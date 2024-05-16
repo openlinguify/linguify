@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from linguify.models import Courses_languages, Courses_languages_categories, Courses_subcategories, Vocabulary, Grammar, Units, User_Lesson_Progress, Revision, User_Revision_Progress, Quiz, Flashcards, User_Flashcard_Progress
+from linguify.models import Courses_languages, Vocabulary, Grammar, Units, UserLessonProgress, Revision, UserRevisionProgress, Quiz, Flashcard, UserFlashcardProgress
 from linguify.forms import ThemeForm
 from django.contrib.auth.decorators import login_required
 import random
