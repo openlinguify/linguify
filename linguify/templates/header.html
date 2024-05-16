@@ -1,0 +1,89 @@
+{% load static %}
+
+<header class="container-fluid" style="background: linear-gradient(90deg, #ffffff 0%, #00fff3 100%);">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="{% url 'index' %}" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                <img src="{% static 'images/logos/logo-linguify.png' %}" alt="Linguify" class="logo-img img-fluid"
+                     style="max-height: 100px; border-radius: 20px">
+            </a>
+
+
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="{% url 'index' %}" class="nav-link px-2 text-secondary">Accueil</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Apprendre
+                    </a>
+                    <!-- Dropdown Content -->
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'vocabulaire' %}">Vocabulaire</a>
+                        <a class="dropdown-item" href="{% url 'grammaire' %}">Grammaire</a>
+                        <a class="dropdown-item" href="{% url 'exercice_vocabulaire' %}">Exercice</a>
+                        <a class="dropdown-item" href="#">Vocabulaire professionnel</a>
+                        <a class="dropdown-item" href="#">Actualité</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Revision
+                    </a>
+                    <!-- Dropdown Content -->
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'revision' %}">Revision</a>
+                        <a class="dropdown-item" href="{% url 'quiz' %}">Quiz</a>
+                        <a class="dropdown-item" href="#">Flashcards</a>
+                    </div>
+                </li>
+                <li><a href="{% url 'pricing' %}" class="nav-link px-2 text-white">Pricing</a></li>
+                <li><a href="#" class="nav-link px-2 text-white">FAQs</a></li>
+                <li><a href="#" class="nav-link px-2 text-white">About</a></li>
+            </ul>
+        </div>
+    </div>
+    <section>
+        <div>
+
+        </div>
+    </section>
+</header>
+
+<script>
+    // Fonction pour afficher la zone de recherche avancée
+    function showAdvancedSearch() {
+        var advancedSearchFields = document.getElementById("advancedSearchFields");
+        advancedSearchFields.style.display = "block";
+    }
+
+    // Fonction pour masquer la zone de recherche avancée
+    function hideAdvancedSearch() {
+        var advancedSearchFields = document.getElementById("advancedSearchFields");
+        advancedSearchFields.style.display = "none";
+    }
+
+    // Fonction pour afficher ou masquer les champs de recherche avancée
+    function toggleAdvancedSearch() {
+        var advancedSearchFields = document.getElementById("advancedSearchFields");
+        if (advancedSearchFields.style.display === "none") {
+            showAdvancedSearch();
+        } else {
+            hideAdvancedSearch();
+        }
+    }
+
+    // Ajoutez des écouteurs d'événements pour les fonctionnalités interactives
+    document.getElementById("advancedSearchButton").addEventListener("click", toggleAdvancedSearch);
+    document.getElementById("hideAdvancedSearchButton").addEventListener("click", hideAdvancedSearch);
+
+    // JavaScript pour la fermeture automatique du dropdown
+    document.addEventListener("click", function(event) {
+        var dropdowns = document.getElementsByClassName("dropdown-menu");
+        for (var i = 0; i < dropdowns.length; i++) {
+            var dropdown = dropdowns[i];
+            if (dropdown.classList.contains("show") && !dropdown.contains(event.target)) {
+                dropdown.classList.remove("show");
+            }
+        }
+    });
+
+</script>
