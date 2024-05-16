@@ -39,8 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Project apps
-    'linguify.apps.LinguifyConfig',
     'authentication',
+    'linguify.apps.LinguifyConfig',
+
     'cards.apps.CardsConfig',
 ]
 
