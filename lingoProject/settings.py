@@ -37,11 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django.contrib.humanize',
     # Project apps
     'authentication',
     'linguify.apps.LinguifyConfig',
-
     'cards.apps.CardsConfig',
 ]
 
