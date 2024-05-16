@@ -41,5 +41,5 @@ urlpatterns = [
     path('prices/', linguify_views.prices),
     path('contact/', linguify_views.contact),
     path('about/', linguify_views.about),
-    path("", include("cards.urls")),
+    path('cards', include("cards.urls")),
 ]

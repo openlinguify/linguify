@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 
+
 class LevelTarget(models.Model):
     LEVEL_CHOICES = [
         ('A1', 'A1'),
@@ -16,6 +17,13 @@ class LevelTarget(models.Model):
     level = models.CharField(max_length=2, choices=LEVEL_CHOICES, unique=True, default='A1')
     def __str__(self):
         return self.level
+class Language(models.Model):
+    language_id = models.AutoField(primary_key=True)
+    language_name = models.CharField(max_length=100, unique=True)
+    language_code = models.CharField(max_length=10, unique=True)
+
+    def __str__(self):
+        return self.language_name
 class Objectives(models.TextChoices):
     GET_A_JOB = 'get_a_job', 'Get a job easily'
     TRAVEL = 'travel', 'Travel in a foreign country'
@@ -24,13 +32,7 @@ class Objectives(models.TextChoices):
     IMPROVE_SKILLS = 'improve_skills', 'Improve skills for work'
     PASS_EXAM = 'pass_exam', 'Pass an exam or test'
     OTHER = 'other', 'Other objective'
-class Language(models.Model):
-    language_id = models.AutoField(primary_key=True)
-    language_name = models.CharField(max_length=100, unique=True)
-    language_code = models.CharField(max_length=10, unique=True)
 
-    def __str__(self):
-        return self.language_name
 class UserSetting(models.Model):
     user_setting_id = models.AutoField(primary_key=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -64,12 +66,12 @@ class User(AbstractUser):
     ]
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     role = models.CharField(max_length=30, choices=ROLE_CHOICES, default='SUBSCRIBER')
-    objectives = models.CharField(max_length=30, choices=Objectives.choices, default='GET_A_JOB', null=True, blank=True)
-    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default='A1')
-    language_id = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='user_language_id', default="A1")
-    learning_language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='user_learning_language', default=1)
-    mother_language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='user_mother_language', default=1)
-    settings = models.OneToOneField('UserSetting', on_delete=models.CASCADE, null=True, blank=True, related_name='user_settings')
+    objectives = models.CharField(max_length=30, choices=Objectives.choices, default=Objectives.GET_A_JOB, null=True, blank=True)
+    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default=None)  # Set default as None
+    language_id = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, blank=True, related_name='user_language', default=None, verbose_name='Language', help_text='Select your language')
+    learning_language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='user_learning_language', default=None)
+    mother_language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='user_mother_language', default=None)
+    settings = models.OneToOneField(UserSetting, on_delete=models.CASCADE, null=True, blank=True, related_name='user_settings')
 
     def __str__(self):
         return f"{self.username} - {self.email} - {self.role}"
