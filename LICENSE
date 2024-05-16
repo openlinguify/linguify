@@ -1,4 +1,18 @@
-                    GNU GENERAL PUBLIC LICENSE
+
+For copyright information, please see the COPYRIGHT file.
+
+Linguify is published under the GNU GENERAL PUBLIC LICENSE, Version 3
+(GPLv3), as included below. Since the GPL is a set of additional
+permissions on top of the GPL, the text of the GPL is included at the
+bottom as well.
+
+Some external libraries and contributions bundled with Linguify may be published
+under other GPL-compatible licenses. For these, please refer to the relevant
+source files and/or license files, in the source code tree.
+
+**************************************************************************
+
+                      GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
