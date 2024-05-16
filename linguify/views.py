@@ -3,13 +3,7 @@ from django.http import HttpResponse
 from linguify.models import Courses_languages, Courses_languages_categories, Courses_subcategories, Vocabulary, Grammar, Units, User_Lesson_Progress, Revision, User_Revision_Progress, Quiz, Flashcards, User_Flashcard_Progress
 from linguify.forms import ThemeForm
 from django.contrib.auth.decorators import login_required
-from authentication.models import User
 import random
-
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic import CreateView, UpdateView, DeleteView
-from django.views.generic.base import TemplateResponseMixin, View
-
 def base(request):
     return render(request, 'base.html')
 
@@ -132,6 +126,10 @@ def search_vocabulary(request):
 
 def revision(request):
     return render(request, 'revision.html')
+
+#def hello(request):
+    #return HttpResponse("Hello, World!")
+
 
 def add_vocabulary_to_flashcard(request, flashcard_id):
     flashcard = Flashcard.objects.get(id=flashcard_id)
