@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Révision{% endblock %}
+
+{% block content %}
+
+    <h1>Révision</h1>
+
+    {% if user.is_authenticated %}
+        <!-- Si l'utilisateur est connecté -->
+        {% if user.target_language.all %}
+            <!-- Si l'utilisateur a une langue cible -->
+            <p>Langue cible : {{ user.target_language.all.0 }}</p>
+            <p>Vous avez {{ mots_revises|length }} mots à réviser dans la langue {{ user.target_language.first }}.</p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="submit" value="Commencer la révision">
+            </form>
+        {% endif %}
+        <p>Vous avez {{ mots_revises|length }} mots à réviser.</p>
+        <form method="post" action="{% url 'quiz' %}">
+            {% csrf_token %}
+            <input type="submit" value="Commencer la révision">
+        </form>
+    {% else %}
+        <!-- Si l'utilisateur n'est pas connecté -->
+        <p>Vous devez vous connecter pour réviser vos mots.</p>
+    {% endif %}
+
+{% endblock content %}
