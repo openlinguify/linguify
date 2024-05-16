@@ -1,0 +1,38 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Vocabulaire</title>
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Sélectionner</button>
+    </form>
+
+    <main>
+        <h1>Le vocabulaire</h1>
+        {% if error %}
+            <p>Aucun vocabulaire trouvé pour le thème selectionné.</p>
+        {% else %}
+            <p>Voici le vocabulaire pour le thème {{ theme }} :</p>
+            <ul>
+                {% for vocabulaire in vocabulaires %}
+                    <li>{{ vocabulaire.word }} - {{ vocabulaire.translation }}</li>
+                {% empty %}
+                    <li>Aucun vocabulaire trouvé.</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </main>
+
+    {% include 'footer.html' %}
+</body>
+</html>
