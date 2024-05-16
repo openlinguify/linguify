@@ -9,7 +9,7 @@ import random
 class Courses_languages(models.Model):
     course_languages_id = models.AutoField(primary_key=True)
     language_id = models.ForeignKey(Language, on_delete=models.CASCADE)
-    level_target_language = models.CharField(max_length=168, choices=LevelTarget.choices, blank=True, null=True)
+    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE)
     course_languages_title = models.CharField(max_length=100)
     course_description = models.TextField(max_length=500)
     course_image = models.ImageField(upload_to='course_images/', null=True, blank=True)

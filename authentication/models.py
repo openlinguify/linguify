@@ -14,6 +14,23 @@ class LevelTarget(models.TextChoices):
     B2 = 'B2', 'B2 - Upper Intermediate'
     C1 = 'C1', 'C1 - Advanced'
     C2 = 'C2', 'C2 - Proficient'
+
+    level_id = models.AutoField(primary_key=True)
+    level = models.CharField(
+        max_length=30,
+        choices=[
+            ('A1', 'A1 - Beginner'),
+            ('A2', 'A2 - Elementary'),
+            ('B1', 'B1 - Intermediate'),
+            ('B2', 'B2 - Upper Intermediate'),
+            ('C1', 'C1 - Advanced'),
+            ('C2', 'C2 - Proficient'),
+        ],
+        default='A1'
+    )
+
+    def __str__(self):
+        return self.level
 class Objectives(models.TextChoices):
     GET_A_JOB = 'get_a_job', 'Get a job easily'
     TRAVEL = 'travel', 'Travel in a foreign country'
@@ -63,7 +80,7 @@ class CustomUser(AbstractUser):
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     role = models.CharField(max_length=30, choices=ROLE_CHOICES, default='SUBSCRIBER')
     objectives = models.CharField(max_length=30, choices=Objectives.choices, default='GET_A_JOB')
-    level_target_language = models.CharField(max_length=30, choices=LevelTarget.choices, default='A1')
+    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default=1)
     language_id = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='user_language_id')
     learning_language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='user_learning_language', default=1)
     mother_language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='user_mother_language')
