@@ -1,0 +1,15 @@
+<!-- cards/templates/cards/card_list.html -->
+
+{% extends "cards/base.html" %}
+
+{% block content %}
+    <h2>
+        All Cards
+    </h2>
+    {% for card in card_list %}
+        <h3>🗃 {{ card.box }} Box</h3>
+        <article>
+            {{ card }}
+        </article>
+    {% endfor %}
+{% endblock content %}
