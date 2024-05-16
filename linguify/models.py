@@ -1,15 +1,13 @@
 #linguify/models.py
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-from authentication.models import User as AuthUser
 from django.contrib.auth.models import User, AbstractUser
-from authentication.models import Language, LevelTarget, User
 import random
-
+from authentication.models import User, LevelTarget, Language
 class Courses_languages(models.Model):
     course_languages_id = models.AutoField(primary_key=True)
     language_id = models.ForeignKey(Language, on_delete=models.CASCADE)
-    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE)
+    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default='A1')
     course_languages_title = models.CharField(max_length=100)
     course_description = models.TextField(max_length=500)
     course_image = models.ImageField(upload_to='course_images/', null=True, blank=True)
@@ -37,7 +35,7 @@ class Courses_subcategories(models.Model):
 class Vocabulary(models.Model):
     vocabulary_id = models.AutoField(primary_key=True)
     language_id = models.ForeignKey(Language, on_delete=models.CASCADE)
-    level_target_language = models.CharField(max_length=168, choices=LevelTarget.choices, blank=True, null=True)
+    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default='A1')
     vocabulary_title = models.CharField(max_length=100)
     word = models.CharField(max_length=500)
     translation = models.CharField(max_length=500)
@@ -48,9 +46,9 @@ class Vocabulary(models.Model):
     def get_vocabulary(self):
         return f"{self.word} - {self.translation}"
 class Grammar(models.Model):
-    id = models.AutoField(primary_key=True)
+    grammar_id = models.AutoField(primary_key=True)
     language_id = models.ForeignKey(Language, on_delete=models.CASCADE)
-    level_target_language = models.CharField(max_length=168, choices=LevelTarget.choices, blank=True, null=True)
+    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default='A1')
     grammar_title = models.CharField(max_length=100)
     grammar_description = models.TextField(max_length=500)
     grammar_example = models.TextField(max_length=500)
@@ -77,11 +75,11 @@ class Theme(models.Model):
         return self.theme_name
 class UserLessonProgress(models.Model):
     user_lesson_progress_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey('AuthUser', on_delete=models.CASCADE)
-    course_id = models.ForeignKey('CoursesLanguages', on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    course_id = models.ForeignKey(Courses_languages, on_delete=models.CASCADE)
     unit_id = models.ForeignKey('Units', on_delete=models.CASCADE)
-    status = models.CharField(max_length=100)
-    completion_percentage = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
+    statut = models.CharField(max_length=100)
+    percentage_completion = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
     time_study = models.IntegerField(validators=[MinValueValidator(0)])
     score_revision = models.IntegerField(validators=[MinValueValidator(0)])
     score_exercise = models.IntegerField(validators=[MinValueValidator(0)])
@@ -91,8 +89,8 @@ class UserLessonProgress(models.Model):
         return f"{self.user_id} - {self.user_lesson_progress_id} - {self.course_id} - {self.unit_id} - {self.status}"
 class Revision(models.Model):
     revision_id = models.AutoField(primary_key=True)
-    language_id = models.ForeignKey('Language', on_delete=models.CASCADE)
-    level_target_language = models.ForeignKey('LevelTarget', on_delete=models.CASCADE)
+    language_id = models.ForeignKey(Language, on_delete=models.CASCADE)
+    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default='A1')
     revision_title = models.CharField(max_length=100)
     revision_description = models.TextField(max_length=500)
     word = models.CharField(max_length=100)
@@ -115,10 +113,10 @@ class UserRevisionProgress(models.Model):
         ('Completed', 'Completed'),
     ]
     user_revision_progress_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey('AuthUser', on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     revision_id = models.ForeignKey(Revision, on_delete=models.CASCADE)
-    status = models.CharField(max_length=100, choices=STATUT_CHOICES, default='Not started')
-    completion_percentage = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)], default=0)
+    statut = models.CharField(max_length=100, choices=STATUT_CHOICES, default='Not started')
+    percentage_completion = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)], default=0)
     time_study = models.IntegerField(validators=[MinValueValidator(0)], default=0)
     score_revision = models.IntegerField(validators=[MinValueValidator(0)], default=0)
     words_succeeded = models.IntegerField(default=0)
@@ -128,7 +126,7 @@ class UserRevisionProgress(models.Model):
         return f"{self.user.username} - {self.revision.title}"
     def start_revision(self):
         """Start the revision for the user."""
-        self.status = 'In progress'
+        self.statut = 'In progress'
         self.save()
     def update_progress(self, succeeded=True):
         """Update the progress of the user based on the result of the revision."""
@@ -140,15 +138,15 @@ class UserRevisionProgress(models.Model):
 
         total_words = self.words_succeeded + self.words_failed
         if total_words > 0:
-            self.completion_percentage = (self.words_succeeded / total_words) * 100
+            self.percentage_completion = (self.words_succeeded / total_words) * 100
         else:
-            self.completion_percentage = 0
+            self.percentage_completion = 0
 
         self.save()
     def reset_progress(self):
         """Reset the progress of the user."""
-        self.status = 'Not started'
-        self.completion_percentage = 0
+        self.statut = 'Not started'
+        self.percentage_completion = 0
         self.time_study = 0
         self.score_revision = 0
         self.words_succeeded = 0
@@ -169,8 +167,8 @@ class UserRevisionProgress(models.Model):
         except cls.DoesNotExist:
             return None
     def complete_revision(self):
-        self.status = 'Completed'
-        self.completion_percentage = 100
+        self.statut = 'Completed'
+        self.percentage_completion = 100
         self.save()
 
     def update_score(self, score):
@@ -182,10 +180,10 @@ class UserRevisionProgress(models.Model):
         self.save()
 class Quiz(models.Model):
     quiz_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     mother_language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='mother_language')
     learning_language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='learning_language')
-    level_target_language = models.CharField(max_length=168, choices=LevelTarget.choices, blank=True, null=True)
+    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default='A1')
     word = models.CharField(max_length=100)
     correct_translation = models.CharField(max_length=100)
     options = models.JSONField(default=list)
@@ -197,13 +195,13 @@ class Quiz(models.Model):
         return f"{self.quiz_id} - {self.user_id} - {self.mother_language} - {self.learning_language} - {self.word} - {self.correct_translation}"
 class Flashcard(models.Model):
     flashcard_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
-    language = models.ForeignKey(Language, on_delete=models.CASCADE)
-    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    language_id = models.ForeignKey(Language, on_delete=models.CASCADE)
+    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default='A1')
     vocabulary = models.ForeignKey(Vocabulary, on_delete=models.CASCADE)
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
     flashcard_title = models.CharField(max_length=100, blank=False, null=False)
-    image = models.ImageField(upload_to='flashcard_images/', null=True, blank=True)
+    image_flashcard = models.ImageField(upload_to='flashcard_images/', null=True, blank=True)
     def add_vocabulary_to_flashcard(self, vocabulary_id):
         vocabulary_entry = Vocabulary.objects.get(id=vocabulary_id)
         self.vocabulary.add(vocabulary_entry)
@@ -224,7 +222,7 @@ class Flashcard(models.Model):
     @property
     def get_flashcard(self):
         return f"{self.vocabulary.word} - {self.vocabulary.translation}"
-class User_Flashcard_Progress(models.Model):
+class UserFlashcardProgress(models.Model):
     """
     This Django model represents the progress of a user on a specific flashcard.
 
@@ -242,22 +240,22 @@ class User_Flashcard_Progress(models.Model):
         ('Completed', 'Completed'),
     ]
     user_flashcard_progress_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     flashcard_id = models.ForeignKey(Flashcard, on_delete=models.CASCADE)
     statut = models.CharField(max_length=100, choices=STATUT_CHOICES)
-    pourcentage_completion = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
+    percentage_completion = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
     score_flashcard = models.IntegerField(validators=[MinValueValidator(0)])
     time_study = models.IntegerField(validators=[MinValueValidator(0)])
 
     def __str__(self):
-        return f"{self.user_id} - {self.flashcard_id} - {self.statut} - {self.pourcentage_completion} - {self.time_study}"
+        return f"{self.user_id} - {self.flashcard_id} - {self.statut} - {self.percentage_completion} - {self.time_study}"
     @property
-    def calculate_pourcentage_completion(self):
+    def calculate_percentage_completion(self):
         total_items = 100
         actual_completude = 0
         if self.statut == 'Completed':
             actual_completude = total_items
         else:
-            actual_completude = self.pourcentage_completion
+            actual_completude = self.percentage_completion
         return actual_completude
 
