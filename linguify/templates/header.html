@@ -12,7 +12,8 @@
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="{% url 'index' %}" class="nav-link px-2 text-secondary">Accueil</a></li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Apprendre
                     </a>
                     <!-- Dropdown Content -->
@@ -25,7 +26,8 @@
                     </div>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Revision
                     </a>
                     <!-- Dropdown Content -->
@@ -36,15 +38,27 @@
                     </div>
                 </li>
                 <li><a href="{% url 'pricing' %}" class="nav-link px-2 text-white">Pricing</a></li>
-                <li><a href="#" class="nav-link px-2 text-white">FAQs</a></li>
-                <li><a href="#" class="nav-link px-2 text-white">About</a></li>
+                <li><a href="{% url 'contact' %}" class="nav-link px-2 text-white">Contact</a></li>
+                <li><a href="{% url 'about' %}" class="nav-link px-2 text-white">About</a></li>
             </ul>
+        <div class="text-end">
+                {% if user.is_authenticated %}
+                    <div class="d-flex align-items-center">
+                        <p class="mb-0 me-3">Welcome, {{ user.first_name }}!</p>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-light me-2">Déconnexion</button>
+                        </form>
+                        <a href="{% url 'password_change' %}" class="btn btn-outline-light">Changer de mot de passe</a>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary">Connexion</a>
+                {% endif %}
+            </div>
         </div>
     </div>
     <section>
-        <div>
 
-        </div>
     </section>
 </header>
 
@@ -76,7 +90,7 @@
     document.getElementById("hideAdvancedSearchButton").addEventListener("click", hideAdvancedSearch);
 
     // JavaScript pour la fermeture automatique du dropdown
-    document.addEventListener("click", function(event) {
+    document.addEventListener("click", function (event) {
         var dropdowns = document.getElementsByClassName("dropdown-menu");
         for (var i = 0; i < dropdowns.length; i++) {
             var dropdown = dropdowns[i];

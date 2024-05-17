@@ -1,0 +1,58 @@
+/* login.css */
+
+/* Centrer le formulaire */
+.login-form {
+    margin-top: 50px;
+}
+
+/* Styling pour la carte */
+.card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling pour le titre de la carte */
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 20px;
+}
+
+/* Styling pour le corps de la carte */
+.card-body {
+    padding: 20px;
+}
+
+/* Styling pour le formulaire */
+form {
+    margin-bottom: 0;
+}
+
+/* Styling pour le bouton de connexion */
+button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Styling pour le lien "Sign up" */
+p {
+    margin-top: 20px;
+    text-align: center;
+}
+
+p a {
+    color: #007bff;
+}
+
+p a:hover {
+    text-decoration: underline;
+}

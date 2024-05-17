@@ -2,7 +2,8 @@
 {% load static %}
 
 {% block content %}
-    <main  class="container-fluid py-5 text-center" style="background: linear-gradient(90deg, #ffffff 0%, #02c2ba 100%);">
+    <main class="container-fluid py-5 text-center"
+          style="background: linear-gradient(90deg, #ffffff 0%, #00fff3 100%);">
 
         <section>
             <div class="container">
@@ -20,92 +21,16 @@
         <section class="accueil-introduction container py-5">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <p class="lead text-justify">
-                        Découvrez un monde de possibilités avec Linguify. Apprenez une langue sans limites et obtenez
-                        des
-                        certifications pour attester de votre niveau. Notre mission est de rendre l'apprentissage des
-                        langues aussi accessible que possible, car nous croyons en la puissance de la communication
-                        multiculturelle.
-                        Depuis plus de 5 ans, nous nous efforçons de capturer l'essence de chaque instant avec passion
-                        et
-                        dévouement, afin que chaque apprenant puisse atteindre ses objectifs linguistiques et s'épanouir
-                        dans un monde de diversité et d'opportunités.
+                    <p class="lead text-justify mb-0" style="text-align: justify; hyphens: auto;">
+                        Découvrez un monde de possibilités avec Linguify. Apprenez une langue sans limites et obtenez des certifications pour attester de votre niveau. Notre mission est de rendre l'apprentissage des langues aussi accessible que possible, car nous croyons en la puissance de la communication multiculturelle. Depuis plus de 5 ans, nous nous efforçons de capturer l'essence de chaque instant avec passion et dévouement, afin que chaque apprenant puisse atteindre ses objectifs linguistiques et s'épanouir dans un monde de diversité et d'opportunités.
                     </p>
-
-                    <div class="d-flex justify-content-between">
-                        <a href="{% url 'login' %}" class="btn btn-primary btn-lg mt-3">Démarrez Votre
-                            Voyage !</a>
-                    </div>
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-lg mt-3">Démarrez Votre Voyage !</a>
                 </div>
                 <div class="col-lg-6">
                     <img src="{% static 'images/logos/logo-linguify.png' %}" alt="Linguify" class="logo-img img-fluid">
                 </div>
             </div>
         </section>
-
-
-        <secton>
-            <div class="container-fluid py-5 text-center" style="background: linear-gradient(90deg, #ffffff 0%, #02c2ba 100%);">
-                <section>
-                    <!-- Champ de commentaire -->
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="comment-input"
-                               placeholder="Entrez votre commentaire...">
-                        <button class="btn btn-primary" type="button" id="submit-comment">Envoyer</button>
-                    </div>
-                </section>
-            </div>
-        </secton>
-
-        <!-- Section Contact -->
-        {% include 'contact.html' %}
     </main>
 {% endblock %}
-{% block scripts %}
-    <script>
-        function search() {
-            // Get the value from the input element
-            var searchTerm = document.getElementById("search-input").value;
 
-            // Perform some processing or logic based on the search term
-            // For example, you can use an if-else statement or a switch statement
-
-            // Simulate a simple example by checking for specific search terms
-            if (searchTerm === "apple") {
-                document.getElementById("search-results").innerHTML =
-                    "Search term matched: apple";
-            } else if (searchTerm === "banana") {
-                document.getElementById("search-results").innerHTML =
-                    "Search term matched: banana";
-            } else {
-                document.getElementById("search-results").innerHTML =
-                    "No matching result for the search term: " + searchTerm;
-            }
-        }
-
-        // Fonction pour gérer l'envoi de commentaire
-        const handleCommentSubmission = () => {
-            // Récupérer le commentaire saisi par l'utilisateur
-            const comment = document.getElementById("comment-input").value;
-
-            // Afficher le commentaire à l'utilisateur (ou effectuer d'autres actions)
-            alert("Votre commentaire : " + comment);
-
-            // Effacer le champ de commentaire après l'envoi
-            document.getElementById("comment-input").value = "";
-        };
-
-        // Ajout d'un gestionnaire d'événement au chargement du document
-        document.addEventListener("DOMContentLoaded", () => {
-            // Ajout d'un gestionnaire d'événement pour le bouton d'envoi de commentaire
-            const submitButton = document.getElementById("submit-comment");
-            submitButton.addEventListener("click", handleCommentSubmission);
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-            integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-            crossorigin="anonymous"></script>
-{% endblock scripts %}

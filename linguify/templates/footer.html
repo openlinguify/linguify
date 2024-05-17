@@ -1,15 +1,16 @@
-<footer class="container-fluid py-5" style="background: linear-gradient(90deg, #ffffff 0%, #02c2ba 100%);">
+<footer class="container-fluid py-5" style="background: linear-gradient(90deg, #ffffff 0%, #00fff3 100%);">
     <div class="container">
         <div class="row">
             <div class="col-md-3 mb-4">
                 <h5>Navigation</h5>
                 <ul class="nav flex-column">
-                    <li class="nav-item mb-4"><a href="index.html" class="nav-link text-dark">Accueil</a></li>
-                    <li class="nav-item mb-4"><a href="courses.html" class="nav-link text-dark">Cours</a></li>
-                    <li class="nav-item mb-4"><a href="testlinguistique.html" class="nav-link text-dark">Révision</a>
+                    <li class="nav-item mb-4"><a href="{% url 'index' %}" class="nav-link text-dark">Accueil</a></li>
+                    <li class="nav-item mb-4"><a href="{% url 'grammaire' %}" class="nav-link text-dark">Cours</a></li>
+                    <li class="nav-item mb-4"><a href="{% url 'revision' %}" class="nav-link text-dark">Révision</a>
                     </li>
-                    <li class="nav-item mb-4"><a href="pricing.html" class="nav-link text-dark">Tarification</a></li>
-                    <li class="nav-item mb-4"><a href="questions.html" class="nav-link text-dark">FAQs</a></li>
+                    <li class="nav-item mb-4"><a href="{% url 'pricing' %}" class="nav-link text-dark">Pricing</a></li>
+                    <li class="nav-item mb-4"><a href="{% url 'contact' %}" class="nav-link text-dark">Contact us</a></li>
+                    <li class="nav-item mb-4"><a href="{% url 'about' %}" class="nav-link text-dark">About</a></li>
                 </ul>
             </div>
 
