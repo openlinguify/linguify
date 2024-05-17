@@ -1,5 +1,9 @@
-<section id="contact" class="section-contact py-5">
-    <div  class="container-fluid" style="background: linear-gradient(90deg, #ffffff 0%, #02c2ba 100%);">
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section id="contact" class="section-contact py-5" style="background: linear-gradient(90deg, #ffffff 0%, #00fff3 100%);">
+    <div  class="container-fluid">
         <h2 class="text-center mb-4">Parlons de votre projet</h2>
         <form method="post" action="http://linguify.com/contact" class="row g-3">
             <div class="col-md-6">
@@ -24,3 +28,5 @@
         </form>
     </div>
 </section>
+
+{% endblock content %}
