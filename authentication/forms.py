@@ -1,3 +1,4 @@
+# authentication/forms.py file is used to create a form for the user to sign up.
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 

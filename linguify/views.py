@@ -14,16 +14,14 @@ def home(request):
 # Create your views here.
 def index(request):
     return render(request, 'index.html')
-
 def header(request):
     return render(request,
                   'header.html',
                   {'header': 'header'}
     )
-
 def footer(request):
     return render(request, 'footer.html')
-
+@login_required(login_url='login')
 def vocabulaire(request):
     vocabulaires = Vocabulary.objects.all()
     form = ThemeForm(request.POST or None)
@@ -43,7 +41,7 @@ def vocabulaire(request):
             return render(request, 'vocabulaire.html', {'form': form, 'error': True})
 
     return render(request, 'vocabulaire.html', {'form': form, 'vocabulaires': vocabulaires})
-
+@login_required(login_url='login')
 def exercice_vocabulary(request):
     # Sélectionner un mot aléatoire
     random_word = random.choice(Vocabulary.objects.all())
@@ -60,20 +58,19 @@ def exercice_vocabulary(request):
         'choices': words,
     }
     return render(request, 'exercice_vocabulaire.html', context)
-
+@login_required(login_url='login')
 def grammaire(request):
 
     return render(request,
                   'grammaire.html',
                   {'vocabulaires': Vocabulary.objects.all(), 'grammaires': Grammar.objects.all()
     })
-
+@login_required
 def revision(request):
     return render(request, 'revision.html')
-
+@login_required(login_url='login')
 def testlinguisitique(request):
     return render(request, 'testlinguistique.html')
-
 def courses(request):
     # Récupérer tous les cours depuis la base de données
     courses = Courses_languages.objects.all()
@@ -87,25 +84,12 @@ def courses(request):
     }
     # Rendre le modèle avec les données
     return render(request, 'linguify/courses.html', context)
-
 def prices(request):
     return render(request, 'linguify/prices.html')
-
 def contact(request):
     return render(request, 'linguify/contact.html')
-
 def about(request):
-    return HttpResponse("""
-                        <h1>About</h1>
-                        <p>Linguify is a language school that offers courses in English, French, Dutch, German, Italian, and Spanish.</p>
-                        <p>Our teachers are native speakers and have years of experience in teaching languages.</p>
-                        <p>Our goal is to help you improve your language skills and achieve your language learning goals.</p>
-                        <p>Whether you are a beginner or an advanced learner, we have a course that is right for you.</p>
-                        <p>Our classes are small and interactive, so you will have plenty of opportunities to practice speaking and listening.</p>
-                        <p>We also offer private lessons and exam preparation courses.</p>
-                        <p>Contact us today to learn more about our courses and schedule a free trial lesson.</p>
-                        """)
-
+    return render(request, 'linguify/about.html')
 #let's integrate the search functionality into a Django view and return the filtered results to the frontend. Here's how you can do it:
 def search_vocabulary(request):
     if request.method == 'GET':
@@ -123,24 +107,19 @@ def search_vocabulary(request):
             'query': query,
         }
         return render(request, 'linguify/search_vocabulary.html', context)
-
+@login_required(login_url='login')
 def revision(request):
     return render(request, 'revision.html')
-
-#def hello(request):
-    #return HttpResponse("Hello, World!")
-
-
 def add_vocabulary_to_flashcard(request, flashcard_id):
     flashcard = Flashcard.objects.get(id=flashcard_id)
     vocabulary_entry = Vocabulary.objects.get(id=1)
     flashcard.vocabulary.add(vocabulary_entry)
     return HttpResponse("Vocabulary entry added to flashcard")
-
 def save(self, *args, **kwargs):
     super().save(*args, **kwargs)
     vocabulary_entry = Vocabulary.objects.get(id=1)
     self.vocabulary.add(vocabulary_entry)
+@login_required
 def quiz(request):
     if request.user.is_authenticated:
         learning_language = request.user.learning_language
@@ -172,7 +151,6 @@ def quiz(request):
         return render(request, 'quiz.html', context)
     else:
         return HttpResponse("Please log in to access this feature.")
-
 def check_answer(request):
     if request.method == 'POST':
         selected_translation = request.POST.get('selected_translation')
