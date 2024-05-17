@@ -1,3 +1,4 @@
+# authentication views
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
