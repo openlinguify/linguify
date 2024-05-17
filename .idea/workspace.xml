@@ -5,23 +5,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0780bdb6-4ca0-4c56-b6ff-bb0917855aea" name="Changes" comment="Some changes in the chart app">
-      <change afterPath="$PROJECT_DIR$/authentication/static/css/authentication.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/authentication/static/css/login.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/linguify/templates/linguify/about.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cards/templates/cards/card.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cards/templates/cards/card_form.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cards/templates/cards/navigation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/35163e5c-35d6-4007-8bf7-11665fd0f231.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/35163e5c-35d6-4007-8bf7-11665fd0f231/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/linguify.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/linguify.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/authentication/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication/templates/authentication/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/templates/authentication/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication/templates/authentication/password_change_done.html" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/templates/authentication/password_change_done.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication/templates/authentication/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/templates/authentication/signup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cards/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/cards/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cards/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/cards/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cards/templates/cards/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/cards/templates/cards/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cards/templates/cards/card_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/cards/templates/cards/card_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cards/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/cards/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cards/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/cards/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lingoProject/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/lingoProject/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lingoProject/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/lingoProject/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/linguify/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/linguify/static/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/linguify/templates/contact.html" beforeDir="false" afterPath="$PROJECT_DIR$/linguify/templates/linguify/contact.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/linguify/templates/footer.html" beforeDir="false" afterPath="$PROJECT_DIR$/linguify/templates/footer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/linguify/templates/grammaire.html" beforeDir="false" afterPath="$PROJECT_DIR$/linguify/templates/grammaire.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/linguify/templates/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/linguify/templates/header.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/linguify/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/linguify/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/linguify/templates/linguify/prices.html" beforeDir="false" afterPath="$PROJECT_DIR$/linguify/templates/linguify/prices.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/linguify/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/linguify/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/linguify/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/linguify/migrations/0001_initial.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -48,6 +59,17 @@
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {}
 }</component>
+  <component name="GitHubPullRequestState"><![CDATA[{
+  "prStates": [
+    {
+      "id": {
+        "id": "PR_kwDOL8YT8c5vyO6F",
+        "number": 15
+      },
+      "lastSeen": 1715949092396
+    }
+  ]
+}]]></component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/lp-linguify/linguify.git&quot;,
@@ -71,7 +93,6 @@
     "Python.models.executor": "Run",
     "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "LoginSystem-in-the-header",
     "list.type.of.created.stylesheet": "CSS",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -134,6 +155,7 @@
       <workItem from="1715902357574" duration="103000" />
       <workItem from="1715902471710" duration="4523000" />
       <workItem from="1715942379935" duration="6121000" />
+      <workItem from="1715948977713" duration="1022000" />
     </task>
     <servers />
   </component>
