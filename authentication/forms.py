@@ -7,5 +7,5 @@ class SignupForm (UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = get_user_model()
         fields = ['username', 'email', 'first_name', 'last_name',
-                  'role', 'mother_language', 'learning_language',
-                  'level', 'objectives', 'profile_picture']
+                  'mother_language', 'learning_language',
+                  'language_level', 'objectives', 'profile_picture']

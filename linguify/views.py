@@ -22,8 +22,12 @@ def header(request):
 def footer(request):
     return render(request, 'footer.html')
 @login_required(login_url='login')
+
 def vocabulaire(request):
-    vocabulaires = Vocabulary.objects.all()
+    user = request.user
+    learning_language = user.learning_language
+    level = user.language_level
+    vocabulaires = Vocabulary.objects.filter(language=learning_language, level=level)
     form = ThemeForm(request.POST or None)
 
     if request.method == 'POST':
@@ -41,6 +45,7 @@ def vocabulaire(request):
             return render(request, 'vocabulaire.html', {'form': form, 'error': True})
 
     return render(request, 'vocabulaire.html', {'form': form, 'vocabulaires': vocabulaires})
+
 @login_required(login_url='login')
 def exercice_vocabulary(request):
     # Sélectionner un mot aléatoire
