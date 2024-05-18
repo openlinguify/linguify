@@ -3,16 +3,15 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User, AbstractUser
 import random
-from authentication.models import User, LevelTarget, Language
+from authentication.models import User, Language, Level
 class Courses_languages(models.Model):
     course_languages_id = models.AutoField(primary_key=True)
-    language_id = models.ForeignKey(Language, on_delete=models.CASCADE)
-    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default='A1')
     course_languages_title = models.CharField(max_length=100)
     course_description = models.TextField(max_length=500)
     course_image = models.ImageField(upload_to='course_images/', null=True, blank=True)
     def __str__(self):
         return self.course_languages_title
+
 class Courses_languages_categories(models.Model):
     category_id = models.AutoField(primary_key=True)
     category_name = models.CharField(max_length=100)
@@ -20,6 +19,7 @@ class Courses_languages_categories(models.Model):
 
     def __str__(self):
         return self.category_name
+
 class Courses_subcategories(models.Model):
     SUBCATEGORY_CHOICES = [
         ('Vocabulary', 'Vocabulary'),
@@ -32,10 +32,9 @@ class Courses_subcategories(models.Model):
 
     def __str__(self):
         return self.subcategory_title
+
 class Vocabulary(models.Model):
     vocabulary_id = models.AutoField(primary_key=True)
-    language_id = models.ForeignKey(Language, on_delete=models.CASCADE)
-    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default='A1')
     vocabulary_title = models.CharField(max_length=100)
     word = models.CharField(max_length=500)
     translation = models.CharField(max_length=500)
@@ -45,10 +44,9 @@ class Vocabulary(models.Model):
     @property
     def get_vocabulary(self):
         return f"{self.word} - {self.translation}"
+
 class Grammar(models.Model):
     grammar_id = models.AutoField(primary_key=True)
-    language_id = models.ForeignKey(Language, on_delete=models.CASCADE)
-    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default='A1')
     grammar_title = models.CharField(max_length=100)
     grammar_description = models.TextField(max_length=500)
     grammar_example = models.TextField(max_length=500)
@@ -89,8 +87,6 @@ class UserLessonProgress(models.Model):
         return f"{self.user_id} - {self.user_lesson_progress_id} - {self.course_id} - {self.unit_id} - {self.status}"
 class Revision(models.Model):
     revision_id = models.AutoField(primary_key=True)
-    language_id = models.ForeignKey(Language, on_delete=models.CASCADE)
-    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default='A1')
     revision_title = models.CharField(max_length=100)
     revision_description = models.TextField(max_length=500)
     word = models.CharField(max_length=100)
@@ -181,9 +177,6 @@ class UserRevisionProgress(models.Model):
 class Quiz(models.Model):
     quiz_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    mother_language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='mother_language')
-    learning_language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='learning_language')
-    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default='A1')
     word = models.CharField(max_length=100)
     correct_translation = models.CharField(max_length=100)
     options = models.JSONField(default=list)
@@ -196,8 +189,6 @@ class Quiz(models.Model):
 class Flashcard(models.Model):
     flashcard_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    language_id = models.ForeignKey(Language, on_delete=models.CASCADE)
-    level = models.ForeignKey(LevelTarget, on_delete=models.CASCADE, default='A1')
     vocabulary = models.ForeignKey(Vocabulary, on_delete=models.CASCADE)
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
     flashcard_title = models.CharField(max_length=100, blank=False, null=False)
