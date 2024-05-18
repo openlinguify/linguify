@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/linux/Bureau/Programmation/Projects/linguify/venv"
+VIRTUAL_ENV="/home/linux/Bureau/Programmation/Projects/linguify_vscode/linguify/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
