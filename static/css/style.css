@@ -137,6 +137,11 @@ p {
     text-align: justify;
 }
 
+.profile-picture {
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
 /* pricing.html */
     .card {
       border:none;
