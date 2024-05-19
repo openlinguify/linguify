@@ -19,67 +19,15 @@ def signup_page(request):
     return render(request, 'authentication/signup.html', context={'form': form})
 
 
-class LogoutView(View):
+class UploadProfilePhotoView(View):
+    def get(self, request):
+        form = forms.UploadProfilePhotoForm(instance=request.user)
+        return render(request, 'authentication/upload_profile_photo.html', context={'form': form})
+
     def post(self, request):
-        logout(request)
-        return redirect(settings.LOGIN_REDIRECT_URL)
-
-
-# class LoginPage(View):
-#     form_class = forms.LoginView
-#     templates_name = 'authentication/login.html'
-#
-#     def get(self, request):
-#         form = self.form_class()
-#         message = ''
-#         return render(
-#             request, self.templates_name, context={'form': form, 'message': message}
-#         )
-#
-#     def post(self, request):
-#         form = self.form_class(request.POST)
-#         message = ''
-#         if form.is_valid():
-#             user = authenticate(
-#                 username=form.cleaned_data['username'],
-#                 password=form.cleaned_data['password']
-#             )
-#             if user is not None:
-#                 login(request, user)
-#                 return redirect('home')
-#             else:
-#                 message = 'Invalid username or password'
-#         return render(
-#             request, self.templates_name, context={'form': form, 'message': message}
-#         )
-#
-#
-# def logout_user(request):
-#     logout(request)
-#     return redirect('login')
-#
-#
-# def login_page(request):
-#     """
-#     this function is used to allow the user to login
-#     :param request:
-#     :return:
-#     """
-#     form = forms.LoginForm()
-#     message = ''
-#     if request.method == 'POST':
-#         form = forms.LoginForm(request.POST)
-#         if form.is_valid():
-#             user = authenticate(
-#                 username=form.cleaned_data['username'],
-#                 password=form.cleaned_data['password']
-#             )
-#             if user is not None:
-#                 login(request, user)
-#                 return redirect('home')
-#             else:
-#                 message = 'Invalid username or password'
-#
-#     return render(
-#         request, 'authentication/login.html', context={'form': form, 'message': message}
-#     )
+        form = forms.UploadProfilePhotoForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+        return render(request, 'authentication/upload_profile_photo.html', context={'form': form})
+        

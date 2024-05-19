@@ -8,16 +8,15 @@
                      style="max-height: 100px; border-radius: 20px">
             </a>
 
-
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="{% url 'index' %}" class="nav-link px-2 text-secondary">Accueil</a></li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                    <a class="nav-link dropdown-toggle" href="#" id="learnDropdown" role="button"
                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Apprendre
                     </a>
                     <!-- Dropdown Content -->
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="learnDropdown">
                         <a class="dropdown-item" href="{% url 'vocabulaire' %}">Vocabulaire</a>
                         <a class="dropdown-item" href="{% url 'grammaire' %}">Grammaire</a>
                         <a class="dropdown-item" href="{% url 'exercice_vocabulaire' %}">Exercice</a>
@@ -26,12 +25,12 @@
                     </div>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                    <a class="nav-link dropdown-toggle" href="#" id="revisionDropdown" role="button"
                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Revision
                     </a>
                     <!-- Dropdown Content -->
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="revisionDropdown">
                         <a class="dropdown-item" href="{% url 'revision' %}">Revision</a>
                         <a class="dropdown-item" href="{% url 'quiz' %}">Quiz</a>
                         <a class="dropdown-item" href="#">Flashcards</a>
@@ -41,9 +40,14 @@
                 <li><a href="{% url 'contact' %}" class="nav-link px-2 text-white">Contact</a></li>
                 <li><a href="{% url 'about' %}" class="nav-link px-2 text-white">About</a></li>
             </ul>
-        <div class="text-end">
+            <div class="text-end">
                 {% if user.is_authenticated %}
                     <div class="d-flex align-items-center">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-picture">
+                        {% else %}
+                            <img src="{% static 'media/images/avatars/avatar.jpg' %}" alt="Default Profile Picture" class="profile-picture">
+                        {% endif %}
                         <p class="mb-0 me-3">Welcome, {{ user.first_name }}!</p>
                         <form method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
@@ -57,9 +61,6 @@
             </div>
         </div>
     </div>
-    <section>
-
-    </section>
 </header>
 
 <script>
