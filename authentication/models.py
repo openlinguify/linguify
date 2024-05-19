@@ -37,10 +37,9 @@ class UserSetting(models.Model):
     settings_sound_notifications = models.BooleanField(default=True)
     settings_language_notifications = models.BooleanField(default=True)
     settings_flashcards_notifications = models.BooleanField(default=True)
-
-
+    
 class User(AbstractUser):
-    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    profile_picture = models.ImageField(verbose_name='Profile Picture')
     mother_language = models.CharField(max_length=50, choices=Language.choices, default=Language.ENGLISH, null=True, blank=True)    
     learning_language = models.CharField(max_length=50, choices=Language.choices, default=Language.SPANISH, null=True, blank=True)
     language_level = models.CharField(max_length=50, choices=Level.choices, default=Level.A1, null=True, blank=True)
@@ -48,7 +47,7 @@ class User(AbstractUser):
     settings = models.OneToOneField(UserSetting, on_delete=models.CASCADE, null=True, blank=True, related_name='user_settings')
 
     def __str__(self):
-        return f"{self.username} - {self.email} - {self.role}"
+        return f"{self.username} - {self.email}"
 
 class UserFeedback(models.Model):
     user_feedback_id = models.AutoField(primary_key=True)
