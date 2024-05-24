@@ -1,38 +1,73 @@
+{%  extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <title>Vocabulaire</title>
-</head>
-<body>
-    {% include 'header.html' %}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form }}
-        <button type="submit">Sélectionner</button>
-    </form>
-
+{% block content %}
     <main>
-        <h1>Le vocabulaire</h1>
-        {% if error %}
-            <p>Aucun vocabulaire trouvé pour le thème selectionné.</p>
-        {% else %}
-            <p>Voici le vocabulaire pour le thème {{ theme }} :</p>
+      <section>
+        <h1>Vocabulaire général</h1>
+        <div class="courses-container">
+          <div class="course-card" onclick="toggleCourseContent(this)">
+            <img src="{% static 'images/courses/téléchargement.jpg' %}" alt="Se présenter" />
+            <p>Se présenter</p>
+            <div class="course-content" style="display: none;">
+              <ul>
+                <li>Je m'appelle...</li>
+                <li>J'ai ... ans.</li>
+                <li>J'habite à ...</li>
+                <li>Je suis ...</li>
+              </ul>
+            </div>
+          </div>
+          <div class="course-card" onclick="toggleCourseContent(this)">
+            <img src="{% static 'images/courses/maison.jpg' %}" alt="Maison & Habitat">
+            <p>Maison & Habitat</p>
+            <div class="course-content" style="display: none;">
+                <ul>
+                    <li>Salon</li>
+                    <li>Chambre</li>
+                    <li>Cuisine</li>
+                    <li>Jardin</li>
+                </ul>
+            </div>
+        </div>
+        <div class="course-card" onclick="toggleCourseContent(this)">
+          <img src="{% static 'images/courses/loisirs.jpg' %}" alt="Temps libre & Loisirs">
+          <p>Temps libre & Loisirs</p>
+          <div class="course-content" style="display: none;">
+              <ul>
+                  <li>Sport</li>
+                  <li>Hobbies</li>
+                  <li>Voyages</li>
+                  <li>Films</li>
+              </ul>
+          </div>
+      </div>
+      <div class="course-card" onclick="toggleCourseContent(this)">
+        <img src="{% static 'images/courses/manger.jpg' %}" alt="Boire & Manger">
+        <p>Boire & Manger</p>
+        <div class="course-content" style="display: none;">
             <ul>
-                {% for vocabulaire in vocabulaires %}
-                    <li>{{ vocabulaire.word }} - {{ vocabulaire.translation }}</li>
-                {% empty %}
-                    <li>Aucun vocabulaire trouvé.</li>
-                {% endfor %}
+                <li>Repas</li>
+                <li>Boissons</li>
+                <li>Restaurant</li>
+                <li>Recettes</li>
             </ul>
-        {% endif %}
+        </div>
+    </div>
+        <div class="course-card" onclick="toggleCourseContent(this)">
+            <img src="{% static 'images/courses/shopping.jpg' %}" alt="Shopping & Achats">
+            <p>Shopping & Achats</p>
+            <div class="course-content" style="display: none;">
+                <ul>
+                    <li>Vêtements</li>
+                    <li>Accessoires</li>
+                    <li>Magasins</li>
+                    <li>Promotions</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
     </main>
-
-    {% include 'footer.html' %}
-</body>
-</html>
+{% endblock content %}

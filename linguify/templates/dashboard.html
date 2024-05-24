@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <section>
+        <div>
+            <h2>My learning</h2>
+        </div>
+        <div>
+            <button>In progress</button>
+            <button>Completed</button>
+            <button>Not started</button>
+        </div>
+    </section>
+    <section class="list-modules">
+        <div class="dashboard-container">
+            <div class="module" id="vocabulaire">Vocabulaire</div>
+            <div class="module" id="grammaire">Grammaire</div>
+            <div class="module" id="quiz">Quiz</div>
+            <div class="module" id="revision">Révision</div>
+            <div class="module" id="exercice">Exercice</div>
+            <div class="module" id="flashcards">Flashcards</div>
+        </div>
+    </section>
+{% endblock content %}
