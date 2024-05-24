@@ -24,10 +24,10 @@ class Courses_subcategories(models.Model):
     SUBCATEGORY_CHOICES = [
         ('Vocabulary', 'Vocabulary'),
         ('Grammar', 'Grammar'),
+        ('Exercice', 'Exercice'),
     ]
     subcategory_id = models.AutoField(primary_key=True)
     subcategory_title = models.CharField(max_length=100, choices=SUBCATEGORY_CHOICES, null=False)
-    subcategory_description = models.TextField(max_length=500)
     category_id = models.ForeignKey(Courses_languages_categories, on_delete=models.CASCADE)
 
     def __str__(self):

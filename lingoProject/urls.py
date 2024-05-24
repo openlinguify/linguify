@@ -7,7 +7,9 @@ from django.contrib.auth.views import (
 from authentication import views as auth_views
 from linguify import views as linguify_views
 from django.conf import settings
-from django.conf.urls.static import static  # Add this import
+from django.conf.urls.static import static
+from payments import views as payments_views
+from django.views import defaults as default_views
 
 
 urlpatterns = [
@@ -20,6 +22,7 @@ urlpatterns = [
     path('change-password-done/', PasswordChangeDoneView.as_view(template_name='authentication/password_change_done.html'), name='password_change_done'),
     path('home/', linguify_views.home, name='home'),
     path('index/', linguify_views.index, name='index'),
+    path('dashboard/', linguify_views.dashboard, name='dashboard'),
     path('vocabulaire/', linguify_views.vocabulaire, name='vocabulaire'),
     path('grammaire/', linguify_views.grammaire, name='grammaire'),
     path('exercice/', linguify_views.exercice_vocabulary, name='exercice_vocabulaire'),
@@ -40,3 +43,13 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += [
+        path('400/', default_views.bad_request, kwargs={'exception': Exception('Bad Request!')}),
+        path('403/', default_views.permission_denied, kwargs={'exception': Exception('Permission Denied')}),
+        path('404/', default_views.page_not_found, kwargs={'exception': Exception('Page not Found')}),
+        path('500/', default_views.server_error),
+    ]
