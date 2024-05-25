@@ -1,41 +1,82 @@
 # authentication views
 from django.conf import settings
-from django.contrib.auth import login, logout
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
+from django.contrib.auth import login
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-from django.views.generic import View
 from django.views import View
-from . import forms
-from .forms import SignupForm, UploadProfilePhotoForm
+from .forms import SignupForm, StudentProfileForm, TeacherProfileForm, UploadStudentProfilePhotoForm, UploadTeacherProfilePhotoForm
+from .models import StudentProfile, TeacherProfile
 
+def choose_user_type(request):
+    return render(request, 'authentication/choose_user_type.html')
 
-def signup_page(request):
+def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            messages.success(request, "Your account has been created successfully.")
-            return redirect(settings.LOGIN_REDIRECT_URL)
+            user = form.save(commit=False)
+            if user.user_type == 'student':
+                student_form = StudentProfileForm(request.POST, instance=user.student_profile)
+                if student_form.is_valid():
+                    user.is_student = True
+                    user.save()
+                    student_form.save()
+                    login(request, user)
+                    messages.success(request, "Your account has been created successfully.")
+                    return redirect(settings.LOGIN_REDIRECT_URL)
+            elif user.user_type == 'teacher':
+                teacher_form = TeacherProfileForm(request.POST, instance=user.teacher_profile)
+                if teacher_form.is_valid():
+                    user.is_teacher = True
+                    user.save()
+                    teacher_form.save()
+                    login(request, user)
+                    messages.success(request, "Your account has been created successfully.")
+                    return redirect('teacher_dashboard')
     else:
         form = SignupForm()
-    return render(request, 'authentication/signup.html', {'form': form})
+        student_form = StudentProfileForm()
+        teacher_form = TeacherProfileForm()
+    return render(request,
+                  'authentication/signup.html',
+                  {'form': form,
+                   'student_form': student_form,
+                   'teacher_form': teacher_form
+  })
+
+
+def student_dashboard(request):
+    return render(request, 'authentication/student_dashboard.html')
+
+def teacher_dashboard(request):
+    return render(request, 'authentication/teacher_dashboard.html')
 
 
 class UploadProfilePhotoView(View):
-    @login_required
     def get(self, request):
-        form = forms.UploadProfilePhotoForm(instance=request.user)
+        if request.user.user_type == 'student':
+            profile = StudentProfile.objects.get(user=request.user)
+            form = UploadStudentProfilePhotoForm(instance=profile)
+        else:
+            profile = TeacherProfile.objects.get(user=request.user)
+            form = UploadTeacherProfilePhotoForm(instance=profile)
+
         return render(request, 'authentication/upload_profile_photo.html', context={'form': form})
-    @login_required
+
     def post(self, request):
-        form = forms.UploadProfilePhotoForm(request.POST, request.FILES, instance=request.user)
+        if request.user.user_type == 'student':
+            profile = StudentProfile.objects.get(user=request.user)
+            form = UploadStudentProfilePhotoForm(request.POST, request.FILES, instance=profile)
+        else:
+            profile = TeacherProfile.objects.get(user=request.user)
+            form = UploadTeacherProfilePhotoForm(request.POST, request.FILES, instance=profile)
+
         if form.is_valid():
             form.save()
             messages.success(request, 'Profile picture uploaded successfully')
             return redirect('index')
+
         return render(request, 'authentication/upload_profile_photo.html', context={'form': form})
 
 @login_required

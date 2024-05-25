@@ -18,6 +18,14 @@
                     <div class="form-group">
                         {{ form.as_p }}
                     </div>
+                    <div id="student-form" style="display:none;">
+                        <h2>Informations pour les étudiants</h2>
+                        {{ student_form.as_p }}
+                    </div>
+                    <div id="teacher-form" style="display:none;">
+                        <h2>Informations pour les professeurs</h2>
+                        {{ teacher_form.as_p }}
+                    </div>
                     <div class="center-align">
                         <button type="submit" class="btn waves-effect waves-light">S'inscrire</button>
                     </div>
@@ -26,4 +34,25 @@
         </div>
     </div>
 </div>
+<script>
+    function toggleForms() {
+        var userType = document.getElementById('id_user_type').value;
+        var studentForm = document.getElementById('student-form');
+        var teacherForm = document.getElementById('teacher-form');
+        if (userType == 'student') {
+            studentForm.style.display = 'block';
+            teacherForm.style.display = 'none';
+        } else if (userType == 'teacher') {
+            studentForm.style.display = 'none';
+            teacherForm.style.display = 'block';
+        } else {
+            studentForm.style.display = 'none';
+            teacherForm.style.display = 'none';
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        toggleForms(); // Initial call
+        document.getElementById('id_user_type').addEventListener('change', toggleForms);
+    });
+</script>
 {% endblock content %}

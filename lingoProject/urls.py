@@ -17,7 +17,7 @@ urlpatterns = [
     path('base/', linguify_views.base),
     path('', LoginView.as_view(template_name='authentication/login.html', redirect_authenticated_user=False), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
-    path('signup/', auth_views.signup_page, name='signup'),
+    path('signup/', auth_views.signup, name='signup'),
     path('change-password/', PasswordChangeView.as_view(template_name='authentication/password_change_form.html'), name='password_change'),
     path('change-password-done/', PasswordChangeDoneView.as_view(template_name='authentication/password_change_done.html'), name='password_change_done'),
     path('home/', linguify_views.home, name='home'),
@@ -38,6 +38,7 @@ urlpatterns = [
     path('contact/', linguify_views.contact, name='contact'),
     path('about/', linguify_views.about, name='about'),
     path("", include("cards.urls")),
+    path('teaching/', include('teaching.urls')),
 ]
 
 if settings.DEBUG:

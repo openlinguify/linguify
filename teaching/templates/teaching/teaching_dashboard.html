@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard{% endblock title %}
+{% block content %}
+    <section>
+           <h1>Dashboard de teaching</h1>
+            <p>Selectionne ton professeur de langues</p>
+    </section>
+    <section>
+     <div>
+         <h2>Les professeurs de langues</h2>
+            <p>Selectionne ton professeur de langues</p>
+         {% for teacher in teachers %}
+         {{ teacher.first_name }}
+         {{ teacher.last_name }}
+         {% endfor %}
+
+     </div>
+    </section>
+
+
+
+
+{% endblock content %}
