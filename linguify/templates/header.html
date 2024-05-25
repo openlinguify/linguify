@@ -17,7 +17,7 @@
                         Apprendre
                     </a>
                     <!-- Dropdown Content -->
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="learnDropdown">
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButtonDark">
                         <a class="dropdown-item" href="{% url 'vocabulaire' %}">Vocabulaire</a>
                         <a class="dropdown-item" href="{% url 'grammaire' %}">Grammaire</a>
                         <a class="dropdown-item" href="{% url 'exercice_vocabulaire' %}">Exercice</a>
@@ -37,31 +37,45 @@
                         <a class="dropdown-item" href="#">Flashcards</a>
                     </div>
                 </li>
+                <li><a href="{% url 'teaching_dashboard' %}" class="nav-link px-2 text-white">Teaching</a></li>
                 <li><a href="{% url 'pricing' %}" class="nav-link px-2 text-white">Pricing</a></li>
                 <li><a href="{% url 'contact' %}" class="nav-link px-2 text-white">Contact</a></li>
                 <li><a href="{% url 'about' %}" class="nav-link px-2 text-white">About</a></li>
             </ul>
+
             <div class="text-end">
-                {% if user.is_authenticated %}
-                    <div class="d-flex align-items-center">
-                        {% if user.profile_picture %}
-                            <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-picture">
-                        {% else %}
-                            <img src="{% static 'media/images/avatars/avatar.jpg' %}" alt="Default Profile Picture" class="profile-picture">
-                        {% endif %}
-                        <p class="mb-0 me-3">Welcome, {{ user.first_name }}!</p>
+    {% if user.is_authenticated %}
+        <div class="d-flex align-items-center">
+            <div class="profile-info me-3 dropdown">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-picture img-fluid rounded-circle" style="max-width: 50px;" data-bs-toggle="dropdown" aria-expanded="false">
+                {% else %}
+                    <img src="{% static 'media/images/avatars/avatar.jpg' %}" alt="Default Profile Picture" class="profile-picture img-fluid rounded-circle" style="max-width: 50px;" data-bs-toggle="dropdown" aria-expanded="false">
+                {% endif %}
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" href="#">Edit Profile</a></li>
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
                         <form method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-light me-2">Déconnexion</button>
+                            <button type="submit" class="btn btn-link text-danger">Logout</button>
                         </form>
-                        <a href="{% url 'password_change' %}" class="btn btn-outline-light">Changer de mot de passe</a>
-                    </div>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-primary">Connexion</a>
-                {% endif %}
+                    </li>
+                </ul>
             </div>
+            <p class="mb-0 me-3">Welcome, {{ user.first_name }}!</p>
+        </div>
+    {% else %}
+        <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+    {% endif %}
+</div>
+
         </div>
     </div>
+
 </header>
 
 <script>
