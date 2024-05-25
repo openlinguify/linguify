@@ -9,6 +9,16 @@
     <section>
      <div>
          <h2>Les professeurs de langues</h2>
+            <h3>Filtres:</h3>
+            <form action="" method="get">
+                <label for="language">Langue</label>
+                <select name="language" id="language">
+                    <option value="fr">Français</option>
+                    <option value="en">Anglais</option>
+                    <option value="es">Espagnol</option>
+                    <option value="de">Allemand</option>
+                </select>
+                <button type="submit">Filtrer</button>
             <p>Selectionne ton professeur de langues</p>
          {% for teacher in teachers %}
          {{ teacher.first_name }}
