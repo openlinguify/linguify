@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="0780bdb6-4ca0-4c56-b6ff-bb0917855aea" name="Changes" comment="Some changes in the chart app">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teaching/templates/teaching/teaching_dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/teaching/templates/teaching/teaching_dashboard.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,9 +19,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="HTML File" />
         <option value="CSS File" />
         <option value="Python Script" />
-        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -96,7 +97,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "preferences.keymap",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -136,8 +137,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.17890.14" />
-        <option value="bundled-python-sdk-5b207ade9991-7e9c3bbb6e34-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.17890.14" />
+        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-PY-241.15989.155" />
+        <option value="bundled-python-sdk-babbdf50b680-7c6932dee5e4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.15989.155" />
       </set>
     </attachedChunks>
   </component>
@@ -170,14 +171,7 @@
       <workItem from="1716501530588" duration="4324000" />
       <workItem from="1716506895413" duration="1799000" />
       <workItem from="1716508861582" duration="303000" />
-      <workItem from="1716557557772" duration="18560000" />
-      <workItem from="1716640847133" duration="297000" />
-      <workItem from="1716659911941" duration="2554000" />
-      <workItem from="1716671763481" duration="1470000" />
-      <workItem from="1716677636740" duration="91000" />
-      <workItem from="1716679003047" duration="908000" />
-      <workItem from="1716759656185" duration="16000" />
-      <workItem from="1720004663887" duration="312000" />
+      <workItem from="1716651697137" duration="919000" />
     </task>
     <task id="LOCAL-00001" summary="Some changes in the chart app">
       <option name="closed" value="true" />
@@ -200,17 +194,6 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
