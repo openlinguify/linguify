@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0780bdb6-4ca0-4c56-b6ff-bb0917855aea" name="Changes" comment="Some changes in the chart app">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teaching/templates/teaching/teaching_dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/teaching/templates/teaching/teaching_dashboard.html" afterDir="false" />
-    </list>
+    <list default="true" id="0780bdb6-4ca0-4c56-b6ff-bb0917855aea" name="Changes" comment="Some changes in the chart app" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -89,7 +86,7 @@
     "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "test1",
     "last_opened_file_path": "C:/Users/louis/Desktop/Projects 1/linguify",
     "list.type.of.created.stylesheet": "CSS",
     "node.js.detected.package.eslint": "true",
@@ -205,7 +202,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/linguify/views.py</url>
-          <line>49</line>
+          <line>47</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
