@@ -4,8 +4,10 @@ from linguify.models import Courses_languages, Vocabulary, Grammar, Units, UserL
 from linguify.forms import ThemeForm
 from django.contrib.auth.decorators import login_required
 import random
+
 def base(request):
     return render(request, 'base.html')
+
 @login_required
 def home(request):
     return render(request, 'linguify/home.html')
