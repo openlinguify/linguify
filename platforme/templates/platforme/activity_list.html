@@ -1,0 +1,24 @@
+{# platforme/templates/activity_list.html #}
+{% extends 'base.html' %}
+
+{% block content %}
+<h1> Activité </h1>
+    <div>
+        <h4>{{ lesson.name }}</h4>
+    </div>
+
+    <div class="row">
+        {% for activity in activities %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <img src="{{ activity.icon_activity.url }}" class="card-img-top" alt="{{ activity.type_activity }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ activity.type_activity }}</h5>
+                        <p class="card-text">Leçon: {{ activity.lesson.name }}</p>
+
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

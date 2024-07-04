@@ -4,7 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="0780bdb6-4ca0-4c56-b6ff-bb0917855aea" name="Changes" comment="Some changes in the chart app" />
+=======
+    <list default="true" id="0780bdb6-4ca0-4c56-b6ff-bb0917855aea" name="Changes" comment="Some changes in the chart app">
+      <change afterPath="$PROJECT_DIR$/platforme/forms.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platforme/templates/platforme/activity_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platforme/templates/platforme/lesson_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platforme/templates/platforme/platforme.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platforme/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cards/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/cards/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lingoProject/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/lingoProject/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lingoProject/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/lingoProject/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/linguify/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/linguify/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/linguify/templates/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/linguify/templates/header.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/linguify/templates/platform.html" beforeDir="false" afterPath="$PROJECT_DIR$/linguify/templates/platform.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/payments/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/payments/migrations/0001_initial.py" afterDir="false" />
+    </list>
+>>>>>>> dev
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,9 +37,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="CSS File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -74,6 +95,7 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+<<<<<<< HEAD
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
@@ -96,6 +118,31 @@
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+=======
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Django Server.linguify.executor": "Run",
+    "Python.apps.executor": "Run",
+    "Python.models.executor": "Run",
+    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
+    "git-widget-placeholder": "dev",
+    "last_opened_file_path": "C:/Users/louis/Desktop/Projects 1/linguify",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "vue.rearranger.settings.migration": "true"
+>>>>>>> dev
   }
 }</component>
   <component name="RecentsManager">
@@ -134,8 +181,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-PY-241.15989.155" />
-        <option value="bundled-python-sdk-babbdf50b680-7c6932dee5e4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.15989.155" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.17890.14" />
+        <option value="bundled-python-sdk-5b207ade9991-7e9c3bbb6e34-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.17890.14" />
       </set>
     </attachedChunks>
   </component>
@@ -169,6 +216,7 @@
       <workItem from="1716506895413" duration="1799000" />
       <workItem from="1716508861582" duration="303000" />
       <workItem from="1716651697137" duration="919000" />
+      <workItem from="1720083066178" duration="13978000" />
     </task>
     <task id="LOCAL-00001" summary="Some changes in the chart app">
       <option name="closed" value="true" />
