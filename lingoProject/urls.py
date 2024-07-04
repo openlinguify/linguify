@@ -15,6 +15,7 @@ from django.views import defaults as default_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('base/', linguify_views.base),
+    path('', include('platforme.urls')),
     path('', LoginView.as_view(template_name='authentication/login.html', redirect_authenticated_user=False), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('signup/', auth_views.signup, name='signup'),

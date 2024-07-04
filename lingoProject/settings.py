@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'cards.apps.CardsConfig',
     'teaching',
     'payments',
+    'platforme'
 ]
 
 MIDDLEWARE = [
