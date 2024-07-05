@@ -1,0 +1,262 @@
+{# <revision/templates/revision/revision.html> #}
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Révision</h1>
+  <p>Bienvenue sur la page principale de l'application de révision.</p>
+
+  <div class="mt-4">
+    <h3>Navigation Rapide</h3>
+    <ul>
+      <li><a href="{% url 'reviewed_vocabulaire_list' %}">Liste des Vocabulaires Révisés</a></li>
+      <li><a href="{% url 'add_revision' %}">Ajouter une Révision</a></li>
+      <li><a href="{% url 'import_revisions' %}">Importer des Révisions</a></li>
+      <li><a href="{% url 'export_revisions' %}">Exporter les Révisions</a></li>
+    </ul>
+  </div>
+
+  <!-- Emplacement pour afficher les messages flash -->
+  {% if messages %}
+    <div class="container mt-4">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <h1>Mots Révisés</h1>
+
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <form class="form-inline" method="GET" action="{% url 'reviewed_vocabulaire_list' %}">
+        <div class="form-group mr-2">
+          <label for="search" class="sr-only">Rechercher</label>
+          <input type="text" name="search" class="form-control" id="search" placeholder="Rechercher...">
+        </div>
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+      </form>
+    </div>
+    <div class="col-md-6 text-right">
+      <a href="{% url 'add_revision' %}" class="btn btn-success">Ajouter Révision</a>
+      <a href="{% url 'export_revisions' %}" class="btn btn-secondary ml-2">Exporter CSV</a>
+      <form id="importForm" method="post" enctype="multipart/form-data" action="{% url 'import_revisions' %}" style="display: inline;">
+        {% csrf_token %}
+        <input type="file" id="importFile" name="file" style="display: none;">
+        <label for="importFile" class="btn btn-secondary ml-2">Importer</label>
+      </form>
+      <button class="btn btn-danger ml-2" id="deleteSelected">Supprimer Sélection</button>
+    </div>
+  </div>
+
+  {% if page_obj %}
+    <form id="bulkDeleteForm" method="POST" action="{% url 'delete_selected_revisions' %}">
+      {% csrf_token %}
+      <div class="revision-list">
+        {% for revision in page_obj %}
+          <div class="revision-item card mb-3">
+            <div class="card-body">
+              <input type="checkbox" name="selected_revisions" value="{{ revision.id }}" class="form-check-input">
+              <h4 class="card-title">{{ revision.vocabulaire.word }}</h4>
+              <p class="card-text"><strong>Traduction:</strong> {{ revision.vocabulaire.translation }}</p>
+              <p class="card-text"><strong>Type:</strong> {{ revision.vocabulaire.type_word }}</p>
+              <p class="card-text"><strong>Définition:</strong> {{ revision.vocabulaire.definition }}</p>
+              <p class="card-text"><strong>Exemple:</strong> {{ revision.vocabulaire.example }}</p>
+              <p class="card-text"><strong>Traduction de l'exemple:</strong> {{ revision.vocabulaire.example_translation }}</p>
+              <p class="card-text"><strong>Date de Révision:</strong> {{ revision.revision_date }}</p>
+              <p class="card-text"><strong>Niveau:</strong> {{ revision.vocabulaire.lesson.get_level_language_display }}</p>
+              <p class="card-text"><strong>Leçon:</strong> {{ revision.vocabulaire.lesson }}</p>
+            </div>
+            <div class="card-footer">
+              <a href="{% url 'edit_revision' revision.id %}" class="btn btn-primary btn-sm mr-2">Modifier</a>
+              <form action="{% url 'delete_revision' revision.id %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette révision ?')">Supprimer</button>
+              </form>
+              <button class="btn btn-info btn-sm ml-2" data-toggle="modal" data-target="#revisionDetails{{ revision.id }}">Détails</button>
+            </div>
+          </div>
+          <!-- Modal pour les détails de la révision -->
+          <div class="modal fade" id="revisionDetails{{ revision.id }}" tabindex="-1" role="dialog" aria-labelledby="revisionDetails{{ revision.id }}Label" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="revisionDetails{{ revision.id }}Label">{{ revision.vocabulaire.word }} - Détails</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p><strong>Traduction:</strong> {{ revision.vocabulaire.translation }}</p>
+                  <p><strong>Type:</strong> {{ revision.vocabulaire.type_word }}</p>
+                  <p><strong>Définition:</strong> {{ revision.vocabulaire.definition }}</p>
+                  <p><strong>Exemple:</strong> {{ revision.vocabulaire.example }}</p>
+                  <p><strong>Traduction de l'exemple:</strong> {{ revision.vocabulaire.example_translation }}</p>
+                  <p><strong>Niveau:</strong> {{ revision.vocabulaire.lesson.get_level_language_display }}</p>
+                  <p><strong>Leçon:</strong> {{ revision.vocabulaire.lesson }}</p>
+                  <p><strong>Date de Révision:</strong> {{ revision.revision_date }}</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </form>
+
+    {% if page_obj.has_other_pages %}
+      <nav aria-label="Navigation des révisions">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page=1">Première</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Précédente</a>
+            </li>
+          {% endif %}
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+              </li>
+            {% else %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}">Suivante</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Dernière</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  {% else %}
+    <p>Aucune révision trouvée.</p>
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Delete selected revisions
+    const deleteSelectedButton = document.getElementById('deleteSelected');
+    deleteSelectedButton.addEventListener('click', function () {
+      const confirmDelete = confirm('Êtes-vous sûr de vouloir supprimer toutes les révisions sélectionnées ?');
+      if (confirmDelete) {
+        const bulkDeleteForm = document.getElementById('bulkDeleteForm');
+        bulkDeleteForm.submit();
+      }
+    });
+
+    // Import functionality (using hidden input for file selection)
+    const importFileInput = document.getElementById('importFile');
+    const importForm = document.getElementById('importForm');
+    importFileInput.addEventListener('change', function () {
+      if (this.files.length > 0) {
+        importForm.submit();
+      }
+    });
+
+    // Flash messages (for user feedback)
+    const flashMessages = document.querySelectorAll('.alert');
+    flashMessages.forEach(function (message) {
+      setTimeout(function () {
+        message.remove();
+      }, 3000); // Supprime le message après 3 secondes
+    });
+  });
+// Import functionality (using hidden input for file selection)
+const importFileInput = document.getElementById('importFile');
+importFileInput.addEventListener('change', function () {
+  const file = this.files[0];
+  if (file) {
+    const confirmImport = confirm(`Êtes-vous sûr de vouloir importer les révisions depuis le fichier ${file.name} ?`);
+    if (confirmImport) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      fetch('{% url "import_revisions" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          // Optional: Provide user feedback here (e.g., show success message)
+          location.reload(); // Reload page to reflect imported revisions
+        } else {
+          throw new Error('Erreur lors de l\'importation.');
+        }
+      })
+      .catch(error => {
+        console.error('Importation error:', error);
+        // Optional: Show error message to user
+      });
+    }
+  }
+});
+const searchForm = document.querySelector('form');
+searchForm.addEventListener('submit', function (e) {
+  e.preventDefault();
+  const searchTerm = document.querySelector('#search').value.trim();
+  // Implement AJAX search logic here
+  fetch(`{% url 'reviewed_vocabulaire_list' %}?search=${searchTerm}`)
+    .then(response => response.text())
+    .then(data => {
+      document.querySelector('.revision-list').innerHTML = data;
+    });
+});
+
+  // Search functionality
+const searchForm = document.querySelector('form');
+searchForm.addEventListener('submit', function (e) {
+  e.preventDefault();
+  const searchTerm = document.querySelector('#search').value.trim();
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.set('search', searchTerm);
+  window.location.href = '{% url "reviewed_vocabulaire_list" %}' + '?' + urlParams.toString();
+});
+const importFileInput = document.getElementById('importFile');
+importFileInput.addEventListener('change', function () {
+    const file = this.files[0];
+    if (file) {
+        const confirmImport = confirm(`Êtes-vous sûr de vouloir importer les révisions depuis le fichier ${file.name} ?`);
+        if (confirmImport) {
+            const formData = new FormData();
+            formData.append('file', file);
+            fetch('{% url 'import_revisions' %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload(); // Recharge la page après l'importation
+                } else {
+                    throw new Error('Erreur lors de l\'importation des révisions.');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de l\'importation des révisions.');
+            });
+        }
+    }
+});
+
+</script>
+{% endblock %}
