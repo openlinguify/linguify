@@ -1,0 +1,161 @@
+{# revision/templates/revision/reviewed_vocabulaire_list.html #}
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Mots Révisés</h1>
+
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <form class="form-inline">
+        <div class="form-group mr-2">
+          <label for="search" class="sr-only">Rechercher</label>
+          <input type="text" class="form-control" id="search" placeholder="Rechercher...">
+        </div>
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+      </form>
+    </div>
+    <div class="col-md-6 text-right">
+      <a href="{% url 'add_revision' %}" class="btn btn-success">Ajouter Révision</a>
+      <a href="{% url 'export_revisions' %}" class="btn btn-secondary ml-2">Exporter CSV</a>
+      <input type="file" id="importFile" style="display: none;">
+      <label for="importFile" class="btn btn-secondary ml-2">Importer</label>
+      <button class="btn btn-danger ml-2" id="deleteSelected">Supprimer Sélection</button>
+    </div>
+  </div>
+
+  {% if page_obj %}
+    <div class="revision-list">
+      {% for revision in page_obj %}
+        <div class="revision-item card mb-3">
+          <div class="card-body">
+            <h4 class="card-title">{{ revision.vocabulaire.word }}</h4>
+            <p class="card-text"><strong>Traduction:</strong> {{ revision.vocabulaire.translation }}</p>
+            <p class="card-text"><strong>Type:</strong> {{ revision.vocabulaire.type_word }}</p>
+            <p class="card-text"><strong>Définition:</strong> {{ revision.vocabulaire.definition }}</p>
+            <p class="card-text"><strong>Exemple:</strong> {{ revision.vocabulaire.example }}</p>
+            <p class="card-text"><strong>Traduction de l'exemple:</strong> {{ revision.vocabulaire.example_translation }}</p>
+            <p class="card-text"><strong>Date de Révision:</strong> {{ revision.revision_date }}</p>
+            <p class="card-text"><strong>Niveau:</strong> {{ revision.vocabulaire.lesson.get_level_language_display }}</p>
+            <p class="card-text"><strong>Leçon:</strong> {{ revision.vocabulaire.lesson }}</p>
+          </div>
+          <div class="card-footer">
+            <a href="{% url 'edit_revision' revision.id %}" class="btn btn-primary btn-sm mr-2">Modifier</a>
+            <form action="{% url 'delete_revision' revision.id %}" method="post" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette révision ?')">Supprimer</button>
+            </form>
+            <button class="btn btn-info btn-sm ml-2" data-toggle="modal" data-target="#revisionDetails{{ revision.id }}">Détails</button>
+          </div>
+        </div>
+        <!-- Modal pour les détails de la révision -->
+        <div class="modal fade" id="revisionDetails{{ revision.id }}" tabindex="-1" role="dialog" aria-labelledby="revisionDetails{{ revision.id }}Label" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="revisionDetails{{ revision.id }}Label">{{ revision.vocabulaire.word }} - Détails</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Traduction:</strong> {{ revision.vocabulaire.translation }}</p>
+                <p><strong>Type:</strong> {{ revision.vocabulaire.type_word }}</p>
+                <p><strong>Définition:</strong> {{ revision.vocabulaire.definition }}</p>
+                <p><strong>Exemple:</strong> {{ revision.vocabulaire.example }}</p>
+                <p><strong>Traduction de l'exemple:</strong> {{ revision.vocabulaire.example_translation }}</p>
+                <p><strong>Niveau:</strong> {{ revision.vocabulaire.lesson.get_level_language_display }}</p>
+                <p><strong>Leçon:</strong> {{ revision.vocabulaire.lesson }}</p>
+                <p><strong>Date de Révision:</strong> {{ revision.revision_date }}</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if page_obj.has_other_pages %}
+      <nav aria-label="Navigation des révisions">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page=1">Première</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Précédente</a>
+            </li>
+          {% endif %}
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+              </li>
+            {% else %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}">Suivante</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Dernière</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+
+  {% else %}
+    <p>Aucune révision trouvée.</p>
+  {% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // JavaScript for advanced features like search, delete selected, import, etc.
+  document.addEventListener('DOMContentLoaded', function () {
+    // Search functionality
+    const searchForm = document.querySelector('form');
+    searchForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const searchTerm = document.querySelector('#search').value.trim();
+      // Implement search logic here
+    });
+
+    // Delete selected revisions
+    const deleteSelectedButton = document.getElementById('deleteSelected');
+    deleteSelectedButton.addEventListener('click', function () {
+      const confirmDelete = confirm('Êtes-vous sûr de vouloir supprimer toutes les révisions sélectionnées ?');
+      if (confirmDelete) {
+        // Implement delete selected logic here
+      }
+    });
+
+    // Import functionality (using hidden input for file selection)
+    const importFileInput = document.getElementById('importFile');
+    importFileInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const confirmImport = confirm(`Êtes-vous sûr de vouloir importer les révisions depuis le fichier ${file.name} ?`);
+        if (confirmImport) {
+          // Implement import logic here
+        }
+      }
+    });
+
+    // Flash messages (for user feedback)
+    const flashMessage = document.querySelector('.flash-message');
+    if (flashMessage) {
+      setTimeout(function () {
+        flashMessage.style.display = 'none';
+      }, 5000); // Hide flash message after 5 seconds
+    }
+  });
+</script>
+{% endblock %}

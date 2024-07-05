@@ -1,0 +1,19 @@
+{# platforme/templates/platforme/exercice_list.html #}
+{% extends 'base.html' %}
+
+{% block content %}
+<h1> Exercices pour {{ activity.lesson.name }} </h1>
+
+{% for exercice in exercices %}
+    <div>
+        <h4>{{ exercice.title }}</h4>
+        <p>Question: {{ exercice.question }}</p>
+        <p>Choix 1: {{ exercice.choice1 }}</p>
+        <p>Choix 2: {{ exercice.choice2 }}</p>
+        <p>Choix 3: {{ exercice.choice3 }}</p>
+        <p>Choix 4: {{ exercice.choice4 }}</p>
+        <p>Réponse: {{ exercice.answer }}</p>
+    </div>
+{% endfor %}
+
+{% endblock %}
