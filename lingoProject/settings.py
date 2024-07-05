@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'linguify.apps.LinguifyConfig',
     'cards.apps.CardsConfig',
     'teaching',
-    'payments',
     'platforme',
     'revision'
 ]
