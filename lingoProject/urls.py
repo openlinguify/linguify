@@ -38,7 +38,6 @@ urlpatterns = [
     path('prices/', linguify_views.prices),
     path('contact/', linguify_views.contact, name='contact'),
     path('about/', linguify_views.about, name='about'),
-    path("", include("cards.urls")),
     path('teaching/', include('teaching.urls')),
 ]
 

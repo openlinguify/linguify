@@ -21,15 +21,15 @@
     <meta property="og:url" content="https://www.linguify.com/fr_FR/"/>
     <meta property="og:description"
           content="Linguify - Apprenez une langue sans limites et obtenez des certifications pour attester de votre niveau."/>
-    <meta property="og:image" content="https://www.linguify.com/static/images/logos/logo-linguify.png"/>
+    <meta property="og:image" content="https://www.linguify.com/static/images/logos/icon-logoo.png"/>
     <link rel="preconnect" href="https://www.linguify.com"/>
     <link rel="canonical" href="https://www.linguify.com/fr_FR/"/>
-    <link type="image/x-icon" rel="shortcut icon" href="{% static 'images/logos/icon-logo.png' %}"/>
+    <link type="image/x-icon" rel="shortcut icon" href="{% static 'images/logos/icon-logoo.png' %}"/>
     <link rel="stylesheet" href="{% static 'js/main.js' %}"/>
     <link rel="stylesheet" href="{% static 'css/vocabulary_style.css' %}"/>
     {#    <link rel="stylesheet" href="{% static 'css/main.css' %}"/>#}
 {#        <link rel="stylesheet" href="{% static 'css/authentication.css' %}"/>#}
-{#    <link rel="stylesheet" href="{% static 'css/style.css' %}">#}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {#    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">#}
     {#    {% block css %}{% endblock css %}#}
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -64,7 +64,7 @@
 </head>
 <body>
     {% include 'header.html' %}
-        <main class="container-fluid" style="background: linear-gradient(90deg, #ffffff 0%, #02c2ba 100%);">
+        <main class="container-fluid">
             {% block title %} {% endblock title %}
             {% block content %}{% endblock content %}
         </main>
