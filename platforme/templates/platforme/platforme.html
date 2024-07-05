@@ -1,25 +1,72 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h1>Platforme</h1>
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <h1 class="display-4 text-center mb-4">Plateforme d'Apprentissage de Langues</h1>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        {% for category in categories %}
+        <div class="col mb-4">
+          <div class="card border-0 shadow-sm rounded category-card">
+            <img src="{{ category.image_categorie.url }}" alt="{{ category.name_categorie }}" class="card-img-top rounded">
+            <div class="card-body text-center">
+              <h5 class="card-title text-dark font-weight-bold">{{ category.name_categorie }}</h5>
+              <ul class="list-unstyled d-flex flex-wrap justify-content-center subcategory-list">
+                {% for subcategory in sous_categories %}
+                {% if subcategory.categorie_id == category.id %}
+                <li class="subcategory-item m-2">
+                  <a href="{% url 'lesson_list' subcategory.id %}" class="text-decoration-none d-flex flex-column align-items-center">
+                    <img src="{{ subcategory.image_sous_categorie.url }}" alt="{{ subcategory.name_sous_categorie }}" class="subcategory-image mb-2 rounded-circle">
+                    <span class="text-center text-dark">{{ subcategory.name_sous_categorie }}</span>
+                  </a>
+                </li>
+                {% endif %}
+                {% endfor %}
+              </ul>
             </div>
-            <div>
-                <ul class="contenair">
-                    {% for category in categories %}
-                        <li>{{ category.name_categorie }}</li>
-                        <ul>
-                            {% for subcategory in sous_categories %}
-                                {% if subcategory.categorie_id == category.id %}
-                                    <li><a href="{% url 'lesson_list' subcategory.id %}">{{ subcategory.name_sous_categorie }}</a></li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    {% endfor %}
-                </ul>
-            </div>
+          </div>
         </div>
+        {% endfor %}
+      </div>
     </div>
+  </div>
+</div>
+
+<style>
+  .category-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #e0e0e0;
+  }
+
+  .category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-title {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .subcategory-list {
+    padding: 0;
+    margin: 0;
+  }
+
+  .subcategory-item {
+    flex: 0 0 auto;
+    width: 150px;
+    text-align: center;
+  }
+
+  .subcategory-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+</style>
+
 {% endblock %}
