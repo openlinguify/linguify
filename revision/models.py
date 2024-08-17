@@ -1,4 +1,4 @@
-# revision/models.py
+# linguify/revision/models.py
 from django.db import models
 
 

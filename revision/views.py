@@ -1,4 +1,4 @@
-# revision/views.py
+# linguify/revision/views.py
 import csv
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Revision
@@ -13,6 +13,7 @@ from platforme.models import Vocabulaire
 
 def revision(request):
     return render(request, 'revision/revision.html')
+
 
 
 def add_revision(request):

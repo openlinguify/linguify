@@ -1,3 +1,4 @@
+# linguify/views.py
 from django.shortcuts import render
 from django.http import HttpResponse
 from linguify.models import Courses_languages, Vocabulary, Grammar, Units, UserLessonProgress, Revision, UserRevisionProgress, Quiz, Flashcard, UserFlashcardProgress
@@ -11,19 +12,22 @@ def base(request):
 @login_required
 def home(request):
     return render(request, 'linguify/home.html')
+
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'linguify/index.html')
+
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    return render(request, 'linguify/dashboard.html')
+
 def header(request):
-    return render(request,
-                  'header.html',
-                  {'header': 'header'}
-    )
+    return render(request, 'linguify/header.html', {'header': 'header'})
+
 def footer(request):
-    return render(request, 'footer.html')
+    return render(request, 'linguify/footer.html')
+
 def vocabulaire(request):
-    return render(request, 'vocabulaire.html')
+    return render(request, 'linguify/vocabulaire.html')
+
 def exercice_vocabulary(request):
     # Sélectionner un mot aléatoire
     random_word = random.choice(Vocabulary.objects.all())
@@ -40,14 +44,15 @@ def exercice_vocabulary(request):
         'choices': words,
     }
     return render(request, 'exercice_vocabulaire.html', context)
-def grammaire(request):
 
-    return render(request,
-                  'grammaire.html',
-                  {'vocabulaires': Vocabulary.objects.all(), 'grammaires': Grammar.objects.all()
-    })
+def grammaire(request):
+    return render(request, 'linguify/grammaire.html', 
+                  {'vocabulaires': Vocabulary.objects.all(), 
+                   'grammaires': Grammar.objects.all()})
+
 def revision(request):
-    return render(request, 'revision.html')
+    return render(request, 'linguify/revision.html')
+
 def quiz(request):
     if request.user.is_authenticated:
         learning_language = request.user.learning_language
@@ -79,6 +84,7 @@ def quiz(request):
         return render(request, 'quiz.html', context)
     else:
         return HttpResponse("Please log in to access this feature.")
+
 def check_answer(request):
     if request.method == 'POST':
         selected_translation = request.POST.get('selected_translation')
@@ -94,8 +100,10 @@ def check_answer(request):
         return render(request, 'result.html', context)
     else:
         return HttpResponse("Method Not Allowed")
+
 def testlinguisitique(request):
     return render(request, 'testlinguistique.html')
+
 def courses(request):
     # Récupérer tous les cours depuis la base de données
     courses = Courses_languages.objects.all()
@@ -109,12 +117,16 @@ def courses(request):
     }
     # Rendre le modèle avec les données
     return render(request, 'linguify/courses.html', context)
+
 def prices(request):
     return render(request, 'linguify/prices.html')
+
 def contact(request):
     return render(request, 'linguify/contact.html')
+
 def about(request):
     return render(request, 'linguify/about.html')
+
 def search_vocabulary(request):
     if request.method == 'GET':
         # Get the search query from the request
@@ -131,13 +143,14 @@ def search_vocabulary(request):
             'query': query,
         }
         return render(request, 'linguify/search_vocabulary.html', context)
+
 def add_vocabulary_to_flashcard(request, flashcard_id):
     flashcard = Flashcard.objects.get(id=flashcard_id)
     vocabulary_entry = Vocabulary.objects.get(id=1)
     flashcard.vocabulary.add(vocabulary_entry)
     return HttpResponse("Vocabulary entry added to flashcard")
+
 def save(self, *args, **kwargs):
     super().save(*args, **kwargs)
     vocabulary_entry = Vocabulary.objects.get(id=1)
     self.vocabulary.add(vocabulary_entry)
-
