@@ -1,3 +1,4 @@
+# authentication/views.py
 from django.conf import settings
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
@@ -5,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import SignupForm, StudentProfileForm, TeacherProfileForm, UploadStudentProfilePhotoForm, UploadTeacherProfilePhotoForm, TeacherRegistrationForm
 from .models import StudentProfile, TeacherProfile
@@ -61,7 +63,7 @@ def student_dashboard(request):
 def teacher_dashboard(request):
     return render(request, 'authentication/teacher_dashboard.html')
 
-class UploadProfilePhotoView(View):
+class UploadProfilePhotoView(LoginRequiredMixin, View):
     @login_required
     def get(self, request):
         if request.user.is_student:

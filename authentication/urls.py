@@ -7,6 +7,7 @@ from authentication.views import UploadProfilePhotoView, choose_user_type, signu
 
 urlpatterns = [
     path('login/', LoginView.as_view(template_name='authentication/login.html'), name='login'),
+    path('signup/', views.signup, name='signup'),
     path('choose-user-type/', views.choose_user_type, name='choose_user_type'),
     path('register-student/', views.signup, name='register_student'),
     path('register-teacher/', views.register_teacher, name='register_teacher'),

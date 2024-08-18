@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 from django.views import defaults as default_views
 from linguify import views as linguify_views
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('base/', linguify_views.base),
