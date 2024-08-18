@@ -7,7 +7,7 @@ def platforme(request):
     categories = Categorie.objects.all()
     sous_categories = Sous_categorie.objects.select_related('categorie').all()
     return render(request,
-                  'templates/platforme/platforme.html',
+                  'platforme/platforme.html',
                   context={
                       'categories': categories,
                       'sous_categories': sous_categories,
