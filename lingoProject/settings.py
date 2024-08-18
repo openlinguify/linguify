@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'cards.apps.CardsConfig',
     'teaching',
     'platforme',
-    'revision'
+    'revision',
 ]
 
 MIDDLEWARE = [
@@ -75,6 +75,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'lingoProject.wsgi.application'
 

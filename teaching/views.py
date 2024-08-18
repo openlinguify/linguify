@@ -2,4 +2,4 @@
 from django.shortcuts import render
 
 def teaching(request):
-    return render(request, 'teaching/teaching_dashboard.html')
+    return render(request, 'teaching_dashboard.html')
