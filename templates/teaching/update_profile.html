@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Mise à Jour du Profil</title>
 </head>
 <body>
+    <h1>Mise à jour de votre profil</h1>
 
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Enregistrer</button>
+    </form>
+
+    <a href="{% url 'teaching_dashboard' %}">Retourner au tableau de bord</a>
 </body>
 </html>

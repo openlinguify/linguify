@@ -27,12 +27,31 @@
 
             <ul>
                 {% for teacher in teachers %}
-                    <li>{{ teacher.first_name }} {{ teacher.last_name }}</li>
-                    <!-- Ajoutez d'autres informations sur les professeurs si nécessaire -->
+                    <li>
+                        {{ teacher.first_name }} {{ teacher.last_name }} - {{ teacher.language }}
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="teacher_id" value="{{ teacher.id }}">
+                            <button type="submit">Sélectionner</button>
+                        </form>
+                    </li>
                 {% empty %}
                     <li>Aucun professeur trouvé.</li>
                 {% endfor %}
             </ul>
         </div>
+    </section>
+    <section>
+        <h1>Vos Étudiants</h1>
+
+        <ul>
+            {% for selection in students %}
+                <li>{{ selection.user.username }} - sélectionné le {{ selection.selected_at }}</li>
+            {% empty %}
+                <li>Aucun étudiant ne vous a encore sélectionné.</li>
+            {% endfor %}
+        </ul>
+    
+        <a href="{% url 'update_profile' %}">Mettre à jour votre profil</a>
     </section>
 {% endblock %}
