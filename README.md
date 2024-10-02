@@ -3,9 +3,11 @@ Linguify is an open-source language learning application designed to help users 
 
 ## Features
 - Vocabulary Builder: Expand your vocabulary with a diverse collection of words and phrases tailored to your language proficiency level.
+- Grammar: Expand your knowledge deeply thanks to our relevant exercices to learn faster.
 - Flashcards: Reinforce your learning with customizable flashcards featuring themes and multimedia support.
 - Quizzes: Assess your language skills through interactive quizzes covering reading, writing, listening, and speaking.
 - Progress Tracking: Monitor your language learning progress with detailed statistics and analytics.
+- Coaching app: Find your teacher easily and be coached as soon as possible thanks to our virtual classrooms.
 - Community Interaction: Engage with fellow language learners through discussion forums, language exchange opportunities, and collaborative projects.
 ## Getting Started
 To begin using Linguify, clone the repository and follow the setup instructions provided in the documentation. Ensure that Python and Django are installed on your system.
