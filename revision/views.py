@@ -1,11 +1,11 @@
-# revision/views.py
+# linguify/revision/views.py
 import csv
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Revision
 from .forms import ImportForm, RevisionForm
 from django.forms import modelform_factory
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
 from django.contrib import messages
 from platforme.models import Vocabulaire
@@ -13,7 +13,6 @@ from platforme.models import Vocabulaire
 
 def revision(request):
     return render(request, 'revision/revision.html')
-
 
 def add_revision(request):
     if request.method == 'POST':

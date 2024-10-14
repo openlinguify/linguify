@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Historique des Sélections</title>
+</head>
+<body>
+    <h1>Historique de vos sélections</h1>
+
+    <ul>
+        {% for selection in selections %}
+            <li>{{ selection.selected_at }} : {{ selection.teacher.first_name }} {{ selection.teacher.last_name }} - {{ selection.teacher.language }}</li>
+        {% empty %}
+            <li>Vous n'avez encore sélectionné aucun professeur.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'teaching_dashboard' %}">Retourner au tableau de bord</a>
+</body>
+</html>

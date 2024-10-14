@@ -1,3 +1,4 @@
+# plateforme/views.py
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from platforme.models import Categorie, Sous_categorie, Lesson, Activity, Vocabulaire, Video, Exercice, Test

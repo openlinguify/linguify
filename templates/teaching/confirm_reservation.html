@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmation de Réservation</title>
+</head>
+<body>
+    <h1>Confirmation de votre sélection</h1>
+
+    {% if teacher %}
+        <p>Vous avez sélectionné : {{ teacher.first_name }} {{ teacher.last_name }} - {{ teacher.language }}</p>
+    {% else %}
+        <p>Aucune sélection n'a été trouvée.</p>
+    {% endif %}
+
+    <a href="{% url 'teaching_dashboard' %}">Retourner au tableau de bord</a>
+</body>
+</html>

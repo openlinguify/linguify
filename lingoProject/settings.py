@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'cards.apps.CardsConfig',
     'teaching',
     'platforme',
-    'revision'
+    'revision',
 ]
 
 MIDDLEWARE = [
@@ -63,9 +63,7 @@ ROOT_URLCONF = 'lingoProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR.joinpath('templates'),
-        ],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,6 +75,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'lingoProject.wsgi.application'
 
