@@ -1,10 +1,16 @@
 # linguify/views.py
-from django.shortcuts import render
-from django.http import HttpResponse
-from linguify.models import Courses_languages, Vocabulary, Grammar, Units, UserLessonProgress, Revision, UserRevisionProgress, Quiz, Flashcard, UserFlashcardProgress
-from linguify.forms import ThemeForm
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 import random
+
+from linguify.models import (
+    CourseLanguage, Vocabulary, Grammar, Unit, UserLessonProgress,
+    Revision, UserRevisionProgress, Quiz, Flashcard, UserFlashcardProgress
+)
+from linguify.forms import ThemeForm
 
 def base(request):
     return render(request, 'base.html')
@@ -25,97 +31,125 @@ def header(request):
 def footer(request):
     return render(request, 'linguify/footer.html')
 
+@login_required
 def vocabulaire(request):
-    return render(request, 'linguify/vocabulaire.html')
+    learning_language = request.user.learning_language
+    level = request.user.level_target_language
 
+    if not learning_language or not level:
+        return HttpResponse("Please specify your learning language and level in your profile.")
+
+    vocabularies = Vocabulary.objects.filter(language=learning_language, level=level)
+    context = {'vocabularies': vocabularies}
+    return render(request, 'linguify/vocabulaire.html', context)
+
+@login_required
 def exercice_vocabulary(request):
-    # Sélectionner un mot aléatoire
-    random_word = random.choice(Vocabulary.objects.all())
+    learning_language = request.user.learning_language
+    level = request.user.level_target_language
 
-    # Sélectionner trois autres mots de la base de données
-    other_words = Vocabulary.objects.exclude(pk=random_word.pk).order_by('?')[:3]
+    if not learning_language or not level:
+        return HttpResponse("Please specify your learning language and level in your profile.")
 
-    # Mélanger la liste des mots
-    words = list(other_words) + [random_word]
-    random.shuffle(words)
+    vocabularies = Vocabulary.objects.filter(language=learning_language, level=level)
+    if not vocabularies.exists():
+        return HttpResponse("No vocabulary words available for your language and level.")
+
+    random_word = random.choice(vocabularies)
+    other_words = vocabularies.exclude(pk=random_word.pk).order_by('?')[:3]
+
+    if other_words.count() < 3:
+        other_words = Vocabulary.objects.exclude(pk=random_word.pk).order_by('?')[:3]
+
+    choices = list(other_words) + [random_word]
+    random.shuffle(choices)
 
     context = {
         'word': random_word,
-        'choices': words,
+        'choices': choices,
     }
-    return render(request, 'exercice_vocabulaire.html', context)
+    return render(request, 'linguify/exercice_vocabulaire.html', context)
 
+@login_required
 def grammaire(request):
-    return render(request, 'linguify/grammaire.html', 
-                  {'vocabulaires': Vocabulary.objects.all(), 
-                   'grammaires': Grammar.objects.all()})
+    learning_language = request.user.learning_language
+    level = request.user.level_target_language
 
+    if not learning_language or not level:
+        return HttpResponse("Please specify your learning language and level in your profile.")
+
+    vocabularies = Vocabulary.objects.filter(language=learning_language, level=level)
+    grammars = Grammar.objects.filter(language=learning_language, level=level)
+
+    context = {
+        'vocabularies': vocabularies,
+        'grammars': grammars,
+    }
+    return render(request, 'linguify/grammaire.html', context)
+
+@login_required
 def revision(request):
-    return render(request, 'linguify/revision.html')
+    learning_language = request.user.learning_language
+    level = request.user.level_target_language
 
+    if not learning_language or not level:
+        return HttpResponse("Please specify your learning language and level in your profile.")
+
+    revisions = Revision.objects.filter(language=learning_language, level=level)
+    context = {'revisions': revisions}
+    return render(request, 'linguify/revision.html', context)
+
+@login_required
 def quiz(request):
-    if request.user.is_authenticated:
-        learning_language = request.user.learning_language
-        level = request.user.level_target_language
+    learning_language = request.user.learning_language
+    level = request.user.level_target_language
 
-        if not learning_language or not level:
-            return HttpResponse("Please specify the learning language and level in your profile.")
+    if not learning_language or not level:
+        return HttpResponse("Please specify the learning language and level in your profile.")
 
-        # Get vocabulary words
-        vocabulary_words = Vocabulary.objects.filter(language_id=learning_language, level_target_language=level)
-        if not vocabulary_words.exists():
-            return HttpResponse("No words found for the specified learning language and level.")
+    vocabulary_words = Vocabulary.objects.filter(language=learning_language, level=level)
+    if not vocabulary_words.exists():
+        return HttpResponse("No words found for the specified learning language and level.")
 
-        # Select a random word pair
-        word_pair = random.choice(vocabulary_words)
-        word = word_pair.word
-        correct_translation = word_pair.translation
+    word_pair = random.choice(vocabulary_words)
+    word = word_pair.word
+    correct_translation = word_pair.translation
 
-        # Get three incorrect translations
-        incorrect_translations = Quiz.objects.filter(language_id=learning_language.language_code, level=level).exclude(pk=(quiz_id)).values_list('translation', flat=True)[:3]
-        options = list(incorrect_translations) + [correct_translation]
-        random.shuffle(options)
-        context = {
-            'language': learning_language,
-            'word': word,
-            'options': options,
-            'correct_translation': correct_translation
-        }
-        return render(request, 'quiz.html', context)
-    else:
-        return HttpResponse("Please log in to access this feature.")
+    incorrect_words = vocabulary_words.exclude(pk=word_pair.pk).order_by('?')[:3]
+    if incorrect_words.count() < 3:
+        incorrect_words = Vocabulary.objects.exclude(pk=word_pair.pk).order_by('?')[:3]
+
+    incorrect_translations = [v.translation for v in incorrect_words]
+    options = incorrect_translations + [correct_translation]
+    random.shuffle(options)
+
+    context = {
+        'language': learning_language,
+        'word': word,
+        'options': options,
+        'correct_translation': correct_translation,
+    }
+    return render(request, 'linguify/quiz.html', context)
 
 def check_answer(request):
     if request.method == 'POST':
         selected_translation = request.POST.get('selected_translation')
         correct_translation = request.POST.get('correct_translation')
-        if selected_translation == correct_translation:
-            result = "Correct!"
-        else:
-            result = "Incorrect!"
+        result = "Correct!" if selected_translation == correct_translation else "Incorrect!"
         context = {
             'result': result,
-            'correct_translation': correct_translation
+            'correct_translation': correct_translation,
         }
-        return render(request, 'result.html', context)
+        return render(request, 'linguify/result.html', context)
     else:
         return HttpResponse("Method Not Allowed")
 
-def testlinguisitique(request):
-    return render(request, 'testlinguistique.html')
+def testlinguistique(request):
+    return render(request, 'linguify/testlinguistique.html')
 
 def courses(request):
-    # Récupérer tous les cours depuis la base de données
-    courses = Courses_languages.objects.all()
-    # Créer une liste de noms et de descriptions des cours
-    course_names = [course.name for course in courses]
-    course_description = [course.definition for course in courses]
-    # Passer les données au modèle
-    context = {
-        'course_names': course_names,
-        'course_description': course_description,
-    }
-    # Rendre le modèle avec les données
+    courses = CourseLanguage.objects.all()
+    context = {'courses': courses}
     return render(request, 'linguify/courses.html', context)
 
 def prices(request):
@@ -127,30 +161,35 @@ def contact(request):
 def about(request):
     return render(request, 'linguify/about.html')
 
+@login_required
 def search_vocabulary(request):
     if request.method == 'GET':
-        # Get the search query from the request
-        query = request.GET.get('query')
+        query = request.GET.get('query', '')
+        learning_language = request.user.learning_language
+        level = request.user.level_target_language
+
+        if not learning_language or not level:
+            return HttpResponse("Please specify your learning language and level in your profile.")
+
+        vocabularies = Vocabulary.objects.filter(language=learning_language, level=level)
         if query:
-            # Filter the vocabularies based on the search query
-            vocabulary_list = Vocabulary.objects.filter(word__icontains=query)
-        else:
-            # If no query is provided, return all vocabularies
-            vocabulary_list = Vocabulary.objects.all()
+            vocabularies = vocabularies.filter(word__icontains=query)
 
         context = {
-            'vocabularies': vocabulary_list,
+            'vocabularies': vocabularies,
             'query': query,
         }
         return render(request, 'linguify/search_vocabulary.html', context)
+    else:
+        return HttpResponse("Method Not Allowed")
 
+@login_required
 def add_vocabulary_to_flashcard(request, flashcard_id):
-    flashcard = Flashcard.objects.get(id=flashcard_id)
-    vocabulary_entry = Vocabulary.objects.get(id=1)
-    flashcard.vocabulary.add(vocabulary_entry)
-    return HttpResponse("Vocabulary entry added to flashcard")
-
-def save(self, *args, **kwargs):
-    super().save(*args, **kwargs)
-    vocabulary_entry = Vocabulary.objects.get(id=1)
-    self.vocabulary.add(vocabulary_entry)
+    if request.method == 'POST':
+        vocabulary_id = request.POST.get('vocabulary_id')
+        flashcard = get_object_or_404(Flashcard, id=flashcard_id, user=request.user)
+        vocabulary_entry = get_object_or_404(Vocabulary, id=vocabulary_id)
+        flashcard.vocabulary.add(vocabulary_entry)
+        return redirect('flashcard_detail', flashcard_id=flashcard_id)
+    else:
+        return HttpResponse("Method Not Allowed")
