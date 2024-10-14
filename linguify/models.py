@@ -250,3 +250,6 @@ class UserFlashcardProgress(models.Model):
             actual_completude = self.percentage_completion
         return actual_completude
 
+class revision(models.Model):
+    cards_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
