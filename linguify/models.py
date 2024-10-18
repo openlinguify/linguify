@@ -12,12 +12,13 @@ class CourseLanguage(models.Model):
     description = models.TextField(max_length=500)
     image = models.ImageField(upload_to='course_images/', null=True, blank=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='course_languages')
-    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='course_languages')
+    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='vocabularies')  # Utilisation correcte des choices
     duration = models.PositiveIntegerField(help_text="Duration in hours", null=True, blank=True)
     prerequisites = models.TextField(max_length=500, null=True, blank=True, help_text="Prerequisites for this course")
 
     def __str__(self):
         return self.title
+
 
     def get_units(self):
         return self.units.all()
@@ -52,7 +53,6 @@ class Vocabulary(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.word} - {self.translation}"
-
     @property
     def get_vocabulary(self):
         return f"{self.word} - {self.translation}"
@@ -62,7 +62,7 @@ class Grammar(models.Model):
     description = models.TextField(max_length=500)
     example = models.TextField(max_length=500)
     language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='grammars')
-    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='grammars')
+    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='vocabularies')
     theme = models.ForeignKey('Theme', on_delete=models.SET_NULL, null=True, blank=True, related_name='grammars')
 
     def __str__(self):
@@ -83,7 +83,13 @@ class Unit(models.Model):
 
     def __str__(self):
         return self.title
-
+class Level(models.TextChoices):
+    A1 = 'A1', 'A1 - Beginner'
+    A2 = 'A2', 'A2 - Elementary'
+    B1 = 'B1', 'B1 - Intermediate'
+    B2 = 'B2', 'B2 - Upper Intermediate'
+    C1 = 'C1', 'C1 - Advanced'
+    C2 = 'C2', 'C2 - Proficiency'
 class Theme(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(max_length=500, null=True, blank=True)
@@ -129,7 +135,7 @@ class Revision(models.Model):
     translation = models.CharField(max_length=100)
     last_revision_date = models.DateTimeField(auto_now=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='revisions')
-    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='revisions')
+    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='vocabularies')level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='revisions')
     theme = models.ForeignKey('Theme', on_delete=models.SET_NULL, null=True, blank=True, related_name='revisions')
 
     def __str__(self):
@@ -224,7 +230,7 @@ class Quiz(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='quizzes')
-    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='quizzes')
+    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='vocabularies')
 
     def __str__(self):
         return f"Quiz {self.pk} - {self.user.username} - {self.word}"
@@ -236,7 +242,7 @@ class Flashcard(models.Model):
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='flashcard_images/', null=True, blank=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='flashcards')
-    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='flashcards')
+    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='vocabularies')
 
     def __str__(self):
         return f"{self.title} - {self.vocabulary.word} - {self.vocabulary.translation}"
@@ -291,7 +297,7 @@ class Flashcard(models.Model):
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='flashcard_images/', null=True, blank=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='flashcards')
-    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='flashcards')
+    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='vocabularies')
 
     def __str__(self):
         return f"{self.title} - {self.user.username}"

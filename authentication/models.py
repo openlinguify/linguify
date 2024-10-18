@@ -7,18 +7,20 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 # Choices for Levels, Languages and Objectives
-class Level(models.TextChoices):
-    A1 = 'A1', 'A1 - Beginner'
-    A2 = 'A2', 'A2 - Elementary'
-    B1 = 'B1', 'B1 - Intermediate'
-    B2 = 'B2', 'B2 - Upper Intermediate'
-    C1 = 'C1', 'C1 - Advanced'
-    C2 = 'C2', 'C2 - Proficiency'
-class Language(models.TextChoices):
-    ENGLISH = 'en', 'English'
-    SPANISH = 'es', 'Spanish'
-    FRENCH = 'fr', 'French'
-    GERMAN = 'de', 'German'
+class Level(models.Model):
+    code = models.CharField(max_length=2, unique=True)  # Par exemple, 'A1'
+    description = models.CharField(max_length=100)  # Par exemple, 'A1 - Beginner'
+
+    def __str__(self):
+        return self.description
+# Define Language as a model
+class Language(models.Model):
+    code = models.CharField(max_length=2, unique=True)  # 'en', 'fr', 'de', etc.
+    name = models.CharField(max_length=50)  # 'English', 'French', 'German', etc.
+
+    def __str__(self):
+        return self.name
+
 class Objectives(models.TextChoices):
     GET_A_JOB = 'get_a_job', 'Get a job easily'
     TRAVEL = 'travel', 'Travel in a foreign country'
@@ -48,32 +50,36 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.username} - {self.email}"
-class StudentProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
-    address = models.CharField(max_length=100, null=True, blank=True)
-    learning_language = models.CharField(max_length=50, choices=Language.choices, default=Language.ENGLISH, null=True, blank=True)
-    mother_language = models.CharField(max_length=50, choices=Language.choices, default=Language.ENGLISH, null=True, blank=True)
-    language_level = models.CharField(max_length=50, choices=Level.choices, default=Level.A1, null=True, blank=True)
-    objectives = models.CharField(max_length=30, choices=Objectives.choices, default=Objectives.GET_A_JOB, null=True, blank=True)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
-    enrollment_date = models.DateField(auto_now_add=True, null=True, blank=True)
 
 class MeetingType(models.TextChoices):
     ONLINE = 'online', 'Online'
     IN_PERSON = 'in_person', 'In Person'
     BOTH = 'both', 'Both'
+
+class StudentProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
+    learning_language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, blank=True, related_name='students_learning_language')
+    mother_language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, blank=True, related_name='students_mother_language')
+    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='vocabularies')    objectives = models.CharField(max_length=30, choices=Objectives.choices, default=Objectives.GET_A_JOB, null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    enrollment_date = models.DateField(auto_now_add=True, null=True, blank=True)
+
 class TeacherProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='teacher_profile')
     hire_date = models.DateField(auto_now_add=True, null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     presentation = models.TextField(max_length=500, null=True, blank=True)
-    mother_language = models.CharField(max_length=50, choices=Language.choices, default=Language.ENGLISH, null=True, blank=True)
+    mother_language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, blank=True, related_name='teachers_mother_language')
     meeting_type = models.CharField(max_length=50, choices=MeetingType.choices, default=MeetingType.ONLINE, null=True, blank=True)
     price_per_hour = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, null=True, blank=True)
     number_of_ratings = models.IntegerField(default=0, null=True, blank=True)
     number_of_students = models.IntegerField(default=0, null=True, blank=True)
-    availability = models.TextField(null=True, blank=True)  # JSON or a string that describes the availability
+    availability = models.TextField(null=True, blank=True)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00, null=True, blank=True)
+
+
+
+
 class Review(models.Model):
     teacher = models.ForeignKey(TeacherProfile, on_delete=models.CASCADE, related_name='reviews')
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='reviews')
