@@ -1,5 +1,5 @@
 # Linguify
-Linguify is an open-source language learning application designed to help users master new languages efficiently. Whether you're a beginner or an advanced learner, Linguify offers a range of features to support your language learning journey.
+Linguify is a language learning application designed to help users master new languages efficiently. Whether you're a beginner or an advanced learner, Linguify offers a range of features to support your language learning journey.
 
 ## Features
 - Vocabulary Builder: Expand your vocabulary with a diverse collection of words and phrases tailored to your language proficiency level.
