@@ -186,61 +186,8 @@ class Quiz(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
         return f"{self.quiz_id} - {self.user_id} - {self.mother_language} - {self.learning_language} - {self.word} - {self.correct_translation}"
-class Flashcard(models.Model):
-    flashcard_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    vocabulary = models.ForeignKey(Vocabulary, on_delete=models.CASCADE)
-    theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
-    flashcard_title = models.CharField(max_length=100, blank=False, null=False)
-    image_flashcard = models.ImageField(upload_to='flashcard_images/', null=True, blank=True)
-    def add_vocabulary_to_flashcard(self, vocabulary_id):
-        vocabulary_entry = Vocabulary.objects.get(id=vocabulary_id)
-        self.vocabulary.add(vocabulary_entry)
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        vocabulary_entry = Vocabulary.objects.get(id=1)
-        self.vocabulary.add(vocabulary_entry)
-    def remove_vocabulary_from_flashcard(self, vocabulary_id):
-        vocabulary_entry = Vocabulary.objects.get(id=vocabulary_id)
-        self.vocabulary.remove(vocabulary_entry)
-    def modify_flashcard(self, flashcard_id):
-        flashcard = Flashcard.objects.get(id=flashcard_id)
-        flashcard.flashcard_title = 'new title'
-        flashcard.save()
-    def __str__(self):
-        return f"{self.flashcard_id} - {self.user} - {self.language} - {self.flashcard_title} - {self.vocabulary.word} - {self.vocabulary.translation} - {self.level}"
 
-    @property
-    def get_flashcard(self):
-        return f"{self.vocabulary.word} - {self.vocabulary.translation}"
-class UserFlashcardProgress(models.Model):
-    """
-    This Django model represents the progress of a user on a specific flashcard.
 
-    Attributes:
-    user_flashcard_progress_id: An automatically incrementing integer that serves as the primary key.
-    user_id: A foreign key that links to the AuthUser model. It represents the user who is making progress.
-    flashcard_id: A foreign key that links to the Flashcards model. It represents the flashcard on which progress is being made.
-    statut: A character field that represents the status of the user's progress. It can be 'Not started', 'In progress', or 'Completed'.
-    pourcentage_completion: An integer field that represents the percentage of completion of the flashcard by the user. It must be between 0 and 100.
-    time_study: An integer field that represents the time spent studying the flashcard. It must be a non-negative integer.
-    """
-    STATUT_CHOICES = [
-        ('Not started', 'Not started'),
-        ('In progress', 'In progress'),
-        ('Completed', 'Completed'),
-    ]
-    user_flashcard_progress_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    flashcard_id = models.ForeignKey(Flashcard, on_delete=models.CASCADE)
-    statut = models.CharField(max_length=100, choices=STATUT_CHOICES)
-    percentage_completion = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
-    score_flashcard = models.IntegerField(validators=[MinValueValidator(0)])
-    time_study = models.IntegerField(validators=[MinValueValidator(0)])
-
-    def __str__(self):
-        return f"{self.user_id} - {self.flashcard_id} - {self.statut} - {self.percentage_completion} - {self.time_study}"
-    @property
     def calculate_percentage_completion(self):
         total_items = 100
         actual_completude = 0

@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'cards.apps.CardsConfig',
     'teaching',
     'platforme',
-    'revision'
+    'revision',
+    'flashcard',
 ]
 
 MIDDLEWARE = [

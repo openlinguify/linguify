@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from linguify.models import Courses_languages, Vocabulary, Grammar, Units, UserLessonProgress, Revision, UserRevisionProgress, Quiz, Flashcard, UserFlashcardProgress
+from linguify.models import Courses_languages, Vocabulary, Grammar, Units, UserLessonProgress, Revision, UserRevisionProgress, Quiz
 from linguify.forms import ThemeForm
 from django.contrib.auth.decorators import login_required
+from linguify.models import Quiz
 import random
 
 def base(request):
@@ -48,6 +49,9 @@ def grammaire(request):
     })
 def revision(request):
     return render(request, 'revision.html')
+
+
+@login_required
 def quiz(request):
     if request.user.is_authenticated:
         learning_language = request.user.learning_language
@@ -67,9 +71,11 @@ def quiz(request):
         correct_translation = word_pair.translation
 
         # Get three incorrect translations
-        incorrect_translations = Quiz.objects.filter(language_id=learning_language.language_code, level=level).exclude(pk=(quiz_id)).values_list('translation', flat=True)[:3]
+        incorrect_translations = Quiz.objects.filter(user_id=request.user.id).exclude(
+            correct_translation=correct_translation).values_list('correct_translation', flat=True)[:3]
         options = list(incorrect_translations) + [correct_translation]
         random.shuffle(options)
+
         context = {
             'language': learning_language,
             'word': word,
@@ -131,13 +137,5 @@ def search_vocabulary(request):
             'query': query,
         }
         return render(request, 'linguify/search_vocabulary.html', context)
-def add_vocabulary_to_flashcard(request, flashcard_id):
-    flashcard = Flashcard.objects.get(id=flashcard_id)
-    vocabulary_entry = Vocabulary.objects.get(id=1)
-    flashcard.vocabulary.add(vocabulary_entry)
-    return HttpResponse("Vocabulary entry added to flashcard")
-def save(self, *args, **kwargs):
-    super().save(*args, **kwargs)
-    vocabulary_entry = Vocabulary.objects.get(id=1)
-    self.vocabulary.add(vocabulary_entry)
+
 
