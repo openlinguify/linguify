@@ -4,7 +4,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from linguify.models import Vocabulary, Theme
 from authentication.models import User
 
-
 class Flashcard(models.Model):
     flashcard_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -18,6 +17,19 @@ class Flashcard(models.Model):
 
     def modify_flashcard(self, new_title):
         self.flashcard_title = new_title
+        self.save()
+
+    def add_flashcard(self, user, vocabulary, theme, flashcard_title, image_flashcard):
+        self.user = user
+        self.vocabulary = vocabulary
+        self.theme = theme
+        self.flashcard_title = flashcard_title
+        self.image_flashcard = image_flashcard
+        self.save()
+
+    def remove_flashcard(self, flashcard_id):
+        self.flashcard_id = flashcard_id
+        self.delete()
         self.save()
 
     def __str__(self):
