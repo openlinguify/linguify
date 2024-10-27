@@ -1,5 +1,4 @@
-from django.shortcuts import render
-from flashcard.models import Flashcard
+from backend.apps.flashcard.models import Flashcard
 from django.http import HttpResponse
 from linguify.models import Vocabulary
 

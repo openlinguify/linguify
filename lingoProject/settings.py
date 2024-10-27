@@ -42,11 +42,11 @@ INSTALLED_APPS = [
     # Project apps
     'authentication',
     'linguify.apps.LinguifyConfig',
-    'cards.apps.CardsConfig',
+    'backend.apps.cards.apps.CardsConfig',
     'teaching',
     'platforme',
     'revision',
-    'flashcard',
+    'backend.apps.flashcard',
 ]
 
 MIDDLEWARE = [
