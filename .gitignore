@@ -1,6 +1,47 @@
-__pycache__/
 db.sqlite3
 templates/
 media/
 static/
+
+
+# Virtual Environment files
+env/
+venv/
+.venv/
 .env
+
+# Fichiers statiques collectés
+staticfiles/
+static/
+
+# Fichiers de cache
+*.cache
+.cache/
+__pycache__/
+
+# Fichiers de l'IDE
+.idea/
+.vscode/
+*.iml
+
+# Fichiers de sauvegarde
+*.bak
+*.swp
+*~.nib
+*.pyc
+*.pyo
+*.pyd
+
+# Fichiers de configuration
+*.orig
+*.conf
+*.ini
+*.env
+*.log
+*.sql
+*.sqlite3
+*.db
+*.data
+*.db-shm
+*.db-wal
+*.sql
