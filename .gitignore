@@ -1,18 +1,10 @@
 db.sqlite3
-templates/
-media/
-static/
-
 
 # Virtual Environment files
 env/
 venv/
 .venv/
 .env
-
-# Fichiers statiques collectés
-staticfiles/
-static/
 
 # Fichiers de cache
 *.cache
