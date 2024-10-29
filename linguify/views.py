@@ -1,14 +1,16 @@
 from django.shortcuts import render
+from rest_framework import viewsets
+from .serializers import Courses_languagesSerializer, Courses_languages_categoriesSerializer
+
 from django.http import HttpResponse
-from linguify.models import Courses_languages, Vocabulary, Grammar, Units, UserLessonProgress, Revision, UserRevisionProgress, Quiz
+from linguify.models import Courses_languages, Vocabulary, Grammar, Units, UserLessonProgress, Revision, \
+    UserRevisionProgress, Quiz, Courses_languages_categories
 from linguify.forms import ThemeForm
 from django.contrib.auth.decorators import login_required
-from linguify.models import Quiz
 import random
 
 def base(request):
     return render(request, 'base.html')
-
 @login_required
 def home(request):
     return render(request, 'linguify/home.html')
@@ -49,8 +51,6 @@ def grammaire(request):
     })
 def revision(request):
     return render(request, 'revision.html')
-
-
 @login_required
 def quiz(request):
     if request.user.is_authenticated:
@@ -137,5 +137,10 @@ def search_vocabulary(request):
             'query': query,
         }
         return render(request, 'linguify/search_vocabulary.html', context)
+class Courses_languagesViewSet(viewsets.ModelViewSet):
+    serializer_class = Courses_languagesSerializer
+    queryset = Courses_languages.objects.all()
 
-
+class Courses_languages_categoriesViewSet(viewsets.ModelViewSet):
+    serializer_class = Courses_languages_categoriesSerializer
+    queryset = Courses_languages_categories.objects.all()
