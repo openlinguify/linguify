@@ -1,4 +1,4 @@
-from backend.apps.flashcard.models import Flashcard
+from backend.django_apps.flashcard.models import Flashcard
 from django.http import HttpResponse
 from linguify.models import Vocabulary
 
