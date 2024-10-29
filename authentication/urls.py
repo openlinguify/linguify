@@ -1,7 +1,6 @@
 from django.urls import path
 from . import views
-from authentication.views import UploadProfilePhotoView, choose_user_type, signup, student_dashboard, teacher_dashboard, delete_account, register_teacher
-
+from backend.django_apps.authentication.views import UploadProfilePhotoView
 
 urlpatterns = [
     path('choose-user-type/', views.choose_user_type, name='choose_user_type'),
