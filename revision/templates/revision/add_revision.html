@@ -2,10 +2,33 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>Mots Révisés</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Ajouter la révision</button>
-</form>
+  <div class="container mt-5">
+    <div class="text-center mb-5">
+      <!-- Titre principal -->
+      <h1 class="display-4 text-primary">Ajouter une Révision</h1>
+      <p class="lead text-muted">Complétez le formulaire ci-dessous pour ajouter un nouveau mot à réviser.</p>
+    </div>
+
+    <!-- Carte principale avec ombre et bordure arrondie -->
+    <div class="card shadow-lg border-0 rounded-3">
+      <div class="card-body bg-light p-4">
+
+        <!-- Formulaire avec une bordure supérieure pour démarquer -->
+        <form method="post" class="p-3">
+          {% csrf_token %}
+          <!-- Formulaires stylisés avec une couleur et un espacement amélioré -->
+          <div class="form-group">
+            {{ form.as_p }}
+          </div>
+
+          <!-- Bouton de soumission centré avec des animations de survol -->
+          <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg px-5 py-2 shadow-sm" style="transition: background-color 0.3s ease, transform 0.2s;">
+              Ajouter la Révision
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 {% endblock %}
