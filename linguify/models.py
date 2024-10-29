@@ -1,16 +1,9 @@
 #linguify/models.py
-from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User, AbstractUser
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
+from authentication.models import User
 import random
-from authentication.models import User, Language, Level
-class Courses_languages(models.Model):
-    course_languages_id = models.AutoField(primary_key=True)
-    course_languages_title = models.CharField(max_length=100)
-    course_description = models.TextField(max_length=500)
-    course_image = models.ImageField(upload_to='course_images/', null=True, blank=True)
-    def __str__(self):
-        return self.course_languages_title
 
 class Courses_languages_categories(models.Model):
     category_id = models.AutoField(primary_key=True)
@@ -19,6 +12,17 @@ class Courses_languages_categories(models.Model):
 
     def __str__(self):
         return self.category_name
+
+class Courses_languages(models.Model):
+    course_languages_id = models.AutoField(primary_key=True)
+    course_languages_title = models.CharField(max_length=100)
+    course_description = models.TextField(max_length=500)
+    course_image = models.ImageField(upload_to='course_images/', null=True, blank=True)
+    category_id = models.ForeignKey('Courses_languages_categories', on_delete=models.CASCADE, related_name='courses')
+    def __str__(self):
+        return self.course_languages_title
+
+
 
 class Courses_subcategories(models.Model):
     SUBCATEGORY_CHOICES = [
@@ -39,6 +43,11 @@ class Vocabulary(models.Model):
     word = models.CharField(max_length=500)
     translation = models.CharField(max_length=500)
     example_sentence = models.TextField(max_length=500)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.language_id = None
+
     def __str__(self):
         return f"{self.vocabulary_id} - {self.language_id} - {self.vocabulary_title} - {self.word} - {self.translation}"
     @property
@@ -50,6 +59,11 @@ class Grammar(models.Model):
     grammar_title = models.CharField(max_length=100)
     grammar_description = models.TextField(max_length=500)
     grammar_example = models.TextField(max_length=500)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.language_id = None
+
     def __str__(self):
         return f"{self.id} - {self.language_id} - {self.grammar_title}"
     @property

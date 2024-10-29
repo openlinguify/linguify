@@ -9,7 +9,7 @@ from .forms import SignupForm, StudentProfileForm, TeacherProfileForm, UploadStu
 from .models import StudentProfile, TeacherProfile
 
 def choose_user_type(request):
-    return render(request, 'authentication/templates/authentication/choose_user_type.html')
+    return render(request, 'authentication/choose_user_type.html')
 
 def signup(request):
     if request.method == 'POST':
@@ -39,7 +39,7 @@ def signup(request):
         student_form = StudentProfileForm()
         teacher_form = TeacherProfileForm()
     return render(request,
-                  'authentication/templates/authentication/signup.html',
+                  'authentication/signup.html',
                   {'form': form,
                    'student_form': student_form,
                    'teacher_form': teacher_form

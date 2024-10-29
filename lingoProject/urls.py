@@ -8,13 +8,17 @@ from authentication import views as auth_views
 from linguify import views as linguify_views
 from django.conf import settings
 from django.conf.urls.static import static
-from payments import views as payments_views
 from django.views import defaults as default_views
+from rest_framework import routers
 
+router = routers.DefaultRouter()
+router.register(r'courses', linguify_views.Courses_languagesViewSet, 'courses')
+router.register(r'categories', linguify_views.Courses_languages_categoriesViewSet, 'categories')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('base/', linguify_views.base),
+    path('index/', linguify_views.index, name='index'),
     path('', include('platforme.urls')),
     path('', include('revision.urls')),
     path('', LoginView.as_view(template_name='authentication/login.html', redirect_authenticated_user=False), name='login'),
@@ -23,7 +27,7 @@ urlpatterns = [
     path('change-password/', PasswordChangeView.as_view(template_name='authentication/password_change_form.html'), name='password_change'),
     path('change-password-done/', PasswordChangeDoneView.as_view(template_name='authentication/password_change_done.html'), name='password_change_done'),
     path('home/', linguify_views.home, name='home'),
-    path('index/', linguify_views.index, name='index'),
+
     path('dashboard/', linguify_views.dashboard, name='dashboard'),
     path('vocabulaire/', linguify_views.vocabulaire, name='vocabulaire'),
     path('grammaire/', linguify_views.grammaire, name='grammaire'),
@@ -39,6 +43,7 @@ urlpatterns = [
     path('contact/', linguify_views.contact, name='contact'),
     path('about/', linguify_views.about, name='about'),
     path('teaching/', include('teaching.urls')),
+    path('api/', include(router.urls)),
 ]
 
 if settings.DEBUG:
