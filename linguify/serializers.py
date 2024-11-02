@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import Courses_languages, Courses_languages_categories
 
-
 class Courses_languages_categoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Courses_languages_categories
