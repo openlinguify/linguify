@@ -1,9 +1,17 @@
 #linguify/models.py
+import random
+
 from django.contrib.auth.models import User, AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+
 from authentication.models import User
-import random
+
+class Language(models.Model):
+    language = models.AutoField(primary_key=True)
+
+    def __str__(self):
+        return self.language
 
 class Courses_languages_categories(models.Model):
     category_id = models.AutoField(primary_key=True)
@@ -18,7 +26,12 @@ class Courses_languages(models.Model):
     course_languages_title = models.CharField(max_length=100)
     course_description = models.TextField(max_length=500)
     course_image = models.ImageField(upload_to='course_images/', null=True, blank=True)
-    category_id = models.ForeignKey('Courses_languages_categories', on_delete=models.CASCADE, related_name='courses')
+    category = models.ForeignKey(
+        Courses_languages_categories,  # Référence directe au modèle
+        on_delete=models.CASCADE,
+        related_name='courses'
+    )
+
     def __str__(self):
         return self.course_languages_title
 
@@ -78,6 +91,7 @@ class Units(models.Model):
     unit_type = models.CharField(max_length=100)
     def __str__(self):
         return self.unit_title
+
 class Theme(models.Model):
     id = models.AutoField(primary_key=True)
     theme_name = models.CharField(max_length=100)
@@ -96,6 +110,10 @@ class UserLessonProgress(models.Model):
     score_revision = models.IntegerField(validators=[MinValueValidator(0)])
     score_exercise = models.IntegerField(validators=[MinValueValidator(0)])
     score_quiz = models.IntegerField(validators=[MinValueValidator(0)])
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.status = None
 
     def __str__(self):
         return f"{self.user_id} - {self.user_lesson_progress_id} - {self.course_id} - {self.unit_id} - {self.status}"
