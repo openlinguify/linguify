@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'platforme',
     'revision',
     'backend.django_apps.flashcard',
+    #'backend.django_apps.revision',
+
     'rest_framework',
     'corsheaders',
 ]
