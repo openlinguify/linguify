@@ -11,14 +11,11 @@ class Flashcard(models.Model):
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
     flashcard_title = models.CharField(max_length=100, blank=False, null=False)
     image_flashcard = models.ImageField(upload_to='flashcard_images/', null=True, blank=True)
-
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-
     def modify_flashcard(self, new_title):
         self.flashcard_title = new_title
         self.save()
-
     def add_flashcard(self, user, vocabulary, theme, flashcard_title, image_flashcard):
         self.user = user
         self.vocabulary = vocabulary
@@ -26,7 +23,6 @@ class Flashcard(models.Model):
         self.flashcard_title = flashcard_title
         self.image_flashcard = image_flashcard
         self.save()
-
     def remove_flashcard(self, flashcard_id):
         self.flashcard_id = flashcard_id
         self.delete()

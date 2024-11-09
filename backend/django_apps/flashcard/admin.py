@@ -7,10 +7,10 @@ class FlashcardAdmin(admin.ModelAdmin):
     list_filter = ('theme',)
 
 class UserFlashcardProgressAdmin(admin.ModelAdmin):
-    list_display = ('user', 'flashcard', 'statut', 'percentage_completion', 'score_flashcard', 'time_study')
-    search_fields = ('user__username', 'flashcard__flashcard_title')
+    list_display = ('user_id', 'flashcard_id', 'statut', 'percentage_completion', 'score_flashcard', 'time_study')
+    search_fields = ('user_id__username', 'flashcard_id__flashcard_title')
     list_filter = ('statut', 'percentage_completion')
 
-# Enregistrer les modèles dans l'admin
+# Register models with the admin site
 admin.site.register(Flashcard, FlashcardAdmin)
 admin.site.register(UserFlashcardProgress, UserFlashcardProgressAdmin)

@@ -52,7 +52,9 @@ INSTALLED_APPS = [
     'platforme',
     'revision',
     'backend.django_apps.flashcard',
+    'backend.django_apps.quiz',
     #'backend.django_apps.revision',
+
 
     'rest_framework',
     'corsheaders',
@@ -136,6 +138,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'fr'
 USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+
 TIME_ZONE = 'Europe/Paris'
 
 
