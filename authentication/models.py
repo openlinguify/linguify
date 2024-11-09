@@ -50,6 +50,11 @@ class User(AbstractUser):
         return f"{self.username} - {self.email}"
 class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
+    last_name = models.CharField(max_length=50, null=True, blank=True)
+    first_name = models.CharField(max_length=50, null=True, blank=True)
+    username = models.CharField(max_length=50, null=True, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
+    bio = models.TextField(max_length=500, null=True, blank=True)
     address = models.CharField(max_length=100, null=True, blank=True)
     learning_language = models.CharField(max_length=50, choices=Language.choices, default=Language.ENGLISH, null=True, blank=True)
     mother_language = models.CharField(max_length=50, choices=Language.choices, default=Language.ENGLISH, null=True, blank=True)
@@ -57,6 +62,13 @@ class StudentProfile(models.Model):
     objectives = models.CharField(max_length=30, choices=Objectives.choices, default=Objectives.GET_A_JOB, null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     enrollment_date = models.DateField(auto_now_add=True, null=True, blank=True)
+    is_active = models.BooleanField(default=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    is_verified = models.BooleanField(default=False, null=True, blank=True)
+    is_premium = models.BooleanField(default=False, null=True, blank=True)
+    is_suspended = models.BooleanField(default=False, null=True, blank=True)
+    is_deleted = models.BooleanField(default=False, null=True, blank=True)
+
 
 class MeetingType(models.TextChoices):
     ONLINE = 'online', 'Online'
