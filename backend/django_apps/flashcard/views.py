@@ -37,3 +37,13 @@ def save(self, *args, **kwargs):
     super().save(*args, **kwargs)
     vocabulary_entry = Vocabulary.objects.get(id=1)
     self.vocabulary.add(vocabulary_entry)
+
+def add_vocabulary_to_flashcard(request, flashcard_id):
+    flashcard = Flashcard.objects.get(id=flashcard_id)
+    vocabulary_entry = Vocabulary.objects.get(id=1)
+    flashcard.vocabulary.add(vocabulary_entry)
+    return HttpResponse("Vocabulary entry added to flashcard")
+def save(self, *args, **kwargs):
+    super().save(*args, **kwargs)
+    vocabulary_entry = Vocabulary.objects.get(id=1)
+    self.vocabulary.add(vocabulary_entry)
