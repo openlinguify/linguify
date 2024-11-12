@@ -3,7 +3,7 @@ from django.test import RequestFactory
 from django.contrib.auth.models import AnonymousUser
 from linguify.views import index, home, vocabulaire, exercice_vocabulary, grammaire, revision, testlinguisitique, courses, prices, contact, about, search_vocabulary, add_vocabulary_to_flashcard, quiz, check_answer
 from linguify.models import Vocabulary, Flashcards
-from authentication.models import User
+from authentication import User
 
 @pytest.fixture
 def factory():

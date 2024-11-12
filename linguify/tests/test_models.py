@@ -1,6 +1,5 @@
 import pytest
-from django.core.exceptions import ValidationError
-from authentication.models import Language, LevelTarget, User
+from authentication import Language, LevelTarget, User
 from linguify.models import Flashcard, Vocabulary, Theme
 
 @pytest.fixture

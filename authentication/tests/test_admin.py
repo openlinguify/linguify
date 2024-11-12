@@ -1,7 +1,7 @@
 import pytest
 from django.contrib import admin
-from backend.django_apps.authentication.models import User
-from backend.django_apps.authentication.admin import UserAdmin
+from authentication.models import User
+from authentication.admin import UserAdmin
 
 @pytest.fixture
 def user():

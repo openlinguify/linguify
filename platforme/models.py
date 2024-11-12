@@ -1,5 +1,5 @@
 from django.db import models
-from revision.models import Revision
+#from revision.models import Revision
 
 # Choices for Levels of Language Proficiency
 LEVEL_LANGUAGE = (
