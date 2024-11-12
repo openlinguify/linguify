@@ -3,7 +3,9 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User, AbstractUser
 import random
-from authentication.models import User, Language, Level
+from authentication.models import User
+
+
 class Courses_languages(models.Model):
     course_languages_id = models.AutoField(primary_key=True)
     course_languages_title = models.CharField(max_length=100)
