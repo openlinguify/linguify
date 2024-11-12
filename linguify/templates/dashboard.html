@@ -1,21 +1,22 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
 <section class="learning-section">
     <div class="learning-header">
-        <h2>My Learning Dashboard</h2>
+        <h2>{% trans "My Learning Dashboard" %}</h2>
         <div class="learning-progress">
-            <span>Overall Progress: 75%</span>
+            <span>{% trans "Overall Progress: 75%%" %}</span>
             <div class="progress-bar">
                 <div class="progress" style="width: 75%;"></div>
             </div>
         </div>
     </div>
     <div class="learning-filters">
-        <button class="filter-button active">In Progress</button>
-        <button class="filter-button">Completed</button>
-        <button class="filter-button">Not Started</button>
+        <button class="filter-button active">{% trans "In Progress" %}</button>
+        <button class="filter-button">{% trans "Completed" %}</button>
+        <button class="filter-button">{% trans "Not Started" %}</button>
     </div>
 </section>
 
@@ -24,68 +25,68 @@
         <div class="module-container">
             <!-- Card 1 -->
             <div class="app">
-                <img src="{% static 'images/logos/vocabulary.png' %}" alt="Vocabulary Icon">
-                <h3>Vocabulaire</h3>
-                <p>10 Lessons - Intermediate</p>
-                <button class="start-button">Continue</button>
-                <span class="badge new">New</span>
+                <img src="{% static 'images/logos/vocabulary.png' %}" alt="{% trans 'Vocabulary Icon' %}">
+                <h3>{% trans "Vocabulaire" %}</h3>
+                <p>{% trans "10 Lessons - Intermediate" %}</p>
+                <button class="start-button">{% trans "Continue" %}</button>
+                <span class="badge new">{% trans "New" %}</span>
             </div>
             <!-- Card 2 -->
             <div class="app">
-                <img src="{% static 'images/logos/grammar.png' %}" alt="Grammar Icon">
-                <h3>Grammaire</h3>
-                <p>15 Lessons - Beginner</p>
-                <button class="start-button">Start</button>
+                <img src="{% static 'images/logos/grammar.png' %}" alt="{% trans 'Grammar Icon' %}">
+                <h3>{% trans "Grammaire" %}</h3>
+                <p>{% trans "15 Lessons - Beginner" %}</p>
+                <button class="start-button">{% trans "Start" %}</button>
             </div>
             <!-- Card 3 -->
             <div class="app">
-                <img src="{% static 'images/logos/exercise.png' %}" alt="Exercise Icon">
-                <h3>Exercice</h3>
-                <p>5 Exercises - Advanced</p>
-                <button class="start-button">Resume</button>
-                <span class="badge popular">Popular</span>
+                <img src="{% static 'images/logos/exercise.png' %}" alt="{% trans 'Exercise Icon' %}">
+                <h3>{% trans "Exercice" %}</h3>
+                <p>{% trans "5 Exercises - Advanced" %}</p>
+                <button class="start-button">{% trans "Resume" %}</button>
+                <span class="badge popular">{% trans "Popular" %}</span>
             </div>
             <!-- Card 4 -->
             <div class="app">
-                <img src="{% static 'images/logos/professional-vocabulary.png' %}" alt="Professional Vocabulary Icon">
-                <h3>Vocabulaire professionnel</h3>
-                <p>8 Lessons - Intermediate</p>
-                <button class="start-button">Continue</button>
+                <img src="{% static 'images/logos/professional-vocabulary.png' %}" alt="{% trans 'Professional Vocabulary Icon' %}">
+                <h3>{% trans "Vocabulaire professionnel" %}</h3>
+                <p>{% trans "8 Lessons - Intermediate" %}</p>
+                <button class="start-button">{% trans "Continue" %}</button>
             </div>
             <!-- Card 5 -->
             <div class="app">
-                <img src="{% static 'images/logos/news.png' %}" alt="News Icon">
-                <h3>Actualité</h3>
-                <p>3 Lessons - All Levels</p>
-                <button class="start-button">Explore</button>
+                <img src="{% static 'images/logos/news.png' %}" alt="{% trans 'News Icon' %}">
+                <h3>{% trans "Actualité" %}</h3>
+                <p>{% trans "3 Lessons - All Levels" %}</p>
+                <button class="start-button">{% trans "Explore" %}</button>
             </div>
             <!-- Card 6 -->
             <div class="app">
-                <img src="{% static 'images/logos/revision.png' %}" alt="Revision Icon">
-                <h3>Révision</h3>
-                <p>6 Lessons - Intermediate</p>
-                <button class="start-button">Review</button>
+                <img src="{% static 'images/logos/revision.png' %}" alt="{% trans 'Revision Icon' %}">
+                <h3>{% trans "Révision" %}</h3>
+                <p>{% trans "6 Lessons - Intermediate" %}</p>
+                <button class="start-button">{% trans "Review" %}</button>
             </div>
             <!-- Card 7 -->
             <div class="app">
-                <img src="{% static 'images/logos/teaching.png' %}" alt="Teaching Icon">
-                <h3>Professeurs en ligne</h3>
-                <p>12 Lessons - Advanced</p>
-                <button class="start-button">Start</button>
+                <img src="{% static 'images/logos/teaching.png' %}" alt="{% trans 'Teaching Icon' %}">
+                <h3>{% trans "Professeurs en ligne" %}</h3>
+                <p>{% trans "12 Lessons - Advanced" %}</p>
+                <button class="start-button">{% trans "Start" %}</button>
             </div>
             <!-- Card 8 -->
             <div class="app">
-                <img src="{% static 'images/logos/quiz.png' %}" alt="Quiz Icon">
-                <h3>Quiz</h3>
-                <p>20 Quizzes - All Levels</p>
-                <button class="start-button">Test Yourself</button>
+                <img src="{% static 'images/logos/quiz.png' %}" alt="{% trans 'Quiz Icon' %}">
+                <h3>{% trans "Quiz" %}</h3>
+                <p>{% trans "20 Quizzes - All Levels" %}</p>
+                <button class="start-button">{% trans "Test Yourself" %}</button>
             </div>
             <!-- Card 9 -->
             <div class="app">
-                <img src="{% static 'images/logos/flashcards.png' %}" alt="Flashcards Icon">
-                <h3>Flashcards</h3>
-                <p>50 Flashcards - Beginner</p>
-                <button class="start-button">Practice</button>
+                <img src="{% static 'images/logos/flashcards.png' %}" alt="{% trans 'Flashcards Icon' %}">
+                <h3>{% trans "Flashcards" %}</h3>
+                <p>{% trans "50 Flashcards - Beginner" %}</p>
+                <button class="start-button">{% trans "Practice" %}</button>
             </div>
         </div>
     </div>
