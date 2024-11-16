@@ -1,0 +1,14 @@
+{% extends '../../../templates/base.html' %}
+{% block content %}
+    <h1>Quiz</h1>
+    <p>Translate the word:</p>
+    <p>{{ word }}</p>
+    <form method="POST">
+        {% csrf_token %}
+        {% for option in options %}
+            <input type="radio" id="{{ option }}" name="answer" value="{{ option }}">
+            <label for="{{ option }}">{{ option }}</label><br>
+        {% endfor %}
+        <button type="submit">Submit</button>
+    </form>
+{% endblock content %}
