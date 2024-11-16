@@ -1,165 +1,87 @@
+# backend/django_apps/revision/models.py
+
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
+from django.db.models import signals
+from django.dispatch import receiver
 import random
 
+# Correct import paths for Activity and Vocabulary models
 
-class Revision(models.Model):
-    revision_id = models.AutoField(primary_key=True)
-    revision_title = models.CharField(max_length=100)
-    revision_description = models.TextField(max_length=500)
-    word = models.CharField(max_length=100)
-    translation = models.CharField(max_length=100)
-    last_revision_date = models.DateTimeField(auto_now=True)
-    def __str__(self):
-        return f"{self.revision_title} - {self.word} - {self.translation}"
-    @classmethod
-    def get_random_words(cls, language, level, num_words=1):
-        """Retrieve random vocabulary words based on language and level."""
-        vocabulary_words = cls.objects.filter(language=language, level=level)
+
+# Get the custom User model
+User = get_user_model()
+
+# Custom Manager for Revision to add querying methods
+class RevisionManager(models.Manager):
+    """Manager for custom Revision methods."""
+
+    def get_random_words(self, language, level, num_words=1):
+        vocabulary_words = self.filter(language=language, level=level)
         if vocabulary_words.exists():
             return random.sample(list(vocabulary_words), num_words)
-        else:
-            return None
-class UserRevisionProgress(models.Model):
-    STATUT_CHOICES = [
-        ('Not started', 'Not started'),
-        ('In progress', 'In progress'),
-        ('Completed', 'Completed'),
-    ]
-    user_revision_progress_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    revision_id = models.ForeignKey(Revision, on_delete=models.CASCADE)
-    statut = models.CharField(max_length=100, choices=STATUT_CHOICES, default='Not started')
-    percentage_completion = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)], default=0)
-    time_study = models.IntegerField(validators=[MinValueValidator(0)], default=0)
-    score_revision = models.IntegerField(validators=[MinValueValidator(0)], default=0)
-    words_succeeded = models.IntegerField(default=0)
-    words_failed = models.IntegerField(default=0)
-    words_to_review = models.IntegerField(default=0)
-    def __str__(self):
-        return f"{self.user.username} - {self.revision.title}"
-    def start_revision(self):
-        """Start the revision for the user."""
-        self.statut = 'In progress'
-        self.save()
-    def update_progress(self, succeeded=True):
-        """Update the progress of the user based on the result of the revision."""
-        if succeeded:
-            self.words_succeeded += 1
-        else:
-            self.words_failed += 1
-            self.words_to_review += 1
+        return None
 
-        total_words = self.words_succeeded + self.words_failed
-        if total_words > 0:
-            self.percentage_completion = (self.words_succeeded / total_words) * 100
-        else:
-            self.percentage_completion = 0
-
-        self.save()
-    def reset_progress(self):
-        """Reset the progress of the user."""
-        self.statut = 'Not started'
-        self.percentage_completion = 0
-        self.time_study = 0
-        self.score_revision = 0
-        self.words_succeeded = 0
-        self.words_failed = 0
-        self.words_to_review = 0
-        self.save()
-    def get_review_words(self, num_words=1):
-        """Retrieve words to review based on the progress of the user."""
-        if self.words_to_review > 0:
-            return Revision.get_random_words(self.revision.language, self.revision.level, num_words)
-        else:
-            return None
-    @classmethod
-    def get_user_revision_progress(cls, user, revision):
-        """Retrieve the progress of a user on a specific revision."""
-        try:
-            return cls.objects.get(user=user, revision=revision)
-        except cls.DoesNotExist:
-            return None
-    def complete_revision(self):
-        self.statut = 'Completed'
-        self.percentage_completion = 100
-        self.save()
-
-    def update_score(self, score):
-        self.score_revision += score
-        self.save()
-
-    def update_time_study(self, time):
-        self.time_study += time
-        self.save()
-
-
-# revision/models.py
-from django.db import models
-
-from platforme.models import Vocabulaire
-from django.utils import timezone
-from django.core.validators import MinValueValidator, MaxValueValidator
-import random
-
+# Main Revision model
 class Revision(models.Model):
     revision_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=100)
-
-    activity = models.ForeignKey('platforme.Activity', on_delete=models.CASCADE)
-    vocabulaire = models.ForeignKey('platforme.Vocabulaire', on_delete=models.CASCADE)
     know = models.BooleanField(default=False)
     last_reviewed = models.DateTimeField(default=timezone.now)
     word = models.CharField(max_length=100)
     translation = models.CharField(max_length=100)
 
-    def __str__(self):
-        return f"Révision de '{self.vocabulaire.word}'"
+    objects = RevisionManager()  # Use custom manager
 
-    @classmethod
-    def get_random_words(cls, language, level, num_words=1):
-        """Retrieve random vocabulary words based on language and level."""
-        vocabulary_words = cls.objects.filter(language=language, level=level)
-        if vocabulary_words.exists():
-            return random.sample(list(vocabulary_words), num_words)
-        else:
-            return None
+    def __str__(self):
+        return f"Revision of {self.word} - {self.translation}"
 
     class Meta:
-        verbose_name = "Révision"
-        verbose_name_plural = "Révisions"
+        verbose_name = "Revision"
+        verbose_name_plural = "Revisions"
+        indexes = [
+            models.Index(fields=['word']),
+            models.Index(fields=['translation']),
+        ]
 
+# Manager for UserRevisionProgress to handle helper methods
+class UserRevisionProgressManager(models.Manager):
+    """Manager for UserRevisionProgress helper methods."""
+
+    def get_user_progress(self, user, revision):
+        progress, created = self.get_or_create(user=user, revision=revision)
+        return progress
+
+# Model to track user progress in revisions
 class UserRevisionProgress(models.Model):
     STATUT_CHOICES = [
         ('Not started', 'Not started'),
         ('In progress', 'In progress'),
         ('Completed', 'Completed'),
     ]
-    user_revision_progress_id = models.AutoField(primary_key=True)
-    #user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    revision_id = models.ForeignKey(Revision, on_delete=models.CASCADE)
-    statut = models.CharField(max_length=100, choices=STATUT_CHOICES, default='Not started')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    revision = models.ForeignKey(Revision, on_delete=models.CASCADE)
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='Not started')
     percentage_completion = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)], default=0)
-    time_study = models.IntegerField(validators=[MinValueValidator(0)], default=0)
+    time_study = models.IntegerField(validators=[MinValueValidator(0)], default=0, help_text="Time studied in minutes")
     score_revision = models.IntegerField(validators=[MinValueValidator(0)], default=0)
     words_succeeded = models.IntegerField(default=0)
     words_failed = models.IntegerField(default=0)
     words_to_review = models.IntegerField(default=0)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(args, kwargs)
-        self.user = None
-        self.revision = None
+    objects = UserRevisionProgressManager()  # Use custom manager
 
     def __str__(self):
         return f"{self.user.username} - {self.revision.title}"
+
+    # Methods to manage the revision process
     def start_revision(self):
-        """Start the revision for the user."""
         self.statut = 'In progress'
         self.save()
+
     def update_progress(self, succeeded=True):
-        """Update the progress of the user based on the result of the revision."""
         if succeeded:
             self.words_succeeded += 1
         else:
@@ -167,14 +89,10 @@ class UserRevisionProgress(models.Model):
             self.words_to_review += 1
 
         total_words = self.words_succeeded + self.words_failed
-        if total_words > 0:
-            self.percentage_completion = (self.words_succeeded / total_words) * 100
-        else:
-            self.percentage_completion = 0
-
+        self.percentage_completion = (self.words_succeeded / total_words) * 100 if total_words > 0 else 0
         self.save()
+
     def reset_progress(self):
-        """Reset the progress of the user."""
         self.statut = 'Not started'
         self.percentage_completion = 0
         self.time_study = 0
@@ -183,19 +101,12 @@ class UserRevisionProgress(models.Model):
         self.words_failed = 0
         self.words_to_review = 0
         self.save()
+
     def get_review_words(self, num_words=1):
-        """Retrieve words to review based on the progress of the user."""
         if self.words_to_review > 0:
-            return Revision.get_random_words(self.revision.language, self.revision.level, num_words)
-        else:
-            return None
-    @classmethod
-    def get_user_revision_progress(cls, user, revision):
-        """Retrieve the progress of a user on a specific revision."""
-        try:
-            return cls.objects.get(user=user, revision=revision)
-        except cls.DoesNotExist:
-            return None
+            return Revision.objects.get_random_words(self.revision.language, self.revision.level, num_words)
+        return None
+
     def complete_revision(self):
         self.statut = 'Completed'
         self.percentage_completion = 100
@@ -209,5 +120,23 @@ class UserRevisionProgress(models.Model):
         self.time_study += time
         self.save()
 
+    class Meta:
+        verbose_name = "User Revision Progress"
+        verbose_name_plural = "User Revision Progresses"
+        indexes = [
+            models.Index(fields=['user', 'revision']),
+        ]
 
+# Signal to update the last reviewed date
+@receiver(signals.post_save, sender=Revision)
+def update_last_reviewed(sender, instance, **kwargs):
+    instance.last_reviewed = timezone.now()
+    instance.save()
 
+# Signal to ensure default values are set
+@receiver(signals.pre_save, sender=UserRevisionProgress)
+def ensure_default_values(sender, instance, **kwargs):
+    if not instance.time_study:
+        instance.time_study = 0
+    if not instance.score_revision:
+        instance.score_revision = 0

@@ -1,3 +1,4 @@
+# backend/django_apps/quiz/models.py
 from django.db import models
 from django.conf import settings  # Import settings for AUTH_USER_MODEL
 

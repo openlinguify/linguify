@@ -1,3 +1,4 @@
+# backend/django_apps/course/serializers.py
 from rest_framework import serializers
 from backend.django_apps.course.models import (LearningPath, Unit, Lesson, Activity,
                                                Vocabulary, Grammar, Listening, Speaking,

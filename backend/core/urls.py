@@ -19,5 +19,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/auth/', include('backend.django_apps.authentication.urls')),
+    path('api/auth/', include('django_apps.authentication.urls')),
 ]

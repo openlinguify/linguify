@@ -1,17 +1,15 @@
-# django_apps/authentication/views.py
-
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
-from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, TokenSerializer
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
-from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import get_user_model
+from .models import User
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -24,14 +22,9 @@ class LoginView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = authenticate(username=serializer.validated_data['username'], password=serializer.validated_data['password'])
-        if user:
-            token_serializer = TokenSerializer(user)
-            return Response(token_serializer.data, status=status.HTTP_200_OK)
-        return Response({"detail": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 class UserProfileView(generics.RetrieveAPIView):
-    queryset = User.objects.all()
     permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
 
@@ -62,10 +55,10 @@ class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
+        refresh_token = request.data.get("refresh")
         try:
-            refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response(status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
+        except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
