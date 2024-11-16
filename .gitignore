@@ -4,7 +4,7 @@ db.sqlite3
 env/
 venv/
 .venv/
-.env
+backend/.env
 .notes_commandes
 
 # Fichiers de cache

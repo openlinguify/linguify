@@ -14,7 +14,8 @@ from pathlib import Path
 import os
 import environ
 
-from lingoProject.settings import CORS_ORIGIN_WHITELIST, USE_TZ, USE_L10N, STATICFILES_DIRS
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
     DEBUG=(bool, False)
@@ -22,17 +23,15 @@ env = environ.Env(
 # reading .env file
 environ.Env.read_env(env_file=str(BASE_DIR.joinpath('.env')))
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY_CORE = env('SECRET_KEY_CORE')
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG_CORE')
+DEBUG = env('DEBUG')
 
 # normally Allowed hosts should be set to the domain name of the website
 # but for development purposes we can set it to all
@@ -51,21 +50,25 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     # Project django_apps
-    'backend.django_apps.authentication',
-    'backend.django_apps.cards',
-    'backend.django_apps.coaching',
-    'backend.django_apps.course',
-    'backend.django_apps.data',
-    'backend.django_apps.flashcard',
-    'backend.django_apps.payments',
-    'backend.django_apps.quiz',
-    'backend.django_apps.revision',
+    'django_apps.authentication',
+    'django_apps.cards',
+    'django_apps.coaching',
+    'django_apps.course',
+    'django_apps.data',
+    'django_apps.flashcard',
+    'django_apps.payments',
+    'django_apps.quiz',
+    'django_apps.revision',
     # Django REST framework module for building Web APIs
     'rest_framework',
-    # Django CORS headers module for handling Cross-Origin Resource Sharing (CORS)
-    'corsheaders',
     # Django REST framework module for token-based authentication
     'rest_framework.authtoken',
+    # Django REST framework module for token-based authentication
+    'rest_framework_simplejwt',
+    # Django CORS headers module for handling Cross-Origin Resource Sharing (CORS)
+    'corsheaders',
+    # Simple JWT Blacklist
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -79,6 +82,24 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+}
+
+# Configuration for JWT
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
@@ -160,3 +181,5 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SIMPLE_JWT['BLACKLIST_AFTER_ROTATION'] = True

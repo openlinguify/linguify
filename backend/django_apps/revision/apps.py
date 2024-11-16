@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class RevisionConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'backend.django_apps.revision'
+    name = 'django_apps.revision'

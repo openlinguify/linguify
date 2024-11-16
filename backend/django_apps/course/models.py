@@ -1,238 +1,116 @@
 from django.db import models
 
-class Language_learning(models.Model):
-    pass
+#Level_choices of the languages
 
-class Unit(models.Model):
-    pass
-
-class Lesson(models.Model):
-    pass
-
-class Question(models.Model):
-    pass
-
-class Exercises(models.Model):
-    pass
-
-class Category_exercises(models.Model):
-    pass
-
-class Vocabulary(models.Model):
-    pass
-
-class Grammar(models.Model):
-    pass
-
-class Listening(models.Model):
-    pass
-
-class Reading(models.Model):
-    pass
-
-class Writing(models.Model):
-    pass
-
-#linguify/models.py
-from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.contrib.auth.models import User, AbstractUser
-import random
-from authentication.models import User
-
-class Courses_languages(models.Model):
-    course_languages_id = models.AutoField(primary_key=True)
-    course_languages_title = models.CharField(max_length=100)
-    course_description = models.TextField(max_length=500)
-    course_image = models.ImageField(upload_to='course_images/', null=True, blank=True)
-    def __str__(self):
-        return self.course_languages_title
-
-    objects = models.Manager()  # Ensure the default manager is set
-class Courses_languages_categories(models.Model):
-    category_id = models.AutoField(primary_key=True)
-    category_name = models.CharField(max_length=100)
-    category_description = models.TextField(max_length=500)
-
-    def __str__(self):
-        return self.category_name
-
-class Courses_subcategories(models.Model):
-    SUBCATEGORY_CHOICES = [
-        ('Vocabulary', 'Vocabulary'),
-        ('Grammar', 'Grammar'),
-        ('Exercice', 'Exercice'),
-    ]
-    subcategory_id = models.AutoField(primary_key=True)
-    subcategory_title = models.CharField(max_length=100, choices=SUBCATEGORY_CHOICES, null=False)
-    category_id = models.ForeignKey(Courses_languages_categories, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.subcategory_title
-
-class Vocabulary(models.Model):
-    vocabulary_id = models.AutoField(primary_key=True)
-    vocabulary_title = models.CharField(max_length=100)
-    word = models.CharField(max_length=500)
-    translation = models.CharField(max_length=500)
-    example_sentence = models.TextField(max_length=500)
-    def __str__(self):
-        return f"{self.vocabulary_id} - {self.language_id} - {self.vocabulary_title} - {self.word} - {self.translation}"
-    @property
-    def get_vocabulary(self):
-        return f"{self.word} - {self.translation}"
-
-class Grammar(models.Model):
-    grammar_id = models.AutoField(primary_key=True)
-    grammar_title = models.CharField(max_length=100)
-    grammar_description = models.TextField(max_length=500)
-    grammar_example = models.TextField(max_length=500)
-    def __str__(self):
-        return f"{self.id} - {self.language_id} - {self.grammar_title}"
-    @property
-    def get_grammar(self):
-        return f"{self.grammar_title} - {self.grammar_description}"
-class Units(models.Model):
-    unit_id = models.AutoField(primary_key=True)
-    unit_title = models.CharField(max_length=100)
-    unit_description = models.TextField(max_length=500)
-    course_id = models.ForeignKey(Courses_languages, on_delete=models.CASCADE)
-    subcategory_id = models.ForeignKey(Courses_subcategories, on_delete=models.CASCADE)
-    unit_type = models.CharField(max_length=100)
-    def __str__(self):
-        return self.unit_title
-class Theme(models.Model):
-    id = models.AutoField(primary_key=True)
-    theme_name = models.CharField(max_length=100)
-    theme_description = models.TextField(max_length=500)
-    theme_image = models.ImageField(upload_to='theme_images/', null=True, blank=True)
-    def __str__(self):
-        return self.theme_name
-class UserLessonProgress(models.Model):
-    user_lesson_progress_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    course_id = models.ForeignKey(Courses_languages, on_delete=models.CASCADE)
-    unit_id = models.ForeignKey('Units', on_delete=models.CASCADE)
-    statut = models.CharField(max_length=100)
-    percentage_completion = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
-    time_study = models.IntegerField(validators=[MinValueValidator(0)])
-    score_revision = models.IntegerField(validators=[MinValueValidator(0)])
-    score_exercise = models.IntegerField(validators=[MinValueValidator(0)])
-    score_quiz = models.IntegerField(validators=[MinValueValidator(0)])
-
-    def __str__(self):
-        return f"{self.user_id} - {self.user_lesson_progress_id} - {self.course_id} - {self.unit_id} - {self.status}"
-
-
-from django.db import models
-#from revision.models import Revision
-
-# Choices for Levels of Language Proficiency
-LEVEL_LANGUAGE = (
-    ('A1-', 'A1-'),
+LEVEL_LANGUAGES = [
+    ('-A1', '-A1'),
     ('A1', 'A1'),
     ('A2', 'A2'),
     ('B1', 'B1'),
     ('B2', 'B2'),
     ('C1', 'C1'),
     ('C2', 'C2'),
-)
+]
 
-# Choices for Types of Activity
-TYPE_ACTIVITY = (
-    ('Vocabulaire', 'Vocabulaire'),
-    ('Video', 'Video'),
-    ('Exercice', 'Exercice'),
+TYPE_ACTIVITY = [
+    ('Vocabulary', 'Vocabulary'),
+    ('Grammar', 'Grammar'),
+    ('Listening', 'Listening'),
+    ('Speaking', 'Speaking'),
+    ('Reading', 'Reading'),
+    ('Writing', 'Writing'),
     ('Test', 'Test'),
-)
+]
 
-
-class Categorie(models.Model):
-    name_categorie = models.CharField(max_length=100)
-    image_categorie = models.ImageField(upload_to='images/', null=True, blank=True, default='images/default.jpg')
+class LearningPath(models,Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
 
     def __str__(self):
-        return self.name_categorie
+        return self.name
 
+class Unit(models.Model):
+    learning_path = models.ForeignKey(LearningPath, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    level = models.CharField(max_length=3, choices=LEVEL_LANGUAGES)
 
-class Sous_categorie(models.Model):
-    categorie = models.ForeignKey(Categorie, on_delete=models.CASCADE)
-    name_sous_categorie = models.CharField(max_length=100)
-    image_sous_categorie = models.ImageField(upload_to='images/', null=True, blank=True, default='images/default.jpg')
-
-    def __str__(self) -> str:
-        """
-        Returns a string representation of the sub-category, including the main category name.
-        """
-        return f"{self.categorie.name_categorie} - {self.name_sous_categorie}"
-
+    def __str__(self):
+        return f"{self.title} - {self.level}"
 
 class Lesson(models.Model):
-    sous_categorie = models.ForeignKey(Sous_categorie, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    image_lesson = models.ImageField(upload_to='images/', null=True, blank=True, default='images/default.jpg')
-    level_language = models.CharField(max_length=3, choices=LEVEL_LANGUAGE, default='A1-')
-
-    def __str__(self) -> str:
-        """
-        Returns a string representation of the lesson, including the sub-category name.
-        """
-        return f"{self.sous_categorie.name_sous_categorie} - {self.name}"
-
-
-class Activity(models.Model):
-    type_activity = models.CharField(max_length=100, choices=TYPE_ACTIVITY, default='Vocabulaire')
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    icon_activity = models.ImageField(upload_to='images/', null=True, blank=True, default='images/default.jpg')
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    difficulty = models.CharField(max_length=10, choices=[('Easy', 'Easy'), ('Medium', 'Medium'), ('Hard', 'Hard')], default='Easy')
+    estimated_duration = models.IntegerField(help_text="In minutes")
 
     def __str__(self):
-        return f"{self.lesson.name} - {self.type_activity}"
+        return self.title
 
-
-class Vocabulaire(models.Model):
+class Activity(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, limit_choices_to={'type_activity': 'Vocabulaire'},
-                                 null=True, blank=True)
+    activity_type = models.CharField(max_length=100, choices=TYPE_ACTIVITY)
+    title = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.title} - {self.activity_type}"
+
+class Vocabulary(models.Model):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, limit_choices_to={'activity_type': 'Vocabulary'})
     word = models.CharField(max_length=100)
     translation = models.CharField(max_length=100)
-    type_word = models.CharField(max_length=100)
-    definition = models.TextField()
-    example = models.TextField()
-    example_translation = models.TextField()
-    rewiewed = models.BooleanField(default=False)
+    example_sentence = models.TextField()
 
     def __str__(self):
         return self.word
 
-
-class Video(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, limit_choices_to={'type_activity': 'Video'},
-                                 null=True, blank=True)
-    title_video = models.CharField(max_length=100)
-    video = models.FileField(upload_to='videos/', null=True, blank=True)
+class Grammar(models.Model):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, limit_choices_to={'activity_type': 'Grammar'})
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    example = models.TextField()
 
     def __str__(self):
-        return self.title_video
+        return self.title
 
-
-class Exercice(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, limit_choices_to={'type_activity': 'Exercice'},
-                                 null=True, blank=True)
-    title_exercice = models.CharField(max_length=100)
-    exercice = models.FileField(upload_to='exercices/', null=True, blank=True)
+class Listening(models.Model):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, limit_choices_to={'activity_type': 'Listening'})
+    title = models.CharField(max_length=100)
+    audio = models.FileField(upload_to='listening_audio/')
 
     def __str__(self):
-        return self.title_exercice
+        return self.title
 
+class Speaking(models.Model):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, limit_choices_to={'activity_type': 'Speaking'})
+    title = models.CharField(max_length=100)
+    audio = models.FileField(upload_to='speaking_audio/')
+
+    def __str__(self):
+        return self.title
+
+class Reading(models.Model):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, limit_choices_to={'activity_type': 'Reading'})
+    title = models.CharField(max_length=100)
+    text = models.TextField()
+
+    def __str__(self):
+        return self.title
+
+class Writing(models.Model):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, limit_choices_to={'activity_type': 'Writing'})
+    title = models.CharField(max_length=100)
+    text = models.TextField()
+
+    def __str__(self):
+        return self.title
 
 class Test(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, limit_choices_to={'type_activity': 'Test'},
-                                 null=True, blank=True)
-    title_test = models.CharField(max_length=100)
-    test = models.FileField(upload_to='tests/', null=True, blank=True)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, limit_choices_to={'activity_type': 'Test'})
+    question = models.TextField()
+    correct_answer = models.CharField(max_length=100)
+    incorrect_answers = models.TextField(help_text="Separate the answers with a comma.")
+
 
     def __str__(self):
-        return self.title_test
+        return self.question
+
