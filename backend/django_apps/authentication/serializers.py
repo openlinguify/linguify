@@ -1,5 +1,3 @@
-# django_apps/authentication/serializers.py
-
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
@@ -22,7 +20,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError({"password": "Password fields didn't match."})
-
         return attrs
 
     def create(self, validated_data):
@@ -31,48 +28,34 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             user_type=validated_data['user_type']
         )
-
         user.set_password(validated_data['password'])
         user.save()
-
         return user
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'user_type']
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255)
-    password = serializers.CharField(
-        max_length=128, write_only=True
-    )
+    password = serializers.CharField(max_length=128, write_only=True)
 
     def validate(self, attrs):
         username = attrs.get('username', None)
         password = attrs.get('password', None)
 
         if username is None:
-            raise serializers.ValidationError(
-                'An username is required to log in.'
-            )
-
+            raise serializers.ValidationError('A username is required to log in.')
         if password is None:
-            raise serializers.ValidationError(
-                'A password is required to log in.'
-            )
+            raise serializers.ValidationError('A password is required to log in.')
 
         user = User.objects.filter(username=username).first()
-
-        if user is None:
-            raise serializers.ValidationError(
-                'A user with this username was not found.'
-            )
-
-        if not user.check_password(password):
-            raise serializers.ValidationError(
-                'The provided password is incorrect.'
-            )
+        if user is None or not user.check_password(password):
+            raise serializers.ValidationError('Invalid credentials.')
 
         refresh = RefreshToken.for_user(user)
-
         return {
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
-

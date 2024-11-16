@@ -1,5 +1,5 @@
+# backend/django_apps/course/models.py
 from django.db import models
-
 #Level_choices of the languages
 
 LEVEL_LANGUAGES = [
@@ -22,7 +22,8 @@ TYPE_ACTIVITY = [
     ('Test', 'Test'),
 ]
 
-class LearningPath(models,Model):
+class LearningPath(models.Model):
+
     name = models.CharField(max_length=100)
     description = models.TextField()
 

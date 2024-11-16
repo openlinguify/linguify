@@ -1,31 +1,27 @@
-# authentication/forms.py
-
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django import forms
 from django.core.exceptions import ValidationError
-from django.core.files.images import get_image_dimensions
-from .models import User, TeacherProfile, StudentProfile
+from .models import User, Teacherprofile, StudentProfile
+
+# Getting the user model
+User = get_user_model()
 
 class SignupForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['user_type', 'username', 'email', 'password1', 'password2', ]
+        fields = ['user_type', 'username', 'email', 'password1', 'password2']
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if email:
-            email_qs = User.objects.filter(email=email)
-            if email_qs.exists():
-                raise forms.ValidationError("This email has already been registered")
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("This email is already registered.")
         return email
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
-        if username:
-            username_qs = User.objects.filter(username=username)
-            if username_qs.exists():
-                raise forms.ValidationError("This username has already been registered")
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("This username is already taken.")
         return username
 
     def clean(self):
@@ -41,21 +37,33 @@ class SignupForm(UserCreationForm):
         if commit:
             user.save()
         return user
-class StudentProfileForm(forms.ModelForm):
+
+
+class BaseProfileForm(forms.ModelForm):
+    """Base form for common profile fields."""
+    class Meta:
+        abstract = True
+
+
+class StudentProfileForm(BaseProfileForm):
     class Meta:
         model = StudentProfile
-        fields = ['address', 'mother_language','learning_language', 'language_level', 'objectives', 'profile_picture']
-class TeacherProfileForm(forms.ModelForm):
+        fields = ['address', 'mother_language', 'learning_language', 'language_level', 'objectives', 'profile_picture']
+
+
+class TeacherProfileForm(BaseProfileForm):
     class Meta:
-        model = TeacherProfile
+        model = Teacherprofile
         fields = ['profile_picture', 'presentation', 'mother_language', 'meeting_type', 'price_per_hour', 'availability']
+
 
 class UploadStudentProfilePhotoForm(forms.ModelForm):
     class Meta:
         model = StudentProfile
         fields = ['profile_picture']
 
+
 class UploadTeacherProfilePhotoForm(forms.ModelForm):
     class Meta:
-        model = TeacherProfile
+        model = Teacherprofile
         fields = ['profile_picture']
