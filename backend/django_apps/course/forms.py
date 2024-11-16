@@ -1,7 +1,7 @@
 
 
 from django import forms
-from .models import Revision
+from backend.django_apps.course.models import Revision
 
 
 

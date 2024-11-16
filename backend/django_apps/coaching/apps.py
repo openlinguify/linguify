@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 class CoachingConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'backend.django_apps.coaching'
+    name = 'django_apps.coaching'

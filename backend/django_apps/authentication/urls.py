@@ -1,13 +1,7 @@
 from django.urls import path
 from . import views
-from authentication.views import UploadProfilePhotoView
+from .views import RegisterView, LoginView, LogoutView, UserView
 
 urlpatterns = [
-    path('choose-user-type/', views.choose_user_type, name='choose_user_type'),
-    path('register-student/', views.signup, name='register_student'),
-    path('register-teacher/', views.register_teacher, name='register_teacher'),
-    path('student-dashboard/', views.student_dashboard, name='student_dashboard'),
-    path('teacher-dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
-    path('delete-account/', views.delete_account, name='delete_account'),
-    path('upload-profile-photo/', UploadProfilePhotoView.as_view(), name='upload_profile_photo'),
+    path('register/', views.RegisterView.as_view(), name='register'),
     ]
