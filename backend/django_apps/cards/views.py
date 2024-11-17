@@ -1,4 +1,4 @@
-# cards/views.py
+# cards/viewsets.py
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
