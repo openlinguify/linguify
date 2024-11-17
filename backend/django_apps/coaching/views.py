@@ -1,4 +1,4 @@
-# teaching/views.py
+# teaching/viewsets.py
 
 def coaching(request):
     pass
