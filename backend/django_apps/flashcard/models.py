@@ -1,7 +1,7 @@
 # backend/django_apps/flashcard/models.py
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django_apps.course.models import Vocabulary  # Import du modèle Vocabulary
 
@@ -9,7 +9,7 @@ from django_apps.course.models import Vocabulary  # Import du modèle Vocabulary
 class Flashcard(models.Model):
     """Modèle représentant une flashcard pour un utilisateur spécifique liée à un vocabulaire."""
     flashcard_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="flashcards")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="flashcards")
     vocabulary = models.ForeignKey(Vocabulary, on_delete=models.CASCADE, related_name="flashcards")
     flashcard_title = models.CharField(max_length=100, blank=False, null=False)
     image_flashcard = models.ImageField(upload_to='flashcard_images/', null=True, blank=True)
@@ -50,7 +50,7 @@ class UserFlashcardProgress(models.Model):
     ]
 
     user_flashcard_progress_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="flashcard_progress")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="flashcard_progress")
     flashcard = models.ForeignKey(Flashcard, on_delete=models.CASCADE, related_name="user_progress")
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='Not started')
     percentage_completion = models.IntegerField(

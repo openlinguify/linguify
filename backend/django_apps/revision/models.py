@@ -1,20 +1,13 @@
 # backend/django_apps/revision/models.py
 
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from django.db.models import signals
 from django.dispatch import receiver
 import random
 
-# Correct import paths for Activity and Vocabulary models
-
-
-# Get the custom User model
-User = get_user_model()
-
-# Custom Manager for Revision to add querying methods
 class RevisionManager(models.Manager):
     """Manager for custom Revision methods."""
 
@@ -61,7 +54,7 @@ class UserRevisionProgress(models.Model):
         ('In progress', 'In progress'),
         ('Completed', 'Completed'),
     ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     revision = models.ForeignKey(Revision, on_delete=models.CASCADE)
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='Not started')
     percentage_completion = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)], default=0)
