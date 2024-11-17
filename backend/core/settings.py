@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 import os
 import environ
+from django.conf.global_settings import AUTH_USER_MODEL
 
 # Base directory for the project
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -73,6 +74,7 @@ INSTALLED_APPS = [
     # Simple JWT Blacklist
     'rest_framework_simplejwt.token_blacklist',
 ]
+AUTH_USER_MODEL = 'authentication.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -101,6 +103,8 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+
 
 
 
