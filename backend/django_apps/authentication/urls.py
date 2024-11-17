@@ -1,3 +1,4 @@
+# backend/django_apps/authentication/urls.py
 from django.urls import path
 from .views import RegisterView, LoginView, UserProfileView, PasswordResetView, LogoutView
 

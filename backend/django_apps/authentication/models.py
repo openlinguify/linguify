@@ -4,6 +4,7 @@ from django.db import models  # Ensure this is imported correctly
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
+from decimal import Decimal
 
 LANGUAGE_CHOICES = [
     ('EN', 'English'),
@@ -231,6 +232,9 @@ class CoachProfile(models.Model):
     price_per_hour = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
     availability = models.TextField(null=True, blank=True)
     description = models.TextField(max_length=1000, null=True, blank=True)
+    bio = models.TextField(max_length=500, null=True, blank=True)
+    commission_rate = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('5.00'), help_text="Commission rate taken by Linguify (in %).")
+    commission_override = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="Override the default commission rate.")
 
     # to update the availability of the coach
     def update_availability(self, new_availability):
@@ -242,6 +246,10 @@ class CoachProfile(models.Model):
         self.price_per_hour = new_price
         self.save()
 
+    def calculate_commission(self):
+        commission_to_use = self.commission_override if self.commission_override is not None else self.commission_rate
+        return (self.price_per_hour * commission_to_use) / Decimal('100.00')
+
     def __str__(self):
         """
         String representation of the CoachProfile model.
@@ -252,23 +260,52 @@ class CoachProfile(models.Model):
         return f"Coach Profile of {self.user.username}"
 
 
-# Review Model
+# Review Model lol
 class Review(models.Model):
+    """
+    Model representing a review.
+
+    Attributes:
+        reviewer (User): Foreign key to the User model, representing the user who wrote the review.
+        rating (Decimal): Rating given by the reviewer, with a maximum of 3 digits and 2 decimal places.
+        comment (str): Optional text content of the review.
+        review_date (datetime): Date and time when the review was created.
+    """
+    coach = models.ForeignKey(CoachProfile, on_delete=models.CASCADE, related_name='reviews')
     reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='given_reviews')
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
     comment = models.TextField(max_length=500, null=True, blank=True)
     review_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        """
+        String representation of the Review model.
+
+        Returns:
+            str: A string representing the reviewer's username.
+        """
         return f"Review by {self.reviewer.username}"
 
-
-# User Feedback Model
 class UserFeedback(models.Model):
+    """
+    Model representing user feedback to get a little bit of feedback don't u think?.
+
+    Attributes:
+        user (User): Foreign key to the User model, representing the user who gave the feedback.
+        feedback_type (str): Type of feedback, either 'like' or 'dislike'.
+        feedback_content (str): Optional text content of the feedback.
+        feedback_date (datetime): Date and time when the feedback was created.
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedbacks')
     feedback_type = models.CharField(max_length=10, choices=[('like', 'Like'), ('dislike', 'Dislike')], default='like')
     feedback_content = models.TextField(null=True, blank=True)
     feedback_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        """
+        String representation of the UserFeedback model.
+
+        Returns:
+            str: A string representing the user's username and the feedback type.
+        """
         return f"{self.user.username} - {self.feedback_type}"
