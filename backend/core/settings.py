@@ -13,7 +13,6 @@ import sys
 from pathlib import Path
 import os
 import environ
-from django.conf.global_settings import AUTH_USER_MODEL
 
 # Base directory for the project
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,21 +20,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Add the project root directory to sys.path for easy imports
 sys.path.append(str(BASE_DIR.parent))
 
-env = environ.Env(
-    DEBUG=(bool, False)
-)
-# reading .env file
-environ.Env.read_env(env_file=str(BASE_DIR.joinpath('.env')))
+# Initialiser environ.Env
+env = environ.Env()
 
+# Lire le fichier .env
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
+# Paramètres Django utilisant les variables d'environnement
 SECRET_KEY = env('SECRET_KEY')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = env.bool('DEBUG', default=False)
 
 # normally Allowed hosts should be set to the domain name of the website
 # but for development purposes we can set it to all
@@ -104,6 +97,11 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
 
 
 
