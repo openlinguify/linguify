@@ -13,13 +13,15 @@ import sys
 from pathlib import Path
 import os
 import environ
+from django.conf.global_settings import MEDIA_URL
 
-# Base directory for the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Add the project root directory to sys.path for easy imports
-sys.path.append(str(BASE_DIR.parent))
-
+# Add the project root directory and 'django_apps' directory to sys.path
+sys.path.append(str(BASE_DIR))
+sys.path.append(str(BASE_DIR / "django_apps"))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(str(BASE_DIR / "backend" / "django_apps"))
 # Initialiser environ.Env
 env = environ.Env()
 
@@ -47,9 +49,12 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     # Project django_apps
+    'django_apps',
     'django_apps.authentication',
     'django_apps.cards',
+    'django_apps.chat',
     'django_apps.coaching',
+    'django_apps.community',
     'django_apps.course',
     'django_apps.data',
     'django_apps.flashcard',
@@ -177,7 +182,8 @@ TIME_ZONE = 'UTC'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 STATICFILES_DIRS = []
 
 # Default primary key field type
