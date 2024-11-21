@@ -91,3 +91,6 @@ class UpdateCommissionOverride(APIView):
 
         except CoachProfile.DoesNotExist:
             return Response({"error": "Coach profile not found."}, status=status.HTTP_404_NOT_FOUND)
+
+def home(response):
+    return render(response, "main/home.html", {})

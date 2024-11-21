@@ -175,8 +175,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     bio = models.TextField(max_length=500, null=True, blank=True)
     native_language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default=LANGUAGE_CHOICES[0][0],
                                        help_text="Your native language")
+    # Fields for language learners
     target_language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default=LANGUAGE_CHOICES[0][0],
-                                       help_text="The language you are learning")
+                                      help_text="The language you want to learn")
     language_level = models.CharField(max_length=2, choices=LEVEL_CHOICES, default=LEVEL_CHOICES[0][0],
                                       help_text="Your language level")
     objectives = models.CharField(max_length=20, choices=OBJECTIVES_CHOICES, default=OBJECTIVES_CHOICES[0][0],

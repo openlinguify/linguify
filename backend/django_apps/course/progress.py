@@ -10,6 +10,18 @@ STATUT_CHOICES = [
     ('Completed', 'Completed'),
 ]
 
+class UserLessonProgress(models.Model):
+    user_lesson_progress_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE)
+    statut = models.CharField(max_length=100, choices=STATUT_CHOICES)
+    percentage_completion = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
+    score_lesson = models.IntegerField(validators=[MinValueValidator(0)])
+    time_study = models.IntegerField(validators=[MinValueValidator(0)])
+
+    def __str__(self):
+        return f"{self.user.username} - {self.lesson.title} - {self.statut} - {self.percentage_completion}% - Time studied: {self.time_study} mins"
+
 class UserUnitProgress(models.Model):
     user_unit_progress_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
