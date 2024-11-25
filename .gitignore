@@ -1,4 +1,42 @@
-__pycache__/
 db.sqlite3
 
-media/
+# Virtual Environment files
+env/
+venv/
+.venv/
+backend/.env
+.notes_commandes
+
+# Fichiers de cache
+*.cache
+.cache/
+__pycache__/
+
+# Fichiers de l'IDE
+.idea/
+.vscode/
+*.iml
+
+# Fichiers de sauvegarde
+*.bak
+*.swp
+*~.nib
+*.pyc
+*.pyo
+*.pyd
+
+# Fichiers de configuration
+*.orig
+*.conf
+*.ini
+*.env
+*.log
+*.sql
+*.sqlite3
+*.db
+*.data
+*.db-shm
+*.db-wal
+*.sql
+*.pyc
+

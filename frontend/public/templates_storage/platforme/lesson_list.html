@@ -1,0 +1,80 @@
+{% extends '../../base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-12 text-center">
+            <div>
+                {% for i in categories %}
+                    {% if i.id == sous_categorie.categorie_id %}
+                        <h1 class="display-4">{{ i.name_categorie }}</h1>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <h2 class="text-muted">{{ sous_categorie.name_sous_categorie }}</h2>
+        </div>
+    </div>
+    <div class="d-flex flex-wrap justify-content-center fade-in">
+        {% for lesson in lessons %}
+        <div class="card shadow-sm m-2 lesson-card">
+            <a href="{% url 'activity_list' lesson.id %}" class="text-decoration-none" aria-label="Lesson {{ lesson.name }}">
+                <img src="{{ lesson.image_lesson.url }}" class="card-img-top lesson-image" alt="{{ lesson.name }}">
+                <div class="card-body">
+                    <h5 class="card-title text-center">{{ lesson.name }}</h5>
+                    <p class="card-text text-center">Level: {{ lesson.level_language }}</p>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+  body {
+    background: linear-gradient(to right, #ece9e6, #ffffff);
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .lesson-card {
+    width: 200px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  }
+
+  .lesson-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    background-color: #f8f9fa;
+  }
+
+  .lesson-image {
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+  }
+
+  .lesson-image:hover {
+    transform: scale(1.1);
+  }
+
+  .fade-in {
+    animation: fadeIn 2s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @media (max-width: 576px) {
+    .lesson-card {
+      width: 100%;
+    }
+
+    .lesson-image {
+      height: auto;
+    }
+  }
+</style>
+{% endblock %}
