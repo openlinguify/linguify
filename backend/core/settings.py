@@ -13,15 +13,9 @@ import sys
 from pathlib import Path
 import os
 import environ
-from django.conf.global_settings import MEDIA_URL
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Add the project root directory and 'django_apps' directory to sys.path
-sys.path.append(str(BASE_DIR))
-sys.path.append(str(BASE_DIR / "django_apps"))
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(str(BASE_DIR / "backend" / "django_apps"))
 # Initialiser environ.Env
 env = environ.Env()
 
@@ -49,29 +43,26 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     # Project django_apps
-    'django_apps',
-    'django_apps.authentication',
-    'django_apps.cards',
-    'django_apps.chat',
-    'django_apps.coaching',
-    'django_apps.community',
-    'django_apps.course',
-    'django_apps.data',
-    'django_apps.flashcard',
-    'django_apps.payments',
-    'django_apps.quiz',
-    'django_apps.revision',
-    # Django REST framework module for building Web APIs
+    'authentication',
+    'cards',
+    'chat',
+    'coaching',
+    'community',
+    'course',
+    'data',
+    'flashcard',
+    'payments',
+    'quiz',
+    'revision',
+
+    # Django REST framework modules
     'rest_framework',
-    # Django REST framework module for token-based authentication
     'rest_framework.authtoken',
-    # Django REST framework module for token-based authentication
     'rest_framework_simplejwt',
-    # Django CORS headers module for handling Cross-Origin Resource Sharing (CORS)
     'corsheaders',
-    # Simple JWT Blacklist
     'rest_framework_simplejwt.token_blacklist',
 ]
+
 AUTH_USER_MODEL = 'authentication.User'
 
 MIDDLEWARE = [
