@@ -3,6 +3,11 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal, Button, Pagination } from "react-bootstrap";
 import CourseCard from "./components/CourseCard";
+import HeaderProfile from "./components/Profile/Header/HeaderProfile"; // Import HeaderProfile
+import Profile from "./components/Profile/Profile";
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom"; // Import Profile
+
+
 
 class App extends Component {
   constructor(props) {
@@ -137,97 +142,116 @@ class App extends Component {
 
   render() {
     const { showModal, selectedCourse } = this.state;
+    const username = "Louis-Philippe";
+    const profilePicture = "http://localhost:8000/path/to/profile-picture.jpg";
 
     return (
-      <div className="d-flex">
-        <div className="bg-light p-4" style={{ width: "250px" }}>
-          <h4>Menu</h4>
-          <ul className="list-unstyled">
-            <li>
-              <input
-                type="text"
-                className="form-control mb-3"
-                placeholder="Rechercher un cours..."
-                value={this.state.searchTerm}
-                onChange={this.handleSearchChange}
-              />
-            </li>
-            <li>
-              <select
-                className="form-control mb-3"
-                value={this.state.filterCategory}
-                onChange={this.handleCategoryChange}
-              >
-                <option value="all">Toutes les catégories</option>
-                {Array.from(
-                  new Set(
-                    this.state.courses.map(
-                      (course) =>
-                        course.category && course.category.category_name
+      <Router>
+        <HeaderProfile username={username} profilePicture={profilePicture} />
+        <div className="d-flex">
+          <div className="bg-light p-4" style={{ width: "250px" }}>
+            <h4>Menu</h4>
+            <ul className="list-unstyled">
+              {/* Ajoutez un lien pour accéder au profil */}
+              <li>
+                <a href="/profile" className="text-decoration-none">Mon Profil</a>
+              </li>
+              <li>
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Rechercher un cours..."
+                  value={this.state.searchTerm}
+                  onChange={this.handleSearchChange}
+                />
+              </li>
+              <li>
+                <select
+                  className="form-control mb-3"
+                  value={this.state.filterCategory}
+                  onChange={this.handleCategoryChange}
+                >
+                  <option value="all">Toutes les catégories</option>
+                  {Array.from(
+                    new Set(
+                      this.state.courses.map(
+                        (course) =>
+                          course.category && course.category.category_name
+                      )
                     )
                   )
-                )
-                  .filter((category) => category)
-                  .map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-              </select>
-            </li>
-            <li>
-              <select
-                className="form-control"
-                value={this.state.sortOption}
-                onChange={this.handleSortChange}
-              >
-                <option value="none">Trier par</option>
-                <option value="title">Titre</option>
-                <option value="category">Catégorie</option>
-              </select>
-            </li>
-          </ul>
-        </div>
-        <main className="container-fluid">
-          <h1 className="text-center my-4">Cours de Langues</h1>
-          <div className="row">{this.renderCourses()}</div>
-          {this.renderPagination()}
-        </main>
+                    .filter((category) => category)
+                    .map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                </select>
+              </li>
+              <li>
+                <select
+                  className="form-control"
+                  value={this.state.sortOption}
+                  onChange={this.handleSortChange}
+                >
+                  <option value="none">Trier par</option>
+                  <option value="title">Titre</option>
+                  <option value="category">Catégorie</option>
+                </select>
+              </li>
+            </ul>
+          </div>
 
-        {/* Modale pour les détails du cours */}
-        <Modal show={showModal} onHide={this.handleCloseModal}>
-          {selectedCourse && (
-            <>
-              <Modal.Header closeButton>
-                <Modal.Title>{selectedCourse.course_languages_title}</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                {selectedCourse.course_image && (
-                  <img
-                    src={`http://localhost:8000${selectedCourse.course_image}`}
-                    alt={selectedCourse.course_languages_title}
-                    className="img-fluid mb-3"
-                  />
-                )}
-                <p>{selectedCourse.course_description}</p>
-                <p>
-                  <strong>Catégorie :</strong>{" "}
-                  {selectedCourse.category
-                    ? selectedCourse.category.category_name
-                    : "Non définie"}
-                </p>
-                {/* Vous pouvez ajouter plus de détails ici */}
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={this.handleCloseModal}>
-                  Fermer
-                </Button>
-                <Button variant="primary">S'inscrire</Button>
-              </Modal.Footer>
-            </>
-          )}
-        </Modal>
-      </div>
+          <main className="container-fluid">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <>
+                    <h1 className="text-center my-4">Cours de Langues</h1>
+                    <div className="row">{this.renderCourses()}</div>
+                    {this.renderPagination()}
+                  </>
+                }
+              />
+              <Route path="/profile" element={<Profile />} /> {/* Route pour le profil */}
+            </Routes>
+
+            {/* Modale pour les détails du cours */}
+            <Modal show={showModal} onHide={this.handleCloseModal}>
+              {selectedCourse && (
+                <>
+                  <Modal.Header closeButton>
+                    <Modal.Title>{selectedCourse.course_languages_title}</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    {selectedCourse.course_image && (
+                      <img
+                        src={`http://localhost:8000${selectedCourse.course_image}`}
+                        alt={selectedCourse.course_languages_title}
+                        className="img-fluid mb-3"
+                      />
+                    )}
+                    <p>{selectedCourse.course_description}</p>
+                    <p>
+                      <strong>Catégorie :</strong>{" "}
+                      {selectedCourse.category
+                        ? selectedCourse.category.category_name
+                        : "Non définie"}
+                    </p>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={this.handleCloseModal}>
+                      Fermer
+                    </Button>
+                    <Button variant="primary">S'inscrire</Button>
+                  </Modal.Footer>
+                </>
+              )}
+            </Modal>
+          </main>
+        </div>
+      </Router>
     );
   }
 }
