@@ -1,0 +1,85 @@
+{% extends '../../base.html' %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <h1 class="text-center mb-4">Activités</h1>
+
+    <div class="d-flex flex-wrap justify-content-center">
+        {% for activity in activities %}
+        <div class="card shadow-sm m-2 activity-card">
+            <div class="card-header">
+                <div class="icon-container">
+                    <img src="{{ activity.icon_activity.url }}" class="card-icon" alt="{{ activity.type_activity }}">
+                </div>
+            </div>
+            <div class="card-body text-center">
+                <h5 class="card-title">{{ activity.type_activity }}</h5>
+                <p class="card-text">Leçon: {{ activity.lesson.name }}</p>
+                {% if activity.type_activity == 'Vocabulaire' %}
+                    <a href="{% url 'vocabulaire_list' activity.id %}" class="btn btn-primary">Voir l'activité</a>
+                {% elif activity.type_activity == 'Video' %}
+                    <a href="{% url 'video_list' activity.id %}" class="btn btn-primary">Voir l'activité</a>
+                {% elif activity.type_activity == 'Exercice' %}
+                    <a href="{% url 'exercice_list' activity.id %}" class="btn btn-primary">Voir l'activité</a>
+                {% elif activity.type_activity == 'Test' %}
+                    <a href="{% url 'test_list' activity.id %}" class="btn btn-primary">Voir l'activité</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .activity-card {
+        width: 250px; /* Largeur fixe pour chaque carte */
+        height: 100%; /* Hauteur automatique pour ajuster le contenu */
+        border: none;
+        transition: transform 0.2s;
+    }
+
+    .activity-card:hover {
+        transform: scale(1.03);
+    }
+
+    .icon-container {
+        height: 200px; /* Hauteur fixe pour le conteneur de l'icône */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .card-icon {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain; /* Ajuster l'icône sans déformation */
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-text {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 1rem;
+    }
+
+    .btn-primary {
+        background-color: #e50914;
+        border-color: #e50914;
+    }
+
+    .btn-primary:hover {
+        background-color: #f40612;
+        border-color: #f40612;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends '../../base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <a href="{% url 'revision' %}" class="btn btn-outline-primary mb-4">Retour à la Page Principale</a>
+    <h2 class="text-primary text-center mb-4">Cartes de Révision</h2>
+
+    <!-- Liste des mots à étudier encore -->
+    <h3 class="text-danger mb-3">Mots à Étudier Encore</h3>
+    <div id="mots-a-etudier" class="card-container mb-5">
+        {% for revision in revisions %}
+        <div class="card mb-4" data-id="{{ revision.id }}">
+            <h3>{{ revision.vocabulaire.word }}</h3>
+            <p><strong>Traduction :</strong> {{ revision.vocabulaire.translation }}</p>
+            <p><strong>Définition :</strong> {{ revision.vocabulaire.definition }}</p>
+            <p><strong>Exemple :</strong> {{ revision.vocabulaire.example }}</p>
+            <p><strong>Traduction de l'exemple :</strong> {{ revision.vocabulaire.example_translation }}</p>
+            <div class="card-actions mt-3 text-center">
+                <button class="btn btn-success btn-connais mr-2">Connais</button>
+                <button class="btn btn-warning btn-ne-connais-pas">Ne Connais Pas</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Liste des mots révisés -->
+    <h3 class="text-success mb-3">Mots Révisés</h3>
+    <div id="mots-revises" class="card-container mb-5">
+        <!-- Les cartes des mots révisés seront déplacées ici -->
+    </div>
+</div>
+
+<style>
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .card {
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 20px;
+        width: 280px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+    .card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        transform: scale(1.02);
+    }
+
+    .card h3 {
+        margin-top: 0;
+        font-size: 1.5rem;
+        color: #333;
+    }
+
+    .card p {
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .card-actions button {
+        min-width: 120px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('.card');
+        const motsAEtudierContainer = document.getElementById('mots-a-etudier');
+        const motsRevisesContainer = document.getElementById('mots-revises');
+
+        // Ajout des événements pour chaque carte
+        cards.forEach((card) => {
+            const connaisButton = card.querySelector('.btn-connais');
+            const neConnaisPasButton = card.querySelector('.btn-ne-connais-pas');
+
+            // Gérer le clic sur le bouton "Connais"
+            connaisButton.addEventListener('click', () => {
+                // Déplacer la carte vers la liste des mots révisés
+                motsRevisesContainer.appendChild(card);
+                card.classList.remove('swipe-left');
+                card.classList.add('swipe-right');
+                // Optionnel : Vous pouvez désactiver les boutons après la révision
+                disableButtons(card);
+            });
+
+            // Gérer le clic sur le bouton "Ne Connais Pas"
+            neConnaisPasButton.addEventListener('click', () => {
+                // Déplacer la carte vers la liste des mots à étudier encore
+                motsAEtudierContainer.appendChild(card);
+                card.classList.remove('swipe-right');
+                card.classList.add('swipe-left');
+            });
+        });
+
+        // Fonction pour désactiver les boutons après une action
+        function disableButtons(card) {
+            const buttons = card.querySelectorAll('button');
+            buttons.forEach(button => button.disabled = true);
+        }
+    });
+</script>
+{% endblock %}
