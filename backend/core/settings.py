@@ -29,7 +29,7 @@ DEBUG = env.bool('DEBUG', default=False)
 # normally Allowed hosts should be set to the domain name of the website
 # but for development purposes we can set it to all
 # normally, ALLOWED_HOSTS = ['yourdomain.com'] or empty in development mode
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default="*").split(",")
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'yourdomain.com']
 
 # Application definition
 
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django_extensions',
 
     # Project django_apps
     'authentication',
@@ -61,6 +62,10 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
+
+
+    # test
+    'pytest_django',
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -133,7 +138,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': env('DB_NAME'),
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASSWORD'),

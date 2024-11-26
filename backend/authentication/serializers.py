@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from decimal import Decimal
 
 class UserSerializer(serializers.ModelSerializer):
-    id = serializers.UUIDField(source='public_id', read_only=True, format='hex')
+    public_id = serializers.UUIDField(source='public_id', read_only=True, format='hex')
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
     email = serializers.EmailField(read_only=True)
@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         # Expose only necessary fields for viewing
         fields = [
-            'id', 'username', 'first_name', 'last_name', 'email', 'age', 'gender',
+            'public_id', 'username', 'first_name', 'last_name', 'email', 'age', 'gender',
             'profile_picture', 'bio', 'native_language', 'target_language',
             'language_level', 'objectives', 'is_active', 'is_coach',
             'is_superuser', 'is_staff', 'created_at', 'updated_at'
