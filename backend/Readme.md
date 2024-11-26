@@ -1,11 +1,14 @@
-# To do: 
+# To-Do List
 
-Most of the tasks are also in Odoo.
+Most of the tasks are also tracked in Odoo.
 
 ## Authentication App
-- need to clarify the authentication app
-- Delete the Tokenauth and leave the standard password model
+- Clarify the functionality and purpose of the authentication app.
+- Remove the **Tokenauth** feature and retain the standard password-based model.
+- If feasible, group related apps into a single package to streamline the project structure and ensure logical organization.
 
 ## Course App
-- need to develop the course app (Learning_paht>Unit>Lesson>Exercice>exercise_type)
-- The Learning_Path takes into account the different language of the SaaS Platform. The field is related to target_language field (English, French, Dutch, Spanish) defined into the authentication app under the Class User.
+- Develop the Course app with the following structure:
+  - **Learning Path** > **Unit** > **Lesson** > **Exercise** > **Exercise Type**
+- Ensure the **Learning Path** accommodates multiple languages supported by the SaaS platform.  
+  - This field should reference the `target_language` field (English, French, Dutch, Spanish) defined in the **Authentication App** under the `User` class.
