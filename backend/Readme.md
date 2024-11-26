@@ -5,7 +5,6 @@ Most of the tasks are also in Odoo.
 ## Authentication App
 - need to clarify the authentication app
 - Delete the Tokenauth and leave the standard password model
--
 
 ## Course App
 - need to develop the course app (Learning_paht>Unit>Lesson>Exercice>exercise_type)
