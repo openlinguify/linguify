@@ -101,7 +101,7 @@ class LessonType(models.Model):
 
 class Lesson(models.Model):
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
-    lesson_type = models.ForeignKey(LessonType, on_delete=models.CASCADE, default='Theory')
+    lesson_type = models.ForeignKey(LessonType, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=200, blank=False, null=False)
     difficulty = models.CharField(max_length=10, choices=[('Easy', 'Easy'), ('Medium', 'Medium'), ('Hard', 'Hard')], default='Easy', blank=False, null=False)
     estimated_duration = models.IntegerField(help_text="In minutes", blank=False, null=False)

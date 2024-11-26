@@ -25,7 +25,7 @@ class QuizQuestion(models.Model):
     lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, related_name='quiz')  # Lien avec une leçon
     exercise_type = models.CharField(max_length=100)
     question = models.CharField(max_length=100)
-    options = models.charField(max_length=100)
+    options = models.CharField(max_length=100)
     correct_answer = models.CharField(max_length=100)
     hint = models.CharField(max_length=100, blank=True, null=True)
 
