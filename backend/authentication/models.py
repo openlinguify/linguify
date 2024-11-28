@@ -163,7 +163,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(db_index=True, unique=True)
-    age = models.PositiveIntegerField(null=False)
+    birthday = models.DateField(null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
     # in order to know if the user is active or not; if the user is not active, he/she can't login to the platform
     # the user can be deactivated by the admin or by the user himself
@@ -214,6 +214,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def name(self):
         return f"{self.first_name} {self.last_name}"
+
+    @property
+    def age(self):
+        import datetime
+        return int((datetime.date.today() - self.birthday).days / 365.25  )
 
 
 # Extended Coach Profile Model: the additional fields for a coach profile are added here as a separate model.
