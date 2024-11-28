@@ -5,8 +5,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from decimal import Decimal
-from django.utils import timezone
-from django.db.models import Q, Avg
 
 LANGUAGE_CHOICES = [
     ('EN', 'English'),
@@ -157,32 +155,6 @@ class UserManager(BaseUserManager):
         """
         return self.filter(language_level=level)
 
-    def get_available_coaches(self, **filters):
-        """
-        Get all available coaches based on various filters.
-
-        Filters can include:
-        - language
-        - price_range
-        - rating
-        - availability
-        - experience_level
-        """
-        coaches = self.filter(is_coach=True, is_active=True)
-
-        if 'language' in filters:
-            coaches = coaches.filter(coach_profile__coaching_languages__contains=[filters['language']])
-
-        if 'max_price' in filters:
-            coaches = coaches.filter(coach_profile__price_per_hour__lte=filters['max_price'])
-
-        if 'min_rating' in filters:
-            coaches = coaches.filter(coach_profile__reviews__rating__gte=filters['min_rating'])
-
-        if 'availability' in filters:
-            coaches = coaches.filter(coach_profile__availability__contains=filters['availability'])
-
-        return coaches.select_related('coach_profile')
 
 # Base User Model
 class User(AbstractBaseUser, PermissionsMixin):
@@ -191,7 +163,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(db_index=True, unique=True)
-    age = models.PositiveIntegerField(null=False)
+    birthday = models.DateField(null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
     # in order to know if the user is active or not; if the user is not active, he/she can't login to the platform
     # the user can be deactivated by the admin or by the user himself
@@ -237,26 +209,16 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.save()
 
     def __str__(self):
-        return f"{self.username} - {self.email} - {self.first_name} {self.last_name} - {self.age}"
+        return f"{self.email}"
 
     @property
     def name(self):
         return f"{self.first_name} {self.last_name}"
 
-    def book_session_coach(self, coach):
-        pass
-
-    def cancel_session_coach(self, coach):
-        pass
-
-    def get_favorite_coaches(self):
-        return self.favorite_coaches.all()
-
-    def add_favorite_coach(self, coach):
-        self.favorite_coaches.add(coach)
-
-    def remove_favorite_coach(self, coach):
-        self.favorite_coaches.remove(coach)
+    @property
+    def age(self):
+        import datetime
+        return int((datetime.date.today() - self.birthday).days / 365.25  )
 
 
 # Extended Coach Profile Model: the additional fields for a coach profile are added here as a separate model.
@@ -284,9 +246,6 @@ class CoachProfile(models.Model):
     bio = models.TextField(max_length=500, null=True, blank=True)
     commission_rate = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('5.00'), help_text="Commission rate taken by Linguify (in %).")
     commission_override = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="Override the default commission rate.")
-    max_students = models.PositiveIntegerField(default=20, help_text="Maximum number of students per session.")
-    current_students = models.PositiveIntegerField(default=0)
-
 
     # to update the availability of the coach
     def update_availability(self, new_availability):
@@ -361,17 +320,3 @@ class UserFeedback(models.Model):
             str: A string representing the user's username and the feedback type.
         """
         return f"{self.user.username} - {self.feedback_type}"
-
-
-class FavoriteCoach(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite_coaches')
-    coach = models.ForeignKey(CoachProfile, on_delete=models.CASCADE, related_name='favorited_by')
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'coach'],
-                name='unique_favorite_coach'
-            )
-        ]
