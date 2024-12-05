@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000'; // Assurez-vous que l'URL pointe vers votre backend
+const API_URL = 'http://localhost:8000';
 
 export const updateWordStatus = (word, status) => {
     return axios.post(`${API_URL}/update_word_status/`, {
