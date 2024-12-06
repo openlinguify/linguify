@@ -35,6 +35,10 @@ class UnitAPIView(APIView):
         word = word_pair.word
         correct_translation = word_pair.translation
 
+
+
+
+
 class ExerciceVocabularyAPIView(APIView):
     def get(self, request):
         random_word = random.choice(Vocabulary.objects.all())

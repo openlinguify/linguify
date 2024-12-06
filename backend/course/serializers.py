@@ -37,6 +37,8 @@ class LessonSerializer(serializers.ModelSerializer):
         # Return a list of activity titles for the lesson
         return [activity.title for activity in obj.activity_set.all()]
 
+
+
 class ActivitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
