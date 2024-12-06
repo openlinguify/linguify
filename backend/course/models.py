@@ -30,6 +30,8 @@ class Objective(models.Model):
     def __str__(self):
         return f"Objective for {self.user.username} - {self.lesson.title}"
 
+
+
 class Language(models.Model):
     name = models.CharField(max_length=100, unique=True, blank=False, null=False)
     code = models.CharField(max_length=2, unique=True, blank=False, null=False)
@@ -54,9 +56,15 @@ class LearningPath(models.Model):
     def __str__(self):
         return f"{self.learning_path} - {self.description}"
 
+class Language(models.Model):
+    combination
+
 class Unit(models.Model):
     learning_path = models.ForeignKey(LearningPath, on_delete=models.CASCADE)
-    title = models.CharField(max_length=100, blank=False, null=False)
+    title_en = models.CharField(max_length=100, blank=False, null=False)
+    title_fr = models.CharField(max_length=100, blank=False, null=False)
+    title_es = models.CharField(max_length=100, blank=False, null=False)
+    title_nl = models.CharField(max_length=100, blank=False, null=False)
     level = models.ForeignKey(Level, on_delete=models.CASCADE)
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
     is_unlocked = models.BooleanField(default=False, blank=False, null=False)
@@ -64,6 +72,16 @@ class Unit(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.level.name}"
+
+    def get_unit_title(self, target_language='en'):
+        if target_language == 'fr':
+            return self.title_fr
+        elif target_language == 'es':
+            return self.title_es
+        elif target_language == 'nl':
+            return self.title_nl
+        else:
+            return self.title_en
 
 class LessonType(models.Model):
     class LessonTypeChoices:
@@ -102,8 +120,14 @@ class LessonType(models.Model):
 class Lesson(models.Model):
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
     lesson_type = models.ForeignKey(LessonType, on_delete=models.CASCADE, null=True, blank=True)
-    title = models.CharField(max_length=200, blank=False, null=False)
-    difficulty = models.CharField(max_length=10, choices=[('Easy', 'Easy'), ('Medium', 'Medium'), ('Hard', 'Hard')], default='Easy', blank=False, null=False)
+    title_en = models.CharField(max_length=255, blank=False, null=False)
+    title_fr = models.CharField(max_length=255, blank=False, null=False)
+    title_es = models.CharField(max_length=255, blank=False, null=False)
+    title_nl = models.CharField(max_length=255, blank=False, null=False)
+    description_en = models.TextField(blank=False, null=False)
+    description_fr = models.TextField(blank=False, null=False)
+    description_es = models.TextField(blank=False, null=False)
+    description_nl = models.TextField(blank=False, null=False)
     estimated_duration = models.IntegerField(help_text="In minutes", blank=False, null=False)
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
     is_complete = models.BooleanField(default=False, blank=False, null=False)
@@ -111,15 +135,25 @@ class Lesson(models.Model):
     def __str__(self):
         return f"{self.unit.title} - {self.lesson_type.name} - {self.title}"
 
-class VocabularyList(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    title = models.CharField(max_length=100, blank=False, null=False)
+    def get_title(self, target_language='en'):
+        if target_language == 'fr':
+            return self.title_fr
+        elif target_language == 'es':
+            return self.title_es
+        elif target_language == 'nl':
+            return self.title_nl
+        else:
+            return self.title_en
 
-    def __str__(self):
-        return self.title
+    def get_description(self, target_language):
+        switch = {
+            'fr': self.description_fr,
+            'es': self.description_es,
+            'nl': self.description_nl,
+        }
+        return switch.get(target_language, self.description_en)
 
 class Vocabulary(models.Model):
-    vocabulary_list = models.ForeignKey(VocabularyList, on_delete=models.CASCADE, default=1)
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, default=1)
     word = models.CharField(max_length=100, blank=False, null=False)
     translation = models.CharField(max_length=100, blank=False, null=False)
@@ -130,16 +164,55 @@ class Vocabulary(models.Model):
         return self.word
 
 
-EXERCISE_TYPE = [
-    ('Multiple choice', 'Multiple choice'),
-    ('Reordering', 'Reordering'),
-    ('Matching', 'Matching'),
-    ('Question and answer', 'Question and answer'),
-    ('Fill in the blank', 'Fill in the blank'),
-    ('True or False', 'True or False'),
-]
+class Vocabulary_List(models.Model):
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    word_en = models.CharField(max_length=100, blank=False, null=False)
+    word_fr = models.CharField(max_length=100, blank=False, null=False)
+    word_es = models.CharField(max_length=100, blank=False, null=False)
+    word_de = models.CharField(max_length=100, blank=False, null=False)
+    word_it = models.CharField(max_length=100, blank=False, null=False)
+
+class example(models.Model):
+    example_sentence = models.TextField(blank=True, null=True)
+    example_sentence_fr = models.TextField(blank=True, null=True)
+    example_sentence_es = models.TextField(blank=True, null=True)
+    example_sentence_de = models.TextField(blank=True, null=True)
+    example_sentence_it = models.TextField(blank=True, null=True)
+
+    word_translated = models.CharField(max_length=100, blank=False, null=False)
+    word_translated_fr = models.CharField(max_length=100, blank=False, null=False)
+    word_translated_es = models.CharField(max_length=100, blank=False, null=False)
+    word_translated_de = models.CharField(max_length=100, blank=False, null=False)
+    word_translated_it = models.CharField(max_length=100, blank=False, null=False)
+
+    example_translation = models.TextField(blank=True, null=True)
+    example_translation_fr = models.TextField(blank=True, null=True)
+    example_translation_es = models.TextField(blank=True, null=True)
+    example_translation_de = models.TextField(blank=True, null=True)
+    example_translation_it = models.TextField(blank=True, null=True)
+    word_type = models.CharField(max_length=100, blank=False, null=False)
+    word_type_fr = models.CharField(max_length=100, blank=False, null=False)
+    word_type_es = models.CharField(max_length=100, blank=False, null=False)
+    word_type_de = models.CharField(max_length=100, blank=False, null=False)
+    word_type_it = models.CharField(max_length=100, blank=False, null=False)
+
+# views.py
+class VocabularyListView(generics.ListAPIView):
+    serializer_class = VocabularyListSerializer
+    queryset = VocabularyList.objects.all()
+
+    def get_queryset(self):
+
 
 class Exercise(models.Model):
+    EXERCISE_TYPE = [
+        ('Multiple choice', 'Multiple choice'),
+        ('Reordering', 'Reordering'),
+        ('Matching', 'Matching'),
+        ('Question and answer', 'Question and answer'),
+        ('fill_blank', 'Fill in the blanks'),
+        ('True or False', 'True or False'),
+    ]
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     exercise_type = models.CharField(max_length=100, choices=EXERCISE_TYPE, blank=False, null=False)
     instruction = models.TextField(blank=False, null=False, default='Text of the instruction')
@@ -203,3 +276,61 @@ class TestRecapAttempt(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.test_recap.title} - {self.score} - {self.attempt_date} - {self.test_recap_passed}"
+
+
+class GrammarModule(models.Model):
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100, blank=False, null=False)
+    is_locked = models.BooleanField(default=True, blank=False, null=False)
+    )
+
+    @property
+    def unlock_module(self):
+        for module in GrammarModule.objects.all():
+            if module.is_locked:
+                module.is_locked = False
+                module.save()
+                return module
+            else:
+                return None
+
+    def __str__(self):
+        return self.title
+
+    def get_list_grammar_modules(self):
+        pass
+
+
+class GrammarRule(models.Model):
+    grammar_module = models.ForeignKey(GrammarModule, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100, blank=False, null=False)
+
+
+class GrammarRuleContent(models.Model):
+    theory = models.TextField(blank=False, null=False)
+    example = models.TextField(blank=False, null=False)
+    example_fr = models.TextField(blank=False, null=False)
+    example_es = models.TextField(blank=False, null=False)
+    example_de = models.TextField(blank=False, null=False)
+    example_it = models.TextField(blank=False, null=False)
+    example_translation = models.TextField(blank=False, null=False)
+    example_translation_fr = models.TextField(blank=False, null=False)
+    example_translation_es = models.TextField(blank=False, null=False)
+    example_translation_de = models.TextField(blank=False, null=False)
+    example_translation_it = models.TextField(blank=False, null=False)
+    grammar_rule = models.ForeignKey(GrammarRule, on_delete=models.CASCADE)
+
+
+class GrammarRuleExercise(models.Model):
+    grammar_rule = models.ForeignKey(GrammarRule, on_delete=models.CASCADE)
+    question = models.TextField(blank=False, null=False)
+    correct_answer = models.CharField(max_length=100, blank=False, null=False)
+    incorrect_answers = models.TextField(blank=False, null=False, help_text="Separate the answers with a comma.")
+    passing_score = models.FloatField(default=0.8, blank=False, null=False)
+
+    def __str__(self):
+        return self.question
+
+    def get_grammar_rule_exercise(self):
+        pass
+
