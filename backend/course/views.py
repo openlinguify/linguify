@@ -1,48 +1,163 @@
-# backend/django_apps/course/viewsets.py
+# course/views.py
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
+from rest_framework import status, filters, generics
+from rest_framework.pagination import PageNumberPagination
 
-from .models import Vocabulary, Grammar, Quiz
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 
+from authentication.models import User
+from .models import LearningPath, Unit, Lesson, VocabularyList, Grammar
+from .serializers import LearningPathSerializer, UnitSerializer, LessonSerializer, VocabularyListSerializer, GrammarSerializer
+from .filters import LessonFilter, VocabularyListFilter
 
 import random
 
-class HomeAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
-    def get(self, request):
-        content = {'message': 'Welcome to the home page!'}
-        return Response(content), status.HTTP_200_OK, status.HTTP_400_BAD_REQUEST, status.HTTP_401_UNAUTHORIZED
+    def get_paginated_response(self, data):
+        return Response({
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
+
+# class BaseTargetLanguageMixin:
+#     """
+#     Mixin pour récupérer automatiquement la langue cible depuis les paramètres
+#     de requête ou le profil utilisateur et l'injecter dans le contexte du sérialiseur.
+#     """
+#     def get_serializer_context(self):
+#         context = super().get_serializer_context()
+#         request = self.request
+#         user = request.user
+#         target_language = request.query_params.get('target_language', getattr(user, 'target_language', 'en'))
+#         context['target_language'] = target_language
+#         return context
+class LearningPathAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = LearningPathSerializer
+
+    def get(self, request, pk):
+        user = request.user
+        target_language = request.query_params.get('target_language', user.target_language)
+
+        learning_path = LearningPath.objects.get(pk=pk, user=user)
+        serializer = LearningPathSerializer(learning_path, context={'target_language': target_language})
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class UnitAPIView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = UnitSerializer
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        if not hasattr(user, 'target_language') or user.target_language is None:
+            return Unit.objects.none()
+        return Unit.objects.filter(learning_path__language=user.target_language)
+
+    def list(self, request, *args, **kwargs):
+        user = request.user
+        if not getattr(user, 'target_language', None):
+            return Response({"error": "Please specify the target language in your profile."}, status=status.HTTP_400_BAD_REQUEST)
+        return super().list(request, *args, **kwargs)
+
+class LessonAPIView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Lesson.objects.all()
+    serializer_class = LessonSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = LessonFilter
+    search_fields = ['title_en', 'title_fr', 'title_es', 'title_nl']
+    ordering_fields = ['order', 'estimated_duration']
+    pagination_class = CustomPagination
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        requests = self.request
+        user = requests.user
+        target_language = requests.query_params.get('target_language', user.target_language)
+        context['target_language'] = target_language
+        return context
+
+class VocabularyListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = VocabularyListSerializer
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_class = VocabularyListFilter
+    search_fields = ['word_en', 'word_fr', 'word_es', 'word_nl']
+    ordering_fields = ['word_en', 'word_fr', 'word_es', 'word_nl']
 
     def get(self, request):
-        user = request.user
-        learning_language = user.learning_language
-        level = user.level_target_language
+        # Retrieve all vocabulary lists
+        vocabulary_lists = VocabularyList.objects.all()
 
-        if not learning_language or not level:
-            return Response({"error": "Please specify the learning language and level in your profile."}, status=status.HTTP_400_BAD_REQUEST)
+        # Apply filtering dynamically using DjangoFilterBackend
+        filterset = self.filterset_class(request.GET, queryset=vocabulary_lists)
+        if not filterset.is_valid():
+            return Response(filterset.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        vocabulary_words = Vocabulary.objects.filter(language_id=learning_language, level_target_language=level)
-        if not vocabulary_words.exists():
-            return Response({"error": "No words found for the specified learning language and level."}, status=status.HTTP_404_NOT_FOUND)
+        filtered_queryset = filterset.qs
 
-        word_pair = random.choice(vocabulary_words)
-        word = word_pair.word
-        correct_translation = word_pair.translation
+        # Apply search and ordering
+        search_query = request.query_params.get('search')
+        if search_query:
+            filtered_queryset = filtered_queryset.filter(
+                word_en__icontains=search_query
+            ) | filtered_queryset.filter(
+                word_fr__icontains=search_query
+            ) | filtered_queryset.filter(
+                word_es__icontains=search_query
+            ) | filtered_queryset.filter(
+                word_nl__icontains=search_query
+            )
 
+        ordering = request.query_params.get('ordering')
+        if ordering:
+            filtered_queryset = filtered_queryset.order_by(ordering)
 
+        # Apply pagination
+        paginator = self.pagination_class()
+        paginated_vocabulary_lists = paginator.paginate_queryset(filtered_queryset, request)
 
+        # Serialize the paginated queryset
+        serializer = self.serializer_class(
+            paginated_vocabulary_lists, many=True, context={'request': request}
+        )
 
+        # Return the paginated response
+        return paginator.get_paginated_response(serializer.data)
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        user = self.request.user
+        target_language = self.request.query_params.get('target_language', getattr(user, 'target_language', 'en'))
+        context['target_language'] = target_language
+        return context
 
 class ExerciceVocabularyAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        random_word = random.choice(Vocabulary.objects.all())
-        other_words = Vocabulary.objects.exclude(pk=random_word.pk).order_by('?')[:3]
+        vocab_count = VocabularyList.objects.count()
+        if vocab_count == 0:
+            return Response({"error": "No vocabulary available."}, status=status.HTTP_404_NOT_FOUND)
+
+        random_word = VocabularyList.objects.order_by('?').first()
+        # Récupère 3 autres mots différents
+        other_words = VocabularyList.objects.exclude(pk=random_word.pk).order_by('?')[:3]
         words = list(other_words) + [random_word]
         random.shuffle(words)
         data = {
@@ -51,50 +166,41 @@ class ExerciceVocabularyAPIView(APIView):
         }
         return Response(data, status=status.HTTP_200_OK)
 
-class GrammaireAPIView(APIView):
-    def get(self, request):
-        vocabulaires = Vocabulary.objects.all()
-        grammaires = Grammar.objects.all()
-        data = {
-            'vocabulaires': [{'id': v.id, 'word': v.word} for v in vocabulaires],
-            'grammaires': [{'id': g.id, 'title': g.grammar_title, 'description': g.grammar_description} for g in grammaires]
-        }
-        return Response(data, status=status.HTTP_200_OK)
 
-class QuizAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, quiz_id=None):
-        user = request.user
-        learning_language = user.learning_language
-        level = user.level_target_language
-
-        if not learning_language or not level:
-            return Response({"error": "Please specify the learning language and level in your profile."}, status=status.HTTP_400_BAD_REQUEST)
-
-        vocabulary_words = Vocabulary.objects.filter(language_id=learning_language, level_target_language=level)
-        if not vocabulary_words.exists():
-            return Response({"error": "No words found for the specified learning language and level."}, status=status.HTTP_404_NOT_FOUND)
-
-        word_pair = random.choice(vocabulary_words)
-        word = word_pair.word
-        correct_translation = word_pair.translation
-
-        incorrect_translations = Quiz.objects.filter(language_id=learning_language.language_code, level=level).exclude(pk=quiz_id).values_list('translation', flat=True)[:3]
-        options = list(incorrect_translations) + [correct_translation]
-        random.shuffle(options)
-
-        data = {
-            'language': learning_language.language_name,
-            'word': word,
-            'options': options,
-            'correct_translation': correct_translation
-        }
-        return Response(data, status=status.HTTP_200_OK)
+# class QuizAPIView(APIView):
+#     permission_classes = [IsAuthenticated]
+#
+#     def get(self, request, quiz_id=None):
+#         user = request.user
+#         learning_language = user.learning_language
+#         level = user.level_target_language
+#
+#         if not learning_language or not level:
+#             return Response({"error": "Please specify the learning language and level in your profile."}, status=status.HTTP_400_BAD_REQUEST)
+#
+#         vocabulary_words = Vocabulary.objects.filter(language_id=learning_language, level_target_language=level)
+#         if not vocabulary_words.exists():
+#             return Response({"error": "No words found for the specified learning language and level."}, status=status.HTTP_404_NOT_FOUND)
+#
+#         word_pair = random.choice(vocabulary_words)
+#         word = word_pair.word
+#         correct_translation = word_pair.translation
+#
+#         incorrect_translations = Quiz.objects.filter(language_id=learning_language.language_code, level=level).exclude(pk=quiz_id).values_list('translation', flat=True)[:3]
+#         options = list(incorrect_translations) + [correct_translation]
+#         random.shuffle(options)
+#
+#         data = {
+#             'language': learning_language.language_name,
+#             'word': word,
+#             'options': options,
+#             'correct_translation': correct_translation
+#         }
+#         return Response(data, status=status.HTTP_200_OK)
 
 class SearchVocabularyAPIView(APIView):
     def get(self, request):
         query = request.GET.get('query', '')
-        vocabulary_list = Vocabulary.objects.filter(word__icontains=query) if query else Vocabulary.objects.all()
+        vocabulary_list = VocabularyList.objects.filter(word__icontains=query) if query else VocabularyList.objects.all()
         data = [{'id': v.id, 'word': v.word, 'translation': v.translation} for v in vocabulary_list]
         return Response({'query': query, 'vocabularies': data}, status=status.HTTP_200_OK)
