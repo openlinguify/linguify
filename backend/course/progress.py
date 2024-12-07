@@ -1,4 +1,4 @@
-# backend/django_apps/course/progress.py
+# course/progress.py
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from authentication.models import User
@@ -74,5 +74,5 @@ class UserLearningPathProgress(models.Model):
     finished_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.learning_path.name} - {'In Progress' if not self.finished_at else 'Completed'}"
+        return f"{self.user.username} - {self.learning_path.learning_path} - {'In Progress' if not self.finished_at else 'Completed'}"
 
