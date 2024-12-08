@@ -1,8 +1,5 @@
 # course/views.py
-from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, RetrieveAPIView
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status, filters, generics
@@ -11,11 +8,10 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from authentication.models import User
-from .models import LearningPath, Unit, Lesson, VocabularyList, Grammar
-from .serializers import LearningPathSerializer, UnitSerializer, LessonSerializer, VocabularyListSerializer, GrammarSerializer
+from .models import LearningPath, Unit, Lesson, VocabularyList
+from .serializers import LearningPathSerializer, UnitSerializer, LessonSerializer, VocabularyListSerializer
 from .filters import LessonFilter, VocabularyListFilter
-
+from authentication.models import User
 import random
 
 class CustomPagination(PageNumberPagination):
@@ -63,13 +59,13 @@ class UnitAPIView(APIView):
 
     def get_queryset(self):
         user = self.request.user
-        if not hasattr(user, 'target_language') or user.target_language is None:
+        if not isinstance(user, User) or not getattr(user, 'target_language', None):
             return Unit.objects.none()
         return Unit.objects.filter(learning_path__language=user.target_language)
 
     def list(self, request, *args, **kwargs):
         user = request.user
-        if not getattr(user, 'target_language', None):
+        if not isinstance(user, User) or not getattr(user, 'target_language', None):
             return Response({"error": "Please specify the target language in your profile."}, status=status.HTTP_400_BAD_REQUEST)
         return super().list(request, *args, **kwargs)
 
@@ -202,5 +198,5 @@ class SearchVocabularyAPIView(APIView):
     def get(self, request):
         query = request.GET.get('query', '')
         vocabulary_list = VocabularyList.objects.filter(word__icontains=query) if query else VocabularyList.objects.all()
-        data = [{'id': v.id, 'word': v.word, 'translation': v.translation} for v in vocabulary_list]
+        data = VocabularyListSerializer(vocabulary_list, many=True).data
         return Response({'query': query, 'vocabularies': data}, status=status.HTTP_200_OK)

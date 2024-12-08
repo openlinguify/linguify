@@ -3,14 +3,13 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
-from course.models import Vocabulary  # Import du modèle Vocabulary
-
+from course.models import VocabularyList
 
 class Flashcard(models.Model):
     """Modèle représentant une flashcard pour un utilisateur spécifique liée à un vocabulaire."""
     flashcard_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="flashcards")
-    vocabulary = models.ForeignKey(Vocabulary, on_delete=models.CASCADE, related_name="flashcards")
+    vocabulary = models.ForeignKey(VocabularyList, on_delete=models.CASCADE, related_name="flashcards")
     flashcard_title = models.CharField(max_length=100, blank=False, null=False)
     image_flashcard = models.ImageField(upload_to='flashcard_images/', null=True, blank=True)
 

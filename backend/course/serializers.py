@@ -35,8 +35,8 @@ class UnitSerializer(serializers.ModelSerializer):
         return getattr(obj, f'title_{target_language}')
 
     def get_lessons(self, obj):
-        lessons = obj.lesson_set.all().order_by('order')
-        return LessonSerializer(obj.lesson_set.all(), many=True, context=self.context).data
+        lessons = obj.lesson_set.order_by('order')
+        return LessonSerializer(lessons, many=True, context=self.context).data
 
     def get_progress(self, obj):
         completed_lessons = obj.lesson_set.filter(is_completed=True).count()
