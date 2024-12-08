@@ -10,4 +10,6 @@ urlpatterns = [
     path('', redirect_to_admin),
     path('admin/', admin.site.urls),
     path('api/authentication/', include('authentication.urls')),
+    path('api/v1/course/', include('course.urls', namespace='course')),
+    path('api/v1/flashcard/', include('flashcard.urls', namespace='flashcard')),
 ]

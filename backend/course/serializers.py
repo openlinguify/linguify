@@ -1,8 +1,6 @@
-# backend/django_apps/course/serializers.py
+# course/serializers.py
 from rest_framework import serializers
-from backend.course.models import (LearningPath, Unit, Lesson, Activity,
-                                   Vocabulary, Grammar, Listening, Speaking,
-                                   Reading, Writing, Test)
+from .models import LearningPath, Unit, Lesson, VocabularyList, Grammar
 
 class LearningPathSerializer(serializers.ModelSerializer):
     units = serializers.SerializerMethodField()
@@ -12,78 +10,123 @@ class LearningPathSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_units(self, obj):
-        # Return a list of unit titles associated with the learning path
-        return [unit.title for unit in obj.unit_set.all()]
+        units = obj.unit_set.order_by('order')
+        return UnitSerializer(units, many=True, context=self.context).data
+
+    def validate(self, data):
+        if not data.get('units'):
+            raise serializers.ValidationError("At least one unit is required.")
+        return data
 
 class UnitSerializer(serializers.ModelSerializer):
+    title_en = serializers.CharField(source='title_en')
+    title_fr = serializers.CharField(source='title_fr')
+    title_es = serializers.CharField(source='title_es')
+    title_nl = serializers.CharField(source='title_nl')
     lessons = serializers.SerializerMethodField()
+    progress = serializers.SerializerMethodField()
 
     class Meta:
         model = Unit
-        fields = '__all__'
+        fields = ['id', 'learning_path', 'title_en', 'title_fr', 'title_es', 'title_nl', 'level', 'order', 'is_unlocked', 'progress']
+
+    def get_title(self, obj):
+        target_language = self.context.get('request').user.target_language
+        return getattr(obj, f'title_{target_language}')
 
     def get_lessons(self, obj):
-        # Return a list of lesson titles for the unit
-        return [lesson.title for lesson in obj.lesson_set.all()]
+        lessons = obj.lesson_set.order_by('order')
+        return LessonSerializer(lessons, many=True, context=self.context).data
+
+    def get_progress(self, obj):
+        completed_lessons = obj.lesson_set.filter(is_completed=True).count()
+        total_lessons = obj.lesson_set.count()
+        if total_lessons == 0:
+            return 0
+        return round((completed_lessons / total_lessons) * 100)
 
 class LessonSerializer(serializers.ModelSerializer):
-    activities = serializers.SerializerMethodField()
+    title = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
 
     class Meta:
         model = Lesson
-        fields = '__all__'
+        fields = ['id', 'unit', 'lesson_type', 'title_en', 'title_fr', 'title_es', 'title_nl', 'description_en', 'description_fr', 'description_es', 'description_nl', 'estimated_duration', 'order', 'is_complete']
 
-    def get_activities(self, obj):
-        # Return a list of activity titles for the lesson
-        return [activity.title for activity in obj.activity_set.all()]
+    def get_title(self, obj):
+        target_language = self.context.get('request').user.target_language
+        return getattr(obj, f'title_{target_language}')
 
-class ActivitySerializer(serializers.ModelSerializer):
+    def get_description(self, obj):
+        target_language = self.context.get('request').user.target_language
+        return getattr(obj, f'description_{target_language}')
+
+class VocabularyListSerializer(serializers.ModelSerializer):
+    word = serializers.SerializerMethodField()
+    example_sentence = serializers.SerializerMethodField()
+
     class Meta:
-        model = Activity
-        fields = '__all__'
+        model = VocabularyList
+        fields = ['word', 'example_sentence', 'word_type']
 
-class VocabularySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vocabulary
-        fields = ['word', 'translation', 'example_sentence']
+    def get_word(self, obj):
+        user = self.context['request'].user
+        target_lang = user.target_language.lower()
+        native_lang = user.native_language.lower()
 
-    def validate_word(self, value):
-        if len(value) < 2:
-            raise serializers.ValidationError("Word must be at least 2 characters long.")
-        return value
+        target_word = getattr(obj, f'word_{target_lang}', None)
+        native_word = getattr(obj, f'word_{native_lang}', None)
+
+        return {
+            'target_language': target_word,
+            'native_language': native_word,
+        }
+
+    def get_example_sentence(self, obj):
+        user = self.context['request'].user
+        target_lang = user.target_language.lower()
+        native_lang = user.native_language.lower()
+
+        target_sentence = getattr(obj, f'example_sentence_{target_lang}', None)
+        native_sentence = getattr(obj, f'example_sentence_{native_lang}', None)
+
+        return {
+            'target_language': target_sentence,
+            'native_language': native_sentence,
+        }
 
 class GrammarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grammar
         fields = ['title', 'description', 'example']
 
-class ListeningSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Listening
-        fields = ['title', 'audio']
+# class ListeningSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Listening
+#         fields = ['title', 'audio']
 
-class SpeakingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Speaking
-        fields = ['title', 'audio']
-
-class ReadingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Reading
-        fields = ['title', 'text']
-
-class WritingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Writing
-        fields = ['title', 'text']
-
-class TestSerializer(serializers.ModelSerializer):
-    incorrect_answers_list = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Test
-        fields = ['question', 'correct_answer', 'incorrect_answers', 'incorrect_answers_list']
-
-    def get_incorrect_answers_list(self, obj):
-        # Convert the comma-separated string into a list
-        return obj.incorrect_answers.split(",")
+# class SpeakingSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Speaking
+#         fields = ['title', 'audio']
+#
+# class ReadingSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Reading
+#         fields = ['title', 'text']
+#
+# class WritingSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Writing
+#         fields = ['title', 'text']
+#
+# class TestSerializer(serializers.ModelSerializer):
+#     incorrect_answers_list = serializers.SerializerMethodField()
+#
+#     class Meta:
+#         model = Test
+#         fields = ['question', 'correct_answer', 'incorrect_answers', 'incorrect_answers_list']
+#
+#     def get_incorrect_answers_list(self, obj):
+#         # Convert the comma-separated string into a list
+#         return obj.incorrect_answers.split(",")
