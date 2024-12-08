@@ -1,4 +1,4 @@
-# backend/django_apps/authentication/models.py
+    # backend/django_apps/authentication/models.py
 import uuid
 from django.db import models  # Ensure this is imported correctly
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
@@ -127,7 +127,7 @@ class UserManager(BaseUserManager):
         Returns:
             QuerySet: A QuerySet containing users whose first or last name contains the given name string.
         """
-        return self.filter(first_name__icontains=name) | self.filter(last_name__icontains=name)
+        return self.filter(first_name__icontains=name)
 
     def search_by_language(self, language):
 
@@ -140,7 +140,7 @@ class UserManager(BaseUserManager):
         Returns:
             QuerySet: A QuerySet containing users whose native or target language matches the given language string.
         """
-        return self.filter(native_language=language) | self.filter(target_language=language)
+        return self.filter(native_language=language)
 
     def search_by_level(self, level):
 
@@ -165,7 +165,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(db_index=True, unique=True)
     birthday = models.DateField(null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
-    # in order to know if the user is active or not; if the user is not active, he/she can't login to the platform
+    # in order to know if the user is active or not; if the user is not active, he/she can't log in to the platform
     # the user can be deactivated by the admin or by the user himself
     # the user progress will be saved even if the user is deactivated during a certain period of time (e.g. 6 months)
     # if the user is deactivated for more than 6 months, the user progress will be deleted

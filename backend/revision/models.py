@@ -133,3 +133,4 @@ def ensure_default_values(sender, instance, **kwargs):
         instance.time_study = 0
     if not instance.score_revision:
         instance.score_revision = 0
+
