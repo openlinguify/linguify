@@ -1,11 +1,13 @@
 from django.urls import path
-from .views import HomeAPIView, ExerciceVocabularyAPIView, GrammaireAPIView, QuizAPIView, SearchVocabularyAPIView
+from .views import ExerciceVocabularyAPIView, UnitAPIView, LessonAPIView, SearchVocabularyAPIView
+
+app_name = 'course'
 
 urlpatterns = [
-    path('api/home/', HomeAPIView.as_view(), name='api-home'),
-    path('api/exercice-vocabulary/', ExerciceVocabularyAPIView.as_view(), name='api-exercice-vocabulary'),
-    path('api/grammaire/', GrammaireAPIView.as_view(), name='api-grammaire'),
-    path('api/quiz/<int:quiz_id>/', QuizAPIView.as_view(), name='api-quiz'),
-    path('api/search-vocabulary/', SearchVocabularyAPIView.as_view(), name='api-search-vocabulary'),
+    path('exercice-vocabulary/', ExerciceVocabularyAPIView.as_view(), name='api-exercice-vocabulary'),
+    path('lesson/', LessonAPIView.as_view(), name='api-lesson'),
+    path('unit/', UnitAPIView.as_view(), name='api-unit'),
+    #path('quiz/<int:quiz_id>/', QuizAPIView.as_view(), name='api-quiz'),
+    path('search-vocabulary/', SearchVocabularyAPIView.as_view(), name='api-search-vocabulary'),
 ]
 
