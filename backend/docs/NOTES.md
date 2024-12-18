@@ -163,3 +163,99 @@ SELECT * FROM course_lesson LIMIT 10;
 
 With this method, you can efficiently perform bulk data inserts into PostgreSQL.
 
+# tree
+find . -type d \( -name "__pycache__" -o -name "migrations" -o -name "venv" \) -prune -o -type f \( -name "*.py" -o -name "requirements.txt" -o -name ".env" \) -print
+
+find . -name "__pycache__" -exec rm -rf {} +
+
+
+# remove cache of the app
+Remove-Item -Recurse -Force -Path "flashcard/__pycache__", "course/__pycache__", "authentication/__pycache__"
+Get-ChildItem -Recurse -Force -Include "__pycache__" | Remove-Item -Recurse -Force
+
+# remove all the migrations of the app
+Remove-Item -Path "authentication/migrations/*.py" -Exclude "__init__.py"
+Remove-Item -Path "cards/migrations/*.py" -Exclude "__init__.py"
+Remove-Item -Path "chat/migrations/*.py" -Exclude "__init__.py"
+Remove-Item -Path "coaching/migrations/*.py" -Exclude "__init__.py"
+Remove-Item -Path "community/migrations/*.py" -Exclude "__init__.py"
+Remove-Item -Path "course/migrations/*.py" -Exclude "__init__.py"
+Remove-Item -Path "data/migrations/*.py" -Exclude "__init__.py"
+Remove-Item -Path "flashcard/migrations/*.py" -Exclude "__init__.py"
+Remove-Item -Path "payments/migrations/*.py" -Exclude "__init__.py"
+Remove-Item -Path "quiz/migrations/*.py" -Exclude "__init__.py"
+Remove-Item -Path "revision/migrations/*.py" -Exclude "__init__.py"
+
+
+# Start the development server
+npm start
+
+# Useful commands for the frontend
+
+# Create a new React app
+npx create-react-app app_name
+
+# Start the development server
+npm start
+
+# Run tests
+npm run test
+
+# Create an optimized production build
+npm run build
+
+# Remove the single build dependency from your project
+npm run eject
+
+# Fix vulnerabilities in the dependencies
+npm audit fix --force
+
+
+##### Useful commands for the backend ###########
+# Create a new virtual environment
+.\venv\Scripts\Activate
+
+# Install Django
+pip install django
+
+# Install Django REST framework
+
+pip install djangorestframework
+
+# Create a new Django project
+django-admin startproject project_name
+
+# Create a new Django app
+python manage.py startapp app_name
+
+# Run the development server
+python manage.py runserver
+
+# Create a new Django superuser
+
+python manage.py createsuperuser
+
+# Create database migrations
+
+python manage.py makemigrations
+
+# Apply database migrations
+
+python manage.py migrate
+
+# Run tests
+
+python manage.py test
+
+# Create a new Django app with a custom user model
+
+python manage.py startapp app_name
+
+# Generate Django models from an existing database
+python manage.py inspectdb > app_name/models.py
+
+# Install the Django REST framework package
+pip install djangorestframework
+
+# Freeze the current state of the installed packages and save it to requirements.txt
+pip freeze > requirements.txt
