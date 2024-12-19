@@ -1,15 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './index.css';
+import './styles/global.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+const ErrorBoundary = ({ children }) => {
+    try {
+        return children;
+    } catch (error) {
+        console.error(error);
+        return <p>Something went wrong!</p>;
+    }
+};
+
 root.render(
-
-    <App />
-
+    <ErrorBoundary>
+        <App />
+    </ErrorBoundary>
 );
-
-reportWebVitals();
