@@ -1,0 +1,23 @@
+{%  extends '../../frontend/public/templates_storage/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Profile</h4>
+                    </div>
+                    <div class="card-body">
+                        <img src="{% static 'img/default.jpg' %}" class="img-fluid"
+                                style="border-radius: 50%; width: 200px; height: 200px;">
+                        <h3>{{ user.username }}</h3>
+                        <p>{{ user.email }}</p>
+                        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

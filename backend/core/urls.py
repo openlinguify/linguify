@@ -10,4 +10,5 @@ urlpatterns = [
     path('', redirect_to_admin),
     path('admin/', admin.site.urls),
     path('api/authentication/', include('authentication.urls')),
+    path('api/course/', include('course.urls')),
 ]
