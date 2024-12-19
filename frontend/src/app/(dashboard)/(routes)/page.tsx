@@ -13,6 +13,8 @@ import {
 export default function Home() {
     return (
         <div>
+        <p>This is a protected page</p>
+        <div>
             <p className="text-3xl font-medium text-sky-500">Linguify</p>
             <Button variant="special">
                 Click me
@@ -35,6 +37,7 @@ export default function Home() {
                     </SelectContent>
                 </Select>
             </div>
+        </div>
         </div>
     );
 }
