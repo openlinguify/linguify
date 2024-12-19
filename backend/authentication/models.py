@@ -270,7 +270,6 @@ class CoachProfile(models.Model):
         """
         return f"Coach Profile of {self.user.username}"
 
-
 # Review Model lol
 class Review(models.Model):
     """
