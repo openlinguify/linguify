@@ -1,0 +1,38 @@
+{% extends '../../base.html' %}
+{% load static %}
+
+{% block content %}
+    <section>
+        <h1>Dashboard de teaching</h1>
+        <p>Sélectionne ton professeur de langues</p>
+    </section>
+
+    <section>
+        <div>
+            <h2>Les professeurs de langues</h2>
+            <h3>Filtres :</h3>
+            <form action="" method="get">
+                <fieldset>
+                    <legend>Filtrer par langue :</legend>
+                    <label for="language">Langue :</label>
+                    <select name="language" id="language">
+                        <option value="fr">Français</option>
+                        <option value="en">Anglais</option>
+                        <option value="es">Espagnol</option>
+                        <option value="de">Allemand</option>
+                    </select>
+                    <button type="submit">Filtrer</button>
+                </fieldset>
+            </form>
+
+            <ul>
+                {% for teacher in teachers %}
+                    <li>{{ teacher.first_name }} {{ teacher.last_name }}</li>
+                    <!-- Ajoutez d'autres informations sur les professeurs si nécessaire -->
+                {% empty %}
+                    <li>Aucun professeur trouvé.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+{% endblock %}
