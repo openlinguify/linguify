@@ -1,3 +1,4 @@
+# frontend/src/api.js
 import axios from 'axios';
 
 const API_URL = 'http://localhost:8000';
@@ -20,3 +21,9 @@ export const getUnits = () => {
 export const getExercises = () => {
     return axios.get(`${API_URL}/exercises/`);
 };
+
+export const getWords = () => {
+    return axios.get(`${API_URL}/words/`);
+}
+
+
