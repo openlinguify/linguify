@@ -1,0 +1,25 @@
+{% extends '../../frontend/public/templates_storage/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <section class="mb-4">
+        <h2 class="h4">Langue d'interface</h2>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="languageDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                français
+            </button>
+            <div class="dropdown-menu" aria-labelledby="languageDropdown">
+                <!-- Dropdown menu items here -->
+            </div>
+        </div>
+    </section>
+    <section class="mb-4">
+        <h2 class="h4">Gérer mes comptes</h2>
+        <ul class="list-unstyled">
+            <li class="mb-2">louisphilippelalou@outlook.com</li>
+        </ul>
+        <button type="button" class="btn btn-danger">Supprimer mon compte</button>
+    </section>
+</div>
+{% endblock content %}
