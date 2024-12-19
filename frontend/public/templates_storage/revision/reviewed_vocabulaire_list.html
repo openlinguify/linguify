@@ -1,0 +1,149 @@
+{% extends '../../base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-primary">Mots Révisés</h1>
+    <a href="{% url 'revision' %}" class="btn btn-outline-primary mb-4">Retour à la Page Principale</a>
+
+    <!-- Section de Recherche et d'Actions -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form class="form-inline" method="get">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="search" name="search" placeholder="Rechercher..." value="{{ search_query }}">
+                    <select class="form-control mx-2" name="type">
+                        <option value="">Tous les types</option>
+                        <option value="nom" {% if type_filter == 'nom' %}selected{% endif %}>Nom</option>
+                        <option value="verbe" {% if type_filter == 'verbe' %}selected{% endif %}>Verbe</option>
+                        <!-- Ajoutez d'autres options de type si nécessaire -->
+                    </select>
+                    <button type="submit" class="btn btn-primary">Rechercher</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 text-right">
+            <a href="{% url 'add_revision' %}" class="btn btn-success">Ajouter Révision</a>
+            <a href="{% url 'export_revisions' %}" class="btn btn-secondary ml-2">Exporter CSV</a>
+            <input type="file" id="importFile" style="display: none;">
+            <label for="importFile" class="btn btn-secondary ml-2">Importer</label>
+            <button class="btn btn-danger ml-2" id="deleteSelected">Supprimer Sélection</button>
+        </div>
+    </div>
+
+    <!-- Liste des Révisions -->
+    {% if page_obj %}
+        <div class="revision-list">
+            {% for revision in page_obj %}
+                <div class="card mb-3 border-0 shadow-sm rounded-lg">
+                    <div class="card-body bg-light">
+                        <h4 class="card-title text-primary">{{ revision.vocabulaire.word }}</h4>
+                        <p class="card-text"><strong>Traduction:</strong> {{ revision.vocabulaire.translation }}</p>
+                        <p class="card-text"><strong>Type:</strong> {{ revision.vocabulaire.type_word }}</p>
+                        <p class="card-text"><strong>Définition:</strong> {{ revision.vocabulaire.definition }}</p>
+                        <p class="card-text"><strong>Exemple:</strong> {{ revision.vocabulaire.example }}</p>
+                        <p class="card-text"><strong>Traduction de l'exemple:</strong> {{ revision.vocabulaire.example_translation }}</p>
+                        <p class="card-text"><strong>Date de Révision:</strong> {{ revision.revision_date }}</p>
+                        <p class="card-text"><strong>Niveau:</strong> {{ revision.vocabulaire.lesson.get_level_language_display }}</p>
+                        <p class="card-text"><strong>Leçon:</strong> {{ revision.vocabulaire.lesson }}</p>
+                    </div>
+                    <div class="card-footer text-right bg-light">
+                        <a href="{% url 'edit_revision' revision.id %}" class="btn btn-primary btn-sm">Modifier</a>
+                        <form action="{% url 'delete_revision' revision.id %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette révision ?')">Supprimer</button>
+                        </form>
+                        <button class="btn btn-info btn-sm ml-2" data-toggle="modal" data-target="#revisionDetails{{ revision.id }}">Détails</button>
+                    </div>
+                </div>
+
+                <!-- Modal pour les Détails de la Révision -->
+                <div class="modal fade" id="revisionDetails{{ revision.id }}" tabindex="-1" role="dialog" aria-labelledby="revisionDetails{{ revision.id }}Label" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="revisionDetails{{ revision.id }}Label">{{ revision.vocabulaire.word }} - Détails</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Traduction:</strong> {{ revision.vocabulaire.translation }}</p>
+                                <p><strong>Type:</strong> {{ revision.vocabulaire.type_word }}</p>
+                                <p><strong>Définition:</strong> {{ revision.vocabulaire.definition }}</p>
+                                <p><strong>Exemple:</strong> {{ revision.vocabulaire.example }}</p>
+                                <p><strong>Traduction de l'exemple:</strong> {{ revision.vocabulaire.example_translation }}</p>
+                                <p><strong>Niveau:</strong> {{ revision.vocabulaire.lesson.get_level_language_display }}</p>
+                                <p><strong>Leçon:</strong> {{ revision.vocabulaire.lesson }}</p>
+                                <p><strong>Date de Révision:</strong> {{ revision.revision_date }}</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <nav aria-label="Navigation des révisions">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">Première</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Précédente</a>
+                        </li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Suivante</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Dernière</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <p>Aucune révision trouvée.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Fonctionnalité d'import
+        document.getElementById('importFile').addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                if (confirm(`Êtes-vous sûr de vouloir importer les révisions depuis le fichier ${file.name} ?`)) {
+                    // Logique d'import ici
+                }
+            }
+        });
+
+        // Suppression des révisions sélectionnées
+        document.getElementById('deleteSelected').addEventListener('click', function () {
+            if (confirm('Êtes-vous sûr de vouloir supprimer toutes les révisions sélectionnées ?')) {
+                // Logique de suppression ici
+            }
+        });
+    });
+</script>
+{% endblock %}
