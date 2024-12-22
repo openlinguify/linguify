@@ -100,13 +100,21 @@ class Unit(models.Model):
                 return "Language not supported"
 
 
+class LessonType(models.Model):
+    LESSON_TYPE = [ "vocabulary", "grammar" ]
+    
+    name = models.CharField(max_length=100, unique=True, blank=False, null=False)
+
+    def __str__(self):
+        if self.name in self.LESSON_TYPE:
+            return self.LESSON_TYPE[self.name]
+        else:
+            return "Not a valid lesson type"        
+
+
 class Lesson(models.Model):
-    LESSON_TYPE = [
-        ('vocabulary', 'Vocabulary'),
-        ('grammar', 'Grammar'),
-    ]
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
-    lesson_type = models.ForeignKey('LessonType', choices=LESSON_TYPE, on_delete=models.CASCADE, blank=False, null=False)
+    lesson_type = models.ForeignKey(LessonType, on_delete=models.CASCADE, blank=False, null=False)
     title_en = models.CharField(max_length=255, blank=False, null=False)
     title_fr = models.CharField(max_length=255, blank=False, null=False)
     title_es = models.CharField(max_length=255, blank=False, null=False)
