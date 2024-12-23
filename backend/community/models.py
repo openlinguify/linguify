@@ -1,6 +1,8 @@
 from authentication.models import User
 from django.db import models
 
+import time
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -52,7 +54,7 @@ class Profile(models.Model):
         return suggested
 class Post(models.Model):
     title = models.CharField(max_length=100, null=True, blank=True)
-    content = models.TextField(null=false, blank=False, max_length=5000, help_text="Post content", verbose_name="Post Content")
+    content = models.TextField(null=False, blank=False, max_length=5000, help_text="Post content", verbose_name="Post Content")
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -185,7 +187,7 @@ class Story(models.Model):
         return f"Story by {self.profile.user.username}"
 
     def is_expired(self):
-        return self.expires_at < timezone.now()
+        return self.expires_at < time.now()
 
 class Reputation(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='reputation')
