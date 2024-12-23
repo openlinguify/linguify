@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "linguify"
+version = "0.1.0"
+description = ""
+authors = []
+readme = "Readme.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+Django = "5.1.2"
+djangorestframework = "3.15.2"
+django-filter = "24.3"
+pillow = "11.0.0"
+django-environ = "^0.11.2"
+django-extensions = "^3.2.3"
+djangorestframework-simplejwt = "^5.3.1"
+django-cors-headers = "^4.6.0"
+pytest-django = "^4.9.0"
+psycopg2 = "^2.9.10"
+openpyxl = "^3.1.5"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

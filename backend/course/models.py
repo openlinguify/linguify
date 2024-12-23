@@ -101,12 +101,8 @@ class Unit(models.Model):
 
 
 class Lesson(models.Model):
-    LESSON_TYPE = [
-        ('vocabulary', 'Vocabulary'),
-        ('grammar', 'Grammar'),
-    ]
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
-    lesson_type = models.ForeignKey('LessonType', choices=LESSON_TYPE, on_delete=models.CASCADE, blank=False, null=False)
+    lesson_type = models.ForeignKey(LessonType, on_delete=models.CASCADE, blank=False, null=False)
     title_en = models.CharField(max_length=255, blank=False, null=False)
     title_fr = models.CharField(max_length=255, blank=False, null=False)
     title_es = models.CharField(max_length=255, blank=False, null=False)
@@ -325,3 +321,4 @@ class GrammarRuleExercise(models.Model):
 
     def get_grammar_rule_exercise(self):
         pass
+
