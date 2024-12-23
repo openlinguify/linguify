@@ -1,7 +1,7 @@
-# backend/django_apps/course/progress.py
+# course/progress.py
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-from django.contrib.auth.models import User
+from authentication.models import User
 from .models import Unit, LearningPath
 
 STATUT_CHOICES = [
@@ -21,6 +21,19 @@ class UserLessonProgress(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.lesson.title} - {self.statut} - {self.percentage_completion}% - Time studied: {self.time_study} mins"
+
+    def update_progress(self, user, lesson, statut, percentage_completion, score_lesson, time_study):
+        self.user = user
+        self.lesson = lesson
+        self.statut = statut
+        self.percentage_completion = percentage_completion
+        self.score_lesson = score_lesson
+        self.time_study = time_study
+        self.save()
+
+    def remove_progress(self, user_lesson_progress_id):
+        pass
+
 
 class UserUnitProgress(models.Model):
     user_unit_progress_id = models.AutoField(primary_key=True)
@@ -61,5 +74,5 @@ class UserLearningPathProgress(models.Model):
     finished_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.learning_path.name} - {'In Progress' if not self.finished_at else 'Completed'}"
+        return f"{self.user.username} - {self.learning_path.learning_path} - {'In Progress' if not self.finished_at else 'Completed'}"
 

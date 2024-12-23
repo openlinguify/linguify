@@ -120,7 +120,6 @@ class CoachProfileViewSet(viewsets.ModelViewSet):
         return Response({"error": "No price provided."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Vues pour le modèle Review
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     permission_classes = [IsAuthenticated]
