@@ -218,8 +218,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def age(self):
         import datetime
-        return int((datetime.date.today() - self.birthday).days / 365.25  )
-
+        if self.birthday:
+            return int((datetime.date.today() - self.birthday).days / 365.25  )
+        else:
+            return None
 
 # Extended Coach Profile Model: the additional fields for a coach profile are added here as a separate model.
 # This model has a Many-to-many relationship with the User model.
