@@ -13,6 +13,20 @@ This file contains useful notes and instructions for the backend of the Linguify
 
 ---
 
+## Bootstrap
+
+### Install peotry
+
+Install pipx: https://github.com/pypa/pipx?tab=readme-ov-file#install-pipx
+
+```sh
+pipx install poetry
+poetry env use 3.12
+poetry install
+```
+
+More info: https://medium.com/@zalun/django-with-poetry-ea95bd5083f7 
+
 ## Project Configuration
 
 ### Project Structure

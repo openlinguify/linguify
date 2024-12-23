@@ -1,3 +1,10 @@
-First of all: 
-- need to clarify the authentication app
-- need to develop the course app (Learning_paht>Unit>Lesson>Exercice>exercise_type)
+# Linguify
+
+## Bootstrap
+
+```sh
+
+```
+
+Useful links:
+ * [Project managment](https://linguify1.odoo.com/odoo/project/5/tasks)

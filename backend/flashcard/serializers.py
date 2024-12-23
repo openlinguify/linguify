@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Deck, Tag, Card, UserFlashcardProgress
+from authentication.models import User
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,7 +27,7 @@ class DeckSerializer(serializers.ModelSerializer):
         source='user',
         write_only=True,
         required=True,
-        help_text=_("ID of the deck owner.")
+        help_text=("ID of the deck owner.")
     )
 
     class Meta:
