@@ -1,4 +1,4 @@
-    # backend/django_apps/authentication/models.py
+# backend/authentication/models.py
 import uuid
 from django.db import models  # Ensure this is imported correctly
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
