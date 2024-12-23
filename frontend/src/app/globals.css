@@ -9,7 +9,6 @@ body {
 html, body, :root {
   height: 100%;
 }
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -72,5 +71,16 @@ html, body, :root {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+@layer utilities {
+  .border-border {
+    border-color: hsl(214.3, 31.8%, 91.4%);
+  }
+  .bg-background {
+    background-color: hsl(0, 0%, 100%);
+  }
+  .text-foreground {
+    color: hsl(222.2, 84%, 4.9%);
   }
 }
