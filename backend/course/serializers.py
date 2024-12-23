@@ -1,6 +1,16 @@
 # course/serializers.py
-from rest_framework import serializers
-from .models import LearningPath, Unit, Lesson, VocabularyList, Grammar
+from rest_framework import serializers, generics
+from .models import Language, Level, LearningPath, Unit, Lesson, VocabularyList, Grammar
+
+class LanguageSerializer(serializers.Serializer):
+    class Meta:
+        model = Language
+        fields = ['id', 'name', 'code']
+
+class LevelSerializer(serializers.Serializer):
+    class Meta:
+        model = Level
+        fields = '__all__'
 
 class LearningPathSerializer(serializers.ModelSerializer):
     units = serializers.SerializerMethodField()
@@ -67,7 +77,7 @@ class VocabularyListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = VocabularyList
-        fields = ['word', 'example_sentence', 'word_type']
+        fields = ['id', 'lesson', 'word_en', 'word_fr', 'word_es', 'word_nl', 'example_sentence_en', 'example_sentence_fr', 'example_sentence_es', 'example_sentence_nl']
 
     def get_word(self, obj):
         user = self.context['request'].user
@@ -99,6 +109,8 @@ class GrammarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grammar
         fields = ['title', 'description', 'example']
+
+
 
 # class ListeningSerializer(serializers.ModelSerializer):
 #     class Meta:

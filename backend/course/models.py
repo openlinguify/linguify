@@ -101,8 +101,14 @@ class Unit(models.Model):
 
 
 class Lesson(models.Model):
+    LESSON_TYPE = [
+        ('theory', 'Theory'),
+        ('vocabulary', 'Vocabulary'),
+        ('grammar', 'Grammar'),
+        ('test', 'Test'),
+    ]
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
-    lesson_type = models.ForeignKey(LessonType, on_delete=models.CASCADE, blank=False, null=False)
+    lesson_type = models.CharField(max_length=100, choices=LESSON_TYPE, blank=False, null=False)
     title_en = models.CharField(max_length=255, blank=False, null=False)
     title_fr = models.CharField(max_length=255, blank=False, null=False)
     title_es = models.CharField(max_length=255, blank=False, null=False)
@@ -158,7 +164,76 @@ class VocabularyList(models.Model):
     def __str__(self):
         return {self.word_en - self.word_fr - self.word_es - self.word_nl}
 
+class ExerciseVocabularyMultipleChoice(models.Model):
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    question = models.TextField(blank=False, null=False, help_text="Question based on example sentence")
+    correct_answer = models.CharField(max_length=255, blank=False, null=False, help_text="Correct answer from vocabulary")
+    incorrect_answers = models.JSONField(blank=False, null=False, help_text="List of incorrect answers")
+    explanation = models.TextField(blank=True, null=True, help_text="Explanation for the correct answer")
 
+    def __str__(self):
+        return f"{self.lesson.title_en} - {self.question}"
+    
+    @classmethod
+    def create_from_vocabulary(cls, lesson, vocab):
+        return cls(
+            lesson=lesson,
+            question=vocab.example_sentence_en,
+            correct_answer=vocab.word_en,
+            incorrect_answers=[vocab.word_fr, vocab.word_es, vocab.word_nl],
+            explanation=f"{vocab.word_en} means {vocab.definition_en}",
+        )
+
+class ExerciseVocabularyFillBlank(models.Model):
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    sentence_fill_blank_en = models.TextField(blank=False, null=False, help_text="Sentence with a blank space")
+    sentence_fill_blank_fr = models.TextField(blank=False, null=False, help_text="Sentence with a blank space")
+    sentence_fill_blank_es = models.TextField(blank=False, null=False, help_text="Sentence with a blank space")
+    sentence_fill_blank_nl = models.TextField(blank=False, null=False, help_text="Sentence with a blank space")
+    correct_answer_en = models.CharField(max_length=255, blank=False, null=False, help_text="Correct answer for the blank space")
+    correct_answer_fr = models.CharField(max_length=255, blank=False, null=False)
+    correct_answer_es = models.CharField(max_length=255, blank=False, null=False)
+    correct_answer_nl = models.CharField(max_length=255, blank=False, null=False)
+    explanation_en = models.TextField(blank=True, null=True)
+    explanation_fr = models.TextField(blank=True, null=True)
+    explanation_es = models.TextField(blank=True, null=True)
+    explanation_nl = models.TextField(blank=True, null=True)
+    hint_en = models.TextField(blank=True, null=True)
+    hint_fr = models.TextField(blank=True, null=True)
+    hint_es = models.TextField(blank=True, null=True)
+    hint_nl = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.lesson.title_en} - {self.sentence_fill_blank_en}"
+class ExerciseGrammarReordering(models.Model):
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    sentence_en = models.TextField(blank=False, null=False, help_text="Sentence to reorder")
+    sentence_fr = models.TextField(blank=False, null=False, help_text="Sentence to reorder")
+    sentence_es = models.TextField(blank=False, null=False, help_text="Sentence to reorder")
+    sentence_nl = models.TextField(blank=False, null=False, help_text="Sentence to reorder")
+    correct_order = models.JSONField(blank=False, null=False, help_text="List of words in the correct order")
+    explanation = models.TextField(blank=True, null=True, help_text="Explanation for the correct order")
+    hint = models.TextField(blank=True, null=True, help_text="Hint to help the user")
+
+    def __str__(self):
+        return f"{self.lesson.title_en} - {self.sentence_en}"
+    
+    @classmethod
+    def create_from_vocabulary(cls, lesson, vocab):
+        """
+        Creates reordering exercises using vocabulary example sentences.
+        """
+        words = vocab.example_sentence_en.split()
+        return cls(
+            lesson=lesson,
+            sentence=vocab.example_sentence_en,
+            correct_order=words,
+            explanation="Reorder the words to match the correct sentence structure.",
+            hint="Start with the subject and follow the sentence structure rules.",
+            difficulty_level='medium'
+        )
+
+    
 class Exercise(models.Model):
     EXERCISE_TYPE = [
         ('Multiple choice', 'Multiple choice'),
@@ -178,8 +253,8 @@ class Exercise(models.Model):
 
     def __str__(self):
         return self.instruction
-
-
+    
+    
 class GrammarRule(models.Model):
     lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, related_name='grammar_rule', limit_choices_to={'lesson_type': 'grammar'})
     title_en = models.CharField(max_length=255, blank=False, null=False)
@@ -215,7 +290,6 @@ class GrammarRule(models.Model):
 
 
 class Grammar(models.Model):
-    lesson_type = models.ForeignKey(LessonType, on_delete=models.CASCADE, default='Grammar')
     title = models.CharField(max_length=100, blank=False, null=False)
     description = models.TextField(blank=False, null=False)
     example = models.TextField(blank=False, null=False)
