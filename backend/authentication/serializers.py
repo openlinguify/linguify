@@ -1,11 +1,12 @@
 # backend/django_apps/authentication/serializers.py
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import User, CoachProfile, Review, UserFeedback
 from django.contrib.auth.password_validation import validate_password
 from decimal import Decimal
 
 class UserSerializer(serializers.ModelSerializer):
-    public_id = serializers.UUIDField(source='public_id', read_only=True, format='hex')
+    public_id = serializers.UUIDField(read_only=True, format='hex')
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
     email = serializers.EmailField(read_only=True)
@@ -227,3 +228,14 @@ class UserFeedbackSerializer(serializers.ModelSerializer):
         model = UserFeedback
         fields = ['user', 'feedback_type', 'feedback_content', 'feedback_date']
         read_only_fields = ['feedback_date']
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user: User):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['email'] = user.email
+        # ...
+
+        return token

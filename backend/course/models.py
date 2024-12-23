@@ -87,23 +87,22 @@ class Unit(models.Model):
         return f"{self.title_en} - {self.level.name}"
 
     def get_unit_title(self, target_language='en'):
-        if target_language == 'fr':
-            return self.title_fr
-        elif target_language == 'es':
-            return self.title_es
-        elif target_language == 'nl':
-            return self.title_nl
-        else:
-            return self.title_en
+        match target_language:
+            case 'fr':
+                return self.title_fr
+            case 'es':
+                return self.title_es
+            case 'nl':
+                return self.title_nl
+            case "en":
+                return self.title_en
+            case _:
+                return "Language not supported"
 
 
 class Lesson(models.Model):
-    LESSON_TYPE = [
-        ('vocabulary', 'Vocabulary'),
-        ('grammar', 'Grammar'),
-    ]
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
-    lesson_type = models.ForeignKey('LessonType', choices=LESSON_TYPE, on_delete=models.CASCADE, blank=False, null=False)
+    lesson_type = models.ForeignKey(LessonType, on_delete=models.CASCADE, blank=False, null=False)
     title_en = models.CharField(max_length=255, blank=False, null=False)
     title_fr = models.CharField(max_length=255, blank=False, null=False)
     title_es = models.CharField(max_length=255, blank=False, null=False)
@@ -322,3 +321,4 @@ class GrammarRuleExercise(models.Model):
 
     def get_grammar_rule_exercise(self):
         pass
+
