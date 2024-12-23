@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 from .models import LearningPath, Unit, Lesson, VocabularyList
-from .serializers import LearningPathSerializer, UnitSerializer, LessonSerializer, VocabularyListSerializer
+from .serializers import LanguageSerializer, LevelSerializer, LearningPathSerializer, UnitSerializer, LessonSerializer, VocabularyListSerializer, TestRecapAttemptSerializer
 from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
 import random
@@ -39,6 +39,13 @@ class CustomPagination(PageNumberPagination):
 #         target_language = request.query_params.get('target_language', getattr(user, 'target_language', 'en'))
 #         context['target_language'] = target_language
 #         return context
+
+class LanguageListView(generics.ListCreateAPIView):
+    queryset = Language.objects.all()
+    serializer_class = LanguageSerializer
+class LevelListView(generics.ListCreateAPIView):
+    queryset = Level.objects.all()
+    serializer_class = LevelSerializer
 class LearningPathAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = LearningPathSerializer
@@ -51,7 +58,6 @@ class LearningPathAPIView(APIView):
         serializer = LearningPathSerializer(learning_path, context={'target_language': target_language})
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 class UnitAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UnitSerializer
@@ -68,7 +74,6 @@ class UnitAPIView(APIView):
         if not isinstance(user, User) or not getattr(user, 'target_language', None):
             return Response({"error": "Please specify the target language in your profile."}, status=status.HTTP_400_BAD_REQUEST)
         return super().list(request, *args, **kwargs)
-
 class LessonAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Lesson.objects.all()
@@ -86,7 +91,6 @@ class LessonAPIView(generics.ListAPIView):
         target_language = requests.query_params.get('target_language', user.target_language)
         context['target_language'] = target_language
         return context
-
 class VocabularyListAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = VocabularyListSerializer
@@ -142,7 +146,6 @@ class VocabularyListAPIView(APIView):
         target_language = self.request.query_params.get('target_language', getattr(user, 'target_language', 'en'))
         context['target_language'] = target_language
         return context
-
 class ExerciceVocabularyAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -162,6 +165,26 @@ class ExerciceVocabularyAPIView(APIView):
         }
         return Response(data, status=status.HTTP_200_OK)
 
+class TestRecapAttemptListView(generics.ListCreateAPIView):
+    queryset = TestRecapAttempt.objects.all()
+    serializer_class = TestRecapAttemptSerializer
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        data = request.data
+        correct_answers = 0
+        for item in data:
+            vocabulary_list = VocabularyList.objects.get(pk=item['id'])
+            if vocabulary_list.word == item['word']:
+                correct_answers += 1
+
+        score = correct_answers / len(data) * 100
+        user.score = score
+        user.save()
+
+        return Response({'score': score}, status=status.HTTP_200_OK)
 
 # class QuizAPIView(APIView):
 #     permission_classes = [IsAuthenticated]
