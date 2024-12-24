@@ -9,6 +9,8 @@ export default {
   theme: {
     extend: {
       colors: {
+        gradientFrom: "#792FCE",
+        gradientTo: "#fdd47c",
         border: "hsl(214.3, 31.8%, 91.4%)",
         background: "var(--background)",
         foreground: "var(--foreground)",
