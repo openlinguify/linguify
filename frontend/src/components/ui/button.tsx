@@ -19,7 +19,8 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         sky: "bg-sky-500 text-sky-foreground hover:bg-sky-600",
-        special: "bg-gradient-to-r from-792FCE to-FDD47C text-FDD47C !important hover:from-792FCE/90 hover:to-FDD47C/90 px-4 py-2 rounded-lg"      },
+        special: "bg-gradient-to-r from-[#792FCE] to-[#FDD47C] text-[#FDD47C] !important hover:from-[#792FCE]/90 hover:to-[#FDD47C]/90 px-4 py-2 rounded-lg transition-all duration-200 ease-in-out",
+},
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
