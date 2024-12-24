@@ -14,6 +14,7 @@ from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
 import random
 
+
 class CustomPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
