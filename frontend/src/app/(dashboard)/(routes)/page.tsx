@@ -2,61 +2,18 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { UserButton } from "@clerk/nextjs";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { GlobeIcon, PlayCircle } from "lucide-react";
-
-// Importation du Header
 import Header from "@/app/(dashboard)/components/Header";
+import SelectField from "@/components/ui/SelectField";
 
-const SelectField = ({
-    label,
-    placeholder,
-    options,
-    value,
-    onChange,
-}: {
-    label: string;
-    placeholder: string;
-    options: { value: string; label: string }[];
-    value: string;
-    onChange: (value: string) => void;
-}) => {
-    return (
-        <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">
-                {label}
-            </label>
-            <Select onValueChange={onChange}>
-                <SelectTrigger className="w-full sm:w-[240px]">
-                    <SelectValue placeholder={placeholder} />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectGroup>
-                        {options.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                            </SelectItem>
-                        ))}
-                    </SelectGroup>
-                </SelectContent>
-            </Select>
-        </div>
-    );
-};
 
 export default function Home() {
     const [level, setLevel] = useState("");
     const [language, setLanguage] = useState("en");
 
+    // Gestion de l'action au clic
     const handleStart = () => {
         if (!level || !language) {
             alert("Please select both a language and a proficiency level.");
@@ -65,6 +22,7 @@ export default function Home() {
         alert(`Starting ${language.toUpperCase()} at level ${level}`);
     };
 
+    // Options des niveaux et des langues
     const levels = [
         { value: "A1", label: "A1 - Beginner" },
         { value: "A2", label: "A2 - Elementary" },
@@ -84,10 +42,13 @@ export default function Home() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Affichage du Header */}
+            {/* Header avec bouton utilisateur */}
             <Header />
+            <div className="absolute top-4 right-4">
+                <UserButton afterSignOutUrl="/" />
+            </div>
 
-            <div className="p-8">
+            <main className="p-8">
                 <Card className="max-w-2xl mx-auto">
                     <CardHeader>
                         <div className="flex items-center gap-3">
@@ -97,14 +58,15 @@ export default function Home() {
                             </CardTitle>
                         </div>
                     </CardHeader>
+
                     <CardContent className="space-y-6">
-                        <div className="bg-sky-50 p-4 rounded-lg border border-sky-100">
+                        <section className="bg-sky-50 p-4 rounded-lg border border-sky-100">
                             <p className="text-sky-800 font-medium">
                                 Welcome to your personalized language learning journey!
                             </p>
-                        </div>
+                        </section>
 
-                        <div className="space-y-4">
+                        <section className="space-y-4">
                             <SelectField
                                 label="Select your target language"
                                 placeholder="Choose a language"
@@ -120,9 +82,9 @@ export default function Home() {
                                 value={level}
                                 onChange={setLevel}
                             />
-                        </div>
+                        </section>
 
-                        <div className="pt-4">
+                        <section className="pt-4">
                             <Button
                                 onClick={handleStart}
                                 disabled={!level || !language}
@@ -131,10 +93,10 @@ export default function Home() {
                                 <PlayCircle className="h-5 w-5 mr-2" />
                                 Start Learning
                             </Button>
-                        </div>
+                        </section>
                     </CardContent>
                 </Card>
-            </div>
+            </main>
         </div>
     );
 }
