@@ -1,4 +1,4 @@
-# core/urls.py
+# backend/core/urls.py
 from django.shortcuts import redirect
 from django.contrib import admin
 from django.urls import path, include

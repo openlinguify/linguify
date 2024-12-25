@@ -8,8 +8,8 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from .models import Language, Level, LearningPath, Unit, Lesson, VocabularyList
-from .serializers import LanguageSerializer, LevelSerializer, LearningPathSerializer, UnitSerializer, LessonSerializer, VocabularyListSerializer
+from .models import Unit, Lesson, VocabularyList
+from .serializers import UnitSerializer, LessonSerializer, VocabularyListSerializer
 from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
 import random
@@ -41,24 +41,6 @@ class CustomPagination(PageNumberPagination):
 #         context['target_language'] = target_language
 #         return context
 
-class LanguageListView(generics.ListCreateAPIView):
-    queryset = Language.objects.all()
-    serializer_class = LanguageSerializer
-class LevelListView(generics.ListCreateAPIView):
-    queryset = Level.objects.all()
-    serializer_class = LevelSerializer
-class LearningPathAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = LearningPathSerializer
-
-    def get(self, request, pk):
-        user = request.user
-        target_language = request.query_params.get('target_language', user.target_language)
-
-        learning_path = LearningPath.objects.get(pk=pk, user=user)
-        serializer = LearningPathSerializer(learning_path, context={'target_language': target_language})
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
 class UnitAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UnitSerializer
