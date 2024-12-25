@@ -1,32 +1,6 @@
 # course/serializers.py
 from rest_framework import serializers, generics
-from .models import Language, Level, LearningPath, Unit, Lesson, VocabularyList, Grammar
-
-class LanguageSerializer(serializers.Serializer):
-    class Meta:
-        model = Language
-        fields = ['id', 'name', 'code']
-
-class LevelSerializer(serializers.Serializer):
-    class Meta:
-        model = Level
-        fields = '__all__'
-
-class LearningPathSerializer(serializers.ModelSerializer):
-    units = serializers.SerializerMethodField()
-
-    class Meta:
-        model = LearningPath
-        fields = '__all__'
-
-    def get_units(self, obj):
-        units = obj.unit_set.order_by('order')
-        return UnitSerializer(units, many=True, context=self.context).data
-
-    def validate(self, data):
-        if not data.get('units'):
-            raise serializers.ValidationError("At least one unit is required.")
-        return data
+from .models import Unit, Lesson, VocabularyList, Grammar
 
 class UnitSerializer(serializers.ModelSerializer):
     title_en = serializers.CharField(source='title_en')
