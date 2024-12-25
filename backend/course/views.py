@@ -8,11 +8,12 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from .models import LearningPath, Unit, Lesson, VocabularyList
-from .serializers import LanguageSerializer, LevelSerializer, LearningPathSerializer, UnitSerializer, LessonSerializer, VocabularyListSerializer, TestRecapAttemptSerializer
+from .models import Language, Level, LearningPath, Unit, Lesson, VocabularyList
+from .serializers import LanguageSerializer, LevelSerializer, LearningPathSerializer, UnitSerializer, LessonSerializer, VocabularyListSerializer
 from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
 import random
+
 
 class CustomPagination(PageNumberPagination):
     page_size = 10
@@ -165,26 +166,27 @@ class ExerciceVocabularyAPIView(APIView):
         }
         return Response(data, status=status.HTTP_200_OK)
 
-class TestRecapAttemptListView(generics.ListCreateAPIView):
-    queryset = TestRecapAttempt.objects.all()
-    serializer_class = TestRecapAttemptSerializer
+# class TestRecapAttemptListView(generics.ListCreateAPIView):
+#     queryset = TestRecapAttempt.objects.all()
+#     serializer_class = TestRecapAttemptSerializer
 
-    permission_classes = [IsAuthenticated]
+#     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        user = request.user
-        data = request.data
-        correct_answers = 0
-        for item in data:
-            vocabulary_list = VocabularyList.objects.get(pk=item['id'])
-            if vocabulary_list.word == item['word']:
-                correct_answers += 1
+#     def post(self, request):
+#         user = request.user
+#         data = request.data
+#         correct_answers = 0
+#         for item in data:
+#             vocabulary_list = VocabularyList.objects.get(pk=item['id'])
+#             if vocabulary_list.word == item['word']:
+#                 correct_answers += 1
 
-        score = correct_answers / len(data) * 100
-        user.score = score
-        user.save()
+#         score = correct_answers / len(data) * 100
+#         user.score = score
+#         user.save()
 
-        return Response({'score': score}, status=status.HTTP_200_OK)
+#         return Response({'score': score}, status=status.HTTP_200_OK)
+    
 
 # class QuizAPIView(APIView):
 #     permission_classes = [IsAuthenticated]
