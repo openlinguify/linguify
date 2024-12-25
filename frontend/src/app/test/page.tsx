@@ -1,7 +1,7 @@
 const TestPage = () => {
     return ( 
         <div>
-            <h1>Test Page</h1>
+            This should be unprotected
         </div>
      );
 }

@@ -110,7 +110,10 @@ class GrammarSerializer(serializers.ModelSerializer):
         model = Grammar
         fields = ['title', 'description', 'example']
 
-
+# class TestRecapSerializer(serializers.Serializer):
+#     class Meta:
+#         model = TestRecap
+#         fields = ['lesson', 'score', 'total_questions', 'correct_answers', 'incorrect_answers']
 
 # class ListeningSerializer(serializers.ModelSerializer):
 #     class Meta:
