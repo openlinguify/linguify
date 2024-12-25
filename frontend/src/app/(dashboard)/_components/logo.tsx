@@ -2,11 +2,11 @@ import Image from "next/image";
 
 export const Logo = () => {
     return (
-        <Image 
-            height={130}
-            width={130}
+        <Image className="border border-gray-100 rounded-lg center-align center-block"
+            height={75}
+            width={75}
             alt="Logo"
-            src="/logo.svg"
+            src="/logo1.svg"
         />
     );
 }
