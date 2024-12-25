@@ -189,7 +189,7 @@ Get-ChildItem -Recurse -Force -Include "__pycache__" | Remove-Item -Recurse -For
 
 # remove all the migrations of the app
 Remove-Item -Path "authentication/migrations/*.py" -Exclude "__init__.py"
-Remove-Item -Path "cards/migrations/*.py" -Exclude "__init__.py"
+
 Remove-Item -Path "chat/migrations/*.py" -Exclude "__init__.py"
 Remove-Item -Path "coaching/migrations/*.py" -Exclude "__init__.py"
 Remove-Item -Path "community/migrations/*.py" -Exclude "__init__.py"
@@ -199,6 +199,19 @@ Remove-Item -Path "flashcard/migrations/*.py" -Exclude "__init__.py"
 Remove-Item -Path "payments/migrations/*.py" -Exclude "__init__.py"
 Remove-Item -Path "quiz/migrations/*.py" -Exclude "__init__.py"
 Remove-Item -Path "revision/migrations/*.py" -Exclude "__init__.py"
+Remove-Item -Path "cards/migrations/*.py" -Exclude "__init__.py"
+
+
+rm -rf authentication/migrations/*.py
+rm -rf course/migrations/*.py
+rm -rf quiz/migrations/*.py
+
+
+# make the makemigrations and migrate of the classes
+
+python manage.py makemigrations authentication
+
+python manage.py makemigrations course
 
 
 # Start the development server

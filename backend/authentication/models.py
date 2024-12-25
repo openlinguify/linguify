@@ -17,12 +17,12 @@ LANGUAGE_CHOICES = [
 ]
 
 LEVEL_CHOICES = [
-    ('A1', 'Beginner'),
-    ('A2', 'Elementary'),
-    ('B1', 'Intermediate'),
-    ('B2', 'Upper Intermediate'),
-    ('C1', 'Advanced'),
-    ('C2', 'Proficiency'),
+    ('A1', 'A1'),
+    ('A2', 'A2'),
+    ('B1', 'B1'),
+    ('B2', 'B2'),
+    ('C1', 'C1'),
+    ('C2', 'C2'),
 ]
 
 OBJECTIVES_CHOICES = [
@@ -188,6 +188,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     objectives = models.CharField(max_length=20, choices=OBJECTIVES_CHOICES, default=OBJECTIVES_CHOICES[0][0],
                                   help_text="Your learning objectives")
     is_coach = models.BooleanField(default=False)  # Flag to indicate if a user is a coach
+
+
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']

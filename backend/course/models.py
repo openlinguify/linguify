@@ -23,16 +23,6 @@ Refer to the diagram for more details: path/to/image.png
 #         field_name = f"{field_base_name}_{target_language}"
 #         return getattr(self, field_name, getattr(self, f"{field_base_name}_en", None))
 
-# Level choices for languages
-LEVEL_CHOICES = [
-    ('A1', 'Beginner'),
-    ('A2', 'Elementary'),
-    ('B1', 'Intermediate'),
-    ('B2', 'Upper Intermediate'),
-    ('C1', 'Advanced'),
-    ('C2', 'Proficiency'),
-]
-
 # Type activity choices
 TYPE_ACTIVITY = [
     ('Theory', 'Theory'),
@@ -45,31 +35,15 @@ TYPE_ACTIVITY = [
     ('Test', 'Test'),
 ]
 
-class Language(models.Model):
-    name = models.CharField(max_length=100, unique=True, blank=False, null=False)
-    code = models.CharField(max_length=2, unique=True, blank=False, null=False)
-
-    def __str__(self):
-        return f"{self.name} - {self.code}"
-
-class Level(models.Model):
-    language = models.ForeignKey(Language, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100, choices=LEVEL_CHOICES, blank=False, null=False)
-    order = models.PositiveIntegerField(blank=False, null=False, default=1)
-
-    def __str__(self):
-        return f"{self.language.name} - {self.name}"
-
-class LearningPath(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
-    language = models.ForeignKey(Language, on_delete=models.CASCADE, default=1)
-    learning_path = models.CharField(max_length=100, unique=True, blank=False, null=False, default='Learning Path')
-
-    def __str__(self):
-        return f"{self.language} - {self.learning_path}"
-
 class Unit(models.Model):
-    learning_path = models.ForeignKey(LearningPath, on_delete=models.CASCADE)
+    LEVEL_CHOICES = [
+        ('A1', 'A1'),
+        ('A2', 'A2'),
+        ('B1', 'B1'),
+        ('B2', 'B2'),
+        ('C1', 'C1'),
+        ('C2', 'C2'),
+    ]
     title_en = models.CharField(max_length=100, blank=False, null=False)
     title_fr = models.CharField(max_length=100, blank=False, null=False)
     title_es = models.CharField(max_length=100, blank=False, null=False)
@@ -78,13 +52,13 @@ class Unit(models.Model):
     description_fr = models.TextField(null=True, blank=True)
     description_es = models.TextField(null=True, blank=True)
     description_nl = models.TextField(null=True, blank=True)
-    level = models.ForeignKey(Level, on_delete=models.CASCADE)
+    level = models.CharField(max_length=2, choices=LEVEL_CHOICES, blank=False, null=False)
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
     is_unlocked = models.BooleanField(default=False, blank=False, null=False)
     progress = models.FloatField(default=0.0, blank=False)
 
     def __str__(self):
-        return f"{self.title_en} - {self.level.name}"
+        return f"{self.title_en} - {self.level}"
 
     def get_unit_title(self, target_language='en'):
         match target_language:
@@ -335,15 +309,13 @@ class TestRecapExercise(models.Model):
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
 
 class TestRecapAttempt(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     test_recap = models.ForeignKey(TestRecap, on_delete=models.CASCADE)
     score = models.FloatField(blank=False, null=False)
     attempt_date = models.DateTimeField(auto_now_add=True)
     test_recap_passed = models.BooleanField(blank=False, null=False)
 
     def __str__(self):
-        return f"{self.user.username} - {self.test_recap.title} - {self.score} - {self.attempt_date} - {self.test_recap_passed}"
-
+        return f"{self.test_recap.title} - {self.score}"
 class GrammarModule(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     title = models.CharField(max_length=100, blank=False, null=False)
