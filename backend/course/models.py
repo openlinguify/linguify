@@ -54,11 +54,9 @@ class Unit(models.Model):
     description_nl = models.TextField(null=True, blank=True)
     level = models.CharField(max_length=2, choices=LEVEL_CHOICES, blank=False, null=False)
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
-    is_unlocked = models.BooleanField(default=False, blank=False, null=False)
-    progress = models.FloatField(default=0.0, blank=False)
 
     def __str__(self):
-        return f"{self.title_en} - {self.level}"
+        return f"{str(self.id).ljust(5)} | {self.title_en.ljust(30)} | {self.level.ljust(5)} | {str(self.order).ljust(5)}"
 
     def get_unit_title(self, target_language='en'):
         match target_language:
@@ -93,7 +91,6 @@ class Lesson(models.Model):
     description_nl = models.TextField(blank=False, null=False)
     estimated_duration = models.IntegerField(help_text="In minutes", blank=False, null=False)
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
-    is_complete = models.BooleanField(default=False, blank=False, null=False)
 
     def __str__(self):
         return f"{self.unit.title_en} - {self.title_en} - {self.lesson_type}"

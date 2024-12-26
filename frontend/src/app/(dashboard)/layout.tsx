@@ -2,6 +2,7 @@
 import React from 'react';
 import { Sidebar } from './_components/sidebar';
 import UnitList from '../(course)/(routes)/course/UnitList';
+import UnitsGrid from '../(course)/(routes)/course/UnitsGrid';
 
 const DashboardLayout = ({
     children
@@ -17,6 +18,10 @@ const DashboardLayout = ({
             {/* Main content of the Units */}
             <div className="flex-1 p-6 ml-56">
                 <UnitList />
+                {children}
+            </div>
+            <div>
+                <UnitsGrid />
                 {children}
             </div>
         </div>
