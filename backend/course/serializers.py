@@ -3,31 +3,32 @@ from rest_framework import serializers, generics
 from .models import Unit, Lesson, VocabularyList, Grammar
 
 class UnitSerializer(serializers.ModelSerializer):
-    title_en = serializers.CharField(source='title_en')
-    title_fr = serializers.CharField(source='title_fr')
-    title_es = serializers.CharField(source='title_es')
-    title_nl = serializers.CharField(source='title_nl')
-    lessons = serializers.SerializerMethodField()
-    progress = serializers.SerializerMethodField()
+    # Titre dynamique basé sur la langue cible
+    title = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
 
     class Meta:
         model = Unit
-        fields = ['id', 'learning_path', 'title_en', 'title_fr', 'title_es', 'title_nl', 'level', 'order', 'is_unlocked', 'progress']
+        fields = ['id', 'title', 'description', 'level', 'order']
 
+    # Méthode pour récupérer le titre dans la langue de l'utilisateur
     def get_title(self, obj):
-        target_language = self.context.get('request').user.target_language
-        return getattr(obj, f'title_{target_language}')
+        target_language = self._get_target_language()
+        return getattr(obj, f"title_{target_language}", obj.title_en)  # Fallback à l'anglais
 
-    def get_lessons(self, obj):
-        lessons = obj.lesson_set.order_by('order')
-        return LessonSerializer(lessons, many=True, context=self.context).data
+    # Méthode pour récupérer la description dans la langue de l'utilisateur
+    def get_description(self, obj):
+        target_language = self._get_target_language()
+        return getattr(obj, f"description_{target_language}", obj.description_en)  # Fallback à l'anglais
 
-    def get_progress(self, obj):
-        completed_lessons = obj.lesson_set.filter(is_completed=True).count()
-        total_lessons = obj.lesson_set.count()
-        if total_lessons == 0:
-            return 0
-        return round((completed_lessons / total_lessons) * 100)
+    # Méthode utilitaire pour récupérer la langue cible
+    def _get_target_language(self):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return getattr(request.user, 'target_language', 'en')  # Langue par défaut : anglais
+        return 'en'
+
+
 
 class LessonSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()

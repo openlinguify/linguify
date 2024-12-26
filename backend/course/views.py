@@ -1,7 +1,8 @@
 # course/views.py
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status, filters, generics
 from rest_framework.pagination import PageNumberPagination
 
@@ -41,22 +42,24 @@ class CustomPagination(PageNumberPagination):
 #         context['target_language'] = target_language
 #         return context
 
-class UnitAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+class UnitAPIView(ListAPIView):
+    permission_classes = [AllowAny]
     serializer_class = UnitSerializer
     pagination_class = CustomPagination
 
     def get_queryset(self):
-        user = self.request.user
-        if not isinstance(user, User) or not getattr(user, 'target_language', None):
-            return Unit.objects.none()
-        return Unit.objects.filter(learning_path__language=user.target_language)
+        queryset = Unit.objects.all().order_by('order')  # Trier par ordre croissant
+        request = self.request
 
-    def list(self, request, *args, **kwargs):
-        user = request.user
-        if not isinstance(user, User) or not getattr(user, 'target_language', None):
-            return Response({"error": "Please specify the target language in your profile."}, status=status.HTTP_400_BAD_REQUEST)
-        return super().list(request, *args, **kwargs)
+        # Filtrer selon la langue cible de l'utilisateur s'il est authentifié
+        if request.user.is_authenticated:
+            target_language = getattr(request.user, 'target_language', None)
+            if target_language:
+                # Ajoutez des filtres spécifiques si besoin
+                queryset = queryset.filter(description_en__isnull=False)
+
+        return queryset
+
 class LessonAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Lesson.objects.all()
