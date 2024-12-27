@@ -54,9 +54,24 @@ class Unit(models.Model):
     description_nl = models.TextField(null=True, blank=True)
     level = models.CharField(max_length=2, choices=LEVEL_CHOICES, blank=False, null=False)
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
+    
+    def get_formatted_titles(self):
+        titles = {
+            'EN': self.title_en,
+            'FR': self.title_fr,
+            'ES': self.title_es,
+            'NL': self.title_nl
+        }
+        return ' | '.join(
+            f"{lang}: {title[:20]}..." if len(title) > 20 else f"{lang}: {title}"
+            for lang, title in titles.items()
+        )
+
 
     def __str__(self):
-        return f"{str(self.id).ljust(5)} | {self.title_en.ljust(30)} | {self.level.ljust(5)} | {str(self.order).ljust(5)}"
+        unit_info = f"Unit {self.order:02d}".ljust(15)
+        level_info = f"[{self.level}]".ljust(5)
+        return f"{unit_info} {level_info} {self.get_formatted_titles()}"
 
     def get_unit_title(self, target_language='en'):
         match target_language:
@@ -133,7 +148,37 @@ class VocabularyList(models.Model):
     word_type_nl = models.CharField(max_length=100, blank=False, null=False)
 
     def __str__(self):
-        return {self.word_en - self.word_fr - self.word_es - self.word_nl}
+        return (
+            f"Lesson: {self.lesson.title_en} ({self.lesson.lesson_type.capitalize()}) | "
+            f"Word: {self.word_en} [{self.word_type_en}] | "
+            f"Definition: {self.definition_en[:30]}..."
+        )
+
+    def get_translation(self, target_language):
+        switch = {
+            'fr': self.word_fr,
+            'es': self.word_es,
+            'nl': self.word_nl,
+        }
+        return switch.get(target_language, self.word_en)
+
+    def get_example_sentence(self, target_language):
+        switch = {
+            'fr': self.example_sentence_fr,
+            'es': self.example_sentence_es,
+            'nl': self.example_sentence_nl,
+        }
+        return switch.get(target_language, self.example_sentence_en)
+
+    def get_definition(self, target_language):
+        switch = {
+            'fr': self.definition_fr,
+            'es': self.definition_es,
+            'nl': self.definition_nl,
+        }
+        return switch.get(target_language, self.definition_en)
+
+
 
 class ExerciseVocabularyMultipleChoice(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
