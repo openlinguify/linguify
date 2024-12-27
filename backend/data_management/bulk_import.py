@@ -1,6 +1,6 @@
 import os
 import csv
-from course.models import Unit, VocabularyList  # Remplacez par votre application et modèle
+from course.models import Unit, VocabularyList
 
 
 def validate_file_path(file_path: str) -> None:
@@ -32,11 +32,9 @@ def import_units_from_csv(file_path):
             )
             units.append(unit)
         
-        # Insérer massivement avec bulk_create pour optimiser
         Unit.objects.bulk_create(units)
         print(f"{len(units)} unités ajoutées avec succès.")
 
-# Spécifiez le chemin de votre fichier CSV
 file_path = "C:/Users/louis/OneDrive/Bureau/content/list_unit.csv"
 
 import_units_from_csv(file_path)
@@ -70,11 +68,11 @@ def import_vocabulary_lists_from_csv(file_path):
             )
             vocabulary_lists.append(vocabulary_list)
         
-        # Insérer massivement avec bulk_create pour optimiser
+        
         VocabularyList.objects.bulk_create(vocabulary_lists)
         print(f"{len(vocabulary_lists)} listes de vocabulaire ajoutées avec succès.")
 
-# Spécifiez le chemin de votre fichier CSV
+
 file_path = "C:/Users/louis/OneDrive/Bureau/content/vocabulary_list.csv"
 import_vocabulary_lists_from_csv(file_path)
 
