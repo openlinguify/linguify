@@ -18,7 +18,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                     {children}
                 </main>
 
-                {/* Grid Section */}
+                {/* Section pour afficher les unités */}
                 <section className="p-6 bg-white border-t">
                     <UnitsGrid />
                 </section>
