@@ -71,6 +71,10 @@ def import_units_from_csv(file_path):
 
         Unit.objects.bulk_create(units)
         print(f"{len(units)} unités ajoutées avec succès.")
+
+file_path = "C:/Users/louis/OneDrive/Bureau/content/list_unit.csv"
+
+import_units_from_csv(file_path)
 ```
 
 ### Exemple : Script pour importer des listes de vocabulaire
