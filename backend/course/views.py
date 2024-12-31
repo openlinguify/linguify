@@ -134,6 +134,7 @@ class VocabularyListAPIView(APIView):
         target_language = self.request.query_params.get('target_language', getattr(user, 'target_language', 'en'))
         context['target_language'] = target_language
         return context
+    
 class ExerciceVocabularyAPIView(APIView):
     permission_classes = [IsAuthenticated]
 

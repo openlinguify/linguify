@@ -92,9 +92,14 @@ class Lesson(models.Model):
         ('theory', 'Theory'),
         ('vocabulary', 'Vocabulary'),
         ('grammar', 'Grammar'),
+        ('pronunciation', 'Pronunciation'),
+        ('listening', 'Listening'),
+        ('speaking', 'Speaking'),
+        ('reading', 'Reading'),
+        ('writing', 'Writing'),
         ('test', 'Test'),
     ]
-    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name='lessons')
     lesson_type = models.CharField(max_length=100, choices=LESSON_TYPE, blank=False, null=False)
     title_en = models.CharField(max_length=255, blank=False, null=False)
     title_fr = models.CharField(max_length=255, blank=False, null=False)
