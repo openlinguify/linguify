@@ -122,7 +122,7 @@ class Booking(models.Model):
         ('CANCELLED', 'Annulé'),
         ('REFUNDED', 'Remboursé'),
     ]
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     commission_amount = models.DecimalField(max_digits=10, decimal_places=2)
