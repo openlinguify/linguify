@@ -1,4 +1,4 @@
-"use client"; // Marque ce fichier comme Client Component
+"use client"; // Pour que le code soit exécuté côté client et non côté serveur
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -27,7 +27,8 @@ const UnitsGrid: React.FC = () => {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/v1/course/units/');
         // Vérifie que la réponse contient bien des résultats paginés
-        setUnits(response.data.results || []);
+        setUnits((response.data as { results: Unit[] }).results || []);
+
       } catch (err) {
         console.error("Erreur lors de la récupération des unités :", err);
         setError("Impossible de charger les unités. Veuillez réessayer.");
@@ -40,78 +41,31 @@ const UnitsGrid: React.FC = () => {
 
   // Affichage du chargement
   if (loading) {
-    return <div style={styles.loading}>Chargement en cours...</div>;
+    return <div className="text-center mt-5 text-lg">Chargement en cours...</div>;
   }
 
   // Affichage des erreurs
   if (error) {
-    return <div style={styles.error}>{error}</div>;
+    return <div className="text-center mt-5 text-red-500 text-lg">{error}</div>;
   }
 
   // Affichage des unités
   return (
-    <div style={styles.gridContainer}>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
       {units.map(unit => (
         <div
           key={unit.id}
-          style={styles.gridItem}
+          className="p-4 border rounded-lg text-center shadow-md bg-gray-50 hover:scale-105 hover:shadow-lg transition-transform cursor-pointer"
           onClick={() => router.push(`/units/${unit.id}`)}
         >
-          <h3 style={styles.title}>{unit.title}</h3>
-          <p style={styles.description}>{unit.description}</p>
-          <p>Niveau : {unit.level}</p>
-          <p>Ordre : {unit.order}</p>
+          <h3 className="font-bold text-lg mb-2">{unit.title}</h3>
+          <p className="text-sm mb-2">{unit.description}</p>
+          <p className="text-sm font-medium">Niveau : {unit.level}</p>
+          <p className="text-sm font-medium">Ordre : {unit.order}</p>
         </div>
       ))}
     </div>
   );
-};
-
-// Styles CSS en JS
-const styles = {
-  gridContainer: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-    gap: '20px',
-    padding: '20px',
-  } as React.CSSProperties,
-
-  gridItem: {
-    padding: '15px',
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    textAlign: 'center',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    transition: 'transform 0.2s, box-shadow 0.2s',
-    cursor: 'pointer',
-    backgroundColor: '#f9f9f9',
-    '&:hover': {
-      transform: 'scale(1.05)',
-      boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
-    },
-  } as React.CSSProperties,
-
-  loading: {
-    textAlign: 'center',
-    marginTop: '20px',
-    fontSize: '18px',
-  } as React.CSSProperties,
-
-  error: {
-    textAlign: 'center',
-    marginTop: '20px',
-    color: 'red',
-    fontSize: '18px',
-  } as React.CSSProperties,
-
-  title: {
-    fontWeight: 'bold',
-  } as React.CSSProperties,
-
-  description: {
-    fontSize: '14px',
-    margin: '10px 0',
-  } as React.CSSProperties,
 };
 
 export default UnitsGrid;

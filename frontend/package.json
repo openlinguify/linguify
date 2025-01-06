@@ -26,7 +26,8 @@
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.1",
     "shadcn-ui": "^0.9.4",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
