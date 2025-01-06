@@ -1,6 +1,6 @@
 "use client";
 
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "@nextui-org/progress";
 
 export const UserProgress = () => {
   // This would normally be fetched from your backend
