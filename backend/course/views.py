@@ -15,9 +15,11 @@ from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
 import random
 
-
+# par exemple, pour limiter le nombre de unités d'apprentissage retournées par page à 15
+# et pour permettre à l'utilisateur de spécifier le nombre d'unités d'apprentissage à afficher par page
+# en utilisant le paramètre de requête `page_size`
 class CustomPagination(PageNumberPagination):
-    page_size = 10
+    page_size = 5
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -132,6 +134,7 @@ class VocabularyListAPIView(APIView):
         target_language = self.request.query_params.get('target_language', getattr(user, 'target_language', 'en'))
         context['target_language'] = target_language
         return context
+    
 class ExerciceVocabularyAPIView(APIView):
     permission_classes = [IsAuthenticated]
 

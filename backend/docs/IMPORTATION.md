@@ -71,6 +71,10 @@ def import_units_from_csv(file_path):
 
         Unit.objects.bulk_create(units)
         print(f"{len(units)} unités ajoutées avec succès.")
+
+file_path = "C:/Users/louis/OneDrive/Bureau/content/list_unit.csv"
+
+import_units_from_csv(file_path)
 ```
 
 ### Exemple : Script pour importer des listes de vocabulaire
@@ -79,13 +83,15 @@ def import_units_from_csv(file_path):
 import csv
 from course.models import VocabularyList
 
-def import_vocabularies_from_csv(file_path):
+def import_vocabulary_lists_from_csv(file_path):
     with open(file_path, encoding='utf-8') as csv_file:
         reader = csv.DictReader(csv_file)
-        vocabularies = []
+        vocabulary_lists = []
 
         for row in reader:
-            vocabulary = VocabularyList(
+            vocabulary_list = VocabularyList(
+
+                lesson_id=int(row['lesson_id']),
                 word_en=row['word_en'],
                 word_fr=row['word_fr'],
                 word_es=row['word_es'],
@@ -93,12 +99,26 @@ def import_vocabularies_from_csv(file_path):
                 definition_en=row['definition_en'],
                 definition_fr=row['definition_fr'],
                 definition_es=row['definition_es'],
-                definition_nl=row['definition_nl']
+                definition_nl=row['definition_nl'],
+                example_sentence_en=row['example_sentence_en'],
+                example_sentence_fr=row['example_sentence_fr'],
+                example_sentence_es=row['example_sentence_es'],
+                example_sentence_nl=row['example_sentence_nl'],
+                word_type_en=row['word_type_en'],
+                word_type_fr=row['word_type_fr'],
+                word_type_es=row['word_type_es'],
+                word_type_nl=row['word_type_nl']
             )
-            vocabularies.append(vocabulary)
+            vocabulary_lists.append(vocabulary_list)
+        
+        # Insérer massivement avec bulk_create pour optimiser
+        VocabularyList.objects.bulk_create(vocabulary_lists)
+        print(f"{len(vocabulary_lists)} listes de vocabulaire ajoutées avec succès.")
 
-        VocabularyList.objects.bulk_create(vocabularies)
-        print(f"{len(vocabularies)} listes de vocabulaire ajoutées avec succès.")
+# Spécifiez le chemin de votre fichier CSV
+file_path = "C:/Users/louis/OneDrive/Bureau/content/list_vocabulary.csv"
+import_vocabulary_lists_from_csv(file_path)
+
 ```
 
 ---
@@ -121,8 +141,8 @@ import_units_from_csv("C:/Users/louis/OneDrive/Bureau/content/list_unit.csv")
 ### 3. Importer et exécuter le script pour les vocabulaires :
 
 ```python
-from data_management.bulk_import import import_vocabularies_from_csv
-import_vocabularies_from_csv("C:/Users/louis/OneDrive/Bureau/content/vocab_list.csv")
+from data_management.bulk_import import import_vocabulary_lists_from_csv
+import_vocabulary_lists_from_csv("C:/Users/louis/OneDrive/Bureau/content/vocabulary_list.csv")
 ```
 
 ---

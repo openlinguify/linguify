@@ -1,5 +1,16 @@
+import os
 import csv
-from course.models import Unit  # Remplacez par votre application et modèle
+from course.models import Unit
+
+
+def validate_file_path(file_path: str) -> None:
+    """Vérifie si le fichier existe et est accessible"""
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Le fichier '{file_path}' n'existe pas.")
+    if not os.path.isfile(file_path):
+        raise ValueError(f"'{file_path}' n'est pas un fichier.")
+    if not file_path.endswith('.csv'):
+        raise ValueError(f"'{file_path}' n'est pas un fichier CSV.")
 
 def import_units_from_csv(file_path):
     with open(file_path, encoding='utf-8') as csv_file:
@@ -21,15 +32,9 @@ def import_units_from_csv(file_path):
             )
             units.append(unit)
         
-        # Insérer massivement avec bulk_create pour optimiser
         Unit.objects.bulk_create(units)
         print(f"{len(units)} unités ajoutées avec succès.")
 
-# Spécifiez le chemin de votre fichier CSV
 file_path = "C:/Users/louis/OneDrive/Bureau/content/list_unit.csv"
 
 import_units_from_csv(file_path)
-
-
-
-

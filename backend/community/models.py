@@ -17,7 +17,7 @@ class Profile(models.Model):
         null=True,
         help_text="Langues que l'utilisateur peut enseigner, exemple : ['English', 'German']"
     )
-    friends = models.ManyToManyField('self', blank=True, symmetrical=True, related_name='friend_profiles')
+    friends = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='friends_with')
     blocked_users = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='blocked_by')
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, help_text="Photo de profil")
     is_online = models.BooleanField(default=False, help_text="Statut en ligne de l'utilisateur")

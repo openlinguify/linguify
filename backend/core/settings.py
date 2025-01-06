@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     'payments',
     'quiz',
     'revision',
+    #'subscription',
+    
 
     # Django REST framework modules
     'rest_framework',
