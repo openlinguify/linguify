@@ -34,15 +34,19 @@ More info: https://medium.com/@zalun/django-with-poetry-ea95bd5083f7
 - **`settings.py` file**: Main configuration for Django.
 - **`docs` folder**: Contains documentation and notes.
 
-### Database Settings
-Ensure that the `.env` file contains the correct information for PostgreSQL:
+### Environment Settings
+Ensure that the `.env` file contains the correct information for PostgreSQL and Auth0:
 ```env
 DB_NAME=linguify_db
 DB_USER=postgres
 DB_PASSWORD=your_password
 DB_HOST=localhost
 DB_PORT=5432
+AUTH0_DOMAIN=YOUR_AUTH0_DOMAIN
+AUTH0_CLIENT_ID=YOUR_AUTH0_CLIENT_ID
+AUTH0_CLIENT_SECRET=YOUR_AUTH0_CLIENT_SECRET
 ```
+The .env file is available in protonpass under `Project ENV (.env)`
 
 ---
 
