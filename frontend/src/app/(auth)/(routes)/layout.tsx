@@ -1,3 +1,4 @@
+// src/app/(auth)/(routes)/layout.tsx
 const AuthLayout = (
     { children }: { children: React.ReactNode }
 ) => {

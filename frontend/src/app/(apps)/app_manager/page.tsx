@@ -1,3 +1,4 @@
+// src/app/(apps)/app_manager/page.tsx
 "use client";
 
 import AppInterface from "@/app_manager/AppInterface";

@@ -1,10 +1,11 @@
+// src/app/(auth)/(routes)/(login)/login/page.tsx
 'use client';
 
 import React from 'react';
-import { Globe, Github, Google } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/Alert";
+import { Globe } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
+import { Alert, AlertDescription } from "@/shared/components/ui/alert";
 
 export default function LoginPage() {
   const [error, setError] = React.useState<string | null>(null);
