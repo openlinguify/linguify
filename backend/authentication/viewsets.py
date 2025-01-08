@@ -1,4 +1,8 @@
 # backend/django_apps/authentication/viewsets.py
+import jwt
+
+from functools import wraps
+from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
@@ -9,6 +13,41 @@ from decimal import Decimal
 from .utils import notify_coach_of_commission_change
 from .models import User, CoachProfile, Review, UserFeedback
 from .serializers import UserSerializer, UserRegistrationSerializer, CoachProfileSerializer, ReviewSerializer, UserFeedbackSerializer
+
+
+# API Scope-based permissions
+# Source: https://auth0.com/docs/quickstart/backend/django/01-authorization
+# Not sure we need this for now, but it's here for reference for later use
+
+def get_token_auth_header(request):
+    """Obtains the Access Token from the Authorization Header
+    """
+    auth = request.META.get("HTTP_AUTHORIZATION", None)
+    parts = auth.split()
+    token = parts[1]
+
+    return token
+
+def requires_scope(required_scope):
+    """Determines if the required scope is present in the Access Token
+    Args:
+        required_scope (str): The scope required to access the resource
+    """
+    def require_scope(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            token = get_token_auth_header(args[0])
+            decoded = jwt.decode(token, verify=False)
+            if decoded.get("scope"):
+                token_scopes = decoded["scope"].split()
+                for token_scope in token_scopes:
+                    if token_scope == required_scope:
+                        return f(*args, **kwargs)
+            response = JsonResponse({'message': 'You don\'t have access to this resource'})
+            response.status_code = 403
+            return response
+        return decorated
+    return require_scope
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
