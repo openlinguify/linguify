@@ -1,4 +1,4 @@
-import { Logo } from "./logo";
+import { Logo } from "./header/logo";
 import { SidebarRoutes } from "./sidebar-routes";
 import { UserProgress } from "./user-progress";
 
