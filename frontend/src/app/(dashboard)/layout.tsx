@@ -1,7 +1,7 @@
 import React from 'react';
 import { Sidebar } from './_components/sidebar';
-import UnitList from '../(routes)/(course)/(routes)/course/UnitList';
-import UnitsGrid from '../(routes)/(course)/(routes)/course/UnitsGrid';
+import UnitList from '../(learning)/courses/course/UnitList';
+import UnitsGrid from '../(learning)/courses/course/UnitsGrid';
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     return (
