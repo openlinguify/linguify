@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^3.5.0",
     "@clerk/nextjs": "^6.9.6",
     "@nextui-org/progress": "^2.2.6",
     "@prisma/client": "^6.1.0",
