@@ -1,3 +1,4 @@
+// src/app/(learning)/courses/course/UnitsGrid.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -8,11 +9,11 @@ import {
   CardHeader,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/shared/components/ui/card";
+import { Badge } from "@/shared/components/ui/badge";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { BookOpen, ArrowUpRight, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/shared/components/ui/alert";
 
 type Unit = {
   id: number;

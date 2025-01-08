@@ -1,6 +1,18 @@
+// src/lib/auth/auth0-provider.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Auth0Provider } from '@auth0/auth0-react';
+
+// type User = {
+//   id: string;
+//   email: string;
+type User = {
+    id: string;
+    email: string;
+    name: string;
+    domain: string;
+    client_id: string;
+}
 
 const AuthContext = createContext({
   isAuthenticated: false,
