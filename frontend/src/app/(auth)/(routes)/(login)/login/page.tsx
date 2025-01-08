@@ -1,31 +1,39 @@
+'use client';
+
 import React from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
 import { Globe, Github, Google } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/Alert";
 
 export default function LoginPage() {
-  const { loginWithRedirect, isLoading, error } = useAuth0();
+  const [error, setError] = React.useState<string | null>(null);
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  const handleLogin = (provider: string) => {
-    loginWithRedirect({
-      authorizationParams: {
-        connection: provider,
-        redirect_uri: `${window.location.origin}/dashboard`
-      }
-    });
+  const handleLogin = async (provider: string) => {
+    try {
+      setIsLoading(true);
+      const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
+      const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
+      const redirectUri = `${window.location.origin}/callback`;
+      
+      window.location.href = `https://${auth0Domain}/authorize?` +
+        `response_type=code&` +
+        `client_id=${clientId}&` +
+        `redirect_uri=${redirectUri}&` +
+        `connection=${provider}&` +
+        `scope=openid profile email`;
+
+    } catch (err) {
+      setError('An error occurred during login');
+      console.error('Login error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-start md:items-center p-8 bg-gradient-to-br from-sky-50 to-gray-100">
+    <div className="min-h-screen flex justify-center items-start md:items-center p-8 bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-3">
           <div className="flex items-center justify-center gap-2">
@@ -34,22 +42,18 @@ export default function LoginPage() {
               Linguify
             </CardTitle>
           </div>
-          <CardDescription className="text-center text-gray-600">
+          <CardDescription className="text-center">
             Choose your preferred way to sign in
           </CardDescription>
         </CardHeader>
 
-        {error && (
-          <CardContent>
+        <CardContent className="space-y-4">
+          {error && (
             <Alert variant="destructive">
-              <AlertDescription>
-                {error.message || "An error occurred during login"}
-              </AlertDescription>
+              <AlertDescription>{error}</AlertDescription>
             </Alert>
-          </CardContent>
-        )}
+          )}
 
-        <CardFooter className="flex flex-col gap-3 pt-6">
           <Button
             disabled={isLoading}
             onClick={() => handleLogin('github')}
@@ -62,18 +66,19 @@ export default function LoginPage() {
           <Button
             disabled={isLoading}
             onClick={() => handleLogin('google-oauth2')}
-            className="w-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+            className="w-full bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+            variant="outline"
           >
             <Google className="w-5 h-5" />
             Sign in with Google
           </Button>
 
-          <div className="relative w-full text-center my-4">
+          <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200"></div>
             </div>
-            <div className="relative">
-              <span className="px-4 text-sm text-gray-500 bg-white">
+            <div className="relative flex justify-center">
+              <span className="bg-white px-4 text-sm text-gray-500">
                 or continue with email
               </span>
             </div>
@@ -86,19 +91,8 @@ export default function LoginPage() {
           >
             Continue with Email
           </Button>
-
-          <p className="text-center text-sm text-gray-500 mt-4">
-            By signing in, you agree to our{' '}
-            <a href="/terms" className="text-sky-600 hover:text-sky-700">
-              Terms of Service
-            </a>{' '}
-            and{' '}
-            <a href="/privacy" className="text-sky-600 hover:text-sky-700">
-              Privacy Policy
-            </a>
-          </p>
-        </CardFooter>
+        </CardContent>
       </Card>
     </div>
   );
-};
+}
