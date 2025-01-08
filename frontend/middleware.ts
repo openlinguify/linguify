@@ -1,24 +1,71 @@
 // frontend/middleware.ts
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from 'next/server';
+import { getSession, withMiddlewareAuthRequired } from '@auth0/nextjs-auth0/edge';
+import type { NextRequest } from 'next/server';
 
-// Crée un vérificateur pour les routes publiques
-const isPublicRoute = createRouteMatcher(["/test"]);
+// Liste des routes publiques
+const PUBLIC_ROUTES = [
+  '/test',
+  '/api/health',
+  '/',
+  '/login',
+  '/register',
+  '/about',
+  '/contact',
+  '/api/auth/.*'  // Pour les endpoints Auth0
+];
 
-export default clerkMiddleware(async (auth, req) => {
-  // Récupérer l'authentification de l'utilisateur
-  const { userId } = await auth(); // Résout la promesse
+// Fonction pour vérifier si une route est publique
+const isPublicRoute = (path: string): boolean => {
+  return PUBLIC_ROUTES.some(route => {
+    if (route.endsWith('.*')) {
+      const baseRoute = route.slice(0, -2);
+      return path.startsWith(baseRoute);
+    }
+    return path === route;
+  });
+};
 
-  // Si ce n'est pas une route publique et qu'il n'y a pas d'utilisateur connecté, renvoie une erreur 401
-  if (!isPublicRoute(req) && !userId) {
-    return new Response("Unauthorized", { status: 401 });
+// Fonction pour vérifier les assets et fichiers statiques
+const isStaticFile = (path: string): boolean => {
+  return /\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/.test(path);
+};
+
+export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+
+  // Permettre l'accès aux fichiers statiques
+  if (isStaticFile(path)) {
+    return NextResponse.next();
   }
-});
+
+  // Permettre l'accès aux routes publiques
+  if (isPublicRoute(path)) {
+    return NextResponse.next();
+  }
+
+  try {
+    // Vérifier la session Auth0
+    const session = await getSession();
+    
+    // Si pas de session et route protégée, rediriger vers login
+    if (!session?.user) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    // Utilisateur authentifié, continuer
+    return NextResponse.next();
+  } catch (error) {
+    console.error('Auth middleware error:', error);
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+}
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
+    // Exclure les fichiers statiques sauf si dans les paramètres de recherche
+    '/((?!_next|[^?]*\\.(html?|css|js|jpg|jpeg|png|gif|ico|svg|woff2?|ttf)).*)',
+    // Toujours exécuter pour les routes API
     '/(api|trpc)(.*)',
   ],
 };

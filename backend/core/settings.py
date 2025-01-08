@@ -56,6 +56,8 @@ INSTALLED_APPS = [
     'quiz',
     'revision',
     #'subscription',
+    #'app_manager', # 'app_manager', # TODO: Uncomment when app_manager is ready
+    #'notebook', # TODO: Uncomment when notebook is ready
     
 
     # Django REST framework modules
