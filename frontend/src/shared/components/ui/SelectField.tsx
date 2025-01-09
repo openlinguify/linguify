@@ -1,3 +1,4 @@
+// src/app/
 "use client";
 
 import React from "react";
@@ -8,7 +9,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
+} from "@/shared/components/ui/select";
 
 interface SelectFieldProps {
     label: string;

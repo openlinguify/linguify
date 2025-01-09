@@ -10,5 +10,6 @@ router.register(r'user-feedback', UserFeedbackViewSet, basename='user-feedback')
 
 urlpatterns = [
     path('', include(router.urls)),  # Inclure les URLs générées par le UserViewSet
+    path('login')
     path('commission-override/<int:coach_id>/', UpdateCommissionOverride.as_view(), name='commission-override'),
 ]
