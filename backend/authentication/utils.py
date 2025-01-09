@@ -1,5 +1,7 @@
 # backend/django_apps/authentication/utils.py
-
+from django.conf import settings
+from rest_framework import authentication
+from rest_framework import exceptions
 import json
 
 import jwt
@@ -52,3 +54,5 @@ def jwt_decode_token(token):
 
     issuer = 'https://{}/'.format('dev-hazi5dwwkk7pe476.eu.auth0.com')
     return jwt.decode(token, public_key, audience='https://dev-hazi5dwwkk7pe476.eu.auth0.com/api/v2/', issuer=issuer, algorithms=['RS256'])
+
+
