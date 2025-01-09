@@ -67,3 +67,42 @@ export function useAuth() {
 }
 
 export default Auth0ProviderWithNavigate;
+
+
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useUser } from '@auth0/nextjs-auth0/client';
+
+interface AuthContextType {
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  user: any;
+  error: Error | null;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { user, error, isLoading } = useUser();
+  
+  const value = {
+    isAuthenticated: !!user,
+    isLoading,
+    user,
+    error
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
