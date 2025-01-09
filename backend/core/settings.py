@@ -63,9 +63,7 @@ INSTALLED_APPS = [
     # Django REST framework modules
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_simplejwt',
     'corsheaders',
-    'rest_framework_simplejwt.token_blacklist',
 
 
     # test
@@ -74,27 +72,18 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'authentication.User'
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.RemoteUserMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-]
-
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'django.contrib.auth.backends.RemoteUserBackend',
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        #'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'authentication.auth0_auth.Auth0Authentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
@@ -106,40 +95,56 @@ REST_FRAMEWORK = {
 }
 
 # Configuration for JWT
-from datetime import timedelta
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'TOKEN_OBTAIN_SERIALIZER': "authentication.serializers.MyTokenObtainPairSerializer",
-}
+# from datetime import timedelta
+# SIMPLE_JWT = {
+#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+#     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+#     'ROTATE_REFRESH_TOKENS': False,
+#     'BLACKLIST_AFTER_ROTATION': True,
+#     'AUTH_HEADER_TYPES': ('Bearer',),
+#     'TOKEN_OBTAIN_SERIALIZER': "authentication.serializers.MyTokenObtainPairSerializer",
+# }
 # Load Auth0 application settings into memory
 
 AUTH0_DOMAIN = os.environ.get("AUTH0_DOMAIN")
 AUTH0_CLIENT_ID = os.environ.get("AUTH0_CLIENT_ID")
 AUTH0_CLIENT_SECRET = os.environ.get("AUTH0_CLIENT_SECRET")
 AUTH0_AUDIENCE = os.environ.get("AUTH0_AUDIENCE")
-JWT_AUTH = {
-    'JWT_PAYLOAD_GET_USERNAME_HANDLER':
-        'auth0authorization.utils.jwt_get_username_from_payload_handler',
-    'JWT_DECODE_HANDLER':
-        'auth0authorization.utils.jwt_decode_token',
-    'JWT_ALGORITHM': 'RS256',
-    'JWT_ISSUER': 'https://dev-hazi5dwwkk7pe476.eu.auth0.com/',
-    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-}
+AUTH0_ALGORITHM = os.environ.get("AUTH0_ALGORITHMS")
+
+# JWT_AUTH = {
+#     'JWT_PAYLOAD_GET_USERNAME_HANDLER':
+#         'auth0authorization.utils.jwt_get_username_from_payload_handler',
+#     'JWT_DECODE_HANDLER':
+#         'auth0authorization.utils.jwt_decode_token',
+#     'JWT_ALGORITHM': 'RS256',
+#     'JWT_ISSUER': 'https://dev-hazi5dwwkk7pe476.eu.auth0.com/',
+#     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+# }
 
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
 }
-
+CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'http://127.0.0.1:8000',
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.RemoteUserMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -213,8 +218,6 @@ STATICFILES_DIRS = []
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-SIMPLE_JWT['BLACKLIST_AFTER_ROTATION'] = True
 
 APPEND_SLASH = True
 
