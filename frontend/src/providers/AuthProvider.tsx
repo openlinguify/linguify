@@ -1,57 +1,40 @@
 "use client";
 
+"use client";
+
 import React, { createContext, useContext, useCallback } from 'react';
-import { UserProfile, UserProvider, useUser } from '@auth0/nextjs-auth0/client';
+import { UserProvider, useUser } from '@auth0/nextjs-auth0/client';
 
 interface AuthContextValue {
-  user: UserProfile | null;
+  user: any;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: Error | null;
-  login: () => Promise<void>;
-  logout: () => Promise<void>;
-  handleAuthError: (error: Error) => void;
+  login: () => void;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-// Créez un composant interne qui utilise useUser
+// Composant interne qui utilise useUser
 function AuthProviderInternal({ children }: { children: React.ReactNode }) {
   const { user, error, isLoading } = useUser();
 
-  const handleAuthError = useCallback((err: Error) => {
-    console.error('Auth error:', err);
-    // Implement your error logging service here
+  const login = useCallback(() => {
+    window.location.href = '/api/v1/auth/login';
   }, []);
 
-  const login = useCallback(async () => {
-    try {
-      window.location.href = '/api/auth/login';
-    } catch (err) {
-      handleAuthError(err as Error);
-    }
-  }, [handleAuthError]);
+  const logout = useCallback(() => {
+    window.location.href = '/api/v1/auth/logout';
+  }, []);
 
-  const logout = useCallback(async () => {
-    try {
-      window.location.href = '/api/auth/logout';
-    } catch (err) {
-      handleAuthError(err as Error);
-    }
-  }, [handleAuthError]);
-
-  if (error) {
-    handleAuthError(error);
-  }
-
-  const value: AuthContextValue = {
+  const value = {
     user: user || null,
     isAuthenticated: !!user,
     isLoading,
     error: error || null,
     login,
-    logout,
-    handleAuthError
+    logout
   };
 
   return (
@@ -72,6 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Hook pour utiliser le contexte d'authentification
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
