@@ -1,4 +1,4 @@
-// src/app/(dashboard)/_components/settings.tsx
+// src/app/(dashboard)/_components/header.tsx
 "use client";
 
 import React, { useState } from "react";

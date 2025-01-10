@@ -56,13 +56,9 @@ const UnitsGrid: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {[...Array(4)].map((_, i) => (
-          <Card key={i} className="p-4">
-            <Skeleton className="h-4 w-24 mb-4" />
-            <Skeleton className="h-24 w-full mb-4" />
-            <Skeleton className="h-8 w-full" />
-          </Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <Skeleton key={index} className="h-40 w-full rounded-lg" />
         ))}
       </div>
     );
@@ -71,35 +67,31 @@ const UnitsGrid: React.FC = () => {
   if (error) {
     return (
       <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
+        <AlertCircle className="h-5 w-5" />
         <AlertDescription>{error}</AlertDescription>
       </Alert>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {units.map((unit) => (
-        <Card key={unit.id} className="hover:shadow-lg transition-shadow">
+        <Card
+          key={unit.id}
+          className="hover:shadow-lg transition-all cursor-pointer"
+          onClick={() => router.push(`/units/${unit.id}`)}
+        >
           <CardHeader>
-            <div className="flex justify-between items-center">
-              <Badge variant="secondary">{unit.level}</Badge>
-              <span className="text-sm text-gray-500">#{unit.order}</span>
-            </div>
-            <h3 className="font-semibold text-lg">{unit.title}</h3>
+            <h3 className="text-lg font-bold">{unit.title}</h3>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600">{unit.description}</p>
           </CardContent>
-          <CardFooter>
-            <button
-              onClick={() => router.push(`/courses/${unit.id}`)}
-              className="w-full flex items-center justify-center gap-2 p-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity"
-            >
-              <BookOpen className="w-4 h-4" />
-              Commencer
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
+          <CardFooter className="flex items-center justify-between">
+            <Badge variant="outline" className="text-sky-600">
+              Level {unit.level}
+            </Badge>
+            <BookOpen className="h-5 w-5 text-sky-600" />
           </CardFooter>
         </Card>
       ))}

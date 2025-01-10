@@ -1,17 +1,9 @@
-import React, { Suspense } from 'react';
-import { Sidebar } from './_components/sidebar';
+// src/app/(dashboard)/layout.tsx
+"use client";
 
-// Loading fallback components
-const LoadingUnits = () => (
-  <div className="animate-pulse space-y-4">
-    <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="h-48 bg-gray-200 rounded"></div>
-      ))}
-    </div>
-  </div>
-);
+import React from 'react';
+import { Sidebar } from './_components/sidebar';
+import { UserButton } from "@/shared/components/ui/user-button";
 
 export default function DashboardLayout({
   children,
@@ -27,23 +19,16 @@ export default function DashboardLayout({
 
       {/* Main Content Section */}
       <div className="flex-1 flex flex-col md:ml-56">
+        {/* Top Header */}
+        <header className="h-16 border-b bg-white flex items-center justify-end px-6">
+          <UserButton />
+        </header>
+
+        {/* Main Content */}
         <main className="flex-1 p-6 overflow-auto">
           {children}
         </main>
-
-        {/* Units Section */}
-        <section className="p-6 bg-white border-t">
-          <Suspense fallback={<LoadingUnits />}>
-            <UnitsList />
-          </Suspense>
-        </section>
       </div>
     </div>
   );
-}
-
-// Import units list component asynchronously
-async function UnitsList() {
-  const UnitsGrid = (await import('../(apps)/learning/courses/UnitsGrid')).default;
-  return <UnitsGrid />;
 }

@@ -1,3 +1,4 @@
+// src/app/(dashboard)/_components/user-progress.tsx
 "use client";
 
 import { Progress } from "@nextui-org/progress";
