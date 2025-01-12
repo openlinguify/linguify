@@ -1,3 +1,4 @@
+// src/middleware.ts
 import { NextResponse } from 'next/server';
 import { getSession, withMiddlewareAuthRequired } from '@auth0/nextjs-auth0/edge';
 import type { NextRequest } from 'next/server';
@@ -27,6 +28,7 @@ const PROTECTED_ROUTES: ProtectedRoute[] = [
   { path: '/admin', roles: ['admin'] },
   { path: '/teacher', roles: ['teacher', 'admin'] },
   { path: '/premium', roles: ['premium', 'admin'] },
+  { path: '/apps/revision', roles: ['user', 'admin', 'teacher', 'premium'] },
   { path: '/dashboard', roles: ['user', 'admin', 'teacher', 'premium'] }
 ];
 
@@ -76,58 +78,51 @@ const getRedirectUrl = (request: NextRequest, path: string): string => {
 };
 
 // Middleware
-export const middleware = withMiddlewareAuthRequired(async function middleware(
-  request: NextRequest
-) {
-  const path = request.nextUrl.pathname;
+export default withMiddlewareAuthRequired(
+  async function middleware(request: NextRequest) {
+    const path = request.nextUrl.pathname;
 
-  // Allow static files and public routes
-  if (isStaticFile(path) || isPublicRoute(path)) {
-    return NextResponse.next();
-  }
-
-  try {
-    const session = await getSession();
-    
-    // Handle unauthenticated users
-    if (!session?.user) {
-      return NextResponse.redirect(
-        getRedirectUrl(request, '/login')
-      );
+    // Allow static files and public routes
+    if (isStaticFile(path) || isPublicRoute(path)) {
+      return NextResponse.next();
     }
 
-    // Get user roles from Auth0 custom claims
-    const userRoles = (session.user['https://your-namespace/roles'] || ['user']) as Role[];
-    
-    // Check role-based access
-    if (!hasRequiredRole(userRoles, path)) {
+    try {
+      const session = await getSession(request, NextResponse.next());
+      
+      // Handle unauthenticated users
+      if (!session?.user) {
+        return NextResponse.redirect(
+          new URL('/api/auth/login', request.url)
+        );
+      }
+
+      // Get user roles from Auth0 custom claims
+      const userRoles = (session.user['https://linguify.app/roles'] || ['user']) as Role[];
+      
+      // Check role-based access
+      if (!hasRequiredRole(userRoles, path)) {
+        return NextResponse.redirect(
+          new URL('/unauthorized', request.url)
+        );
+      }
+
+      // Add user info to request headers
+      const response = NextResponse.next();
+      response.headers.set('x-user-id', session.user.sub);
+      response.headers.set('x-user-roles', userRoles.join(','));
+
+      return response;
+
+    } catch (error) {
+      console.error('Auth middleware error:', error);
       return NextResponse.redirect(
-        getRedirectUrl(request, '/unauthorized')
+        new URL('/api/auth/login', request.url)
       );
     }
-
-    // Add user info to request headers
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set('x-user-id', session.user.sub);
-    requestHeaders.set('x-user-roles', userRoles.join(','));
-
-    // Continue with added context
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
-
-  } catch (error) {
-    console.error('Auth middleware error:', error);
-    // Log detailed error info but don't expose it to the client
-    return NextResponse.redirect(
-      getRedirectUrl(request, '/login')
-    );
   }
-});
+);
 
-// Matcher configuration
 export const config = {
   matcher: [
     // Match all paths except Next.js specific ones and static files

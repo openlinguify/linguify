@@ -24,6 +24,11 @@ const routes = [
     href: "/apps/learning/courses",
   },
   {
+    label: "Revision",
+    icon: BookOpen,
+    href: "/apps/revision",
+  },
+  {
     label: "Progress",
     icon: Star,
     href: "/progress",

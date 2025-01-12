@@ -1,6 +1,9 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { AuthProvider } from "@/providers/AuthProvider";
+import { Toaster } from "@/components/ui/toaster";
 import "@/styles/globals.css";
 
 // Font configuration
@@ -27,11 +30,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} bg-gray-50 min-h-screen`}>
-        <AuthProvider>
-          <main className="flex min-h-screen flex-col">
-            {children}
-          </main>
-        </AuthProvider>
+        <UserProvider>
+          <AuthProvider>
+            <main className="flex min-h-screen flex-col">
+              {children}
+            </main>
+            <Toaster />
+          </AuthProvider>
+        </UserProvider>
       </body>
     </html>
   );
