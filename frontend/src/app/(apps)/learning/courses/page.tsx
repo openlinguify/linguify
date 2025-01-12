@@ -29,7 +29,6 @@ export default function CoursesPage() {
     const fetchUnits = async () => {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/v1/course/units/');
-        // Vérifie que la réponse contient bien des résultats paginés
         setUnits((response.data as { results: Unit[] }).results || []);
       } catch (err) {
         console.error("Error loading units:", err);

@@ -1,3 +1,4 @@
+// src/frontend/src/app/%28apps%29/learning/courses/_components/UnitsGrid.tsx
 'use client';
 
 import React, { useEffect, useState } from "react";
@@ -32,7 +33,6 @@ const UnitsGrid: React.FC = () => {
 
   useEffect(() => {
     const fetchUnits = async () => {
-      if (!isAuthenticated) return;
       
       try {
         const response = await axios.get<{ results: Unit[] }>(
