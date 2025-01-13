@@ -48,7 +48,7 @@ def auth0_callback(request):
 
     return JsonResponse(token_response.json())
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def auth0_logout(request):
     """
@@ -56,10 +56,14 @@ def auth0_logout(request):
     """
     params = {
         'client_id': settings.AUTH0_CLIENT_ID,
-        'returnTo': f"{request.scheme}://{request.get_host()}/"
+        'returnTo': f"http://localhost:3000/"
     }
 
-    return redirect(f'https://{settings.AUTH0_DOMAIN}/v2/logout?{urlencode(params)}')
+    auth0_logout_url = f'https://{settings.AUTH0_DOMAIN}/v2/logout?{urlencode(params)}'
+    return JsonResponse({
+        'logoutUrl': auth0_logout_url 
+    })
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
