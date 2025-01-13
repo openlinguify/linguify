@@ -21,6 +21,6 @@ auth0_patterns = [
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('auth0/', include(auth0_patterns)),
+    path('auth/', include(auth0_patterns)),
     path('commission-override/<int:coach_id>/', UpdateCommissionOverride.as_view(), name='commission-override'),
 ]
