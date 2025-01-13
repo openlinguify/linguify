@@ -33,3 +33,8 @@ class UserAppAccess(models.Model):
     )
     is_premium = models.BooleanField(default=False)
     premium_expiry = models.DateTimeField(null=True, blank=True)
+
+
+
+
+
