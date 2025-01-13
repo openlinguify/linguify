@@ -1,13 +1,15 @@
-// src/app/(learning)/courses/page.tsx
-"use client";
+'use client';
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { AxiosError } from "axios";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/components/ui/tabs";
 import { Card } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
-import { BookOpen, List, Grid } from "lucide-react";
+import { BookOpen, List, Grid, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/shared/components/ui/alert";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 // Types
 interface Unit {
@@ -18,7 +20,24 @@ interface Unit {
   order: number;
 }
 
-// Main component
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+
+// Loading skeleton component
+const LoadingSkeleton = () => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {[...Array(6)].map((_, i) => (
+      <Card key={i} className="p-6">
+        <Skeleton className="h-6 w-3/4 mb-4" />
+        <Skeleton className="h-20 w-full mb-4" />
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-6 w-20" />
+          <Skeleton className="h-6 w-6 rounded-full" />
+        </div>
+      </Card>
+    ))}
+  </div>
+);
+
 export default function CoursesPage() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,45 +47,72 @@ export default function CoursesPage() {
   useEffect(() => {
     const fetchUnits = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/v1/course/units/');
-        setUnits((response.data as { results: Unit[] }).results || []);
+        const { data } = await axios.get<{ results: Unit[] }>(`${apiUrl}/api/v1/course/units/`, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          withCredentials: false
+        });
+        setUnits(data.results || []);
       } catch (err) {
-        console.error("Error loading units:", err);
-        setError("Unable to load units. Please try again.");
+        console.error('Error fetching units:', err);
+        if (axios.isAxiosError(err)) {
+          const axiosError = err as AxiosError;
+          setError(axiosError.response?.data?.message || "Unable to load units.");
+        } else {
+          setError("An unexpected error occurred.");
+        }
       } finally {
         setLoading(false);
       }
     };
-
     fetchUnits();
   }, []);
 
-  // Loading state
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[200px]">
-        <div className="text-center space-y-2">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600 mx-auto"/>
-          <p className="text-gray-500">Loading courses...</p>
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-8 w-48" />
         </div>
+        <LoadingSkeleton />
       </div>
     );
   }
 
-  // Error state
   if (error) {
     return (
-      <div className="text-center text-red-500 p-4 rounded-lg bg-red-50">
-        <p>{error}</p>
-        <Button onClick={() => window.location.reload()} className="mt-4">
-          Try Again
-        </Button>
+      <div className="p-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+          <Button 
+            onClick={() => window.location.reload()} 
+            variant="outline" 
+            size="sm"
+            className="mt-2"
+          >
+            Try Again
+          </Button>
+        </Alert>
+      </div>
+    );
+  }
+
+  if (units.length === 0) {
+    return (
+      <div className="p-6">
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>No courses available at the moment.</AlertDescription>
+        </Alert>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-sky-700">Available Courses</h1>
       </div>
@@ -83,27 +129,25 @@ export default function CoursesPage() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="grid" className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <TabsContent value="grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {units.map((unit) => (
               <Card
                 key={unit.id}
-                className="p-4 hover:shadow-lg transition-all cursor-pointer group"
+                className="p-6 hover:shadow-lg transition-all cursor-pointer group"
                 onClick={() => router.push(`/units/${unit.id}`)}
               >
                 <div className="flex flex-col h-full">
                   <h3 className="text-lg font-semibold mb-2 group-hover:text-sky-600 transition-colors">
                     {unit.title}
                   </h3>
-                  <p className="text-sm text-gray-600 flex-grow">
-                    {unit.description}
-                  </p>
+                  <p className="text-sm text-gray-600 flex-grow">{unit.description}</p>
                   <div className="mt-4 flex items-center justify-between pt-4 border-t">
                     <span className="text-sm font-medium px-2 py-1 rounded-full bg-sky-100 text-sky-600">
                       Level {unit.level}
                     </span>
-                    <Button size="sm" variant="ghost">
-                      <BookOpen className="h-4 w-4" />
+                    <Button variant="ghost" size="icon">
+                      <BookOpen className="h-4 w-4 text-sky-600" />
                     </Button>
                   </div>
                 </div>
@@ -126,12 +170,8 @@ export default function CoursesPage() {
                     <p className="text-sm text-gray-600">{unit.description}</p>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-500">
-                      Level {unit.level}
-                    </span>
-                    <Button size="sm" variant="ghost">
-                      <BookOpen className="h-4 w-4" />
-                    </Button>
+                    <span className="text-sm text-gray-500">Level {unit.level}</span>
+                    <BookOpen className="h-4 w-4 text-sky-600" />
                   </div>
                 </div>
               </Card>

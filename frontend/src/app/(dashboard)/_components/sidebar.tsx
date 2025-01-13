@@ -20,9 +20,9 @@ const routes = [
     href: "/",
   },
   {
-    label: "Courses",
+    label: "Learning",
     icon: BookOpen,
-    href: "/apps/learning/courses",
+    href: "/learning",
   },
   {
     label: "Revision",
@@ -36,7 +36,7 @@ const routes = [
   },
   {
     label: "Community",
-    icon: MessageCircle,
+    icon: Star,
     href: "/community",
   },
   {
