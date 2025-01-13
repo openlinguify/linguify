@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { 
   BookOpen, 
   LayoutDashboard, 
+  MessageCircle, 
   Settings,
   Star 
 } from "lucide-react";
@@ -26,7 +27,17 @@ const routes = [
   {
     label: "Revision",
     icon: BookOpen,
-    href: "/apps/revision",
+    href: "/revision",
+  },
+  {
+    label: "Chat",
+    icon: MessageCircle,
+    href: "/chat",
+  },
+  {
+    label: "Community",
+    icon: MessageCircle,
+    href: "/community",
   },
   {
     label: "Progress",
