@@ -8,6 +8,8 @@ from rest_framework.pagination import PageNumberPagination
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Unit, Lesson, VocabularyList
 from .serializers import UnitSerializer, LessonSerializer, VocabularyListSerializer
@@ -44,23 +46,13 @@ class CustomPagination(PageNumberPagination):
 #         context['target_language'] = target_language
 #         return context
 
+@method_decorator(csrf_exempt, name='dispatch')
 class UnitAPIView(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = UnitSerializer
-    pagination_class = CustomPagination
-
+    
     def get_queryset(self):
-        queryset = Unit.objects.all().order_by('order')  # Trier par ordre croissant
-        request = self.request
-
-        # Filtrer selon la langue cible de l'utilisateur s'il est authentifié
-        if request.user.is_authenticated:
-            target_language = getattr(request.user, 'target_language', None)
-            if target_language:
-                # Ajoutez des filtres spécifiques si besoin
-                queryset = queryset.filter(description_en__isnull=False)
-
-        return queryset
+        return Unit.objects.all().order_by('order')
 
 class LessonAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]

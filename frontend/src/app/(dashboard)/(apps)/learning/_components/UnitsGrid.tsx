@@ -1,10 +1,7 @@
-// src/frontend/src/app/%28apps%29/learning/courses/_components/UnitsGrid.tsx
-'use client';
-
+// Original path: frontend/src/app/%28dashboard%29/%28apps%29/learning/_components/UnitsGrid.tsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/providers/AuthProvider";
+import { courseAPI, Unit } from "@/services/api";
 import {
   Card,
   CardHeader,
@@ -13,52 +10,36 @@ import {
 } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { BookOpen, ArrowUpRight, AlertCircle } from "lucide-react";
+import { BookOpen, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/components/ui/alert";
 
-interface Unit {
-  id: number;
-  title: string;
-  description: string;
-  level: string;
-  order: number;
-}
-
-const UnitsGrid: React.FC = () => {
-  const { user, isAuthenticated } = useAuth();
+export default function UnitsGrid() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchUnits = async () => {
-      
+    const loadUnits = async () => {
       try {
-        const response = await axios.get<{ results: Unit[] }>(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/course/units/`
-        );
-        setUnits(response.data.results || []);
+        const data = await courseAPI.getUnits();
+        setUnits(data);
       } catch (err) {
-        console.error("Erreur lors de la récupération des unités:", err);
-        setError("Impossible de charger les unités. Veuillez réessayer.");
+        console.error("Error loading units:", err);
+        setError("Failed to load units. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUnits();
-  }, [isAuthenticated]);
-
-  if (!isAuthenticated) {
-    return null;
-  }
+    loadUnits();
+  }, []);
 
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <Skeleton key={index} className="h-40 w-full rounded-lg" />
+        {[...Array(6)].map((_, i) => (
+          <Skeleton key={i} className="h-48 w-full" />
         ))}
       </div>
     );
@@ -67,14 +48,14 @@ const UnitsGrid: React.FC = () => {
   if (error) {
     return (
       <Alert variant="destructive">
-        <AlertCircle className="h-5 w-5" />
+        <AlertCircle className="h-4 w-4" />
         <AlertDescription>{error}</AlertDescription>
       </Alert>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {units.map((unit) => (
         <Card
           key={unit.id}
@@ -97,6 +78,4 @@ const UnitsGrid: React.FC = () => {
       ))}
     </div>
   );
-};
-
-export default UnitsGrid;
+}

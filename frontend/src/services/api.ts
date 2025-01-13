@@ -1,38 +1,58 @@
-// frontend/src/services/api.ts
+// src/services/api.ts
+import axios from 'axios';
 
-import axios from "axios";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
-const API_URL = "http://127.0.0.1:8000/api/v1/course/units/";
-
-const apiClient = axios.create({
-    baseURL: API_URL,
-    headers: {
-        "Content-Type": "application/json",
-    },
+// Create axios instance with default config
+const api = axios.create({
+  baseURL: apiUrl,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+  withCredentials: false,
 });
 
-export const fetchLevels = async () => {
-    const token = localStorage.getItem("token");
-    const headers = {
-        Authorization: `Token ${token}`,
-    };
+// Add a request interceptor
+api.interceptors.request.use(
+  (config) => {
+    // Vous pouvez ajouter des headers d'authentification ici plus tard
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-    const response = await axios.get('${API_URL}levels/', { headers });
-    return response.data;
-};
+// Add a response interceptor
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('API Error:', error);
+    return Promise.reject(error);
+  }
+);
 
-// Fetch Units
-export const fetchUnits = async () => {
+// Type definitions
+export interface Unit {
+  id: number;
+  title: string;
+  description: string;
+  level: string;
+  order: number;
+}
+
+// API functions
+export const courseAPI = {
+  getUnits: async () => {
     try {
-        const token = localStorage.getItem("token");
-        const response = await apiClient.get("units/", {
-            headers: {
-                Authorization: `Token ${token}`,
-            },
-        });
-        return response.data;
-    } catch (error: any) {
-        console.error("Error fetching units:", error.response || error.message);
-        throw error;
+      const response = await api.get<{ results: Unit[] }>('/api/v1/course/units/');
+      return response.data.results || [];
+    } catch (error) {
+      console.error('Failed to fetch units:', error);
+      throw error;
     }
+  }
 };
+
+export default api;
