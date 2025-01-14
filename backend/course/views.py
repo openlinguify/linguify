@@ -48,12 +48,10 @@ class CustomPagination(PageNumberPagination):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class UnitAPIView(ListAPIView):
-    permission_classes = [AllowAny]
+    queryset = Unit.objects.all().order_by('order')
     serializer_class = UnitSerializer
-    
-    def get_queryset(self):
-        return Unit.objects.all().order_by('order')
-
+    permission_classes = [AllowAny]
+    authentication_classes = []
 class LessonAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Lesson.objects.all()
