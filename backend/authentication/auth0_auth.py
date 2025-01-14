@@ -9,12 +9,12 @@ def get_token_auth_header(request):
     """Obtains the Access Token from the Authorization Header"""
     auth = request.headers.get("Authorization", None)
     if not auth:
-        raise exceptions.AuthenticationFailed("Authorization header is missing")
+        return None  # Changed from raise None
 
     parts = auth.split()
 
     if parts[0].lower() != "bearer":
-        raise exceptions.AuthenticationFailed("Authorization header must start with Bearer")
+        return None  # Changed from raise None
     elif len(parts) == 1:
         raise exceptions.AuthenticationFailed("Token not found")
     elif len(parts) > 2:
@@ -26,10 +26,13 @@ def get_token_auth_header(request):
 class Auth0Authentication(authentication.BaseAuthentication):
     def authenticate(self, request):
         """
-        Authenticate request using Auth0 JWT
+        Authenticate request using Auth0 JWT.
+        Returns None if authentication should not be attempted.
         """
         try:
             token = get_token_auth_header(request)
+            if token is None:
+                return None  # No authentication attempted
 
             jwks = requests.get(f'https://{settings.AUTH0_DOMAIN}/.well-known/jwks.json').json()
             unverified_header = jwt.get_unverified_header(token)
@@ -60,5 +63,7 @@ class Auth0Authentication(authentication.BaseAuthentication):
                 return (payload, None)
 
             raise exceptions.AuthenticationFailed('Invalid token')
+        except exceptions.AuthenticationFailed:
+            raise
         except Exception as e:
-            raise exceptions.AuthenticationFailed(str(e))
+            return None  # Return None instead of raising an exception
