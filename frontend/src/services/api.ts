@@ -1,4 +1,5 @@
 // src/services/api.ts
+// src/services/api.ts
 import axios from 'axios';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
@@ -13,28 +14,62 @@ const api = axios.create({
   withCredentials: false,
 });
 
-// Add a request interceptor
+interface ApiError {
+  message: string;
+  status?: number;
+  code?: string;
+}
+
+// Single request interceptor that handles authorization
 api.interceptors.request.use(
-  (config) => {
-    // Vous pouvez ajouter des headers d'authentification ici plus tard
+  (config: any) => {
+    // Ensure headers object exists
+    if (!config.headers) {
+      config.headers = {};
+    }
+    
+    // Add auth token if it exists
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
     return config;
   },
-  (error) => {
+  (error: any) => {
+    console.error('Request Interceptor Error:', error);
     return Promise.reject(error);
   }
 );
 
-// Add a response interceptor
+// Response interceptor with error handling
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('API Error:', error);
-    return Promise.reject(error);
+  (response: any) => response,
+  (error: any) => {
+    const apiError: ApiError = {
+      message: 'An error occurred',
+      status: error.response?.status,
+    };
+
+    if (error.response) {
+      apiError.message = error.response.data.message || error.response.data.detail || 'Server error';
+      apiError.code = error.response.data.code;
+
+      if (error.response.status === 401) {
+        localStorage.removeItem('token');
+      }
+    } else if (error.request) {
+      apiError.message = 'No response from server';
+    } else {
+      apiError.message = error.message;
+    }
+
+    console.error('API Error:', apiError);
+    return Promise.reject(apiError);
   }
 );
 
-// Type definitions
-export interface Unit {
+interface Unit {
   id: number;
   title: string;
   description: string;
@@ -42,7 +77,6 @@ export interface Unit {
   order: number;
 }
 
-// API functions
 export const courseAPI = {
   getUnits: async () => {
     try {
