@@ -28,23 +28,13 @@ class UnitSerializer(serializers.ModelSerializer):
             return getattr(request.user, 'target_language', 'en')  # Langue par défaut : anglais
         return 'en'
 
-
-
 class LessonSerializer(serializers.ModelSerializer):
-    title = serializers.SerializerMethodField()
-    description = serializers.SerializerMethodField()
+    title = serializers.CharField(source='title_en')  # Utilise le titre anglais par défaut
+    description = serializers.CharField(source='description_en')  # Utilise la description anglaise par défaut
 
     class Meta:
         model = Lesson
-        fields = ['id', 'unit', 'lesson_type', 'title_en', 'title_fr', 'title_es', 'title_nl', 'description_en', 'description_fr', 'description_es', 'description_nl', 'estimated_duration', 'order', 'is_complete']
-
-    def get_title(self, obj):
-        target_language = self.context.get('request').user.target_language
-        return getattr(obj, f'title_{target_language}')
-
-    def get_description(self, obj):
-        target_language = self.context.get('request').user.target_language
-        return getattr(obj, f'description_{target_language}')
+        fields = ['id', 'title', 'description', 'lesson_type', 'estimated_duration', 'order']
 
 class VocabularyListSerializer(serializers.ModelSerializer):
     word = serializers.SerializerMethodField()

@@ -1,9 +1,12 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
-import "./globals.css";
+import { UserProvider } from '@auth0/nextjs-auth0/client';
+import { AuthProvider } from "@/providers/AuthProvider";
+import { Toaster } from "@/components/ui/toaster";
+import "@/styles/globals.css";
 
-// Importation et configuration des polices
+// Font configuration
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -14,27 +17,28 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Métadonnées personnalisées
 export const metadata: Metadata = {
   title: "Linguify - Learn Languages Easily",
   description: "A personalized language learning app designed for your growth.",
 };
 
-// Composant RootLayout
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode; // Correction des types
+  children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} bg-gray-50 min-h-screen`}
-        >
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} bg-gray-50 min-h-screen`}>
+        <UserProvider>
+          <AuthProvider>
+            <main className="flex min-h-screen flex-col">
+              {children}
+            </main>
+            <Toaster />
+          </AuthProvider>
+        </UserProvider>
+      </body>
+    </html>
   );
 }

@@ -1,10 +1,10 @@
+// src/app/(dashboard)/_components/header.tsx
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import {
     GlobeIcon,
-    MenuIcon,
     User,
     BookOpen,
     Trophy,
@@ -18,7 +18,7 @@ import {
     SelectContent,
     SelectItem,
     SelectValue,
-} from "@/components/ui/select";
+} from "@/shared/components/ui/select";
 
 const Header: React.FC = () => {
     const [language, setLanguage] = useState("en");
