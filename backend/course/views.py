@@ -52,23 +52,18 @@ class UnitAPIView(ListAPIView):
     serializer_class = UnitSerializer
     permission_classes = [AllowAny]
     authentication_classes = []
+@method_decorator(csrf_exempt, name='dispatch')
 class LessonAPIView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
-    queryset = Lesson.objects.all()
+    permission_classes = [AllowAny]
+    authentication_classes = []  # Désactive l'authentification comme pour UnitAPIView
     serializer_class = LessonSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_class = LessonFilter
-    search_fields = ['title_en', 'title_fr', 'title_es', 'title_nl']
-    ordering_fields = ['order', 'estimated_duration']
-    pagination_class = CustomPagination
 
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        requests = self.request
-        user = requests.user
-        target_language = requests.query_params.get('target_language', user.target_language)
-        context['target_language'] = target_language
-        return context
+    def get_queryset(self):
+        unit_id = self.request.query_params.get('unit')
+        queryset = Lesson.objects.all().order_by('order')
+        if unit_id:
+            return queryset.filter(unit_id=unit_id)
+        return queryset
 class VocabularyListAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = VocabularyListSerializer

@@ -40,6 +40,11 @@ const routes = [
     href: "/community",
   },
   {
+    label: "Coaching",
+    icon: Star,
+    href: "/coaching",
+  },
+  {
     label: "Progress",
     icon: Star,
     href: "/progress",
