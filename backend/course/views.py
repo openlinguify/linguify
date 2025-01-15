@@ -8,6 +8,8 @@ from rest_framework.pagination import PageNumberPagination
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Unit, Lesson, VocabularyList
 from .serializers import UnitSerializer, LessonSerializer, VocabularyListSerializer
@@ -44,41 +46,24 @@ class CustomPagination(PageNumberPagination):
 #         context['target_language'] = target_language
 #         return context
 
+@method_decorator(csrf_exempt, name='dispatch')
 class UnitAPIView(ListAPIView):
-    permission_classes = [AllowAny]
+    queryset = Unit.objects.all().order_by('order')
     serializer_class = UnitSerializer
-    pagination_class = CustomPagination
+    permission_classes = [AllowAny]
+    authentication_classes = []
+@method_decorator(csrf_exempt, name='dispatch')
+class LessonAPIView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []  # Désactive l'authentification comme pour UnitAPIView
+    serializer_class = LessonSerializer
 
     def get_queryset(self):
-        queryset = Unit.objects.all().order_by('order')  # Trier par ordre croissant
-        request = self.request
-
-        # Filtrer selon la langue cible de l'utilisateur s'il est authentifié
-        if request.user.is_authenticated:
-            target_language = getattr(request.user, 'target_language', None)
-            if target_language:
-                # Ajoutez des filtres spécifiques si besoin
-                queryset = queryset.filter(description_en__isnull=False)
-
+        unit_id = self.request.query_params.get('unit')
+        queryset = Lesson.objects.all().order_by('order')
+        if unit_id:
+            return queryset.filter(unit_id=unit_id)
         return queryset
-
-class LessonAPIView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
-    queryset = Lesson.objects.all()
-    serializer_class = LessonSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_class = LessonFilter
-    search_fields = ['title_en', 'title_fr', 'title_es', 'title_nl']
-    ordering_fields = ['order', 'estimated_duration']
-    pagination_class = CustomPagination
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        requests = self.request
-        user = requests.user
-        target_language = requests.query_params.get('target_language', user.target_language)
-        context['target_language'] = target_language
-        return context
 class VocabularyListAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = VocabularyListSerializer

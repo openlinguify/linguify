@@ -1,6 +1,5 @@
 # backend/django_apps/authentication/viewsets.py
 import jwt
-
 from functools import wraps
 from django.http import JsonResponse
 from rest_framework.views import APIView
