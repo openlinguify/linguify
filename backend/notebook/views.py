@@ -4,6 +4,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
+ 
+
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -110,10 +112,6 @@ class NoteViewSet(viewsets.ModelViewSet):
             'notes_by_type': {
                 note_type: queryset.filter(note_type=note_type).count()
                 for note_type, _ in Note.TYPE_CHOICES
-            },
-            'notes_by_language': {
-                language: queryset.filter(language=language).count()
-                for language, _ in LANGUAGE_CHOICES
             },
             'notes_needing_review': queryset.filter(needs_review=True).count(),
             'notes_by_difficulty': {
