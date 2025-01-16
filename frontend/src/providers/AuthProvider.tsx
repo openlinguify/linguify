@@ -1,65 +1,114 @@
-"use client";
+'use client';
 
-"use client";
+import { Auth0Provider as BaseAuth0Provider, useAuth0 } from '@auth0/auth0-react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-import React, { createContext, useContext, useCallback } from 'react';
-import { UserProvider, useUser } from '@auth0/nextjs-auth0/client';
-
-interface AuthContextValue {
-  user: any;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: Error | null;
-  login: () => void;
-  logout: () => void;
+interface LoginOptions {
+  connection?: string;
+  appState?: {
+    returnTo?: string;
+  };
 }
 
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+interface AuthContextType {
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  user: any;
+  login: (options?: LoginOptions) => Promise<void>;
+  logout: () => Promise<void>;
+  getAccessToken: () => Promise<string>;
+}
 
-// Composant interne qui utilise useUser
-function AuthProviderInternal({ children }: { children: React.ReactNode }) {
-  const { user, error, isLoading } = useUser();
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-  const login = useCallback(() => {
-    window.location.href = '/api/v1/auth/login';
+// Composant wrapper Auth0
+function Auth0ProviderWrapper({ children }: { children: React.ReactNode }) {
+  const [isMounted, setIsMounted] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    setIsMounted(true);
   }, []);
 
-  const logout = useCallback(() => {
-    window.location.href = '/api/v1/auth/logout';
-  }, []);
+  if (!isMounted) {
+    return null;
+  }
 
-  const value = {
-    user: user || null,
-    isAuthenticated: !!user,
-    isLoading,
-    error: error || null,
-    login,
-    logout
+  const onRedirectCallback = (appState: any) => {
+    router.push(appState?.returnTo || '/dashboard');
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <BaseAuth0Provider
+      domain="dev-hazi5dwwkk7pe476.eu.auth0.com"
+      clientId="gVXFn4QKiS62BvdrLZjBECjYG7ZUAW5D"
+      authorizationParams={{
+        redirect_uri: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000',
+        audience: "https://dev-hazi5dwwkk7pe476.eu.auth0.com/api/v2/",
+      }}
+      onRedirectCallback={onRedirectCallback}
+    >
+      {children}
+    </BaseAuth0Provider>
+  );
+}
+
+function AuthProviderContent({ children }: { children: React.ReactNode }) {
+  const {
+    isLoading,
+    isAuthenticated,
+    user,
+    loginWithRedirect,
+    logout: auth0Logout,
+    getAccessTokenSilently
+  } = useAuth0();
+
+  const login = async (options?: LoginOptions) => {
+    await loginWithRedirect({
+      authorizationParams: {
+        connection: options?.connection,
+      },
+      appState: options?.appState,
+    });
+  };
+
+  const logout = async () => {
+    await auth0Logout({
+      logoutParams: {
+        returnTo: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000',
+      },
+    });
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        isLoading,
+        isAuthenticated,
+        user,
+        login,
+        logout,
+        getAccessToken: getAccessTokenSilently,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Le composant principal qui wrap avec UserProvider
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
-    <UserProvider>
-      <AuthProviderInternal>
-        {children}
-      </AuthProviderInternal>
-    </UserProvider>
+    <Auth0ProviderWrapper>
+      <AuthProviderContent>{children}</AuthProviderContent>
+    </Auth0ProviderWrapper>
   );
 }
 
-// Hook pour utiliser le contexte d'authentification
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
 }

@@ -13,6 +13,10 @@ from .utils import notify_coach_of_commission_change
 from .models import User, CoachProfile, Review, UserFeedback
 from .serializers import UserSerializer, UserRegistrationSerializer, CoachProfileSerializer, ReviewSerializer, UserFeedbackSerializer
 
+from .decorators import require_auth0_user
+from .serializers import UserSerializer, UserRegistrationSerializer
+from rest_framework.decorators import api_view, permission_classes
+
 
 # API Scope-based permissions
 # Source: https://auth0.com/docs/quickstart/backend/django/01-authorization
@@ -188,3 +192,38 @@ class UserFeedbackViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+
+@api_view(['GET'])
+@require_auth0_user
+def get_user_profile(request):
+    """
+    Retrieve the user profile for the authenticated user
+    """
+    try:
+        user = User.objects.get(email=request.auth0_user['email'])
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+    except User.DoesNotExist:
+        return Response(
+            {'error': 'User profile not found'}, 
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_user_profile(request):
+    """
+    Update the user profile for the authenticated user
+    """
+    try:
+        user = request.user
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response(
+            {'error': str(e)}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
