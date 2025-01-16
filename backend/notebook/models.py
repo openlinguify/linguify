@@ -1,11 +1,12 @@
 # backend/notebook/models.py
 from django.db import models
 from authentication.models import User
+from django.conf import settings
 
 class NoteCategory(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='note_categories')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='note_categories')
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='subcategories')
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -49,6 +50,14 @@ class Note(models.Model):
         ('TEXT', 'Text'),
         ('IMAGE', 'Image'),
         ('VIDEO', 'Video')
+    ]
+    LANGUAGE_CHOICES = [
+        ('en', 'English'),
+        ('fr', 'French'),
+        ('es', 'Spanish'),
+        ('de', 'German'),
+        ('it', 'Italian'),
+        # Ajoutez d'autres langues selon vos besoins
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notes')
