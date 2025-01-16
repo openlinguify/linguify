@@ -80,10 +80,9 @@ AUTHENTICATION_BACKENDS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        #'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'authentication.auth0_auth.Auth0Authentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
@@ -107,29 +106,27 @@ REST_FRAMEWORK = {
 # }
 # Load Auth0 application settings into memory
 
-AUTH0_DOMAIN = os.environ.get("AUTH0_DOMAIN")
-AUTH0_CLIENT_ID = os.environ.get("AUTH0_CLIENT_ID")
-AUTH0_CLIENT_SECRET = os.environ.get("AUTH0_CLIENT_SECRET")
-AUTH0_AUDIENCE = os.environ.get("AUTH0_AUDIENCE")
-AUTH0_ALGORITHM = os.environ.get("AUTH0_ALGORITHMS")
+AUTH0_DOMAIN = env('AUTH0_DOMAIN')
+AUTH0_CLIENT_ID = env('AUTH0_CLIENT_ID')
+AUTH0_CLIENT_SECRET = env('AUTH0_CLIENT_SECRET')
+AUTH0_AUDIENCE = env('AUTH0_AUDIENCE')
+AUTH0_ALGORITHM = 'RS256'
 
-# JWT_AUTH = {
-#     'JWT_PAYLOAD_GET_USERNAME_HANDLER':
-#         'auth0authorization.utils.jwt_get_username_from_payload_handler',
-#     'JWT_DECODE_HANDLER':
-#         'auth0authorization.utils.jwt_decode_token',
-#     'JWT_ALGORITHM': 'RS256',
-#     'JWT_ISSUER': 'https://dev-hazi5dwwkk7pe476.eu.auth0.com/',
-#     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-# }
+JWT_AUTH = {
+    'JWT_PAYLOAD_GET_USERNAME_HANDLER':
+        'authentication.utils.jwt_get_username_from_payload_handler',
+    'JWT_DECODE_HANDLER':
+        'authentication.utils.jwt_decode_token',
+    'JWT_ALGORITHM': 'RS256',
+    'JWT_ISSUER': f'https://{env("AUTH0_DOMAIN")}/',
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+}
 
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
 }
-
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -142,19 +139,18 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
+    'authentication.middleware.JWTMiddleware',
 ]
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "http://localhost:4040",
+    "http://127.0.0.1:4040",
 ]
 
 
-CORS_ORIGIN_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = False
-
+CORS_ORIGIN_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = [
     'DELETE',
