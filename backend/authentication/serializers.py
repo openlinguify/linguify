@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'public_id', 'username', 'first_name', 'last_name', 'email', 'age', 'gender',
             'profile_picture', 'bio', 'native_language', 'target_language',
-            'language_level', 'objectives', 'is_active', 'is_coach',
+            'language_level', 'objectives', 'is_active', 'is_coach', 'is_subscribed',
             'is_superuser', 'is_staff', 'created_at', 'updated_at'
         ]
         # Mark sensitive fields as read-only
@@ -28,6 +28,17 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'email', 'is_active', 'is_superuser', 'is_staff',
             'created_at', 'updated_at'
         ]
+
+    def update(self, instance, validated_data):
+        "To make an update to the user profile"
+        for i in self.Meta.fields:
+            if i not in self.Meta.read_only_fields and i in validated_data:
+                setattr(instance, i, validated_data[i])
+        instance.save()
+        return instance
+    
+    
+                
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
