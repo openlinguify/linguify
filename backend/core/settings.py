@@ -80,12 +80,9 @@ AUTHENTICATION_BACKENDS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'authentication.auth0_auth.Auth0Authentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -144,13 +141,13 @@ MIDDLEWARE = [
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4040",
-    "http://127.0.0.1:4040",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 
 
-CORS_ORIGIN_ALL_ORIGINS = False
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = False
 
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -173,7 +170,11 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-
+# Configuration supplémentaire pour la sécurité
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
 
 ROOT_URLCONF = 'core.urls'
 
