@@ -1,5 +1,7 @@
+// src/app/(dashboard)/settings/_components/SettingsPage.tsx
 'use client';
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { Input } from "@/shared/components/ui/input";
@@ -7,67 +9,88 @@ import { Button } from "@/shared/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { Switch } from "@/shared/components/ui/switch";
-import { Globe, User, BookOpen, Crown, Save } from 'lucide-react';
+import { Globe, User, BookOpen, Save, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from "@/shared/components/ui/alert";
+import { userSettingsService, UserSettings } from '@/services/userSettingsService';
 
-interface FormState {
-  profile: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    bio: string;
-  };
-  language: {
-    nativeLanguage: string;
-    targetLanguage: string;
-  };
-  learning: {
-    level: string;
-    objectives: string;
-  };
-  subscription: {
-    isPremium: boolean;
-    isCoach: boolean;
-  };
-}
+const LANGUAGE_OPTIONS = [
+  { value: 'EN', label: 'English' },
+  { value: 'FR', label: 'French' },
+  { value: 'DE', label: 'German' },
+  { value: 'ES', label: 'Spanish' },
+  { value: 'IT', label: 'Italian' },
+  { value: 'PT', label: 'Portuguese' },
+];
 
-interface SaveStatus {
-  show: boolean;
-  success: boolean;
-}
+const LEVEL_OPTIONS = [
+  { value: 'A1', label: 'A1 - Beginner' },
+  { value: 'A2', label: 'A2 - Elementary' },
+  { value: 'B1', label: 'B1 - Intermediate' },
+  { value: 'B2', label: 'B2 - Upper Intermediate' },
+  { value: 'C1', label: 'C1 - Advanced' },
+  { value: 'C2', label: 'C2 - Mastery' },
+];
 
-type FormSection = keyof FormState;
-type FormField<T extends FormSection> = keyof FormState[T];
-type FormValue = string | boolean;
-
+const OBJECTIVES_OPTIONS = [
+  { value: 'Travel', label: 'Travel' },
+  { value: 'Business', label: 'Business' },
+  { value: 'Live Abroad', label: 'Live Abroad' },
+  { value: 'Exam', label: 'Exam' },
+  { value: 'For Fun', label: 'For Fun' },
+];
 
 const SettingsPage = () => {
-  const [activeTab, setActiveTab] = useState<FormSection>("profile");
-  const [formState, setFormState] = useState<FormState>({
+  const [settings, setSettings] = useState<UserSettings>({
     profile: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      bio: ""
+      firstName: '',
+      lastName: '',
+      email: '',
+      bio: null,
     },
     language: {
-      nativeLanguage: "",
-      targetLanguage: ""
+      nativeLanguage: '',
+      targetLanguage: '',
+      level: '',
     },
     learning: {
-      level: "",
-      objectives: ""
+      objectives: '',
     },
-    subscription: {
-      isPremium: false,
-      isCoach: false
-    }
+    account: {
+      isCoach: false,
+      isSubscribed: false,
+    },
   });
-  const [saveStatus, setSaveStatus] = useState({ show: false, success: false });
 
-  const handleInputChange = (section: FormSection, field: string, value: FormValue) => {
-    setFormState(prev => ({
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
+  const [saveStatus, setSaveStatus] = useState<{ show: boolean; isError: boolean; message: string }>({
+    show: false,
+    isError: false,
+    message: '',
+  });
+
+  useEffect(() => {
+    loadUserSettings();
+  }, []);
+
+  const loadUserSettings = async () => {
+    try {
+      const data = await userSettingsService.getUserSettings();
+      setSettings(data);
+    } catch (error) {
+      setSaveStatus({
+        show: true,
+        isError: true,
+        message: 'Failed to load settings',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleInputChange = (section: keyof UserSettings, field: string, value: any) => {
+    setSettings(prev => ({
       ...prev,
       [section]: {
         ...prev[section],
@@ -78,59 +101,76 @@ const SettingsPage = () => {
 
   const handleSave = async () => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSaveStatus({ show: true, success: true });
-      setTimeout(() => setSaveStatus({ show: false, success: false }), 3000);
+      setIsSaving(true);
+      await userSettingsService.updateUserSettings(settings);
+      setSaveStatus({
+        show: true,
+        isError: false,
+        message: 'Settings saved successfully',
+      });
     } catch (error) {
-      setSaveStatus({ show: true, success: false });
+      setSaveStatus({
+        show: true,
+        isError: true,
+        message: 'Failed to save settings',
+      });
+    } finally {
+      setIsSaving(false);
+      setTimeout(() => {
+        setSaveStatus(prev => ({ ...prev, show: false }));
+      }, 3000);
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto p-6 max-w-4xl">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Settings</h1>
         <Button 
-          onClick={handleSave}
+          onClick={handleSave} 
+          disabled={isSaving}
           className="flex items-center gap-2"
         >
-          <Save className="w-4 h-4" />
+          {isSaving ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Save className="w-4 h-4" />
+          )}
           Save Changes
         </Button>
       </div>
 
       {saveStatus.show && (
-        <Alert className={saveStatus.success ? "bg-green-50" : "bg-red-50"}>
-          <AlertDescription>
-            {saveStatus.success 
-              ? "Settings saved successfully!"
-              : "Error saving settings. Please try again."}
-          </AlertDescription>
+        <Alert variant={saveStatus.isError ? "destructive" : "default"} className="mb-6">
+          <AlertDescription>{saveStatus.message}</AlertDescription>
         </Alert>
       )}
 
-      <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as FormSection)} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="profile" className="space-x-2">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="w-4 h-4" />
-            <span>Profile</span>
+            Profile
           </TabsTrigger>
-          <TabsTrigger value="language" className="space-x-2">
+          <TabsTrigger value="language" className="flex items-center gap-2">
             <Globe className="w-4 h-4" />
-            <span>Language</span>
+            Language
           </TabsTrigger>
-          <TabsTrigger value="learning" className="space-x-2">
+          <TabsTrigger value="learning" className="flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
-            <span>Learning</span>
-          </TabsTrigger>
-          <TabsTrigger value="subscription" className="space-x-2">
-            <Crown className="w-4 h-4" />
-            <span>Subscription</span>
+            Learning
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="profile" className="space-y-6">
+        <TabsContent value="profile">
           <Card>
             <CardHeader>
               <CardTitle>Personal Information</CardTitle>
@@ -139,47 +179,44 @@ const SettingsPage = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input 
-                    id="firstName" 
-                    value={formState.profile.firstName}
-                    onChange={(e) => handleInputChange('profile', 'firstName', e.target.value)}
-                    placeholder="First Name" 
+                  <Input
+                    id="firstName"
+                    value={settings.profile.firstName}
+                    onChange={e => handleInputChange('profile', 'firstName', e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input 
-                    id="lastName" 
-                    value={formState.profile.lastName}
-                    onChange={(e) => handleInputChange('profile', 'lastName', e.target.value)}
-                    placeholder="Last Name" 
+                  <Input
+                    id="lastName"
+                    value={settings.profile.lastName}
+                    onChange={e => handleInputChange('profile', 'lastName', e.target.value)}
                   />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  value={formState.profile.email}
-                  onChange={(e) => handleInputChange('profile', 'email', e.target.value)}
-                  placeholder="Email" 
+                <Input
+                  id="email"
+                  value={settings.profile.email}
+                  disabled
+                  className="bg-gray-50"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="bio">Bio</Label>
-                <Textarea 
-                  id="bio" 
-                  value={formState.profile.bio}
-                  onChange={(e) => handleInputChange('profile', 'bio', e.target.value)}
-                  placeholder="Tell us about yourself" 
+                <Textarea
+                  id="bio"
+                  value={settings.profile.bio || ''}
+                  onChange={e => handleInputChange('profile', 'bio', e.target.value)}
+                  placeholder="Tell us about yourself"
                 />
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="language" className="space-y-6">
+        <TabsContent value="language">
           <Card>
             <CardHeader>
               <CardTitle>Language Settings</CardTitle>
@@ -187,37 +224,59 @@ const SettingsPage = () => {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="nativeLanguage">Native Language</Label>
-                <Select 
-                  value={formState.language.nativeLanguage}
-                  onValueChange={(value) => handleInputChange('language', 'nativeLanguage', value)}
+                <Select
+                  value={settings.language.nativeLanguage}
+                  onValueChange={value => handleInputChange('language', 'nativeLanguage', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select language" />
+                    <SelectValue placeholder="Select your native language" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="EN">English</SelectItem>
-                    <SelectItem value="FR">French</SelectItem>
-                    <SelectItem value="DE">German</SelectItem>
-                    <SelectItem value="ES">Spanish</SelectItem>
-                    <SelectItem value="IT">Italian</SelectItem>
+                    {LANGUAGE_OPTIONS.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="targetLanguage">Target Language</Label>
                 <Select
-                  value={formState.language.targetLanguage}
-                  onValueChange={(value) => handleInputChange('language', 'targetLanguage', value)}
+                  value={settings.language.targetLanguage}
+                  onValueChange={value => handleInputChange('language', 'targetLanguage', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select language" />
+                    <SelectValue placeholder="Select language to learn" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="EN">English</SelectItem>
-                    <SelectItem value="FR">French</SelectItem>
-                    <SelectItem value="DE">German</SelectItem>
-                    <SelectItem value="ES">Spanish</SelectItem>
-                    <SelectItem value="IT">Italian</SelectItem>
+                    {LANGUAGE_OPTIONS.map(option => (
+                      <SelectItem
+                        key={option.value}
+                        value={option.value}
+                        disabled={option.value === settings.language.nativeLanguage}
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="level">Current Level</Label>
+                <Select
+                  value={settings.language.level}
+                  onValueChange={value => handleInputChange('language', 'level', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LEVEL_OPTIONS.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -225,86 +284,29 @@ const SettingsPage = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="learning" className="space-y-6">
+        <TabsContent value="learning">
           <Card>
             <CardHeader>
               <CardTitle>Learning Preferences</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="level">Current Level</Label>
-                <Select
-                  value={formState.learning.level}
-                  onValueChange={(value) => handleInputChange('learning', 'level', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="A1">A1 (Beginner)</SelectItem>
-                    <SelectItem value="A2">A2 (Elementary)</SelectItem>
-                    <SelectItem value="B1">B1 (Intermediate)</SelectItem>
-                    <SelectItem value="B2">B2 (Upper Intermediate)</SelectItem>
-                    <SelectItem value="C1">C1 (Advanced)</SelectItem>
-                    <SelectItem value="C2">C2 (Mastery)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
                 <Label htmlFor="objectives">Learning Objectives</Label>
                 <Select
-                  value={formState.learning.objectives}
-                  onValueChange={(value) => handleInputChange('learning', 'objectives', value)}
+                  value={settings.learning.objectives}
+                  onValueChange={value => handleInputChange('learning', 'objectives', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select objective" />
+                    <SelectValue placeholder="Select your objectives" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Travel">Travel</SelectItem>
-                    <SelectItem value="Business">Business</SelectItem>
-                    <SelectItem value="Live Abroad">Live Abroad</SelectItem>
-                    <SelectItem value="Exam">Exam</SelectItem>
-                    <SelectItem value="For Fun">For Fun</SelectItem>
+                    {OBJECTIVES_OPTIONS.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="subscription" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Subscription Settings</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Premium Subscription</Label>
-                  <div className="text-sm text-muted-foreground">
-                    Access premium features and content
-                  </div>
-                </div>
-                <Switch
-                  checked={formState.subscription.isPremium}
-                  onCheckedChange={(checked) => 
-                    handleInputChange('subscription', 'isPremium', checked)
-                  }
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Coach Profile</Label>
-                  <div className="text-sm text-muted-foreground">
-                    Enable coaching features
-                  </div>
-                </div>
-                <Switch
-                  checked={formState.subscription.isCoach}
-                  onCheckedChange={(checked) => 
-                    handleInputChange('subscription', 'isCoach', checked)
-                  }
-                />
               </div>
             </CardContent>
           </Card>
@@ -312,6 +314,6 @@ const SettingsPage = () => {
       </Tabs>
     </div>
   );
-};
+}
 
 export default SettingsPage;
