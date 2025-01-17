@@ -14,6 +14,7 @@ class JWTMiddleware:
             '/api/v1/auth/login/',
             '/api/v1/auth/callback/',
             '/api/v1/auth/logout/',
+            '/api/v1/course/units/',
         ]
 
         # Check if the path is public
