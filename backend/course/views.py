@@ -61,7 +61,7 @@ class UnitAPIView(generics.ListAPIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class LessonAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
-    authentication_classes = []  # Désactive l'authentification comme pour UnitAPIView
+    authentication_classes = []
     serializer_class = LessonSerializer
 
     def get_queryset(self):
