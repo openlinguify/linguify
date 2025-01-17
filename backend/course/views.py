@@ -48,13 +48,11 @@ class CustomPagination(PageNumberPagination):
 #         context['target_language'] = target_language
 #         return context
 
-class UnitAPIView(ListAPIView):
-    permission_classes = []  # Retirez toutes les restrictions de permission
-    authentication_classes = []  # Retirez toute authentification
-    queryset = Unit.objects.all().order_by('order')
+class UnitAPIView(generics.ListAPIView):
+    permission_classes = [AllowAny]  # Explicitly set AllowAny
+    authentication_classes = []  # Remove authentication requirement
     serializer_class = UnitSerializer
-
-
+    queryset = Unit.objects.all().order_by('order')
 
 
 

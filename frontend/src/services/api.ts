@@ -2,10 +2,12 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000',
+  baseURL: 'http://localhost:8000',
   headers: {
     'Content-Type': 'application/json',
-  }
+  },
+  // Add withCredentials if using session authentication
+  withCredentials: true,
 });
 
 export interface Unit {
@@ -19,21 +21,19 @@ export interface Unit {
 export const courseAPI = {
   getUnits: async () => {
     try {
-      const response = await api.get<Unit[]>('/api/v1/course/units/');
-      // Si l'API renvoie { results: Unit[] }, utilisez cette ligne à la place :
-      // return response.data.results || [];
+      const response = await api.get('/api/v1/course/units/');
       return response.data;
-    } catch (err) {
-      // Log l'erreur pour le débogage
-      const error = err as any;
+    } catch (err: any) {
       console.error('Failed to fetch units:', {
-        status: error.response?.status,
-        data: error.response?.data,
-        message: error.message
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message
       });
-      throw err;
+      // Rethrow with more context
+      throw new Error(`Failed to fetch units: ${err.message}`);
     }
   }
 };
+
 
 export default api;
