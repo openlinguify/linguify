@@ -1,4 +1,5 @@
 # course/views.py
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
@@ -10,6 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
 from .models import Unit, Lesson, VocabularyList
 from .serializers import UnitSerializer, LessonSerializer, VocabularyListSerializer
@@ -46,12 +48,18 @@ class CustomPagination(PageNumberPagination):
 #         context['target_language'] = target_language
 #         return context
 
-@method_decorator(csrf_exempt, name='dispatch')
 class UnitAPIView(ListAPIView):
+    permission_classes = []  # Retirez toutes les restrictions de permission
+    authentication_classes = []  # Retirez toute authentification
     queryset = Unit.objects.all().order_by('order')
     serializer_class = UnitSerializer
-    permission_classes = [AllowAny]
-    authentication_classes = []
+
+
+
+
+
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class LessonAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
