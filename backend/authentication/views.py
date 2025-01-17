@@ -1,13 +1,17 @@
 # backend/authentication/views.py
+from rest_framework import status
 from django.shortcuts import redirect
 from django.conf import settings
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from django.core.exceptions import ValidationError
 from urllib.parse import urlencode
 import requests
 from .models import User
 from .serializers import UserSerializer
+import logging
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -190,3 +194,45 @@ def auth_status(request):
             'isAuthenticated': False,
             'user': None
         }, status=500)
+    
+
+logger = logging.getLogger(__name__)
+
+@api_view(['GET', 'PATCH']) 
+@permission_classes([IsAuthenticated])
+def user_profile(request):
+    """
+    Gestion du profil utilisateur.
+    GET: Récupérer les informations du profil
+    PATCH: Mettre à jour les informations du profil
+    """
+
+    try:
+        if request.method == 'GET':
+            serializer = UserSerializer(request.user)
+            return JsonResponse(serializer.data)
+        
+        elif request.method == 'PATCH':
+            serializer = UserSerializer(request.user, data=request.data, partial=True)
+            if serializer.is_valid():
+                native_lang = request.data.get('native_language')
+                target_lang = request.data.get('target_language')
+                # Vérifier si les langues sont valides
+                if native_lang == target_lang:
+                    return Response(
+                        {'error': 'Native and target languages cannot be the same'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except ValidationError as e:
+        logger.error(f"Validation error in user profile update: {str(e)}")
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        logger.error(f"Error in user profile update: {str(e)}")
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+
+        
