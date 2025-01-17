@@ -1,8 +1,11 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/shared/components/ui/card';
 import { Alert, AlertDescription } from '@/shared/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
+import { courseAPI } from '@/services/api';
 
 interface Unit {
   id: number;
@@ -12,38 +15,39 @@ interface Unit {
 }
 
 const UnitsGrid = () => {
+  const router = useRouter();
   const [units, setUnits] = useState<Unit[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUnits = async () => {
+    const loadUnits = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/v1/course/units/', {
-          credentials: 'omit' // Ne pas envoyer de credentials
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch units');
-        }
-        const data = await response.json();
+        setIsLoading(true);
+        const data = await courseAPI.getUnits();
         setUnits(data);
+        setError(null);
       } catch (err) {
-        setError('Failed to load units. Please try again later.');
-        console.error('Error:', err);
+        console.error('Error fetching units:', err);
+        setError('Unable to load learning units. Please try again later.');
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
-    fetchUnits();
+    loadUnits();
   }, []);
 
   const handleUnitClick = (unitId: number) => {
-    window.location.href = `/learning/${unitId}`;
+    router.push(`/learning/${unitId}`);
   };
 
-  if (loading) {
-    return <div className="p-6">Loading units...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   if (error) {
@@ -58,26 +62,37 @@ const UnitsGrid = () => {
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold mb-6">Learning Units</h1>
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Learning Units</h1>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {units.map((unit) => (
           <Card
             key={unit.id}
-            className="cursor-pointer hover:bg-gray-50 transition-colors"
+            className="cursor-pointer hover:shadow-md transition-all duration-200"
             onClick={() => handleUnitClick(unit.id)}
           >
             <div className="p-6">
               <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-medium text-base">{unit.title}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{unit.description}</p>
+                <div className="space-y-2">
+                  <h3 className="font-semibold text-lg">{unit.title}</h3>
+                  <p className="text-sm text-gray-600">{unit.description}</p>
                 </div>
-                <span className="text-sm text-gray-500">{unit.level}</span>
+                <span className="px-2 py-1 bg-sky-100 text-sky-700 rounded-md text-sm font-medium">
+                  {unit.level}
+                </span>
               </div>
             </div>
           </Card>
         ))}
+
+        {units.length === 0 && !error && (
+          <div className="col-span-full text-center py-12 text-gray-500">
+            No learning units available yet.
+          </div>
+        )}
       </div>
     </div>
   );

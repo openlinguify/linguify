@@ -1,39 +1,13 @@
 // src/services/api.ts
 import axios from 'axios';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
-
-// Create axios instance with default config
 const api = axios.create({
-  baseURL: apiUrl,
+  baseURL: 'http://127.0.0.1:8000',
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
-  withCredentials: false,
+  }
 });
 
-// Add a request interceptor
-api.interceptors.request.use(
-  (config) => {
-    // Vous pouvez ajouter des headers d'authentification ici plus tard
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Add a response interceptor
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('API Error:', error);
-    return Promise.reject(error);
-  }
-);
-
-// Type definitions
 export interface Unit {
   id: number;
   title: string;
@@ -42,15 +16,22 @@ export interface Unit {
   order: number;
 }
 
-// API functions
 export const courseAPI = {
   getUnits: async () => {
     try {
-      const response = await api.get<{ results: Unit[] }>('/api/v1/course/units/');
-      return response.data.results || [];
-    } catch (error) {
-      console.error('Failed to fetch units:', error);
-      throw error;
+      const response = await api.get<Unit[]>('/api/v1/course/units/');
+      // Si l'API renvoie { results: Unit[] }, utilisez cette ligne à la place :
+      // return response.data.results || [];
+      return response.data;
+    } catch (err) {
+      // Log l'erreur pour le débogage
+      const error = err as any;
+      console.error('Failed to fetch units:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
+      throw err;
     }
   }
 };
