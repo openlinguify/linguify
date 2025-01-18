@@ -1,6 +1,6 @@
 # course/serializers.py
 from rest_framework import serializers, generics
-from .models import Unit, Lesson, VocabularyList, Grammar
+from .models import Unit, Lesson, ContentLesson, VocabularyList, Grammar
 
 class UnitSerializer(serializers.ModelSerializer):
     # Titre dynamique basé sur la langue cible
@@ -36,13 +36,82 @@ class LessonSerializer(serializers.ModelSerializer):
         model = Lesson
         fields = ['id', 'title', 'description', 'lesson_type', 'estimated_duration', 'order']
 
+class ContentLessonSerializer(serializers.ModelSerializer):
+    title = serializers.SerializerMethodField()
+    instruction = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ContentLesson
+        fields = [
+            'id',
+            'title',
+            'instruction',
+            'content_type',
+            'estimated_duration',
+            'order'
+        ]
+
+    def get_title(self, obj):
+        return {
+            'en': obj.title_en,
+            'fr': obj.title_fr,
+            'es': obj.title_es,
+            'nl': obj.title_nl,
+        }
+
+    def get_instruction(self, obj):
+        return {
+            'en': obj.instruction_en,
+            'fr': obj.instruction_fr,
+            'es': obj.instruction_es,
+            'nl': obj.instruction_nl,
+        }
+
+    def to_representation(self, instance):
+        """Add title_en et instruction_en pour faciliter l'accès direct"""
+        representation = super().to_representation(instance)
+        representation['title_en'] = instance.title_en
+        representation['instruction_en'] = instance.instruction_en
+        return representation
+
+
+
 class VocabularyListSerializer(serializers.ModelSerializer):
     word = serializers.SerializerMethodField()
     example_sentence = serializers.SerializerMethodField()
 
     class Meta:
         model = VocabularyList
-        fields = ['id', 'lesson', 'word_en', 'word_fr', 'word_es', 'word_nl', 'example_sentence_en', 'example_sentence_fr', 'example_sentence_es', 'example_sentence_nl']
+        fields = ['id', 
+                  'lesson', 
+                  'word_en', 
+                  'word_fr', 
+                  'word_es', 
+                  'word_nl',
+                  'definition_en',
+                    'definition_fr',
+                    'definition_es',
+                    'definition_nl',
+
+                  'example_sentence_en', 
+                  'example_sentence_fr', 
+                  'example_sentence_es', 
+                  'example_sentence_nl',
+                  'word_type_en',
+                    'word_type_fr',
+                    'word_type_es',
+                    'word_type_nl',
+                    'synonymous_en',
+                    'synonymous_fr',
+                    'synonymous_es',
+                    'synonymous_nl',
+                    'antonymous_en',
+                    'antonymous_fr',
+                    'antonymous_es',
+                    'antonymous_nl',
+
+
+                  ]
 
     def get_word(self, obj):
         user = self.context['request'].user
@@ -69,6 +138,14 @@ class VocabularyListSerializer(serializers.ModelSerializer):
             'target_language': target_sentence,
             'native_language': native_sentence,
         }
+
+
+class ContentLessonDetailSerializer(ContentLessonSerializer):
+    vocabulary_lists = VocabularyListSerializer(many=True, read_only=True)
+    
+    class Meta(ContentLessonSerializer.Meta):
+        fields = ContentLessonSerializer.Meta.fields + ['vocabulary_lists']
+
 
 class GrammarSerializer(serializers.ModelSerializer):
     class Meta:
