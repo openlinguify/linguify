@@ -92,12 +92,20 @@ Open a PostgreSQL terminal to execute SQL commands.
 ```bash
 psql -U postgres
 ```
-
+you will be prompted to enter the password for the `postgres` user.
 Select the database used by your Django project:
 
 ```sql
-\c linguify_db
+\c db_linguify
 ```
+display the tables in the database:
+
+\dt
+
+
+
+
+
 
 ---
 
@@ -134,6 +142,17 @@ You can also display the inserted data:
 ```sql
 SELECT * FROM course_lesson LIMIT 10;
 ```
+
+
+### Verify if a Table Exists in PostgreSQL
+
+\dt course_grammar;
+
+### Delete a table
+
+DROP TABLE IF EXISTS course_grammar, course_grammarrule, course_lesson, course_unit, course_writing, course_reading, ...;
+
+
 
 ---
 
@@ -184,7 +203,14 @@ With this method, you can efficiently perform bulk data inserts into PostgreSQL.
 # tree
 find . -type d \( -name "__pycache__" -o -name "migrations" -o -name "venv" \) -prune -o -type f \( -name "*.py" -o -name "requirements.txt" -o -name ".env" \) -print
 
+
+
+# Remove the cache of all apps (bash)
 find . -name "__pycache__" -exec rm -rf {} +
+
+# Remove 
+find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+
 
 
 # remove cache of the app
@@ -203,13 +229,14 @@ Remove-Item -Path "flashcard/migrations/*.py" -Exclude "__init__.py"
 Remove-Item -Path "payments/migrations/*.py" -Exclude "__init__.py"
 Remove-Item -Path "quiz/migrations/*.py" -Exclude "__init__.py"
 Remove-Item -Path "revision/migrations/*.py" -Exclude "__init__.py"
-Remove-Item -Path "cards/migrations/*.py" -Exclude "__init__.py"
+
 
 
 rm -rf authentication/migrations/*.py
 rm -rf course/migrations/*.py
 rm -rf quiz/migrations/*.py
 
+find . -name "__pycache__" -exec rm -r {} +
 
 # make the makemigrations and migrate of the classes
 
