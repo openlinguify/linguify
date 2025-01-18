@@ -1,20 +1,22 @@
 # course/views.py
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status, filters, generics
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter, OrderingFilter
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404
 
-from .models import Unit, Lesson, VocabularyList
-from .serializers import UnitSerializer, LessonSerializer, VocabularyListSerializer
+from .models import Unit, Lesson, ContentLesson, VocabularyList
+from .serializers import UnitSerializer, LessonSerializer, ContentLessonSerializer, VocabularyListSerializer, ContentLessonDetailSerializer
 from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
 import random
@@ -53,11 +55,6 @@ class UnitAPIView(generics.ListAPIView):
     authentication_classes = []  # Remove authentication requirement
     serializer_class = UnitSerializer
     queryset = Unit.objects.all().order_by('order')
-
-
-
-
-
 @method_decorator(csrf_exempt, name='dispatch')
 class LessonAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
@@ -70,6 +67,54 @@ class LessonAPIView(generics.ListAPIView):
         if unit_id:
             return queryset.filter(unit_id=unit_id)
         return queryset
+
+
+class ContentLessonViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    serializer_class = ContentLessonSerializer
+
+    def get_queryset(self):
+        lesson_id = self.kwargs.get('lesson_id')
+        print(f"[ContentLessonViewSet] Fetching content lessons for lesson_id: {lesson_id}")
+        
+        if lesson_id:
+            queryset = ContentLesson.objects.filter(
+                lesson_id=lesson_id
+            ).order_by('order')
+            
+            # Log détaillé des contenus trouvés
+            contents = list(queryset)
+            print(f"[ContentLessonViewSet] Found {len(contents)} content lessons:")
+            for content in contents:
+                print(f"  - ID: {content.id}, Title: {content.title_en}, Type: {content.content_type}")
+            
+            return queryset
+            
+        print("[ContentLessonViewSet] No lesson_id provided, returning empty queryset")
+        return ContentLesson.objects.none()
+
+    def list(self, request, *args, **kwargs):
+        print(f"[ContentLessonViewSet] List method called with kwargs: {kwargs}")
+        print(f"[ContentLessonViewSet] Request path: {request.path}")
+        
+        lesson_id = self.kwargs.get('lesson_id')
+        if not lesson_id:
+            print("[ContentLessonViewSet] No lesson_id found in kwargs")
+            return Response(
+                {'error': 'lesson_id is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        data = serializer.data
+        print(f"[ContentLessonViewSet] Returning {len(data)} serialized content lessons")
+        return Response(data)
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 class VocabularyListAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = VocabularyListSerializer

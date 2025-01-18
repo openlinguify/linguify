@@ -1,6 +1,7 @@
+// src/app/%28dashboard%29/%28apps%29/learning/_components/Lessons.tsx
 'use client';
-
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/shared/components/ui/card';
 import { Alert, AlertDescription } from '@/shared/components/ui/alert';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
@@ -23,6 +24,7 @@ export default function Lessons({ unitId }: LessonsProps) {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -52,7 +54,11 @@ export default function Lessons({ unitId }: LessonsProps) {
   }, [unitId]);
 
   const handleBack = () => {
-    window.history.back();
+    router.push('/learning');
+  };
+
+  const handleLessonClick = (lessonId: number) => {
+    router.push(`/learning/${unitId}/${lessonId}`);
   };
 
   if (loading) {
@@ -91,7 +97,11 @@ export default function Lessons({ unitId }: LessonsProps) {
           </Alert>
         ) : (
           lessons.map((lesson) => (
-            <Card key={lesson.id} className="p-4">
+            <Card 
+              key={lesson.id} 
+              className="p-4 hover:shadow-md transition-all cursor-pointer"
+              onClick={() => handleLessonClick(lesson.id)}
+            >
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-lg font-medium">{lesson.title}</h3>
