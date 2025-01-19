@@ -8,6 +8,7 @@ from rest_framework import status, filters, generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.exceptions import ValidationError
 
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.decorators import method_decorator
@@ -55,7 +56,7 @@ class UnitAPIView(generics.ListAPIView):
     authentication_classes = []  # Remove authentication requirement
     serializer_class = UnitSerializer
     queryset = Unit.objects.all().order_by('order')
-@method_decorator(csrf_exempt, name='dispatch')
+
 class LessonAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -63,10 +64,12 @@ class LessonAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         unit_id = self.request.query_params.get('unit')
-        queryset = Lesson.objects.all().order_by('order')
         if unit_id:
-            return queryset.filter(unit_id=unit_id)
-        return queryset
+            try:
+                return Lesson.objects.filter(unit_id=unit_id).order_by('order')
+            except ValueError:
+                raise ValidationError({"error": "Invalid unit ID"})
+        return Lesson.objects.all().order_by('order')
 
 
 class ContentLessonViewSet(viewsets.ModelViewSet):
@@ -75,46 +78,15 @@ class ContentLessonViewSet(viewsets.ModelViewSet):
     serializer_class = ContentLessonSerializer
 
     def get_queryset(self):
-        lesson_id = self.kwargs.get('lesson_id')
-        print(f"[ContentLessonViewSet] Fetching content lessons for lesson_id: {lesson_id}")
-        
+        lesson_id = self.request.query_params.get('lesson')
+        queryset = ContentLesson.objects.all().order_by('order')
         if lesson_id:
-            queryset = ContentLesson.objects.filter(
-                lesson_id=lesson_id
-            ).order_by('order')
-            
-            # Log détaillé des contenus trouvés
-            contents = list(queryset)
-            print(f"[ContentLessonViewSet] Found {len(contents)} content lessons:")
-            for content in contents:
-                print(f"  - ID: {content.id}, Title: {content.title_en}, Type: {content.content_type}")
-            
-            return queryset
-            
-        print("[ContentLessonViewSet] No lesson_id provided, returning empty queryset")
-        return ContentLesson.objects.none()
+            try:
+                return queryset.filter(lesson_id=lesson_id).order_by('order')
+            except ValueError:
+                raise ValidationError({"error": "Invalid lesson ID"})
+        return queryset.objects.all().order_by('order')
 
-    def list(self, request, *args, **kwargs):
-        print(f"[ContentLessonViewSet] List method called with kwargs: {kwargs}")
-        print(f"[ContentLessonViewSet] Request path: {request.path}")
-        
-        lesson_id = self.kwargs.get('lesson_id')
-        if not lesson_id:
-            print("[ContentLessonViewSet] No lesson_id found in kwargs")
-            return Response(
-                {'error': 'lesson_id is required'}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        data = serializer.data
-        print(f"[ContentLessonViewSet] Returning {len(data)} serialized content lessons")
-        return Response(data)
-
-    @method_decorator(csrf_exempt)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
 class VocabularyListAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = VocabularyListSerializer
