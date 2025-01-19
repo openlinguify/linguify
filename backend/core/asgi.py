@@ -1,8 +1,8 @@
 # linguify/asgi.py
 import os
 from django.core.asgi import get_asgi_application
-from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter # type: ignore
+from channels.auth import AuthMiddlewareStack # type: ignore
 from chat.token_auth import TokenAuthMiddleware
 from chat.routing import websocket_urlpatterns
 
