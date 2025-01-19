@@ -20,7 +20,7 @@ class JWTMiddleware:
             '/api/v1/auth/user/',
             '/api/v1/course/units/',
             '/api/v1/course/lesson/',
-            '/api/v1/course/lesson/<int:lesson_id>/content/',
+            '/api/v1/course/content-lesson/',
             
             
             '/favicon.ico',

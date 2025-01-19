@@ -38,7 +38,10 @@ export default function Lessons({ unitId }: LessonsProps) {
         }
         
         const data = await response.json();
-        setLessons(Array.isArray(data) ? data : data.results || []);
+        // Tri des leçons par ordre si nécessaire
+        const sortedLessons = (Array.isArray(data) ? data : data.results || [])
+          .sort((a: Lesson, b: Lesson) => a.order - b.order);
+        setLessons(sortedLessons);
         setError(null);
       } catch (err) {
         console.error('Error fetching lessons:', err);
@@ -62,7 +65,13 @@ export default function Lessons({ unitId }: LessonsProps) {
   };
 
   if (loading) {
-    return <div className="p-6">Loading lessons...</div>;
+    return (
+      <div className="p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-pulse">Loading lessons...</div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
