@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Linguify - Learn Languages Easily",
-  description: "A personalized language learning app designed for your growth.",
+  description: "Language learning platform for everyone.",
 };
 
 export default function RootLayout({

@@ -12,5 +12,6 @@ urlpatterns = [
     path('api/v1/auth/', include('authentication.urls')),
     path('api/v1/course/', include('course.urls', namespace='course')),
     path('api/v1/flashcard/', include('flashcard.urls', namespace='flashcard')),
-    # path('api/v1/notes/', include('notebook.urls', namespace='note')),
+    path('api/v1/notebook/', include('notebook.urls', namespace='notebook')),
+    path('api/chat/', include('chat.urls', namespace='chat')),
 ]

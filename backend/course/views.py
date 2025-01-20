@@ -1,18 +1,23 @@
 # course/views.py
+from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status, filters, generics
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.exceptions import ValidationError
 
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter, OrderingFilter
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404
 
-from .models import Unit, Lesson, VocabularyList
-from .serializers import UnitSerializer, LessonSerializer, VocabularyListSerializer
+from .models import Unit, Lesson, ContentLesson, VocabularyList
+from .serializers import UnitSerializer, LessonSerializer, ContentLessonSerializer, VocabularyListSerializer, ContentLessonDetailSerializer
 from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
 import random
@@ -46,24 +51,42 @@ class CustomPagination(PageNumberPagination):
 #         context['target_language'] = target_language
 #         return context
 
-@method_decorator(csrf_exempt, name='dispatch')
-class UnitAPIView(ListAPIView):
-    queryset = Unit.objects.all().order_by('order')
+class UnitAPIView(generics.ListAPIView):
+    permission_classes = [AllowAny]  # Explicitly set AllowAny
+    authentication_classes = []  # Remove authentication requirement
     serializer_class = UnitSerializer
-    permission_classes = [AllowAny]
-    authentication_classes = []
-@method_decorator(csrf_exempt, name='dispatch')
+    queryset = Unit.objects.all().order_by('order')
+
 class LessonAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
-    authentication_classes = []  # Désactive l'authentification comme pour UnitAPIView
+    authentication_classes = []
     serializer_class = LessonSerializer
 
     def get_queryset(self):
         unit_id = self.request.query_params.get('unit')
-        queryset = Lesson.objects.all().order_by('order')
         if unit_id:
-            return queryset.filter(unit_id=unit_id)
-        return queryset
+            try:
+                return Lesson.objects.filter(unit_id=unit_id).order_by('order')
+            except ValueError:
+                raise ValidationError({"error": "Invalid unit ID"})
+        return Lesson.objects.all().order_by('order')
+
+
+class ContentLessonViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    serializer_class = ContentLessonSerializer
+
+    def get_queryset(self):
+        lesson_id = self.request.query_params.get('lesson')
+        queryset = ContentLesson.objects.all().order_by('order')
+        if lesson_id:
+            try:
+                return queryset.filter(lesson_id=lesson_id).order_by('order')
+            except ValueError:
+                raise ValidationError({"error": "Invalid lesson ID"})
+        return queryset.order_by('order')
+
 class VocabularyListAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = VocabularyListSerializer
