@@ -1,5 +1,6 @@
 # course/models.py
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from authentication.models import User
 
 """
@@ -133,8 +134,80 @@ class Lesson(models.Model):
         }
         return switch.get(target_language, self.description_en)
 
+class ContentLesson(models.Model):
+    CONTENT_TYPE = [
+        ('Theory', 'Theory'),
+        ('Vocabulary', 'Vocabulary'),
+        ('Grammar', 'Grammar'),
+        ('Multiple choice', 'Multiple choice'),
+        ('Reordering', 'Reordering'),
+        ('Matching', 'Matching'),
+        ('Question and answer', 'Question and answer'),
+        ('fill_blank', 'Fill in the blanks'),
+        ('True or False', 'True or False'),
+        ('Test', 'Test'),
+    ]
+        
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='content_lessons')
+    content_type = models.CharField(max_length=100, choices=CONTENT_TYPE, blank=False, null=False, db_index=True)
+    title_en = models.CharField(max_length=255, blank=False, null=False)
+    title_fr = models.CharField(max_length=255, blank=False, null=False)
+    title_es = models.CharField(max_length=255, blank=False, null=False)
+    title_nl = models.CharField(max_length=255, blank=False, null=False)
+    instruction_en = models.TextField(blank=False, null=False, default='Text of the instruction')
+    instruction_fr = models.TextField(blank=False, null=False, default='Text of the instruction')
+    instruction_es = models.TextField(blank=False, null=False, default='Text of the instruction')
+    instruction_nl = models.TextField(blank=False, null=False, default='Text of the instruction')
+    estimated_duration = models.IntegerField(help_text="Duration in minutes", validators=[MinValueValidator(1)], blank=False, null=False)
+    order = models.PositiveIntegerField(blank=False, validators=[MinValueValidator(1)],null=False, default=1)
+
+    class Meta:
+        ordering = ['order', 'id']
+        verbose_name= "Content Lesson"
+        verbose_name_plural = "Content Lessons"
+        indexes = [
+            models.Index(fields=['content_type']),
+            models.Index(fields=['order']),
+        ]
+
+
+    def __str__(self):
+        return f"{self.lesson.title_en} - {self.title_en} - {self.content_type}"
+    
+    def get_title(self, target_language='en'):
+        """
+        Get the title in the specified language.
+        
+        Args:
+            target_language (str): Language code ('en', 'fr', 'es', or 'nl')
+            
+        Returns:
+            str: Title in the requested language
+        """
+        return getattr(self, f'title_{target_language}', self.title_en)
+
+    def get_instruction(self, target_language='en'):
+        """
+        Get the instruction in the specified language.
+        
+        Args:
+            target_language (str): Language code ('en', 'fr', 'es', or 'nl')
+            
+        Returns:
+            str: Instruction in the requested language
+        """
+        return getattr(self, f'instruction_{target_language}', self.instruction_en)
+
+    def save(self, *args, **kwargs):
+        """Override save to ensure content type is lowercase and validate duration"""
+        self.content_type = self.content_type.lower()
+        if self.estimated_duration < 1:
+            self.estimated_duration = 1
+        super().save(*args, **kwargs)
+
 class VocabularyList(models.Model):
-    lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, related_name='vocabulary_list', limit_choices_to={'lesson_type': 'vocabulary'})
+
+    content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='vocabulary_lists', default=1)
     word_en = models.CharField(max_length=100, blank=False, null=False)
     word_fr = models.CharField(max_length=100, blank=False, null=False)
     word_es = models.CharField(max_length=100, blank=False, null=False)
@@ -151,6 +224,14 @@ class VocabularyList(models.Model):
     word_type_fr = models.CharField(max_length=100, blank=False, null=False)
     word_type_es = models.CharField(max_length=100, blank=False, null=False)
     word_type_nl = models.CharField(max_length=100, blank=False, null=False)
+    synonymous_en = models.TextField(blank=True, null=True)
+    synonymous_fr = models.TextField(blank=True, null=True)
+    synonymous_es = models.TextField(blank=True, null=True)
+    synonymous_nl = models.TextField(blank=True, null=True)
+    antonymous_en = models.TextField(blank=True, null=True)
+    antonymous_fr = models.TextField(blank=True, null=True)
+    antonymous_es = models.TextField(blank=True, null=True)
+    antonymous_nl = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return (
@@ -182,9 +263,33 @@ class VocabularyList(models.Model):
             'nl': self.definition_nl,
         }
         return switch.get(target_language, self.definition_en)
+    
+    def get_word_type(self, target_language):
+        switch = {
+            'fr': self.word_type_fr,
+            'es': self.word_type_es,
+            'nl': self.word_type_nl,
+        }
+        return switch.get(target_language, self.word_type_en)
+    
+    def get_synonymous(self, target_language):
+        switch = {
+            'fr': self.synonymous_fr,
+            'es': self.synonymous_es,
+            'nl': self.synonymous_nl,
+        }
+        return switch.get(target_language, self.synonymous_en)
+    
+    def get_antonymous(self, target_language):
+        switch = {
+            'fr': self.antonymous_fr,
+            'es': self.antonymous_es,
+            'nl': self.antonymous_nl,
+        }
+        return switch.get(target_language, self.antonymous_en)
+    
 
-
-
+    
 class ExerciseVocabularyMultipleChoice(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     question = models.TextField(blank=False, null=False, help_text="Question based on example sentence")
@@ -204,7 +309,6 @@ class ExerciseVocabularyMultipleChoice(models.Model):
             incorrect_answers=[vocab.word_fr, vocab.word_es, vocab.word_nl],
             explanation=f"{vocab.word_en} means {vocab.definition_en}",
         )
-
 class ExerciseVocabularyFillBlank(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     sentence_fill_blank_en = models.TextField(blank=False, null=False, help_text="Sentence with a blank space")
@@ -252,42 +356,21 @@ class ExerciseGrammarReordering(models.Model):
             explanation="Reorder the words to match the correct sentence structure.",
             hint="Start with the subject and follow the sentence structure rules.",
             difficulty_level='medium'
-        )
-
-    
-class Exercise(models.Model):
-    EXERCISE_TYPE = [
-        ('Multiple choice', 'Multiple choice'),
-        ('Reordering', 'Reordering'),
-        ('Matching', 'Matching'),
-        ('Question and answer', 'Question and answer'),
-        ('fill_blank', 'Fill in the blanks'),
-        ('True or False', 'True or False'),
-    ]
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    exercise_type = models.CharField(max_length=100, choices=EXERCISE_TYPE, blank=False, null=False)
-    instruction_en = models.TextField(blank=False, null=False, default='Text of the instruction')
-    instruction_fr = models.TextField(blank=False, null=False, default='Text of the instruction')
-    instruction_es = models.TextField(blank=False, null=False, default='Text of the instruction')
-    instruction_nl = models.TextField(blank=False, null=False, default='Text of the instruction')
-    order = models.PositiveIntegerField(blank=False, null=False, default=1)
-
-    def __str__(self):
-        return self.instruction
-    
-    
+        ) 
 class GrammarRule(models.Model):
-    lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, related_name='grammar_rule', limit_choices_to={'lesson_type': 'grammar'})
-    title_en = models.CharField(max_length=255, blank=False, null=False)
-    title_fr = models.CharField(max_length=255, blank=False, null=False)
-    title_es = models.CharField(max_length=255, blank=False, null=False)
-    title_nl = models.CharField(max_length=255, blank=False, null=False)
-    content = models.TextField(blank=False, null=False, help_text="Explication de la règle de grammaire")
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='grammar_rules', default=1)
+
+    title_en = models.CharField(max_length=255, blank=False, null=False, default="Grammar rule title")
+    title_fr = models.CharField(max_length=255, blank=False, null=False, default="Grammar rule title")
+    title_es = models.CharField(max_length=255, blank=False, null=False, default="Grammar rule title")
+    title_nl = models.CharField(max_length=255, blank=False, null=False, default="Grammar rule title")
+    content = models.TextField(blank=False, null=False, help_text="Explication de la règle de grammaire", default="Grammar rule content")
 
     examples = models.JSONField(
         blank=False,
         null=False,
         help_text="Exemples sous forme JSON. Exemple : [{'en': 'I eat', 'fr': 'Je mange'}]",
+        default=list,
     )
     special_cases = models.TextField(
         blank=True,
@@ -302,14 +385,6 @@ class GrammarRule(models.Model):
 
     def __str__(self):
         return f"{self.lesson.title_en} - {self.title}"
-
-
-
-
-
-
-
-
 class Grammar(models.Model):
     title = models.CharField(max_length=100, blank=False, null=False)
     description = models.TextField(blank=False, null=False)
@@ -317,7 +392,6 @@ class Grammar(models.Model):
 
     def __str__(self):
         return self.title
-
 class GrammarRulePoint(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     title = models.CharField(max_length=100, blank=False, null=False)
@@ -325,21 +399,18 @@ class GrammarRulePoint(models.Model):
 
     def __str__(self):
         return self.title
-
 class Reading(models.Model):
     title = models.CharField(max_length=100, blank=False, null=False)
     text = models.TextField(blank=False, null=False)
 
     def __str__(self):
         return self.title
-
 class Writing(models.Model):
     title = models.CharField(max_length=100, blank=False, null=False)
     text = models.TextField(blank=False, null=False)
 
     def __str__(self):
         return self.title
-
 class TestRecap(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     title = models.CharField(max_length=100, blank=False, null=False)
@@ -350,11 +421,9 @@ class TestRecap(models.Model):
 
     def __str__(self):
         return self.title
-
 class TestRecapExercise(models.Model):
     test_recap = models.ForeignKey(TestRecap, on_delete=models.CASCADE)
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
-
 class TestRecapAttempt(models.Model):
     test_recap = models.ForeignKey(TestRecap, on_delete=models.CASCADE)
     score = models.FloatField(blank=False, null=False)
@@ -383,11 +452,6 @@ class GrammarModule(models.Model):
 
     def get_list_grammar_modules(self):
         pass
-
-class GrammarRule(models.Model):
-    grammar_module = models.ForeignKey(GrammarModule, on_delete=models.CASCADE)
-    title = models.CharField(max_length=100, blank=False, null=False)
-
 class GrammarRuleContent(models.Model):
     theory = models.TextField(blank=False, null=False)
     example = models.TextField(blank=False, null=False)
@@ -401,7 +465,6 @@ class GrammarRuleContent(models.Model):
     example_translation_de = models.TextField(blank=False, null=False)
     example_translation_it = models.TextField(blank=False, null=False)
     grammar_rule = models.ForeignKey(GrammarRule, on_delete=models.CASCADE)
-
 class GrammarRuleExercise(models.Model):
     grammar_rule = models.ForeignKey(GrammarRule, on_delete=models.CASCADE)
     question = models.TextField(blank=False, null=False)

@@ -1,39 +1,56 @@
 // src/app/api/auth/me/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0/edge';
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const res = NextResponse.next();
-    const session = await getSession(req, res);
-    
-    if (!session?.user) {
-      return NextResponse.json({ 
-        user: null,
-        isAuthenticated: false 
-      }, { status: 401 });
+    // Attendre cookies() et get()
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get('session');
+
+    if (!sessionCookie?.value) {
+      return NextResponse.json(
+        { 
+          isAuthenticated: false,
+          error: 'No session found'
+        },
+        { status: 401 }
+      );
     }
 
-    // On s'assure d'avoir les rôles
-    const roles = session.user[`${process.env.AUTH0_ISSUER_BASE_URL}/roles`] || ['user'];
+    const session = JSON.parse(sessionCookie.value);
+    
+    // Vérifier si la session est expirée
+    if (Date.now() > session.expiresAt) {
+      return NextResponse.json(
+        { 
+          isAuthenticated: false, 
+          error: 'Session expired' 
+        },
+        { status: 401 }
+      );
+    }
 
+    // Retourner les infos utilisateur sans données sensibles
     return NextResponse.json({
+      isAuthenticated: true,
       user: {
-        id: session.user.sub,
+        sub: session.user.sub,
         email: session.user.email,
         name: session.user.name,
         picture: session.user.picture,
-        email_verified: session.user.email_verified,
-        roles: roles,
-        // Ajoutez d'autres propriétés personnalisées si nécessaire
-      },
-      isAuthenticated: true
+      }
     });
   } catch (error) {
-    console.error('Session error:', error);
+    console.error('Error getting user session:', error);
     return NextResponse.json(
-      { error: 'Failed to get user session', details: error },
-      { status: 500 }
+      { 
+        isAuthenticated: false, 
+        error: 'Invalid session' 
+      },
+      { status: 401 }
     );
   }
 }
+
+export const runtime = 'edge';

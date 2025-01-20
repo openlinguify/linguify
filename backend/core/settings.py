@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django_extensions',
     'django_filters',
+    'channels',
 
     # Project django_apps
     'authentication',
@@ -55,9 +56,10 @@ INSTALLED_APPS = [
     'payments',
     'quiz',
     'revision',
+    'notebook',
     #'subscription',
     #'app_manager', # 'app_manager', # TODO: Uncomment when app_manager is ready
-    #'notebook', # TODO: Uncomment when notebook is ready
+    
     
 
     # Django REST framework modules
@@ -79,10 +81,9 @@ AUTHENTICATION_BACKENDS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'authentication.auth0_auth.Auth0Authentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
@@ -143,12 +144,12 @@ MIDDLEWARE = [
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4040",
-    "http://127.0.0.1:4040",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 
 
-CORS_ORIGIN_ALL_ORIGINS = False
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = [
@@ -172,7 +173,11 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-
+# Configuration supplémentaire pour la sécurité
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
 
 ROOT_URLCONF = 'core.urls'
 
@@ -249,3 +254,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 APPEND_SLASH = True
 
 
+
+ASGI_APPLICATION = 'core.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
