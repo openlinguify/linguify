@@ -39,9 +39,18 @@ export default function LessonContent({ unitId, lessonId }: LessonContentProps) 
   useEffect(() => {
     const fetchContents = async () => {
       try {
+        console.log('Fetching content for lessonId:', lessonId);
+        
         const response = await fetch(
           `http://localhost:8000/api/v1/course/content-lesson?lesson=${lessonId}`,
-          { credentials: 'omit' }
+          {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            mode: 'cors'
+          }
         );
         
         if (!response.ok) {
@@ -49,10 +58,10 @@ export default function LessonContent({ unitId, lessonId }: LessonContentProps) 
         }
         
         const data = await response.json();
-        console.log('API Response:', data); // Debug log
+        console.log('API Response:', data);
         
         const sortedContents = Array.isArray(data) ? 
-          data.sort((a: ContentLesson, b: ContentLesson) => a.order - b.order) : 
+          data.sort((a, b) => a.order - b.order) : 
           [];
         
         setContents(sortedContents);
@@ -65,7 +74,9 @@ export default function LessonContent({ unitId, lessonId }: LessonContentProps) 
       }
     };
 
-    fetchContents();
+    if (lessonId) {
+      fetchContents();
+    }
   }, [lessonId]);
 
   const handleBack = () => {
@@ -136,7 +147,7 @@ export default function LessonContent({ unitId, lessonId }: LessonContentProps) 
                 <div className="mt-6 border-t pt-4">
                   <h4 className="font-medium mb-3">Vocabulary</h4>
                   <div className="space-y-2">
-                    {content.vocabulary_lists.map((vocab: any) => (
+                    {content.vocabulary_lists.map((vocab) => (
                       <div key={vocab.id} className="bg-gray-50 p-3 rounded">
                         <div className="font-medium">{vocab.word_en}</div>
                         <div className="text-gray-600">{vocab.definition_en}</div>
