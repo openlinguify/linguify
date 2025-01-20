@@ -1,20 +1,21 @@
-// src/app/(dashboard)/(apps)/learning/[unitId]/[lessonId]/page.tsx
 import { Suspense } from 'react';
 import LessonContent from '../../_components/LessonContent';
 import { notFound } from 'next/navigation';
 
-interface Props {
-  params: {
+interface PageProps {
+  params: Promise<{
     unitId: string;
     lessonId: string;
-  };
+  }>;
 }
 
-export default function LessonPage({ params }: Props) {
-  const { unitId, lessonId } = params;
+export default async function LessonPage({ params }: PageProps) {
+  // Destructure après le await - c'est la clé !
+  const { unitId, lessonId } = await params;
 
+  // Validation avec les valeurs déjà "awaited"
   if (!unitId || !lessonId || isNaN(Number(unitId)) || isNaN(Number(lessonId))) {
-    notFound();
+    return notFound();
   }
 
   return (
@@ -25,7 +26,7 @@ export default function LessonPage({ params }: Props) {
         </div>
       }
     >
-      <LessonContent lessonId={lessonId} />
+      <LessonContent unitId={unitId} lessonId={lessonId} />
     </Suspense>
   );
 }
