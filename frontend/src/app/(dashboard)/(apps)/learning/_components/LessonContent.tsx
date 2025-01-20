@@ -1,39 +1,36 @@
 'use client';
-
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';  // Changed from next/router to next/navigation
+import { useRouter } from 'next/navigation';
 import { Card } from '@/shared/components/ui/card';
 import { Alert, AlertDescription } from '@/shared/components/ui/alert';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 
-// Define proper interfaces
 interface ContentLesson {
   id: number;
+  title: {
+    en: string;
+    fr: string;
+    es: string;
+    nl: string;
+  };
+  instruction: {
+    en: string;
+    fr: string;
+    es: string;
+    nl: string;
+  };
   content_type: string;
-  title_en: string;
-  instruction_en: string;
-  estimated_duration: number;
+  vocabulary_lists?: any[];
   order: number;
-  vocabulary_lists?: VocabularyItem[];
 }
 
-interface VocabularyItem {
-  word_en: string;
-  word_fr: string;
-  definition_en: string;
-  example_sentence_en: string;
-  word_type_en: string;
-  synonymous_en: string | null;
-  antonymous_en: string | null;
-}
-
-interface ContentLessonProps {
+interface LessonContentProps {
+  unitId: string;
   lessonId: string;
 }
 
-export default function ContentLesson({ lessonId }: ContentLessonProps) {
+export default function LessonContent({ unitId, lessonId }: LessonContentProps) {
   const [contents, setContents] = useState<ContentLesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,31 +38,28 @@ export default function ContentLesson({ lessonId }: ContentLessonProps) {
 
   useEffect(() => {
     const fetchContents = async () => {
-      if (!lessonId) return;
-      
       try {
-        setLoading(true);
-        setError(null);
         const response = await fetch(
           `http://localhost:8000/api/v1/course/content-lesson?lesson=${lessonId}`,
-          {
-            credentials: 'omit',
-          }
+          { credentials: 'omit' }
         );
-
+        
         if (!response.ok) {
-          throw new Error('Failed to fetch lesson contents');
+          throw new Error('Failed to fetch lesson content');
         }
-
+        
         const data = await response.json();
-        // Sort contents by order
+        console.log('API Response:', data); // Debug log
+        
         const sortedContents = Array.isArray(data) ? 
-          data.sort((a, b) => a.order - b.order) : 
+          data.sort((a: ContentLesson, b: ContentLesson) => a.order - b.order) : 
           [];
+        
         setContents(sortedContents);
+        setError(null);
       } catch (err) {
-        console.error('Error fetching contents:', err);
-        setError('Failed to load lesson contents');
+        console.error('Error fetching content:', err);
+        setError('Failed to load lesson content');
       } finally {
         setLoading(false);
       }
@@ -82,7 +76,7 @@ export default function ContentLesson({ lessonId }: ContentLessonProps) {
     return (
       <div className="p-6">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-pulse">Loading lesson content...</div>
+          <div className="animate-pulse">Loading content...</div>
         </div>
       </div>
     );
@@ -112,56 +106,49 @@ export default function ContentLesson({ lessonId }: ContentLessonProps) {
         </Button>
       </div>
 
-      {contents.length === 0 ? (
-        <Alert>
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>No content found for this lesson.</AlertDescription>
-        </Alert>
-      ) : (
-        <Tabs defaultValue={contents[0]?.id.toString()} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-2">
-            {contents.map((content) => (
-              <TabsTrigger
-                key={content.id}
-                value={content.id.toString()}
-                className="w-full"
-              >
-                {content.title_en}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          {contents.map((content) => (
-            <TabsContent key={content.id} value={content.id.toString()}>
-              <Card className="p-6">
-                <h3 className="text-xl font-bold mb-4">{content.title_en}</h3>
-                <div className="prose max-w-none">
-                  <p className="mb-4">{content.instruction_en}</p>
-                  
-                  {content.content_type === 'vocabulary' && content.vocabulary_lists && (
-                    <div className="mt-6 space-y-4">
-                      {content.vocabulary_lists.map((vocab, index) => (
-                        <Card key={index} className="p-4">
-                          <div className="space-y-2">
-                            <h4 className="font-medium">{vocab.word_en}</h4>
-                            <p className="text-sm text-gray-600">({vocab.word_type_en})</p>
-                            <p className="text-gray-700">{vocab.definition_en}</p>
-                            {vocab.example_sentence_en && (
-                              <p className="text-sm italic">
-                                Example: {vocab.example_sentence_en}
-                              </p>
-                            )}
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
+      <div className="space-y-4">
+        {contents.length === 0 ? (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>No content found for this lesson.</AlertDescription>
+          </Alert>
+        ) : (
+          contents.map((content) => (
+            <Card 
+              key={content.id} 
+              className="p-6 space-y-4"
+            >
+              <div>
+                <h3 className="text-lg font-semibold">
+                  {content.title.en}
+                </h3>
+                <p className="text-gray-600 mt-2">
+                  {content.instruction.en}
+                </p>
+                <div className="mt-4">
+                  <span className="px-3 py-1 bg-sky-100 text-sky-800 rounded-full text-sm font-medium">
+                    {content.content_type}
+                  </span>
                 </div>
-              </Card>
-            </TabsContent>
-          ))}
-        </Tabs>
-      )}
+              </div>
+
+              {content.vocabulary_lists && content.vocabulary_lists.length > 0 && (
+                <div className="mt-6 border-t pt-4">
+                  <h4 className="font-medium mb-3">Vocabulary</h4>
+                  <div className="space-y-2">
+                    {content.vocabulary_lists.map((vocab: any) => (
+                      <div key={vocab.id} className="bg-gray-50 p-3 rounded">
+                        <div className="font-medium">{vocab.word_en}</div>
+                        <div className="text-gray-600">{vocab.definition_en}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </Card>
+          ))
+        )}
+      </div>
     </div>
   );
 }

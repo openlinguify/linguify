@@ -1,22 +1,19 @@
-// src/app/(dashboard)/(apps)/learning/[unitId]/page.tsx
-// src/app/(dashboard)/(apps)/learning/[unitId]/page.tsx
 import { Suspense } from 'react';
-import Lessons from "../_components/Lessons";
+import Lessons from '../_components/Lessons';
 import { notFound } from 'next/navigation';
 
-interface Props {
-  params: {
+interface PageProps {
+  params: Promise<{
     unitId: string;
-  };
+  }>;
 }
 
-export default function UnitPage({ params }: Props) {
-  // Retirer le await ici
-  const { unitId } = params;
+export default async function UnitPage({ params }: PageProps) {
+  // Destructure après le await - même principe !
+  const { unitId } = await params;
 
-  // Validate unitId
   if (!unitId || isNaN(Number(unitId))) {
-    notFound();
+    return notFound();
   }
 
   return (
