@@ -85,7 +85,7 @@ class ContentLessonViewSet(viewsets.ModelViewSet):
                 return queryset.filter(lesson_id=lesson_id).order_by('order')
             except ValueError:
                 raise ValidationError({"error": "Invalid lesson ID"})
-        return queryset.objects.all().order_by('order')
+        return queryset.order_by('order')
 
 class VocabularyListAPIView(APIView):
     permission_classes = [IsAuthenticated]
