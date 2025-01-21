@@ -1,10 +1,10 @@
 "use client";
 
-import React from 'react';
-import { Sidebar } from './_components/sidebar';
-import { UserButton } from "@/shared/components/ui/user-button";
-import { Menu } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
+import React from "react";
+import { Sidebar } from "./_components/sidebar";
+import { UserButton } from "@/components/ui/user-button";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardLayout({
   children,
@@ -17,21 +17,23 @@ export default function DashboardLayout({
     <div className="h-full relative">
       {/* Mobile Sidebar Overlay */}
       {isMobileSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/30 z-40 md:hidden"
           onClick={() => setIsMobileSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar Section */}
-      <aside className={`
+      <aside
+        className={`
         fixed inset-y-0 z-50 
         flex h-full w-56 flex-col 
         bg-gray-100 border-r shadow-sm
         transition-transform duration-300
         md:translate-x-0 md:flex
-        ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
+        ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+      `}
+      >
         <Sidebar />
       </aside>
 
@@ -56,9 +58,7 @@ export default function DashboardLayout({
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 p-6 overflow-y-auto">
-          {children}
-        </main>
+        <main className="flex-1 p-6 overflow-y-auto">{children}</main>
       </div>
     </div>
   );

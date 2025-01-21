@@ -1,10 +1,10 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Card } from '@/shared/components/ui/card';
-import { Alert, AlertDescription } from '@/shared/components/ui/alert';
-import { AlertCircle, ArrowLeft } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Card } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ContentLesson {
   id: number;
@@ -30,7 +30,10 @@ interface LessonContentProps {
   lessonId: string;
 }
 
-export default function LessonContent({ unitId, lessonId }: LessonContentProps) {
+export default function LessonContent({
+  unitId,
+  lessonId,
+}: LessonContentProps) {
   const [contents, setContents] = useState<ContentLesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,36 +42,36 @@ export default function LessonContent({ unitId, lessonId }: LessonContentProps) 
   useEffect(() => {
     const fetchContents = async () => {
       try {
-        console.log('Fetching content for lessonId:', lessonId);
-        
+        console.log("Fetching content for lessonId:", lessonId);
+
         const response = await fetch(
           `http://localhost:8000/api/v1/course/content-lesson?lesson=${lessonId}`,
           {
-            method: 'GET',
+            method: "GET",
             headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
+              Accept: "application/json",
+              "Content-Type": "application/json",
             },
-            mode: 'cors'
+            mode: "cors",
           }
         );
-        
+
         if (!response.ok) {
-          throw new Error('Failed to fetch lesson content');
+          throw new Error("Failed to fetch lesson content");
         }
-        
+
         const data = await response.json();
-        console.log('API Response:', data);
-        
-        const sortedContents = Array.isArray(data) ? 
-          data.sort((a, b) => a.order - b.order) : 
-          [];
-        
+        console.log("API Response:", data);
+
+        const sortedContents = Array.isArray(data)
+          ? data.sort((a, b) => a.order - b.order)
+          : [];
+
         setContents(sortedContents);
         setError(null);
       } catch (err) {
-        console.error('Error fetching content:', err);
-        setError('Failed to load lesson content');
+        console.error("Error fetching content:", err);
+        setError("Failed to load lesson content");
       } finally {
         setLoading(false);
       }
@@ -121,21 +124,16 @@ export default function LessonContent({ unitId, lessonId }: LessonContentProps) 
         {contents.length === 0 ? (
           <Alert>
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>No content found for this lesson.</AlertDescription>
+            <AlertDescription>
+              No content found for this lesson.
+            </AlertDescription>
           </Alert>
         ) : (
           contents.map((content) => (
-            <Card 
-              key={content.id} 
-              className="p-6 space-y-4"
-            >
+            <Card key={content.id} className="p-6 space-y-4">
               <div>
-                <h3 className="text-lg font-semibold">
-                  {content.title.en}
-                </h3>
-                <p className="text-gray-600 mt-2">
-                  {content.instruction.en}
-                </p>
+                <h3 className="text-lg font-semibold">{content.title.en}</h3>
+                <p className="text-gray-600 mt-2">{content.instruction.en}</p>
                 <div className="mt-4">
                   <span className="px-3 py-1 bg-sky-100 text-sky-800 rounded-full text-sm font-medium">
                     {content.content_type}
@@ -143,19 +141,22 @@ export default function LessonContent({ unitId, lessonId }: LessonContentProps) 
                 </div>
               </div>
 
-              {content.vocabulary_lists && content.vocabulary_lists.length > 0 && (
-                <div className="mt-6 border-t pt-4">
-                  <h4 className="font-medium mb-3">Vocabulary</h4>
-                  <div className="space-y-2">
-                    {content.vocabulary_lists.map((vocab) => (
-                      <div key={vocab.id} className="bg-gray-50 p-3 rounded">
-                        <div className="font-medium">{vocab.word_en}</div>
-                        <div className="text-gray-600">{vocab.definition_en}</div>
-                      </div>
-                    ))}
+              {content.vocabulary_lists &&
+                content.vocabulary_lists.length > 0 && (
+                  <div className="mt-6 border-t pt-4">
+                    <h4 className="font-medium mb-3">Vocabulary</h4>
+                    <div className="space-y-2">
+                      {content.vocabulary_lists.map((vocab) => (
+                        <div key={vocab.id} className="bg-gray-50 p-3 rounded">
+                          <div className="font-medium">{vocab.word_en}</div>
+                          <div className="text-gray-600">
+                            {vocab.definition_en}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </Card>
           ))
         )}

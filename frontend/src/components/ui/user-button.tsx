@@ -8,11 +8,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
-import { Button } from "@/shared/components/ui/button";
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { User, LogOut, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function UserButton() {
   const { user, logout, isAuthenticated } = useAuth();
@@ -20,8 +20,8 @@ export function UserButton() {
 
   if (!isAuthenticated) {
     return (
-      <Button 
-        variant="outline" 
+      <Button
+        variant="outline"
         onClick={() => router.push("/login")}
         aria-label="Sign in"
       >
@@ -36,19 +36,14 @@ export function UserButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className="relative h-8 w-8 rounded-full"
           aria-label={`User menu for ${userName}`}
         >
           <Avatar className="h-8 w-8">
-            <AvatarImage 
-              src={user?.picture || ""} 
-              alt={userName} 
-            />
-            <AvatarFallback>
-              {userName.charAt(0)}
-            </AvatarFallback>
+            <AvatarImage src={user?.picture || ""} alt={userName} />
+            <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -62,7 +57,7 @@ export function UserButton() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem 
+        <DropdownMenuItem
           onClick={() => router.push("/settings")}
           aria-label="Go to settings"
         >
@@ -70,7 +65,7 @@ export function UserButton() {
           Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem 
+        <DropdownMenuItem
           onClick={() => logout()}
           className="text-red-600 focus:text-red-600"
           aria-label="Log out"
