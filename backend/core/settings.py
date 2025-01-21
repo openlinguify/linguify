@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'quiz',
     'revision',
     'notebook',
+    'task',
     #'subscription',
     #'app_manager', # 'app_manager', # TODO: Uncomment when app_manager is ready
     
