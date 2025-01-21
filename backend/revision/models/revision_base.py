@@ -1,4 +1,4 @@
-# backend/django_apps/revision/models.py
+# backend/django_apps/revision/models/revision_base.py
 
 from django.db import models
 from django.conf import settings

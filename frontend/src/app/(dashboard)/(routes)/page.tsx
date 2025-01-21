@@ -2,8 +2,8 @@
 "use client";
 
 import { useAuth } from "@/providers/AuthProvider";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { Button } from "@/shared/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { BookOpen, Star, Trophy, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -49,10 +49,10 @@ export default function DashboardPage() {
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">
             Welcome to Linguify
           </h1>
-          
+
           <p className="text-lg text-gray-600">
-            Start your language learning journey today with personalized lessons,
-            interactive exercises, and real-time progress tracking.
+            Start your language learning journey today with personalized
+            lessons, interactive exercises, and real-time progress tracking.
           </p>
 
           <div className="mt-8">

@@ -1,13 +1,17 @@
-'use client';
+"use client";
 
-import { useAuth } from '@/providers/AuthProvider';
-import { useRouter } from 'next/navigation';
-import React from 'react';
-import { Github, Mail } from 'lucide-react';
-import { Button } from "@/shared/components/ui/button";
-import { Alert, AlertDescription } from "@/shared/components/ui/alert";
-import { AuthCard, AuthCardHeader, AuthCardContent } from '../_components/auth-card';
-import Link from 'next/link';
+import { useAuth } from "@/providers/AuthProvider";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { Github, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  AuthCard,
+  AuthCardHeader,
+  AuthCardContent,
+} from "../_components/auth-card";
+import Link from "next/link";
 
 export default function RegisterPage() {
   const { login, isAuthenticated } = useAuth();
@@ -17,7 +21,7 @@ export default function RegisterPage() {
 
   React.useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [isAuthenticated, router]);
 
@@ -25,13 +29,13 @@ export default function RegisterPage() {
     try {
       setIsLoading(true);
       await login({
-        connection: provider === 'github' ? 'github' : undefined,
-        appState: { returnTo: '/onboarding' },
-        screen_hint: 'signup'
+        connection: provider === "github" ? "github" : undefined,
+        appState: { returnTo: "/onboarding" },
+        screen_hint: "signup",
       });
     } catch (err) {
-      setError('An error occurred during registration. Please try again.');
-      console.error('Registration error:', err);
+      setError("An error occurred during registration. Please try again.");
+      console.error("Registration error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +60,7 @@ export default function RegisterPage() {
         <div className="space-y-4">
           <Button
             disabled={isLoading}
-            onClick={() => handleSignup('github')}
+            onClick={() => handleSignup("github")}
             className="w-full bg-gray-900 hover:bg-gray-800 text-white"
           >
             <Github className="mr-2 h-4 w-4" />
@@ -76,7 +80,7 @@ export default function RegisterPage() {
 
           <Button
             disabled={isLoading}
-            onClick={() => handleSignup('email')}
+            onClick={() => handleSignup("email")}
             className="w-full"
           >
             <Mail className="mr-2 h-4 w-4" />
@@ -85,7 +89,7 @@ export default function RegisterPage() {
         </div>
 
         <p className="mt-4 text-center text-sm text-gray-600">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link href="/login" className="text-sky-600 hover:text-sky-700">
             Sign in
           </Link>

@@ -2,10 +2,16 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { Button } from "@/shared/components/ui/button";
-import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { PlusCircle, Repeat, X, ChevronRight, ChevronLeft } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -63,9 +69,11 @@ export default function FlashCards() {
   };
 
   const markAsLearned = (id: string) => {
-    setCards(cards.map((card) =>
-      card.id === id ? { ...card, learned: !card.learned } : card
-    ));
+    setCards(
+      cards.map((card) =>
+        card.id === id ? { ...card, learned: !card.learned } : card
+      )
+    );
   };
 
   const removeCard = (id: string) => {
@@ -80,7 +88,7 @@ export default function FlashCards() {
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       addCard();
     }
   };
@@ -116,7 +124,7 @@ export default function FlashCards() {
               />
             </div>
           </div>
-          <Button 
+          <Button
             onClick={addCard}
             className="w-full bg-gradient-to-r from-sky-500 to-blue-600"
           >
