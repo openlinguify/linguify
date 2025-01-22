@@ -26,12 +26,10 @@ interface ContentLesson {
 }
 
 interface LessonContentProps {
-  unitId: string;
   lessonId: string;
 }
 
 export default function LessonContent({
-  unitId,
   lessonId,
 }: LessonContentProps) {
   const [contents, setContents] = useState<ContentLesson[]>([]);
