@@ -43,7 +43,7 @@ export default function LessonContent({
         console.log("Fetching content for lessonId:", lessonId);
 
         const response = await fetch(
-          `http://localhost:8000/api/v1/course/content-lesson?lesson=${lessonId}`,
+          `http://localhost:8000/api/v1/course/content-lesson/?lesson=${lessonId}`,
           {
             method: "GET",
             headers: {
