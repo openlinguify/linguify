@@ -14,7 +14,7 @@ app_name = 'course'
 urlpatterns = [
     path('units/', UnitAPIView.as_view(), name='unit-list'),
     path('lesson/', LessonAPIView.as_view(), name='lesson-list'),
-    path('content-lesson', ContentLessonViewSet.as_view({'get': 'list'}), name='content-lesson-list'),
+    path('content-lesson/', ContentLessonViewSet.as_view({'get': 'list'}), name='content-lesson-list'),
     path('content-lesson/<int:lesson_id>/', ContentLessonViewSet.as_view({'get': 'retrieve'})),
     path('vocabulary-list/', VocabularyListAPIView.as_view(), name='vocabulary-list'),
     path('exercice-vocabulary/', ExerciceVocabularyAPIView.as_view(), name='api-exercice-vocabulary'),
