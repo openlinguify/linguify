@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
@@ -29,9 +29,7 @@ interface LessonContentProps {
   lessonId: string;
 }
 
-export default function LessonContent({
-  lessonId,
-}: LessonContentProps) {
+export default function LessonContent({ lessonId }: LessonContentProps) {
   const [contents, setContents] = useState<ContentLesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,8 +38,6 @@ export default function LessonContent({
   useEffect(() => {
     const fetchContents = async () => {
       try {
-        console.log("Fetching content for lessonId:", lessonId);
-
         const response = await fetch(
           `http://localhost:8000/api/v1/course/content-lesson/?lesson=${lessonId}`,
           {
@@ -59,8 +55,6 @@ export default function LessonContent({
         }
 
         const data = await response.json();
-        console.log("API Response:", data);
-
         const sortedContents = Array.isArray(data)
           ? data.sort((a, b) => a.order - b.order)
           : [];
@@ -83,6 +77,8 @@ export default function LessonContent({
   const handleBack = () => {
     router.back();
   };
+
+
 
   if (loading) {
     return (
@@ -133,9 +129,12 @@ export default function LessonContent({
                 <h3 className="text-lg font-semibold">{content.title.en}</h3>
                 <p className="text-gray-600 mt-2">{content.instruction.en}</p>
                 <div className="mt-4">
-                  <span className="px-3 py-1 bg-sky-100 text-sky-800 rounded-full text-sm font-medium">
+                  <Button
+                    variant="ghost"
+                    data-lesson-content-id={content.id}
+                  >
                     {content.content_type}
-                  </span>
+                  </Button>
                 </div>
               </div>
 
