@@ -51,6 +51,7 @@ class JWTMiddleware:
             '/api/v1/course/lesson/',
             '/api/v1/course/content-lesson/',
             '/api/v1/course/content-lesson/<int:lesson_id>/',
+
             '/favicon.ico',
             '/static/',
             '/_next/',

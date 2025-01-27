@@ -234,11 +234,7 @@ class VocabularyList(models.Model):
     antonymous_nl = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return (
-            f"Lesson: {self.lesson.title_en} ({self.lesson.lesson_type.capitalize()}) | "
-            f"Word: {self.word_en} [{self.word_type_en}] | "
-            f"Definition: {self.definition_en[:30]}..."
-        )
+        return f"{self.word_en} - {self.definition_en} - {self.example_sentence_en}"
 
     def get_translation(self, target_language):
         switch = {
