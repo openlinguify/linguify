@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+'use client';
+import { useAuth0 } from '@auth0/auth0-react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { ThumbsUp, ThumbsDown, Download, Printer } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Download, Printer, AlertCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import * as XLSX from 'xlsx';
 
+
 interface VocabularyWord {
+  id: number;
+  content_lesson: string;
   word_en: string;
   word_fr: string;
   word_es: string;
@@ -35,102 +41,127 @@ interface VocabularyWord {
 
 type LanguageCode = 'en' | 'fr' | 'es' | 'nl';
 
-// Sample data for preview
-const SAMPLE_VOCABULARY: VocabularyWord[] = [
-  {
-    word_en: "Journey",
-    word_fr: "Voyage",
-    word_es: "Viaje",
-    word_nl: "Reis",
-    definition_en: "An act of traveling from one place to another, especially over a long distance",
-    definition_fr: "Action de se déplacer d'un endroit à un autre, particulièrement sur une longue distance",
-    definition_es: "Acto de trasladarse de un lugar a otro, especialmente a larga distancia",
-    definition_nl: "Het zich verplaatsen van de ene plaats naar de andere, vooral over lange afstand",
-    example_sentence_en: "Their journey to the mountains was full of adventures.",
-    example_sentence_fr: "Leur voyage dans les montagnes était plein d'aventures.",
-    example_sentence_es: "Su viaje a las montañas estuvo lleno de aventuras.",
-    example_sentence_nl: "Hun reis naar de bergen was vol avonturen.",
-    word_type_en: "noun",
-    word_type_fr: "nom",
-    word_type_es: "sustantivo",
-    word_type_nl: "zelfstandig naamwoord",
-    synonymous_en: "trip, voyage, excursion, expedition",
-    synonymous_fr: "périple, traversée, excursion, expédition",
-    synonymous_es: "travesía, excursión, expedición, trayecto",
-    synonymous_nl: "tocht, expeditie, uitstap, trip",
-    antonymous_en: "arrival, destination, stay",
-    antonymous_fr: "arrivée, destination, séjour",
-    antonymous_es: "llegada, destino, estancia",
-    antonymous_nl: "aankomst, bestemming, verblijf"
-  },
-  {
-    word_en: "Discover",
-    word_fr: "Découvrir",
-    word_es: "Descubrir",
-    word_nl: "Ontdekken",
-    definition_en: "To find something or someone unexpectedly or during a search",
-    definition_fr: "Trouver quelque chose ou quelqu'un de manière inattendue ou après une recherche",
-    definition_es: "Encontrar algo o alguien inesperadamente o durante una búsqueda",
-    definition_nl: "Iets of iemand onverwacht of tijdens een zoektocht vinden",
-    example_sentence_en: "Scientists discovered a new species in the rainforest.",
-    example_sentence_fr: "Les scientifiques ont découvert une nouvelle espèce dans la forêt tropicale.",
-    example_sentence_es: "Los científicos descubrieron una nueva especie en la selva tropical.",
-    example_sentence_nl: "Wetenschappers ontdekten een nieuwe soort in het regenwoud.",
-    word_type_en: "verb",
-    word_type_fr: "verbe",
-    word_type_es: "verbo",
-    word_type_nl: "werkwoord",
-    synonymous_en: "uncover, find, locate, detect",
-    synonymous_fr: "trouver, repérer, détecter, dénicher",
-    synonymous_es: "encontrar, hallar, localizar, detectar",
-    synonymous_nl: "vinden, aantreffen, opsporen, waarnemen",
-    antonymous_en: "hide, conceal, miss, overlook",
-    antonymous_fr: "cacher, dissimuler, manquer, négliger",
-    antonymous_es: "ocultar, esconder, perder, pasar por alto",
-    antonymous_nl: "verbergen, verhullen, missen, over het hoofd zien"
-  },
-  {
-    word_en: "Courage",
-    word_fr: "Courage",
-    word_es: "Coraje",
-    word_nl: "Moed",
-    definition_en: "The ability to face danger, pain, or difficulty without fear",
-    definition_fr: "Capacité à faire face au danger, à la douleur ou à la difficulté sans peur",
-    definition_es: "Capacidad de enfrentar el peligro, dolor o dificultad sin miedo",
-    definition_nl: "Het vermogen om gevaar, pijn of moeilijkheden zonder angst tegemoet te treden",
-    example_sentence_en: "It takes great courage to stand up for what you believe in.",
-    example_sentence_fr: "Il faut beaucoup de courage pour défendre ses convictions.",
-    example_sentence_es: "Se necesita gran coraje para defender lo que uno cree.",
-    example_sentence_nl: "Het vergt veel moed om op te komen voor waar je in gelooft.",
-    word_type_en: "noun",
-    word_type_fr: "nom",
-    word_type_es: "sustantivo",
-    word_type_nl: "zelfstandig naamwoord",
-    synonymous_en: "bravery, valor, fearlessness, boldness",
-    synonymous_fr: "bravoure, vaillance, intrépidité, audace",
-    synonymous_es: "valentía, valor, osadía, intrepidez",
-    synonymous_nl: "dapperheid, durf, onverschrokkenheid, lef",
-    antonymous_en: "cowardice, fear, timidity, weakness",
-    antonymous_fr: "lâcheté, peur, timidité, faiblesse",
-    antonymous_es: "cobardía, miedo, timidez, debilidad",
-    antonymous_nl: "lafheid, angst, verlegenheid, zwakheid"
-  }
-];
+interface VocabularyPageProps {
+  vocabularyLists?: VocabularyWord[];
+}
 
-const VocabularyPage = () => {
-  const [nativeLanguage, setNativeLanguage] = useState<LanguageCode>('fr');
-  const [targetLanguage, setTargetLanguage] = useState<LanguageCode>('en');
+const VocabularyPage = ({ vocabularyLists }: VocabularyPageProps) => {
+  // 1. D'abord le hook Auth0
+  const { getAccessTokenSilently, isAuthenticated, isLoading: isAuthLoading } = useAuth0();
+
+  // 2. Ensuite les autres states
+  const [vocabulary, setVocabulary] = useState<VocabularyWord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [nativeLanguage, setNativeLanguage] = useState<LanguageCode>(() => 
+    (localStorage.getItem('nativeLanguage') as LanguageCode) || 'fr'
+  );
+  const [targetLanguage, setTargetLanguage] = useState<LanguageCode>(() => 
+    (localStorage.getItem('targetLanguage') as LanguageCode) || 'en'
+  );
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [knownWords, setKnownWords] = useState<Set<number>>(new Set());
+  const [knownWords, setKnownWords] = useState<Set<number>>(() => {
+    const saved = localStorage.getItem('knownWords');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
 
-  const currentWord = SAMPLE_VOCABULARY[currentWordIndex];
-
-  const handleNextWord = () => {
-    setCurrentWordIndex((prev) => (prev + 1) % SAMPLE_VOCABULARY.length);
+  // Mot courant avec valeurs par défaut
+  const currentWord = vocabulary[currentWordIndex] || {
+    id: 0,
+    content_lesson: '',
+    word_en: '',
+    word_fr: '',
+    word_es: '',
+    word_nl: '',
+    definition_en: '',
+    definition_fr: '',
+    definition_es: '',
+    definition_nl: '',
+    example_sentence_en: '',
+    example_sentence_fr: '',
+    example_sentence_es: '',
+    example_sentence_nl: '',
+    word_type_en: '',
+    word_type_fr: '',
+    word_type_es: '',
+    word_type_nl: '',
+    synonymous_en: '',
+    synonymous_fr: '',
+    synonymous_es: '',
+    synonymous_nl: '',
+    antonymous_en: '',
+    antonymous_fr: '',
+    antonymous_es: '',
+    antonymous_nl: '',
   };
 
+  useEffect(() => {
+    const fetchVocabulary = async () => {
+      try {
+        if (!isAuthenticated) {
+          throw new Error('Not authenticated');
+        }
+
+        const token = await getAccessTokenSilently();
+        
+        const response = await fetch('http://localhost:8000/api/v1/course/vocabulary-list/', {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch vocabulary');
+        }
+
+        const data = await response.json();
+        setVocabulary(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching vocabulary:', err);
+        setError('Failed to load vocabulary');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (vocabularyLists?.length) {
+      setVocabulary(vocabularyLists);
+      setLoading(false);
+    } else if (isAuthenticated && !isAuthLoading) {
+      fetchVocabulary();
+    }
+  }, [vocabularyLists, isAuthenticated, isAuthLoading, getAccessTokenSilently]);
+
+  useEffect(() => {
+    localStorage.setItem('knownWords', JSON.stringify(Array.from(knownWords)));
+  }, [knownWords]);
+
+  useEffect(() => {
+    localStorage.setItem('nativeLanguage', nativeLanguage);
+  }, [nativeLanguage]);
+
+  useEffect(() => {
+    localStorage.setItem('targetLanguage', targetLanguage);
+  }, [targetLanguage]);
+
+  // Handlers
+  const handleNextWord = () => {
+    setCurrentWordIndex((prev) => (prev + 1) % vocabulary.length);
+  };
+  
   const handlePreviousWord = () => {
-    setCurrentWordIndex((prev) => (prev - 1 + SAMPLE_VOCABULARY.length) % SAMPLE_VOCABULARY.length);
+    setCurrentWordIndex((prev) => (prev - 1 + vocabulary.length) % vocabulary.length);
+  };
+
+  const handleNativeLanguageChange = (value: LanguageCode) => {
+    setNativeLanguage(value);
+  };
+
+  const handleTargetLanguageChange = (value: LanguageCode) => {
+    setTargetLanguage(value);
   };
 
   const toggleKnownStatus = () => {
@@ -145,6 +176,7 @@ const VocabularyPage = () => {
     });
   };
 
+  // Getters
   const getWordInLanguage = (language: LanguageCode) => {
     const wordKey = `word_${language}` as keyof VocabularyWord;
     return currentWord[wordKey];
@@ -160,8 +192,9 @@ const VocabularyPage = () => {
     return currentWord[exampleKey];
   };
 
+  // Export functions
   const exportToExcel = () => {
-    const exportData = SAMPLE_VOCABULARY.map(word => ({
+    const exportData = vocabulary.map(word => ({
       [`Mot (${targetLanguage})`]: word[`word_${targetLanguage}` as keyof VocabularyWord],
       [`Mot (${nativeLanguage})`]: word[`word_${nativeLanguage}` as keyof VocabularyWord],
       [`Définition (${targetLanguage})`]: word[`definition_${targetLanguage}` as keyof VocabularyWord],
@@ -219,7 +252,7 @@ const VocabularyPage = () => {
         </head>
         <body>
           <h1>Liste de vocabulaire (${targetLanguage.toUpperCase()} - ${nativeLanguage.toUpperCase()})</h1>
-          ${SAMPLE_VOCABULARY.map(word => `
+          ${vocabulary.map(word => `
             <div class="word-entry">
               <div class="word">${word[`word_${targetLanguage}` as keyof VocabularyWord]} - 
                    ${word[`word_${nativeLanguage}` as keyof VocabularyWord]}</div>
@@ -247,6 +280,66 @@ const VocabularyPage = () => {
     }
   };
 
+    // 5. Les vérifications d'authentification avant le return principal
+    if (isAuthLoading) {
+      return (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-pulse">Authenticating...</div>
+        </div>
+      );
+    }
+  
+    if (!isAuthenticated) {
+      return (
+        <div className="p-6">
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>Please log in to view vocabulary.</AlertDescription>
+          </Alert>
+        </div>
+      );
+    }
+  
+    // 6. Les autres vérifications (loading, error, etc.)
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-pulse">Loading vocabulary...</div>
+        </div>
+      );
+    }
+
+  // Loading states
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-pulse">Loading vocabulary...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  if (vocabulary.length === 0) {
+    return (
+      <div className="p-6">
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>No vocabulary items found.</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <Card className="bg-white shadow-lg">
@@ -255,11 +348,11 @@ const VocabularyPage = () => {
             <div className="flex flex-col">
               <CardTitle className="text-2xl font-bold">Apprentissage du vocabulaire</CardTitle>
               <span className="text-sm text-gray-500 mt-1">
-                {currentWordIndex + 1} / {SAMPLE_VOCABULARY.length} mots
+                {currentWordIndex + 1} / {vocabulary.length} mots
               </span>
             </div>
             <div className="flex gap-4">
-              <Select value={nativeLanguage} onValueChange={(value: LanguageCode) => setNativeLanguage(value)}>
+              <Select value={nativeLanguage} onValueChange={handleNativeLanguageChange}>
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Langue maternelle" />
                 </SelectTrigger>
@@ -270,7 +363,7 @@ const VocabularyPage = () => {
                   <SelectItem value="nl">Nederlands</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={targetLanguage} onValueChange={(value: LanguageCode) => setTargetLanguage(value)}>
+              <Select value={targetLanguage} onValueChange={handleTargetLanguageChange}>
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Langue cible" />
                 </SelectTrigger>
@@ -304,32 +397,35 @@ const VocabularyPage = () => {
             </Button>
           </div>
         </CardHeader>
+  
         <CardContent>
           <div className="space-y-6">
-            {/* Word to learn */}
+            {/* Mot à apprendre */}
             <div className="text-center p-8 bg-blue-50 rounded-lg shadow-sm">
               <h2 className="text-4xl font-bold mb-3">{getWordInLanguage(targetLanguage)}</h2>
               <p className="text-xl text-gray-600">{getWordInLanguage(nativeLanguage)}</p>
               <div className="mt-2 text-sm text-gray-500">
-                Type: {currentWord[`word_type_${targetLanguage}` as keyof VocabularyWord]}
+                Type: {currentWord[`word_type_${targetLanguage}` as keyof VocabularyWord] || 'N/A'}
               </div>
             </div>
-
-            {/* Example sentence */}
-            <div className="bg-gray-50 p-6 rounded-lg space-y-3 shadow-sm">
-              <h3 className="font-semibold text-gray-700 mb-2">Example:</h3>
-              <p className="font-medium text-lg">{getExampleInLanguage(targetLanguage)}</p>
-              <p className="text-gray-600 italic">{getExampleInLanguage(nativeLanguage)}</p>
-            </div>
-
-            {/* Additional information tabs */}
+  
+            {/* Exemple */}
+            {(currentWord[`example_sentence_${targetLanguage}`] || currentWord[`example_sentence_${nativeLanguage}`]) && (
+              <div className="bg-gray-50 p-6 rounded-lg space-y-3 shadow-sm">
+                <h3 className="font-semibold text-gray-700 mb-2">Exemple :</h3>
+                <p className="font-medium text-lg">{getExampleInLanguage(targetLanguage) || '-'}</p>
+                <p className="text-gray-600 italic">{getExampleInLanguage(nativeLanguage) || '-'}</p>
+              </div>
+            )}
+  
+            {/* Informations supplémentaires */}
             <Tabs defaultValue="definition" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="definition">Definition</TabsTrigger>
-                <TabsTrigger value="synonyms">Synonyms</TabsTrigger>
-                <TabsTrigger value="antonyms">Antonyms</TabsTrigger>
+                <TabsTrigger value="definition">Définition</TabsTrigger>
+                <TabsTrigger value="synonyms">Synonymes</TabsTrigger>
+                <TabsTrigger value="antonyms">Antonymes</TabsTrigger>
               </TabsList>
-
+  
               <TabsContent value="definition" className="mt-4">
                 <Card>
                   <CardContent className="pt-6">
@@ -340,46 +436,47 @@ const VocabularyPage = () => {
                   </CardContent>
                 </Card>
               </TabsContent>
-
+  
               <TabsContent value="synonyms" className="mt-4">
                 <Card>
                   <CardContent className="pt-6">
                     <div className="space-y-3">
                       <p className="font-medium text-lg">
-                        {currentWord[`synonymous_${targetLanguage}` as keyof VocabularyWord]}
+                        {currentWord[`synonymous_${targetLanguage}` as keyof VocabularyWord] || 'Aucun synonyme disponible'}
                       </p>
                       <p className="text-gray-600">
-                        {currentWord[`synonymous_${nativeLanguage}` as keyof VocabularyWord]}
+                        {currentWord[`synonymous_${nativeLanguage}` as keyof VocabularyWord] || 'Aucun synonyme disponible'}
                       </p>
                     </div>
                   </CardContent>
                 </Card>
               </TabsContent>
-
+  
               <TabsContent value="antonyms" className="mt-4">
                 <Card>
                   <CardContent className="pt-6">
                     <div className="space-y-3">
                       <p className="font-medium text-lg">
-                        {currentWord[`antonymous_${targetLanguage}` as keyof VocabularyWord]}
+                        {currentWord[`antonymous_${targetLanguage}` as keyof VocabularyWord] || 'Aucun antonyme disponible'}
                       </p>
                       <p className="text-gray-600">
-                        {currentWord[`antonymous_${nativeLanguage}` as keyof VocabularyWord]}
+                        {currentWord[`antonymous_${nativeLanguage}` as keyof VocabularyWord] || 'Aucun antonyme disponible'}
                       </p>
                     </div>
                   </CardContent>
                 </Card>
               </TabsContent>
             </Tabs>
-
-            {/* Navigation and controls */}
+  
+            {/* Navigation et contrôles */}
             <div className="flex justify-between items-center pt-4">
               <Button 
                 onClick={handlePreviousWord} 
                 variant="outline"
                 className="hover:bg-blue-50"
+                disabled={vocabulary.length <= 1}
               >
-                Previous
+                Précédent
               </Button>
               <div className="text-center">
                 <Button
@@ -394,18 +491,19 @@ const VocabularyPage = () => {
                   ) : (
                     <ThumbsDown className="w-4 h-4" />
                   )}
-                  {knownWords.has(currentWordIndex) ? 'Word Mastered' : 'Need Review'}
+                  {knownWords.has(currentWordIndex) ? 'Mot maîtrisé' : 'À réviser'}
                 </Button>
                 <div className="text-sm text-gray-500 mt-2">
-                  {currentWordIndex + 1} / {SAMPLE_VOCABULARY.length}
+                  {currentWordIndex + 1} / {vocabulary.length}
                 </div>
               </div>
               <Button 
                 onClick={handleNextWord} 
                 variant="outline"
                 className="hover:bg-blue-50"
+                disabled={vocabulary.length <= 1}
               >
-                Next
+                Suivant
               </Button>
             </div>
           </div>
@@ -413,6 +511,6 @@ const VocabularyPage = () => {
       </Card>
     </div>
   );
-};
+}
 
 export default VocabularyPage;
