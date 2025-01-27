@@ -1,190 +1,304 @@
-import csv
-
-from django.contrib import messages
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
+# revision/views.py
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.utils import timezone
+from django.db.models import Q
+from django.db import transaction
+import pandas as pd
+import logging
 
-from platforme.models import Vocabulaire
-from .forms import ImportForm, RevisionForm
-from .models import Revision
+from .models import (
+    FlashcardDeck,
+    Flashcard,
+    RevisionSession,
+    VocabularyWord,
+    VocabularyList
+)
+from .serializers import (
+    FlashcardDeckSerializer, 
+    FlashcardSerializer,
+    RevisionSessionSerializer,
+    VocabularyWordSerializer,
+    VocabularyListSerializer
+)
 
+logger = logging.getLogger(__name__)
 
-def paginate_queryset(request, queryset, items_per_page=10):
-    """
-    Utility function for paginating a queryset.
-    """
-    paginator = Paginator(queryset, items_per_page)
-    page_number = request.GET.get('page')
-    try:
-        return paginator.page(page_number)
-    except PageNotAnInteger:
-        return paginator.page(1)
-    except EmptyPage:
-        return paginator.page(paginator.num_pages)
-def revision(request):
-    return render(request, '../../../old_docs/templates/revision/revision.html')
-def add_revision(request):
-    form = RevisionForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        form.save()
-        messages.success(request, 'Révision ajoutée avec succès.')
-        return redirect('reviewed_vocabulaire_list')
-    elif request.method == 'POST':
-        messages.error(request, 'Erreur lors de l\'ajout de la révision.')
+class FlashcardDeckViewSet(viewsets.ModelViewSet):
+    serializer_class = FlashcardDeckSerializer
+    permission_classes = [IsAuthenticated]
 
-    return render(request, '../../../old_docs/templates/revision/add_revision.html', {'form': form})
-def reviewed_vocabulaire_list(request):
-    search_query = request.GET.get('search', '')
-    type_filter = request.GET.get('type', '')
-    level_filter = request.GET.get('level', '')
-    revision_date_filter = request.GET.get('revision_date', '')
+    def get_queryset(self):
+        return FlashcardDeck.objects.filter(user=self.request.user, is_active=True)
 
-    revisions = Revision.objects.select_related('vocabulaire').order_by('-revision_date')
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-    # Filtering logic
-    if search_query:
-        revisions = revisions.filter(vocabulaire__word__icontains=search_query)
-    if type_filter:
-        revisions = revisions.filter(vocabulaire__type_word=type_filter)
-    if level_filter:
-        revisions = revisions.filter(vocabulaire__lesson__level_language=level_filter)
-    if revision_date_filter:
-        revisions = revisions.filter(revision_date=revision_date_filter)
+    @action(detail=True, methods=['post'])
+    def archive(self, request, pk=None):
+        deck = self.get_object()
+        deck.is_active = False
+        deck.save()
+        return Response({'status': 'deck archived'})
 
-    # Paginate the filtered queryset
-    page_obj = paginate_queryset(request, revisions)
+class FlashcardViewSet(viewsets.ModelViewSet):
+    serializer_class = FlashcardSerializer
+    permission_classes = [IsAuthenticated]
 
-    context = {
-        'page_obj': page_obj,
-        'search_query': search_query,
-        'type_filter': type_filter,
-        'level_filter': level_filter,
-        'revision_date_filter': revision_date_filter,
-    }
-    return render(request, '../../../old_docs/templates/revision/reviewed_vocabulaire_list.html', context)
-def delete_revision(request, revision_id):
-    revision = get_object_or_404(Revision, pk=revision_id)
-    if request.method == 'POST':
-        revision.delete()
-        messages.success(request, 'Révision supprimée avec succès.')
-        return redirect('reviewed_vocabulaire_list')
-    return render(request, '../../../old_docs/templates/revision/delete_revision.html', {'revision': revision})
-def import_revisions(request):
-    form = ImportForm(request.POST, request.FILES or None)
-    if request.method == 'POST' and form.is_valid():
-        file = request.FILES.get('file')
-        if file and file.name.endswith('.csv'):
-            try:
-                reader = csv.reader(file.read().decode('utf-8').splitlines())
-                for row in reader:
-                    if len(row) != 7:
-                        messages.error(request, 'Le fichier CSV doit avoir exactement 7 colonnes.')
-                        return redirect('import_revisions')
+    def get_queryset(self):
+        deck_id = self.request.query_params.get('deck')
+        queryset = Flashcard.objects.filter(deck__user=self.request.user)
+        
+        if deck_id:
+            queryset = queryset.filter(deck_id=deck_id)
+        
+        return queryset
 
-                    word, translation, type_word, definition, example, example_translation, lesson_id = row
-                    vocabulaire, created = Vocabulaire.objects.get_or_create(
-                        word=word,
-                        defaults={
-                            'translation': translation,
-                            'type_word': type_word,
-                            'definition': definition,
-                            'example': example,
-                            'example_translation': example_translation,
-                            'lesson_id': lesson_id,
-                        }
+    @action(detail=True, methods=['post'])
+    def mark_reviewed(self, request, pk=None):
+        try:
+            flashcard = self.get_object()
+            success = request.data.get('success', True)
+            flashcard.mark_reviewed(success=success)
+            serializer = self.get_serializer(flashcard)
+            return Response(serializer.data)
+        except Exception as e:
+            logger.error(f"Error marking flashcard as reviewed: {str(e)}")
+            return Response(
+                {'error': 'Failed to mark flashcard as reviewed'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @action(detail=False, methods=['get'])
+    def due_for_review(self, request):
+        limit = int(request.query_params.get('limit', 10))
+        queryset = self.get_queryset().filter(
+            Q(next_review__isnull=True) |
+            Q(next_review__lte=timezone.now())
+        ).order_by('?')[:limit]
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+class RevisionSessionViewSet(viewsets.ModelViewSet):
+    serializer_class = RevisionSessionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return RevisionSession.objects.filter(user=self.request.user)
+
+    @transaction.atomic
+    def perform_create(self, serializer):
+        due_cards = Flashcard.objects.select_for_update().filter(
+            deck__user=self.request.user,
+            next_review__lte=timezone.now()
+        )
+        if not due_cards.exists():
+            raise ValidationError("No cards due for review")
+        
+        session = serializer.save(user=self.request.user)
+        session.flashcards.set(due_cards)
+        return session
+
+    @action(detail=True, methods=['post'])
+    def complete_session(self, request, pk=None):
+        try:
+            session = self.get_object()
+            if session.status == 'COMPLETED':
+                return Response(
+                    {'error': 'Session already completed'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
+            success_rate = request.data.get('success_rate')
+            if not isinstance(success_rate, (int, float)) or not 0 <= success_rate <= 100:
+                return Response(
+                    {'error': 'Invalid success rate'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
+            session.mark_completed(success_rate)
+            serializer = self.get_serializer(session)
+            return Response(serializer.data)
+        except Exception as e:
+            logger.error(f"Error completing revision session: {str(e)}")
+            return Response(
+                {'error': 'Failed to complete session'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @action(detail=False, methods=['get'])
+    def get_schedule(self, request):
+        days_before = int(request.query_params.get('days_before', 7))
+        days_after = int(request.query_params.get('days_after', 30))
+        
+        today = timezone.now()
+        sessions = self.get_queryset().filter(
+            scheduled_date__range=[
+                today - timezone.timedelta(days=days_before),
+                today + timezone.timedelta(days=days_after)
+            ]
+        ).order_by('scheduled_date')
+        
+        serializer = self.get_serializer(sessions, many=True)
+        return Response(serializer.data)
+
+class VocabularyWordViewSet(viewsets.ModelViewSet):
+    serializer_class = VocabularyWordSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_queryset(self):
+        queryset = VocabularyWord.objects.filter(user=self.request.user)
+        
+        # Filtrage par langue
+        source_lang = self.request.query_params.get('source_language')
+        target_lang = self.request.query_params.get('target_language')
+        if source_lang:
+            queryset = queryset.filter(source_language=source_lang)
+        if target_lang:
+            queryset = queryset.filter(target_language=target_lang)
+            
+        return queryset
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    @action(detail=False, methods=['post'])
+    def import_excel(self, request):
+        if 'file' not in request.FILES:
+            return Response(
+                {'error': 'No file provided'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        file = request.FILES['file']
+        source_language = request.data.get('source_language')
+        target_language = request.data.get('target_language')
+
+        if not all([source_language, target_language]):
+            return Response(
+                {'error': 'Both source and target languages must be specified'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            with transaction.atomic():
+                if file.name.endswith('.xlsx'):
+                    df = pd.read_excel(file)
+                elif file.name.endswith('.csv'):
+                    df = pd.read_csv(file)
+                else:
+                    return Response(
+                        {'error': 'File must be either .xlsx or .csv'}, 
+                        status=status.HTTP_400_BAD_REQUEST
                     )
-                    # Avoid duplicating revisions
-                    if not Revision.objects.filter(vocabulaire=vocabulaire).exists():
-                        Revision.objects.create(vocabulaire=vocabulaire)
 
-                messages.success(request, 'Importation des révisions réussie.')
-            except Exception as e:
-                messages.error(request, f'Erreur lors de l\'importation des révisions : {str(e)}')
-        else:
-            messages.error(request, 'Le fichier doit être un fichier CSV.')
+                required_columns = ['word', 'translation']
+                if not all(col in df.columns for col in required_columns):
+                    return Response(
+                        {'error': f'File must contain columns: {", ".join(required_columns)}'}, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
 
-        return redirect('reviewed_vocabulaire_list')
+                words_created = []
+                for _, row in df.iterrows():
+                    # Skip empty rows
+                    if pd.isna(row['word']) or pd.isna(row['translation']):
+                        continue
+                        
+                    word = VocabularyWord.objects.create(
+                        user=request.user,
+                        word=str(row['word']).strip(),
+                        translation=str(row['translation']).strip(),
+                        source_language=source_language,
+                        target_language=target_language,
+                        context=str(row.get('context', '')).strip(),
+                        notes=str(row.get('notes', '')).strip()
+                    )
+                    words_created.append(word)
 
-    return render(request, '../../../old_docs/templates/revision/import_revisions.html', {'form': form})
-def export_revisions(request):
-    revisions = Revision.objects.select_related('vocabulaire')
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="revisions.csv"'
+                if not words_created:
+                    return Response(
+                        {'error': 'No valid words found in file'}, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
 
-    writer = csv.writer(response)
-    writer.writerow(['Word', 'Translation', 'Type', 'Definition', 'Example', 'Example Translation', 'Lesson ID'])
+                serializer = VocabularyWordSerializer(words_created, many=True)
+                return Response({
+                    'message': f'{len(words_created)} words imported successfully',
+                    'words': serializer.data
+                }, status=status.HTTP_201_CREATED)
 
-    for revision in revisions:
-        writer.writerow([
-            revision.vocabulaire.word,
-            revision.vocabulaire.translation,
-            revision.vocabulaire.type_word,
-            revision.vocabulaire.definition,
-            revision.vocabulaire.example,
-            revision.vocabulaire.example_translation,
-            revision.vocabulaire.lesson.id if revision.vocabulaire.lesson else '',
-        ])
+        except Exception as e:
+            logger.error(f"Error importing vocabulary: {str(e)}")
+            return Response(
+                {'error': f'Failed to import words: {str(e)}'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-    return response
-def delete_selected_revisions(request):
-    if request.method == 'POST':
-        selected_revisions = request.POST.getlist('selected_revisions')
-        revisions = Revision.objects.filter(id__in=selected_revisions)
-        count = revisions.count()
-        revisions.delete()
-        messages.success(request, f'{count} révisions supprimées avec succès.')
-    else:
-        messages.error(request, 'Requête invalide.')
-    return redirect('reviewed_vocabulaire_list')
-def edit_revision(request, revision_id):
-    revision = get_object_or_404(Revision, id=revision_id)
-    form = RevisionForm(request.POST or None, instance=revision)
-    if request.method == 'POST' and form.is_valid():
-        form.save()
-        messages.success(request, 'Révision modifiée avec succès.')
-        return redirect('reviewed_vocabulaire_list')
+    @action(detail=False, methods=['get'])
+    def due_for_review(self, request):
+        try:
+            limit = int(request.query_params.get('limit', 10))
+            words = self.get_queryset().filter(
+                Q(last_reviewed__isnull=True) |
+                Q(mastery_level__lt=5)
+            ).order_by('?')[:limit]
+            
+            serializer = self.get_serializer(words, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            logger.error(f"Error getting words due for review: {str(e)}")
+            return Response(
+                {'error': 'Failed to get words for review'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
-    return render(request, '../../../old_docs/templates/revision/edit_revision.html', {'form': form, 'revision': revision})
-def select_multiple_revisions(request):
-    selected_revisions = request.POST.getlist('selected_revisions')
-    revisions = Revision.objects.filter(id__in=selected_revisions)
-    if not revisions.exists():
-        messages.error(request, 'Aucune révision sélectionnée.')
-        return redirect('reviewed_vocabulaire_list')
+class VocabularyListViewSet(viewsets.ModelViewSet):
+    serializer_class = VocabularyListSerializer
+    permission_classes = [IsAuthenticated]
 
-    return render(request, '../../../old_docs/templates/revision/select_revision.html', {'revisions': revisions})
-def revision_card(request):
-    revisions = Revision.objects.select_related('vocabulaire')
-    return render(request, '../../../old_docs/templates/revision/revision_card.html', {'revisions': revisions})
-def revision_list(request):
-    user = request.user
-    mots_a_etudier = Revision.objects.filter(user=user, known=False)
-    mots_revises = Revision.objects.filter(user=user, known=True)
-    return render(request, '../../../old_docs/templates/revision/revision_list.html', {
-        'mots_a_etudier': mots_a_etudier,
-        'mots_revises': mots_revises,
-    })
+    def get_queryset(self):
+        return VocabularyList.objects.filter(user=self.request.user)
 
-def mark_as_known(request, revision_id):
-    revision = get_object_or_404(Revision, id=revision_id, user=request.user)
-    revision.known = True
-    revision.last_reviewed = timezone.now()
-    revision.save()
-    messages.success(request, f"Vous avez marqué '{revision.vocabulaire.word}' comme connu.")
-    return redirect('revision_list')
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-def mark_as_not_known(request, revision_id):
-    revision = get_object_or_404(Revision, id=revision_id, user=request.user)
-    revision.known = False
-    revision.last_reviewed = timezone.now()
-    revision.save()
-    messages.info(request, f"Vous avez marqué '{revision.vocabulaire.word}' comme à étudier encore.")
-    return redirect('revision_list')
+    @action(detail=True, methods=['post'])
+    def add_words(self, request, pk=None):
+        try:
+            vocab_list = self.get_object()
+            word_ids = request.data.get('word_ids', [])
+            
+            if not word_ids:
+                return Response(
+                    {'error': 'No word IDs provided'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-def reset_revisions(request):
-    user = request.user
-    Revision.objects.filter(user=user).update(known=False, last_reviewed=timezone.now())
-    messages.warning(request, "Toutes les révisions ont été réinitialisées.")
-    return redirect('revision_list')
+            words = VocabularyWord.objects.filter(
+                id__in=word_ids,
+                user=request.user
+            )
+
+            if not words.exists():
+                return Response(
+                    {'error': 'No valid words found'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            vocab_list.words.add(*words)
+            serializer = self.get_serializer(vocab_list)
+            return Response(serializer.data)
+            
+        except Exception as e:
+            logger.error(f"Error adding words to vocabulary list: {str(e)}")
+            return Response(
+                {'error': 'Failed to add words to list'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

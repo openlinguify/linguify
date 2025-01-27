@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Card } from "@/shared/components/ui/card";
-import { Alert, AlertDescription } from "@/shared/components/ui/alert";
+import { Card } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2, RefreshCcw } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { courseAPI } from "@/services/api";
 
 // Define the Unit interface with TypeScript for better type checking

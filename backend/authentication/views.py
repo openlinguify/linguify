@@ -13,6 +13,8 @@ from .models import User
 from .serializers import UserSerializer
 import logging
 
+logger = logging.getLogger(__name__)
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def auth0_login(request):
@@ -21,7 +23,7 @@ def auth0_login(request):
     """
     try:
         # Récupérer le returnTo s'il existe
-        return_to = request.GET.get('returnTo', '/')
+        return_to = request.GET.get('returnTo', 'http://localhost:4040')
         
         params = {
             'client_id': settings.AUTH0_CLIENT_ID,
@@ -32,9 +34,10 @@ def auth0_login(request):
             'state': return_to  # Stocker l'URL de retour dans state
         }
 
-        login_url = f'https://{settings.AUTH0_DOMAIN}/authorize?{urlencode(params)}'
-        return redirect(login_url)
+        auth0_url = f'https://{settings.AUTH0_DOMAIN}/authorize?{urlencode(params)}'
+        return redirect(auth0_url)
     except Exception as e:
+        logger.error(f"Error in Auth0 login: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['GET'])
@@ -45,67 +48,69 @@ def auth0_callback(request):
     """
     try:
         code = request.GET.get('code')
-        state = request.GET.get('state', '/')  # Récupérer l'URL de retour
+        state = request.GET.get('state', 'http://localhost:4040')
         
         if not code:
             return JsonResponse({'error': 'No code provided'}, status=400)
 
         token_payload = {
+            'grant_type': 'authorization_code',
             'client_id': settings.AUTH0_CLIENT_ID,
             'client_secret': settings.AUTH0_CLIENT_SECRET,
             'code': code,
-            'grant_type': 'authorization_code',
             'redirect_uri': f"{request.scheme}://{request.get_host()}/api/v1/auth/callback/"
         }
 
         # Obtenir les tokens
-        token_response = requests.post(
-            f'https://{settings.AUTH0_DOMAIN}/oauth/token',
-            json=token_payload
-        )
+        token_url = f'https://{settings.AUTH0_DOMAIN}/oauth/token'
+        token_response = requests.post(token_url, json=token_payload)
         
         if token_response.status_code != 200:
-            return JsonResponse({
-                'error': 'Failed to obtain tokens'
-            }, status=400)
+            logger.error(f"Token error: {token_response.text}")
+            return JsonResponse({'error': 'Failed to obtain tokens'}, status=400)
 
         tokens = token_response.json()
 
-        # Obtenir les infos utilisateur
-        user_info = requests.get(
-            f'https://{settings.AUTH0_DOMAIN}/userinfo',
+        # Get user info
+        user_info_url = f'https://{settings.AUTH0_DOMAIN}/userinfo'
+        user_info_response = requests.get(
+            user_info_url,
             headers={'Authorization': f'Bearer {tokens["access_token"]}'}
-        ).json()
+        )
 
-        # Créer ou mettre à jour l'utilisateur en base
+        if user_info_response.status_code != 200:
+            logger.error(f"User info error: {user_info_response.text}")
+            return JsonResponse({'error': 'Failed to get user info'}, status=400)
+
+        user_info = user_info_response.json()
+
+        # Create or update user
         user, created = User.objects.get_or_create(
             email=user_info['email'],
             defaults={
                 'username': user_info.get('nickname', user_info['email']),
                 'first_name': user_info.get('given_name', ''),
-                'last_name': user_info.get('family_name', '')
+                'last_name': user_info.get('family_name', ''),
+                'is_active': True
             }
         )
 
-        response = JsonResponse({
-            'tokens': tokens,
+        return JsonResponse({
+            'access_token': tokens['access_token'],
+            'id_token': tokens['id_token'],
             'user': UserSerializer(user).data,
             'returnTo': state
         })
 
-        return response
-
     except Exception as e:
+        logger.error(f"Callback error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def auth0_logout(request):
-    """
-    Logs out the user from Auth0
-    """
+    """Handles logout"""
     try:
-        # URL de retour par défaut
         return_to = request.GET.get('returnTo', settings.CLIENT_ORIGIN_URL)
         
         params = {
@@ -113,15 +118,13 @@ def auth0_logout(request):
             'returnTo': return_to
         }
 
-        auth0_logout_url = f'https://{settings.AUTH0_DOMAIN}/v2/logout?{urlencode(params)}'
-        
-        # Supprimer les sessions/tokens côté backend si nécessaire
-        # request.user.auth_token.delete()
+        logout_url = f'https://{settings.AUTH0_DOMAIN}/v2/logout?{urlencode(params)}'
         
         return JsonResponse({
-            'logoutUrl': auth0_logout_url 
+            'logoutUrl': logout_url
         })
     except Exception as e:
+        logger.error(f"Logout error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['GET'])
@@ -194,9 +197,6 @@ def auth_status(request):
             'isAuthenticated': False,
             'user': None
         }, status=500)
-    
-
-logger = logging.getLogger(__name__)
 
 @api_view(['GET', 'PATCH']) 
 @permission_classes([IsAuthenticated])

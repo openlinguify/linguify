@@ -1,12 +1,12 @@
 // Original path: frontend/src/app/dashboard/apps/notebook/_components/NotebookWrapper.tsx
-'use client';
-'use client';
+"use client";
+"use client";
 
-import React, { useState } from 'react';
-import NotebookClient from './NotebookClient';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/components/ui/tabs';
-import { Input } from '@/shared/components/ui/input';
-import { Button } from '@/shared/components/ui/button';
+import React, { useState } from "react";
+import NotebookClient from "./NotebookClient";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,9 +14,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Search, Filter, Plus } from 'lucide-react';
-import { Textarea } from "@/shared/components/ui/textarea";
-import { notebookAPI } from '@/services/notebookAPI';
+import { Search, Filter, Plus } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { notebookAPI } from "@/services/notebookAPI";
 
 interface newNote {
   name: string;
@@ -25,37 +25,42 @@ interface newNote {
   priority: string;
 }
 
-
-  
-
 export default function NotebookWrapper() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilter, setActiveFilter] = useState("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newNote, setNewNote] = useState({
-    title: '',
-    content: '',
-    note_type: 'NOTE',
-    priority: 'MEDIUM'
+    title: "",
+    content: "",
+    note_type: "NOTE",
+    priority: "MEDIUM",
   });
 
   const handleCreateNote = async () => {
     try {
       await notebookAPI.createNote(newNote);
-      setNewNote({ title: '', content: '', note_type: 'NOTE', priority: 'MEDIUM' });
+      setNewNote({
+        title: "",
+        content: "",
+        note_type: "NOTE",
+        priority: "MEDIUM",
+      });
       setIsDialogOpen(false);
       // Vous pourriez vouloir rafraîchir la liste des notes ici
     } catch (error) {
-      console.error('Failed to create note:', error);
+      console.error("Failed to create note:", error);
     }
   };
-  
+
   return (
     <div className="space-y-6">
       {/* Search, Filter, and Create Bar */}
       <div className="flex gap-4 items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            size={20}
+          />
           <Input
             type="text"
             placeholder="Search notes..."
@@ -80,7 +85,9 @@ export default function NotebookWrapper() {
                 <Input
                   placeholder="Note Title"
                   value={newNote.title}
-                  onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
+                  onChange={(e) =>
+                    setNewNote({ ...newNote, title: e.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -88,7 +95,9 @@ export default function NotebookWrapper() {
                   placeholder="Note Content"
                   className="min-h-[200px]"
                   value={newNote.content}
-                  onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
+                  onChange={(e) =>
+                    setNewNote({ ...newNote, content: e.target.value })
+                  }
                 />
               </div>
               <div className="flex justify-end space-x-2">
@@ -98,9 +107,7 @@ export default function NotebookWrapper() {
                 >
                   Cancel
                 </Button>
-                <Button onClick={handleCreateNote}>
-                  Create Note
-                </Button>
+                <Button onClick={handleCreateNote}>Create Note</Button>
               </div>
             </div>
           </DialogContent>
@@ -110,7 +117,11 @@ export default function NotebookWrapper() {
         </button>
       </div>
 
-      <Tabs defaultValue="all" className="w-full" onValueChange={setActiveFilter}>
+      <Tabs
+        defaultValue="all"
+        className="w-full"
+        onValueChange={setActiveFilter}
+      >
         <TabsList>
           <TabsTrigger value="all">All Notes</TabsTrigger>
           <TabsTrigger value="recent">Recent</TabsTrigger>

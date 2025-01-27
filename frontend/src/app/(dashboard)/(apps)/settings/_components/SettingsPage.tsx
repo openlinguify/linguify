@@ -1,59 +1,68 @@
 // src/app/(dashboard)/settings/_components/SettingsPage.tsx
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
-import { Input } from "@/shared/components/ui/input";
-import { Button } from "@/shared/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
-import { Label } from "@/shared/components/ui/label";
-import { Textarea } from "@/shared/components/ui/textarea";
-import { Globe, User, BookOpen, Save, Loader2 } from 'lucide-react';
-import { Alert, AlertDescription } from "@/shared/components/ui/alert";
-import { userSettingsService, UserSettings } from '@/services/userSettingsService';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Globe, User, BookOpen, Save, Loader2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  userSettingsService,
+  UserSettings,
+} from "@/services/userSettingsService";
 
 const LANGUAGE_OPTIONS = [
-  { value: 'EN', label: 'English' },
-  { value: 'FR', label: 'French' },
-  { value: 'DE', label: 'German' },
-  { value: 'ES', label: 'Spanish' },
-  { value: 'IT', label: 'Italian' },
-  { value: 'PT', label: 'Portuguese' },
+  { value: "EN", label: "English" },
+  { value: "FR", label: "French" },
+  { value: "DE", label: "German" },
+  { value: "ES", label: "Spanish" },
+  { value: "IT", label: "Italian" },
+  { value: "PT", label: "Portuguese" },
 ];
 
 const LEVEL_OPTIONS = [
-  { value: 'A1', label: 'A1 - Beginner' },
-  { value: 'A2', label: 'A2 - Elementary' },
-  { value: 'B1', label: 'B1 - Intermediate' },
-  { value: 'B2', label: 'B2 - Upper Intermediate' },
-  { value: 'C1', label: 'C1 - Advanced' },
-  { value: 'C2', label: 'C2 - Mastery' },
+  { value: "A1", label: "A1 - Beginner" },
+  { value: "A2", label: "A2 - Elementary" },
+  { value: "B1", label: "B1 - Intermediate" },
+  { value: "B2", label: "B2 - Upper Intermediate" },
+  { value: "C1", label: "C1 - Advanced" },
+  { value: "C2", label: "C2 - Mastery" },
 ];
 
 const OBJECTIVES_OPTIONS = [
-  { value: 'Travel', label: 'Travel' },
-  { value: 'Business', label: 'Business' },
-  { value: 'Live Abroad', label: 'Live Abroad' },
-  { value: 'Exam', label: 'Exam' },
-  { value: 'For Fun', label: 'For Fun' },
+  { value: "Travel", label: "Travel" },
+  { value: "Business", label: "Business" },
+  { value: "Live Abroad", label: "Live Abroad" },
+  { value: "Exam", label: "Exam" },
+  { value: "For Fun", label: "For Fun" },
 ];
 
 const SettingsPage = () => {
   const [settings, setSettings] = useState<UserSettings>({
     profile: {
-      firstName: '',
-      lastName: '',
-      email: '',
+      firstName: "",
+      lastName: "",
+      email: "",
       bio: null,
     },
     language: {
-      nativeLanguage: '',
-      targetLanguage: '',
-      level: '',
+      nativeLanguage: "",
+      targetLanguage: "",
+      level: "",
     },
     learning: {
-      objectives: '',
+      objectives: "",
     },
     account: {
       isCoach: false,
@@ -63,11 +72,15 @@ const SettingsPage = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState('profile');
-  const [saveStatus, setSaveStatus] = useState<{ show: boolean; isError: boolean; message: string }>({
+  const [activeTab, setActiveTab] = useState("profile");
+  const [saveStatus, setSaveStatus] = useState<{
+    show: boolean;
+    isError: boolean;
+    message: string;
+  }>({
     show: false,
     isError: false,
-    message: '',
+    message: "",
   });
 
   useEffect(() => {
@@ -82,20 +95,24 @@ const SettingsPage = () => {
       setSaveStatus({
         show: true,
         isError: true,
-        message: 'Failed to load settings',
+        message: "Failed to load settings",
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleInputChange = (section: keyof UserSettings, field: string, value: any) => {
-    setSettings(prev => ({
+  const handleInputChange = (
+    section: keyof UserSettings,
+    field: string,
+    value: any
+  ) => {
+    setSettings((prev) => ({
       ...prev,
       [section]: {
         ...prev[section],
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
@@ -106,18 +123,18 @@ const SettingsPage = () => {
       setSaveStatus({
         show: true,
         isError: false,
-        message: 'Settings saved successfully',
+        message: "Settings saved successfully",
       });
     } catch (error) {
       setSaveStatus({
         show: true,
         isError: true,
-        message: 'Failed to save settings',
+        message: "Failed to save settings",
       });
     } finally {
       setIsSaving(false);
       setTimeout(() => {
-        setSaveStatus(prev => ({ ...prev, show: false }));
+        setSaveStatus((prev) => ({ ...prev, show: false }));
       }, 3000);
     }
   };
@@ -134,8 +151,8 @@ const SettingsPage = () => {
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Settings</h1>
-        <Button 
-          onClick={handleSave} 
+        <Button
+          onClick={handleSave}
           disabled={isSaving}
           className="flex items-center gap-2"
         >
@@ -149,12 +166,19 @@ const SettingsPage = () => {
       </div>
 
       {saveStatus.show && (
-        <Alert variant={saveStatus.isError ? "destructive" : "default"} className="mb-6">
+        <Alert
+          variant={saveStatus.isError ? "destructive" : "default"}
+          className="mb-6"
+        >
           <AlertDescription>{saveStatus.message}</AlertDescription>
         </Alert>
       )}
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="w-4 h-4" />
@@ -182,7 +206,9 @@ const SettingsPage = () => {
                   <Input
                     id="firstName"
                     value={settings.profile.firstName}
-                    onChange={e => handleInputChange('profile', 'firstName', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("profile", "firstName", e.target.value)
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -190,7 +216,9 @@ const SettingsPage = () => {
                   <Input
                     id="lastName"
                     value={settings.profile.lastName}
-                    onChange={e => handleInputChange('profile', 'lastName', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("profile", "lastName", e.target.value)
+                    }
                   />
                 </div>
               </div>
@@ -207,8 +235,10 @@ const SettingsPage = () => {
                 <Label htmlFor="bio">Bio</Label>
                 <Textarea
                   id="bio"
-                  value={settings.profile.bio || ''}
-                  onChange={e => handleInputChange('profile', 'bio', e.target.value)}
+                  value={settings.profile.bio || ""}
+                  onChange={(e) =>
+                    handleInputChange("profile", "bio", e.target.value)
+                  }
                   placeholder="Tell us about yourself"
                 />
               </div>
@@ -226,13 +256,15 @@ const SettingsPage = () => {
                 <Label htmlFor="nativeLanguage">Native Language</Label>
                 <Select
                   value={settings.language.nativeLanguage}
-                  onValueChange={value => handleInputChange('language', 'nativeLanguage', value)}
+                  onValueChange={(value) =>
+                    handleInputChange("language", "nativeLanguage", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select your native language" />
                   </SelectTrigger>
                   <SelectContent>
-                    {LANGUAGE_OPTIONS.map(option => (
+                    {LANGUAGE_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -244,17 +276,21 @@ const SettingsPage = () => {
                 <Label htmlFor="targetLanguage">Target Language</Label>
                 <Select
                   value={settings.language.targetLanguage}
-                  onValueChange={value => handleInputChange('language', 'targetLanguage', value)}
+                  onValueChange={(value) =>
+                    handleInputChange("language", "targetLanguage", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select language to learn" />
                   </SelectTrigger>
                   <SelectContent>
-                    {LANGUAGE_OPTIONS.map(option => (
+                    {LANGUAGE_OPTIONS.map((option) => (
                       <SelectItem
                         key={option.value}
                         value={option.value}
-                        disabled={option.value === settings.language.nativeLanguage}
+                        disabled={
+                          option.value === settings.language.nativeLanguage
+                        }
                       >
                         {option.label}
                       </SelectItem>
@@ -266,13 +302,15 @@ const SettingsPage = () => {
                 <Label htmlFor="level">Current Level</Label>
                 <Select
                   value={settings.language.level}
-                  onValueChange={value => handleInputChange('language', 'level', value)}
+                  onValueChange={(value) =>
+                    handleInputChange("language", "level", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select your level" />
                   </SelectTrigger>
                   <SelectContent>
-                    {LEVEL_OPTIONS.map(option => (
+                    {LEVEL_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -294,13 +332,15 @@ const SettingsPage = () => {
                 <Label htmlFor="objectives">Learning Objectives</Label>
                 <Select
                   value={settings.learning.objectives}
-                  onValueChange={value => handleInputChange('learning', 'objectives', value)}
+                  onValueChange={(value) =>
+                    handleInputChange("learning", "objectives", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select your objectives" />
                   </SelectTrigger>
                   <SelectContent>
-                    {OBJECTIVES_OPTIONS.map(option => (
+                    {OBJECTIVES_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -314,6 +354,6 @@ const SettingsPage = () => {
       </Tabs>
     </div>
   );
-}
+};
 
 export default SettingsPage;

@@ -13,11 +13,17 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    // useful TypeScrip options for better type safety
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
     "plugins": [
       {
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@services/*": ["./src/services/*"],

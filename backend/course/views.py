@@ -88,7 +88,8 @@ class ContentLessonViewSet(viewsets.ModelViewSet):
         return queryset.order_by('order')
 
 class VocabularyListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+    authentication_classes = []
     serializer_class = VocabularyListSerializer
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]

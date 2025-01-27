@@ -1,7 +1,7 @@
 'use client';
 
 import { Auth0Provider as BaseAuth0Provider, useAuth0 } from '@auth0/auth0-react';
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface LoginOptions {
@@ -22,18 +22,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Composant wrapper Auth0
 function Auth0ProviderWrapper({ children }: { children: React.ReactNode }) {
-  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
 
   const onRedirectCallback = (appState: any) => {
     router.push(appState?.returnTo || '/dashboard');
@@ -55,46 +45,27 @@ function Auth0ProviderWrapper({ children }: { children: React.ReactNode }) {
 }
 
 function AuthProviderContent({ children }: { children: React.ReactNode }) {
-  const {
+  const { isLoading, isAuthenticated, user, loginWithRedirect, logout: auth0Logout, getAccessTokenSilently } = useAuth0();
+
+  const contextValue: AuthContextType = {
     isLoading,
     isAuthenticated,
     user,
-    loginWithRedirect,
-    logout: auth0Logout,
-    getAccessTokenSilently
-  } = useAuth0();
-
-  const login = async (options?: LoginOptions) => {
-    await loginWithRedirect({
-      authorizationParams: {
-        connection: options?.connection,
-      },
-      appState: options?.appState,
-    });
+    login: (options) =>
+      loginWithRedirect({
+        authorizationParams: { connection: options?.connection },
+        appState: options?.appState,
+      }),
+    logout: () =>
+      auth0Logout({
+        logoutParams: {
+          returnTo: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000',
+        },
+      }),
+    getAccessToken: getAccessTokenSilently,
   };
 
-  const logout = async () => {
-    await auth0Logout({
-      logoutParams: {
-        returnTo: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000',
-      },
-    });
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        isLoading,
-        isAuthenticated,
-        user,
-        login,
-        logout,
-        getAccessToken: getAccessTokenSilently,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

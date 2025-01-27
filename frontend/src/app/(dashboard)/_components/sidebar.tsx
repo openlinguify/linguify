@@ -55,6 +55,11 @@ const routes = [
     href: "/progress",
   },
   {
+    label: "Task",
+    icon: Star,
+    href: "/task",
+  },
+  {
     label: "Settings",
     icon: Settings,
     href: "/settings",

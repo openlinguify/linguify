@@ -1,13 +1,17 @@
-'use client';
+"use client";
 
-import { useAuth } from '@/providers/AuthProvider';
-import { useRouter } from 'next/navigation';
-import React from 'react';
-import { Github, Mail } from 'lucide-react';
-import { Button } from "@/shared/components/ui/button";
-import { Alert, AlertDescription } from "@/shared/components/ui/alert";
-import { AuthCard, AuthCardHeader, AuthCardContent } from '../_components/auth-card';
-import Link from 'next/link';
+import { useAuth } from "@/providers/AuthProvider";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { Github, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  AuthCard,
+  AuthCardHeader,
+  AuthCardContent,
+} from "../_components/auth-card";
+import Link from "next/link";
 
 export default function LoginPage() {
   const { login, isAuthenticated } = useAuth();
@@ -17,7 +21,7 @@ export default function LoginPage() {
 
   React.useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [isAuthenticated, router]);
 
@@ -25,12 +29,12 @@ export default function LoginPage() {
     try {
       setIsLoading(true);
       await login({
-        connection: provider === 'github' ? 'github' : undefined,
-        appState: { returnTo: '/dashboard' }
+        connection: provider === "github" ? "github" : undefined,
+        appState: { returnTo: "/dashboard" },
       });
     } catch (err) {
-      setError('An error occurred during login. Please try again.');
-      console.error('Login error:', err);
+      setError("An error occurred during login. Please try again.");
+      console.error("Login error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -55,7 +59,7 @@ export default function LoginPage() {
         <div className="space-y-4">
           <Button
             disabled={isLoading}
-            onClick={() => handleLogin('github')}
+            onClick={() => handleLogin("github")}
             className="w-full bg-gray-900 hover:bg-gray-800 text-white"
           >
             <Github className="mr-2 h-4 w-4" />
@@ -75,7 +79,7 @@ export default function LoginPage() {
 
           <Button
             disabled={isLoading}
-            onClick={() => handleLogin('email')}
+            onClick={() => handleLogin("email")}
             className="w-full"
           >
             <Mail className="mr-2 h-4 w-4" />
@@ -84,7 +88,7 @@ export default function LoginPage() {
         </div>
 
         <p className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
+          Don't have an account?{" "}
           <Link href="/register" className="text-sky-600 hover:text-sky-700">
             Sign up
           </Link>

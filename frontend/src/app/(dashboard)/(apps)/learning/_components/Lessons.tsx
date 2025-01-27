@@ -1,11 +1,11 @@
 // src/app/%28dashboard%29/%28apps%29/learning/_components/Lessons.tsx
-'use client';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Card } from '@/shared/components/ui/card';
-import { Alert, AlertDescription } from '@/shared/components/ui/alert';
-import { AlertCircle, ArrowLeft } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Card } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Lesson {
   id: number;
@@ -29,23 +29,27 @@ export default function Lessons({ unitId }: LessonsProps) {
   useEffect(() => {
     const fetchLessons = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/v1/course/lesson/?unit=${unitId}`, {
-          credentials: 'omit',
-        });
-        
+        const response = await fetch(
+          `http://localhost:8000/api/v1/course/lesson/?unit=${unitId}`,
+          {
+            credentials: "omit",
+          }
+        );
+
         if (!response.ok) {
-          throw new Error('Failed to fetch lessons');
+          throw new Error("Failed to fetch lessons");
         }
-        
+
         const data = await response.json();
         // Tri des leçons par ordre si nécessaire
-        const sortedLessons = (Array.isArray(data) ? data : data.results || [])
-          .sort((a: Lesson, b: Lesson) => a.order - b.order);
+        const sortedLessons = (
+          Array.isArray(data) ? data : data.results || []
+        ).sort((a: Lesson, b: Lesson) => a.order - b.order);
         setLessons(sortedLessons);
         setError(null);
       } catch (err) {
-        console.error('Error fetching lessons:', err);
-        setError('Failed to load lessons');
+        console.error("Error fetching lessons:", err);
+        setError("Failed to load lessons");
       } finally {
         setLoading(false);
       }
@@ -57,7 +61,7 @@ export default function Lessons({ unitId }: LessonsProps) {
   }, [unitId]);
 
   const handleBack = () => {
-    router.push('/learning');
+    router.push("/learning");
   };
 
   const handleLessonClick = (lessonId: number) => {
@@ -106,8 +110,8 @@ export default function Lessons({ unitId }: LessonsProps) {
           </Alert>
         ) : (
           lessons.map((lesson) => (
-            <Card 
-              key={lesson.id} 
+            <Card
+              key={lesson.id}
               className="p-4 hover:shadow-md transition-all cursor-pointer"
               onClick={() => handleLessonClick(lesson.id)}
             >
