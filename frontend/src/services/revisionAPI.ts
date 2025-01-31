@@ -1,86 +1,136 @@
-// src/services/revisionAPI.ts
-import api from './api';
+// services/revisionAPI.ts:
+import { Flashcard, FlashcardDeck, RevisionSession, VocabularyList, VocabularyWord } from '@/types/revision';
 
-interface Flashcard {
-  id: string;
-  front_text: string;
-  back_text: string;
-  learned: boolean;
-  last_reviewed: string | null;
-  next_review: string | null;
-  review_count: number;
-}
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-interface Deck {
-  id: string;
-  name: string;
-  description: string;
-  card_count: number;
-  learned_count: number;
-  flashcards: Flashcard[];
-}
-
-interface RevisionSession {
-  id: string;
-  scheduled_date: string;
-  completed_date: string | null;
-  status: 'PENDING' | 'COMPLETED' | 'MISSED';
-  success_rate: number | null;
-  flashcards: Flashcard[];
-}
-
-export const revisionAPI = {
-  // Decks
-  getDecks: async () => {
-    const response = await api.get<Deck[]>('/api/revision/decks/');
-    return response.data;
+const api = {
+  get: async <T>(endpoint: string): Promise<T> => {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        // Add Authorization header if needed
+        // 'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'Une erreur est survenue');
+    }
+    return response.json();
   },
 
-  createDeck: async (data: { name: string; description: string }) => {
-    const response = await api.post<Deck>('/api/revision/decks/', data);
-    return response.data;
+  post: async <T>(endpoint: string, data: any): Promise<T> => {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Add Authorization header if needed
+        // 'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'Une erreur est survenue');
+    }
+    return response.json();
+  },
+};
+
+export const revisionApi = {
+  // Flashcard Decks
+  async getDecks(): Promise<FlashcardDeck[]> {
+    return api.get('/api/v1/revision/decks/');
+  },
+
+  async getDeck(id: number): Promise<FlashcardDeck> {
+    return api.get(`/api/v1/revision/decks/${id}/`);
+  },
+
+  async createDeck(data: Pick<FlashcardDeck, 'name' | 'description'>): Promise<FlashcardDeck> {
+    return api.post('/api/v1/revision/decks/', data);
   },
 
   // Flashcards
-  getFlashcards: async (deckId?: string) => {
-    const params = deckId ? { deck: deckId } : {};
-    const response = await api.get<Flashcard[]>('/api/revision/flashcards/', { params });
-    return response.data;
+  async getFlashcards(deckId?: number): Promise<Flashcard[]> {
+    const endpoint = deckId 
+      ? `/api/v1/revision/flashcards/?deck=${deckId}`
+      : '/api/v1/revision/flashcards/';
+    return api.get(endpoint);
   },
 
-  createFlashcard: async (data: { 
-    deck: string; 
-    front_text: string; 
-    back_text: string; 
-  }) => {
-    const response = await api.post<Flashcard>('/api/revision/flashcards/', data);
-    return response.data;
+  async createFlashcard(data: Pick<Flashcard, 'front_text' | 'back_text'> & { deck_id: number }): Promise<Flashcard> {
+    return api.post('/api/v1/revision/flashcards/', data);
   },
 
-  markReviewed: async (id: string, success: boolean) => {
-    const response = await api.post(`/api/revision/flashcards/${id}/mark_reviewed/`, {
-      success
+  async markFlashcardReviewed(id: number, success: boolean): Promise<Flashcard> {
+    return api.post(`/api/v1/revision/flashcards/${id}/mark_reviewed/`, { success });
+  },
+
+  async getDueFlashcards(limit: number = 10): Promise<Flashcard[]> {
+    return api.get(`/api/v1/revision/flashcards/due_for_review/?limit=${limit}`);
+  },
+
+  // Vocabulary Lists
+  async getVocabularyLists(): Promise<VocabularyList[]> {
+    return api.get('/api/v1/revision/vocabulary-lists/');
+  },
+
+  async getVocabularyList(id: number): Promise<VocabularyList> {
+    return api.get(`/api/v1/revision/vocabulary-lists/${id}/`);
+  },
+
+  async createVocabularyList(data: Pick<VocabularyList, 'name' | 'description'>): Promise<VocabularyList> {
+    return api.post('/api/v1/revision/vocabulary-lists/', data);
+  },
+
+  async addWordsToList(listId: number, wordIds: number[]): Promise<VocabularyList> {
+    return api.post(`/api/v1/revision/vocabulary-lists/${listId}/add_words/`, {
+      word_ids: wordIds,
     });
-    return response.data;
   },
 
-  getDueCards: async () => {
-    const response = await api.get<Flashcard[]>('/api/revision/flashcards/due_for_review/');
-    return response.data;
+  // Vocabulary Words
+  async getVocabularyWords(params?: {
+    source_language?: string;
+    target_language?: string;
+  }): Promise<VocabularyWord[]> {
+    const queryParams = new URLSearchParams(params);
+    return api.get(`/api/v1/revision/vocabulary/?${queryParams}`);
+  },
+
+  async createVocabularyWord(data: Omit<VocabularyWord, 'id' | 'created_at' | 'last_reviewed' | 'review_count' | 'mastery_level'>): Promise<VocabularyWord> {
+    return api.post('/api/v1/revision/vocabulary/', data);
+  },
+
+  async getDueVocabulary(limit: number = 10): Promise<VocabularyWord[]> {
+    return api.get(`/api/v1/revision/vocabulary/due_for_review/?limit=${limit}`);
   },
 
   // Revision Sessions
-  getSessions: async () => {
-    const response = await api.get<RevisionSession[]>('/api/revision/sessions/get_schedule/');
-    return response.data;
+  async getRevisionSessions(): Promise<RevisionSession[]> {
+    return api.get('/api/v1/revision/revision-sessions/');
   },
 
-  completeSession: async (id: string, successRate: number) => {
-    const response = await api.post(`/api/revision/sessions/${id}/complete_session/`, {
-      success_rate: successRate
-    });
-    return response.data;
-  }
-};
+  async createRevisionSession(data: { scheduled_date: string }): Promise<RevisionSession> {
+    return api.post('/api/v1/revision/revision-sessions/', data);
+  },
 
-export type { Flashcard, Deck, RevisionSession };
+  async completeRevisionSession(id: number, successRate: number): Promise<RevisionSession> {
+    return api.post(`/api/v1/revision/revision-sessions/${id}/complete_session/`, {
+      success_rate: successRate,
+    });
+  },
+
+  async getRevisionSchedule(daysRange: { before: number; after: number } = { before: 7, after: 30 }): Promise<RevisionSession[]> {
+    return api.get(`/api/v1/revision/revision-sessions/get_schedule/?days_before=${daysRange.before}&days_after=${daysRange.after}`);
+  },
+
+  async markWordReviewed(id: number, success: boolean): Promise<VocabularyWord> {
+    return api.post(`/api/v1/revision/vocabulary/${id}/mark_reviewed/`, { success });
+  },
+
+  async getVocabularyStats(range: 'week' | 'month' | 'year' = 'week'): Promise<any> {
+    return api.get(`/api/v1/revision/vocabulary/stats/?range=${range}`);
+  },
+};
