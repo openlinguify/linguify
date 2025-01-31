@@ -8,8 +8,7 @@ class VocabularyWord(models.Model):
         ('EN', 'English'),
         ('FR', 'French'),
         ('ES', 'Spanish'),
-        ('DE', 'German'),
-        # Ajoutez d'autres langues selon vos besoins
+        ('NL', 'Dutch'),
     ]
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
