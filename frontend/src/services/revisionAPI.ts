@@ -3,6 +3,7 @@ import { Flashcard, FlashcardDeck, RevisionSession, VocabularyList, VocabularyWo
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
+
 const api = {
   get: async <T>(endpoint: string): Promise<T> => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
