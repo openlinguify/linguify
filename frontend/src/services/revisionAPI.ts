@@ -9,8 +9,7 @@ const api = {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
-        // Add Authorization header if needed
-        // 'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
     });
     if (!response.ok) {
@@ -25,8 +24,7 @@ const api = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // Add Authorization header if needed
-        // 'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
       body: JSON.stringify(data),
     });

@@ -25,6 +25,7 @@ export interface Flashcard {
     next_review: string | null;
 }
 
+
 export interface RevisionSession {
     id: number;
     scheduled_date: string;

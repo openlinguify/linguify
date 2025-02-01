@@ -4,7 +4,7 @@ from django.db.models import Q
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from revision.models import FlashcardDeck, Flashcard
 from revision.serializers import FlashcardDeckSerializer, FlashcardSerializer
 
@@ -14,13 +14,13 @@ logger = logging.getLogger(__name__)
 
 class FlashcardDeckViewSet(viewsets.ModelViewSet):
     serializer_class = FlashcardDeckSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
-        return FlashcardDeck.objects.filter(user=self.request.user, is_active=True)
+        return FlashcardDeck.objects.filter(is_active=True)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save()
 
     @action(detail=True, methods=['post'])
     def archive(self, request, pk=None):
@@ -31,16 +31,20 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
 
 class FlashcardViewSet(viewsets.ModelViewSet):
     serializer_class = FlashcardSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         deck_id = self.request.query_params.get('deck')
-        queryset = Flashcard.objects.filter(deck__user=self.request.user)
-        
+        queryset = Flashcard.objects.all()
+
         if deck_id:
             queryset = queryset.filter(deck_id=deck_id)
-        
+
         return queryset
+
+    def perform_create(self, serializer):
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'])
     def mark_reviewed(self, request, pk=None):
