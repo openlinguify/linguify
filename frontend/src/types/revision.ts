@@ -15,7 +15,7 @@ export interface FlashcardDeck {
 }
 
 export interface Flashcard {
-    id: number;
+    id: string;
     front_text: string;
     back_text: string;
     learned: boolean;

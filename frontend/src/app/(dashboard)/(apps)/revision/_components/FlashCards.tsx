@@ -15,13 +15,8 @@ import { Label } from "@/components/ui/label";
 import { PlusCircle, Repeat, X, ChevronRight, ChevronLeft } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { Flashcard as FlashCard } from "@/types/revision";
 
-interface FlashCard {
-  id: string;
-  english: string;
-  translation: string;
-  learned: boolean;
-}
 
 export default function FlashCards() {
   const [cards, setCards] = useState<FlashCard[]>([]);
@@ -42,9 +37,13 @@ export default function FlashCards() {
 
     const newCard: FlashCard = {
       id: Date.now().toString(),
-      english: newEnglish.trim(),
-      translation: newTranslation.trim(),
+      front_text: newEnglish.trim(),
+      back_text: newTranslation.trim(),
       learned: false,
+      created_at: new Date().toISOString(),
+      last_reviewed: null,
+      review_count: 0,
+      next_review: new Date().toISOString(),
     };
 
     setCards([...cards, newCard]);
@@ -143,11 +142,11 @@ export default function FlashCards() {
           <CardContent className="min-h-[200px] flex items-center justify-center">
             <div className="text-center space-y-4">
               <div className="text-2xl font-semibold">
-                {cards[currentIndex].english}
+                {cards[currentIndex].front_text}
               </div>
               {showTranslation && (
                 <div className="text-xl text-blue-600">
-                  {cards[currentIndex].translation}
+                  {cards[currentIndex].back_text}
                 </div>
               )}
             </div>
