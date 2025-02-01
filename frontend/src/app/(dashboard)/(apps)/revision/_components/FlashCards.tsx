@@ -1,209 +1,121 @@
-// src/app/(apps)/revision/_components/FlashCards.tsx
 "use client";
 
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PlusCircle, Repeat, X, ChevronRight, ChevronLeft } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { Flashcard as FlashCard } from "@/types/revision";
+import { revisionApi } from "@/services/revisionAPI";
+import { Flashcard } from "@/types/revision";
 
+type FlashcardsProps = {
+  deck_id: number;
+};
 
-export default function FlashCards() {
-  const [cards, setCards] = useState<FlashCard[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [showTranslation, setShowTranslation] = useState(false);
+export default function FlashCards({ deck_id }: FlashcardsProps) {
   const [newEnglish, setNewEnglish] = useState("");
   const [newTranslation, setNewTranslation] = useState("");
+  const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const addCard = () => {
+  // Charger les flashcards existantes
+  useEffect(() => {
+    async function fetchFlashcards() {
+      try {
+        const data = await revisionApi.getFlashcards(deck_id);
+        setFlashcards(data);
+      } catch (error) {
+        console.error("Erreur de chargement des flashcards", error);
+      }
+    }
+    fetchFlashcards();
+  }, [deck_id]);
+
+  const validateInputs = () => {
     if (!newEnglish.trim() || !newTranslation.trim()) {
-      toast({
-        title: "Error",
-        description: "Please fill in both fields",
-        variant: "destructive",
+      showToast("Erreur", "Veuillez remplir tous les champs", "destructive");
+      return false;
+    }
+    return true;
+  };
+
+  const showToast = (title: string, description: string, variant: "default" | "destructive" = "default") => {
+    toast({ title, description, variant });
+  };
+
+  const addCard = async () => {
+    if (!validateInputs()) return;
+
+    try {
+      setIsLoading(true);
+
+      const newFlashcard = await revisionApi.createFlashcard({
+        front_text: newEnglish.trim(),
+        back_text: newTranslation.trim(),
+        deck_id,
       });
-      return;
-    }
 
-    const newCard: FlashCard = {
-      id: Date.now().toString(),
-      front_text: newEnglish.trim(),
-      back_text: newTranslation.trim(),
-      learned: false,
-      created_at: new Date().toISOString(),
-      last_reviewed: null,
-      review_count: 0,
-      next_review: new Date().toISOString(),
-    };
+      setFlashcards([...flashcards, newFlashcard]);
+      setNewEnglish("");
+      setNewTranslation("");
 
-    setCards([...cards, newCard]);
-    setNewEnglish("");
-    setNewTranslation("");
-    toast({
-      title: "Success",
-      description: "New card added successfully",
-    });
-  };
+      showToast("Succès", "Carte créée avec succès");
 
-  const nextCard = () => {
-    if (cards.length === 0) return;
-    setShowTranslation(false);
-    setCurrentIndex((prev) => (prev + 1) % cards.length);
-  };
-
-  const previousCard = () => {
-    if (cards.length === 0) return;
-    setShowTranslation(false);
-    setCurrentIndex((prev) => (prev - 1 + cards.length) % cards.length);
-  };
-
-  const markAsLearned = (id: string) => {
-    setCards(
-      cards.map((card) =>
-        card.id === id ? { ...card, learned: !card.learned } : card
-      )
-    );
-  };
-
-  const removeCard = (id: string) => {
-    setCards(cards.filter((card) => card.id !== id));
-    if (cards.length > 1 && currentIndex === cards.length - 1) {
-      setCurrentIndex(currentIndex - 1);
-    }
-    toast({
-      title: "Card removed",
-      description: "The flashcard has been removed",
-    });
-  };
-
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      addCard();
+    } catch (error) {
+      console.error("Erreur lors de la création:", error);
+      showToast("Erreur", "Impossible de créer la carte", "destructive");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <Toaster />
-      {/* Add new card section */}
       <Card>
         <CardHeader>
-          <CardTitle>Add New Flashcard</CardTitle>
+          <CardTitle>Ajouter une flashcard</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="english">English Word</Label>
-              <Input
-                id="english"
-                value={newEnglish}
-                onChange={(e) => setNewEnglish(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="Enter English word"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="translation">Translation</Label>
-              <Input
-                id="translation"
-                value={newTranslation}
-                onChange={(e) => setNewTranslation(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="Enter translation"
-              />
-            </div>
+        <CardContent>
+          <div className="space-y-2">
+            <Label htmlFor="english">Mot en anglais</Label>
+            <Input
+              id="english"
+              value={newEnglish}
+              onChange={(e) => setNewEnglish(e.target.value)}
+              placeholder="Enter English word"
+            />
           </div>
-          <Button
-            onClick={addCard}
-            className="w-full bg-gradient-to-r from-sky-500 to-blue-600"
-          >
-            <PlusCircle className="w-4 h-4 mr-2" />
-            Add Flashcard
+          <div className="space-y-2">
+            <Label htmlFor="translation">Traduction</Label>
+            <Input
+              id="translation"
+              value={newTranslation}
+              onChange={(e) => setNewTranslation(e.target.value)}
+              placeholder="Enter translation"
+            />
+          </div>
+          <Button onClick={addCard} disabled={isLoading} className="mt-4">
+            <PlusCircle className="w-5 h-5 mr-2" />
+            {isLoading ? "Ajout..." : "Ajouter"}
           </Button>
         </CardContent>
       </Card>
 
-      {/* Review section */}
-      {cards.length > 0 ? (
-        <Card className="relative">
-          <CardHeader>
-            <CardTitle>Review Flashcards</CardTitle>
-          </CardHeader>
-          <CardContent className="min-h-[200px] flex items-center justify-center">
-            <div className="text-center space-y-4">
-              <div className="text-2xl font-semibold">
-                {cards[currentIndex].front_text}
-              </div>
-              {showTranslation && (
-                <div className="text-xl text-blue-600">
-                  {cards[currentIndex].back_text}
-                </div>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-between items-center">
-            <Button
-              variant="outline"
-              onClick={previousCard}
-              disabled={cards.length <= 1}
-              className="flex items-center"
-            >
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              Previous
-            </Button>
-            <div className="space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setShowTranslation(!showTranslation)}
-              >
-                {showTranslation ? "Hide" : "Show"} Translation
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => markAsLearned(cards[currentIndex].id)}
-                className={cards[currentIndex].learned ? "text-green-600" : ""}
-              >
-                <Repeat className="w-4 h-4 mr-2" />
-                {cards[currentIndex].learned ? "Learned" : "Mark as Learned"}
-              </Button>
-            </div>
-            <Button
-              variant="outline"
-              onClick={nextCard}
-              disabled={cards.length <= 1}
-              className="flex items-center"
-            >
-              Next
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Button>
-          </CardFooter>
-          <div className="absolute top-4 right-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => removeCard(cards[currentIndex].id)}
-            >
-              <X className="w-4 h-4 text-red-600" />
-            </Button>
-          </div>
-        </Card>
-      ) : (
-        <Card>
-          <CardContent className="py-8 text-center text-gray-500">
-            No flashcards yet. Add some cards to start reviewing!
-          </CardContent>
-        </Card>
-      )}
+      <div className="space-y-4">
+        {flashcards.map((card) => (
+          <Card key={card.id}>
+            <CardContent>
+              <p>
+                <strong>{card.front_text}</strong> - {card.back_text}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
