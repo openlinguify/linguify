@@ -1,9 +1,15 @@
 # backend/django_apps/authentication/serializers.py
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import User, CoachProfile, Review, UserFeedback
+from .models import CoachProfile, Review, UserFeedback
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 from django.contrib.auth.password_validation import validate_password
 from decimal import Decimal
+from django.core.validators import validate_email
+from authentication.models import User
+
 
 class UserSerializer(serializers.ModelSerializer):
     public_id = serializers.UUIDField(read_only=True, format='hex')
@@ -25,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
         ]
         # Mark sensitive fields as read-only
         read_only_fields = [
-            'id', 'email', 'is_active', 'is_superuser', 'is_staff',
+            'public_id', 'is_active', 'is_superuser', 'is_staff',
             'created_at', 'updated_at'
         ]
 
@@ -93,13 +99,82 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
             'language_level', 'objectives'
         ]
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user: User):
-        token = super().get_token(user)
+class MeSerializer(serializers.ModelSerializer):
+    """
+    Serializer for retrieving basic user profile information
+    """
+    # Custom fields or transformations can be added here
+    age = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
 
-        # Add custom claims
-        token['email'] = user.email
-        # ...
+    class Meta:
+        model = User
+        fields = [
+            'public_id',  # UUID
+            'username', 
+            'email', 
+            'first_name', 
+            'last_name',
+            'name',  # Full name
+            'age',
+            'gender',
+            'native_language', 
+            'target_language',
+            'language_level',
+            'objectives',
+            'is_coach',
+            'is_active',
+            'is_subscribed',
+            'profile_picture',
+            'bio',
+            'created_at',
+            'updated_at'
+        ]
+        read_only_fields = [
+            'public_id', 
+            'email', 
+            'is_active', 
+            'is_coach',
+            'is_subscribed', 
+            'created_at', 
+            'updated_at'
+        ]
 
-        return token
+    def get_name(self, obj):
+        """Generate full name"""
+        return f"{obj.first_name} {obj.last_name}".strip()
+
+    def get_age(self, obj):
+        """Retrieve user's age"""
+        return obj.age
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for updating user profile
+    """
+    class Meta:
+        model = User
+        fields = [
+            'first_name', 
+            'last_name', 
+            'username',
+            'profile_picture', 
+            'bio', 
+            'native_language', 
+            'target_language', 
+            'language_level', 
+            'objectives',
+            'gender'
+        ]
+
+    def validate(self, data):
+        """
+        Custom validation
+        """
+        # Ensure native and target languages are different
+        if data.get('native_language') and data.get('target_language'):
+            if data['native_language'] == data['target_language']:
+                raise serializers.ValidationError({
+                    'target_language': 'Target language must be different from native language'
+                })
+        return data

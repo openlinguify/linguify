@@ -15,7 +15,8 @@ import logging
 from rest_framework.response import Response
 from decimal import Decimal
 from django.core.exceptions import ValidationError
-from .serializers import UserSerializer
+from .serializers import UserSerializer, MeSerializer, ProfileUpdateSerializer
+
 
 logger = logging.getLogger(__name__)
 
@@ -201,3 +202,23 @@ def reactivate_account(request):
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+        
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_me_view(request):
+    serializer = MeSerializer(request.user)
+    return Response(serializer.data)
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    serializer = ProfileUpdateSerializer(
+        request.user, 
+        data=request.data, 
+        partial=True
+    )
+    if serializer.is_valid():
+        serializer.save()
+        return Response(MeSerializer(request.user).data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

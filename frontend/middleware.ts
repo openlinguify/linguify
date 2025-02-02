@@ -1,73 +1,75 @@
-// src/middleware.ts
+// middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getSession } from '@auth0/nextjs-auth0';
+
+const PUBLIC_PATHS = [
+  '/',
+  '/login',
+  '/register',
+  '/about',
+  '/api/auth/login',
+  '/api/auth/logout',
+  '/api/auth/callback'
+];
+
+const API_PATHS = [
+  '/api/v1/course',
+  '/api/v1/revision',
+  '/api/v1/chat',
+  '/api/v1/task',
+  '/api/v1/notebook',
+  '/api/v1/flashcard'
+];
 
 export async function middleware(request: NextRequest) {
-  // Skip auth check for public routes
-  if (
-    request.nextUrl.pathname.startsWith('/_next') ||
-    request.nextUrl.pathname.startsWith('/api/auth') ||
-    request.nextUrl.pathname === '/login' ||
-    request.nextUrl.pathname === '/'
-  ) {
+  const { pathname } = request.nextUrl;
+
+  // Allow public paths
+  if (PUBLIC_PATHS.includes(pathname)) {
     return NextResponse.next();
   }
 
-  // Check for session cookie
-  const session = request.cookies.get('session');
-  console.log('Checking session:', session ? 'Found' : 'Not found');
-
-  if (!session?.value) {
-    console.log('No session found, redirecting to login');
-    const returnTo = encodeURIComponent(request.nextUrl.pathname);
-    return NextResponse.redirect(
-      new URL(`/api/auth/login?returnTo=${returnTo}`, request.url)
-    );
-  }
-
   try {
-    // Verify session is valid
-    const sessionData = JSON.parse(session.value);
-    console.log('Session data:', { 
-      isExpired: Date.now() > sessionData.expiresAt,
-      timeLeft: Math.round((sessionData.expiresAt - Date.now()) / 1000)
-    });
+    const session = await getSession();
 
-    if (Date.now() > sessionData.expiresAt) {
-      console.log('Session expired, redirecting to login');
-      const returnTo = encodeURIComponent(request.nextUrl.pathname);
-      return NextResponse.redirect(
-        new URL(`/api/auth/login?returnTo=${returnTo}`, request.url)
-      );
+    // Not authenticated
+    if (!session?.user) {
+      // API routes return 401
+      if (API_PATHS.some(path => pathname.startsWith(path))) {
+        return NextResponse.json(
+          { error: 'Unauthorized' },
+          { status: 401 }
+        );
+      }
+
+      // Store the original URL to redirect back after login
+      const loginUrl = new URL('/api/auth/login', request.url);
+      loginUrl.searchParams.set('returnTo', pathname);
+      return NextResponse.redirect(loginUrl);
     }
 
-    // Add user info to request headers
+    // Add user info and token to headers
     const requestHeaders = new Headers(request.headers);
-    requestHeaders.set('x-user-id', sessionData.user.sub);
-    requestHeaders.set('x-user-email', sessionData.user.email);
+    requestHeaders.set('Authorization', `Bearer ${session.accessToken}`);
+    requestHeaders.set('x-user-id', session.user.sub);
+    requestHeaders.set('x-user-email', session.user.email);
 
-    // Clone the response and add the headers
-    const response = NextResponse.next({
+    return NextResponse.next({
       request: {
         headers: requestHeaders,
       },
     });
 
-    return response;
   } catch (error) {
-    console.error('Session verification error:', error);
-    // Invalid session, redirect to login
-    return NextResponse.redirect(
-      new URL('/api/auth/login', request.url)
-    );
+    console.error('Auth middleware error:', error);
+    return NextResponse.redirect(new URL('/api/auth/login', request.url));
   }
 }
 
 export const config = {
   matcher: [
-    '/apps/:path*',
-    '/settings/:path*',
-    '/profile/:path*',
-    '/api/:path*',
-  ]
+    '/dashboard/:path*',
+    '/api/v1/:path*',
+  ],
 };

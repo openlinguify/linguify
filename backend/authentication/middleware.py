@@ -39,57 +39,20 @@ class JWTMiddleware:
             return None
         return None
 
-    def __call__(self, request):
-        # URLs that don't need authentication
-        public_paths = [
-            '/admin/',
-            '/api/v1/auth/login/',
-            '/api/v1/auth/callback/',
-            '/api/v1/auth/logout/',
-            '/api/v1/auth/user/',
-            '/api/v1/course/units/',
-            '/api/v1/course/lesson/',
-            '/api/v1/course/content-lesson/',
-            '/api/v1/course/content-lesson/<int:lesson_id>/',
-            'api/v1/revision/flashcards/',
-
-            '/favicon.ico',
-            '/static/',
-            '/_next/',
-            '/assets/'
-        ]
-
-        private_paths = [
-            '/api/v1/chat/',
-            'api/v1/settings/',
-            '/api/v1/auth/users/profile/',
-        ]
-
-        # Check if the path is public
-        current_path = urlparse(request.path).path
-        
-        # Allow public paths without authentication
-        if any(current_path.startswith(path) for path in public_paths):
-            return self.get_response(request)
-
-        # Get the token from the Authorization header
-        auth_header = request.headers.get('Authorization')
-        if not auth_header:
-            logger.debug(f'No authorization header for path: {current_path}')
-            return JsonResponse({'error': 'No authorization header'}, status=401)
-
+    def process_token(self, request, auth_header):
+        """Process the auth token if present"""
         try:
             # Extract token
             token_parts = auth_header.split()
             if len(token_parts) != 2 or token_parts[0].lower() != 'bearer':
-                return JsonResponse({'error': 'Invalid authorization header'}, status=401)
+                return None
 
             token = token_parts[1]
 
             # Get the RSA key for verification
             rsa_key = self.get_rsa_key(token)
             if not rsa_key:
-                return JsonResponse({'error': 'Unable to find appropriate key'}, status=401)
+                return None
 
             # Verify token with RSA key
             payload = jwt.decode(
@@ -115,20 +78,19 @@ class JWTMiddleware:
 
             # Add Auth0 user info to request
             request.auth0_user = payload
+            return payload
 
-        except jwt.ExpiredSignatureError:
-            logger.warning(f"Expired token for path: {current_path}")
-            return JsonResponse({'error': 'Token has expired'}, status=401)
-        except jwt.InvalidTokenError as e:
-            logger.warning(f"Invalid token for path: {current_path}")
-            return JsonResponse({'error': 'Invalid token'}, status=401)
-        except Exception as e:
-            logger.error(f"JWT error for path {current_path}: {str(e)}")
-            return JsonResponse({'error': str(e)}, status=401)
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, Exception) as e:
+            logger.warning(f"Token processing error: {str(e)}")
+            return None
 
-        # Check if path requires authentication
-        if any(current_path.startswith(path) for path in private_paths):
-            if not hasattr(request, 'user') or not request.user.is_authenticated:
-                return JsonResponse({'error': 'Authentication required for this resource'}, status=401)
-
+    def __call__(self, request):
+        # Get the token from the Authorization header if present
+        auth_header = request.headers.get('Authorization')
+        
+        # If there's an auth header, try to process it
+        if auth_header:
+            self.process_token(request, auth_header)
+        
+        # Always continue with the request, regardless of auth status
         return self.get_response(request)
