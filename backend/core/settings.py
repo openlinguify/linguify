@@ -120,8 +120,9 @@ JWT_AUTH = {
     'JWT_AUDIENCE': AUTH0_AUDIENCE,
     'JWT_ISSUER': f'https://{AUTH0_DOMAIN}/',
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-    'JWT_EXPIRATION_DELTA': timedelta(hours=24),
+    'JWT_VERIFY_EXPIRATION': False, 
     'JWT_ALLOW_REFRESH': True,
+    'JWT_EXPIRATION_DELTA': timedelta(days=7),
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
 }
 

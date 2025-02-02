@@ -2,26 +2,13 @@
 'use client';
 
 import { Auth0Provider as BaseAuth0Provider, useAuth0 } from '@auth0/auth0-react';
-import { createContext, useContext, useCallback, useEffect } from 'react';
+import { createContext, useContext, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveAuthState, clearAuthState, getStoredAuthState } from '@/services/auth-state';
+import { LoginOptions } from '@/types/auth';
+import { User } from '@/types/user';
+import { AuthContextType } from '@/types/auth';
 
-interface LoginOptions {
-  connection?: string;
-  appState?: {
-    returnTo?: string;
-  };
-  screen_hint?: string;
-}
-
-interface AuthContextType {
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  user: any;
-  login: (options?: LoginOptions) => Promise<void>;
-  logout: () => Promise<void>;
-  getAccessToken: () => Promise<string>;
-}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -52,44 +39,71 @@ function Auth0ProviderWrapper({ children }: { children: React.ReactNode }) {
 
 function AuthProviderContent({ children }: { children: React.ReactNode }) {
   const { 
-    isLoading, 
-    isAuthenticated, 
-    user, 
+    isLoading: auth0Loading, 
+    isAuthenticated: auth0Authenticated, 
+    user: auth0User, 
     loginWithRedirect, 
     logout: auth0Logout, 
-    getAccessTokenSilently 
+    getAccessTokenSilently,
+    error: auth0Error 
   } = useAuth0();
-  
-  // Effect to handle auth state persistence
+
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    const persistAuthState = async () => {
-      if (isAuthenticated && user) {
-        try {
-          const token = await getAccessTokenSilently({
-            authorizationParams: {
-              audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
-              scope: "openid profile email offline_access"
-            }
-          });
-          saveAuthState(token, user);
-        } catch (error) {
-          console.error('Error persisting auth state:', error);
+    const syncUserWithBackend = async () => {
+      if (!auth0Authenticated || !auth0User) {
+        setUser(null);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
+            scope: "openid profile email offline_access"
+          }
+        });
+
+        const response = await fetch("/api/auth/me", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to sync user with backend");
         }
+
+        const userData = await response.json();
+        setUser(userData);
+        saveAuthState(token, userData);
+      } catch (err) {
+        console.error('Error syncing user:', err);
+        setError(err instanceof Error ? err : new Error("Unknown error occurred"));
+        clearAuthState();
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    persistAuthState();
-  }, [isAuthenticated, user, getAccessTokenSilently]);
+    if (!auth0Loading) {
+      syncUserWithBackend();
+    }
+  }, [auth0User, auth0Loading, auth0Authenticated, getAccessTokenSilently]);
 
   const getAccessToken = useCallback(async () => {
     try {
-      // First try to get from stored state
       const storedState = getStoredAuthState();
       if (storedState?.token) {
         return storedState.token;
       }
 
-      // If no stored token or expired, get new one
       const token = await getAccessTokenSilently({
         authorizationParams: {
           audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
@@ -129,23 +143,30 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
     });
   }, [auth0Logout]);
 
-  const contextValue: AuthContextType = {
-    isLoading,
-    isAuthenticated: isAuthenticated || !!getStoredAuthState()?.token,
-    user: user || getStoredAuthState()?.user,
-    login,
-    logout,
-    getAccessToken,
-  };
-
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading: isLoading || auth0Loading,
+        isAuthenticated: auth0Authenticated || !!getStoredAuthState()?.token,
+        error: error || auth0Error || null,
+        login,
+        logout,
+        getAccessToken,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+
+  const onRedirectCallback = (appState: any) => {
+    router.push(appState?.returnTo || '/dashboard');
+  };
+  
   return (
     <Auth0ProviderWrapper>
       <AuthProviderContent>{children}</AuthProviderContent>
