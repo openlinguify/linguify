@@ -1,12 +1,11 @@
 'use client';
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import VocabularyPage from "./VocabularyPage"; // Importez le composant VocabularyPage
-
+import VocabularyLesson from "./VocabularyLesson"; // Assurez-vous que le chemin est correct
 interface ContentLesson {
   id: number;
   title: {
@@ -109,27 +108,25 @@ export default function LessonContent({ lessonId }: LessonContentProps) {
     );
   }
 
-  // Si un contenu est sélectionné et c'est du vocabulaire, afficher la page de vocabulaire
-  if (selectedContent?.startsWith('vocabulary-')) {
-    const contentId = selectedContent.split('-')[1];
-    const selectedVocabularyContent = contents.find(c => c.id === parseInt(contentId));
-    
-    return (
-      <div>
-        <div className="p-6">
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2 mb-6"
-            onClick={handleBack}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Lesson Content
-          </Button>
-        </div>
-        <VocabularyPage vocabularyLists={selectedVocabularyContent?.vocabulary_lists || []} />
+// Si un contenu est sélectionné et c'est du vocabulaire, afficher la page de vocabulaire
+if (selectedContent?.startsWith('vocabulary-')) {
+  const contentId = selectedContent.split('-')[1];
+  return (
+    <div>
+      <div className="p-6">
+        <Button
+          variant="ghost"
+          className="flex items-center gap-2 mb-6"
+          onClick={handleBack}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Lesson Content
+        </Button>
       </div>
-    );
-  }
+      <VocabularyLesson lessonId={contentId} />
+    </div>
+  );
+}
 
   return (
     <div className="p-6">

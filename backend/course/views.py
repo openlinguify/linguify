@@ -86,7 +86,12 @@ class ContentLessonViewSet(viewsets.ModelViewSet):
             except ValueError:
                 raise ValidationError({"error": "Invalid lesson ID"})
         return queryset.order_by('order')
+    
 
+
+
+
+    
 class VocabularyListAPIView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -97,53 +102,52 @@ class VocabularyListAPIView(APIView):
     search_fields = ['word_en', 'word_fr', 'word_es', 'word_nl']
     ordering_fields = ['word_en', 'word_fr', 'word_es', 'word_nl']
 
-    def get(self, request):
-        # Retrieve all vocabulary lists
-        vocabulary_lists = VocabularyList.objects.all()
+    def get_queryset(self):
+        return VocabularyList.objects.all()
 
-        # Apply filtering dynamically using DjangoFilterBackend
-        filterset = self.filterset_class(request.GET, queryset=vocabulary_lists)
-        if not filterset.is_valid():
-            return Response(filterset.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        filtered_queryset = filterset.qs
-
-        # Apply search and ordering
-        search_query = request.query_params.get('search')
-        if search_query:
-            filtered_queryset = filtered_queryset.filter(
-                word_en__icontains=search_query
-            ) | filtered_queryset.filter(
-                word_fr__icontains=search_query
-            ) | filtered_queryset.filter(
-                word_es__icontains=search_query
-            ) | filtered_queryset.filter(
-                word_nl__icontains=search_query
-            )
-
-        ordering = request.query_params.get('ordering')
-        if ordering:
-            filtered_queryset = filtered_queryset.order_by(ordering)
-
-        # Apply pagination
-        paginator = self.pagination_class()
-        paginated_vocabulary_lists = paginator.paginate_queryset(filtered_queryset, request)
-
-        # Serialize the paginated queryset
-        serializer = self.serializer_class(
-            paginated_vocabulary_lists, many=True, context={'request': request}
-        )
-
-        # Return the paginated response
-        return paginator.get_paginated_response(serializer.data)
+    def filter_queryset(self, queryset):
+        for backend in self.filter_backends:
+            queryset = backend().filter_queryset(self.request, queryset, self)
+        return queryset
 
     def get_serializer_context(self):
-        context = super().get_serializer_context()
+        context = {
+            'request': self.request,
+            'format': self.format_kwarg,
+            'view': self
+        }
         user = self.request.user
-        target_language = self.request.query_params.get('target_language', getattr(user, 'target_language', 'en'))
-        context['target_language'] = target_language
+        context['target_language'] = self.request.query_params.get(
+            'target_language', 
+            getattr(user, 'target_language', 'en')
+        )
         return context
+
+    def get(self, request):
+        queryset = self.get_queryset()
+        filtered_queryset = self.filter_queryset(queryset)
+        
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(filtered_queryset, request)
+        
+        serializer = self.serializer_class(
+            page, 
+            many=True, 
+            context=self.get_serializer_context()
+        )
+        
+        return paginator.get_paginated_response(serializer.data)
     
+
+
+
+
+
+
+
+
+
+
 class ExerciceVocabularyAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
