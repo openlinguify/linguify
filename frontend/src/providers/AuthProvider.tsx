@@ -1,85 +1,121 @@
-'use client';
+'use client'
 
-import { Auth0Provider as BaseAuth0Provider, useAuth0 } from '@auth0/auth0-react';
-import { createContext, useContext } from 'react';
-import { useRouter } from 'next/navigation';
+import { useUser } from '@auth0/nextjs-auth0/client'
+import { createContext, useContext, useCallback, useEffect, useState, ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
 
-interface LoginOptions {
-  connection?: string;
-  appState?: {
-    returnTo?: string;
-  };
+interface User {
+  id: string
+  email: string
+  name?: string | null
 }
 
 interface AuthContextType {
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  user: any;
-  login: (options?: LoginOptions) => Promise<void>;
-  logout: () => Promise<void>;
-  getAccessToken: () => Promise<string>;
+  user: User | null
+  isLoading: boolean
+  isAuthenticated: boolean
+  error: Error | null
+  login: (options?: { returnTo?: string }) => Promise<void>
+  logout: () => Promise<void>
+  getAccessToken: () => Promise<string>
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-function Auth0ProviderWrapper({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
+const LOCAL_STORAGE_KEY = 'auth_state'
 
-  const onRedirectCallback = (appState: any) => {
-    router.push(appState?.returnTo || '/dashboard');
-  };
+interface AuthState {
+  token: string
+  user: User
+}
+
+function saveAuthState(token: string, user: User) {
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ token, user }))
+}
+
+function clearAuthState() {
+  localStorage.removeItem(LOCAL_STORAGE_KEY)
+}
+
+function getStoredAuthState(): AuthState | null {
+  const stored = localStorage.getItem(LOCAL_STORAGE_KEY)
+  return stored ? JSON.parse(stored) : null
+}
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter()
+  const { user: auth0User, error: auth0Error, isLoading: auth0Loading } = useUser()
+  const [user, setUser] = useState<User | null>(null)
+  const [error, setError] = useState<Error | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    if (auth0User) {
+      const userData = {
+        id: auth0User.sub!,
+        email: auth0User.email!,
+        name: auth0User.name
+      }
+      setUser(userData)
+      // Vous pouvez également sauvegarder l'état ici si nécessaire
+    }
+    setIsLoading(false)
+  }, [auth0User])
+
+  const login = useCallback(async (options?: { returnTo?: string }) => {
+    try {
+      const returnTo = options?.returnTo || window.location.origin
+      window.location.href = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Login failed'))
+      throw err
+    }
+  }, [])
+
+  const logout = useCallback(async () => {
+    try {
+      window.location.href = `/api/auth/logout`
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Logout failed'))
+      throw err
+    }
+  }, [])
+
+  const getAccessToken = useCallback(async () => {
+    try {
+      const response = await fetch('/api/auth/token')
+      if (!response.ok) {
+        throw new Error('Failed to get access token')
+      }
+      const { accessToken } = await response.json()
+      return accessToken
+    } catch (err) {
+      console.error('Error getting access token:', err)
+      throw err
+    }
+  }, [])
 
   return (
-    <BaseAuth0Provider
-      domain="dev-hazi5dwwkk7pe476.eu.auth0.com"
-      clientId="gVXFn4QKiS62BvdrLZjBECjYG7ZUAW5D"
-      authorizationParams={{
-        redirect_uri: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000',
-        audience: "https://dev-hazi5dwwkk7pe476.eu.auth0.com/api/v2/",
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading: isLoading || auth0Loading,
+        isAuthenticated: !!user,
+        error: error || auth0Error || null,
+        login,
+        logout,
+        getAccessToken,
       }}
-      onRedirectCallback={onRedirectCallback}
     >
       {children}
-    </BaseAuth0Provider>
-  );
-}
-
-function AuthProviderContent({ children }: { children: React.ReactNode }) {
-  const { isLoading, isAuthenticated, user, loginWithRedirect, logout: auth0Logout, getAccessTokenSilently } = useAuth0();
-
-  const contextValue: AuthContextType = {
-    isLoading,
-    isAuthenticated,
-    user,
-    login: (options) =>
-      loginWithRedirect({
-        authorizationParams: { connection: options?.connection },
-        appState: options?.appState,
-      }),
-    logout: () =>
-      auth0Logout({
-        logoutParams: {
-          returnTo: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000',
-        },
-      }),
-    getAccessToken: getAccessTokenSilently,
-  };
-
-  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
-}
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  return (
-    <Auth0ProviderWrapper>
-      <AuthProviderContent>{children}</AuthProviderContent>
-    </Auth0ProviderWrapper>
-  );
+    </AuthContext.Provider>
+  )
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
+  const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error('useAuth must be used within AuthProvider')
   }
-  return context;
+  return context
 }

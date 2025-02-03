@@ -9,7 +9,8 @@ def redirect_to_admin(request):
 urlpatterns = [
     path('', redirect_to_admin),
     path('admin/', admin.site.urls),
-    path('api/v1/auth/', include('authentication.urls')),
+    path('api/', include('rest_framework.urls')),
+    path('api/auth/', include('authentication.urls')),
     path('api/v1/course/', include('course.urls', namespace='course')),
     path('api/v1/revision/', include('revision.urls', namespace='revision')),
     path('api/v1/flashcard/', include('flashcard.urls', namespace='flashcard')),

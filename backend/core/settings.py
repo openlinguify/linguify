@@ -1,3 +1,4 @@
+# backend/core/settings.py
 import sys
 from pathlib import Path
 import os
@@ -88,8 +89,8 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4040",
-    "http://127.0.0.1:4040",
+    "http://localhost:3000",
+    "http://localhost:8000",
 ]
 
 
@@ -120,8 +121,9 @@ JWT_AUTH = {
     'JWT_AUDIENCE': AUTH0_AUDIENCE,
     'JWT_ISSUER': f'https://{AUTH0_DOMAIN}/',
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-    'JWT_EXPIRATION_DELTA': timedelta(hours=24),
+    'JWT_VERIFY_EXPIRATION': False, 
     'JWT_ALLOW_REFRESH': True,
+    'JWT_EXPIRATION_DELTA': timedelta(days=7),
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
 }
 

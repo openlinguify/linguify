@@ -1,238 +1,247 @@
-# backend/authentication/views.py
-from rest_framework import status
+# authentication/views.py
+from rest_framework import status, viewsets
 from django.shortcuts import redirect
 from django.conf import settings
 from django.http import JsonResponse
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.response import Response
-from django.core.exceptions import ValidationError
+from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.views import APIView
+
 from urllib.parse import urlencode
 import requests
 from .models import User
-from .serializers import UserSerializer
 import logging
+import jwt
+from jwt.exceptions import PyJWTError
+
+from rest_framework.response import Response
+from decimal import Decimal
+from django.core.exceptions import ValidationError
+from .serializers import UserSerializer, MeSerializer, ProfileUpdateSerializer
+
 
 logger = logging.getLogger(__name__)
 
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def auth0_login(request):
-    """
-    Redirects to Auth0 login page
-    """
-    try:
-        # Récupérer le returnTo s'il existe
-        return_to = request.GET.get('returnTo', 'http://localhost:4040')
-        
-        params = {
-            'client_id': settings.AUTH0_CLIENT_ID,
-            'redirect_uri': f"{request.scheme}://{request.get_host()}/api/v1/auth/callback/",
-            'response_type': 'code',
-            'scope': 'openid profile email',
-            'audience': settings.AUTH0_AUDIENCE,
-            'state': return_to  # Stocker l'URL de retour dans state
-        }
+class Auth0Login(APIView):
+    """Initie le flux d'authentification Auth0"""
+    permission_classes = [AllowAny]
 
-        auth0_url = f'https://{settings.AUTH0_DOMAIN}/authorize?{urlencode(params)}'
-        return redirect(auth0_url)
-    except Exception as e:
-        logger.error(f"Error in Auth0 login: {str(e)}")
-        return JsonResponse({'error': str(e)}, status=500)
+    def get(self, request):
+        try:
+            params = {
+                'client_id': settings.AUTH0_CLIENT_ID,
+                'redirect_uri': f"{settings.BACKEND_URL}/api/auth/callback",
+                'response_type': 'code',
+                'scope': 'openid profile email',
+                'audience': settings.AUTH0_AUDIENCE
+            }
+            auth_url = f'https://{settings.AUTH0_DOMAIN}/authorize?{urlencode(params)}'
+            return Response({'auth_url': auth_url})
+        
+        except Exception as e:
+            logger.error(f"Auth0 login error: {str(e)}")
+            return Response({'error': 'Authentication service unavailable'}, 
+                          status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def auth0_callback(request):
-    """
-    Handles the Auth0 callback and exchanges the code for tokens
-    """
+    """Gère le callback Auth0 et crée/mets à jour l'utilisateur"""
     try:
+        # Validation du code d'autorisation
         code = request.GET.get('code')
-        state = request.GET.get('state', 'http://localhost:4040')
-        
         if not code:
-            return JsonResponse({'error': 'No code provided'}, status=400)
+            return JsonResponse({'error': 'Authorization code missing'}, 
+                              status=status.HTTP_400_BAD_REQUEST)
 
+        # Configuration de la requête de token
         token_payload = {
             'grant_type': 'authorization_code',
             'client_id': settings.AUTH0_CLIENT_ID,
             'client_secret': settings.AUTH0_CLIENT_SECRET,
             'code': code,
-            'redirect_uri': f"{request.scheme}://{request.get_host()}/api/v1/auth/callback/"
+            'redirect_uri': f"{settings.BACKEND_URL}/api/auth/callback"
         }
 
-        # Obtenir les tokens
-        token_url = f'https://{settings.AUTH0_DOMAIN}/oauth/token'
-        token_response = requests.post(token_url, json=token_payload)
+        # Récupération des tokens Auth0
+        token_response = requests.post(
+            f'https://{settings.AUTH0_DOMAIN}/oauth/token',
+            data=token_payload,
+            timeout=10
+        )
         
         if token_response.status_code != 200:
             logger.error(f"Token error: {token_response.text}")
-            return JsonResponse({'error': 'Failed to obtain tokens'}, status=400)
+            return JsonResponse({'error': 'Failed to obtain tokens'}, 
+                              status=status.HTTP_401_UNAUTHORIZED)
 
         tokens = token_response.json()
 
-        # Get user info
-        user_info_url = f'https://{settings.AUTH0_DOMAIN}/userinfo'
-        user_info_response = requests.get(
-            user_info_url,
-            headers={'Authorization': f'Bearer {tokens["access_token"]}'}
-        )
+        # Validation du token JWT
+        try:
+            jwt_header = jwt.get_unverified_header(tokens['access_token'])
+            jwks = requests.get(f'https://{settings.AUTH0_DOMAIN}/.well-known/jwks.json').json()
+            rsa_key = next(k for k in jwks['keys'] if k['kid'] == jwt_header['kid'])
+            
+            payload = jwt.decode(
+                tokens['access_token'],
+                key=rsa_key,
+                algorithms=['RS256'],
+                audience=settings.AUTH0_AUDIENCE,
+                issuer=f'https://{settings.AUTH0_DOMAIN}/'
+            )
+        except PyJWTError as e:
+            logger.error(f"JWT validation error: {str(e)}")
+            return JsonResponse({'error': 'Invalid token'}, 
+                              status=status.HTTP_401_UNAUTHORIZED)
 
-        if user_info_response.status_code != 200:
-            logger.error(f"User info error: {user_info_response.text}")
-            return JsonResponse({'error': 'Failed to get user info'}, status=400)
-
-        user_info = user_info_response.json()
-
-        # Create or update user
-        user, created = User.objects.get_or_create(
-            email=user_info['email'],
+        # Création/Mise à jour de l'utilisateur
+        user, created = User.objects.update_or_create(
+            email=payload['email'],
             defaults={
-                'username': user_info.get('nickname', user_info['email']),
-                'first_name': user_info.get('given_name', ''),
-                'last_name': user_info.get('family_name', ''),
+                'username': payload.get('nickname', payload['email']),
+                'first_name': payload.get('given_name', ''),
+                'last_name': payload.get('family_name', ''),
                 'is_active': True
             }
         )
 
         return JsonResponse({
             'access_token': tokens['access_token'],
-            'id_token': tokens['id_token'],
-            'user': UserSerializer(user).data,
-            'returnTo': state
+            'expires_in': tokens['expires_in'],
+            'user': UserSerializer(user).data
         })
 
     except Exception as e:
         logger.error(f"Callback error: {str(e)}")
-        return JsonResponse({'error': str(e)}, status=500)
+        return JsonResponse({'error': 'Authentication failed'}, 
+                          status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def auth0_logout(request):
-    """Handles logout"""
+    """Déconnexion de l'utilisateur"""
     try:
-        return_to = request.GET.get('returnTo', settings.CLIENT_ORIGIN_URL)
-        
+        logout_url = f'https://{settings.AUTH0_DOMAIN}/v2/logout'
         params = {
             'client_id': settings.AUTH0_CLIENT_ID,
-            'returnTo': return_to
+            'returnTo': settings.FRONTEND_LOGOUT_REDIRECT
         }
-
-        logout_url = f'https://{settings.AUTH0_DOMAIN}/v2/logout?{urlencode(params)}'
-        
-        return JsonResponse({
-            'logoutUrl': logout_url
-        })
+        return JsonResponse({'logout_url': f'{logout_url}?{urlencode(params)}'})
+    
     except Exception as e:
         logger.error(f"Logout error: {str(e)}")
-        return JsonResponse({'error': str(e)}, status=500)
+        return JsonResponse({'error': 'Logout failed'}, 
+                          status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_auth0_user(request):
-    """
-    Gets the user info from Auth0 and syncs with local database
-    """
-    try:
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return JsonResponse({'error': 'Invalid authorization header'}, status=401)
-
-        token = auth_header.split()[1]
-        
-        # Obtenir les infos utilisateur depuis Auth0
-        user_response = requests.get(
-            f'https://{settings.AUTH0_DOMAIN}/userinfo',
-            headers={'Authorization': f'Bearer {token}'}
-        )
-
-        if user_response.status_code != 200:
-            return JsonResponse({'error': 'Failed to get user info'}, status=400)
-
-        auth0_user = user_response.json()
-
-        # Synchroniser avec la base de données locale
-        user, _ = User.objects.update_or_create(
-            email=auth0_user['email'],
-            defaults={
-                'username': auth0_user.get('nickname', auth0_user['email']),
-                'first_name': auth0_user.get('given_name', ''),
-                'last_name': auth0_user.get('family_name', ''),
-                'is_active': True
-            }
-        )
-
-        return JsonResponse({
-            'auth0': auth0_user,
-            'user': UserSerializer(user).data
-        })
-        
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-    
-@api_view(['GET'])
-def auth_status(request):
-    """
-    Check authentication status and sync user data
-    """
-    try:
-        if not request.user.is_authenticated:
-            return JsonResponse({
-                'isAuthenticated': False,
-                'user': None
-            })
-
-        # Sync user data if authenticated
-        user = request.user
-        user_data = UserSerializer(user).data
-
-        return JsonResponse({
-            'isAuthenticated': True,
-            'user': user_data
-        })
-
-    except Exception as e:
-        return JsonResponse({
-            'error': str(e),
-            'isAuthenticated': False,
-            'user': None
-        }, status=500)
-
-@api_view(['GET', 'PATCH']) 
+@api_view(['GET', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def user_profile(request):
-    """
-    Gestion du profil utilisateur.
-    GET: Récupérer les informations du profil
-    PATCH: Mettre à jour les informations du profil
-    """
-
+    """Gestion du profil utilisateur"""
     try:
         if request.method == 'GET':
-            serializer = UserSerializer(request.user)
-            return JsonResponse(serializer.data)
+            return Response(MeSerializer(request.user).data)
         
-        elif request.method == 'PATCH':
-            serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if request.method == 'PATCH':
+            serializer = ProfileUpdateSerializer(
+                request.user, 
+                data=request.data, 
+                partial=True
+            )
+            
             if serializer.is_valid():
-                native_lang = request.data.get('native_language')
-                target_lang = request.data.get('target_language')
-                # Vérifier si les langues sont valides
-                if native_lang == target_lang:
+                # Validation des langues
+                if serializer.validated_data.get('native_language') == serializer.validated_data.get('target_language'):
                     return Response(
-                        {'error': 'Native and target languages cannot be the same'},
+                        {'error': 'Les langues doivent être différentes'},
                         status=status.HTTP_400_BAD_REQUEST
                     )
+                
                 serializer.save()
-                return Response(serializer.data)
+                return Response(MeSerializer(request.user).data)
+            
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    except ValidationError as e:
-        logger.error(f"Validation error in user profile update: {str(e)}")
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
     except Exception as e:
-        logger.error(f"Error in user profile update: {str(e)}")
+        logger.error(f"Profile error: {str(e)}")
+        return Response({'error': str(e)}, 
+                      status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deactivate_account(request):
+    """Deactivate user account"""
+    try:
+        user = request.user
+        user.deactivate_user()
+        return Response({"message": "Account deactivated successfully."}, status=status.HTTP_200_OK)
+    except Exception as e:
+        logger.error(f"Account deactivation error: {str(e)}")
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def reactivate_account(request):
+    """Reactivate user account"""
+    try:
+        user = request.user
+        user.reactivate_user()
+        return Response({"message": "Account reactivated successfully."}, status=status.HTTP_200_OK)
+    except Exception as e:
+        logger.error(f"Account reactivation error: {str(e)}")
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
+    permission_classes = [IsAdminUser]
 
+    def post(self, request, coach_id):
+        """Update coach commission override (admin only)"""
+        try:
+            coach_profile = CoachProfile.objects.get(user__id=coach_id)
+            commission_override = request.data.get('commission_override')
 
+            if commission_override is None:
+                return Response(
+                    {"error": "No commission override provided."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            coach_profile.commission_override = Decimal(commission_override)
+            coach_profile.save()
+            notify_coach_of_commission_change(coach_profile)
+            
+            return Response(
+                {"message": "Commission override updated successfully."},
+                status=status.HTTP_200_OK
+            )
+
+        except CoachProfile.DoesNotExist:
+            return Response(
+                {"error": "Coach profile not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"Error updating commission override: {str(e)}")
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
         
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_me_view(request):
+    serializer = MeSerializer(request.user)
+    return Response(serializer.data)
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    serializer = ProfileUpdateSerializer(
+        request.user, 
+        data=request.data, 
+        partial=True
+    )
+    if serializer.is_valid():
+        serializer.save()
+        return Response(MeSerializer(request.user).data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
