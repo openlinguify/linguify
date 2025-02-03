@@ -1,3 +1,4 @@
+# backend/core/settings.py
 import sys
 from pathlib import Path
 import os
@@ -88,8 +89,8 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4040",
-    "http://127.0.0.1:4040",
+    "http://localhost:3000",
+    "http://localhost:8000",
 ]
 
 
