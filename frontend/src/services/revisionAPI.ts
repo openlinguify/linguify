@@ -1,86 +1,122 @@
-// src/services/revisionAPI.ts
-import api from './api';
+// services/revisionAPI.ts
+import { Flashcard, FlashcardDeck, RevisionSession, VocabularyWord } from '@/types/revision';
 
-interface Flashcard {
-  id: string;
-  front_text: string;
-  back_text: string;
-  learned: boolean;
-  last_reviewed: string | null;
-  next_review: string | null;
-  review_count: number;
-}
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-interface Deck {
-  id: string;
-  name: string;
-  description: string;
-  card_count: number;
-  learned_count: number;
-  flashcards: Flashcard[];
-}
+type RequestHeaders = Record<string, string>;
 
-interface RevisionSession {
-  id: string;
-  scheduled_date: string;
-  completed_date: string | null;
-  status: 'PENDING' | 'COMPLETED' | 'MISSED';
-  success_rate: number | null;
-  flashcards: Flashcard[];
-}
+const getAuthHeader = async (): Promise<RequestHeaders> => {
+  const token = localStorage.getItem('auth_token');
+  const headers: RequestHeaders = {
+    'Content-Type': 'application/json'
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  return headers;
+};
 
-export const revisionAPI = {
-  // Decks
-  getDecks: async () => {
-    const response = await api.get<Deck[]>('/api/revision/decks/');
-    return response.data;
+const api = {
+  get: async <T>(endpoint: string): Promise<T> => {
+    const headers = await getAuthHeader();
+    const init: RequestInit = {
+      headers,
+      credentials: 'include',
+    };
+
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, init);
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'An error occurred');
+    }
+    return response.json();
   },
 
-  createDeck: async (data: { name: string; description: string }) => {
-    const response = await api.post<Deck>('/api/revision/decks/', data);
-    return response.data;
+  post: async <T>(endpoint: string, data: any): Promise<T> => {
+    const headers = await getAuthHeader();
+    const init: RequestInit = {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+      body: JSON.stringify(data),
+    };
+
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, init);
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'An error occurred');
+    }
+    return response.json();
+  },
+};
+
+export const revisionApi = {
+  // Flashcard Decks
+  async getDecks(): Promise<FlashcardDeck[]> {
+    return api.get('/api/v1/revision/decks/');
+  },
+
+  async getDeck(id: number): Promise<FlashcardDeck> {
+    return api.get(`/api/v1/revision/decks/${id}/`);
+  },
+
+  async createDeck(data: Pick<FlashcardDeck, 'name' | 'description'>): Promise<FlashcardDeck> {
+    return api.post('/api/v1/revision/decks/', data);
   },
 
   // Flashcards
-  getFlashcards: async (deckId?: string) => {
-    const params = deckId ? { deck: deckId } : {};
-    const response = await api.get<Flashcard[]>('/api/revision/flashcards/', { params });
-    return response.data;
+  async getFlashcards(deckId?: number): Promise<Flashcard[]> {
+    const endpoint = deckId 
+      ? `/api/v1/revision/flashcards/?deck=${deckId}`
+      : '/api/v1/revision/flashcards/';
+    return api.get(endpoint);
   },
 
-  createFlashcard: async (data: { 
-    deck: string; 
-    front_text: string; 
-    back_text: string; 
-  }) => {
-    const response = await api.post<Flashcard>('/api/revision/flashcards/', data);
-    return response.data;
+  async createFlashcard(data: Pick<Flashcard, 'front_text' | 'back_text'> & { deck_id: number }): Promise<Flashcard> {
+    return api.post('/api/v1/revision/flashcards/', data);
   },
 
-  markReviewed: async (id: string, success: boolean) => {
-    const response = await api.post(`/api/revision/flashcards/${id}/mark_reviewed/`, {
-      success
-    });
-    return response.data;
+  async markFlashcardReviewed(id: number, success: boolean): Promise<Flashcard> {
+    return api.post(`/api/v1/revision/flashcards/${id}/mark_reviewed/`, { success });
   },
 
-  getDueCards: async () => {
-    const response = await api.get<Flashcard[]>('/api/revision/flashcards/due_for_review/');
-    return response.data;
+  async getDueFlashcards(limit: number = 10): Promise<Flashcard[]> {
+    return api.get(`/api/v1/revision/flashcards/due_for_review/?limit=${limit}`);
   },
 
   // Revision Sessions
-  getSessions: async () => {
-    const response = await api.get<RevisionSession[]>('/api/revision/sessions/get_schedule/');
-    return response.data;
+  async getRevisionSessions(): Promise<RevisionSession[]> {
+    return api.get('/api/v1/revision/revision-sessions/');
   },
 
-  completeSession: async (id: string, successRate: number) => {
-    const response = await api.post(`/api/revision/sessions/${id}/complete_session/`, {
-      success_rate: successRate
+  async createRevisionSession(data: { scheduled_date: string }): Promise<RevisionSession> {
+    return api.post('/api/v1/revision/revision-sessions/', data);
+  },
+
+  async completeRevisionSession(id: number, successRate: number): Promise<RevisionSession> {
+    return api.post(`/api/v1/revision/revision-sessions/${id}/complete_session/`, {
+      success_rate: successRate,
     });
-    return response.data;
+  },
+
+  async getRevisionSchedule(daysRange: { before: number; after: number } = { before: 7, after: 30 }): Promise<RevisionSession[]> {
+    return api.get(`/api/v1/revision/revision-sessions/get_schedule/?days_before=${daysRange.before}&days_after=${daysRange.after}`);
+  },
+
+  async markWordReviewed(id: number, success: boolean): Promise<VocabularyWord> {
+    return api.post(`/api/v1/revision/vocabulary/${id}/mark_reviewed/`, { success });
+  },
+
+  // Error handling
+  handleApiError(error: any) {
+    console.error('API Error:', error);
+    if (error.status === 401) {
+      window.location.href = '/login';
+    }
+    throw error;
   }
 };
-
-export type { Flashcard, Deck, RevisionSession };

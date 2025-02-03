@@ -1,159 +1,149 @@
 import React, { useState } from 'react';
-import { 
-  Brain, Book, Clock, Settings,
-  CheckCircle, AlertTriangle, Rotate3D 
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { Toaster } from '@/components/ui/toaster';
-import FlashCards from './FlashCards';
-import RevisionSchedule from './RevisionSchedule';
-import VocabularyManager from './VocabularyManager';
-import VocabularyRevision from './VocabularyRevision';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { revisionApi } from '@/services/revisionAPI';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
+import { ThumbsUp, ThumbsDown, RotateCcw } from 'lucide-react';
 
-const RevisionDashboard = () => {
-  // Stats that would normally come from an API
-  const stats = {
-    totalWords: 150,
-    learned: 85,
-    dueSoon: 12,
-    streak: 7,
-    todayProgress: 65
+export default function VocabularyRevision() {
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [showTranslation, setShowTranslation] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: dueWords = [], isLoading } = useQuery({
+    queryKey: ['dueVocabulary'],
+    queryFn: () => revisionApi.getDueVocabulary(10)
+  });
+
+  const markReviewedMutation = useMutation({
+    mutationFn: (params: { id: number; success: boolean }) => 
+      revisionApi.markWordReviewed(params.id, params.success),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dueVocabulary'] });
+      toast({
+        title: "Progress saved",
+        description: "Your revision progress has been updated"
+      });
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save progress"
+      });
+    }
+  });
+
+  const handleReview = async (success: boolean) => {
+    if (dueWords.length === 0) return;
+    
+    const currentWord = dueWords[currentWordIndex];
+    await markReviewedMutation.mutate({ id: currentWord.id, success });
+    
+    if (currentWordIndex < dueWords.length - 1) {
+      setCurrentWordIndex(prev => prev + 1);
+      setShowTranslation(false);
+    } else {
+      toast({
+        title: "Session complete!",
+        description: "You've reviewed all due words for now."
+      });
+    }
   };
 
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-center min-h-[200px]">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (dueWords.length === 0) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center py-8">
+            <h3 className="text-xl font-semibold mb-2">All caught up!</h3>
+            <p className="text-gray-600">No words due for revision right now.</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const currentWord = dueWords[currentWordIndex];
+
   return (
-    <div className="min-h-screen bg-background p-6">
-      <Toaster />
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex flex-col items-center justify-center space-y-4 text-center pb-4">
-          <h1 className="text-3xl font-bold tracking-tighter bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent sm:text-4xl">
-            Vocabulary Revision
-          </h1>
-          <p className="max-w-[600px] text-gray-600">
-            Review your vocabulary with flashcards and spaced repetition.
-          </p>
-        </div>
+    <Card className="max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex justify-between items-center">
+          <span>Revision Session</span>
+          <span className="text-sm text-gray-500">
+            {currentWordIndex + 1} / {dueWords.length}
+          </span>
+        </CardTitle>
+      </CardHeader>
 
-        {/* Quick Stats */}
-        <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <Brain className="h-8 w-8 text-blue-500" />
-                <div>
-                  <div className="text-sm font-medium text-gray-500">
-                    Total Words
-                  </div>
-                  <div className="text-2xl font-bold">{stats.totalWords}</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      <CardContent>
+        <div className="space-y-6 text-center py-8">
+          <div className="text-2xl font-semibold">{currentWord.word}</div>
+          
+          {showTranslation ? (
+            <div className="text-xl text-blue-600">{currentWord.translation}</div>
+          ) : (
+            <Button 
+              variant="outline" 
+              onClick={() => setShowTranslation(true)}
+              className="min-w-[150px]"
+            >
+              Show Translation
+            </Button>
+          )}
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <CheckCircle className="h-8 w-8 text-green-500" />
-                <div>
-                  <div className="text-sm font-medium text-gray-500">
-                    Words Learned
-                  </div>
-                  <div className="text-2xl font-bold">{stats.learned}</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <Clock className="h-8 w-8 text-orange-500" />
-                <div>
-                  <div className="text-sm font-medium text-gray-500">
-                    Due Today
-                  </div>
-                  <div className="text-2xl font-bold">{stats.dueSoon}</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <AlertTriangle className="h-8 w-8 text-purple-500" />
-                <div>
-                  <div className="text-sm font-medium text-gray-500">
-                    Day Streak
-                  </div>
-                  <div className="text-2xl font-bold">{stats.streak}</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Daily Progress */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-sky-600" />
-              Today's Progress
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Progress value={stats.todayProgress} className="h-2" />
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>{stats.todayProgress}% completed</span>
-                <span>{stats.dueSoon} words remaining</span>
-              </div>
+          {currentWord.context && (
+            <div className="text-gray-600 text-sm mt-4 italic">
+              Context: {currentWord.context}
             </div>
-          </CardContent>
-        </Card>
+          )}
+        </div>
+      </CardContent>
 
-        {/* Main Content */}
-        <Tabs defaultValue="practice" className="space-y-6">
-          <TabsList className="grid w-full max-w-[800px] grid-cols-4 mx-auto">
-            <TabsTrigger value="practice" className="flex items-center gap-2">
-              <Rotate3D className="w-4 h-4" />
-              Practice
-            </TabsTrigger>
-            <TabsTrigger value="flashcards" className="flex items-center gap-2">
-              <Brain className="w-4 h-4" />
-              Flashcards
-            </TabsTrigger>
-            <TabsTrigger value="schedule" className="flex items-center gap-2">
-              <Book className="w-4 h-4" />
-              Schedule
-            </TabsTrigger>
-            <TabsTrigger value="manage" className="flex items-center gap-2">
-              <Settings className="w-4 h-4" />
-              Manage
-            </TabsTrigger>
-          </TabsList>
+      <CardFooter className="flex justify-between">
+        <Button
+          variant="outline"
+          className="text-red-600"
+          onClick={() => handleReview(false)}
+          disabled={markReviewedMutation.isPending}
+        >
+          <ThumbsDown className="w-4 h-4 mr-2" />
+          Need Review
+        </Button>
 
-          <TabsContent value="practice" className="mt-6 space-y-6">
-            <VocabularyRevision />
-          </TabsContent>
+        <Button
+          variant="outline"
+          onClick={() => setShowTranslation(!showTranslation)}
+        >
+          <RotateCcw className="w-4 h-4 mr-2" />
+          {showTranslation ? 'Hide' : 'Show'}
+        </Button>
 
-          <TabsContent value="flashcards" className="mt-6 space-y-6">
-            <FlashCards />
-          </TabsContent>
-
-          <TabsContent value="schedule" className="mt-6 space-y-6">
-            <RevisionSchedule />
-          </TabsContent>
-
-          <TabsContent value="manage" className="mt-6 space-y-6">
-            <VocabularyManager />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+        <Button
+          variant="outline"
+          className="text-green-600"
+          onClick={() => handleReview(true)}
+          disabled={markReviewedMutation.isPending}
+        >
+          <ThumbsUp className="w-4 h-4 mr-2" />
+          Know It
+        </Button>
+      </CardFooter>
+    </Card>
   );
-};
-
-export default RevisionDashboard;
+}

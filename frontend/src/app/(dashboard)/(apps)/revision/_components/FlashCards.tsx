@@ -1,210 +1,231 @@
-// src/app/(apps)/revision/_components/FlashCards.tsx
-"use client";
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/providers/AuthProvider';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Plus, Loader2, RefreshCw } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
+import { revisionApi } from '@/services/revisionAPI';
+import { Flashcard } from '@/types/revision';
 
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { PlusCircle, Repeat, X, ChevronRight, ChevronLeft } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
-import { Toaster } from "@/components/ui/toaster";
-
-interface FlashCard {
-  id: string;
-  english: string;
-  translation: string;
-  learned: boolean;
+interface FlashCardsProps {
+  deckId: number;
 }
 
-export default function FlashCards() {
-  const [cards, setCards] = useState<FlashCard[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [showTranslation, setShowTranslation] = useState(false);
-  const [newEnglish, setNewEnglish] = useState("");
-  const [newTranslation, setNewTranslation] = useState("");
+interface FlashCardFormData {
+  frontText: string;
+  backText: string;
+}
 
-  const addCard = () => {
-    if (!newEnglish.trim() || !newTranslation.trim()) {
+const FlashCards: React.FC<FlashCardsProps> = ({ deckId }) => {
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const [formData, setFormData] = useState<FlashCardFormData>({ frontText: '', backText: '' });
+  const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const fetchFlashcards = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await revisionApi.getFlashcards(deckId);
+      setFlashcards(data);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
       toast({
-        title: "Error",
-        description: "Please fill in both fields",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Unable to load flashcards',
+        variant: 'destructive',
       });
-      return;
+    } finally {
+      setIsLoading(false);
     }
-
-    const newCard: FlashCard = {
-      id: Date.now().toString(),
-      english: newEnglish.trim(),
-      translation: newTranslation.trim(),
-      learned: false,
-    };
-
-    setCards([...cards, newCard]);
-    setNewEnglish("");
-    setNewTranslation("");
-    toast({
-      title: "Success",
-      description: "New card added successfully",
-    });
   };
 
-  const nextCard = () => {
-    if (cards.length === 0) return;
-    setShowTranslation(false);
-    setCurrentIndex((prev) => (prev + 1) % cards.length);
+  useEffect(() => {
+    if (isAuthenticated && !isAuthLoading) {
+      fetchFlashcards();
+    }
+  }, [isAuthenticated, isAuthLoading, deckId]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const previousCard = () => {
-    if (cards.length === 0) return;
-    setShowTranslation(false);
-    setCurrentIndex((prev) => (prev - 1 + cards.length) % cards.length);
+  const validateForm = (): boolean => {
+    if (!formData.frontText.trim() || !formData.backText.trim()) {
+      toast({
+        title: 'Validation Error',
+        description: 'Both fields are required',
+        variant: 'destructive',
+      });
+      return false;
+    }
+    return true;
   };
 
-  const markAsLearned = (id: string) => {
-    setCards(
-      cards.map((card) =>
-        card.id === id ? { ...card, learned: !card.learned } : card
-      )
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    try {
+      setIsSubmitting(true);
+      setError(null);
+      
+      const newCard = await revisionApi.createFlashcard({
+        front_text: formData.frontText.trim(),
+        back_text: formData.backText.trim(),
+        deck_id: deckId,
+      });
+
+      setFlashcards(prev => [...prev, newCard]);
+      setFormData({ frontText: '', backText: '' });
+      
+      toast({
+        title: 'Success',
+        description: 'Flashcard created successfully',
+      });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
+      toast({
+        title: 'Error',
+        description: 'Unable to create flashcard',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isAuthLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[200px]">
+        <Loader2 className="h-8 w-8 animate-spin text-sky-600" />
+      </div>
     );
-  };
+  }
 
-  const removeCard = (id: string) => {
-    setCards(cards.filter((card) => card.id !== id));
-    if (cards.length > 1 && currentIndex === cards.length - 1) {
-      setCurrentIndex(currentIndex - 1);
-    }
-    toast({
-      title: "Card removed",
-      description: "The flashcard has been removed",
-    });
-  };
+  if (!isAuthenticated) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <Alert>
+            <AlertDescription>
+              Please log in to view and create flashcards.
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
+    );
+  }
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      addCard();
-    }
-  };
+  if (error) {
+    return (
+      <Alert variant="destructive" className="mb-4">
+        <AlertDescription>{error}</AlertDescription>
+        <Button onClick={fetchFlashcards} variant="outline" size="sm" className="mt-2">
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Try again
+        </Button>
+      </Alert>
+    );
+  }
 
   return (
-    <div className="space-y-8">
-      <Toaster />
-      {/* Add new card section */}
+    <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Add New Flashcard</CardTitle>
+          <CardTitle>Add Flashcard</CardTitle>
+          <CardDescription>Create a new flashcard for your deck</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="english">English Word</Label>
+              <Label htmlFor="frontText">Front</Label>
               <Input
-                id="english"
-                value={newEnglish}
-                onChange={(e) => setNewEnglish(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="Enter English word"
+                id="frontText"
+                name="frontText"
+                value={formData.frontText}
+                onChange={handleInputChange}
+                placeholder="Enter front text"
+                disabled={isSubmitting}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="translation">Translation</Label>
+              <Label htmlFor="backText">Back</Label>
               <Input
-                id="translation"
-                value={newTranslation}
-                onChange={(e) => setNewTranslation(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="Enter translation"
+                id="backText"
+                name="backText"
+                value={formData.backText}
+                onChange={handleInputChange}
+                placeholder="Enter back text"
+                disabled={isSubmitting}
               />
             </div>
-          </div>
-          <Button
-            onClick={addCard}
-            className="w-full bg-gradient-to-r from-sky-500 to-blue-600"
-          >
-            <PlusCircle className="w-4 h-4 mr-2" />
-            Add Flashcard
-          </Button>
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="w-full"
+            >
+              {isSubmitting ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Plus className="w-4 h-4 mr-2" />
+              )}
+              Add flashcard
+            </Button>
+          </form>
         </CardContent>
       </Card>
 
-      {/* Review section */}
-      {cards.length > 0 ? (
-        <Card className="relative">
-          <CardHeader>
-            <CardTitle>Review Flashcards</CardTitle>
-          </CardHeader>
-          <CardContent className="min-h-[200px] flex items-center justify-center">
-            <div className="text-center space-y-4">
-              <div className="text-2xl font-semibold">
-                {cards[currentIndex].english}
-              </div>
-              {showTranslation && (
-                <div className="text-xl text-blue-600">
-                  {cards[currentIndex].translation}
+      <div className="space-y-4">
+        <CardTitle>Your Flashcards</CardTitle>
+        {isLoading ? (
+          Array(3).fill(0).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="p-4">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-2/3 mt-2" />
+              </CardContent>
+            </Card>
+          ))
+        ) : flashcards.length === 0 ? (
+          <Card>
+            <CardContent className="p-4 text-center text-muted-foreground">
+              No flashcards yet. Create your first one above!
+            </CardContent>
+          </Card>
+        ) : (
+          flashcards.map((card) => (
+            <Card key={card.id}>
+              <CardContent className="p-4 flex justify-between items-center">
+                <div>
+                  <p className="font-medium">{card.front_text}</p>
+                  <p className="text-muted-foreground mt-1">{card.back_text}</p>
                 </div>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-between items-center">
-            <Button
-              variant="outline"
-              onClick={previousCard}
-              disabled={cards.length <= 1}
-              className="flex items-center"
-            >
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              Previous
-            </Button>
-            <div className="space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setShowTranslation(!showTranslation)}
-              >
-                {showTranslation ? "Hide" : "Show"} Translation
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => markAsLearned(cards[currentIndex].id)}
-                className={cards[currentIndex].learned ? "text-green-600" : ""}
-              >
-                <Repeat className="w-4 h-4 mr-2" />
-                {cards[currentIndex].learned ? "Learned" : "Mark as Learned"}
-              </Button>
-            </div>
-            <Button
-              variant="outline"
-              onClick={nextCard}
-              disabled={cards.length <= 1}
-              className="flex items-center"
-            >
-              Next
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Button>
-          </CardFooter>
-          <div className="absolute top-4 right-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => removeCard(cards[currentIndex].id)}
-            >
-              <X className="w-4 h-4 text-red-600" />
-            </Button>
-          </div>
-        </Card>
-      ) : (
-        <Card>
-          <CardContent className="py-8 text-center text-gray-500">
-            No flashcards yet. Add some cards to start reviewing!
-          </CardContent>
-        </Card>
-      )}
+                {card.learned && (
+                  <span className="text-green-500 text-sm font-medium">
+                    Learned
+                  </span>
+                )}
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default FlashCards;
