@@ -75,6 +75,13 @@ class ContentLessonSerializer(serializers.ModelSerializer):
         return representation
 
 
+
+
+
+
+
+
+
 class VocabularyListSerializer(serializers.ModelSerializer):
     word = serializers.SerializerMethodField()
     example_sentence = serializers.SerializerMethodField()
@@ -116,58 +123,41 @@ class VocabularyListSerializer(serializers.ModelSerializer):
                   'antonymous_en',
                   'antonymous_fr',
                   'antonymous_es',
-                  'antonymous_nl',
-                  ]
-
-    def _get_user_languages(self, request):
-        if not request or not hasattr(request, 'user'):
-            return 'en', 'en'
-        user = request.user
-        target_lang = user.target_language.lower() if user.target_language else 'en'
-        native_lang = user.native_language.lower() if user.native_language else 'en'
-        return target_lang, native_lang
+                  'antonymous_nl']
 
     def get_word(self, obj):
-        target_lang, native_lang = self._get_user_languages(self.context.get('request'))
-        return {
-            'target_language': getattr(obj, f'word_{target_lang}', None) or obj.word_en,
-            'native_language': getattr(obj, f'word_{native_lang}', None) or obj.word_en
-        }
-
-    def get_definition(self, obj):
-        target_lang, native_lang = self._get_user_languages(self.context.get('request'))
-        return {
-            'target_language': getattr(obj, f'definition_{target_lang}', None) or obj.definition_en,
-            'native_language': getattr(obj, f'definition_{native_lang}', None) or obj.definition_en
-        }
+        target_language = self.context.get('target_language', 'en')
+        return obj.get_translation(target_language)
 
     def get_example_sentence(self, obj):
-        target_lang, native_lang = self._get_user_languages(self.context.get('request'))
-        return {
-            'target_language': getattr(obj, f'example_sentence_{target_lang}', None) or obj.example_sentence_en,
-            'native_language': getattr(obj, f'example_sentence_{native_lang}', None) or obj.example_sentence_en
-        }
+        target_language = self.context.get('target_language', 'en')
+        return obj.get_example_sentence(target_language)
+
+    def get_definition(self, obj):
+        target_language = self.context.get('target_language', 'en')
+        return obj.get_definition(target_language)
 
     def get_word_type(self, obj):
-        target_lang, native_lang = self._get_user_languages(self.context.get('request'))
-        return {
-            'target_language': getattr(obj, f'word_type_{target_lang}', None) or obj.word_type_en,
-            'native_language': getattr(obj, f'word_type_{native_lang}', None) or obj.word_type_en
-        }
+        target_language = self.context.get('target_language', 'en')
+        return obj.get_word_type(target_language)
 
     def get_synonymous(self, obj):
-        target_lang, native_lang = self._get_user_languages(self.context.get('request'))
-        return {
-            'target_language': getattr(obj, f'synonymous_{target_lang}', None) or obj.synonymous_en,
-            'native_language': getattr(obj, f'synonymous_{native_lang}', None) or obj.synonymous_en
-        }
+        target_language = self.context.get('target_language', 'en')
+        return obj.get_synonymous(target_language)
 
     def get_antonymous(self, obj):
-        target_lang, native_lang = self._get_user_languages(self.context.get('request'))
-        return {
-            'target_language': getattr(obj, f'antonymous_{target_lang}', None) or obj.antonymous_en,
-            'native_language': getattr(obj, f'antonymous_{native_lang}', None) or obj.antonymous_en
-        }
+        target_language = self.context.get('target_language', 'en')
+        return obj.get_antonymous(target_language)
+
+
+
+
+
+
+
+
+
+
 class ContentLessonDetailSerializer(ContentLessonSerializer):
     vocabulary_lists = VocabularyListSerializer(many=True, read_only=True)
     
