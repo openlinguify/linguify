@@ -3,7 +3,7 @@
 
 import { UserProgress } from "./_components/user-progress";
 import { Card } from "@/components/ui/card";
-import { BookOpen, MessageCircle, Star, Trophy, Loader2 } from "lucide-react";
+import { BookOpen, MessageCircle, Star, Trophy } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardHome() {
@@ -39,11 +39,9 @@ export default function DashboardHome() {
       {/* Header avec bienvenue personnalisé */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Welcome back!</h1>
-        <div className="text-sm text-gray-500">
-          Target Language: ENGLISH
-        </div>
+        <div className="text-sm text-gray-500">Target Language: ENGLISH</div>
       </div>
-      
+
       {/* Progress Section */}
       <div className="w-full">
         <UserProgress />
@@ -74,7 +72,9 @@ export default function DashboardHome() {
           {/* Informations linguistiques */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <p className="text-sm font-medium text-gray-500">Native Language</p>
+              <p className="text-sm font-medium text-gray-500">
+                Native Language
+              </p>
               <p className="text-lg">ENGLISH</p>
             </div>
             <div>
@@ -82,7 +82,9 @@ export default function DashboardHome() {
               <p className="text-lg">Intermediate</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500">Learning Goals</p>
+              <p className="text-sm font-medium text-gray-500">
+                Learning Goals
+              </p>
               <p className="text-lg">Improve speaking skills</p>
             </div>
           </div>

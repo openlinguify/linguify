@@ -1,154 +1,106 @@
-// src/providers/AuthProvider.tsx
-'use client';
+'use client'
 
-import { Auth0Provider as BaseAuth0Provider, useAuth0 } from '@auth0/auth0-react';
-import { createContext, useContext, useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { saveAuthState, clearAuthState, getStoredAuthState } from '@/services/auth-state';
-import { LoginOptions } from '@/types/auth';
-import { User } from '@/types/user';
-import { AuthContextType } from '@/types/auth';
+import { useUser } from '@auth0/nextjs-auth0/client'
+import { createContext, useContext, useCallback, useEffect, useState, ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
 
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-function Auth0ProviderWrapper({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-
-  const onRedirectCallback = (appState: any) => {
-    router.push(appState?.returnTo || '/dashboard');
-  };
-
-  return (
-    <BaseAuth0Provider
-      domain={process.env.NEXT_PUBLIC_AUTH0_DOMAIN!}
-      clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID!}
-      authorizationParams={{
-        redirect_uri: process.env.NEXT_PUBLIC_AUTH0_REDIRECT_URI,
-        audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
-        scope: "openid profile email offline_access",
-      }}
-      useRefreshTokens={true}
-      cacheLocation="localstorage"
-      onRedirectCallback={onRedirectCallback}
-    >
-      {children}
-    </BaseAuth0Provider>
-  );
+interface User {
+  id: string
+  email: string
+  name?: string | null
 }
 
-function AuthProviderContent({ children }: { children: React.ReactNode }) {
-  const { 
-    isLoading: auth0Loading, 
-    isAuthenticated: auth0Authenticated, 
-    user: auth0User, 
-    loginWithRedirect, 
-    logout: auth0Logout, 
-    getAccessTokenSilently,
-    error: auth0Error 
-  } = useAuth0();
+interface AuthContextType {
+  user: User | null
+  isLoading: boolean
+  isAuthenticated: boolean
+  error: Error | null
+  login: (options?: { returnTo?: string }) => Promise<void>
+  logout: () => Promise<void>
+  getAccessToken: () => Promise<string>
+}
 
-  const [user, setUser] = useState<User | null>(null);
-  const [error, setError] = useState<Error | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+const LOCAL_STORAGE_KEY = 'auth_state'
+
+interface AuthState {
+  token: string
+  user: User
+}
+
+function saveAuthState(token: string, user: User) {
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ token, user }))
+}
+
+function clearAuthState() {
+  localStorage.removeItem(LOCAL_STORAGE_KEY)
+}
+
+function getStoredAuthState(): AuthState | null {
+  const stored = localStorage.getItem(LOCAL_STORAGE_KEY)
+  return stored ? JSON.parse(stored) : null
+}
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter()
+  const { user: auth0User, error: auth0Error, isLoading: auth0Loading } = useUser()
+  const [user, setUser] = useState<User | null>(null)
+  const [error, setError] = useState<Error | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const syncUserWithBackend = async () => {
-      if (!auth0Authenticated || !auth0User) {
-        setUser(null);
-        setIsLoading(false);
-        return;
+    if (auth0User) {
+      const userData = {
+        id: auth0User.sub!,
+        email: auth0User.email!,
+        name: auth0User.name
       }
-
-      try {
-        const token = await getAccessTokenSilently({
-          authorizationParams: {
-            audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
-            scope: "openid profile email offline_access"
-          }
-        });
-
-        const response = await fetch("/api/auth/me", {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to sync user with backend");
-        }
-
-        const userData = await response.json();
-        setUser(userData);
-        saveAuthState(token, userData);
-      } catch (err) {
-        console.error('Error syncing user:', err);
-        setError(err instanceof Error ? err : new Error("Unknown error occurred"));
-        clearAuthState();
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (!auth0Loading) {
-      syncUserWithBackend();
+      setUser(userData)
+      // Vous pouvez également sauvegarder l'état ici si nécessaire
     }
-  }, [auth0User, auth0Loading, auth0Authenticated, getAccessTokenSilently]);
+    setIsLoading(false)
+  }, [auth0User])
+
+  const login = useCallback(async (options?: { returnTo?: string }) => {
+    try {
+      const returnTo = options?.returnTo || window.location.origin
+      window.location.href = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Login failed'))
+      throw err
+    }
+  }, [])
+
+  const logout = useCallback(async () => {
+    try {
+      window.location.href = `/api/auth/logout`
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Logout failed'))
+      throw err
+    }
+  }, [])
 
   const getAccessToken = useCallback(async () => {
     try {
-      const storedState = getStoredAuthState();
-      if (storedState?.token) {
-        return storedState.token;
+      const response = await fetch('/api/auth/token')
+      if (!response.ok) {
+        throw new Error('Failed to get access token')
       }
-
-      const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
-          scope: "openid profile email offline_access"
-        }
-      });
-      
-      if (user) {
-        saveAuthState(token, user);
-      }
-      
-      return token;
-    } catch (error) {
-      console.error('Error getting access token:', error);
-      clearAuthState();
-      throw error;
+      const { accessToken } = await response.json()
+      return accessToken
+    } catch (err) {
+      console.error('Error getting access token:', err)
+      throw err
     }
-  }, [getAccessTokenSilently, user]);
-
-  const login = useCallback(async (options?: LoginOptions) => {
-    return loginWithRedirect({
-      authorizationParams: { 
-        connection: options?.connection,
-        audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
-        scope: "openid profile email offline_access"
-      },
-      appState: options?.appState,
-    });
-  }, [loginWithRedirect]);
-
-  const logout = useCallback(async () => {
-    clearAuthState();
-    return auth0Logout({
-      logoutParams: {
-        returnTo: process.env.NEXT_PUBLIC_AUTH0_REDIRECT_URI,
-      },
-    });
-  }, [auth0Logout]);
+  }, [])
 
   return (
     <AuthContext.Provider
       value={{
         user,
         isLoading: isLoading || auth0Loading,
-        isAuthenticated: auth0Authenticated || !!getStoredAuthState()?.token,
+        isAuthenticated: !!user,
         error: error || auth0Error || null,
         login,
         logout,
@@ -157,27 +109,13 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
     >
       {children}
     </AuthContext.Provider>
-  );
-}
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-
-  const onRedirectCallback = (appState: any) => {
-    router.push(appState?.returnTo || '/dashboard');
-  };
-  
-  return (
-    <Auth0ProviderWrapper>
-      <AuthProviderContent>{children}</AuthProviderContent>
-    </Auth0ProviderWrapper>
-  );
+  )
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
+  const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error('useAuth must be used within AuthProvider')
   }
-  return context;
+  return context
 }

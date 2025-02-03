@@ -3,7 +3,6 @@
 
 import React from "react";
 import { Sidebar } from "./_components/sidebar";
-import { Button } from "@/components/ui/button";
 import Header from "./_components/header";
 
 export default function DashboardLayout({
@@ -44,9 +43,7 @@ export default function DashboardLayout({
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto bg-gray-50">
-          <div className="container mx-auto p-6">
-            {children}
-          </div>
+          <div className="container mx-auto p-6">{children}</div>
         </main>
       </div>
     </div>
