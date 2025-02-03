@@ -4,6 +4,7 @@ import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { AuthProvider } from "@/providers/AuthProvider";
 import { Toaster } from "@/components/ui/toaster";
 import "@/styles/globals.css";
+import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   title: "Linguify - Learn Languages Easily",
@@ -17,7 +18,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-gray-100">
+      <body className="bg-white dark:bg-gray-900">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange> 
         <UserProvider>
           <AuthProvider>
             <main className="flex min-h-screen flex-col">
@@ -26,6 +28,7 @@ export default function RootLayout({
             <Toaster />
           </AuthProvider>
         </UserProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

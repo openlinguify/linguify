@@ -34,10 +34,15 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 
+import { useTheme } from "next-themes";
+import { Sun, Moon } from "lucide-react";
+
+
 const Header: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
 
   const handleLanguageChange = (value: string) => {
     // Here you would integrate with your i18n system
@@ -73,7 +78,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:bg-gray-900/95">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo and Main Navigation */}
         <div className="flex items-center gap-6">
@@ -92,8 +97,22 @@ const Header: React.FC = () => {
 
         {/* Right Side Actions */}
         <div className="flex items-center gap-4">
+          {/* Theme Toggle Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            className="text-gray-600 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400"
+          >
+            {theme === 'light' ? (
+              <Moon className="h-5 w-5" />
+            ) : (
+              <Sun className="h-5 w-5" />
+            )}
+          </Button>
+
           <Select onValueChange={handleLanguageChange} defaultValue="en">
-            <SelectTrigger className="w-32 border border-gray-300 rounded-lg">
+            <SelectTrigger className="w-32 border border-gray-300 dark:border-gray-700 rounded-lg">
               <SelectValue placeholder="Language" />
             </SelectTrigger>
             <SelectContent>
@@ -110,10 +129,9 @@ const Header: React.FC = () => {
                 variant="ghost" 
                 size="icon"
                 onClick={handleNotificationClick}
-                className="relative"
+                className="relative text-gray-600 dark:text-gray-300"
               >
-                <Bell className="h-5 w-5 text-gray-600 hover:text-sky-600" />
-                {/* Notification badge - show when there are notifications */}
+                <Bell className="h-5 w-5 hover:text-sky-600 dark:hover:text-sky-400" />
                 <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full" />
               </Button>
 
@@ -121,7 +139,7 @@ const Header: React.FC = () => {
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost"
-                    className="flex items-center gap-2 text-gray-600 hover:text-sky-600 hover:bg-sky-50"
+                    className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/20"
                   >
                     <User className="h-4 w-4" />
                     {user?.name || 'Profile'}
@@ -152,6 +170,7 @@ const Header: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => router.push('/login')}
+                className="dark:text-gray-300"
               >
                 Sign In
               </Button>
@@ -164,8 +183,7 @@ const Header: React.FC = () => {
             </div>
           )}
 
-          {/* Mobile Menu Button - only shown on mobile */}
-          <Button variant="ghost" size="icon" className="md:hidden">
+          <Button variant="ghost" size="icon" className="md:hidden dark:text-gray-300">
             <Menu className="h-5 w-5" />
           </Button>
         </div>
@@ -185,7 +203,7 @@ const NavItem = ({
 }) => (
   <Link
     href={href}
-    className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-sky-600 transition-colors"
+    className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
   >
     <Icon className="h-4 w-4" />
     {label}
