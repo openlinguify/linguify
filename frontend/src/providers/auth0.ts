@@ -12,7 +12,7 @@ export default initAuth0({
     scope: 'openid profile email'
   },
   routes: {
-    callback: '/api/auth/callback',
+    callback: '/api/v1/auth/callback',
     postLogoutRedirect: '/'
   }
 });
