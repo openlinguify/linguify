@@ -1,6 +1,6 @@
 # course/serializers.py
 from rest_framework import serializers, generics
-from .models import Unit, Lesson, ContentLesson, VocabularyList, Grammar
+from .models import Unit, Lesson, ContentLesson, VocabularyList, Grammar, MultipleChoiceQuestion
 
 class UnitSerializer(serializers.ModelSerializer):
     # Titre dynamique basé sur la langue cible
@@ -78,10 +78,6 @@ class ContentLessonSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
-
 class VocabularyListSerializer(serializers.ModelSerializer):
     word = serializers.SerializerMethodField()
     example_sentence = serializers.SerializerMethodField()
@@ -150,19 +146,104 @@ class VocabularyListSerializer(serializers.ModelSerializer):
         return obj.get_antonymous(target_language)
 
 
-
-
-
-
-
-
-
-
 class ContentLessonDetailSerializer(ContentLessonSerializer):
     vocabulary_lists = VocabularyListSerializer(many=True, read_only=True)
     
     class Meta(ContentLessonSerializer.Meta):
         fields = ContentLessonSerializer.Meta.fields + ['vocabulary_lists']
+
+
+class MultipleChoiceQuestionSerializer(serializers.ModelSerializer):
+    question = serializers.SerializerMethodField()
+    correct_answer = serializers.SerializerMethodField()
+    fake_answers = serializers.SerializerMethodField()
+    hint_answer = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MultipleChoiceQuestion
+        fields = [
+            'id',
+            'content_lesson',
+            'question',
+            'correct_answer',
+            'fake_answers',
+            'hint_answer',
+            # Champs originaux pour référence
+            'question_en',
+            'question_fr',
+            'question_es',
+            'question_nl',
+            'correct_answer_en',
+            'correct_answer_fr',
+            'correct_answer_es',
+            'correct_answer_nl',
+            'fake_answer1_en',
+            'fake_answer2_en',
+            'fake_answer3_en',
+            'fake_answer4_en',
+            'fake_answer1_fr',
+            'fake_answer2_fr',
+            'fake_answer3_fr',
+            'fake_answer4_fr',
+            'fake_answer1_es',
+            'fake_answer2_es',
+            'fake_answer3_es',
+            'fake_answer4_es',
+            'fake_answer1_nl',
+            'fake_answer2_nl',
+            'fake_answer3_nl',
+            'fake_answer4_nl',
+            'hint_answer_en',
+            'hint_answer_fr',
+            'hint_answer_es',
+            'hint_answer_nl'
+        ]
+
+    def get_question(self, obj):
+        target_language = self.context.get('target_language', 'en')
+        return getattr(obj, f'question_{target_language}', obj.question_en)
+
+    def get_correct_answer(self, obj):
+        target_language = self.context.get('target_language', 'en')
+        return getattr(obj, f'correct_answer_{target_language}', obj.correct_answer_en)
+
+    def get_fake_answers(self, obj):
+        target_language = self.context.get('target_language', 'en')
+        fake_answers = []
+        for i in range(1, 5):
+            answer = getattr(obj, f'fake_answer{i}_{target_language}')
+            if answer:
+                fake_answers.append(answer)
+        return fake_answers
+
+    def get_hint_answer(self, obj):
+        target_language = self.context.get('target_language', 'en')
+        return getattr(obj, f'hint_answer_{target_language}', obj.hint_answer_en)
+
+    def to_representation(self, instance):
+        """Personnaliser la sortie finale du serializer"""
+        data = super().to_representation(instance)
+        
+        # Ajouter toutes les réponses mélangées dans un seul tableau
+        all_answers = [data['correct_answer']] + data['fake_answers']
+        import random
+        random.shuffle(all_answers)
+        
+        # Créer la représentation finale
+        return {
+            'id': data['id'],
+            'content_lesson': data['content_lesson'],
+            'question': data['question'],
+            'answers': all_answers,  # Toutes les réponses mélangées
+            'correct_answer': data['correct_answer'],  # Pour la vérification
+            'hint': data['hint_answer']
+        }
+
+
+
+
+
+
 
 
 class GrammarSerializer(serializers.ModelSerializer):
