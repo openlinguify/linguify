@@ -17,7 +17,7 @@ export default function DashboardLayout({
       {/* Mobile Sidebar Overlay */}
       {isMobileSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/30 z-40 md:hidden"
+          className="fixed inset-0 bg-black/20 dark:bg-black/40 z-40 md:hidden backdrop-blur-sm"
           onClick={() => setIsMobileSidebarOpen(false)}
         />
       )}
@@ -25,24 +25,22 @@ export default function DashboardLayout({
       {/* Sidebar */}
       <aside
         className={`
-          fixed inset-y-0 z-50 
-          flex h-full w-56 flex-col 
-          bg-gray-100 shadow-sm
-          transition-transform duration-300
-          md:translate-x-0 md:flex
-          ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-        `}
+            fixed inset-y-0 z-50 
+            flex h-full w-56 flex-col 
+            bg-white dark:bg-[#0f172a] // Couleur spécifique pour matcher votre design
+            border-r border-gray-200 dark:border-gray-800
+            transition-all duration-300 ease-in-out
+            md:translate-x-0 md:flex
+            ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          `}
       >
         <Sidebar />
       </aside>
 
       {/* Main Content */}
       <div className="flex flex-col md:pl-56">
-        {/* Header */}
         <Header />
-
-        {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto bg-gray-50">
+        <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-[#0f172a] min-h-screen">
           <div className="container mx-auto p-6">{children}</div>
         </main>
       </div>
