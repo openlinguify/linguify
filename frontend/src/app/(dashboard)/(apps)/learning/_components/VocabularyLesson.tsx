@@ -1,11 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GradientText } from "@/components/ui/gradient-text";
+import { GradientCard } from "@/components/ui/gradient-card";
+import { commonStyles } from "@/styles/gradient_style";
 
 interface VocabularyLessonProps {
   lessonId: string;
@@ -115,120 +117,109 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="animate-pulse">Loading vocabulary...</div>
+      <div className={commonStyles.container}>
+        <div className="flex items-center justify-center h-96">
+          <div className="animate-pulse">Loading vocabulary...</div>
+        </div>
       </div>
     );
   }
 
-  if (error) {
+  if (error || !vocabulary.length) {
     return (
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
-    );
-  }
-
-  if (!vocabulary.length) {
-    return (
-      <Alert>
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>No vocabulary items found for this lesson.</AlertDescription>
-      </Alert>
+      <div className={commonStyles.container}>
+        <Alert variant={error ? "destructive" : "default"}>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {error || "No vocabulary items found for this lesson."}
+          </AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
   const currentWord = vocabulary[currentIndex];
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <Card className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 backdrop-blur-sm shadow-xl">
-        <CardContent className="p-8">
+    <div className="w-full max-w-6xl mx-auto min-h-[calc(100vh-8rem)] px-4 py-6">
+      <GradientCard className="h-full">
+        <div className="p-6 flex flex-col gap-4 h-full">
           {/* Progress Section */}
-          <div className="mb-8">
+          <div>
             <Progress 
               value={((currentIndex + 1) / vocabulary.length) * 100} 
-              className="h-2 bg-gray-200 dark:bg-gray-700"
+              className="h-2"
             />
             <p className="text-sm text-muted-foreground mt-2 text-center">
               Word {currentIndex + 1} of {vocabulary.length}
             </p>
           </div>
-
-          {/* Main Word Card */}
-          <div className="relative overflow-hidden rounded-xl mb-8">
-            {/* Gradient Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-brand-purple/10 to-brand-gold/10" />
-            
-            <div className="relative p-8 text-center">
-              <div className="text-sm font-medium text-brand-purple mb-2">
-                {currentWord.word_type_en || 'N/A'}
+  
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col justify-center gap-6">
+            {/* Word Card */}
+            <div className={commonStyles.contentBox}>
+              <div className={commonStyles.gradientBackground} />
+              <div className="relative p-8 text-center">
+                <div className="text-lg font-medium text-brand-purple mb-2">
+                  {currentWord.word_type_en || 'N/A'}
+                </div>
+                <GradientText className="text-5xl font-bold block mb-3">
+                  {currentWord.word_en}
+                </GradientText>
+                <p className="text-2xl text-muted-foreground">
+                  {currentWord.word_fr}
+                </p>
               </div>
-              <h2 className="text-4xl font-bold mb-3 bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
-                {currentWord.word_en}
-              </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300">
-                {currentWord.word_fr}
-              </p>
             </div>
+  
+            {/* Example Section */}
+            {currentWord.example_sentence_en && (
+              <div className={commonStyles.exampleBox}>
+                <h3 className="font-semibold text-brand-purple text-lg mb-2">Example:</h3>
+                <p className="text-lg mb-1">{currentWord.example_sentence_en}</p>
+                <p className="text-muted-foreground">
+                  {currentWord.example_sentence_fr}
+                </p>
+              </div>
+            )}
+  
+            {/* Tabs Section */}
+            <Tabs defaultValue="definition">
+              <TabsList className={commonStyles.tabsList}>
+                {['definition', 'synonyms', 'antonyms'].map((tab) => (
+                  <TabsTrigger 
+                    key={tab}
+                    value={tab}
+                    className={commonStyles.tabsTrigger}
+                  >
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+  
+              <div className={commonStyles.tabsContent}>
+                <TabsContent value="definition">
+                  <p className="text-lg mb-1">{currentWord.definition_en}</p>
+                  <p className="text-muted-foreground">{currentWord.definition_fr}</p>
+                </TabsContent>
+  
+                <TabsContent value="synonyms">
+                  <p className="text-muted-foreground">
+                    {currentWord.synonymous_en || 'No synonyms available'}
+                  </p>
+                </TabsContent>
+  
+                <TabsContent value="antonyms">
+                  <p className="text-muted-foreground">
+                    {currentWord.antonymous_en || 'No antonyms available'}
+                  </p>
+                </TabsContent>
+              </div>
+            </Tabs>
           </div>
-
-          {/* Example Section avec un style amélioré */}
-          {currentWord.example_sentence_en && (
-            <div className="rounded-lg border border-brand-purple/20 bg-gradient-to-br from-brand-purple/5 to-transparent p-6 mb-8">
-              <h3 className="font-semibold text-brand-purple mb-3">Example:</h3>
-              <p className="text-lg mb-2">{currentWord.example_sentence_en}</p>
-              <p className="text-muted-foreground italic">
-                {currentWord.example_sentence_fr}
-              </p>
-            </div>
-          )}
-
-          {/* Tabs avec style amélioré */}
-          <Tabs defaultValue="definition" className="mt-8">
-            <TabsList className="grid w-full grid-cols-3 bg-gray-100/50 dark:bg-gray-800/50 p-1 rounded-lg">
-              <TabsTrigger 
-                value="definition"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-brand-purple data-[state=active]:to-brand-gold data-[state=active]:text-white"
-              >
-                Definition
-              </TabsTrigger>
-              <TabsTrigger 
-                value="synonyms"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-brand-purple data-[state=active]:to-brand-gold data-[state=active]:text-white"
-              >
-                Synonyms
-              </TabsTrigger>
-              <TabsTrigger 
-                value="antonyms"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-brand-purple data-[state=active]:to-brand-gold data-[state=active]:text-white"
-              >
-                Antonyms
-              </TabsTrigger>
-            </TabsList>
-
-            <div className="mt-6 bg-gray-50/50 dark:bg-gray-800/50 rounded-lg p-6">
-              <TabsContent value="definition">
-                <p className="font-medium text-lg mb-2">{currentWord.definition_en}</p>
-                <p className="text-muted-foreground">{currentWord.definition_fr}</p>
-              </TabsContent>
-
-              <TabsContent value="synonyms">
-                <p className="text-muted-foreground">
-                  {currentWord.synonymous_en || 'No synonyms available'}
-                </p>
-              </TabsContent>
-
-              <TabsContent value="antonyms">
-                <p className="text-muted-foreground">
-                  {currentWord.antonymous_en || 'No antonyms available'}
-                </p>
-              </TabsContent>
-            </div>
-          </Tabs>
-
-          {/* Navigation Buttons */}
-          <div className="flex justify-between mt-8">
+  
+          {/* Navigation */}
+          <div className="flex justify-between">
             <Button
               onClick={handlePrevious}
               disabled={currentIndex === 0}
@@ -247,8 +238,8 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </GradientCard>
     </div>
   );
 };
