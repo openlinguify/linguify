@@ -234,7 +234,7 @@ class VocabularyList(models.Model):
     antonymous_nl = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.word_en} - {self.definition_en} - {self.example_sentence_en}"
+        return f"{self.content_lesson} - {self.word_en} - {self.definition_en}"
 
     def get_translation(self, target_language):
         switch = {
@@ -283,8 +283,55 @@ class VocabularyList(models.Model):
             'nl': self.antonymous_nl,
         }
         return switch.get(target_language, self.antonymous_en)
-    
 
+class MultipleChoiceQuestion(models.Model):
+    content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='multiple_choices', default=1)
+    # example of question Level A1: What is the capital of Belgium?
+    question_en = models.CharField(max_length=255, blank=False, null=False)
+    question_fr = models.CharField(max_length=255, blank=False, null=False)
+    question_es = models.CharField(max_length=255, blank=False, null=False)
+    question_nl = models.CharField(max_length=255, blank=False, null=False)
+    # example of correct answer Level A1: Brussels
+    correct_answer_en = models.CharField(max_length=255, blank=False, null=False)
+
+    fake_answer1_en = models.CharField(max_length=255, blank=False, null=False)
+    fake_answer2_en = models.CharField(max_length=255, blank=False, null=False)
+    fake_answer3_en = models.CharField(max_length=255, blank=False, null=False)
+    fake_answer4_en = models.CharField(max_length=255, blank=False, null=False)
+
+    hint_answer_en = models.CharField(max_length=255, blank=True, null=True)
+    # example of correct answer Level A1: Bruxelles
+    correct_answer_fr = models.CharField(max_length=255, blank=False, null=False)
+
+    fake_answer1_fr = models.CharField(max_length=255, blank=False, null=False)
+    fake_answer2_fr = models.CharField(max_length=255, blank=False, null=False)
+    fake_answer3_fr = models.CharField(max_length=255, blank=False, null=False)
+    fake_answer4_fr = models.CharField(max_length=255, blank=False, null=False)
+
+    hint_answer_fr = models.CharField(max_length=255, blank=True, null=True)
+    # example of correct answer Level A1: Bruselas
+    correct_answer_es = models.CharField(max_length=255, blank=False, null=False)
+
+    fake_answer1_es = models.CharField(max_length=255, blank=False, null=False)
+    fake_answer2_es = models.CharField(max_length=255, blank=False, null=False)
+    fake_answer3_es = models.CharField(max_length=255, blank=False, null=False)
+    fake_answer4_es = models.CharField(max_length=255, blank=False, null=False)
+
+    hint_answer_es = models.CharField(max_length=255, blank=True, null=True)
+
+    # example of correct answer Level A1: Brussel
+    correct_answer_nl = models.CharField(max_length=255, blank=False, null=False)
+
+    fake_answer1_nl = models.CharField(max_length=255, blank=False, null=False)
+    fake_answer2_nl = models.CharField(max_length=255, blank=False, null=False)
+    fake_answer3_nl = models.CharField(max_length=255, blank=False, null=False)
+    fake_answer4_nl = models.CharField(max_length=255, blank=False, null=False)
+
+    hint_answer_nl = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.content_lesson} - {self.question_en}"
+    
     
 class ExerciseVocabularyMultipleChoice(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)

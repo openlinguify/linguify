@@ -5,6 +5,7 @@ from .views import (
     LessonAPIView,
     ContentLessonViewSet,
     VocabularyListAPIView,
+    MultipleChoiceQuestionAPIView,
     ExerciceVocabularyAPIView,
     SearchVocabularyAPIView
 )
@@ -17,6 +18,7 @@ urlpatterns = [
     path('content-lesson/', ContentLessonViewSet.as_view({'get': 'list'}), name='content-lesson-list'),
     path('content-lesson/<int:lesson_id>/', ContentLessonViewSet.as_view({'get': 'retrieve'})),
     path('vocabulary-list/', VocabularyListAPIView.as_view(), name='vocabulary-list'),
+    path('multiple-choice-question/', MultipleChoiceQuestionAPIView.as_view(), name='multiple-choice-question'),
     path('exercice-vocabulary/', ExerciceVocabularyAPIView.as_view(), name='api-exercice-vocabulary'),
     path('search-vocabulary/', SearchVocabularyAPIView.as_view(), name='api-search-vocabulary'),
 ]
