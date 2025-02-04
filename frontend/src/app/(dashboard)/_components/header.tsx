@@ -15,7 +15,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  GlobeIcon,
   User,
   BookOpen,
   Trophy,
@@ -82,12 +81,7 @@ const Header: React.FC = () => {
       <div className="container flex h-16 items-center justify-between">
         {/* Logo and Main Navigation */}
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
-            <GlobeIcon className="h-8 w-8 text-sky-500" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">
-              Linguify
-            </span>
-          </Link>
+
 
           <nav className="hidden md:flex gap-6">
             <NavItem href="/learning" icon={BookOpen} label="Learn" />
