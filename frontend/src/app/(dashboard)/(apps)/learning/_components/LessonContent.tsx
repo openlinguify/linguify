@@ -1,11 +1,19 @@
 'use client';
+
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import VocabularyLesson from "./VocabularyLesson"; // Assurez-vous que le chemin est correct
+import VocabularyLesson from "./VocabularyLesson"; 
+import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
+
+// Content type mapping for consistent handling
+const CONTENT_TYPES = {
+  VOCABULARY: 'vocabulary',
+  MULTIPLE_CHOICE: 'multiple choice',
+} as const;
+
 interface ContentLesson {
   id: number;
   title: {
@@ -21,23 +29,33 @@ interface ContentLesson {
     nl: string;
   };
   content_type: string;
-  vocabulary_lists?: any[];
+  vocabulary_lists?: Array<{
+    id: number;
+    word_en: string;
+    definition_en: string;
+  }>;
   order: number;
 }
 
 interface LessonContentProps {
   lessonId: string;
+  language?: 'en' | 'fr' | 'es' | 'nl';
 }
 
-export default function LessonContent({ lessonId }: LessonContentProps) {
+export default function LessonContent({ lessonId, language = 'en' }: LessonContentProps) {
   const [contents, setContents] = useState<ContentLesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedContent, setSelectedContent] = useState<string | null>(null);
-  const router = useRouter();
+  const [selectedContent, setSelectedContent] = useState<{
+    type: string;
+    id: number;
+  } | null>(null);
 
+  // Fetch content lessons
   useEffect(() => {
     const fetchContents = async () => {
+      if (!lessonId) return;
+      
       try {
         const response = await fetch(
           `http://localhost:8000/api/v1/course/content-lesson/?lesson=${lessonId}`,
@@ -52,7 +70,7 @@ export default function LessonContent({ lessonId }: LessonContentProps) {
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch lesson content");
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
@@ -64,29 +82,28 @@ export default function LessonContent({ lessonId }: LessonContentProps) {
         setError(null);
       } catch (err) {
         console.error("Error fetching content:", err);
-        setError("Failed to load lesson content");
+        setError(err instanceof Error ? err.message : "Failed to load lesson content");
       } finally {
         setLoading(false);
       }
     };
 
-    if (lessonId) {
-      fetchContents();
-    }
+    fetchContents();
   }, [lessonId]);
 
   const handleBack = () => {
     if (selectedContent) {
       setSelectedContent(null);
     } else {
-      router.back();
+      window.history.back();
     }
   };
 
   const handleContentClick = (contentType: string, contentId: number) => {
-    setSelectedContent(`${contentType}-${contentId}`);
+    setSelectedContent({ type: contentType, id: contentId });
   };
 
+  // Loading state
   if (loading) {
     return (
       <div className="p-6">
@@ -97,6 +114,7 @@ export default function LessonContent({ lessonId }: LessonContentProps) {
     );
   }
 
+  // Error state
   if (error) {
     return (
       <div className="p-6">
@@ -108,38 +126,48 @@ export default function LessonContent({ lessonId }: LessonContentProps) {
     );
   }
 
-// Si un contenu est sélectionné et c'est du vocabulaire, afficher la page de vocabulaire
-if (selectedContent?.startsWith('vocabulary-')) {
-  const contentId = selectedContent.split('-')[1];
-  return (
-    <div>
-      <div className="p-6">
-        <Button
-          variant="ghost"
-          className="flex items-center gap-2 mb-6"
-          onClick={handleBack}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Lesson Content
-        </Button>
-      </div>
-      <VocabularyLesson lessonId={contentId} />
-    </div>
-  );
-}
+  // Render selected content
+  if (selectedContent) {
+    const commonProps = {
+      lessonId: selectedContent.id.toString(),
+      language: language
+    };
 
+    return (
+      <div>
+        <div className="p-6">
+          <Button
+            variant="ghost"
+            className="flex items-center gap-2 mb-6"
+            onClick={handleBack}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Lesson Content
+          </Button>
+        </div>
+        
+        {selectedContent.type === CONTENT_TYPES.VOCABULARY && (
+          <VocabularyLesson {...commonProps} />
+        )}
+        
+        {selectedContent.type === CONTENT_TYPES.MULTIPLE_CHOICE && (
+          <MultipleChoiceQuestion {...commonProps} />
+        )}
+      </div>
+    );
+  }
+
+  // Main content list
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <Button
-          variant="ghost"
-          className="flex items-center gap-2"
-          onClick={handleBack}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Lessons
-        </Button>
-      </div>
+      <Button
+        variant="ghost"
+        className="flex items-center gap-2 mb-6"
+        onClick={handleBack}
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Lessons
+      </Button>
 
       <div className="space-y-4">
         {contents.length === 0 ? (
@@ -154,57 +182,49 @@ if (selectedContent?.startsWith('vocabulary-')) {
             <Card 
               key={content.id} 
               className={`p-6 space-y-4 transition-all duration-200 ${
-                content.content_type === 'vocabulary' 
+                content.content_type === CONTENT_TYPES.VOCABULARY ||
+                content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE
                   ? 'hover:shadow-lg hover:border-blue-400 cursor-pointer' 
                   : ''
               }`}
               onClick={() => {
-                if (content.content_type === 'vocabulary') {
-                  handleContentClick('vocabulary', content.id);
+                if (
+                  content.content_type === CONTENT_TYPES.VOCABULARY ||
+                  content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE
+                ) {
+                  handleContentClick(content.content_type, content.id);
                 }
               }}
             >
               <div>
-                <h3 className="text-lg font-semibold">{content.title.en}</h3>
-                <p className="text-gray-600 mt-2">{content.instruction.en}</p>
+                <h3 className="text-lg font-semibold">
+                  {content.title[language] || content.title.en}
+                </h3>
+                <p className="text-gray-600 mt-2">
+                  {content.instruction[language] || content.instruction.en}
+                </p>
                 
-                {content.content_type !== 'vocabulary' && (
-                  <div className="mt-4">
-                    <Button
-                      variant="ghost"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleContentClick(content.content_type, content.id);
-                      }}
-                    >
-                      {content.content_type}
-                    </Button>
+                {content.vocabulary_lists && content.vocabulary_lists.length > 0 && (
+                  <div className="mt-6 border-t pt-4">
+                    <h4 className="font-medium mb-3">
+                      Vocabulary Preview ({content.vocabulary_lists.length} words)
+                    </h4>
+                    <div className="space-y-2">
+                      {content.vocabulary_lists.slice(0, 3).map((vocab) => (
+                        <div key={vocab.id} className="bg-gray-50 p-3 rounded">
+                          <div className="font-medium">{vocab.word_en}</div>
+                          <div className="text-gray-600">{vocab.definition_en}</div>
+                        </div>
+                      ))}
+                      {content.vocabulary_lists.length > 3 && (
+                        <div className="text-blue-600 text-sm mt-2">
+                          Click to view all words...
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
-
-              {content.vocabulary_lists && content.vocabulary_lists.length > 0 && (
-                <div className="mt-6 border-t pt-4">
-                  <h4 className="font-medium mb-3">
-                    Vocabulary Preview ({content.vocabulary_lists.length} words)
-                  </h4>
-                  <div className="space-y-2">
-                    {content.vocabulary_lists.slice(0, 3).map((vocab) => (
-                      <div key={vocab.id} className="bg-gray-50 p-3 rounded">
-                        <div className="font-medium">{vocab.word_en}</div>
-                        <div className="text-gray-600">
-                          {vocab.definition_en}
-                        </div>
-                      </div>
-                    ))}
-                    {content.vocabulary_lists.length > 3 && (
-                      <div className="text-blue-600 text-sm mt-2">
-                        Click to view all words...
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
             </Card>
           ))
         )}

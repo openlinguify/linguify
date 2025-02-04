@@ -1,3 +1,4 @@
+// frontend/src/app/%28dashboard%29/%28apps%29/learning/_components/VocabularyLesson.tsx
 'use client';
 import { useState, useEffect } from 'react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
