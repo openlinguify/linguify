@@ -1,11 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GradientText } from "@/components/ui/gradient-text";
+import { GradientCard } from "@/components/ui/gradient-card";
+import { commonStyles } from "@/styles/gradient_style";
 
 interface VocabularyLessonProps {
   lessonId: string;
@@ -57,6 +59,8 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
   // Déplacer la fonction fetchVocabulary à l'intérieur du useEffect
   useEffect(() => {
     const fetchVocabulary = async () => {
+      if (!lessonId) return;
+
       console.log('Fetching vocabulary for lesson:', lessonId);
       try {
         const response = await fetch(
@@ -73,32 +77,26 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
         );
 
         if (!response.ok) {
-          console.error('Response not OK:', response.status, response.statusText);
           throw new Error(`Failed to fetch vocabulary content: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log('Received data:', data);
+        console.log('Vocabulary data:', data);
 
-        if (data.results && Array.isArray(data.results)) {
+        if (data.results) {
           setVocabulary(data.results);
-        } else {
-          console.warn('Unexpected data format:', data);
+          console.log('Setting vocabulary:', data.results);
         }
       } catch (err) {
-        console.error('Fetch error details:', err);
+        console.error('Fetch error:', err);
         setError('Failed to load vocabulary content');
       } finally {
         setLoading(false);
       }
     };
 
-    if (lessonId) {
-      fetchVocabulary();
-    }
+    fetchVocabulary();
   }, [lessonId]);
-
-  // Reste du code...
 
 
 
@@ -119,128 +117,129 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="animate-pulse">Loading vocabulary...</div>
+      <div className={commonStyles.container}>
+        <div className="flex items-center justify-center h-96">
+          <div className="animate-pulse">Loading vocabulary...</div>
+        </div>
       </div>
     );
   }
 
-  if (error) {
+  if (error || !vocabulary.length) {
     return (
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
-    );
-  }
-
-  if (!vocabulary.length) {
-    return (
-      <Alert>
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>No vocabulary items found for this lesson.</AlertDescription>
-      </Alert>
+      <div className={commonStyles.container}>
+        <Alert variant={error ? "destructive" : "default"}>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {error || "No vocabulary items found for this lesson."}
+          </AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
   const currentWord = vocabulary[currentIndex];
-
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <Card className="bg-white">
-        <CardContent className="p-6">
-          {/* Progress Bar */}
-          <div className="mb-6">
+    <div className="w-full max-w-6xl mx-auto min-h-[calc(100vh-8rem)] px-4 py-6">
+      <GradientCard className="h-full">
+        <div className="p-6 flex flex-col gap-4 h-full">
+          {/* Progress Section */}
+          <div>
             <Progress 
               value={((currentIndex + 1) / vocabulary.length) * 100} 
-              className="mb-2"
+              className="h-2"
             />
-            <p className="text-sm text-gray-500 text-center">
-              {currentIndex + 1} / {vocabulary.length} words
+            <p className="text-sm text-muted-foreground mt-2 text-center">
+              Word {currentIndex + 1} of {vocabulary.length}
             </p>
           </div>
-
-          {/* Main Word Display */}
-          <div className="text-center p-8 bg-blue-50 rounded-lg mb-6">
-            <h2 className="text-4xl font-bold mb-3">{currentWord.word_en}</h2>
-            <p className="text-xl text-gray-600">{currentWord.word_fr}</p>
-            <div className="mt-2 text-sm text-gray-500">
-              Type: {currentWord.word_type_en || 'N/A'}
+  
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col justify-center gap-6">
+            {/* Word Card */}
+            <div className={commonStyles.contentBox}>
+              <div className={commonStyles.gradientBackground} />
+              <div className="relative p-8 text-center">
+                <div className="text-lg font-medium text-brand-purple mb-2">
+                  {currentWord.word_type_en || 'N/A'}
+                </div>
+                <GradientText className="text-5xl font-bold block mb-3">
+                  {currentWord.word_en}
+                </GradientText>
+                <p className="text-2xl text-muted-foreground">
+                  {currentWord.word_fr}
+                </p>
+              </div>
             </div>
-          </div>
-
-          {/* Example Section */}
-          {currentWord.example_sentence_en && (
-            <div className="bg-gray-50 p-6 rounded-lg mb-6">
-              <h3 className="font-semibold text-gray-700 mb-2">Example:</h3>
-              <p className="text-lg">{currentWord.example_sentence_en}</p>
-              <p className="text-gray-600 italic mt-2">
-                {currentWord.example_sentence_fr}
-              </p>
-            </div>
-          )}
-
-          {/* Additional Information Tabs */}
-          <Tabs defaultValue="definition" className="mt-6">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="definition">Definition</TabsTrigger>
-              <TabsTrigger value="synonyms">Synonyms</TabsTrigger>
-              <TabsTrigger value="antonyms">Antonyms</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="definition" className="mt-4">
-              <Card>
-                <CardContent className="pt-6">
-                  <p className="font-medium text-lg">{currentWord.definition_en}</p>
-                  <p className="text-gray-600 mt-2">{currentWord.definition_fr}</p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="synonyms" className="mt-4">
-              <Card>
-                <CardContent className="pt-6">
-                  <p className="text-gray-600">
+  
+            {/* Example Section */}
+            {currentWord.example_sentence_en && (
+              <div className={commonStyles.exampleBox}>
+                <h3 className="font-semibold text-brand-purple text-lg mb-2">Example:</h3>
+                <p className="text-lg mb-1">{currentWord.example_sentence_en}</p>
+                <p className="text-muted-foreground">
+                  {currentWord.example_sentence_fr}
+                </p>
+              </div>
+            )}
+  
+            {/* Tabs Section */}
+            <Tabs defaultValue="definition">
+              <TabsList className={commonStyles.tabsList}>
+                {['definition', 'synonyms', 'antonyms'].map((tab) => (
+                  <TabsTrigger 
+                    key={tab}
+                    value={tab}
+                    className={commonStyles.tabsTrigger}
+                  >
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+  
+              <div className={commonStyles.tabsContent}>
+                <TabsContent value="definition">
+                  <p className="text-lg mb-1">{currentWord.definition_en}</p>
+                  <p className="text-muted-foreground">{currentWord.definition_fr}</p>
+                </TabsContent>
+  
+                <TabsContent value="synonyms">
+                  <p className="text-muted-foreground">
                     {currentWord.synonymous_en || 'No synonyms available'}
                   </p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="antonyms" className="mt-4">
-              <Card>
-                <CardContent className="pt-6">
-                  <p className="text-gray-600">
+                </TabsContent>
+  
+                <TabsContent value="antonyms">
+                  <p className="text-muted-foreground">
                     {currentWord.antonymous_en || 'No antonyms available'}
                   </p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-
-          {/* Navigation Controls */}
-          <div className="flex justify-between mt-6">
+                </TabsContent>
+              </div>
+            </Tabs>
+          </div>
+  
+          {/* Navigation */}
+          <div className="flex justify-between">
             <Button
               onClick={handlePrevious}
               disabled={currentIndex === 0}
-              className="flex items-center"
               variant="outline"
+              className="flex items-center gap-2 border-brand-purple/20 hover:bg-brand-purple/10"
             >
-              <ChevronLeft className="h-4 w-4 mr-2" />
+              <ChevronLeft className="h-4 w-4" />
               Previous
             </Button>
             <Button
               onClick={handleNext}
               disabled={currentIndex === vocabulary.length - 1}
-              className="flex items-center"
-              variant="outline"
+              className="flex items-center gap-2 bg-gradient-to-r from-brand-purple to-brand-gold text-white hover:opacity-90"
             >
               Next
-              <ChevronRight className="h-4 w-4 ml-2" />
+              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </GradientCard>
     </div>
   );
 };

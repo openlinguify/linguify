@@ -16,11 +16,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
 
+
 from .models import Unit, Lesson, ContentLesson, VocabularyList
 from .serializers import UnitSerializer, LessonSerializer, ContentLessonSerializer, VocabularyListSerializer, ContentLessonDetailSerializer
 from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
 import random
+import django_filters
 
 # par exemple, pour limiter le nombre de unités d'apprentissage retournées par page à 15
 # et pour permettre à l'utilisateur de spécifier le nombre d'unités d'apprentissage à afficher par page
@@ -88,10 +90,15 @@ class ContentLessonViewSet(viewsets.ModelViewSet):
         return queryset.order_by('order')
     
 
+class VocabularyListFilter(django_filters.FilterSet):
+    content_lesson = django_filters.NumberFilter(field_name='content_lesson')
+
+    class Meta:
+        model = VocabularyList
+        fields = ['content_lesson']
 
 
 
-    
 class VocabularyListAPIView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
