@@ -1,6 +1,6 @@
 # course/serializers.py
 from rest_framework import serializers, generics
-from .models import Unit, Lesson, ContentLesson, VocabularyList, Grammar, MultipleChoiceQuestion, Numbers
+from .models import Unit, Lesson, ContentLesson, VocabularyList, Grammar, MultipleChoiceQuestion, Numbers, TheoryContent
 
 class UnitSerializer(serializers.ModelSerializer):
     # Titre dynamique basé sur la langue cible
@@ -74,7 +74,6 @@ class ContentLessonSerializer(serializers.ModelSerializer):
         representation['instruction_en'] = instance.instruction_en
         return representation
 
-
 class VocabularyListSerializer(serializers.ModelSerializer):
     word = serializers.SerializerMethodField()
     example_sentence = serializers.SerializerMethodField()
@@ -142,6 +141,12 @@ class VocabularyListSerializer(serializers.ModelSerializer):
         target_language = self.context.get('target_language', 'en')
         return obj.get_antonymous(target_language)
 
+class TheoryContentSerializer(serializers.ModelSerializer):
+    content_lesson = ContentLessonSerializer(read_only=True)
+
+    class Meta:
+        model = TheoryContent
+        fields = '__all__'
 
 class ContentLessonDetailSerializer(ContentLessonSerializer):
     vocabulary_lists = VocabularyListSerializer(many=True, read_only=True)
