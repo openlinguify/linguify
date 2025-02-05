@@ -1,6 +1,6 @@
 # course/serializers.py
 from rest_framework import serializers, generics
-from .models import Unit, Lesson, ContentLesson, VocabularyList, Grammar, MultipleChoiceQuestion
+from .models import Unit, Lesson, ContentLesson, VocabularyList, Grammar, MultipleChoiceQuestion, Numbers
 
 class UnitSerializer(serializers.ModelSerializer):
     # Titre dynamique basé sur la langue cible
@@ -73,9 +73,6 @@ class ContentLessonSerializer(serializers.ModelSerializer):
         representation['title_en'] = instance.title_en
         representation['instruction_en'] = instance.instruction_en
         return representation
-
-
-
 
 
 class VocabularyListSerializer(serializers.ModelSerializer):
@@ -240,7 +237,25 @@ class MultipleChoiceQuestionSerializer(serializers.ModelSerializer):
         }
 
 
+class NumbersSerializer(serializers.ModelSerializer):
+    number = serializers.SerializerMethodField()
 
+    class Meta:
+        model = Numbers
+        fields = ['id', 'content_lesson', 'number', 'number_en', 'number_fr', 'number_es', 'number_nl', 'is_reviewed']
+
+    def get_number(self, obj):
+        target_language = self.context.get('target_language', 'en')
+        return getattr(obj, f'number_{target_language}', obj.number_en)
+    
+    def get_is_reviewed(self, obj):
+        # user = self.context.get('request').user
+        # if user and user.is_authenticated:
+        return obj.is_reviewed
+        # return False
+    
+
+    
 
 
 
