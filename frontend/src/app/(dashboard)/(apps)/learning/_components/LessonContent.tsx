@@ -7,13 +7,17 @@ import { AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VocabularyLesson from "./VocabularyLesson"; 
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
-import NumberComponent from "./Numbers"; 
+import NumberComponent from "./Numbers";
+import NumbersGame from "./NumbersGame";
 
 // Content type mapping for consistent handling
+// 🟡 rejouter le nouveau contenu ci-dessous
+
 const CONTENT_TYPES = {
   VOCABULARY: 'vocabulary',
   MULTIPLE_CHOICE: 'multiple choice',
   NUMBERS: 'numbers',
+  NUMBERS_GAME: 'numbers',
 } as const;
 
 interface ContentLesson {
@@ -159,6 +163,13 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
         {selectedContent.type === CONTENT_TYPES.NUMBERS && (
           <NumberComponent {...commonProps} />
         )}
+
+        {selectedContent.type === CONTENT_TYPES.NUMBERS_GAME && (
+          <NumbersGame {...commonProps} />
+
+        // Ajouter le prochain module ici 🟡
+
+        )}
       </div>
     );
   }
@@ -190,7 +201,8 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
               className={`p-6 space-y-4 transition-all duration-200 ${
                 content.content_type === CONTENT_TYPES.VOCABULARY ||
                 content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE ||
-                content.content_type === CONTENT_TYPES.NUMBERS
+                content.content_type === CONTENT_TYPES.NUMBERS ||
+                content.content_type === CONTENT_TYPES.NUMBERS_GAME
                   ? 'hover:shadow-lg hover:border-blue-400 cursor-pointer' 
                   : ''
               }`}
@@ -198,7 +210,8 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
                 if (
                   content.content_type === CONTENT_TYPES.VOCABULARY ||
                   content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE ||
-                  content.content_type === CONTENT_TYPES.NUMBERS
+                  content.content_type === CONTENT_TYPES.NUMBERS ||
+                  content.content_type === CONTENT_TYPES.NUMBERS_GAME
                 ) {
                   handleContentClick(content.content_type, content.id);
                 }
