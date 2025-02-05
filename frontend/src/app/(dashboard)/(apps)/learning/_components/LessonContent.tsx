@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import TheoryContent from "./TheoryContent";
 import VocabularyLesson from "./VocabularyLesson"; 
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
 import NumberComponent from "./Numbers";
@@ -14,6 +15,7 @@ import NumbersGame from "./NumbersGame";
 // 🟡 rejouter le nouveau contenu ci-dessous
 
 const CONTENT_TYPES = {
+  THEORY: 'theory',
   VOCABULARY: 'vocabulary',
   MULTIPLE_CHOICE: 'multiple choice',
   NUMBERS: 'numbers',
@@ -166,10 +168,13 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
 
         {selectedContent.type === CONTENT_TYPES.NUMBERS_GAME && (
           <NumbersGame {...commonProps} />
-
-        // Ajouter le prochain module ici 🟡
-
         )}
+
+        {selectedContent.type === CONTENT_TYPES.THEORY && (
+          <TheoryContent {...commonProps} />
+        )}
+
+        {/* // Ajouter le prochain module ici 🟡 */}
       </div>
     );
   }
@@ -202,7 +207,8 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
                 content.content_type === CONTENT_TYPES.VOCABULARY ||
                 content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE ||
                 content.content_type === CONTENT_TYPES.NUMBERS ||
-                content.content_type === CONTENT_TYPES.NUMBERS_GAME
+                content.content_type === CONTENT_TYPES.NUMBERS_GAME || 
+                content.content_type === CONTENT_TYPES.THEORY
                   ? 'hover:shadow-lg hover:border-blue-400 cursor-pointer' 
                   : ''
               }`}
@@ -211,7 +217,8 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
                   content.content_type === CONTENT_TYPES.VOCABULARY ||
                   content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE ||
                   content.content_type === CONTENT_TYPES.NUMBERS ||
-                  content.content_type === CONTENT_TYPES.NUMBERS_GAME
+                  content.content_type === CONTENT_TYPES.NUMBERS_GAME ||
+                  content.content_type === CONTENT_TYPES.THEORY
                 ) {
                   handleContentClick(content.content_type, content.id);
                 }
