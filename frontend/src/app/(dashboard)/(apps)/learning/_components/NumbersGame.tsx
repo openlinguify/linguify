@@ -1,11 +1,11 @@
+// src/app/(dashboard)/(apps)/learning/_components/Numbers/NumbersGame.tsx
 'use client';
 
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Volume2, Trophy, RefreshCw } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { Volume2, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Number {

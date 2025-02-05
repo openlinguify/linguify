@@ -1,3 +1,4 @@
+// src/app/(dashboard)/(apps)/learning/_components/Numbers/Numbers.tsx
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -25,12 +26,12 @@ interface Number {
     is_reviewed: boolean;
 }
 
-interface NumberProps {
+interface NumbersLessonProps {
     lessonId: string;
     language?: 'en' | 'fr' | 'es' | 'nl';
 }
 
-const NumberComponent = ({ lessonId, language = 'en' }: NumberProps) => {
+const NumberComponent = ({ lessonId, language = 'en' }: NumbersLessonProps) => {
     const [numbers, setNumbers] = useState<Number[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -128,7 +129,7 @@ const NumberComponent = ({ lessonId, language = 'en' }: NumberProps) => {
         if (currentIndex === numbers.length - 1) {  // If we're on the last number
             console.log('Reached last number, playing sound...');
             const audio = new Audio('/success1.mp3');
-            audio.volume = 0.3;
+            audio.volume = 0.2;
             audio.play().catch(err => {
                 console.error('Error playing sound:', err);
             });
@@ -148,7 +149,7 @@ const NumberComponent = ({ lessonId, language = 'en' }: NumberProps) => {
         if (isLastNumber && allReviewed) {
             console.log('Attempting to play sound...');
             const audio = new Audio('C:/Users/louis/WebstormProjects/linguify-1/frontend/public/success.mp3');
-            audio.volume = 0.3;
+            audio.volume = 0.2;
             audio.play().catch(err => {
                 console.debug('Audio playback failed:', err);
             });
