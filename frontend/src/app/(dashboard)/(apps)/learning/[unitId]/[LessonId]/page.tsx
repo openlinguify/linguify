@@ -3,17 +3,13 @@ import LessonContent from '../../_components/LessonContent';
 import { notFound } from 'next/navigation';
 
 interface PageProps {
-  params: Promise<{
-    unitId: string;
-    lessonId: string;
-  }>;
+  params: Promise<{ unitId: string; lessonId: string }>;
 }
 
 export default async function LessonPage({ params }: PageProps) {
-  // Destructure après le await - c'est la clé !
-  const { unitId, lessonId } = await params;
+  const resolvedParams = await params; // On attend la résolution de la promesse
+  const { unitId, lessonId } = resolvedParams;
 
-  // Validation avec les valeurs déjà "awaited"
   if (!unitId || !lessonId || isNaN(Number(unitId)) || isNaN(Number(lessonId))) {
     return notFound();
   }
@@ -26,7 +22,7 @@ export default async function LessonPage({ params }: PageProps) {
         </div>
       }
     >
-      <LessonContent unitId={unitId} lessonId={lessonId} />
+      <LessonContent lessonId={lessonId} />
     </Suspense>
   );
 }

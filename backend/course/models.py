@@ -140,6 +140,7 @@ class ContentLesson(models.Model):
         ('Vocabulary', 'Vocabulary'),
         ('Grammar', 'Grammar'),
         ('Multiple choice', 'Multiple choice'),
+        ('Numbers', 'Numbers'),
         ('Reordering', 'Reordering'),
         ('Matching', 'Matching'),
         ('Question and answer', 'Question and answer'),
@@ -331,7 +332,18 @@ class MultipleChoiceQuestion(models.Model):
 
     def __str__(self):
         return f"{self.content_lesson} - {self.question_en}"
-    
+
+class Numbers(models.Model):
+    content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='numbers', default=1)
+    number = models.CharField(max_length=255, blank=False, null=False)
+    number_en = models.CharField(max_length=255, blank=False, null=False)
+    number_fr = models.CharField(max_length=255, blank=False, null=False)
+    number_es = models.CharField(max_length=255, blank=False, null=False)
+    number_nl = models.CharField(max_length=255, blank=False, null=False)
+    is_reviewed = models.BooleanField(default=False, blank=False, null=False)
+
+    def __str__(self):
+        return f"{self.content_lesson} - {self.content_lesson.title_en} - {self.number} - {self.number_en} - {self.is_reviewed}"
     
 class ExerciseVocabularyMultipleChoice(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)

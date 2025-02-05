@@ -17,8 +17,8 @@ from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
 
 
-from .models import Unit, Lesson, ContentLesson, VocabularyList, MultipleChoiceQuestion
-from .serializers import UnitSerializer, LessonSerializer, ContentLessonSerializer, VocabularyListSerializer, ContentLessonDetailSerializer, MultipleChoiceQuestionSerializer
+from .models import Unit, Lesson, ContentLesson, VocabularyList, MultipleChoiceQuestion, Numbers
+from .serializers import UnitSerializer, LessonSerializer, ContentLessonSerializer, VocabularyListSerializer, ContentLessonDetailSerializer, MultipleChoiceQuestionSerializer, NumbersSerializer
 from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
 import random
@@ -145,6 +145,40 @@ class VocabularyListAPIView(APIView):
         
         return paginator.get_paginated_response(serializer.data)
     
+class NumbersViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    serializer_class = NumbersSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['content_lesson']
+
+    def get_queryset(self):
+        return Numbers.objects.all()
+    
+    def get(self, request):
+        content_lesson = request.query_params.get('content_lesson')
+        target_language = request.query_params.get('target_language', 'en')
+
+        queryset = self.get_queryset()
+        if content_lesson:
+            queryset = queryset.filter(content_lesson=content_lesson)
+
+        serializer = self.serializer_class(
+            queryset,
+            many=True,
+            context={'target_language': target_language, 'request': request}
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def toggle_review(self, request, pk=None):
+        number = self.get_object()
+        number.is_reviewed = not number.is_reviewed
+        number.save()
+        return Response({'message': 'Number reviewed'}, status=status.HTTP_200_OK)
+    
+
 
 class MultipleChoiceQuestionAPIView(APIView):
     permission_classes = [AllowAny]
