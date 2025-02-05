@@ -7,11 +7,13 @@ import { AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VocabularyLesson from "./VocabularyLesson"; 
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
+import NumberComponent from "./Numbers"; 
 
 // Content type mapping for consistent handling
 const CONTENT_TYPES = {
   VOCABULARY: 'vocabulary',
   MULTIPLE_CHOICE: 'multiple choice',
+  NUMBERS: 'numbers',
 } as const;
 
 interface ContentLesson {
@@ -145,13 +147,17 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
             Back to Lesson Content
           </Button>
         </div>
-        
+
         {selectedContent.type === CONTENT_TYPES.VOCABULARY && (
           <VocabularyLesson {...commonProps} />
         )}
         
         {selectedContent.type === CONTENT_TYPES.MULTIPLE_CHOICE && (
           <MultipleChoiceQuestion {...commonProps} />
+        )}
+
+        {selectedContent.type === CONTENT_TYPES.NUMBERS && (
+          <NumberComponent {...commonProps} />
         )}
       </div>
     );
@@ -183,14 +189,16 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
               key={content.id} 
               className={`p-6 space-y-4 transition-all duration-200 ${
                 content.content_type === CONTENT_TYPES.VOCABULARY ||
-                content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE
+                content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE ||
+                content.content_type === CONTENT_TYPES.NUMBERS
                   ? 'hover:shadow-lg hover:border-blue-400 cursor-pointer' 
                   : ''
               }`}
               onClick={() => {
                 if (
                   content.content_type === CONTENT_TYPES.VOCABULARY ||
-                  content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE
+                  content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE ||
+                  content.content_type === CONTENT_TYPES.NUMBERS
                 ) {
                   handleContentClick(content.content_type, content.id);
                 }
