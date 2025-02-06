@@ -154,6 +154,10 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
           </Button>
         </div>
 
+        {selectedContent.type === CONTENT_TYPES.THEORY && (
+          <TheoryContent {...commonProps} />
+        )}
+
         {selectedContent.type === CONTENT_TYPES.VOCABULARY && (
           <VocabularyLesson {...commonProps} />
         )}
@@ -170,9 +174,7 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
           <NumbersGame {...commonProps} />
         )}
 
-        {selectedContent.type === CONTENT_TYPES.THEORY && (
-          <TheoryContent {...commonProps} />
-        )}
+
 
         {/* // Ajouter le prochain module ici 🟡 */}
       </div>
@@ -204,21 +206,23 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
             <Card 
               key={content.id} 
               className={`p-6 space-y-4 transition-all duration-200 ${
+                content.content_type === CONTENT_TYPES.THEORY ||
                 content.content_type === CONTENT_TYPES.VOCABULARY ||
                 content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE ||
                 content.content_type === CONTENT_TYPES.NUMBERS ||
-                content.content_type === CONTENT_TYPES.NUMBERS_GAME || 
-                content.content_type === CONTENT_TYPES.THEORY
+                content.content_type === CONTENT_TYPES.NUMBERS_GAME
+                
                   ? 'hover:shadow-lg hover:border-blue-400 cursor-pointer' 
                   : ''
               }`}
               onClick={() => {
                 if (
+                  content.content_type === CONTENT_TYPES.THEORY ||
                   content.content_type === CONTENT_TYPES.VOCABULARY ||
                   content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE ||
                   content.content_type === CONTENT_TYPES.NUMBERS ||
-                  content.content_type === CONTENT_TYPES.NUMBERS_GAME ||
-                  content.content_type === CONTENT_TYPES.THEORY
+                  content.content_type === CONTENT_TYPES.NUMBERS_GAME
+                  
                 ) {
                   handleContentClick(content.content_type, content.id);
                 }
