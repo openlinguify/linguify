@@ -13,35 +13,41 @@ export default function DashboardLayout({
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
 
   return (
-    <div className="h-full relative">
-      {/* Mobile Sidebar Overlay */}
-      {isMobileSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 dark:bg-black/40 z-40 md:hidden backdrop-blur-sm"
-          onClick={() => setIsMobileSidebarOpen(false)}
-        />
-      )}
+    <div className="min-h-screen flex flex-col">
+      {/* Header - Full width at the top */}
+      <Header />
 
-      {/* Sidebar */}
-      <aside
-        className={`
-            fixed inset-y-0 z-50 
-            flex h-full w-56 flex-col 
-            bg-white dark:bg-[#0f172a] // Couleur spécifique pour matcher votre design
+      {/* Main container - below header */}
+      <div className="flex-1 flex">
+        {/* Mobile Sidebar Overlay */}
+        {isMobileSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/20 dark:bg-black/40 z-40 md:hidden backdrop-blur-sm"
+            onClick={() => setIsMobileSidebarOpen(false)}
+          />
+        )}
+
+        {/* Fixed Sidebar */}
+        <aside
+          className={`
+            fixed top-14 bottom-0 w-56
+            bg-white dark:bg-[#0f172a]
             border-r border-gray-200 dark:border-gray-800
             transition-all duration-300 ease-in-out
-            md:translate-x-0 md:flex
+            md:translate-x-0 
             ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}
           `}
-      >
-        <Sidebar />
-      </aside>
+        >
+          <div className="h-full overflow-y-auto">
+            <Sidebar />
+          </div>
+        </aside>
 
-      {/* Main Content */}
-      <div className="flex flex-col md:pl-56">
-        <Header />
-        <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-[#0f172a] min-h-screen">
-          <div className="container mx-auto p-6">{children}</div>
+        {/* Main Content - with left margin to account for sidebar */}
+        <main className="flex-1 ml-0 md:ml-56 bg-gray-50 dark:bg-[#0f172a] min-h-[calc(100vh-56px)]">
+          <div className="container mx-auto p-6">
+            {children}
+          </div>
         </main>
       </div>
     </div>

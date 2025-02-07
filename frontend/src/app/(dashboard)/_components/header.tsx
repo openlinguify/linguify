@@ -1,5 +1,5 @@
 // src/app/(dashboard)/_components/header.tsx
-'use client';
+"use client";
 
 import React from "react";
 import Link from "next/link";
@@ -23,6 +23,7 @@ import {
   LogOut,
   Menu,
   ChevronDown,
+  GlobeIcon,
 } from "lucide-react";
 import {
   Select,
@@ -32,10 +33,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
-
 
 const Header: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -44,7 +43,6 @@ const Header: React.FC = () => {
   const { theme, setTheme } = useTheme();
 
   const handleLanguageChange = (value: string) => {
-    // Here you would integrate with your i18n system
     toast({
       title: "Language Changed",
       description: `Language set to ${value.toUpperCase()}`,
@@ -77,13 +75,22 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:bg-gray-900/95">
-      <div className="container flex h-16 items-center justify-between">
-        {/* Logo and Main Navigation */}
-        <div className="flex items-center gap-6">
+    <header className="sticky top-0 z-50 w-full h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:bg-gray-900/95">
+      <div className="flex h-14 items-center justify-between px-6">
+        {/* Logo Section */}
+        <div className="flex items-center gap-2">
+          <Link
+            href="/"
+            className="flex items-center gap-2 hover:opacity-90 transition-all"
+          >
+            <GlobeIcon className="h-6 w-6 text-brand-purple" />
+            <span className="text-xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
+              Linguify
+            </span>
+          </Link>
 
-
-          <nav className="hidden md:flex gap-6">
+          {/* Navigation */}
+          <nav className="hidden md:flex gap-6 ml-10">
             <NavItem href="/learning" icon={BookOpen} label="Learn" />
             <NavItem href="/progress" icon={Trophy} label="Progress" />
           </nav>
@@ -91,7 +98,7 @@ const Header: React.FC = () => {
 
         {/* Right Side Actions */}
         <div className="flex items-center gap-4">
-          {/* Theme Toggle Button */}
+          {/* Theme Toggle */}
           <Button
             variant="ghost"
             size="icon"
@@ -105,8 +112,9 @@ const Header: React.FC = () => {
             )}
           </Button>
 
+          {/* Language Selector */}
           <Select onValueChange={handleLanguageChange} defaultValue="en">
-            <SelectTrigger className="w-32 border border-gray-300 dark:border-gray-700 rounded-lg">
+            <SelectTrigger className="w-32">
               <SelectValue placeholder="Language" />
             </SelectTrigger>
             <SelectContent>
@@ -119,22 +127,21 @@ const Header: React.FC = () => {
 
           {isAuthenticated ? (
             <>
-              <Button 
-                variant="ghost" 
+              {/* Notifications */}
+              <Button
+                variant="ghost"
                 size="icon"
                 onClick={handleNotificationClick}
-                className="relative text-gray-600 dark:text-gray-300"
+                className="relative"
               >
-                <Bell className="h-5 w-5 hover:text-sky-600 dark:hover:text-sky-400" />
+                <Bell className="h-5 w-5" />
                 <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full" />
               </Button>
 
+              {/* User Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost"
-                    className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/20"
-                  >
+                  <Button variant="ghost" className="flex items-center gap-2">
                     <User className="h-4 w-4" />
                     {user?.name || 'Profile'}
                     <ChevronDown className="h-4 w-4" />
@@ -152,7 +159,7 @@ const Header: React.FC = () => {
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
+                  <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
                   </DropdownMenuItem>
@@ -161,15 +168,14 @@ const Header: React.FC = () => {
             </>
           ) : (
             <div className="flex items-center gap-2">
-              <Button
+              <Button 
                 variant="ghost"
                 onClick={() => router.push('/login')}
-                className="dark:text-gray-300"
               >
                 Sign In
               </Button>
               <Button
-                className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white shadow-sm hover:shadow-md transition-all duration-200"
+                className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
                 onClick={() => router.push('/register')}
               >
                 Get Started
@@ -177,7 +183,8 @@ const Header: React.FC = () => {
             </div>
           )}
 
-          <Button variant="ghost" size="icon" className="md:hidden dark:text-gray-300">
+          {/* Mobile Menu Button */}
+          <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-5 w-5" />
           </Button>
         </div>
