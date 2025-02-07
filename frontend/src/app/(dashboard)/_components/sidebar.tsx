@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   BookOpen, // Learning
-  GlobeIcon, // Logo
   LayoutDashboard, // Dashboard
   MessageCircle, // Chat
   Settings, // Settings
@@ -17,6 +16,7 @@ import {
   BookMarked, // Revision
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Grouper les routes pour une meilleure organisation
 const routes = [
@@ -112,20 +112,9 @@ export function Sidebar() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Logo Section */}
-      <div className="p-6 border-b border-border">
-        <Link 
-          href="/" 
-          className="flex items-center gap-2 hover:opacity-90 transition-all"
-        >
-          <GlobeIcon className="h-6 w-6 text-brand-purple" />
-          <span className="text-xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
-            Linguify
-          </span>
-        </Link>
-      </div>
 
       {/* Navigation */}
+      <ScrollArea className="flex-1">
       <div className="flex-1 px-3 py-4 space-y-6 overflow-y-auto">
         {routes.map((group) => (
           <div key={group.label} className="space-y-2">
@@ -157,6 +146,7 @@ export function Sidebar() {
           </div>
         ))}
       </div>
+      </ScrollArea>
 
       {/* User Section - Optional */}
       <div className="p-4 border-t border-border mt-auto">
