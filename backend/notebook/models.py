@@ -51,14 +51,6 @@ class Note(models.Model):
         ('IMAGE', 'Image'),
         ('VIDEO', 'Video')
     ]
-    LANGUAGE_CHOICES = [
-        ('en', 'English'),
-        ('fr', 'French'),
-        ('es', 'Spanish'),
-        ('de', 'German'),
-        ('it', 'Italian'),
-        # Ajoutez d'autres langues selon vos besoins
-    ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notes')
     title = models.CharField(max_length=255)
@@ -97,7 +89,7 @@ class Note(models.Model):
     @property
     def needs_review(self):
         """Détermine si la note doit être révisée basé sur la dernière révision"""
-        if not self.last_reviewed:
+        if not self.last_reviewed_at:
             return True
         
         from django.utils import timezone
@@ -114,7 +106,7 @@ class Note(models.Model):
         }
         
         review_level = min(self.review_count, 5)
-        return timezone.now() > (self.last_reviewed + intervals[review_level])
+        return timezone.now() > (self.last_reviewed_at + intervals[review_level])
     
 class SharedNote(models.Model):
     """Modèle pour le partage de notes entre utilisateurs"""
