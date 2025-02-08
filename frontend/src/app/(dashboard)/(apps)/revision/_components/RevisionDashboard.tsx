@@ -1,20 +1,23 @@
-// src/app/(dashboard)/(apps)/revision/_components/RevisionDashboard.tsx
-'use client';
 import React, { useState, useEffect } from 'react';
 import { 
-  Brain, Book, Clock, Settings,
-  CheckCircle, AlertTriangle, Rotate3D as Rotate,
+  Brain, 
+  Book, 
+  Clock, 
+  Settings,
+  CheckCircle, 
+  AlertTriangle, 
+  Rotate3D as Rotate,
   BarChart2 
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Toaster } from '@/components/ui/toaster';
-import FlashCards from './FlashCards';
 import RevisionSchedule from './RevisionSchedule';
 import VocabularyManager from './VocabularyManager';
 import VocabularyRevision from './VocabularyRevision';
 import VocabularyStats from './VocabularyStats';
+import FlashCards from './FlashCards';
 
 interface DashboardStats {
   totalWords: number;
@@ -43,7 +46,8 @@ interface StatsResponse {
   accuracyByDay: AccuracyDay[];
 }
 
-const RevisionDashboard = () => {
+const RevisionDashboard: React.FC = () => {
+  const [loading, setLoading] = useState<boolean>(true);
   const [stats, setStats] = useState<DashboardStats>({
     totalWords: 0,
     masteredWords: 0,
@@ -51,13 +55,12 @@ const RevisionDashboard = () => {
     streak: 0,
     todayProgress: 0
   });
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardStats();
   }, []);
 
-  const fetchDashboardStats = async () => {
+  const fetchDashboardStats = async (): Promise<void> => {
     try {
       const response = await fetch('/api/v1/revision/vocabulary/stats/?range=today');
       if (!response.ok) throw new Error('Failed to fetch statistics');
@@ -95,13 +98,16 @@ const RevisionDashboard = () => {
       <Toaster />
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex flex-col items-center justify-center space-y-4 text-center pb-4">
-          <h1 className="text-3xl font-bold tracking-tighter bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent sm:text-4xl">
-            Vocabulary Revision
-          </h1>
-          <p className="max-w-[600px] text-gray-600">
-            Review your vocabulary with flashcards and spaced repetition.
-          </p>
+        <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-brand-purple to-brand-gold p-8 text-white">
+        <div className="absolute inset-0 bg-white/5" />
+        <div className="relative flex justify-between items-start">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold">Revision</h1>
+            <p className="text-white/80">
+              Start or continue your language learning journey
+            </p>
+          </div>
+        </div>
         </div>
 
         {/* Quick Stats */}
@@ -212,7 +218,7 @@ const RevisionDashboard = () => {
           </TabsContent>
 
           <TabsContent value="flashcards" className="mt-6 space-y-6">
-            <FlashCards />
+            <FlashCards deckId={1} />
           </TabsContent>
 
           <TabsContent value="schedule" className="mt-6 space-y-6">

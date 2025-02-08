@@ -17,8 +17,25 @@ from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
 
 
-from .models import Unit, Lesson, ContentLesson, VocabularyList, MultipleChoiceQuestion, Numbers
-from .serializers import UnitSerializer, LessonSerializer, ContentLessonSerializer, VocabularyListSerializer, ContentLessonDetailSerializer, MultipleChoiceQuestionSerializer, NumbersSerializer
+from .models import (
+    Unit, 
+    Lesson, 
+    ContentLesson, 
+    TheoryContent,
+    VocabularyList, 
+    MultipleChoiceQuestion, 
+    Numbers
+)
+from .serializers import (
+    UnitSerializer, 
+    LessonSerializer, 
+    ContentLessonSerializer, 
+    VocabularyListSerializer, 
+    ContentLessonDetailSerializer, 
+    MultipleChoiceQuestionSerializer, 
+    NumbersSerializer, 
+    TheoryContentSerializer
+)
 from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
 import random
@@ -89,6 +106,103 @@ class ContentLessonViewSet(viewsets.ModelViewSet):
                 raise ValidationError({"error": "Invalid lesson ID"})
         return queryset.order_by('order')
     
+
+
+
+class TheoryContentViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    queryset = TheoryContent.objects.select_related('content_lesson').all()
+    serializer_class = TheoryContentSerializer
+
+    def get_queryset(self):
+        """
+        Optionally filters the theories by content_lesson
+        """
+        queryset = super().get_queryset()
+        content_lesson_id = self.request.query_params.get('content_lesson', None)
+        
+        if content_lesson_id is not None:
+            queryset = queryset.filter(content_lesson_id=content_lesson_id)
+        return queryset
+
+
+    @action(detail=False, methods=['GET'], url_path='by-lesson/(?P<lesson_id>[^/.]+)')
+    def by_lesson(self, request, lesson_id=None):
+        """
+        Retrieve theory content by lesson ID
+        """
+        try:
+            # Vérifier d'abord si le ContentLesson existe et est de type 'theory'
+            content_lesson = get_object_or_404(
+                ContentLesson, 
+                id=lesson_id,
+                content_type='theory'
+            )
+            
+            # Récupérer la théorie associée
+            theory = get_object_or_404(
+                TheoryContent,
+                content_lesson=content_lesson
+            )
+            
+            serializer = self.get_serializer(theory)
+            return Response(serializer.data)
+        
+        except ContentLesson.DoesNotExist:
+            return Response(
+                {"error": "Theory lesson not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except TheoryContent.DoesNotExist:
+            return Response(
+                {"error": "Theory content not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+    def create(self, request, *args, **kwargs):
+        """
+        Créer un nouveau contenu théorique
+        Vérifie que le content_lesson est de type 'theory'
+        """
+        content_lesson_id = request.data.get('content_lesson')
+        try:
+            content_lesson = ContentLesson.objects.get(
+                id=content_lesson_id,
+                content_type='theory'
+            )
+        except ContentLesson.DoesNotExist:
+            return Response(
+                {"error": "Invalid content lesson or not a theory type"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return super().create(request, *args, **kwargs)
+
+
+    def update(self, request, *args, **kwargs):
+        """
+        Mettre à jour un contenu théorique existant
+        Vérifie que le content_lesson est de type 'theory' si modifié
+        """
+        content_lesson_id = request.data.get('content_lesson')
+        if content_lesson_id:
+            try:
+                content_lesson = ContentLesson.objects.get(
+                    id=content_lesson_id,
+                    content_type='theory'
+                )
+            except ContentLesson.DoesNotExist:
+                return Response(
+                    {"error": "Invalid content lesson or not a theory type"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        return super().update(request, *args, **kwargs)
+    
+
+
 
 class VocabularyListFilter(django_filters.FilterSet):
     content_lesson = django_filters.NumberFilter(field_name='content_lesson')
