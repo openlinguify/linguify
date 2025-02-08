@@ -98,8 +98,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:4040",
-    "http://127.0.0.1:4040",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 
 SECURE_SSL_REDIRECT = not DEBUG  # Redirection SSL en production

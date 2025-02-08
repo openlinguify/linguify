@@ -1,4 +1,3 @@
-// src/app/layout.tsx
 import type { Metadata } from "next";
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { AuthProvider } from "@/providers/AuthProvider";
@@ -7,8 +6,21 @@ import "@/styles/globals.css";
 import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
-  title: "Linguify - Learn Languages Easily",
+  title: "Linguify",
   description: "Language learning platform for everyone.",
+  icons: {
+    icon: [
+      {
+        url: "/logo.png",
+        sizes: "16x16",
+      },
+      {
+        url: "/icon.png",
+        type: "image/png",
+        sizes: "192x192",
+      }
+    ]
+  }
 };
 
 export default function RootLayout({

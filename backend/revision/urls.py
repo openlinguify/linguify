@@ -5,8 +5,11 @@ from .views import FlashcardDeckViewSet, FlashcardViewSet, RevisionSessionViewSe
 app_name = 'revision'
 
 router = DefaultRouter()
+# View for the Flashcard App
 router.register(r'decks', FlashcardDeckViewSet, basename='deck')
 router.register(r'flashcards', FlashcardViewSet, basename='flashcard')
+
+
 router.register(r'revision-sessions', RevisionSessionViewSet, basename='revision-session')
 router.register(r'vocabulary', VocabularyWordViewSet, basename='vocabulary-word')
 router.register(r'vocabulary-lists', VocabularyListViewSet, basename='vocabulary-list')
