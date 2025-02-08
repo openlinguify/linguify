@@ -1,100 +1,68 @@
-// frontend/src/services/notebookAPI.ts
-import api from './api';
-
-interface Tag {
-  id: number;
-  name: string;
-}
-
-interface NoteCategory {
-  id: number;
-  name: string;
-  description?: string;
-  parent?: number;
-}
+// src/services/notebookAPI.ts
+import axios from 'axios';
+import { Note, Category, Tag } from '@/types/notebook';
 
 
-export interface Note {
-  id: number;
-  user: number;
-  title: string;
-  content: string;
-  category?: NoteCategory;
-  tags?: Tag[];
-  note_type: 'NOTE' | 'TASK' | 'REMINDER' | 'MEETING' | 'IDEA' | 'PROJECT' | 
-  'VOCABULARY' | 'GRAMMAR' | 'EXPRESSION' | 'CULTURE' | 'EVENT' | 
-  'TEXT' | 'IMAGE' | 'VIDEO';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
-  created_at: string;
-  updated_at: string;
-  last_reviewed_at: string;
-  review_count: number;
-  is_pinned: boolean;
-  is_archived: boolean;
-  priority: 'LOW' | 'MEDIUM' | 'HIGH';
-  need_review: boolean;
-}
-
-export const notebookAPI = {
-  getNotes: async (filter?: string) => {
-    try {
-      const params = filter && filter !== 'all' ? { filter } : {};
-      const response = await api.get<{ results: Note[] }>('/api/v1/notebook/notes/', { params });
-      return response.data.results || response.data || [];
-    } catch (error) {
-      console.error('Failed to fetch notes:', error);
-      throw error;
-    }
+export const notesApi = {
+  async getNotes(): Promise<Note[]> {
+    const { data } = await axios.get<Note[]>(`${API_URL}/notebook/notes/`);
+    return data;
   },
 
-  createNote: async (noteData: Partial<Note>) => {
-    try {
-      const response = await api.post<Note>('/api/v1/notebook/notes/', noteData);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to create note:', error);
-      throw error;
-    }
+  async getNote(id: number): Promise<Note> {
+    const { data } = await axios.get<Note>(`${API_URL}/notebook/notes/${id}/`);
+    return data;
   },
 
-  updateNote: async (id: number, noteData: Partial<Note>) => {
-    try {
-      const response = await api.patch<Note>(`/api/v1/notebook/notes/${id}/`, noteData);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to update note:', error);
-      throw error;
-    }
+  async createNote(noteData: Partial<Note>): Promise<Note> {
+    const { data } = await axios.post<Note>(`${API_URL}/notebook/notes/`, noteData);
+    return data;
   },
 
-  deleteNote: async (id: number) => {
-    try {
-      await api.delete(`/api/v1/notebook/notes/${id}/`);
-    } catch (error) {
-      console.error('Failed to delete note:', error);
-      throw error;
-    }
+  async updateNote(noteData: Partial<Note> & { id: number }): Promise<Note> {
+    const { id, ...rest } = noteData;
+    const { data } = await axios.patch<Note>(`${API_URL}/notebook/notes/${id}/`, rest);
+    return data;
   },
 
-  searchNotes: async (query: string) => {
-    try {
-      const response = await api.get<{ results: Note[] }>('/api/v1/notebook/notes/', {
-        params: { search: query }
-      });
-      return response.data.results || [];
-    } catch (error) {
-      console.error('Failed to search notes:', error);
-      throw error;
-    }
+  async deleteNote(id: number): Promise<void> {
+    await axios.delete(`${API_URL}/notebook/notes/${id}/`);
   },
 
-  markNoteAsReviewed: async (id: number) => {
-    try {
-      const response = await api.post<Note>(`/api/v1/notebook/notes/${id}/mark_reviewed/`);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to mark note as reviewed:', error);
-      throw error;
-    }
+  async getCategories(): Promise<Category[]> {
+    const { data } = await axios.get<Category[]>(`${API_URL}/notebook/categories/`);
+    return data;
+  },
+
+  async createCategory(categoryData: Partial<Category>): Promise<Category> {
+    const { data } = await axios.post<Category>(`${API_URL}/notebook/categories/`, categoryData);
+    return data;
+  },
+
+  async getTags(): Promise<Tag[]> {
+    const { data } = await axios.get<Tag[]>(`${API_URL}/notebook/tags/`);
+    return data;
+  },
+
+  async createTag(tagData: Partial<Tag>): Promise<Tag> {
+    const { data } = await axios.post<Tag>(`${API_URL}/notebook/tags/`, tagData);
+    return data;
+  },
+
+  async markNoteReviewed(id: number): Promise<Note> {
+    const { data } = await axios.post<Note>(`${API_URL}/notebook/notes/${id}/mark_reviewed/`);
+    return data;
+  },
+
+  async getDueForReview(): Promise<Note[]> {
+    const { data } = await axios.get<Note[]>(`${API_URL}/notebook/notes/due_for_review/`);
+    return data;
+  },
+
+  async getStatistics() {
+    const { data } = await axios.get(`${API_URL}/notebook/notes/statistics/`);
+    return data;
   }
 };

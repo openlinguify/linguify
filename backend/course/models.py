@@ -135,6 +135,13 @@ class Lesson(models.Model):
         return switch.get(target_language, self.description_en)
 
 class ContentLesson(models.Model):
+    '''
+    Content lesson model
+    This is the area where the content of the lesson is stored.
+    While you have created a lesson, you can add content to it.
+    For instance, you can add a theory, vocabulary, grammar, etc. ==> titre= "Vocabulaire, Théorie, Un point de Grammaire, etc."    
+    '''
+
     CONTENT_TYPE = [
         ('Theory', 'Theory'),
         ('Vocabulary', 'Vocabulary'),
@@ -205,6 +212,33 @@ class ContentLesson(models.Model):
         if self.estimated_duration < 1:
             self.estimated_duration = 1
         super().save(*args, **kwargs)
+
+
+class TheoryContent(models.Model):
+    content_lesson = models.OneToOneField(ContentLesson, on_delete=models.CASCADE, related_name='theory_content', default=1)
+    content_en = models.TextField(blank=False, null=False)
+    content_fr = models.TextField(blank=False, null=False)
+    content_es = models.TextField(blank=False, null=False)
+    content_nl = models.TextField(blank=False, null=False)
+    explication_en = models.TextField(blank=False, null=False)
+    explication_fr = models.TextField(blank=False, null=False)
+    explication_es = models.TextField(blank=False, null=False)
+    explication_nl = models.TextField(blank=False, null=False)
+    formula_en = models.TextField(blank=True, null=True)
+    formula_fr = models.TextField(blank=True, null=True)
+    formula_es = models.TextField(blank=True, null=True)
+    formula_nl = models.TextField(blank=True, null=True)
+    exception_en = models.TextField(blank=True, null=True)
+    exception_fr = models.TextField(blank=True, null=True)
+    exception_es = models.TextField(blank=True, null=True)
+    exception_nl = models.TextField(blank=True, null=True)
+    example_en = models.TextField(blank=True, null=True)
+    example_fr = models.TextField(blank=True, null=True)
+    example_es = models.TextField(blank=True, null=True)
+    example_nl = models.TextField(blank=True, null=True)
+    
+    def __str__(self):
+        return f"{self.content_lesson} - {self.content_en}"
 
 class VocabularyList(models.Model):
 
