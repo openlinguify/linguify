@@ -9,33 +9,40 @@ export interface FlashcardDeck {
     created_at: string;
     updated_at: string;
     is_active: boolean;
-    card_count: number;
-    learned_count: number;
-    flashcards: Flashcard[];
-}
-
-export interface Flashcard {
-    id: string;
+    card_count?: number;
+  }
+  
+  export interface Flashcard {
+    id: number;
+    deck_id: number;
     front_text: string;
     back_text: string;
     learned: boolean;
     created_at: string;
-    last_reviewed: string | null;
+    updated_at: string;
+    last_reviewed?: string;
     review_count: number;
-    next_review: string | null;
-}
+    next_review?: string;
+    review_status: {
+      total_reviews: number;
+      is_learned: boolean;
+      days_until_next_review: number;
+      mastery_level: number;
+      due_for_review: boolean;
+    };
+    review_priority: number;
+  }
 
-
-export interface RevisionSession {
+  export interface RevisionSession {
     id: number;
     scheduled_date: string;
-    completed_date: string | null;
-    status: 'PENDING' | 'COMPLETED' | 'MISSED';
-    success_rate: number | null;
-    flashcards: Flashcard[];
-    due_date: string | null;
-}
+    completed_date?: string;
+    success_rate?: number;
+    cards_reviewed: number;
+    due_cards: number;
+  }
 
+  
 export interface VocabularyWord {
     id: number;
     word: string;
