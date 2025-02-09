@@ -9,12 +9,12 @@ export interface FlashcardDeck {
     created_at: string;
     updated_at: string;
     is_active: boolean;
-    card_count?: number;
+    cards?: Flashcard[];
   }
   
   export interface Flashcard {
     id: number;
-    deck_id: number;
+    deck: number;
     front_text: string;
     back_text: string;
     learned: boolean;
@@ -23,14 +23,6 @@ export interface FlashcardDeck {
     last_reviewed?: string;
     review_count: number;
     next_review?: string;
-    review_status: {
-      total_reviews: number;
-      is_learned: boolean;
-      days_until_next_review: number;
-      mastery_level: number;
-      due_for_review: boolean;
-    };
-    review_priority: number;
   }
 
   export interface RevisionSession {

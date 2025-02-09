@@ -5,6 +5,8 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+from django.utils.decorators import method_decorator
 from revision.models import FlashcardDeck, Flashcard
 from revision.serializers import FlashcardDeckSerializer, FlashcardSerializer
 
@@ -12,6 +14,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+@method_decorator(csrf_exempt, name='dispatch')
 class FlashcardDeckViewSet(viewsets.ModelViewSet):
     queryset = FlashcardDeck.objects.all()
     serializer_class = FlashcardDeckSerializer

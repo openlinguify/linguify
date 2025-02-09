@@ -2,6 +2,7 @@
 from django.shortcuts import redirect
 from django.contrib import admin
 from django.urls import path, include
+from . import utils
 
 def redirect_to_admin(request):
     return redirect('admin/')
@@ -9,6 +10,7 @@ def redirect_to_admin(request):
 urlpatterns = [
     path('', redirect_to_admin),
     path('admin/', admin.site.urls),
+    path('csrf/', utils.get_csrf_token, name='get_csrf_token'),
     path('api/', include('rest_framework.urls')),
     path('api/auth/', include('authentication.urls')),
     path('api/v1/course/', include('course.urls', namespace='course')),
