@@ -1,207 +1,143 @@
-// services/revisionAPI.ts
-// services/revisionAPI.ts
-import { Flashcard, FlashcardDeck, RevisionSession, VocabularyWord } from '@/types/revision';
+import { Flashcard, FlashcardDeck } from '@/types/revision';
+import Cookies from 'js-cookie';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-type RequestHeaders = Record<string, string>;
+// Type definitions
+export interface ApiError extends Error {
+  status?: number;
+  data?: any;
+}
 
-const getAuthHeader = async (): Promise<RequestHeaders> => {
-  const token = localStorage.getItem('auth_token');
-  const headers: RequestHeaders = {
-    'Content-Type': 'application/json'
-  };
-  
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  
-  return headers;
+type ApiHeaders = Record<string, string> & {
+  'Content-Type': string;
+  'X-CSRFToken'?: string;
+  'Authorization'?: string;
 };
 
-const api = {
-  get: async <T>(endpoint: string): Promise<T> => {
+class ApiClient {
+  private static async getHeaders(): Promise<ApiHeaders> {
+    const headers: ApiHeaders = {
+      'Content-Type': 'application/json'
+    };
+
     try {
-      const headers = await getAuthHeader();
-      console.log('Making GET request to:', `${API_BASE_URL}${endpoint}`);
-
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        headers,
-        credentials: 'include',
-      });
-
-      console.log('Response status:', response.status);
-      console.log('Response status text:', response.statusText);
-
-      const responseText = await response.text();
-      console.log('Raw response:', responseText);
-
-      if (!response.ok) {
-        let errorData = {};
-        try {
-          if (responseText) {
-            errorData = JSON.parse(responseText);
-          }
-        } catch (e) {
-          console.log('Failed to parse error response as JSON');
-        }
-
-        throw new Error(
-          `Request failed: ${response.status} ${response.statusText}\n` +
-          `Error details: ${JSON.stringify(errorData)}\n` +
-          `Raw response: ${responseText}`
-        );
+      await fetch(`${API_BASE_URL}/csrf/`, { credentials: 'include' });
+      const csrfToken = Cookies.get('csrftoken');
+      if (csrfToken) {
+        headers['X-CSRFToken'] = csrfToken;
       }
-
-      let result;
-      try {
-        result = responseText ? JSON.parse(responseText) : null;
-      } catch (e) {
-        throw new Error(`Failed to parse response as JSON: ${responseText}`);
-      }
-
-      return result;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error('GET request failed:', {
-          url: `${API_BASE_URL}${endpoint}`,
-          error: error.message
-        });
-      }
-      throw error;
+    } catch (error) {
+      console.error('Failed to fetch CSRF token:', error);
     }
-  },
 
-  post: async <T>(endpoint: string, data: any): Promise<T> => {
-    try {
-      const headers = await getAuthHeader();
-      console.log('Making POST request to:', `${API_BASE_URL}${endpoint}`);
-      console.log('With data:', data);
-      console.log('With headers:', headers);
-
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        method: 'POST',
-        headers,
-        credentials: 'include',
-        body: JSON.stringify(data),
-      });
-
-      console.log('Response status:', response.status);
-      console.log('Response status text:', response.statusText);
-
-      const responseText = await response.text();
-      console.log('Raw response:', responseText);
-
-      if (!response.ok) {
-        let errorData = {};
-        try {
-          if (responseText) {
-            errorData = JSON.parse(responseText);
-          }
-        } catch (e) {
-          console.log('Failed to parse error response as JSON');
-        }
-
-        throw new Error(
-          `Request failed: ${response.status} ${response.statusText}\n` +
-          `Error details: ${JSON.stringify(errorData)}\n` +
-          `Raw response: ${responseText}`
-        );
-      }
-
-      let result;
-      try {
-        result = responseText ? JSON.parse(responseText) : null;
-      } catch (e) {
-        throw new Error(`Failed to parse response as JSON: ${responseText}`);
-      }
-
-      return result;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error('POST request failed:', {
-          url: `${API_BASE_URL}${endpoint}`,
-          data,
-          error: error.message
-        });
-      }
-      throw error;
+    const authToken = localStorage.getItem('auth_token');
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;
     }
+
+    return headers;
   }
-};
+
+  private static async request<T>(
+    method: string,
+    endpoint: string,
+    data?: any
+  ): Promise<T> {
+    const headers = await this.getHeaders();
+    const config: RequestInit = {
+      method,
+      headers,
+      credentials: 'include',
+      mode: 'cors',
+    };
+
+    if (data) {
+      config.body = JSON.stringify(data);
+    }
+
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const contentType = response.headers.get('content-type');
+    
+    let responseData;
+    try {
+      responseData = contentType?.includes('application/json')
+        ? await response.json()
+        : await response.text();
+    } catch (parseError) {
+      throw new Error('Failed to parse response');
+    }
+
+    if (!response.ok) {
+      const error = new Error(
+        typeof responseData === 'object'
+          ? responseData?.detail || 'Request failed'
+          : responseData || 'Request failed'
+      ) as ApiError;
+      error.status = response.status;
+      error.data = responseData;
+      throw error;
+    }
+
+    return responseData;
+  }
+
+  static get<T>(endpoint: string): Promise<T> {
+    return this.request<T>('GET', endpoint);
+  }
+
+  static post<T>(endpoint: string, data: any): Promise<T> {
+    return this.request<T>('POST', endpoint, data);
+  }
+
+  static put<T>(endpoint: string, data: any): Promise<T> {
+    return this.request<T>('PUT', endpoint, data);
+  }
+
+  static delete<T>(endpoint: string): Promise<T> {
+    return this.request<T>('DELETE', endpoint);
+  }
+}
 
 export const revisionApi = {
-  // Flashcard Decks
-  async getDecks(): Promise<FlashcardDeck[]> {
-    try {
-      return await api.get('/api/v1/revision/decks/');
-    } catch (error) {
-      console.error('Failed to get decks:', error);
-      throw error;
+  decks: {
+    getAll(): Promise<FlashcardDeck[]> {
+      return ApiClient.get('/api/v1/revision/decks/');
+    },
+
+    create(data: Pick<FlashcardDeck, 'name' | 'description'> & { is_active?: boolean }): Promise<FlashcardDeck> {
+      // Validation côté client
+      if (!data.description || data.description.trim() === '') {
+        data.description = `Deck created on ${new Date().toLocaleDateString()}`;
+      }
+      
+      return ApiClient.post('/api/v1/revision/decks/', {
+        ...data,
+        is_active: data.is_active ?? true
+      });
+    },
+
+    getById(id: number): Promise<FlashcardDeck> {
+      return ApiClient.get(`/api/v1/revision/decks/${id}/`);
     }
   },
 
-  async createDeck(data: Pick<FlashcardDeck, 'name' | 'description'>): Promise<FlashcardDeck> {
-    try {
-      console.log('Creating deck with data:', data);
-      const result = await api.post<FlashcardDeck>('/api/v1/revision/decks/', data);
-      console.log('Deck created successfully:', result);
-      return result;
-    } catch (error) {
-      console.error('Failed to create deck:', error);
-      throw error;
+  flashcards: {
+    getAll(deckId?: number): Promise<Flashcard[]> {
+      const query = deckId ? `?deck=${deckId}` : '';
+      return ApiClient.get(`/api/v1/revision/flashcards/${query}`);
+    },
+
+    create(data: Pick<Flashcard, 'front_text' | 'back_text'> & { deck_id: number }): Promise<Flashcard> {
+      return ApiClient.post('/api/v1/revision/flashcards/', data);
+    },
+
+    markReviewed(id: number, success: boolean): Promise<Flashcard> {
+      return ApiClient.post(`/api/v1/revision/flashcards/${id}/mark_reviewed/`, { success });
+    },
+
+    getDue(limit: number = 10): Promise<Flashcard[]> {
+      return ApiClient.get(`/api/v1/revision/flashcards/due_for_review/?limit=${limit}`);
     }
-  },
-
-  // Flashcards
-  async getFlashcards(deckId?: number): Promise<Flashcard[]> {
-    const endpoint = deckId 
-      ? `/api/v1/revision/flashcards/?deck=${deckId}`
-      : '/api/v1/revision/flashcards/';
-    return api.get(endpoint);
-  },
-
-  async createFlashcard(data: Pick<Flashcard, 'front_text' | 'back_text'> & { deck_id: number }): Promise<Flashcard> {
-    return api.post('/api/v1/revision/flashcards/', data);
-  },
-
-  async markFlashcardReviewed(id: number, success: boolean): Promise<Flashcard> {
-    return api.post(`/api/v1/revision/flashcards/${id}/mark_reviewed/`, { success });
-  },
-
-  async getDueFlashcards(limit: number = 10): Promise<Flashcard[]> {
-    return api.get(`/api/v1/revision/flashcards/due_for_review/?limit=${limit}`);
-  },
-
-  // Revision Sessions
-  async getRevisionSessions(): Promise<RevisionSession[]> {
-    return api.get('/api/v1/revision/revision-sessions/');
-  },
-
-  async createRevisionSession(data: { scheduled_date: string }): Promise<RevisionSession> {
-    return api.post('/api/v1/revision/revision-sessions/', data);
-  },
-
-  async completeRevisionSession(id: number, successRate: number): Promise<RevisionSession> {
-    return api.post(`/api/v1/revision/revision-sessions/${id}/complete_session/`, {
-      success_rate: successRate,
-    });
-  },
-
-  async getRevisionSchedule(daysRange: { before: number; after: number } = { before: 7, after: 30 }): Promise<RevisionSession[]> {
-    return api.get(`/api/v1/revision/revision-sessions/get_schedule/?days_before=${daysRange.before}&days_after=${daysRange.after}`);
-  },
-
-  async markWordReviewed(id: number, success: boolean): Promise<VocabularyWord> {
-    return api.post(`/api/v1/revision/vocabulary/${id}/mark_reviewed/`, { success });
-  },
-
-  // Error handling
-  handleApiError(error: any) {
-    console.error('API Error:', error);
-    if (error.status === 401) {
-      window.location.href = '/login';
-    }
-    throw error;
   }
 };

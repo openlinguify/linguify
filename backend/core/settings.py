@@ -90,7 +90,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://localhost:8000",
+    "http://localhost:3000",
 ]
 
 
@@ -102,9 +102,16 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:3000",
 ]
 
-SECURE_SSL_REDIRECT = not DEBUG  # Redirection SSL en production
-SESSION_COOKIE_SECURE = not DEBUG  # Cookies sécurisés en production
-CSRF_COOKIE_SECURE = not DEBUG # Cookies sécurisés en production
+# En développement
+if DEBUG:
+    CSRF_USE_SESSIONS = False
+    CSRF_COOKIE_HTTPONLY = False
+    CSRF_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_HTTPONLY = True
+
 
 AUTH0_DOMAIN = env('AUTH0_DOMAIN')
 AUTH0_CLIENT_ID = env('AUTH0_CLIENT_ID')
