@@ -10,10 +10,10 @@ from .models import (
 
 @admin.register(FlashcardDeck)
 class FlashcardDeckAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'created_at', 'is_active')
+    list_display = ('name', 'created_at', 'is_active')
     list_filter = ('is_active', 'created_at')
-    search_fields = ('name', 'user__username')
-    date_hierarchy = 'created_at'
+    search_fields = ('name', 'description')
+    date_hierarchy = ('created_at')
 
 @admin.register(Flashcard)
 class FlashcardAdmin(admin.ModelAdmin):

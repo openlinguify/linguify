@@ -1,12 +1,10 @@
 # backend/revision/models/revision_flashcard.py
 from django.db import models
-from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
 
 class FlashcardDeck(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=255)
     description = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
@@ -16,7 +14,7 @@ class FlashcardDeck(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.name} - {self.user.username}"
+        return f"{self.name}"
     
 class Flashcard(models.Model):
     deck = models.ForeignKey(FlashcardDeck, on_delete=models.CASCADE, related_name='flashcards')
@@ -24,6 +22,7 @@ class Flashcard(models.Model):
     back_text = models.TextField()
     learned = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     last_reviewed = models.DateTimeField(null=True, blank=True)
     review_count = models.PositiveIntegerField(default=0)
     next_review = models.DateTimeField(null=True, blank=True)
@@ -32,7 +31,7 @@ class Flashcard(models.Model):
         ordering = ['deck', '-created_at']
 
     def __str__(self):
-        return f"{self.front_text} -> {self.back_text}"
+        return f"{self.front_text} -> {self.back_text} - {self.deck.name}"
     
     def mark_reviewed(self, success=True):
         self.last_reviewed = timezone.now()

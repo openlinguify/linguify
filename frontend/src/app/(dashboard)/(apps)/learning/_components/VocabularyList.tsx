@@ -1,4 +1,4 @@
-// src/app/(dashboard)/(apps)/learning/[unitId]/[lessonId]/page.tsx
+// src/app/(dashboard)/(apps)/learning/_components/VocabularyList.tsx
 "use client";
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
