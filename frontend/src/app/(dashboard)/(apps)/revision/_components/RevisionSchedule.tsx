@@ -11,7 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Clock, Brain, CheckCircle2, AlertCircle, Loader2, Plus } from "lucide-react";
 import { RevisionSession } from "@/types/revision";
 import { revisionApi } from '@/services/revisionAPI';
-import { useAuth } from '@/hooks/useAuth';
+import useAuth from '@/hooks/useAuth';
 
 function formatDueDate(dateString: string): string {
   const date = new Date(dateString);
@@ -33,7 +33,8 @@ function getBadgeVariant(session: RevisionSession): "default" | "secondary" | "d
 export default function RevisionSchedule() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
+  const isAuthenticated = !!user;
 
   // Create new session mutation
   const createSessionMutation = useMutation({
