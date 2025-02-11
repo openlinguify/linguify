@@ -1,6 +1,6 @@
 # course/serializers.py
 from rest_framework import serializers, generics
-from .models import Unit, Lesson, ContentLesson, VocabularyList, Grammar, MultipleChoiceQuestion, Numbers, TheoryContent
+from .models import Unit, Lesson, ContentLesson, VocabularyList, Grammar, MultipleChoiceQuestion, Numbers, TheoryContent, ExerciseGrammarReordering
 
 class UnitSerializer(serializers.ModelSerializer):
     # Titre dynamique basé sur la langue cible
@@ -254,12 +254,16 @@ class NumbersSerializer(serializers.ModelSerializer):
         return getattr(obj, f'number_{target_language}', obj.number_en)
     
     def get_is_reviewed(self, obj):
+        # need to active this code when the feature of authenticated user is implemented
         # user = self.context.get('request').user
         # if user and user.is_authenticated:
         return obj.is_reviewed
         # return False
     
-
+class ExerciseGrammarReorderingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExerciseGrammarReordering
+        fields = ['id', 'content_lesson', 'sentence_en', 'sentence_fr', 'sentence_es', 'sentence_nl', 'explanation', 'hint']
     
 
 

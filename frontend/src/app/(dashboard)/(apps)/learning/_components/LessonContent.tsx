@@ -10,6 +10,8 @@ import VocabularyLesson from "./VocabularyLesson";
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
 import NumberComponent from "./Numbers";
 import NumbersGame from "./NumbersGame";
+import ReorderingContent from "./ReorderingContent";
+import { R } from "node_modules/@tanstack/react-query-devtools/build/modern/ReactQueryDevtools-Cn7cKi7o";
 
 // Content type mapping for consistent handling
 // 🟡 rejouter le nouveau contenu ci-dessous
@@ -20,6 +22,7 @@ const CONTENT_TYPES = {
   MULTIPLE_CHOICE: 'multiple choice',
   NUMBERS: 'numbers',
   NUMBERS_GAME: 'numbers',
+  REORDERING: 'reordering',
 } as const;
 
 interface ContentLesson {
@@ -174,6 +177,10 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
           <NumbersGame {...commonProps} />
         )}
 
+        {selectedContent.type === CONTENT_TYPES.REORDERING && (
+          <ReorderingContent {...commonProps} />
+        )}
+
 
 
         {/* // Ajouter le prochain module ici 🟡 */}
@@ -210,7 +217,11 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
                 content.content_type === CONTENT_TYPES.VOCABULARY ||
                 content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE ||
                 content.content_type === CONTENT_TYPES.NUMBERS ||
-                content.content_type === CONTENT_TYPES.NUMBERS_GAME
+                content.content_type === CONTENT_TYPES.NUMBERS_GAME ||
+                content.content_type === CONTENT_TYPES.REORDERING
+
+
+                // {/* // Ajouter le prochain module ici 🟡 */}
                 
                   ? 'hover:shadow-lg hover:border-blue-400 cursor-pointer' 
                   : ''
@@ -221,7 +232,10 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
                   content.content_type === CONTENT_TYPES.VOCABULARY ||
                   content.content_type === CONTENT_TYPES.MULTIPLE_CHOICE ||
                   content.content_type === CONTENT_TYPES.NUMBERS ||
-                  content.content_type === CONTENT_TYPES.NUMBERS_GAME
+                  content.content_type === CONTENT_TYPES.NUMBERS_GAME ||
+                  content.content_type === CONTENT_TYPES.REORDERING
+
+                  // {/* // Ajouter le prochain module ici 🟡 */}
                   
                 ) {
                   handleContentClick(content.content_type, content.id);
