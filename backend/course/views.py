@@ -9,6 +9,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.exceptions import ValidationError
+from rest_framework.authentication import TokenAuthentication
 
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.decorators import method_decorator
@@ -24,7 +25,8 @@ from .models import (
     TheoryContent,
     VocabularyList, 
     MultipleChoiceQuestion, 
-    Numbers
+    Numbers,
+    ExerciseGrammarReordering,
 )
 from .serializers import (
     UnitSerializer, 
@@ -34,7 +36,8 @@ from .serializers import (
     ContentLessonDetailSerializer, 
     MultipleChoiceQuestionSerializer, 
     NumbersSerializer, 
-    TheoryContentSerializer
+    TheoryContentSerializer,
+    ExerciseGrammarReorderingSerializer,
 )
 from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
@@ -90,7 +93,6 @@ class LessonAPIView(generics.ListAPIView):
                 raise ValidationError({"error": "Invalid unit ID"})
         return Lesson.objects.all().order_by('order')
 
-
 class ContentLessonViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -106,9 +108,6 @@ class ContentLessonViewSet(viewsets.ModelViewSet):
                 raise ValidationError({"error": "Invalid lesson ID"})
         return queryset.order_by('order')
     
-
-
-
 class TheoryContentViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -201,17 +200,12 @@ class TheoryContentViewSet(viewsets.ModelViewSet):
 
         return super().update(request, *args, **kwargs)
     
-
-
-
 class VocabularyListFilter(django_filters.FilterSet):
     content_lesson = django_filters.NumberFilter(field_name='content_lesson')
 
     class Meta:
         model = VocabularyList
         fields = ['content_lesson']
-
-
 
 class VocabularyListAPIView(APIView):
     permission_classes = [AllowAny]
@@ -291,8 +285,6 @@ class NumbersViewSet(viewsets.ModelViewSet):
         number.is_reviewed = not number.is_reviewed
         number.save()
         return Response({'message': 'Number reviewed'}, status=status.HTTP_200_OK)
-    
-
 
 class MultipleChoiceQuestionAPIView(APIView):
     permission_classes = [AllowAny]
@@ -320,6 +312,62 @@ class MultipleChoiceQuestionAPIView(APIView):
         )
 
         return Response(serializer.data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class ExerciseGrammarReorderingViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    serializer_class = ExerciseGrammarReorderingSerializer
+    queryset = ExerciseGrammarReordering.objects.all()
+
+    @action(detail=False, methods=['GET'], url_path='random', url_name='random')
+    def random(self, request):
+        content_lesson = request.query_params.get('content_lesson')
+        queryset = self.get_queryset()
+        
+        if content_lesson:
+            queryset = queryset.filter(content_lesson=content_lesson)
+        
+        exercise = queryset.order_by('?').first()
+
+        if not exercise:
+            return Response(
+                {
+                    "error": f"No exercise available for content lesson {content_lesson}"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        serializer = self.get_serializer(exercise)
+        return Response(serializer.data)
+
+    def list(self, request, *args, **kwargs):
+        content_lesson = request.query_params.get('content_lesson')
+        queryset = self.get_queryset()
+        
+        if content_lesson:
+            queryset = queryset.filter(content_lesson=content_lesson)
+            
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+
+
+
 
 
 
