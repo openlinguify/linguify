@@ -8,7 +8,8 @@ from .models import (
     VocabularyList, 
     ExerciseVocabularyMultipleChoice, 
     MultipleChoiceQuestion, 
-    Numbers
+    Numbers,
+    ExerciseGrammarReordering
 )
 
 admin.site.register(Unit)
@@ -17,5 +18,6 @@ admin.site.register(ContentLesson)
 admin.site.register(TheoryContent)
 admin.site.register(VocabularyList)
 admin.site.register(Numbers)
+admin.site.register(ExerciseGrammarReordering)
 admin.site.register(MultipleChoiceQuestion)
 admin.site.register(ExerciseVocabularyMultipleChoice)
