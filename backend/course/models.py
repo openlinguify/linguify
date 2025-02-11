@@ -419,33 +419,22 @@ class ExerciseVocabularyFillBlank(models.Model):
 
     def __str__(self):
         return f"{self.lesson.title_en} - {self.sentence_fill_blank_en}"
+
+
 class ExerciseGrammarReordering(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='reordering', default=1)
     sentence_en = models.TextField(blank=False, null=False, help_text="Sentence to reorder")
     sentence_fr = models.TextField(blank=False, null=False, help_text="Sentence to reorder")
     sentence_es = models.TextField(blank=False, null=False, help_text="Sentence to reorder")
     sentence_nl = models.TextField(blank=False, null=False, help_text="Sentence to reorder")
-    correct_order = models.JSONField(blank=False, null=False, help_text="List of words in the correct order")
     explanation = models.TextField(blank=True, null=True, help_text="Explanation for the correct order")
     hint = models.TextField(blank=True, null=True, help_text="Hint to help the user")
 
     def __str__(self):
-        return f"{self.lesson.title_en} - {self.sentence_en}"
-    
-    @classmethod
-    def create_from_vocabulary(cls, lesson, vocab):
-        """
-        Creates reordering exercises using vocabulary example sentences.
-        """
-        words = vocab.example_sentence_en.split()
-        return cls(
-            lesson=lesson,
-            sentence=vocab.example_sentence_en,
-            correct_order=words,
-            explanation="Reorder the words to match the correct sentence structure.",
-            hint="Start with the subject and follow the sentence structure rules.",
-            difficulty_level='medium'
-        ) 
+        return f"{self.content_lesson} - {self.sentence_en}"
+
+
+
 class GrammarRule(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='grammar_rules', default=1)
 
