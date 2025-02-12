@@ -317,3 +317,9 @@ pip install djangorestframework
 
 # Freeze the current state of the installed packages and save it to requirements.txt
 pip freeze > requirements.txt
+
+# To know the number of lines of code in the project
+
+find backend -type f \
+  \( -path "*/migrations/*" -o -path "backend/venv/*" -o -path "backend/.env/*" -o -path "backend/myenv/*" -o -path "backend/docs/*" \) -prune \
+  -o -name "*.py" -exec wc -l {} + | awk '{sum += $1} END {print sum}'
