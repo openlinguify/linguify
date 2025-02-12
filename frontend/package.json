@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev:all": "concurrently \"cd ../backend && python manage.py runserver\" \"npm run dev\""
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
@@ -86,6 +87,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/xlsx": "^0.0.35",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.2",
     "eslint": "^9",
     "eslint-config-next": "15.1.2",
     "postcss": "^8.5.1",
