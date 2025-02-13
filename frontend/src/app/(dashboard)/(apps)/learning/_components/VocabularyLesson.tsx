@@ -69,11 +69,11 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
   // Effect to handle sound when reaching the last word
   useEffect(() => {
     if (currentIndex === vocabulary.length - 1) {
-      console.log('Reached last word, playing sound...');
-      const audio = new Audio('/success1.mp3');
+      console.log("Reached last word, playing sound...");
+      const audio = new Audio("/success1.mp3");
       audio.volume = 0.3;
-      audio.play().catch(err => {
-        console.error('Error playing sound:', err);
+      audio.play().catch((err) => {
+        console.error("Error playing sound:", err);
       });
 
       // Show celebration and completion message
@@ -96,18 +96,20 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
   // Speech synthesis function
   const speak = (text: string) => {
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';  // Utiliser la voix anglaise américaine
-    utterance.rate = 0.9;      // Ralentir légèrement la prononciation
-    
+    utterance.lang = "en-US"; // Utiliser la voix anglaise américaine
+    utterance.rate = 0.9; // Ralentir légèrement la prononciation
+
     // Obtenir toutes les voix disponibles
     const voices = window.speechSynthesis.getVoices();
-    
+
     // Chercher une voix anglaise de meilleure qualité
-    const englishVoice = voices.find(
-      voice => voice.lang.includes('en-US') && voice.name.includes('Google') // Préférer les voix Google si disponibles
-    ) || voices.find(
-      voice => voice.lang.includes('en-US') // Sinon, prendre n'importe quelle voix anglaise
-    );
+    const englishVoice =
+      voices.find(
+        (voice) => voice.lang.includes("en-US") && voice.name.includes("Google") // Préférer les voix Google si disponibles
+      ) ||
+      voices.find(
+        (voice) => voice.lang.includes("en-US") // Sinon, prendre n'importe quelle voix anglaise
+      );
 
     if (englishVoice) {
       utterance.voice = englishVoice;
@@ -136,7 +138,9 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
         );
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch vocabulary content: ${response.status}`);
+          throw new Error(
+            `Failed to fetch vocabulary content: ${response.status}`
+          );
         }
 
         const data = await response.json();
@@ -206,11 +210,11 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
               <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
               <motion.div
                 initial={{ y: -20, opacity: 0 }}
-                animate={{ 
-                  y: 0, 
+                animate={{
+                  y: 0,
                   opacity: 1,
                   scale: [1, 1.2, 1],
-                  rotate: [0, -5, 5, -5, 0]
+                  rotate: [0, -5, 5, -5, 0],
                 }}
                 transition={{ duration: 0.8 }}
                 className="bg-gradient-to-r from-brand-purple to-brand-gold p-6 rounded-lg shadow-xl text-white text-2xl font-bold z-20 flex items-center gap-3"
@@ -240,7 +244,8 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
                   🎉 Vocabulary Mastered! 🎉
                 </h3>
                 <p className="text-gray-600">
-                  Great work! You've completed all the vocabulary in this lesson.
+                  Great work! You've completed all the vocabulary in this
+                  lesson.
                 </p>
                 <div className="pt-2">
                   <Button
@@ -297,11 +302,15 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
 
             {/* Example Section */}
             {currentWord.example_sentence_en && (
-              <div className={commonStyles.exampleBox}>
+              <div
+                className={`${commonStyles.exampleBox} flex flex-col items-center text-center`}
+              >
                 <h3 className="font-semibold text-brand-purple text-lg mb-2">
                   Example:
                 </h3>
-                <p className="text-lg mb-1">{currentWord.example_sentence_en}</p>
+                <p className="text-lg mb-1">
+                  {currentWord.example_sentence_en}
+                </p>
                 <p className="text-muted-foreground">
                   {currentWord.example_sentence_fr}
                 </p>
@@ -322,7 +331,7 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
                 ))}
               </TabsList>
 
-              <div className={commonStyles.tabsContent}>
+              <div className={'${commonStyles.tabsContent} flex flex-col items_center text-center'}>
                 <TabsContent value="definition">
                   <p className="text-lg mb-1">{currentWord.definition_en}</p>
                   <p className="text-muted-foreground">
