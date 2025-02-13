@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import BackButton from "@/components/ui/BackButton";
 import TheoryContent from "./TheoryContent";
 import VocabularyLesson from "./VocabularyLesson"; 
@@ -12,8 +11,6 @@ import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
 import NumberComponent from "./Numbers";
 import NumbersGame from "./NumbersGame";
 import ReorderingContent from "./ReorderingContent";
-import { R } from "node_modules/@tanstack/react-query-devtools/build/modern/ReactQueryDevtools-Cn7cKi7o";
-
 // Content type mapping for consistent handling
 // 🟡 rejouter le nouveau contenu ci-dessous
 
