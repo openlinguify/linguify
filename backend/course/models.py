@@ -35,7 +35,6 @@ TYPE_ACTIVITY = [
     ('Writing', 'Writing'),
     ('Test', 'Test'),
 ]
-
 class Unit(models.Model):
     LEVEL_CHOICES = [
         ('A1', 'A1'),
@@ -86,8 +85,6 @@ class Unit(models.Model):
                 return self.title_en
             case _:
                 return "Language not supported"
-
-
 class Lesson(models.Model):
     LESSON_TYPE = [
         ('theory', 'Theory'),
@@ -113,8 +110,11 @@ class Lesson(models.Model):
     estimated_duration = models.IntegerField(help_text="In minutes", blank=False, null=False)
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
 
+    class Meta:
+        ordering = ['id']
+
     def __str__(self):
-        return f"{self.unit.title_en} - {self.title_en} - {self.lesson_type}"
+        return f"{self.unit} - {self.unit.title_en} - {self.title_en} - {self.lesson_type}"
 
     def get_title(self, target_language='en'):
         if target_language == 'fr':
@@ -133,7 +133,6 @@ class Lesson(models.Model):
             'nl': self.description_nl,
         }
         return switch.get(target_language, self.description_en)
-
 class ContentLesson(models.Model):
     '''
     Content lesson model
@@ -180,7 +179,7 @@ class ContentLesson(models.Model):
 
 
     def __str__(self):
-        return f"{self.lesson.title_en} - {self.title_en} - {self.content_type}"
+        return f"{self.lesson.title_en} - {self.title_en} - {self.content_type} - {self.order}"
     
     def get_title(self, target_language='en'):
         """
@@ -212,8 +211,6 @@ class ContentLesson(models.Model):
         if self.estimated_duration < 1:
             self.estimated_duration = 1
         super().save(*args, **kwargs)
-
-
 class TheoryContent(models.Model):
     content_lesson = models.OneToOneField(ContentLesson, on_delete=models.CASCADE, related_name='theory_content', default=1)
     content_en = models.TextField(blank=False, null=False)
@@ -239,7 +236,6 @@ class TheoryContent(models.Model):
     
     def __str__(self):
         return f"{self.content_lesson} - {self.content_en}"
-
 class VocabularyList(models.Model):
 
     content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='vocabulary_lists', default=1)
@@ -268,8 +264,11 @@ class VocabularyList(models.Model):
     antonymous_es = models.TextField(blank=True, null=True)
     antonymous_nl = models.TextField(blank=True, null=True)
 
+    class Meta:
+        ordering = ['id']
+
     def __str__(self):
-        return f"{self.content_lesson} - {self.word_en} - {self.definition_en}"
+        return f"{self.id} - {self.content_lesson} - {self.word_en} - {self.definition_en}"
 
     def get_translation(self, target_language):
         switch = {
@@ -318,7 +317,6 @@ class VocabularyList(models.Model):
             'nl': self.antonymous_nl,
         }
         return switch.get(target_language, self.antonymous_en)
-
 class MultipleChoiceQuestion(models.Model):
     content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='multiple_choices', default=1)
     # example of question Level A1: What is the capital of Belgium?
@@ -366,7 +364,6 @@ class MultipleChoiceQuestion(models.Model):
 
     def __str__(self):
         return f"{self.content_lesson} - {self.question_en}"
-
 class Numbers(models.Model):
     content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='numbers', default=1)
     number = models.CharField(max_length=255, blank=False, null=False)
@@ -378,7 +375,6 @@ class Numbers(models.Model):
 
     def __str__(self):
         return f"{self.content_lesson} - {self.content_lesson.title_en} - {self.number} - {self.number_en} - {self.is_reviewed}"
-    
 class ExerciseVocabularyMultipleChoice(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     question = models.TextField(blank=False, null=False, help_text="Question based on example sentence")
@@ -419,8 +415,6 @@ class ExerciseVocabularyFillBlank(models.Model):
 
     def __str__(self):
         return f"{self.lesson.title_en} - {self.sentence_fill_blank_en}"
-
-
 class ExerciseGrammarReordering(models.Model):
     content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='reordering', default=1)
     sentence_en = models.TextField(blank=False, null=False, help_text="Sentence to reorder")
@@ -432,9 +426,6 @@ class ExerciseGrammarReordering(models.Model):
 
     def __str__(self):
         return f"{self.content_lesson} - {self.sentence_en}"
-
-
-
 class GrammarRule(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='grammar_rules', default=1)
 

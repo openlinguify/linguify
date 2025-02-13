@@ -1,21 +1,22 @@
-'use client';
-import React, { useState, useEffect } from 'react';
+"use client";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { 
-  ArrowLeft, 
-  Clock, 
-  BookOpen, 
-  CheckCircle, 
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import BackButton from "@/components/ui/BackButton";
+import { Progress } from "@/components/ui/progress";
+import {
+  ArrowLeft,
+  Clock,
+  BookOpen,
+  CheckCircle,
   AlertCircle,
   ChevronRight,
   GraduationCap,
   Video,
-  FileText
-} from 'lucide-react';
+  FileText,
+} from "lucide-react";
 
 interface Lesson {
   id: number;
@@ -32,11 +33,11 @@ interface LessonsProps {
 
 const getLessonTypeIcon = (type: string) => {
   switch (type.toLowerCase()) {
-    case 'video':
+    case "video":
       return <Video className="w-5 h-5" />;
-    case 'quiz':
+    case "quiz":
       return <GraduationCap className="w-5 h-5" />;
-    case 'reading':
+    case "reading":
       return <FileText className="w-5 h-5" />;
     default:
       return <BookOpen className="w-5 h-5" />;
@@ -62,10 +63,12 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
         if (!response.ok) throw new Error("Failed to fetch lessons");
 
         const data = await response.json();
-        const sortedLessons = Array.isArray(data) 
+        const sortedLessons = Array.isArray(data)
           ? data.sort((a: Lesson, b: Lesson) => a.order - b.order)
-          : (data.results || []).sort((a: Lesson, b: Lesson) => a.order - b.order);
-        
+          : (data.results || []).sort(
+              (a: Lesson, b: Lesson) => a.order - b.order
+            );
+
         setLessons(sortedLessons);
         setError(null);
       } catch (err) {
@@ -92,7 +95,9 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
       <div className="min-h-screen w-full bg-purple-50 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-          <p className="text-purple-600 font-medium">Loading your learning journey...</p>
+          <p className="text-purple-600 font-medium">
+            Loading your learning journey...
+          </p>
         </div>
       </div>
     );
@@ -111,33 +116,41 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
 
   return (
     <div className="min-h-screen w-full bg-purple-50">
-      <div className="px-8 py-6 max-w-7xl mx-auto">
+      <div className="px-8 py-6 max-w-7xl mx-auto margin-bottom-8">
         {/* Header Section */}
-        <Button
-          variant="ghost"
-          className="flex items-center gap-2 text-purple-600 hover:text-purple-700 mb-8"
-          onClick={handleBack}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Units
-        </Button>
-        
+        <div className="mb-8">
+          <BackButton
+            onClick={handleBack}
+            iconLeft={<ArrowLeft className="h-4 w-4" />}
+          >
+            Back to Lessons
+          </BackButton>
+        </div>
+
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-amber-500 text-transparent bg-clip-text">
-            Course Progress
+            Lesson Progress
           </h1>
           <div className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-purple-600" />
             <span className="text-gray-600">
-              {lessons.reduce((acc, lesson) => acc + lesson.estimated_duration, 0)} min total
+              {lessons.reduce(
+                (acc, lesson) => acc + lesson.estimated_duration,
+                0
+              )}{" "}
+              min total
             </span>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-lg p-4 mb-8 shadow-sm">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-600">Overall Progress</span>
-            <span className="text-sm font-medium text-purple-600">{progress}%</span>
+            <span className="text-sm font-medium text-gray-600">
+              Overall Progress
+            </span>
+            <span className="text-sm font-medium text-purple-600">
+              {progress}%
+            </span>
           </div>
           <Progress value={progress} className="h-2 bg-purple-100" />
         </div>
@@ -161,18 +174,20 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
                     <div className="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 text-purple-600 shrink-0">
                       {getLessonTypeIcon(lesson.lesson_type)}
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-amber-500 text-transparent bg-clip-text">
                             {lesson.title}
                           </h3>
-                          <p className="text-gray-600 mt-1">{lesson.description}</p>
+                          <p className="text-gray-600 mt-1">
+                            {lesson.description}
+                          </p>
                         </div>
                         <ChevronRight className="h-5 w-5 text-gray-400 shrink-0" />
                       </div>
-                      
+
                       <div className="flex flex-wrap items-center gap-3 mt-4">
                         <span className="flex items-center gap-2 text-sm text-gray-600">
                           <Clock className="h-4 w-4" />
