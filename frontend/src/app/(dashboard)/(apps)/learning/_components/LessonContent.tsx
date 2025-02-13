@@ -4,15 +4,13 @@ import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import BackButton from "@/components/ui/BackButton";
 import TheoryContent from "./TheoryContent";
 import VocabularyLesson from "./VocabularyLesson"; 
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
 import NumberComponent from "./Numbers";
 import NumbersGame from "./NumbersGame";
 import ReorderingContent from "./ReorderingContent";
-import { R } from "node_modules/@tanstack/react-query-devtools/build/modern/ReactQueryDevtools-Cn7cKi7o";
-
 // Content type mapping for consistent handling
 // 🟡 rejouter le nouveau contenu ci-dessous
 
@@ -147,14 +145,12 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
     return (
       <div>
         <div className="p-6">
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2 mb-6"
+          <BackButton
             onClick={handleBack}
+            iconLeft={<ArrowLeft className="h-4 w-4" />}
           >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Lesson Content
-          </Button>
+            Back to Lessons
+          </BackButton>
         </div>
 
         {selectedContent.type === CONTENT_TYPES.THEORY && (
@@ -191,14 +187,14 @@ export default function LessonContent({ lessonId, language = 'en' }: LessonConte
   // Main content list
   return (
     <div className="p-6">
-      <Button
-        variant="ghost"
-        className="flex items-center gap-2 mb-6"
-        onClick={handleBack}
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Lessons
-      </Button>
+        <div className="mb-8">
+          <BackButton
+            onClick={handleBack}
+            iconLeft={<ArrowLeft className="h-4 w-4" />}
+          >
+            Back to Lessons
+          </BackButton>
+        </div>
 
       <div className="space-y-4">
         {contents.length === 0 ? (
