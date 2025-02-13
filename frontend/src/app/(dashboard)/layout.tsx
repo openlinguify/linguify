@@ -1,4 +1,3 @@
-// src/app/(dashboard)/layout.tsx
 "use client";
 
 import React from "react";
@@ -44,8 +43,8 @@ export default function DashboardLayout({
         </aside>
 
         {/* Main Content - with left margin to account for sidebar */}
-        <main className="flex-1 ml-0 md:ml-56 bg-gray-50 dark:bg-[#0f172a] min-h-[calc(100vh-56px)]">
-          <div className="container mx-auto p-6">
+        <main className="flex-1 ml-0 md:ml-56 bg-purple-50 min-h-[calc(100vh-56px)]">
+          <div className="p-6 w-full">
             {children}
           </div>
         </main>
