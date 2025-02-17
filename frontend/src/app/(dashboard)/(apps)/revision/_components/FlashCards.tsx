@@ -25,10 +25,12 @@ import {
   BookOpen,
   MoreVertical,
   Trash,
+  Pencil,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { revisionApi } from "@/services/revisionAPI";
 import type { Flashcard, FlashcardDeck } from "@/types/revision";
+import EditCardModal from "./EditCardModal";
 
 // Types
 interface ApiError extends Error {
@@ -111,6 +113,7 @@ const FlashcardApp = () => {
   );
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [isAddingDeck, setIsAddingDeck] = useState(false);
+  const [editingCard, setEditingCard] = useState<Flashcard | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     frontText: "",
@@ -171,12 +174,11 @@ const FlashcardApp = () => {
       setIsLoading(true);
       await revisionApi.flashcards.delete(cardId);
       setCards((prev) => prev.filter((card) => card.id !== cardId));
-      
+
       toast({
         title: "Success",
         description: "Card deleted successfully",
       });
-
     } catch (err) {
       toast({
         title: "Error",
@@ -185,20 +187,6 @@ const FlashcardApp = () => {
       });
     }
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   const handleAddDeck = async () => {
     if (!formData.deckName.trim()) {
@@ -304,9 +292,28 @@ const FlashcardApp = () => {
     }
   };
 
-  const handleCardStatusUpdate = async (cardId: number) => {
+  const handleEditCard = async (cardData: Partial<Flashcard>) => {
+    if (!editingCard) return;
+
     try {
-      await revisionApi.flashcards.toggleLearned(cardId);
+      const updatedCard = await revisionApi.flashcards.update(
+        editingCard.id,
+        cardData
+      );
+
+      // Mettre à jour la carte dans l'état local
+      setCards((prev) =>
+        prev.map((card) => (card.id === updatedCard.id ? updatedCard : card))
+      );
+
+      setEditingCard(null);
+    } catch (err) {
+      throw err;
+    }
+  };
+  const handleCardStatusUpdate = async (cardId: number, success: boolean) => {
+    try {
+      await revisionApi.flashcards.toggleLearned(cardId, success);
       setCards((prev) =>
         prev.map((card) =>
           card.id === cardId ? { ...card, learned: !card.learned } : card
@@ -314,7 +321,9 @@ const FlashcardApp = () => {
       );
       toast({
         title: "Success",
-        description: "Card status updated",
+        description: success
+          ? "Card marked as known"
+          : "Card marked for review",
       });
     } catch (err) {
       const message =
@@ -386,7 +395,8 @@ const FlashcardApp = () => {
   // Computed values
   const filteredCards = cards.filter((card) => {
     if (filter === "all") return true;
-    if (filter === "new") return !card.learned;
+    if (filter === "new") return !card.learned && card.review_count === 0;
+    if (filter === "review") return !card.learned && card.review_count > 0;
     if (filter === "known") return card.learned;
     return false;
   });
@@ -430,7 +440,10 @@ const FlashcardApp = () => {
                   Add Card
                 </Button>
                 <Button
-                  onClick={() => handleDeleteCard(filteredCards[currentIndex].id)}>
+                  onClick={() =>
+                    handleDeleteCard(filteredCards[currentIndex].id)
+                  }
+                >
                   <Trash className="w-4 h-4 mr-2" /> Delete Card
                 </Button>
               </>
@@ -510,9 +523,20 @@ const FlashcardApp = () => {
       ) : filteredCards.length > 0 ? (
         <div className="space-y-6">
           <Card
-            className="h-80 cursor-pointer transition-all duration-300 hover:shadow-lg"
+            className="h-80 cursor-pointer transition-all duration-300 hover:shadow-lg relative"
             onClick={() => setIsFlipped(!isFlipped)}
           >
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4"
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditingCard(filteredCards[currentIndex]);
+              }}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
             <div className="h-full flex items-center justify-center p-6">
               <div className="text-center">
                 <div className="text-3xl font-medium">
@@ -521,6 +545,17 @@ const FlashcardApp = () => {
                     : filteredCards[currentIndex].front_text}
                 </div>
                 <div className="text-sm text-gray-500 mt-4">Click to flip</div>
+                {filteredCards[currentIndex].review_count > 0 && (
+                  <div className="mt-2">
+                    Reviews: {filteredCards[currentIndex].review_count} | Last
+                    reviewed:{" "}
+                    {filteredCards[currentIndex].last_reviewed
+                      ? new Date(
+                          filteredCards[currentIndex].last_reviewed
+                        ).toLocaleDateString()
+                      : "N/A"}
+                  </div>
+                )}
               </div>
             </div>
           </Card>
@@ -550,13 +585,24 @@ const FlashcardApp = () => {
               Next
               <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 z-10"
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditingCard(filteredCards[currentIndex]);
+              }}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
           </div>
 
           <div className="flex justify-center gap-4">
             <Button
               className="w-40 bg-yellow-500 hover:bg-yellow-600 text-white"
               onClick={() =>
-                handleCardStatusUpdate(filteredCards[currentIndex].id)
+                handleCardStatusUpdate(filteredCards[currentIndex].id, false)
               }
             >
               <RefreshCw className="w-4 h-4 mr-2" />
@@ -565,7 +611,7 @@ const FlashcardApp = () => {
             <Button
               className="w-40 bg-green-500 hover:bg-green-600 text-white"
               onClick={() =>
-                handleCardStatusUpdate(filteredCards[currentIndex].id)
+                handleCardStatusUpdate(filteredCards[currentIndex].id, true)
               }
             >
               <Check className="w-4 h-4 mr-2" />
@@ -683,6 +729,14 @@ const FlashcardApp = () => {
       {renderHeader()}
       {renderMainContent()}
       {renderModals()}
+      {editingCard && (
+        <EditCardModal
+          card={editingCard}
+          isOpen={true}
+          onClose={() => setEditingCard(null)}
+          onSave={handleEditCard}
+        />
+      )}
     </div>
   );
 };

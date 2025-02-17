@@ -196,8 +196,10 @@ export const revisionApi = {
      * @param {number} id - The ID of the flashcard to toggle.
      * @returns {Promise<Flashcard>} A promise that resolves to the updated flashcard.
      */
-    toggleLearned(id: number): Promise<Flashcard> {
-      return ApiClient.patch(`/api/v1/revision/flashcards/${id}/toggle_learned/`, {});
+    toggleLearned(id: number, success: boolean): Promise<Flashcard> {
+      return ApiClient.patch(`/api/v1/revision/flashcards/${id}/toggle_learned/`, {
+        success
+      });
     },
 
     /**
@@ -215,6 +217,21 @@ export const revisionApi = {
      */
         delete(id: number): Promise<void> {
           return ApiClient.delete(`/api/v1/revision/flashcards/${id}/`);
-        }
-  }
+    },
+        /**
+     * Updates an existing flashcard.
+     * @param {number} id - The ID of the flashcard to update.
+     * @param {Partial<Flashcard>} data - The data to update.
+     * @returns {Promise<Flashcard>} A promise that resolves to the updated flashcard.
+     */
+
+    update(id:number, data: {
+      front_text?: string;
+      back_text?: string;
+      deck_id?: number;
+      learned?: boolean;
+    }): Promise<Flashcard> {
+      return ApiClient.patch(`/api/v1/revision/flashcards/${id}/update_card/`, data);
+    }
+  },
 };
