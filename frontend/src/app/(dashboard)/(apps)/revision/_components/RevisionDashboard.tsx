@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Brain,
   Book,
-  Clock,
   Settings,
   Rotate3D as Rotate,
   BarChart2,
