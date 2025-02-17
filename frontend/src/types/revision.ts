@@ -20,9 +20,9 @@ export interface FlashcardDeck {
     learned: boolean;
     created_at: string;
     updated_at: string;
-    last_reviewed?: string;
+    last_reviewed: string | null;
     review_count: number;
-    next_review?: string;
+    next_review: string | null;
   }
 
   export interface RevisionSession {
