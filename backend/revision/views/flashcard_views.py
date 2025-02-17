@@ -23,7 +23,7 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def cards(self, request, pk=None):
         deck = self.get_object()
-        cards = deck.flashcards.all()
+        cards = deck.flashcards.filter(deck=deck)
         serializer = FlashcardSerializer(cards, many=True)
         return Response(serializer.data)
 
@@ -38,3 +38,13 @@ class FlashcardViewSet(viewsets.ModelViewSet):
         card.learned = not card.learned
         card.save()
         return Response({"status": "success"})
+    
+    @action(detail=True, methods=['delete'])
+    def delete_card(self, request, pk=None):
+        try:
+            card = self.get_object()
+            card.delete()
+            return Response({"message": "Card deleted successfully"}), status.HTTP_204_NO_CONTENT
+        except Exception as e:
+            return Response({"error": str(e)}, status.HTTP_400_BAD_REQUEST)
+    
