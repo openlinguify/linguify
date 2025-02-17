@@ -43,12 +43,12 @@ interface FormData {
 }
 
 // DeckSelection Component
-const DeckSelection = ({ 
-  decks, 
-  selectedDeck, 
-  onDeckSelect, 
+const DeckSelection = ({
+  decks,
+  selectedDeck,
+  onDeckSelect,
   onDeleteDeck,
-  isLoading 
+  isLoading,
 }: {
   decks: FlashcardDeck[];
   selectedDeck: number | null;
@@ -57,23 +57,18 @@ const DeckSelection = ({
   isLoading: boolean;
 }) => (
   <div className="flex gap-2 items-center">
-    <Select
-      value={selectedDeck?.toString()}
-      onValueChange={onDeckSelect}
-    >
+    <Select value={selectedDeck?.toString()} onValueChange={onDeckSelect}>
       <SelectTrigger className="w-full sm:w-48">
         <SelectValue placeholder="Choose a deck" />
       </SelectTrigger>
       <SelectContent>
         {decks.map((deck) => (
           <div key={deck.id} className="flex items-center justify-between pr-2">
-            <SelectItem value={deck.id.toString()}>
-              {deck.name}
-            </SelectItem>
+            <SelectItem value={deck.id.toString()}>{deck.name}</SelectItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   className="h-8 w-8 p-0"
                   disabled={isLoading}
@@ -104,14 +99,16 @@ const DeckSelection = ({
 // Main FlashcardApp Component
 const FlashcardApp = () => {
   const { toast } = useToast();
-  
+
   // State
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
   const [selectedDeck, setSelectedDeck] = useState<number | null>(null);
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  const [filter, setFilter] = useState<"all" | "new" | "review" | "known">("all");
+  const [filter, setFilter] = useState<"all" | "new" | "review" | "known">(
+    "all"
+  );
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [isAddingDeck, setIsAddingDeck] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -129,16 +126,20 @@ const FlashcardApp = () => {
   };
 
   const handleDeleteDeck = async (deckId: number) => {
-    if (!window.confirm('Are you sure you want to delete this deck? This action cannot be undone.')) {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this deck? This action cannot be undone."
+      )
+    ) {
       return;
     }
 
     try {
       setIsLoading(true);
       await revisionApi.decks.delete(deckId);
-      
+
       setDecks((prev) => prev.filter((deck) => deck.id !== deckId));
-      
+
       if (selectedDeck === deckId) {
         setSelectedDeck(null);
         setCards([]);
@@ -149,7 +150,8 @@ const FlashcardApp = () => {
         description: "Deck deleted successfully",
       });
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to delete deck";
+      const message =
+        err instanceof Error ? err.message : "Failed to delete deck";
       toast({
         title: "Error",
         description: message,
@@ -159,6 +161,44 @@ const FlashcardApp = () => {
       setIsLoading(false);
     }
   };
+
+  const handleDeleteCard = async (cardId: number) => {
+    if (!window.confirm("Are you sure you want to delete this card?")) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await revisionApi.flashcards.delete(cardId);
+      setCards((prev) => prev.filter((card) => card.id !== cardId));
+      
+      toast({
+        title: "Success",
+        description: "Card deleted successfully",
+      });
+
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to delete card",
+        variant: "destructive",
+      });
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const handleAddDeck = async () => {
     if (!formData.deckName.trim()) {
@@ -189,9 +229,10 @@ const FlashcardApp = () => {
       });
     } catch (err) {
       const apiError = err as ApiError;
-      const message = apiError.data?.description?.[0] || 
-                     apiError.data?.detail || 
-                     "Failed to create deck";
+      const message =
+        apiError.data?.description?.[0] ||
+        apiError.data?.detail ||
+        "Failed to create deck";
       toast({
         title: "Error",
         description: message,
@@ -212,7 +253,7 @@ const FlashcardApp = () => {
       });
       return;
     }
-  
+
     if (!formData.frontText.trim() || !formData.backText.trim()) {
       toast({
         title: "Error",
@@ -221,41 +262,42 @@ const FlashcardApp = () => {
       });
       return;
     }
-  
+
     try {
       setIsLoading(true);
-  
+
       const cardData = {
         front_text: formData.frontText.trim(),
         back_text: formData.backText.trim(),
         deck_id: selectedDeck,
       };
-  
-      console.log('Sending card data:', cardData); // Debug log
-  
+
+      console.log("Sending card data:", cardData); // Debug log
+
       const newCard = await revisionApi.flashcards.create(cardData);
-  
-      console.log('Card created:', newCard); // Debug log
-  
+
+      console.log("Card created:", newCard); // Debug log
+
       setCards((prev) => [...prev, newCard]);
       setFormData((prev) => ({ ...prev, frontText: "", backText: "" }));
       setIsAddingCard(false);
-      
-      toast({ 
-        title: "Success", 
-        description: "Card created successfully" 
+
+      toast({
+        title: "Success",
+        description: "Card created successfully",
       });
     } catch (err) {
-      console.error('Error creating card:', err); // Debug log
+      console.error("Error creating card:", err); // Debug log
       const apiError = err as ApiError;
-      const errorMessage = apiError.data?.detail || 
-                          apiError.data?.error || 
-                          "Failed to create card";
-      
-      toast({ 
-        title: "Error", 
+      const errorMessage =
+        apiError.data?.detail ||
+        apiError.data?.error ||
+        "Failed to create card";
+
+      toast({
+        title: "Error",
         description: errorMessage,
-        variant: "destructive" 
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -270,16 +312,17 @@ const FlashcardApp = () => {
           card.id === cardId ? { ...card, learned: !card.learned } : card
         )
       );
-      toast({ 
-        title: "Success", 
-        description: "Card status updated"
+      toast({
+        title: "Success",
+        description: "Card status updated",
       });
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to update card status";
-      toast({ 
-        title: "Error", 
-        description: message, 
-        variant: "destructive" 
+      const message =
+        err instanceof Error ? err.message : "Failed to update card status";
+      toast({
+        title: "Error",
+        description: message,
+        variant: "destructive",
       });
     }
   };
@@ -293,7 +336,8 @@ const FlashcardApp = () => {
         setSelectedDeck(data[0].id);
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to load decks";
+      const message =
+        err instanceof Error ? err.message : "Failed to load decks";
       toast({
         title: "Error",
         description: message,
@@ -315,7 +359,8 @@ const FlashcardApp = () => {
       setCards(data);
       setFilter("all");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to load flashcards";
+      const message =
+        err instanceof Error ? err.message : "Failed to load flashcards";
       toast({
         title: "Error",
         description: message,
@@ -366,8 +411,8 @@ const FlashcardApp = () => {
             isLoading={isLoading}
           />
           <div className="flex gap-2">
-            <Button 
-              onClick={() => setIsAddingDeck(true)} 
+            <Button
+              onClick={() => setIsAddingDeck(true)}
               className="whitespace-nowrap"
               disabled={isLoading}
             >
@@ -375,14 +420,20 @@ const FlashcardApp = () => {
               New Deck
             </Button>
             {selectedDeck && (
-              <Button 
-                onClick={() => setIsAddingCard(true)}
-                className="whitespace-nowrap"
-                disabled={isLoading}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Card
-              </Button>
+              <>
+                <Button
+                  onClick={() => setIsAddingCard(true)}
+                  className="whitespace-nowrap"
+                  disabled={isLoading}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Card
+                </Button>
+                <Button
+                  onClick={() => handleDeleteCard(filteredCards[currentIndex].id)}>
+                  <Trash className="w-4 h-4 mr-2" /> Delete Card
+                </Button>
+              </>
             )}
           </div>
         </div>
@@ -474,8 +525,6 @@ const FlashcardApp = () => {
             </div>
           </Card>
 
-
-
           <div className="flex justify-center gap-4">
             <Button
               variant="outline"
@@ -506,14 +555,18 @@ const FlashcardApp = () => {
           <div className="flex justify-center gap-4">
             <Button
               className="w-40 bg-yellow-500 hover:bg-yellow-600 text-white"
-              onClick={() => handleCardStatusUpdate(filteredCards[currentIndex].id)}
+              onClick={() =>
+                handleCardStatusUpdate(filteredCards[currentIndex].id)
+              }
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Review Later
             </Button>
             <Button
               className="w-40 bg-green-500 hover:bg-green-600 text-white"
-              onClick={() => handleCardStatusUpdate(filteredCards[currentIndex].id)}  
+              onClick={() =>
+                handleCardStatusUpdate(filteredCards[currentIndex].id)
+              }
             >
               <Check className="w-4 h-4 mr-2" />
               Mark as Known
@@ -569,7 +622,9 @@ const FlashcardApp = () => {
               <Button
                 className="flex-1"
                 onClick={handleAddCard}
-                disabled={!formData.frontText || !formData.backText || isLoading}
+                disabled={
+                  !formData.frontText || !formData.backText || isLoading
+                }
               >
                 Add
               </Button>

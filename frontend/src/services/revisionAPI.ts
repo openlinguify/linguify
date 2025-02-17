@@ -207,6 +207,14 @@ export const revisionApi = {
      */
     getDue(limit: number = 10): Promise<Flashcard[]> {
       return ApiClient.get(`/api/v1/revision/flashcards/due_for_review/?limit=${limit}`);
-    }
+    },
+        /**
+     * Deletes a flashcard by ID.
+     * @param {number} id - The ID of the flashcard to delete.
+     * @returns {Promise<void>} A promise that resolves when the flashcard is deleted.
+     */
+        delete(id: number): Promise<void> {
+          return ApiClient.delete(`/api/v1/revision/flashcards/${id}/`);
+        }
   }
 };
