@@ -48,7 +48,27 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
                 {"error": f"Failed to fetch cards: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
+        
+    @action(detail=True, methods=['patch'])
+    def update_deck(self, request, pk=None):
+            try:
+                deck = self.get_object()
+                serializer = self.get_serializer(deck, data=request.data, partial=True)
+                if serializer.is_valid():
+                    if 'name' in request.data:
+                        deck.name = request.data['name']
+                    if 'description' in request.data:
+                        deck.description = request.data['description']
+                    if 'is_active' in request.data:
+                        deck.is_active = request.data['is_active']
+                    deck.save()
+                    return Response(serializer.data)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return Response(
+                    {"error": f"Failed to update deck: {str(e)}"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )   
 
 class FlashcardViewSet(viewsets.ModelViewSet):
     serializer_class = FlashcardSerializer
