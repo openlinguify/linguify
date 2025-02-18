@@ -236,11 +236,11 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
         <div className="flex gap-2">
           <Button
             onClick={() => setIsAddingDeck(true)}
-            className="bg-gradient-to-r from-brand-purple to-brand-gold"
+            className="bg-brand-purple text-white hover:bg-purple-700 disabled:bg-purple-300"
             disabled={isLoading}
           >
             <Plus className="h-4 w-4 mr-2" />
-            New Deck
+            New List
           </Button>
           {isSelectionMode ? (
             <>
@@ -264,7 +264,11 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
               </Button>
             </>
           ) : (
-            <Button variant="outline" onClick={() => setIsSelectionMode(true)}>
+            <Button
+              variant="outline"
+              className="bg-brand-purple text-white hover:bg-brand-purple-dark disabled:bg-brand-purple-light"
+              onClick={() => setIsSelectionMode(true)}
+            >
               <CheckSquare className="h-4 w-4 mr-2" />
               Select
             </Button>
@@ -278,7 +282,11 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
           <Card
             key={deck.id}
             className={`group hover:shadow-md transition-all duration-200 cursor-pointer border
-              ${selectedDecks.includes(deck.id) ? 'ring-2 ring-brand-purple' : ''}`}
+              ${
+                selectedDecks.includes(deck.id)
+                  ? "ring-2 ring-brand-purple"
+                  : ""
+              }`}
             onClick={() => !isSelectionMode && onDeckSelect(deck.id)}
           >
             <CardContent className="p-4 space-y-2">
@@ -300,7 +308,10 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                 <div className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4 text-gray-400 group-hover:text-brand-purple transition-colors" />
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                    <DropdownMenuTrigger
+                      asChild
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <MoreVertical className="h-4 w-4" />
                       </Button>
@@ -312,7 +323,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                           setEditingDeck({
                             id: deck.id,
                             name: deck.name,
-                            description: deck.description
+                            description: deck.description,
                           });
                         }}
                       >
@@ -339,7 +350,9 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
               </p>
               <div className="flex justify-between text-xs text-gray-400">
                 <span>{deck.cardCount ?? 0} cards</span>
-                <span>Created {new Date(deck.created_at).toLocaleDateString()}</span>
+                <span>
+                  Created {new Date(deck.created_at).toLocaleDateString()}
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -469,10 +482,8 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
             </CardContent>
           </Card>
         </div>
-        
       )}
     </div>
-    
   );
 };
 
