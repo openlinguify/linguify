@@ -79,3 +79,8 @@ export interface ReviewResponse {
     message: string;
     word: VocabularyWord;
 }
+export interface EditingDeck {
+  id: number;
+  name: string;
+  description: string;
+}

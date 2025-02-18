@@ -420,20 +420,31 @@ const FlashcardApp = () => {
             onDeleteDeck={handleDeleteDeck}
             isLoading={isLoading}
           />
+
+
+
+          
           <div className="flex gap-2">
             <Button
               onClick={() => setIsAddingDeck(true)}
-              className="whitespace-nowrap"
+              className="whitespace-nowrap bg-gradient-to-r from-brand-purple to-brand-gold"
               disabled={isLoading}
             >
               <Plus className="w-4 h-4 mr-2" />
-              New Deck
+              New List
             </Button>
+
+
+
+
+
+
+
             {selectedDeck && (
               <>
                 <Button
                   onClick={() => setIsAddingCard(true)}
-                  className="whitespace-nowrap"
+                  className="whitespace-nowrap bg-gradient-to-r from-brand-purple to-brand-gold"
                   disabled={isLoading}
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -443,6 +454,7 @@ const FlashcardApp = () => {
                   onClick={() =>
                     handleDeleteCard(filteredCards[currentIndex].id)
                   }
+                  className="whitespace-nowrap bg-gradient-to-r from-brand-purple to-brand-gold"
                 >
                   <Trash className="w-4 h-4 mr-2" /> Delete Card
                 </Button>
@@ -529,7 +541,7 @@ const FlashcardApp = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-4 right-4"
+              className="absolute top-4 right-4 bg-gradient-to-r from-brand-purple to-brand-gold"
               onClick={(e) => {
                 e.stopPropagation();
                 setEditingCard(filteredCards[currentIndex]);

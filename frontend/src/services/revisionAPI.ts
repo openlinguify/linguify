@@ -118,11 +118,6 @@ export const revisionApi = {
       return ApiClient.get('/api/v1/revision/decks/');
     },
 
-    /**
-     * Creates a new flashcard deck.
-     * @param {Pick<FlashcardDeck, 'name' | 'description'> & { is_active?: boolean }} data - The data for the new deck.
-     * @returns {Promise<FlashcardDeck>} A promise that resolves to the created flashcard deck.
-     */
     create(data: Pick<FlashcardDeck, 'name' | 'description'> & { is_active?: boolean }): Promise<FlashcardDeck> {
       // Validation côté client
       if (!data.description || data.description.trim() === '') {
@@ -134,31 +129,19 @@ export const revisionApi = {
       });
     },
 
-    /**
-     * Deletes a flashcard deck by ID.
-     * @param {number} id - The ID of the deck to delete.
-     * @returns {Promise<void>} A promise that resolves when the deck is deleted.
-     */
     delete(id: number): Promise<void> {
       return ApiClient.delete(`/api/v1/revision/decks/${id}/`);
     },
+    update(id: number, data: { name?: string; description?: string }): Promise<FlashcardDeck> {
+      return ApiClient.patch(`/api/v1/revision/decks/${id}/`, data);
+    },
 
-    /**
-     * Fetches a flashcard deck by ID.
-     * @param {number} id - The ID of the deck to fetch.
-     * @returns {Promise<FlashcardDeck>} A promise that resolves to the fetched flashcard deck.
-     */
     getById(id: number): Promise<FlashcardDeck> {
       return ApiClient.get(`/api/v1/revision/decks/${id}/`);
     }
   },
 
   flashcards: {
-    /**
-     * Fetches all flashcards, optionally filtered by deck ID.
-     * @param {number} [deckId] - The ID of the deck to filter flashcards by.
-     * @returns {Promise<Flashcard[]>} A promise that resolves to an array of flashcards.
-     */
     getAll(deckId?: number): Promise<Flashcard[]> {
       const query = deckId ? `?deck=${deckId}` : '';
       return ApiClient.get(`/api/v1/revision/flashcards/${query}`);
