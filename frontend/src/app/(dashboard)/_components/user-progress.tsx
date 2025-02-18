@@ -1,19 +1,27 @@
-// src/app/(dashboard)/_components/user-progress.tsx
 "use client";
 
-import { Progress } from "@nextui-org/progress";
+import { Progress } from "@/components/ui/progress";
 
-export const UserProgress = () => {
-  // This would normally be fetched from your backend
-  const progress = 65;
+interface UserProgressProps {
+  value?: number;
+  label?: string;
+}
 
+export const UserProgress = ({
+  value = 90,
+  label = "Progress",
+}: UserProgressProps) => {
   return (
-    <div className="flex flex-col space-y-4">
-      <div className="flex justify-between text-sm">
-        <span className="text-slate-500 font-medium">Course Progress</span>
-        <span className="text-sky-700 font-semibold">{progress}%</span>
+    <div className="flex flex-col space-y-2">
+      <div className="flex justify-between items-center">
+        <span className="text-sm text-muted-foreground font-medium">
+          {label}
+        </span>
+        <span className="text-sm font-semibold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
+          {value}%
+        </span>
       </div>
-      <Progress value={progress} className="h-2" />
+      <Progress value={value} />
     </div>
   );
 };

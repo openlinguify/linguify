@@ -19,10 +19,10 @@ module.exports = {
       colors: {
         // Brand colors
         brand: {
-          purple: '#792FCE',
+          'purple': '#5D3FD3',
           'purple-light': '#8A45E0',
           'purple-dark': '#6825B0',
-          gold: '#fdd47c',
+          'gold': '#fdd47c',
           'gold-light': '#FFE4A3',
           'gold-dark': '#E5B854'
         },
