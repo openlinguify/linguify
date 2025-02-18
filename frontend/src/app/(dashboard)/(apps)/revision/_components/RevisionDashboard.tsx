@@ -8,11 +8,12 @@ import {
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toaster } from "@/components/ui/toaster";
-import FlashcardApp from "./FlashCards";
+import FlashcardApp from "../../flashcard/_components/FlashCards";
 import RevisionSchedule from "./RevisionSchedule";
 import VocabularyManager from "./VocabularyManager";
 import VocabularyRevision from "./VocabularyRevision";
 import VocabularyStats from "./VocabularyStats";
+import FlashcardList from "../../flashcard/_components/FlashcardDeckList";
 
 const tabItems = [
   {
@@ -20,6 +21,12 @@ const tabItems = [
     label: "Practice",
     icon: Rotate,
     component: VocabularyRevision,
+  },
+  {
+    value: "flashcardlist",
+    label: "Flashcard List",
+    icon: Book,
+    component: FlashcardList,
   },
   {
     value: "flashcards",
@@ -58,10 +65,12 @@ const RevisionDashboard = () => {
         <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 p-8 text-white">
           <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
           <div className="relative space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">Vocabulary Revision</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Vocabulary Revision
+            </h1>
             <p className="text-lg text-white/90 font-medium">
-              Master your vocabulary through interactive flashcards and smart spaced repetition.
-              Track your progress and learn efficiently.
+              Master your vocabulary through interactive flashcards and smart
+              spaced repetition. Track your progress and learn efficiently.
             </p>
           </div>
         </div>
