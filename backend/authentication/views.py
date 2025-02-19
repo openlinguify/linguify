@@ -215,10 +215,12 @@ def reactivate_account(request):
 @permission_classes([IsAuthenticated])
 def get_me_view(request):
     user = request.user
+    name = f"{user.first_name} {user.last_name}".strip() or user.username
+
     data = {
         'id': str(user.id),
         'email': user.email,
-        'name': user.get_full_name() or user.username,
+        'name': name,
         'picture': user.profile_picture_url if hasattr(user, 'profile_picture_url') else None,
         'language_level': user.language_level,
         'native_language': user.native_language,
