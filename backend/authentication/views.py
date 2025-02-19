@@ -22,100 +22,84 @@ from .serializers import UserSerializer, MeSerializer, ProfileUpdateSerializer
 
 logger = logging.getLogger(__name__)
 
+
 class Auth0Login(APIView):
-    """Initie le flux d'authentification Auth0"""
     permission_classes = [AllowAny]
 
     def get(self, request):
         try:
             params = {
                 'client_id': settings.AUTH0_CLIENT_ID,
-                'redirect_uri': f"{settings.BACKEND_URL}/api/auth/callback",
+                'redirect_uri': settings.FRONTEND_CALLBACK_URL,
                 'response_type': 'code',
                 'scope': 'openid profile email',
                 'audience': settings.AUTH0_AUDIENCE
             }
+            
             auth_url = f'https://{settings.AUTH0_DOMAIN}/authorize?{urlencode(params)}'
+            logger.debug(f"Generated Auth0 URL: {auth_url}")
+            
             return Response({'auth_url': auth_url})
-        
         except Exception as e:
             logger.error(f"Auth0 login error: {str(e)}")
-            return Response({'error': 'Authentication service unavailable'}, 
-                          status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            return Response({
+                'error': 'Authentication service unavailable',
+                'details': str(e)
+            }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def auth0_callback(request):
-    """Gère le callback Auth0 et crée/mets à jour l'utilisateur"""
     try:
-        # Validation du code d'autorisation
         code = request.GET.get('code')
-        if not code:
-            return JsonResponse({'error': 'Authorization code missing'}, 
-                              status=status.HTTP_400_BAD_REQUEST)
+        logger.debug(f"Received code: {code}")
 
-        # Configuration de la requête de token
+        if not code:
+            logger.error("No authorization code provided")
+            return JsonResponse(
+                {'error': 'Authorization code missing'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         token_payload = {
             'grant_type': 'authorization_code',
             'client_id': settings.AUTH0_CLIENT_ID,
             'client_secret': settings.AUTH0_CLIENT_SECRET,
             'code': code,
-            'redirect_uri': f"{settings.BACKEND_URL}/api/auth/callback"
+            'redirect_uri': f"{settings.FRONTEND_URL}/callback"  # URL frontend
         }
 
-        # Récupération des tokens Auth0
+        logger.debug(f"Token request payload: {token_payload}")
+
         token_response = requests.post(
             f'https://{settings.AUTH0_DOMAIN}/oauth/token',
             data=token_payload,
             timeout=10
         )
         
+        logger.debug(f"Token response status: {token_response.status_code}")
+        logger.debug(f"Token response: {token_response.text}")
+
         if token_response.status_code != 200:
-            logger.error(f"Token error: {token_response.text}")
-            return JsonResponse({'error': 'Failed to obtain tokens'}, 
-                              status=status.HTTP_401_UNAUTHORIZED)
+            return JsonResponse(
+                {'error': 'Failed to obtain token', 'details': token_response.text}, 
+                status=status.HTTP_401_UNAUTHORIZED
+            )
 
         tokens = token_response.json()
-
-        # Validation du token JWT
-        try:
-            jwt_header = jwt.get_unverified_header(tokens['access_token'])
-            jwks = requests.get(f'https://{settings.AUTH0_DOMAIN}/.well-known/jwks.json').json()
-            rsa_key = next(k for k in jwks['keys'] if k['kid'] == jwt_header['kid'])
-            
-            payload = jwt.decode(
-                tokens['access_token'],
-                key=rsa_key,
-                algorithms=['RS256'],
-                audience=settings.AUTH0_AUDIENCE,
-                issuer=f'https://{settings.AUTH0_DOMAIN}/'
-            )
-        except PyJWTError as e:
-            logger.error(f"JWT validation error: {str(e)}")
-            return JsonResponse({'error': 'Invalid token'}, 
-                              status=status.HTTP_401_UNAUTHORIZED)
-
-        # Création/Mise à jour de l'utilisateur
-        user, created = User.objects.update_or_create(
-            email=payload['email'],
-            defaults={
-                'username': payload.get('nickname', payload['email']),
-                'first_name': payload.get('given_name', ''),
-                'last_name': payload.get('family_name', ''),
-                'is_active': True
-            }
-        )
-
         return JsonResponse({
             'access_token': tokens['access_token'],
-            'expires_in': tokens['expires_in'],
-            'user': UserSerializer(user).data
+            'expires_in': tokens['expires_in']
         })
 
     except Exception as e:
-        logger.error(f"Callback error: {str(e)}")
-        return JsonResponse({'error': 'Authentication failed'}, 
-                          status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        logger.exception("Callback processing failed")
+        return JsonResponse(
+            {'error': 'Authentication failed', 'details': str(e)}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
