@@ -1,24 +1,26 @@
 // src/providers/AuthProvider.tsx
 "use client";
 
-import { Auth0Provider } from "@auth0/auth0-react";
-import { useAuth0 } from "@auth0/auth0-react";
+import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import {
   createContext,
   useContext,
   useCallback,
   useEffect,
   useState,
+  ReactNode
 } from "react";
 
+// Types
 interface User {
   id: string;
   email: string;
   name: string;
   picture?: string;
-  // Add other user properties as needed
+  language_level?: string;
+  native_language?: string;
+  target_language?: string;
 }
-
 
 interface AuthContextType {
   user: User | null;
@@ -30,9 +32,12 @@ interface AuthContextType {
   getAccessToken: () => Promise<string | null>;
 }
 
+// Context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-function AuthProviderContent({ children }: { children: React.ReactNode }) {
+// Main Content Provider
+function AuthProviderContent({ children }: { children: ReactNode }) {
+  // Auth0 hooks
   const {
     isLoading: auth0Loading,
     isAuthenticated,
@@ -43,36 +48,38 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
     error: auth0Error,
   } = useAuth0();
 
+  // Local state
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Synchronize user with backend
+  // Sync user with backend
   const syncUser = useCallback(async (token: string) => {
     try {
-      const response = await fetch("/api/auth/me", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
 
-      if (!response.ok) throw new Error("Failed to fetch user data");
+      if (!response.ok) {
+        throw new Error("Failed to fetch user data");
+      }
 
       const userData = await response.json();
       setUser(userData);
 
-      // Save auth state
-      localStorage.setItem("auth_state", JSON.stringify({
-        user: userData,
-        token
-      }));
+      // Save both in localStorage and cookie for middleware
+      localStorage.setItem("auth_state", JSON.stringify({ user: userData, token }));
+      document.cookie = `auth_state=${JSON.stringify({ token })}; path=/`;
 
       return userData;
     } catch (err) {
       console.error("Error syncing user:", err);
       setError(err instanceof Error ? err : new Error("Failed to sync user"));
       localStorage.removeItem("auth_state");
+      document.cookie = "auth_state=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       throw err;
     }
   }, []);
@@ -84,6 +91,7 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
         if (!isAuthenticated || !auth0User) {
           setUser(null);
           localStorage.removeItem("auth_state");
+          document.cookie = "auth_state=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
           setIsLoading(false);
           return;
         }
@@ -109,6 +117,7 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
     initAuth();
   }, [auth0Loading, isAuthenticated, auth0User, getAccessTokenSilently, syncUser]);
 
+  // Get access token
   const getAccessToken = useCallback(async (): Promise<string | null> => {
     try {
       // Check stored token first
@@ -118,7 +127,7 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
         if (token) return token;
       }
 
-      // Get fresh token
+      // Get fresh token if needed
       const token = await getAccessTokenSilently({
         authorizationParams: {
           audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
@@ -126,7 +135,6 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
         }
       });
 
-      // Sync user and save state
       if (token) {
         await syncUser(token);
         return token;
@@ -140,11 +148,13 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
     }
   }, [getAccessTokenSilently, syncUser]);
 
+  // Login handler
   const login = useCallback(async (returnTo?: string) => {
     try {
       await loginWithRedirect({
-        appState: { returnTo: returnTo || "/dashboard" },
+        appState: { returnTo: returnTo || "/" },
         authorizationParams: {
+          redirect_uri: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/callback`,
           audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
           scope: "openid profile email"
         }
@@ -156,9 +166,11 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
     }
   }, [loginWithRedirect]);
 
+  // Logout handler
   const logout = useCallback(async () => {
     try {
       localStorage.removeItem("auth_state");
+      document.cookie = "auth_state=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       setUser(null);
       await auth0Logout({
         logoutParams: {
@@ -172,6 +184,7 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
     }
   }, [auth0Logout]);
 
+  // Context value
   const value = {
     user,
     isLoading: isLoading || auth0Loading,
@@ -189,14 +202,16 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+// providers/AuthProvider.tsx
+export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <Auth0Provider
       domain={process.env.NEXT_PUBLIC_AUTH0_DOMAIN!}
       clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID!}
       authorizationParams={{
-        redirect_uri: typeof window !== "undefined" ? window.location.origin : undefined,
+        redirect_uri: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/callback`,
         audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
+        scope: 'openid profile email'
       }}
       useRefreshTokens={true}
       cacheLocation="localstorage"
@@ -206,6 +221,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Custom hook
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

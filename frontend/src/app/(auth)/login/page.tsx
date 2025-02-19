@@ -1,45 +1,33 @@
-// src/app/(auth)/(routes)/login/page.tsx
-"use client";
+// app/login/page.tsx
+'use client';
 
-import { useAuth } from "@/providers/AuthProvider";
-import { useRouter } from "next/navigation";
-import React from "react";
-import { AuthUI } from "../_components/AuthUI";
+import { useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 
 export default function LoginPage() {
-  const { login, isAuthenticated } = useAuth();
-  const router = useRouter();
-  const [error, setError] = React.useState<string | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  React.useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/dashboard");
-    }
-  }, [isAuthenticated, router]);
-
-  const handleLogin = async (provider: string) => {
+  const handleLogin = async () => {
     try {
-      setError(null);
-      setIsLoading(true);
-      await login({
-        connection: provider === "github" ? "github" : undefined,
-        appState: { returnTo: "/dashboard" },
-      });
-    } catch (err) {
-      setError("An error occurred during login. Please try again.");
-      console.error("Login error:", err);
-    } finally {
-      setIsLoading(false);
+      // Obtenir l'URL d'authentification du backend
+      const response = await fetch('http://localhost:8000/api/auth/login/');
+      const data = await response.json();
+      
+      if (data.auth_url) {
+        // Rediriger vers Auth0
+        window.location.href = data.auth_url;
+      }
+    } catch (error) {
+      console.error('Login error:', error);
     }
   };
 
   return (
-    <AuthUI 
-      mode="login"
-      error={error}
-      isLoading={isLoading}
-      onSubmit={handleLogin}
-    />
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="p-8 bg-white rounded-lg shadow-md">
+        <h1 className="text-2xl font-bold mb-6">Welcome to Linguify</h1>
+        <Button onClick={handleLogin} className="w-full">
+          Login with Auth0
+        </Button>
+      </div>
+    </div>
   );
 }
