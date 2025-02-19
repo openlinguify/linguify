@@ -214,8 +214,27 @@ def reactivate_account(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_me_view(request):
-    serializer = MeSerializer(request.user)
-    return Response(serializer.data)
+    user = request.user
+    data = {
+        'id': str(user.id),
+        'email': user.email,
+        'name': user.get_full_name() or user.username,
+        'picture': user.profile_picture_url if hasattr(user, 'profile_picture_url') else None,
+        'language_level': user.language_level,
+        'native_language': user.native_language,
+        'target_language': user.target_language,
+    }
+    return Response(data)
+
+
+
+
+
+
+
+
+
+
 
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
