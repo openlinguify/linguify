@@ -126,7 +126,7 @@ const Header: React.FC = () => {
           </Select>
 
           {isAuthenticated ? (
-            <>
+            <div className="flex items-center gap-4">
               {/* Notifications */}
               <Button
                 variant="ghost"
@@ -142,17 +142,43 @@ const Header: React.FC = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    {user?.name || 'Profile'}
+                    {user?.picture ? (
+                      <img 
+                        src={user.picture} 
+                        alt="Profile" 
+                        className="h-6 w-6 rounded-full object-cover"
+                      />
+                    ) : (
+                      <User className="h-4 w-4" />
+                    )}
+                    <span className="max-w-[100px] truncate">{user?.name || 'Profile'}</span>
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    <div className="flex items-center gap-2">
+                      {user?.picture && (
+                        <img 
+                          src={user.picture} 
+                          alt="Profile" 
+                          className="h-8 w-8 rounded-full object-cover"
+                        />
+                      )}
+                      <div>
+                        <p className="font-medium text-sm">{user?.name}</p>
+                        <p className="text-xs text-muted-foreground">{user?.email}</p>
+                      </div>
+                    </div>
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => router.push('/profile')}>
                     <User className="h-4 w-4 mr-2" />
                     Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push('/learning')}>
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    My Learning
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => router.push('/settings')}>
                     <Settings className="h-4 w-4 mr-2" />
@@ -165,7 +191,7 @@ const Header: React.FC = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </>
+            </div>
           ) : (
             <div className="flex items-center gap-2">
               <Button 
@@ -178,7 +204,7 @@ const Header: React.FC = () => {
                 className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
                 onClick={() => router.push('/register')}
               >
-                Get Started
+                Get Started 
               </Button>
             </div>
           )}

@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { setCookie } from 'cookies-next'; // Ajoutez cette importation
+import { setCookie } from 'cookies-next';
 
 export default function CallbackPage() {
   const router = useRouter();
@@ -41,9 +41,15 @@ export default function CallbackPage() {
           throw new Error('No access token received');
         }
 
-        // Stocker le token dans localStorage et cookie
+        // Use setCookie from cookies-next
+        setCookie('access_token', data.access_token, { 
+          req: undefined, 
+          res: undefined, 
+          path: '/' 
+        });
+        
+        // Still keep localStorage for client-side storage
         localStorage.setItem('access_token', data.access_token);
-        document.cookie = `access_token=${data.access_token}; path=/`;
         
         // Rediriger vers le dashboard
         router.push('/');
