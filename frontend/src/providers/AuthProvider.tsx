@@ -1,6 +1,7 @@
 // src/providers/AuthProvider.tsx
 "use client";
 
+
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import {
   createContext,
@@ -54,9 +55,15 @@ function AuthProviderContent({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   // Sync user with backend
+
+
   const syncUser = useCallback(async (token: string) => {
     try {
       console.log("attempting to sync user:", token);
+      console.log("NEXT_PUBLIC_BACKEND_URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
+      console.log("Fetching user from:", `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`);
+      console.log("Fetching from:", `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`);
+
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`, {
         method: "GET",
@@ -67,15 +74,20 @@ function AuthProviderContent({ children }: { children: ReactNode }) {
       });
 
       console.log("Sync user response:", response.status);
+      console.log("Fetching from:", `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`);
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Failed to fetch user data:', response.status, errorText);
+        console.log("Fetching from:", `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`);
+
         throw new Error(`Failed to fetch user data: ${errorText}`);
       }
 
       const userData = await response.json();
       console.log('Fetched user data:', userData);
+      console.log("Fetching from:", `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`);
+
 
           // Transformer les données si nécessaire
       const formattedUserData: User = {
