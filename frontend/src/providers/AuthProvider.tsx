@@ -56,33 +56,68 @@ function AuthProviderContent({ children }: { children: ReactNode }) {
   // Sync user with backend
   const syncUser = useCallback(async (token: string) => {
     try {
+      console.log("attempting to sync user:", token);
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`, {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
 
+      console.log("Sync user response:", response.status);
+
       if (!response.ok) {
-        throw new Error("Failed to fetch user data");
+        const errorText = await response.text();
+        console.error('Failed to fetch user data:', response.status, errorText);
+        throw new Error(`Failed to fetch user data: ${errorText}`);
       }
 
       const userData = await response.json();
-      setUser(userData);
+      console.log('Fetched user data:', userData);
+
+          // Transformer les données si nécessaire
+      const formattedUserData: User = {
+        id: userData.id || auth0User?.sub,
+        email: userData.email || auth0User?.email,
+        name: userData.name || auth0User?.name,
+        picture: userData.picture || auth0User?.picture,
+        language_level: userData.language_level,
+        native_language: userData.native_language,
+        target_language: userData.target_language
+    };
+
+
+
+      setUser(formattedUserData);
 
       // Save both in localStorage and cookie for middleware
-      localStorage.setItem("auth_state", JSON.stringify({ user: userData, token }));
+      localStorage.setItem("auth_state", JSON.stringify({ user: formattedUserData, token }));
       document.cookie = `auth_state=${JSON.stringify({ token })}; path=/`;
 
-      return userData;
+      return formattedUserData;
     } catch (err) {
-      console.error("Error syncing user:", err);
+      console.error("Detailed error syncing user:", err);
+
       setError(err instanceof Error ? err : new Error("Failed to sync user"));
+      
+      // Fallback: utiliser les données d'Auth0 si la synchronisation échoue
+      if (auth0User) {
+        const fallbackUser: User = {
+          id: auth0User.sub || '',
+          email: auth0User.email || '',
+          name: auth0User.name || '',
+          picture: auth0User.picture,
+        };
+        setUser(fallbackUser);
+      }
+  
       localStorage.removeItem("auth_state");
       document.cookie = "auth_state=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       throw err;
     }
-  }, []);
+  }, [auth0User]);
 
   // Initialize auth state
   useEffect(() => {
