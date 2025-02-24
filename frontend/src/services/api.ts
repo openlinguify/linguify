@@ -1,5 +1,4 @@
 // src/services/api.ts
-// src/services/api.ts
 import axios from 'axios';
 
 const api = axios.create({
@@ -20,9 +19,13 @@ export interface Unit {
 }
 
 export const courseAPI = {
-  getUnits: async () => {
+  getUnits: async (level?: string, targetLanguage?: string) => {
     try {
-      const response = await api.get('/api/v1/course/units/');
+      const params: Record<string, string> = {};
+      if (level) params.level = level;
+      if (targetLanguage) params.target_language = targetLanguage;
+
+      const response = await api.get('/api/v1/course/units/', { params });
       return response.data;
     } catch (err: any) {
       console.error('Failed to fetch units:', {
@@ -30,11 +33,9 @@ export const courseAPI = {
         data: err.response?.data,
         message: err.message
       });
-      // Rethrow with more context
       throw new Error(`Failed to fetch units: ${err.message}`);
     }
   }
 };
-
 
 export default api;

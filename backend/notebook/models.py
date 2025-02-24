@@ -18,6 +18,7 @@ class NoteCategory(models.Model):
     def __str__(self):
         return self.name
     
+# Modèle pour les étiquettes (tags) des notes  
 class Tag(models.Model):
     name = models.CharField(max_length=50)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

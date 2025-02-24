@@ -199,7 +199,7 @@ const SettingsPage = () => {
       if (!token) {
         throw new Error("No authentication token found");
       }
-
+  
       // Match the exact fields from ProfileUpdateSerializer
       const updateData = {
         first_name: settings.first_name,
@@ -212,7 +212,7 @@ const SettingsPage = () => {
         objectives: settings.objectives,
         gender: settings.gender,
       };
-
+  
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/user/`, {
         method: "PATCH",
         headers: {
@@ -223,7 +223,7 @@ const SettingsPage = () => {
         credentials: "include",
         body: JSON.stringify(updateData),
       });
-
+  
       if (!response.ok) {
         let errorMessage = "Failed to save settings";
         try {
@@ -242,10 +242,19 @@ const SettingsPage = () => {
         }
         throw new Error(errorMessage);
       }
-
+  
       // Refresh the user data after successful save
       await loadUserSettings();
-
+  
+      // Sauvegarder les paramètres utilisateur dans le localStorage
+      localStorage.setItem('userSettings', JSON.stringify({
+        native_language: settings.native_language,
+        target_language: settings.target_language,
+        language_level: settings.language_level,
+        objectives: settings.objectives
+      }));
+      console.log("User settings saved to localStorage:", settings);
+  
       setSaveStatus({
         show: true,
         isError: false,
