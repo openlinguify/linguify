@@ -18,6 +18,9 @@ from rest_framework.response import Response
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from .serializers import UserSerializer, MeSerializer, ProfileUpdateSerializer
+from django.views.decorators.csrf import csrf_exempt
+from .models import CoachProfile
+
 
 
 logger = logging.getLogger(__name__)
@@ -39,15 +42,21 @@ class Auth0Login(APIView):
             auth_url = f'https://{settings.AUTH0_DOMAIN}/authorize?{urlencode(params)}'
             logger.debug(f"Generated Auth0 URL: {auth_url}")
             
-            return Response({'auth_url': auth_url})
+            response = Response({'auth_url': auth_url})
+            response["Access-Control-Allow-Origin"] = settings.FRONTEND_URL
+            response["Access-Control-Allow-Credentials"] = "true"
+            return response
         except Exception as e:
             logger.error(f"Auth0 login error: {str(e)}")
             return Response({
                 'error': 'Authentication service unavailable',
                 'details': str(e)
             }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        
 
 
+
+        
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def auth0_callback(request):
@@ -118,38 +127,6 @@ def auth0_logout(request):
         return JsonResponse({'error': 'Logout failed'}, 
                           status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@api_view(['GET', 'PATCH'])
-@permission_classes([IsAuthenticated])
-def user_profile(request):
-    """Gestion du profil utilisateur"""
-    try:
-        if request.method == 'GET':
-            return Response(MeSerializer(request.user).data)
-        
-        if request.method == 'PATCH':
-            serializer = ProfileUpdateSerializer(
-                request.user, 
-                data=request.data, 
-                partial=True
-            )
-            
-            if serializer.is_valid():
-                # Validation des langues
-                if serializer.validated_data.get('native_language') == serializer.validated_data.get('target_language'):
-                    return Response(
-                        {'error': 'Les langues doivent être différentes'},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-                
-                serializer.save()
-                return Response(MeSerializer(request.user).data)
-            
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    except Exception as e:
-        logger.error(f"Profile error: {str(e)}")
-        return Response({'error': str(e)}, 
-                      status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -211,24 +188,102 @@ def reactivate_account(request):
             )
         
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+@csrf_exempt
+@api_view(['GET', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def user_profile(request):
+    """User profile management"""
+    try:
+        if not hasattr(request, 'user') or not request.user.is_authenticated:
+            return Response(
+                {'error': 'Authentication required'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        if request.method == 'GET':
+            serializer = MeSerializer(request.user)
+            return Response(serializer.data)
+        
+        elif request.method == 'PATCH':
+            serializer = ProfileUpdateSerializer(
+                request.user, 
+                data=request.data, 
+                partial=True
+            )
+            
+            if not serializer.is_valid():
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Validate languages
+            native_lang = serializer.validated_data.get('native_language')
+            target_lang = serializer.validated_data.get('target_language')
+            if native_lang and target_lang and native_lang == target_lang:
+                return Response(
+                    {'error': 'Native and target languages must be different'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Save and return updated user data
+            serializer.save()
+            return Response(MeSerializer(request.user).data)
+            
+    except Exception as e:
+        logger.error(f"Profile error: {str(e)}", exc_info=True)
+        return Response(
+            {'error': 'An error occurred while processing your request'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+
+
+
+
+
+    
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_me_view(request):
-    user = request.user
-    data = {
-        'id': str(user.id),
-        'email': user.email,
-        'name': user.get_full_name() or user.username,
-        'picture': user.profile_picture_url if hasattr(user, 'profile_picture_url') else None,
-        'language_level': user.language_level,
-        'native_language': user.native_language,
-        'target_language': user.target_language,
-    }
-    return Response(data)
-
-
-
-
+    try:
+        user = request.user
+        data = {
+            'id': str(user.id),
+            'email': user.email,
+            'name': user.get_full_name() or user.username,
+            'picture': user.profile_picture_url if hasattr(user, 'profile_picture_url') else None,
+            'language_level': user.language_level,
+            'native_language': user.native_language,
+            'target_language': user.target_language,
+        }
+        return Response(data)
+    except AttributeError as e:
+        logger.error(f"Missing user attribute: {str(e)}")
+        return Response(
+            {'error': 'User profile incomplete'}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    except Exception as e:
+        logger.error(f"Error retrieving user data: {str(e)}")
+        return Response(
+            {'error': 'Internal server error'}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 
