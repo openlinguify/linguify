@@ -188,74 +188,51 @@ def reactivate_account(request):
             )
         
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-@csrf_exempt
 @api_view(['GET', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def user_profile(request):
     """User profile management"""
-    try:
-        if not hasattr(request, 'user') or not request.user.is_authenticated:
-            return Response(
-                {'error': 'Authentication required'},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
+    logger.info(f"Processing request for user: {request.user}")
+    logger.info(f"Auth header: {request.headers.get('Authorization')}")
+    logger.info(f"Request method: {request.method}")
+    
+    if not request.user.is_authenticated:
+        logger.error("User is not authenticated")
+        return Response(
+            {"error": "Authentication required"},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
 
+    try:
         if request.method == 'GET':
             serializer = MeSerializer(request.user)
             return Response(serializer.data)
         
         elif request.method == 'PATCH':
+            logger.info(f"PATCH data received: {request.data}")
+            
             serializer = ProfileUpdateSerializer(
-                request.user, 
-                data=request.data, 
+                request.user,
+                data=request.data,
                 partial=True
             )
             
             if not serializer.is_valid():
+                logger.error(f"Validation errors: {serializer.errors}")
                 return Response(
                     serializer.errors,
                     status=status.HTTP_400_BAD_REQUEST
                 )
-
-            # Validate languages
-            native_lang = serializer.validated_data.get('native_language')
-            target_lang = serializer.validated_data.get('target_language')
-            if native_lang and target_lang and native_lang == target_lang:
-                return Response(
-                    {'error': 'Native and target languages must be different'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
             
-            # Save and return updated user data
             serializer.save()
             return Response(MeSerializer(request.user).data)
             
     except Exception as e:
         logger.error(f"Profile error: {str(e)}", exc_info=True)
         return Response(
-            {'error': 'An error occurred while processing your request'},
+            {"error": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-
-
-
-
-
-
-
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -290,16 +267,3 @@ def get_me_view(request):
 
 
 
-
-@api_view(['PATCH'])
-@permission_classes([IsAuthenticated])
-def update_profile(request):
-    serializer = ProfileUpdateSerializer(
-        request.user, 
-        data=request.data, 
-        partial=True
-    )
-    if serializer.is_valid():
-        serializer.save()
-        return Response(MeSerializer(request.user).data)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
