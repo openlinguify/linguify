@@ -1,75 +1,49 @@
 // middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0';
 
 const PUBLIC_PATHS = [
-  '/',
   '/login',
+  '/callback',
   '/register',
-  '/about',
-  '/api/auth/login',
-  '/api/auth/logout',
-  '/api/auth/callback'
+  '/api/auth/callback',
+  '/api/auth/login'
 ];
 
-const API_PATHS = [
-  '/api/v1/course',
-  '/api/v1/revision',
-  '/api/v1/chat',
-  '/api/v1/task',
-  '/api/v1/notebook',
-  '/api/v1/flashcard'
-];
-
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const token = request.cookies.get('access_token');
 
-  // Allow public paths
-  if (PUBLIC_PATHS.includes(pathname)) {
+  // Permettre l'accès aux ressources statiques et chemins publics
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/static') ||
+    pathname.startsWith('/api/auth') ||
+    PUBLIC_PATHS.some(path => pathname.startsWith(path))
+  ) {
     return NextResponse.next();
   }
 
-  try {
-    const session = await getSession();
-
-    // Not authenticated
-    if (!session?.user) {
-      // API routes return 401
-      if (API_PATHS.some(path => pathname.startsWith(path))) {
-        return NextResponse.json(
-          { error: 'Unauthorized' },
-          { status: 401 }
-        );
-      }
-
-      // Store the original URL to redirect back after login
-      const loginUrl = new URL('/api/auth/login', request.url);
-      loginUrl.searchParams.set('returnTo', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-
-    // Add user info and token to headers
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set('Authorization', `Bearer ${session.accessToken}`);
-    requestHeaders.set('x-user-id', session.user.sub);
-    requestHeaders.set('x-user-email', session.user.email);
-
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
-
-  } catch (error) {
-    console.error('Auth middleware error:', error);
-    return NextResponse.redirect(new URL('/api/auth/login', request.url));
+  // Rediriger vers login si non authentifié
+  if (!token && !pathname.startsWith('/login')) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
+
+  // Rediriger dashboard vers home si authentifié
+  if (pathname === '/dashboard' && token) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  // Rediriger login vers home si déjà authentifié
+  if (pathname === '/login' && token) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/api/v1/:path*',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

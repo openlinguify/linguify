@@ -17,10 +17,14 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
+# Paramètres de base
+BACKEND_URL = env.str('BACKEND_URL', default='http://localhost:8000')
+FRONTEND_URL = env.str('FRONTEND_URL', default='http://localhost:3000')
+
 # normally Allowed hosts should be set to the domain name of the website
 # but for development purposes we can set it to all
 # normally, ALLOWED_HOSTS = ['yourdomain.com'] or empty in development mode
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'yourdomain.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'yourdomain.com']    
 
 # Application definition
 
@@ -117,6 +121,10 @@ AUTH0_DOMAIN = env('AUTH0_DOMAIN')
 AUTH0_CLIENT_ID = env('AUTH0_CLIENT_ID')
 AUTH0_CLIENT_SECRET = env('AUTH0_CLIENT_SECRET')
 AUTH0_AUDIENCE = env('AUTH0_AUDIENCE')
+AUTH0_CALLBACK_URL = f"{BACKEND_URL}/api/auth/callback/"
+FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:3000')
+FRONTEND_CALLBACK_URL = f"{FRONTEND_URL}/callback"
+FRONTEND_LOGOUT_REDIRECT = FRONTEND_URL
 AUTH0_ALGORITHM = 'RS256'
 
 JWT_AUTH = {
@@ -267,6 +275,27 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
+# Au début du fichier
+import logging
+logger = logging.getLogger(__name__)
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'authentication': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
         },
     },
 }

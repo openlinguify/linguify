@@ -1,24 +1,26 @@
 // src/providers/AuthProvider.tsx
 "use client";
 
-import { Auth0Provider } from "@auth0/auth0-react";
-import { useAuth0 } from "@auth0/auth0-react";
+import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import {
   createContext,
   useContext,
   useCallback,
   useEffect,
   useState,
+  ReactNode
 } from "react";
 
+// Types
 interface User {
   id: string;
   email: string;
   name: string;
   picture?: string;
-  // Add other user properties as needed
+  language_level?: string;
+  native_language?: string;
+  target_language?: string;
 }
-
 
 interface AuthContextType {
   user: User | null;
@@ -30,9 +32,12 @@ interface AuthContextType {
   getAccessToken: () => Promise<string | null>;
 }
 
+// Context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-function AuthProviderContent({ children }: { children: React.ReactNode }) {
+// Main Content Provider
+function AuthProviderContent({ children }: { children: ReactNode }) {
+  // Auth0 hooks
   const {
     isLoading: auth0Loading,
     isAuthenticated,
@@ -43,39 +48,76 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
     error: auth0Error,
   } = useAuth0();
 
+  // Local state
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Synchronize user with backend
+  // Sync user with backend
   const syncUser = useCallback(async (token: string) => {
     try {
-      const response = await fetch("/api/auth/me", {
+      console.log("attempting to sync user:", token);
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`, {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
 
-      if (!response.ok) throw new Error("Failed to fetch user data");
+      console.log("Sync user response:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Failed to fetch user data:', response.status, errorText);
+        throw new Error(`Failed to fetch user data: ${errorText}`);
+      }
 
       const userData = await response.json();
-      setUser(userData);
+      console.log('Fetched user data:', userData);
 
-      // Save auth state
-      localStorage.setItem("auth_state", JSON.stringify({
-        user: userData,
-        token
-      }));
+          // Transformer les données si nécessaire
+      const formattedUserData: User = {
+        id: userData.id || auth0User?.sub,
+        email: userData.email || auth0User?.email,
+        name: userData.name || auth0User?.name,
+        picture: userData.picture || auth0User?.picture,
+        language_level: userData.language_level,
+        native_language: userData.native_language,
+        target_language: userData.target_language
+    };
 
-      return userData;
+
+
+      setUser(formattedUserData);
+
+      // Save both in localStorage and cookie for middleware
+      localStorage.setItem("auth_state", JSON.stringify({ user: formattedUserData, token }));
+      document.cookie = `auth_state=${JSON.stringify({ token })}; path=/`;
+
+      return formattedUserData;
     } catch (err) {
-      console.error("Error syncing user:", err);
+      console.error("Detailed error syncing user:", err);
+
       setError(err instanceof Error ? err : new Error("Failed to sync user"));
+      
+      // Fallback: utiliser les données d'Auth0 si la synchronisation échoue
+      if (auth0User) {
+        const fallbackUser: User = {
+          id: auth0User.sub || '',
+          email: auth0User.email || '',
+          name: auth0User.name || '',
+          picture: auth0User.picture,
+        };
+        setUser(fallbackUser);
+      }
+  
       localStorage.removeItem("auth_state");
+      document.cookie = "auth_state=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       throw err;
     }
-  }, []);
+  }, [auth0User]);
 
   // Initialize auth state
   useEffect(() => {
@@ -84,6 +126,7 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
         if (!isAuthenticated || !auth0User) {
           setUser(null);
           localStorage.removeItem("auth_state");
+          document.cookie = "auth_state=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
           setIsLoading(false);
           return;
         }
@@ -109,6 +152,7 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
     initAuth();
   }, [auth0Loading, isAuthenticated, auth0User, getAccessTokenSilently, syncUser]);
 
+  // Get access token
   const getAccessToken = useCallback(async (): Promise<string | null> => {
     try {
       // Check stored token first
@@ -118,7 +162,7 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
         if (token) return token;
       }
 
-      // Get fresh token
+      // Get fresh token if needed
       const token = await getAccessTokenSilently({
         authorizationParams: {
           audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
@@ -126,7 +170,6 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
         }
       });
 
-      // Sync user and save state
       if (token) {
         await syncUser(token);
         return token;
@@ -140,11 +183,13 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
     }
   }, [getAccessTokenSilently, syncUser]);
 
+  // Login handler
   const login = useCallback(async (returnTo?: string) => {
     try {
       await loginWithRedirect({
-        appState: { returnTo: returnTo || "/dashboard" },
+        appState: { returnTo: returnTo || "/" },
         authorizationParams: {
+          redirect_uri: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/callback`,
           audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
           scope: "openid profile email"
         }
@@ -156,9 +201,11 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
     }
   }, [loginWithRedirect]);
 
+  // Logout handler
   const logout = useCallback(async () => {
     try {
       localStorage.removeItem("auth_state");
+      document.cookie = "auth_state=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       setUser(null);
       await auth0Logout({
         logoutParams: {
@@ -172,6 +219,7 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
     }
   }, [auth0Logout]);
 
+  // Context value
   const value = {
     user,
     isLoading: isLoading || auth0Loading,
@@ -189,14 +237,16 @@ function AuthProviderContent({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+// providers/AuthProvider.tsx
+export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <Auth0Provider
       domain={process.env.NEXT_PUBLIC_AUTH0_DOMAIN!}
       clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID!}
       authorizationParams={{
-        redirect_uri: typeof window !== "undefined" ? window.location.origin : undefined,
+        redirect_uri: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/callback`,
         audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
+        scope: 'openid profile email'
       }}
       useRefreshTokens={true}
       cacheLocation="localstorage"
@@ -206,6 +256,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Custom hook
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
