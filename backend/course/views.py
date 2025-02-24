@@ -74,10 +74,37 @@ class CustomPagination(PageNumberPagination):
 #         return context
 
 class UnitAPIView(generics.ListAPIView):
-    permission_classes = [AllowAny]  # Explicitly set AllowAny
-    authentication_classes = []  # Remove authentication requirement
+    permission_classes = [AllowAny]  # Permettre l'accès sans authentification
+    authentication_classes = []  # Ne pas utiliser d'authentification
     serializer_class = UnitSerializer
-    queryset = Unit.objects.all().order_by('order')
+    
+    def get_queryset(self):
+        queryset = Unit.objects.all().order_by('order')
+        
+        # Récupérer les paramètres de filtrage
+        level = self.request.query_params.get('level')
+        target_language = self.request.query_params.get('target_language')
+        
+        # Filtrer par niveau si spécifié
+        if level:
+            queryset = queryset.filter(level=level)
+        
+        # Si vous souhaitez filtrer par langue cible
+        # Cela dépend de comment vous avez implémenté le support multi-langue
+        # Par exemple, si vous utilisez le serializer pour gérer la langue:
+        if target_language:
+            # Le filtrage par langue peut être géré dans le serializer
+            # Vous pouvez ajouter cette information au contexte du serializer
+            pass
+        
+        return queryset
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        # Ajouter la langue cible au contexte pour que le serializer puisse l'utiliser
+        target_language = self.request.query_params.get('target_language', 'en').lower()
+        context['target_language'] = target_language
+        return context
 
 class LessonAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
