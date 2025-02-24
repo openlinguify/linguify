@@ -1,5 +1,3 @@
-// frontend/src/app/%28dashboard%29/%28apps%29/learning/_components/VocabularyLesson.tsx
-
 "use client";
 import { useState, useEffect } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -65,6 +63,51 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
   const [error, setError] = useState<string | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showCompletionMessage, setShowCompletionMessage] = useState(false);
+  const [userSettings, setUserSettings] = useState({
+    native_language: 'EN',
+    target_language: 'EN',
+  });
+
+  // Charger les préférences de l'utilisateur au démarrage
+  useEffect(() => {
+    const loadUserPreferences = () => {
+      const userSettingsStr = localStorage.getItem('userSettings');
+      if (userSettingsStr) {
+        try {
+          const settings = JSON.parse(userSettingsStr);
+          setUserSettings({
+            native_language: settings.native_language || 'EN',
+            target_language: settings.target_language || 'EN',
+          });
+          console.log("Loaded user settings:", settings);
+        } catch (e) {
+          console.error("Error parsing user settings:", e);
+        }
+      }
+    };
+    
+    loadUserPreferences();
+  }, []);
+
+  // Fonction pour obtenir dynamiquement le contenu dans la langue spécifiée
+  const getWordInLanguage = (word: VocabularyItem, language: string, field: string) => {
+    // Convertir en minuscules pour correspondre au format "_en", "_fr", etc.
+    const lang = language.toLowerCase();
+    const fieldName = `${field}_${lang}`;
+    
+    // Si le champ existe dans l'objet word, retournez-le, sinon retournez la version anglaise
+    return word[fieldName as keyof VocabularyItem] || word[`${field}_en` as keyof VocabularyItem];
+  };
+
+  // Fonction pour obtenir le contenu dans la langue native
+  const getWordInNativeLanguage = (word: VocabularyItem, field: string) => {
+    return getWordInLanguage(word, userSettings.native_language, field);
+  };
+
+  // Fonction pour obtenir le contenu dans la langue cible
+  const getWordInTargetLanguage = (word: VocabularyItem, field: string) => {
+    return getWordInLanguage(word, userSettings.target_language, field);
+  };
 
   // Effect to handle sound when reaching the last word
   useEffect(() => {
@@ -96,23 +139,35 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
   // Speech synthesis function
   const speak = (text: string) => {
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US"; // Utiliser la voix anglaise américaine
+    
+    // Utiliser la langue cible pour la prononciation
+    const langMap: { [key: string]: string } = {
+      'EN': 'en-US',
+      'FR': 'fr-FR',
+      'NL': 'nl-NL',
+      'ES': 'es-ES',
+      'DE': 'de-DE',
+      'IT': 'it-IT',
+      'PT': 'pt-PT'
+    };
+    
+    utterance.lang = langMap[userSettings.target_language] || "en-US";
     utterance.rate = 0.9; // Ralentir légèrement la prononciation
 
     // Obtenir toutes les voix disponibles
     const voices = window.speechSynthesis.getVoices();
 
-    // Chercher une voix anglaise de meilleure qualité
-    const englishVoice =
+    // Chercher une voix dans la langue cible
+    const targetVoice =
       voices.find(
-        (voice) => voice.lang.includes("en-US") && voice.name.includes("Google") // Préférer les voix Google si disponibles
+        (voice) => voice.lang.includes(utterance.lang) && voice.name.includes("Google")
       ) ||
       voices.find(
-        (voice) => voice.lang.includes("en-US") // Sinon, prendre n'importe quelle voix anglaise
+        (voice) => voice.lang.includes(utterance.lang)
       );
 
-    if (englishVoice) {
-      utterance.voice = englishVoice;
+    if (targetVoice) {
+      utterance.voice = targetVoice;
     }
 
     window.speechSynthesis.speak(utterance);
@@ -124,8 +179,19 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
 
       console.log("Fetching vocabulary for lesson:", lessonId);
       try {
+        // Récupérer les paramètres utilisateur
+        const userSettingsStr = localStorage.getItem('userSettings');
+        const settings = userSettingsStr ? JSON.parse(userSettingsStr) : {};
+        const targetLanguage = settings.target_language || 'EN';
+        const nativeLanguage = settings.native_language || 'EN';
+        
+        console.log("Using languages for API call:", {
+          target: targetLanguage,
+          native: nativeLanguage
+        });
+        
         const response = await fetch(
-          `http://localhost:8000/api/v1/course/vocabulary-list/?content_lesson=${lessonId}`,
+          `http://localhost:8000/api/v1/course/vocabulary-list/?content_lesson=${lessonId}&target_language=${targetLanguage.toLowerCase()}`,
           {
             method: "GET",
             headers: {
@@ -280,18 +346,18 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
               <div className={commonStyles.gradientBackground} />
               <div className="relative p-8 text-center">
                 <div className="text-lg font-medium text-brand-purple mb-2">
-                  {currentWord.word_type_en || "N/A"}
+                  {getWordInTargetLanguage(currentWord, 'word_type')}
                 </div>
                 <GradientText className="text-5xl font-bold block mb-3">
-                  {currentWord.word_en}
+                  {getWordInTargetLanguage(currentWord, 'word')}
                 </GradientText>
                 <p className="text-2xl text-muted-foreground">
-                  {currentWord.word_fr}
+                  {getWordInNativeLanguage(currentWord, 'word')}
                 </p>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => speak(currentWord.word)}
+                  onClick={() => speak(String(getWordInTargetLanguage(currentWord, 'word')))}
                   className="mt-4"
                 >
                   <Volume2 className="h-4 w-4 mr-2" />
@@ -301,7 +367,7 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
             </div>
 
             {/* Example Section */}
-            {currentWord.example_sentence_en && (
+            {currentWord.example_sentence && (
               <div
                 className={`${commonStyles.exampleBox} flex flex-col items-center text-center`}
               >
@@ -309,10 +375,10 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
                   Example:
                 </h3>
                 <p className="text-lg mb-1">
-                  {currentWord.example_sentence_en}
+                  {getWordInTargetLanguage(currentWord, 'example_sentence')}
                 </p>
                 <p className="text-muted-foreground">
-                  {currentWord.example_sentence_fr}
+                  {getWordInNativeLanguage(currentWord, 'example_sentence')}
                 </p>
               </div>
             )}
@@ -333,21 +399,27 @@ const VocabularyLesson = ({ lessonId }: VocabularyLessonProps) => {
 
               <div className={'${commonStyles.tabsContent} flex flex-col items_center text-center'}>
                 <TabsContent value="definition">
-                  <p className="text-lg mb-1">{currentWord.definition_en}</p>
+                  <p className="text-lg mb-1">{getWordInTargetLanguage(currentWord, 'definition')}</p>
                   <p className="text-muted-foreground">
-                    {currentWord.definition_fr}
+                    {getWordInNativeLanguage(currentWord, 'definition')}
                   </p>
                 </TabsContent>
 
                 <TabsContent value="synonyms">
+                  <p className="text-lg mb-1">
+                    {getWordInTargetLanguage(currentWord, 'synonymous') || "No synonyms available"}
+                  </p>
                   <p className="text-muted-foreground">
-                    {currentWord.synonymous_en || "No synonyms available"}
+                    {getWordInNativeLanguage(currentWord, 'synonymous') || "Pas de synonymes disponibles"}
                   </p>
                 </TabsContent>
 
                 <TabsContent value="antonyms">
+                  <p className="text-lg mb-1">
+                    {getWordInTargetLanguage(currentWord, 'antonymous') || "No antonyms available"}
+                  </p>
                   <p className="text-muted-foreground">
-                    {currentWord.antonymous_en || "No antonyms available"}
+                    {getWordInNativeLanguage(currentWord, 'antonymous') || "Pas d'antonymes disponibles"}
                   </p>
                 </TabsContent>
               </div>
