@@ -122,7 +122,9 @@ AUTH0_CLIENT_ID = env('AUTH0_CLIENT_ID')
 AUTH0_CLIENT_SECRET = env('AUTH0_CLIENT_SECRET')
 AUTH0_AUDIENCE = env('AUTH0_AUDIENCE')
 AUTH0_CALLBACK_URL = f"{BACKEND_URL}/api/auth/callback/"
+FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:3000')
 FRONTEND_CALLBACK_URL = f"{FRONTEND_URL}/callback"
+FRONTEND_LOGOUT_REDIRECT = FRONTEND_URL
 AUTH0_ALGORITHM = 'RS256'
 
 JWT_AUTH = {
@@ -281,7 +283,7 @@ CHANNEL_LAYERS = {
 import logging
 logger = logging.getLogger(__name__)
 
-# Dans settings.py, ajoutez :
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
