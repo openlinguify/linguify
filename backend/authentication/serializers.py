@@ -1,5 +1,8 @@
 # backend/django_apps/authentication/serializers.py
 from rest_framework import serializers
+import logging
+
+logger = logging.getLogger(__name__)
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CoachProfile, Review, UserFeedback
 from django.contrib.auth import get_user_model
@@ -90,14 +93,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         )
         return user
 
-class UserProfileUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            'username', 'first_name', 'last_name', 'age', 'gender',
-            'profile_picture', 'bio', 'native_language', 'target_language',
-            'language_level', 'objectives'
-        ]
 
 class MeSerializer(serializers.ModelSerializer):
     """
@@ -148,6 +143,7 @@ class MeSerializer(serializers.ModelSerializer):
         """Retrieve user's age"""
         return obj.age
 
+# authentication/serializers.py
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     """
     Serializer for updating user profile
@@ -166,15 +162,38 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             'objectives',
             'gender'
         ]
+        extra_kwargs = {
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+            'username': {'required': False},
+            'profile_picture': {'required': False, 'allow_null': True},
+            'bio': {'required': False, 'allow_null': True, 'allow_blank': True},
+            'native_language': {'required': False},
+            'target_language': {'required': False},
+            'language_level': {'required': False},
+            'objectives': {'required': False},
+            'gender': {'required': False, 'allow_null': True}
+        }
 
     def validate(self, data):
         """
         Custom validation
         """
-        # Ensure native and target languages are different
-        if data.get('native_language') and data.get('target_language'):
-            if data['native_language'] == data['target_language']:
-                raise serializers.ValidationError({
-                    'target_language': 'Target language must be different from native language'
-                })
+        logger.info(f"Validating profile update data: {data}")
+
+        # Only validate languages if both are provided
+        native_lang = data.get('native_language')
+        target_lang = data.get('target_language')
+        if native_lang and target_lang and native_lang == target_lang:
+            raise serializers.ValidationError({
+                'target_language': 'Target language must be different from native language'
+            })
+
         return data
+
+    def update(self, instance, validated_data):
+        logger.info(f"Updating user profile with data: {validated_data}")
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
