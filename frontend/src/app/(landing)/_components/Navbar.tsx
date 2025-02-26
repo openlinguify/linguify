@@ -2,67 +2,107 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 
 export const Navbar = () => {
   const pathname = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const navigation = [
     { name: "Home", href: "/home" },
     { name: "Features", href: "/features" },
     { name: "Pricing", href: "/pricing" },
     { name: "Company", href: "/company" },
-    { name: "Blog", href: "/blog" },
+    { name: "Contact", href: "/contact" },
   ];
 
-  return (
-    <nav className="bg-white border-b border-gray-200">
-      <div className="container px-6 py-4 mx-auto md:flex md:justify-between md:items-center">
-        <div className="flex items-center justify-between">
-          <Link href="/home" className="text-xl font-bold text-gray-800">
-            Linguify
-          </Link>
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
-          <div className="md:hidden">
-            <button type="button" className="block text-gray-800 hover:text-gray-700 focus:text-gray-700 focus:outline-none">
-              <svg className="h-6 w-6 fill-current" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+  return (
+    <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex">
+            <div className="flex-shrink-0 flex items-center">
+              <Link href="/home" className="font-bold text-xl text-gray-900 dark:text-white">
+                Linguify
+              </Link>
+            </div>
+            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+              {navigation.map((item) => (
+                <Link 
+                  key={item.name} 
+                  href={item.href} 
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 ${
+                    pathname === item.href 
+                      ? "border-indigo-500 text-gray-900 dark:text-white" 
+                      : "border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+          
+          <div className="hidden sm:ml-6 sm:flex sm:items-center">
+            <Link 
+              href="/login" 
+              className="ml-8 inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+            >
+              Login
+            </Link>
+          </div>
+          
+          <div className="flex items-center sm:hidden">
+            <button
+              type="button"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+              aria-expanded="false"
+              onClick={toggleMenu}
+            >
+              <span className="sr-only">Open main menu</span>
+              {isMenuOpen ? (
+                <X className="block h-6 w-6" aria-hidden="true" />
+              ) : (
+                <Menu className="block h-6 w-6" aria-hidden="true" />
+              )}
             </button>
           </div>
         </div>
+      </div>
 
-        <div className="hidden md:flex md:items-center md:justify-between w-full">
-          <div className="flex flex-col md:flex-row md:items-center md:space-x-6">
+      {/* Mobile menu */}
+      {isMenuOpen && (
+        <div className="sm:hidden">
+          <div className="pt-2 pb-3 space-y-1">
             {navigation.map((item) => (
-              <Link 
-                key={item.name} 
-                href={item.href} 
-                className={`text-gray-800 hover:text-blue-600 ${
-                  pathname === item.href ? "font-medium text-blue-600" : ""
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  pathname === item.href
+                    ? "bg-indigo-50 border-indigo-500 text-indigo-700"
+                    : "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
                 }`}
+                onClick={() => setIsMenuOpen(false)}
               >
                 {item.name}
               </Link>
             ))}
-          </div>
-          
-          {/* Boutons d'authentification */}
-          <div className="flex items-center mt-4 md:mt-0">
-            <Link 
-              href="/login" 
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            <Link
+              href="/login"
+              className="block w-full text-center px-3 py-2 mt-4 rounded-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+              onClick={() => setIsMenuOpen(false)}
             >
-              Se connecter
-            </Link>
-            <Link 
-              href="/register" 
-              className="ml-4 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-            >
-              S'inscrire
+              Login
             </Link>
           </div>
         </div>
-      </div>
+      )}
     </nav>
   );
-}
+};
