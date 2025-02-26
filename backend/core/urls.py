@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 from django.contrib import admin
 from django.urls import path, include
 from . import utils
+from . import views
 
 def redirect_to_admin(request):
     return redirect('admin/')
@@ -19,4 +20,5 @@ urlpatterns = [
     path('api/v1/notebook/', include('notebook.urls', namespace='notebook')),
     path('api/v1/chat/', include('chat.urls', namespace='chat')),
     path('api/v1/task/', include('task.urls', namespace='task')),
+    path('api/contact/', views.contact_view, name='contact'),
 ]

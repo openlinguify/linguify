@@ -299,3 +299,14 @@ LOGGING = {
         },
     },
 }
+
+
+
+# Configuration email pour l'envoi depuis les formulaires de contact
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Ou votre fournisseur de mail
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'linguify.info@gmail.com'  # Remplacez par votre adresse email
+EMAIL_HOST_PASSWORD = 'Sony728596'  # Mot de passe d'application pour Gmail
+DEFAULT_FROM_EMAIL = 'Linguify <no-reply@linguify.com>'
