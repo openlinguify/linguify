@@ -1,7 +1,5 @@
 'use client';
 
-
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,6 +16,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Globe, User, BookOpen, Save, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/providers/AuthProvider";
+import { apiGet, apiPatch } from "@/lib/api-client";
+import { storeAuthData, getUserProfile } from "@/lib/auth";
 
 // Constants matching backend choices
 const LANGUAGE_CHOICES = [
@@ -73,15 +74,10 @@ interface UserSettings {
   profile_picture: string | null;
 }
 
-// Utility function to get cookies
-const getCookie = (name: string): string => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift() || '';
-  return '';
-};
-
 const SettingsPage = () => {
+  // Get auth context
+  const { isAuthenticated, user, getAccessToken } = useAuth();
+  
   const [settings, setSettings] = useState<UserSettings>({
     username: "",
     first_name: "",
@@ -108,82 +104,98 @@ const SettingsPage = () => {
     message: "",
   });
 
-  useEffect(() => {
-    loadUserSettings();
-  }, []);
-
+  // Try both user endpoints to get user data
   const loadUserSettings = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/user/`, {
-        method: 'GET',
-        credentials: "include",
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        }
-      });
-
-      if (!response.ok) {
-        const contentType = response.headers.get("content-type");
-        let errorMessage = "Failed to load settings";
-        
-        try {
-          if (contentType && contentType.includes("application/json")) {
-            const errorData = await response.json();
-            errorMessage = errorData.error || errorData.detail || errorMessage;
-          } else {
-            const textError = await response.text();
-            console.error("Server error:", textError);
-          }
-        } catch (e) {
-          console.error("Error parsing response:", e);
-        }
-        
-        throw new Error(errorMessage);
-      }
-      if (!response.ok) throw new Error("Failed to load settings");
-      const data = await response.json();
-      console.log("Received user data:", data);
+      setIsLoading(true);
       
-      // Transform backend data to match our state structure
-      // Validate required fields
-      if (!data.email) {
-        throw new Error("Invalid user data received");
+      // Initialize with data from Auth provider if available
+      if (user) {
+        setSettings(prev => ({
+          ...prev,
+          email: user.email || '',
+          first_name: user.name?.split(' ')[0] || '',
+          last_name: user.name?.split(' ').slice(1).join(' ') || '',
+          native_language: user.native_language || 'EN',
+          target_language: user.target_language || 'EN',
+          language_level: user.language_level || 'A1',
+        }));
       }
-
-      setSettings({
-        username: data.username || "",
-        first_name: data.first_name || "",
-        last_name: data.last_name || "",
-        email: data.email || "",
-        birthday: data.birthday || null,
-        gender: data.gender || null,
-        bio: data.bio || null,
-        native_language: data.native_language || "EN",
-        target_language: data.target_language || "EN",
-        language_level: data.language_level || "A1",
-        objectives: data.objectives || "Travel",
-        is_coach: !!data.is_coach,
-        is_subscribed: !!data.is_subscribed,
-        profile_picture: data.profile_picture || null,
-      });
+      
+      // Try /me endpoint first
+      try {
+        const userData = await apiGet<any>('/api/auth/me/');
+        updateSettingsFromUserData(userData);
+        return;
+      } catch (meError) {
+        console.log("Failed to fetch from /me endpoint, trying /user/...");
+        // Fall back to /user/ endpoint
+        try {
+          const userData = await apiGet<any>('/api/auth/user/');
+          updateSettingsFromUserData(userData);
+          return;
+        } catch (userError) {
+          // If both fail, fallback to local storage
+          const localProfile = getUserProfile();
+          if (localProfile) {
+            updateSettingsFromUserData(localProfile);
+            return;
+          }
+          throw userError;
+        }
+      }
     } catch (error) {
       setSaveStatus({
         show: true,
         isError: true,
-        message: "Failed to load settings",
+        message: error instanceof Error ? error.message : "Failed to load settings",
       });
       console.error("Load settings error:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const updateSettingsFromUserData = (data: any) => {
+    if (!data) return;
+    
+    // Check for required fields
+    if (!data.email) {
+      console.warn("Invalid user data received:", data);
+      return;
+    }
+
+    setSettings({
+      username: data.username || "",
+      first_name: data.first_name || "",
+      last_name: data.last_name || "",
+      email: data.email || "",
+      birthday: data.birthday || null,
+      gender: data.gender || null,
+      bio: data.bio || null,
+      native_language: data.native_language || "EN",
+      target_language: data.target_language || "EN",
+      language_level: data.language_level || "A1",
+      objectives: data.objectives || "Travel",
+      is_coach: !!data.is_coach,
+      is_subscribed: !!data.is_subscribed,
+      profile_picture: data.profile_picture || null,
+    });
+    
+    // Also update local storage for offline access
+    const token = getAccessToken ? getAccessToken() : null;
+    if (token) {
+      storeAuthData(token, data);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadUserSettings();
+    } else {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated]);
 
   const handleInputChange = (field: keyof UserSettings, value: any) => {
     setSettings(prev => ({
@@ -195,11 +207,8 @@ const SettingsPage = () => {
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-  
+      setSaveStatus({ show: false, isError: false, message: "" });
+      
       // Match the exact fields from ProfileUpdateSerializer
       const updateData = {
         first_name: settings.first_name,
@@ -212,49 +221,21 @@ const SettingsPage = () => {
         objectives: settings.objectives,
         gender: settings.gender,
       };
-  
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/user/`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-          "Accept": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(updateData),
-      });
-  
-      if (!response.ok) {
-        let errorMessage = "Failed to save settings";
-        try {
-          const contentType = response.headers.get("content-type");
-          if (contentType && contentType.includes("application/json")) {
-            const errorData = await response.json();
-            errorMessage = errorData.error || errorData.detail || 
-              (typeof errorData === 'object' ? JSON.stringify(errorData) : errorData) ||
-              errorMessage;
-          } else {
-            const textError = await response.text();
-            errorMessage = textError || errorMessage;
-          }
-        } catch (e) {
-          console.error("Error parsing error response:", e);
-        }
-        throw new Error(errorMessage);
-      }
-  
-      // Refresh the user data after successful save
-      await loadUserSettings();
-  
-      // Sauvegarder les paramètres utilisateur dans le localStorage
+      
+      // Use our API client for consistent auth handling
+      const updatedData = await apiPatch<any>('/api/auth/user/', updateData);
+      
+      // Update settings with response data
+      updateSettingsFromUserData(updatedData);
+      
+      // Save user preferences to localStorage for quick access
       localStorage.setItem('userSettings', JSON.stringify({
         native_language: settings.native_language,
         target_language: settings.target_language,
         language_level: settings.language_level,
         objectives: settings.objectives
       }));
-      console.log("User settings saved to localStorage:", settings);
-  
+      
       setSaveStatus({
         show: true,
         isError: false,
@@ -279,6 +260,25 @@ const SettingsPage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+  }
+
+  // Check if user is not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="container mx-auto p-6 max-w-4xl">
+        <Card>
+          <CardHeader>
+            <CardTitle>Authentication Required</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">You need to be logged in to view and edit your settings.</p>
+            <Button onClick={() => window.location.href = "/login"}>
+              Login
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
