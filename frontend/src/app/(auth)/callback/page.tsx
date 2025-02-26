@@ -49,7 +49,10 @@ export default function CallbackPage() {
         });
         
         // Still keep localStorage for client-side storage
-        localStorage.setItem('access_token', data.access_token);
+localStorage.setItem('auth_state', JSON.stringify({
+  token: data.access_token
+}));
+        document.cookie = `auth_state=${JSON.stringify({ token: data.access_token })}; path=/`;
         
         // Rediriger vers le dashboard
         router.push('/');

@@ -55,6 +55,20 @@ export const Navbar = () => {
             >
               Login
             </Link>
+            <Link 
+              href="/register" 
+              className="ml-4 inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+            >
+              Register
+            </Link>
+
+
+
+
+
+
+
+
           </div>
           
           <div className="flex items-center sm:hidden">
@@ -99,6 +113,13 @@ export const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Login
+            </Link>
+            <Link
+              href="/register"
+              className="block w-full text-center px-3 py-2 mt-4 rounded-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Register
             </Link>
           </div>
         </div>

@@ -3,11 +3,16 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 const PUBLIC_PATHS = [
+  '/',
   '/login',
-  '/callback',
   '/register',
+  '/callback',
+  '/about',
+  '/terms',
+  '/privacy',
+  '/contact',
+  '/api/auth/login',
   '/api/auth/callback',
-  '/api/auth/login'
 ];
 
 export function middleware(request: NextRequest) {
