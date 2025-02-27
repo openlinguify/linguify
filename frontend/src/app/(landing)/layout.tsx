@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LanguageProvider } from "@/components/LanguageContext";
 import { Navbar } from "./_components/Navbar";
 
 export const metadata: Metadata = {
@@ -6,18 +7,18 @@ export const metadata: Metadata = {
     description: "Landing page for Linguify",
   };
 
-export default function Layout({
+  export default function RootLayout({
     children,
-  }: Readonly<{
+  }: {
     children: React.ReactNode;
-  }>) {
+  }) {
     return (
-      <html lang="en" suppressHydrationWarning>
+      <html lang="fr">
         <body>
-          <>
+          <LanguageProvider>
             <Navbar />
-            <div>{children}</div>
-          </>
+            {children}
+          </LanguageProvider>
         </body>
       </html>
     );
