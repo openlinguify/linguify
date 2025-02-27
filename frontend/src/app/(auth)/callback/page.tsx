@@ -1,4 +1,3 @@
-// app/(auth)/callback/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -14,11 +13,13 @@ export default function CallbackPage() {
     const processAuth = async () => {
       try {
         const code = searchParams.get('code');
-        console.log('Auth code received:', code);
+        console.log('🔹 Auth code received:', code);
 
         if (!code) {
-          throw new Error('No authorization code received');
+          throw new Error('⚠️ No authorization code received');
         }
+
+        console.log('🔹 Fetching:', `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/callback/?code=${code}`);
 
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/callback/?code=${code}`,
@@ -29,35 +30,41 @@ export default function CallbackPage() {
           }
         );
 
+        console.log('🔹 Response status:', response.status);
+
         if (!response.ok) {
           const errorData = await response.json();
+          console.error('❌ Error response from backend:', errorData);
           throw new Error(errorData.error || 'Failed to process authentication');
         }
 
         const data = await response.json();
-        console.log('Auth callback response:', data);
+        console.log('✅ Auth callback response:', data);
 
         if (!data.access_token) {
-          throw new Error('No access token received');
+          throw new Error('⚠️ No access token received');
         }
 
         // Use setCookie from cookies-next
-        setCookie('access_token', data.access_token, { 
-          req: undefined, 
-          res: undefined, 
-          path: '/' 
+        setCookie('access_token', data.access_token, {
+          req: undefined,
+          res: undefined,
+          path: '/'
         });
-        
+
+        console.log('✅ Cookie set: access_token');
+
         // Still keep localStorage for client-side storage
-localStorage.setItem('auth_state', JSON.stringify({
-  token: data.access_token
-}));
+        localStorage.setItem('auth_state', JSON.stringify({ token: data.access_token }));
+        console.log('✅ Local storage updated:', localStorage.getItem('auth_state'));
+
         document.cookie = `auth_state=${JSON.stringify({ token: data.access_token })}; path=/`;
-        
+        console.log('✅ Document cookie set:', document.cookie);
+
         // Rediriger vers le dashboard
         router.push('/');
       } catch (error) {
-        console.error('Callback error:', error);
+        console.error('❌ Callback error:', error);
         setError(error instanceof Error ? error.message : 'Authentication failed');
         router.push('/login');
       }

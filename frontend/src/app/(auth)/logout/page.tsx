@@ -15,7 +15,7 @@ export default function LogoutPage() {
     try {
       setIsLoading(true);
       await logout();
-      router.push("/");
+      router.push("/home");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {

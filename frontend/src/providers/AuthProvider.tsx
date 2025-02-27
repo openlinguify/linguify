@@ -49,6 +49,7 @@ function AuthProviderContent({ children }: { children: ReactNode }) {
     getAccessTokenSilently,
     error: auth0Error,
   } = useAuth0();
+  console.log("Auth0 State:", { auth0User, isAuthenticated, auth0Loading, auth0Error });
 
   // Local state
   const [user, setUser] = useState<User | null>(null);
@@ -180,19 +181,33 @@ function AuthProviderContent({ children }: { children: ReactNode }) {
             const stored = localStorage.getItem('auth_state');
             if (stored) {
               const authData = JSON.parse(stored);
-              if (authData.token && authData.user) {
-                // We have stored auth data, use it
+              if (authData.token) {  // Check for token presence only
                 setToken(authData.token);
-                setUser(authData.user);
+                
+                if (authData.user) {
+                  setUser(authData.user);
+                } else {
+                  // Attempt to sync user if user data is missing
+                  try {
+                    await syncUser(authData.token);
+                  } catch (err) {
+                    console.error('Failed to sync user with stored token:', err);
+                    clearAuthData();
+                    setToken(null);
+                    setUser(null);
+                  }
+                }
+  
                 setIsLoading(false);
                 return;
               }
             }
           } catch (e) {
             console.error('Error reading stored auth data:', e);
+            clearAuthData();
           }
-          
-          // No stored auth data, clear state
+  
+          // No valid stored auth data, clear state
           setUser(null);
           setToken(null);
           clearAuthData();
@@ -203,6 +218,7 @@ function AuthProviderContent({ children }: { children: ReactNode }) {
         // Case 2: Auth0 authenticated
         try {
           // Get token from Auth0
+          console.log("Requesting access token...");
           const accessToken = await getAccessTokenSilently({
             authorizationParams: {
               audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
@@ -211,6 +227,7 @@ function AuthProviderContent({ children }: { children: ReactNode }) {
           });
           
           // Sync user with backend
+          console.log("Access token received: ", accessToken ? accessToken.substring(0, 10) + "..." : "none");
           await syncUser(accessToken);
         } catch (err) {
           console.error("Auth initialization error:", err);

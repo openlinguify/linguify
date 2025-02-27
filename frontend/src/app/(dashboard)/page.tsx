@@ -1,6 +1,7 @@
 // src/app/(dashboard)/page.tsx
 "use client";
 
+import React from "react";
 import { UserProgress } from "./_components/user-progress";
 import { Card } from "@/components/ui/card";
 import { BookOpen, MessageCircle, Star, Trophy } from "lucide-react";

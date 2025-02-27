@@ -45,7 +45,14 @@ const Header: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  console.log("Header rendered");
+  console.log("isAuthenticated:", isAuthenticated);
+  console.log("user:", user);
+  console.log("localStorage auth_state:", localStorage.getItem('auth_state'));
+  console.log("effectivelyAuthenticated:", isAuthenticated || !!user || !!localStorage.getItem('auth_state'));
+
   const handleLanguageChange = (value: string) => {
+    console.log("Language changed to:", value);
     toast({
       title: "Language Changed",
       description: `Language set to ${value.toUpperCase()}`,
@@ -55,6 +62,7 @@ const Header: React.FC = () => {
   const handleLogout = async () => {
     try {
       await logout();
+      console.log("Logged out successfully");
       router.push("/");
       toast({
         title: "Logged out successfully",
@@ -80,8 +88,11 @@ const Header: React.FC = () => {
   // Vérifier si l'utilisateur est authentifié pour la mise à jour de l'interface
   useEffect(() => {
     // Vérification par Auth0 ou localStorage comme solution de secours
+    console.log("Checking auth state consistency");
     const authStateFromStorage = localStorage.getItem('auth_state');
+    console.log("localStorage auth_state:", authStateFromStorage);
     const hasAuthInStorage = !!authStateFromStorage;
+    console.log("hasAuthInStorage:", hasAuthInStorage);
     
     // Si user existe mais isAuthenticated est false, ou si auth_state existe dans localStorage
     if ((user && !isAuthenticated) || (!isAuthenticated && hasAuthInStorage)) {
