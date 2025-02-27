@@ -31,6 +31,7 @@ export default function LoginPage() {
       const data = await response.json();
       
       if (data.auth_url) {
+        console.log(data.auth_url);
         window.location.href = data.auth_url;
       } else {
         throw new Error('No authentication URL received');
