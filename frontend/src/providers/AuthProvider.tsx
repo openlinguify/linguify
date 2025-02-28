@@ -30,7 +30,7 @@ interface AuthContextType {
   error: Error | null;
   token: string | null;
   login: (returnTo?: string) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: (options?: { returnTo?: string }) => Promise<void>;
   getAccessToken: () => Promise<string | null>;
 }
 
@@ -319,22 +319,29 @@ function AuthProviderContent({ children }: { children: ReactNode }) {
   }, [loginWithRedirect]);
 
   // Logout handler
-  const logout = useCallback(async () => {
+  const logout = useCallback(async (options?: { returnTo?: string }) => {
     try {
       // Clear local auth state first
       setUser(null);
       setToken(null);
       clearAuthData();
       
+      // Déterminer l'URL de retour
+      const returnTo = options?.returnTo || `${window.location.origin}/home`;
+      
       // Then logout from Auth0
       await auth0Logout({
         logoutParams: {
-          returnTo: window.location.origin
+          returnTo: returnTo
         }
       });
     } catch (err) {
       console.error("Logout error:", err);
       setError(err instanceof Error ? err : new Error("Logout failed"));
+      
+      // Redirection de secours en cas d'erreur
+      window.location.href = options?.returnTo || `${window.location.origin}/home`;
+      
       throw err;
     }
   }, [auth0Logout]);
