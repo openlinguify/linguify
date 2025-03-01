@@ -1,7 +1,12 @@
+// src/app/(landing)/_components/Footer.tsx
 import React from "react";
 import Link from "next/link";
-import { Container } from "./Container";
-import { Logo } from "./Logo";
+
+// Import base translations
+import enTranslations from "@/locales/en/footer.json";
+import esTranslations from "@/locales/es/footer.json";
+import frTranslations from "@/locales/fr/footer.json";
+import nlTranslations from "@/locales/nl/footer.json";
 
 interface NavItem {
   name: string;
@@ -11,7 +16,6 @@ interface NavItem {
 interface SocialItem {
   name: string;
   href: string;
-  icon: React.FC<{ size?: number }>;
 }
 
 // Social Icons Components
@@ -51,7 +55,7 @@ const LinkedInIcon: React.FC<{ size?: number }> = ({ size = 24 }) => (
   </svg>
 );
 
-// LinkSection composant déplacé après définition des icônes
+// Link Section component
 const LinkSection: React.FC<{ title: string; items: NavItem[] }> = ({ title, items }) => (
   <div className="space-y-4">
     <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">
@@ -71,39 +75,62 @@ const LinkSection: React.FC<{ title: string; items: NavItem[] }> = ({ title, ite
   </div>
 );
 
+// Logo component (simplified - replace with your actual Logo component)
+const Logo: React.FC = () => (
+  <div className="flex items-center">
+    <span className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">Linguify</span>
+  </div>
+);
+
+// Container component (simplified - replace with your actual Container component)
+const Container: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">{children}</div>
+);
+
+// Supported languages
+type AvailableLocales = "en" | "fr" | "es" | "nl";
+
+// Merge all translations
+const translations = {
+  en: enTranslations.en,
+  es: esTranslations.es,
+  fr: frTranslations?.fr || enTranslations.en, // Fallback to English if not available
+  nl: nlTranslations?.nl || enTranslations.en, // Fallback to English if not available
+};
+
 export const Footer: React.FC = () => {
-  const navigation: NavItem[] = [
-    { name: "Accueil", href: "/" },
-    { name: "Fonctionnalités", href: "/features" },
-    { name: "Tarifs", href: "/pricing" },
-    { name: "À propos", href: "/company" },
-    { name: "Contact", href: "/contact" }
-  ];
+  // Get current locale
+  // Extract locale from path or use default
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  const localeParts = pathname.match(/^\/(en|fr|es|nl)\//) || [];
+  const detectedLocale = localeParts[1] as AvailableLocales;
   
-  const legal: NavItem[] = [
-    { name: "Conditions", href: "/terms" },
-    { name: "Confidentialité", href: "/privacy" },
-    { name: "Mentions légales", href: "/legal" }
-  ];
+  // Use detected locale or fallback to English
+  const locale = detectedLocale || "en" as AvailableLocales;
+  
+  // Get translations for current locale
+  const t = translations[locale];
+  
+  // Map social icons to their components
+  const socialIconMap: { [key: string]: React.FC<{ size?: number }> } = {
+    LinkedIn: LinkedInIcon,
+    Twitter: TwitterIcon,
+    Instagram: InstagramIcon
+  };
 
-  const social: SocialItem[] = [
-    { name: "LinkedIn", href: "https://linkedin.com/company/next-corporation", icon: LinkedInIcon },
-    { name: "Twitter", href: "https://twitter.com/next_corporation", icon: TwitterIcon },
-    { name: "Instagram", href: "https://instagram.com/next_corporation", icon: InstagramIcon }
-  ];
-
+  // Generate current year for copyright
+  const currentYear = new Date().getFullYear();
+  
   return (
     <footer className="bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
       <Container>
         <div className="mx-auto pt-16 pb-8">
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
             {/* Brand Section */}
             <div className="lg:col-span-2 space-y-8">
               <Logo />
               <p className="text-gray-600 dark:text-gray-400 max-w-md">
-                Linguify est une plateforme d&apos;apprentissage des langues créée par Next-Corporation, conçue pour rendre 
-                l&apos;apprentissage des langues accessible, engageant et efficace pour tous. Rejoignez-nous pour 
-                éliminer les barrières linguistiques dans le monde entier.
+                {t.brand.description}
               </p>
               <Link
                 href="https://next-corporation.com"
@@ -111,24 +138,24 @@ export const Footer: React.FC = () => {
                 rel="noopener"
                 className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 shadow-sm"
               >
-                <span className="font-medium">Un produit Next-Corporation</span>
+                <span className="font-medium">{t.brand.companyLink}</span>
               </Link>
             </div>
 
             {/* Navigation Links */}
-            <LinkSection title="Navigation" items={navigation} />
+            <LinkSection title={t.navigation.title} items={t.navigation.items} />
 
             {/* Legal Links */}
-            <LinkSection title="Mentions légales" items={legal} />
+            <LinkSection title={t.legal.title} items={t.legal.items} />
 
             {/* Social Links */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">
-                Suivez-nous
+                {t.social.title}
               </h3>
               <div className="flex gap-4">
-                {social.map((item) => {
-                  const Icon = item.icon;
+                {t.social.items.map((item: SocialItem) => {
+                  const Icon = socialIconMap[item.name];
                   return (
                     <a
                       key={item.name}
@@ -138,7 +165,7 @@ export const Footer: React.FC = () => {
                       className="p-2 rounded-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 hover:text-indigo-600 dark:hover:bg-gray-700 dark:hover:text-indigo-400 transition-all duration-200 shadow-sm"
                       aria-label={item.name}
                     >
-                      <Icon size={20} />
+                      {Icon && <Icon size={20} />}
                     </a>
                   );
                 })}
@@ -150,10 +177,10 @@ export const Footer: React.FC = () => {
           <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
             <div className="text-center">
               <p className="text-gray-600 dark:text-gray-400">
-                © {new Date().getFullYear()} Next-Corporation. Tous droits réservés.
+                {t.copyright.rights.replace('{year}', currentYear.toString())}
               </p>
               <p className="mt-2 text-sm text-gray-500 dark:text-gray-500">
-                Linguify s&apos;engage à rendre l&apos;éducation accessible dans le monde entier.
+                {t.copyright.tagline}
               </p>
             </div>
           </div>
