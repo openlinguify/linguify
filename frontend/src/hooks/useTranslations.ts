@@ -1,58 +1,79 @@
-// src/hooks/useTranslations.ts
-'use client';
-import { useState } from 'react';
+// src/hooks/useTranslation.ts
+import { useState, useEffect, useCallback } from 'react';
 
-// Variable globale pour stocker la langue active
-let currentLocale = 'fr';
+// Dynamically import translation files
+const translationModules = {
+  en: async () => {
+    const common = await import('@/locales/en/common.json');
+    const footer = await import('@/locales/en/footer.json');
+    return { ...common.default, ...footer.default };
+  },
+  fr: async () => {
+    const common = await import('@/locales/fr/common.json');
+    const footer = await import('@/locales/fr/footer.json');
+    return { ...common.default, ...footer.default };
+  },
+  es: async () => {
+    const common = await import('@/locales/es/common.json');
+    const footer = await import('@/locales/es/footer.json');
+    return { ...common.default, ...footer.default };
+  },
+  nl: async () => {
+    const common = await import('@/locales/nl/common.json');
+    const footer = await import('@/locales/nl/footer.json');
+    return { ...common.default, ...footer.default };
+  }
+};
 
-// Fonction pour définir la langue active
-export function setLocale(locale: string) {
-  currentLocale = locale;
-  // Déclenche un événement pour informer les composants du changement
-  window.dispatchEvent(new Event('localeChange'));
-}
+type AvailableLocales = keyof typeof translationModules;
+type TranslationFunction = (key: string, params?: Record<string, string>) => string;
 
-// Hook simplifié qui utilise un état local pour forcer le rendu
-export function useTranslations(namespace: string = 'common') {
-  // État local pour forcer le rendu quand la langue change
-  const [, setRender] = useState({});
+export function useTranslation() {
+  const [locale, setLocale] = useState<AvailableLocales>('en');
+  const [translations, setTranslations] = useState<any>({});
 
-  // S'abonner aux changements de langue
-  useState(() => {
-    const handleLocaleChange = () => setRender({});
-    window.addEventListener('localeChange', handleLocaleChange);
-    return () => window.removeEventListener('localeChange', handleLocaleChange);
-  });
-
-  // Fonction de traduction simplifiée
-  const t = (key: string): string => {
-    try {
-      // Essayer de charger les traductions pour la langue actuelle
-      let translations;
+  // Load translations
+  useEffect(() => {
+    const loadTranslations = async () => {
       try {
-        translations = require(`../../locales/${currentLocale}/${namespace}.json`);
-      } catch (e) {
-        // Fallback à la langue par défaut
-        translations = require(`../../locales/fr/${namespace}.json`);
+        const module = await translationModules[locale]();
+        setTranslations(module);
+      } catch (error) {
+        console.error('Translation load error:', error);
+        setTranslations({});
       }
+    };
 
-      // Accéder à la traduction via la clé
-      const keys = key.split('.');
-      let value: any = translations;
-      
-      for (const k of keys) {
-        if (!value || typeof value !== 'object') return key;
-        value = value[k];
-      }
-      
-      return typeof value === 'string' ? value : key;
-    } catch (error) {
-      // En cas d'erreur, retourner la clé
-      return key;
+    loadTranslations();
+  }, [locale]);
+
+  // Translation function
+  const t: TranslationFunction = useCallback((key, params = {}) => {
+    const keys = key.split('.');
+    let value: any = translations;
+
+    for (const k of keys) {
+      if (!value || typeof value !== 'object') return key;
+      value = value[k];
     }
+
+    // Simple parameter replacement
+    if (typeof value === 'string') {
+      return value.replace(/\{(\w+)\}/g, (_, p) => params[p] || _);
+    }
+
+    return key;
+  }, [translations]);
+
+  // Language change handler
+  const changeLanguage = useCallback((newLocale: AvailableLocales) => {
+    setLocale(newLocale);
+    localStorage.setItem('language', newLocale);
+  }, []);
+
+  return {
+    t,
+    locale,
+    changeLanguage
   };
-
-  return t;
 }
-
-

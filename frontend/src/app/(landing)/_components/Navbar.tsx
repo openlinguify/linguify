@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -19,6 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/providers/AuthProvider";
 
 // Define navigation items as a const outside the component for better performance
 const NAVIGATION_ITEMS = [
@@ -29,7 +30,7 @@ const NAVIGATION_ITEMS = [
   { name: "Contact", href: "/contact" },
 ] as const;
 
-// Langues disponibles
+// Available languages
 const LANGUAGES = [
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
   { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -42,22 +43,26 @@ export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('fr');
   
-  // Charger la langue depuis localStorage au démarrage
+  const { login, isAuthenticated, logout } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load language from localStorage on startup
   useEffect(() => {
     const savedLanguage = localStorage.getItem('language');
-    if (savedLanguage) {
+    if (savedLanguage && LANGUAGES.some(lang => lang.code === savedLanguage)) {
       setCurrentLanguage(savedLanguage);
     }
   }, []);
-  
-  // Fonction pour changer la langue
+
+  // Function to change language
   const setLanguage = (lang: string) => {
     setCurrentLanguage(lang);
     localStorage.setItem('language', lang);
-    // Déclencher un événement pour que d'autres composants puissent réagir
+    // Trigger an event for other components to react
     window.dispatchEvent(new Event('languageChanged'));
   };
-  
+
   // Close mobile menu when screen size changes to desktop
   useEffect(() => {
     const handleResize = () => {
@@ -81,6 +86,32 @@ export const Navbar = () => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLogin = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      await login();
+      // The redirect will happen automatically
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Failed to log in. Please try again.');
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      setIsLoading(true);
+      await logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+      setError('Failed to log out. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Get current language name and flag
@@ -126,11 +157,11 @@ export const Navbar = () => {
           </div>
           
           {/* Desktop Auth Buttons and Language Switcher */}
-          <div className="hidden sm:flex sm:items-center">
+          <div className="hidden sm:flex sm:items-center sm:space-x-4">
             {/* Language Switcher - Desktop */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="mr-4">
+                <Button variant="outline" size="sm">
                   <Globe className="h-4 w-4 mr-2" />
                   <span>{currentLangObj.flag} {currentLangObj.name}</span>
                 </Button>
@@ -152,12 +183,29 @@ export const Navbar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
             
-            <Link href="/login" className="mr-4">
-              <Button variant="outline">Login</Button>
-            </Link>
-            <Link href="/register">
-              <Button>Register</Button>
-            </Link>
+            {/* Auth Buttons */}
+            {isAuthenticated ? (
+              <Button 
+                variant="destructive" 
+                onClick={handleLogout}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Logging out...' : 'Log Out'}
+              </Button>
+            ) : (
+              <>
+                <Button 
+                  variant="outline"
+                  onClick={handleLogin}
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Logging in...' : 'Log In'}
+                </Button>
+                <Link href="/register">
+                  <Button>Register</Button>
+                </Link>
+              </>
+            )}
           </div>
           
           {/* Mobile Menu Toggle */}
@@ -241,21 +289,35 @@ export const Navbar = () => {
                 </div>
               </div>
               
+              {/* Mobile Auth Buttons */}
               <div className="mt-6 space-y-2">
-                <Link
-                  href="/login"
-                  className="block w-full"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Button variant="outline" className="w-full">Login</Button>
-                </Link>
-                <Link
-                  href="/register"
-                  className="block w-full"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Button className="w-full">Register</Button>
-                </Link>
+                {isAuthenticated ? (
+                  <Button 
+                    onClick={handleLogout}
+                    disabled={isLoading}
+                    className="w-full"
+                    variant="destructive"
+                  >
+                    {isLoading ? 'Logging out...' : 'Log Out'}
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      onClick={handleLogin}
+                      disabled={isLoading}
+                      className="w-full"
+                    >
+                      {isLoading ? 'Logging in...' : 'Log In'}
+                    </Button>
+                    <Link 
+                      href="/register" 
+                      className="w-full"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Button className="w-full">Register</Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </div>
@@ -263,4 +325,4 @@ export const Navbar = () => {
       )}
     </header>
   );
-};
+};  
