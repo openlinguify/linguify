@@ -1,9 +1,9 @@
 // src/lib/api-client.ts
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios from 'axios';
 import { getAccessToken, sanitizeToken } from './auth';
 
 // Create base API instance
-const createApiClient = (): AxiosInstance => {
+const createApiClient = () => {
   const instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000',
     headers: {
@@ -14,15 +14,27 @@ const createApiClient = (): AxiosInstance => {
 
   // Request interceptor to add auth token
   instance.interceptors.request.use(
-    async (config) => {
+    // Version non-async pour éviter les problèmes de type
+    (config) => {
       try {
-        const token = await getAccessToken();
+        console.log('[Auth Debug] Début de l\'ajout du token à la requête');
+        
+        // Utilisez une promesse déjà résolue pour éviter l'async
+        const token = getAccessToken();
+        console.log('[Auth Debug] Token récupéré:', token ? 'Token présent' : 'Token manquant');
+        
         if (token) {
-          // Ensure we have the authorization header object
           config.headers = config.headers || {};
-          // Add token to Authorization header
-          config.headers.Authorization = `Bearer ${sanitizeToken(token)}`;
+          const cleanToken = sanitizeToken(token);
+          
+          if (cleanToken) {
+            console.log('[Auth Debug] Token ajouté à la requête');
+            config.headers.Authorization = `Bearer ${cleanToken}`;
+          } else {
+            console.error('[Auth Debug] Token invalide après nettoyage');
+          }
         }
+        
         return config;
       } catch (error) {
         console.error('Error adding auth token to request:', error);
@@ -32,14 +44,14 @@ const createApiClient = (): AxiosInstance => {
     (error) => Promise.reject(error)
   );
 
-  // Response interceptor to handle common errors
+  // Response interceptor to handle auth errors
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
       // Handle auth errors (401 Unauthorized)
       if (error.response && error.response.status === 401) {
         console.error('Authentication error:', error.response.data);
-        // You could trigger a logout or auth renewal here
+        // You could redirect to login or refresh token here
       }
       
       // Log detailed error info
@@ -64,40 +76,40 @@ export const apiClient = createApiClient();
 /**
  * Make a GET request
  */
-export const apiGet = async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-  const response: AxiosResponse<T> = await apiClient.get(url, config);
+export const apiGet = async <T>(url: string, config?: any): Promise<T> => {
+  const response = await apiClient.get<T>(url, config);
   return response.data;
 };
 
 /**
  * Make a POST request
  */
-export const apiPost = async <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
-  const response: AxiosResponse<T> = await apiClient.post(url, data, config);
+export const apiPost = async <T>(url: string, data?: any, config?: any): Promise<T> => {
+  const response = await apiClient.post<T>(url, data, config);
   return response.data;
 };
 
 /**
  * Make a PUT request
  */
-export const apiPut = async <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
-  const response: AxiosResponse<T> = await apiClient.put(url, data, config);
+export const apiPut = async <T>(url: string, data?: any, config?: any): Promise<T> => {
+  const response = await apiClient.put<T>(url, data, config);
   return response.data;
 };
 
 /**
  * Make a PATCH request
  */
-export const apiPatch = async <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
-  const response: AxiosResponse<T> = await apiClient.patch(url, data, config);
+export const apiPatch = async <T>(url: string, data?: any, config?: any): Promise<T> => {
+  const response = await apiClient.patch<T>(url, data, config);
   return response.data;
 };
 
 /**
  * Make a DELETE request
  */
-export const apiDelete = async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-  const response: AxiosResponse<T> = await apiClient.delete(url, config);
+export const apiDelete = async <T>(url: string, config?: any): Promise<T> => {
+  const response = await apiClient.delete<T>(url, config);
   return response.data;
 };
 
