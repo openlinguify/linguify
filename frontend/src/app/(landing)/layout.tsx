@@ -1,45 +1,43 @@
-import type { Metadata } from "next";
+// src/app/(landing)/layout-client.tsx
+'use client';
+
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/providers/AuthProvider";
 import { LanguageProvider } from "@/components/LanguageContext";
 import { Navbar } from "./_components/Navbar";
 import { Footer } from "./_components/Footer";
-import { Inter } from "next/font/google";
 
-// Définition de la police Inter avec un sous-ensemble latin
-const inter = Inter({ 
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter"
-});
-
-export const metadata: Metadata = {
-  title: "Linguify",
-  description: "Apprenez des langues facilement et efficacement avec Linguify",
-  keywords: ["apprentissage des langues", "linguistique", "éducation"],
-  authors: [{ name: "Linguify Team" }],
-  viewport: "width=device-width, initial-scale=1",
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-icon.png",
-  },
-  themeColor: "#ffffff",
-};
-
-export default function RootLayout({
+export default function LandingLayoutClient({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    console.log("Landing Auth State:", { user, isLoading, pathname });
+    // Si l'utilisateur est authentifié et sur /home, rediriger vers le dashboard
+    if (user && !isLoading && pathname === '/home') {
+      router.push("/");
+    }
+  }, [user, isLoading, router, pathname]);
+
+  console.log('LandingLayoutClient Render:', {
+    userExists: !!user,
+    isLoading,
+    pathname
+  });
+
   return (
-    <html lang="fr" className={inter.variable}>
-      <body className="min-h-screen flex flex-col bg-gray-50">
-        <LanguageProvider>
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-grow">{children}</main>
-            <Footer />
-          </div>
-        </LanguageProvider>
-      </body>
-    </html>
+    <LanguageProvider>
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
+        <main className="flex-grow">{children}</main>
+        <Footer />
+      </div>
+    </LanguageProvider>
   );
 }

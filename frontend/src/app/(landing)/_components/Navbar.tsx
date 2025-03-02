@@ -47,6 +47,12 @@ export const Navbar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  console.log('Navbar Component - Initial Render', { 
+    pathname, 
+    isMenuOpen, 
+    currentLanguage, 
+    isAuthenticated 
+  });
   // Load language from localStorage on startup
   useEffect(() => {
     const savedLanguage = localStorage.getItem('language');
