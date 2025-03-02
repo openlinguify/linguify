@@ -1,22 +1,24 @@
+// src/app/(dashboard)/layout.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { Sidebar } from "./_components/sidebar";
 import Header from "./_components/header";
 import { useAuth } from "@/providers/AuthProvider";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
-    console.log("Auth State:", { user, isLoading });
-    if (!user && !isLoading) {
-      router.push("/login");
+    console.log("Auth State:", { user, isLoading, pathname });
+    if (!user && !isLoading && pathname === '/') {
+      router.push("/home");
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading, router, pathname]);
 
   if (isLoading) {
     return (
