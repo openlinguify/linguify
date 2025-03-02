@@ -1,7 +1,7 @@
 // src/app/(dashboard)/_components/header.tsx
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
@@ -38,11 +38,21 @@ import { Sun, Moon } from "lucide-react";
 
 const Header: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
+  const [, setForceUpdate] = useState(0);
+  const forceUpdate = () => setForceUpdate(prev => prev + 1);
   const router = useRouter();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  console.log("Header rendered");
+  console.log("isAuthenticated:", isAuthenticated);
+  console.log("user:", user);
+  console.log("localStorage auth_state:", localStorage.getItem('auth_state'));
+  console.log("effectivelyAuthenticated:", isAuthenticated || !!user || !!localStorage.getItem('auth_state'));
 
   const handleLanguageChange = (value: string) => {
+    console.log("Language changed to:", value);
     toast({
       title: "Language Changed",
       description: `Language set to ${value.toUpperCase()}`,
@@ -52,6 +62,7 @@ const Header: React.FC = () => {
   const handleLogout = async () => {
     try {
       await logout();
+      console.log("Logged out successfully");
       router.push("/");
       toast({
         title: "Logged out successfully",
@@ -73,6 +84,35 @@ const Header: React.FC = () => {
       description: "Check back later for updates",
     });
   };
+
+  // Vérifier si l'utilisateur est authentifié pour la mise à jour de l'interface
+  useEffect(() => {
+    // Vérification par Auth0 ou localStorage comme solution de secours
+    console.log("Checking auth state consistency");
+    const authStateFromStorage = localStorage.getItem('auth_state');
+    console.log("localStorage auth_state:", authStateFromStorage);
+    const hasAuthInStorage = !!authStateFromStorage;
+    console.log("hasAuthInStorage:", hasAuthInStorage);
+    
+    // Si user existe mais isAuthenticated est false, ou si auth_state existe dans localStorage
+    if ((user && !isAuthenticated) || (!isAuthenticated && hasAuthInStorage)) {
+      console.log("Auth state inconsistency detected, forcing update");
+      forceUpdate();
+    }
+  }, [user, isAuthenticated]);
+
+  // Gérer la fermeture du menu mobile lors du clic à l'extérieur
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (isMenuOpen) setIsMenuOpen(false);
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isMenuOpen]);
+
+  // Déterminer si l'utilisateur est réellement authentifié (fallback si isAuthenticated est incorrect)
+  const effectivelyAuthenticated = isAuthenticated || !!user || !!localStorage.getItem('auth_state');
 
   return (
     <header className="sticky top-0 z-50 w-full h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:bg-gray-900/95">
@@ -125,7 +165,8 @@ const Header: React.FC = () => {
             </SelectContent>
           </Select>
 
-          {isAuthenticated ? (
+          {/* Auth-dependent UI */}
+          {effectivelyAuthenticated ? (
             <div className="flex items-center gap-4">
               {/* Notifications */}
               <Button
@@ -210,11 +251,69 @@ const Header: React.FC = () => {
           )}
 
           {/* Mobile Menu Button */}
-          <Button variant="ghost" size="icon" className="md:hidden">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMenuOpen(!isMenuOpen);
+            }}
+          >
             <Menu className="h-5 w-5" />
           </Button>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {isMenuOpen && (
+        <div className="md:hidden border-t dark:border-gray-700">
+          <div className="p-4 space-y-3">
+            <NavItemMobile href="/learning" icon={BookOpen} label="Learn" onClick={() => setIsMenuOpen(false)} />
+            <NavItemMobile href="/progress" icon={Trophy} label="Progress" onClick={() => setIsMenuOpen(false)} />
+            
+            {effectivelyAuthenticated ? (
+              <>
+                <NavItemMobile href="/profile" icon={User} label="Profile" onClick={() => setIsMenuOpen(false)} />
+                <NavItemMobile href="/settings" icon={Settings} label="Settings" onClick={() => setIsMenuOpen(false)} />
+                <div className="pt-2">
+                  <Button 
+                    variant="destructive" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col gap-2 pt-2">
+                <Button 
+                  onClick={() => {
+                    router.push('/login');
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  Sign In
+                </Button>
+                <Button
+                  className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
+                  onClick={() => {
+                    router.push('/register');
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  Get Started 
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };
@@ -233,6 +332,27 @@ const NavItem = ({
     className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
   >
     <Icon className="h-4 w-4" />
+    {label}
+  </Link>
+);
+
+const NavItemMobile = ({
+  href,
+  icon: Icon,
+  label,
+  onClick,
+}: {
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  onClick?: () => void;
+}) => (
+  <Link
+    href={href}
+    className="flex items-center p-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+    onClick={onClick}
+  >
+    <Icon className="h-4 w-4 mr-3" />
     {label}
   </Link>
 );
