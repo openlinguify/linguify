@@ -233,37 +233,51 @@ def user_profile(request):
             {"error": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-    
+
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_me_view(request):
+    """
+    Enhanced endpoint to get the current authenticated user's information.
+    This is used by the frontend to get the user's info after login.
+    """
     try:
         user = request.user
+        logger.info(f"Retrieving profile for user: {user.email}")
+        
+        # Create a comprehensive response with all user information
+        # that might be needed by the frontend
         data = {
             'id': str(user.id),
+            'public_id': str(user.public_id) if hasattr(user, 'public_id') else None,
             'email': user.email,
-            'name': user.get_full_name() or user.username,
-            'picture': user.profile_picture_url if hasattr(user, 'profile_picture_url') else None,
+            'name': f"{user.first_name} {user.last_name}".strip() or user.username,
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'picture': request.build_absolute_uri(user.profile_picture.url) if hasattr(user, 'profile_picture') and user.profile_picture else None,
             'language_level': user.language_level,
             'native_language': user.native_language,
             'target_language': user.target_language,
+            'objectives': user.objectives,
+            'bio': user.bio,
+            'gender': user.gender,
+            'is_coach': user.is_coach,
+            'is_subscribed': user.is_subscribed,
+            'is_active': user.is_active,
         }
         return Response(data)
     except AttributeError as e:
         logger.error(f"Missing user attribute: {str(e)}")
         return Response(
-            {'error': 'User profile incomplete'}, 
+            {'error': 'User profile incomplete', 'detail': str(e)}, 
             status=status.HTTP_400_BAD_REQUEST
         )
     except Exception as e:
         logger.error(f"Error retrieving user data: {str(e)}")
         return Response(
-            {'error': 'Internal server error'}, 
+            {'error': 'Internal server error', 'detail': str(e)}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-
-
-
-
-
-
