@@ -4,15 +4,27 @@ import type { NextRequest } from 'next/server';
 
 const PUBLIC_PATHS = [
   '/',
-  '/login',
-  '/register',
-  '/callback',
-  '/about',
-  '/terms',
-  '/privacy',
+  '/home',
+  '/features',
+  '/pricing',
+  '/company',
   '/contact',
-  '/api/auth/login',
+  '/login',
+  '/callback',
+  '/register',
   '/api/auth/callback',
+  '/api/auth/login'
+];
+
+// Chemins qui nécessitent une authentification
+const PROTECTED_PATHS = [
+  '/',
+  '/learning',
+  '/chat',
+  '/progress',
+  '/task',
+  '/settings',
+  // Ajoutez d'autres chemins protégés ici
 ];
 
 export function middleware(request: NextRequest) {
@@ -24,22 +36,17 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/_next') ||
     pathname.startsWith('/static') ||
     pathname.startsWith('/api/auth') ||
-    PUBLIC_PATHS.some(path => pathname.startsWith(path))
+    PUBLIC_PATHS.some(path => pathname === path || pathname.startsWith(path))
   ) {
     return NextResponse.next();
   }
 
-  // Rediriger vers login si non authentifié
-  if (!token && !pathname.startsWith('/login')) {
+  // Rediriger vers login si non authentifié et essaie d'accéder à une page protégée
+  if (!token && PROTECTED_PATHS.some(path => pathname === path || pathname.startsWith(path))) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // Rediriger dashboard vers home si authentifié
-  if (pathname === '/dashboard' && token) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
-  // Rediriger login vers home si déjà authentifié
+  // Rediriger login vers /dashboard si déjà authentifié
   if (pathname === '/login' && token) {
     return NextResponse.redirect(new URL('/', request.url));
   }
