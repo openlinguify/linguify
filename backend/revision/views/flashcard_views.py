@@ -5,6 +5,9 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
+import pandas as pd
 from rest_framework import filters
 from django.shortcuts import get_object_or_404
 from revision.models import FlashcardDeck, Flashcard
@@ -238,3 +241,79 @@ class FlashcardViewSet(viewsets.ModelViewSet):
                 {"error": f"Failed to reset card: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+class FlashcardImportView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        try:
+            # Récupérer le fichier Excel et l'ID du deck
+            excel_file = request.FILES.get('file')
+            deck_id = request.data.get('deck_id')
+            
+            # Vérifier si le fichier est présent
+            if not excel_file:
+                return Response({"detail": "Aucun fichier n'a été fourni."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Vérifier le type de fichier
+            if not excel_file.name.endswith(('.xls', '.xlsx')):
+                return Response({"detail": "Le fichier doit être au format Excel (.xls ou .xlsx)."}, 
+                               status=status.HTTP_400_BAD_REQUEST)
+
+            # Vérifier si le deck existe et appartient à l'utilisateur
+            try:
+                deck = FlashcardDeck.objects.get(id=deck_id, user=request.user)
+            except FlashcardDeck.DoesNotExist:
+                return Response({"detail": "Le deck spécifié n'existe pas ou ne vous appartient pas."}, 
+                               status=status.HTTP_404_NOT_FOUND)
+            
+            # Lire le fichier Excel
+            df = pd.read_excel(excel_file, engine='openpyxl')
+            
+            # Vérifier que les colonnes nécessaires existent
+            required_columns = ['front_text', 'back_text']
+            # Si le fichier a des noms de colonnes différents (par exemple 'anglais', 'français'),
+            # on peut les mapper automatiquement aux 2 premières colonnes
+            if len(df.columns) < 2:
+                return Response({"detail": "Le fichier doit contenir au moins 2 colonnes."}, 
+                               status=status.HTTP_400_BAD_REQUEST)
+            
+            # Si les colonnes ne sont pas nommées front_text et back_text, on les renomme
+            if df.columns[0] != 'front_text' or df.columns[1] != 'back_text':
+                df = df.iloc[:, :2]  # Prendre seulement les 2 premières colonnes
+                df.columns = ['front_text', 'back_text']
+            
+            # Créer les flashcards
+            flashcards_created = 0
+            flashcards_failed = 0
+            
+            for _, row in df.iterrows():
+                front_text = str(row['front_text']).strip()
+                back_text = str(row['back_text']).strip()
+                
+                # Ignorer les lignes vides
+                if not front_text or not back_text or front_text == 'nan' or back_text == 'nan':
+                    continue
+                
+                try:
+                    Flashcard.objects.create(
+                        deck=deck,
+                        front_text=front_text,
+                        back_text=back_text,
+                        user=request.user
+                    )
+                    flashcards_created += 1
+                except Exception as e:
+                    flashcards_failed += 1
+                    print(f"Erreur lors de la création d'une flashcard: {e}")
+            
+            return Response({
+                "detail": f"{flashcards_created} cartes ont été importées avec succès. {flashcards_failed} imports ont échoué.",
+                "created": flashcards_created,
+                "failed": flashcards_failed
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            return Response({"detail": f"Une erreur s'est produite lors de l'importation: {str(e)}"}, 
+                          status=status.HTTP_500_INTERNAL_SERVER_ERROR)

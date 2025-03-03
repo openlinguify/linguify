@@ -1,300 +1,230 @@
+// src/services/revisionAPI.ts
 import { Flashcard, FlashcardDeck } from '@/types/revision';
-import Cookies from 'js-cookie';
+import { apiClient, apiGet, apiPost, apiPatch, apiDelete } from '@/lib/api-client';
 import { getAccessToken } from '@/lib/auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Configuration de base
+const API_BASE = '/api/v1/revision';
 
-// Type definitions
-export interface ApiError extends Error {
-  status?: number;
-  data?: any;
+// Fonctions de journalisation
+const enableDebugLogging = process.env.NODE_ENV === 'development';
+
+function logDebug(message: string, data?: any) {
+  if (!enableDebugLogging) return;
+  console.log(`🔄 REVISION: ${message}`, data || '');
 }
 
-type ApiHeaders = Record<string, string> & {
-  'Content-Type': string;
-  'X-CSRFToken'?: string;
-  'Authorization'?: string;
-};
-
-// API client : gestion des requêtes
-class ApiClient {
-  private static async getHeaders(): Promise<ApiHeaders> {
-    const headers: ApiHeaders = {
-      'Content-Type': 'application/json'
-    };
-
-    try {
-      await fetch(`${API_BASE_URL}/csrf/`, { credentials: 'include' });
-      const csrfToken = Cookies.get('csrftoken');
-      if (csrfToken) {
-        headers['X-CSRFToken'] = csrfToken;
-      }
-    } catch (error) {
-      console.error('[API Debug] Failed to fetch CSRF token:', error);
-    }
-
-    // Utiliser getAccessToken de notre module auth.ts au lieu d'accéder directement à localStorage
-    const token = getAccessToken();
-    if (token) {
-      console.log('[API Debug] Token trouvé, ajout à l\'en-tête Authorization');
-      headers['Authorization'] = `Bearer ${token}`;
-    } else {
-      console.log('[API Debug] Aucun token d\'authentification trouvé');
-    }
-
-    return headers;
-  }
-
-  private static async request<T>(
-    method: string,
-    endpoint: string,
-    data?: any
-  ): Promise<T> {
-    const headers = await this.getHeaders();
-    const config: RequestInit = {
-      method,
-      headers,
-      credentials: 'include',
-      mode: 'cors',
-    };
-
-    if (data) {
-      config.body = JSON.stringify(data);
-    }
-
-    console.log(`[API Debug] Envoi de requête ${method} à ${endpoint}`);
-    
-    try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-      const contentType = response.headers.get('content-type');
-      
-      console.log(`[API Debug] Réponse reçue: status ${response.status}`);
-      
-      let responseData;
-      try {
-        responseData = contentType?.includes('application/json')
-          ? await response.json()
-          : await response.text();
-      } catch (parseError) {
-        console.error('[API Debug] Erreur lors du parsing de la réponse:', parseError);
-        throw new Error('Failed to parse response');
-      }
-
-      if (!response.ok) {
-        console.error(`[API Debug] Erreur ${response.status}:`, responseData);
-        
-        // Si on reçoit une erreur 401, déclencher un événement pour que l'app puisse rediriger
-        if (response.status === 401) {
-          console.log('[API Debug] Erreur d\'authentification 401, déclenchement de l\'événement auth:failed');
-          if (typeof window !== 'undefined') {
-            window.dispatchEvent(new CustomEvent('auth:failed'));
-          }
-        }
-        
-        const error = new Error(
-          typeof responseData === 'object'
-            ? responseData?.detail || 'Request failed'
-            : responseData || 'Request failed'
-        ) as ApiError;
-        error.status = response.status;
-        error.data = responseData;
-        throw error;
-      }
-
-      return responseData;
-    } catch (error) {
-      console.error(`[API Debug] Erreur lors de la requête ${method} ${endpoint}:`, error);
-      throw error;
-    }
-  }
-
-  static get<T>(endpoint: string, options?: { params?: Record<string, any> }): Promise<T> {
-    if (options?.params) {
-      const queryParams = new URLSearchParams();
-      Object.entries(options.params).forEach(([key, value]) => {
-        if (value !== undefined) {
-          queryParams.append(key, String(value));
-        }
-      });
-      const queryString = queryParams.toString();
-      if (queryString) {
-        endpoint = `${endpoint}${endpoint.includes('?') ? '&' : '?'}${queryString}`;
-      }
-    }
-    return this.request<T>('GET', endpoint);
-  }
-
-  static post<T>(endpoint: string, data: any): Promise<T> {
-    return this.request<T>('POST', endpoint, data);
-  }
-
-  static put<T>(endpoint: string, data: any): Promise<T> {
-    return this.request<T>('PUT', endpoint, data);
-  }
-
-  static patch<T>(endpoint: string, data: any): Promise<T> {
-    return this.request<T>('PATCH', endpoint, data);
-  }
-
-  static delete<T>(endpoint: string): Promise<T> {
-    return this.request<T>('DELETE', endpoint);
-  }
+function logError(message: string, error?: any) {
+  console.error(`❌ REVISION ERROR: ${message}`, error);
 }
 
 /**
- * Service for interacting with the revision API.
+ * Service pour interagir avec l'API de révision
  */
 export const revisionApi = {
-  // Fonction utilitaire pour gérer les réponses
-  processApiResponse<T>(promise: Promise<any>): Promise<T> {
-    return promise.then(response => {
-      // Si la réponse a une structure data, on retourne data
-      if (response && response.data !== undefined) {
-        return response.data;
-      }
-      // Sinon on retourne la réponse directement
-      return response;
-    });
-  },
-  
-  // Vocabulary API
-  getVocabularyStats: (range: 'week' | 'month' | 'year') => {
-    return ApiClient.get<any>(`/api/v1/vocabulary/stats/?range=${range}`);
-  },
-  
-  getVocabularyWords: (params?: { source_language?: string; target_language?: string }) => {
-    return ApiClient.get<any>('/api/v1/vocabulary/words/', { params });
-  },
-  
-  getDueVocabulary: (limit: number = 10) => {
-    return ApiClient.get<any>(`/api/v1/vocabulary/due/?limit=${limit}`);
-  },
-  
-  markWordReviewed: (id: number, success: boolean) => {
-    return ApiClient.post<any>(`/api/v1/vocabulary/${id}/review/`, { success });
-  },
-  
-  // Decks API
+  // API des decks de flashcards
   decks: {
     /**
-     * Fetches all flashcard decks.
-     * @returns {Promise<FlashcardDeck[]>} A promise that resolves to an array of flashcard decks.
+     * Récupère tous les decks de flashcards
      */
     getAll(): Promise<FlashcardDeck[]> {
-      console.log('[API Debug] Récupération de tous les decks');
-      return ApiClient.get('/api/v1/revision/decks/');
+      logDebug('Récupération de tous les decks');
+      return apiGet(`${API_BASE}/decks/`);
     },
 
-    create(data: Pick<FlashcardDeck, 'name' | 'description'> & { is_active?: boolean }): Promise<FlashcardDeck> {
-      // Validation côté client
-      if (!data.description || data.description.trim() === '') {
-        data.description = `Deck created on ${new Date().toLocaleDateString()}`;
-      }
-      console.log('[API Debug] Création d\'un nouveau deck:', data);
-      return ApiClient.post('/api/v1/revision/decks/', {
+    /**
+     * Crée un nouveau deck
+     */
+    create(data: Pick<FlashcardDeck, 'name' | 'description'>): Promise<FlashcardDeck> {
+      const payload = {
         ...data,
-        is_active: data.is_active ?? true
-      });
+        description: data.description.trim() || `Deck created on ${new Date().toLocaleDateString()}`,
+        is_active: true
+      };
+      
+      logDebug('Création d\'un nouveau deck', payload);
+      return apiPost(`${API_BASE}/decks/`, payload);
     },
 
+    /**
+     * Supprime un deck par son ID
+     */
     delete(id: number): Promise<void> {
-      console.log('[API Debug] Suppression du deck:', id);
-      return ApiClient.delete(`/api/v1/revision/decks/${id}/`);
+      logDebug('Suppression du deck', { id });
+      return apiDelete(`${API_BASE}/decks/${id}/`);
     },
     
-    update(id: number, data: { name?: string; description?: string }): Promise<FlashcardDeck> {
-      console.log('[API Debug] Mise à jour du deck:', id, data);
-      return ApiClient.patch(`/api/v1/revision/decks/${id}/`, data);
+    /**
+     * Met à jour un deck existant
+     */
+    update(id: number, data: Partial<FlashcardDeck>): Promise<FlashcardDeck> {
+      logDebug('Mise à jour du deck', { id, data });
+      return apiPatch(`${API_BASE}/decks/${id}/`, data);
     },
 
+    /**
+     * Récupère un deck par son ID
+     */
     getById(id: number): Promise<FlashcardDeck> {
-      console.log('[API Debug] Récupération du deck par ID:', id);
-      return ApiClient.get(`/api/v1/revision/decks/${id}/`);
+      logDebug('Récupération du deck par ID', { id });
+      return apiGet(`${API_BASE}/decks/${id}/`);
     }
   },
 
-  // Flashcards API
+  // API des flashcards
   flashcards: {
+    /**
+     * Récupère toutes les flashcards, optionnellement filtrées par deck
+     */
     getAll(deckId?: number): Promise<Flashcard[]> {
-      const query = deckId ? `?deck=${deckId}` : '';
-      console.log('[API Debug] Récupération des flashcards:', deckId ? `pour le deck ${deckId}` : 'toutes');
-      return ApiClient.get(`/api/v1/revision/flashcards/${query}`);
+      const url = deckId 
+        ? `${API_BASE}/flashcards/?deck=${deckId}`
+        : `${API_BASE}/flashcards/`;
+        
+      logDebug('Récupération des flashcards', { deckId });
+      return apiGet(url);
     },
 
     /**
-     * Creates a new flashcard.
-     * @param {Object} data - The data for the new flashcard.
-     * @param {string} data.front_text - The front text of the flashcard.
-     * @param {string} data.back_text - The back text of the flashcard.
-     * @param {number} data.deck_id - The ID of the deck the flashcard belongs to.
-     * @returns {Promise<Flashcard>} A promise that resolves to the created flashcard.
-     * @throws {Error} If the front or back text is missing or empty.
+     * Crée une nouvelle flashcard
      */
     create(data: { front_text: string; back_text: string; deck_id: number }): Promise<Flashcard> {
       // Validation côté client
       if (!data.front_text?.trim() || !data.back_text?.trim()) {
-        throw new Error('Front and back text are required');
+        throw new Error('Les textes recto et verso sont obligatoires');
       }
-  
-      // Transforme deck_id en deck pour correspondre au modèle Django
+
+      // Transforme deck_id en deck pour correspondre à l'API
       const payload = {
         front_text: data.front_text.trim(),
         back_text: data.back_text.trim(),
-        deck: data.deck_id,  
+        deck: data.deck_id,
         learned: false
       };
-  
-      console.log('[API Debug] Création d\'une flashcard:', payload); 
-      return ApiClient.post('/api/v1/revision/flashcards/', payload);
+
+      logDebug('Création d\'une flashcard', payload);
+      return apiPost(`${API_BASE}/flashcards/`, payload);
     },
 
     /**
-     * Toggles the learned status of a flashcard by ID.
-     * @param {number} id - The ID of the flashcard to toggle.
-     * @param {boolean} success - Whether the review was successful
-     * @returns {Promise<Flashcard>} A promise that resolves to the updated flashcard.
+     * Change le statut "appris" d'une flashcard
      */
     toggleLearned(id: number, success: boolean): Promise<Flashcard> {
-      console.log('[API Debug] Changement de statut de la flashcard:', id, success ? 'succès' : 'échec');
-      return ApiClient.patch(`/api/v1/revision/flashcards/${id}/toggle_learned/`, {
-        success
-      });
+      logDebug('Mise à jour du statut d\'apprentissage', { id, success });
+      return apiPatch(`${API_BASE}/flashcards/${id}/toggle_learned/`, { success });
     },
 
     /**
-     * Fetches flashcards that are due for review.
-     * @param {number} [limit=10] - The maximum number of flashcards to fetch.
-     * @returns {Promise<Flashcard[]>} A promise that resolves to an array of flashcards due for review.
+     * Récupère les flashcards à réviser
      */
     getDue(limit: number = 10): Promise<Flashcard[]> {
-      console.log('[API Debug] Récupération des flashcards à réviser, limite:', limit);
-      return ApiClient.get(`/api/v1/revision/flashcards/due_for_review/?limit=${limit}`);
+      logDebug('Récupération des flashcards à réviser', { limit });
+      return apiGet(`${API_BASE}/flashcards/due_for_review/?limit=${limit}`);
     },
     
     /**
-     * Deletes a flashcard by ID.
-     * @param {number} id - The ID of the flashcard to delete.
-     * @returns {Promise<void>} A promise that resolves when the flashcard is deleted.
+     * Supprime une flashcard
      */
     delete(id: number): Promise<void> {
-      console.log('[API Debug] Suppression de la flashcard:', id);
-      return ApiClient.delete(`/api/v1/revision/flashcards/${id}/`);
+      logDebug('Suppression de la flashcard', { id });
+      return apiDelete(`${API_BASE}/flashcards/${id}/`);
     },
     
     /**
-     * Updates an existing flashcard.
-     * @param {number} id - The ID of the flashcard to update.
-     * @param {Partial<Flashcard>} data - The data to update.
-     * @returns {Promise<Flashcard>} A promise that resolves to the updated flashcard.
+     * Met à jour une flashcard existante
      */
-    update(id: number, data: {
-      front_text?: string;
-      back_text?: string;
-      deck_id?: number;
-      learned?: boolean;
-    }): Promise<Flashcard> {
-      console.log('[API Debug] Mise à jour de la flashcard:', id, data);
-      return ApiClient.patch(`/api/v1/revision/flashcards/${id}/update_card/`, data);
+    update(id: number, data: Partial<Flashcard>): Promise<Flashcard> {
+      logDebug('Mise à jour de la flashcard', { id, data });
+      return apiPatch(`${API_BASE}/flashcards/${id}/update_card/`, data);
+    },
+    
+    /**
+     * Importe des flashcards depuis un fichier Excel ou CSV
+     */
+    importFromExcel(deckId: number, file: File): Promise<{ created: number, failed: number }> {
+      logDebug('Importation depuis Excel', { deckId, fileName: file.name });
+      
+      // Vérifier le format du fichier
+      if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls') && !file.name.endsWith('.csv')) {
+        logError('Format de fichier non supporté', { fileName: file.name });
+        return Promise.reject(new Error('Format de fichier non supporté. Utilisez .xlsx, .xls ou .csv'));
+      }
+      
+      // Créer un FormData pour l'upload
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('deck_id', deckId.toString());
+      
+      // Utiliser directement fetch car apiClient ne gère pas facilement les FormData
+      const accessToken = getAccessToken();
+      
+      return fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${API_BASE}/decks/${deckId}/import/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': accessToken ? `Bearer ${accessToken}` : ''
+        },
+        body: formData,
+        credentials: 'include',
+      })
+      .then(async response => {
+        if (!response.ok) {
+          const errorText = await response.json();
+          logError('Erreur d\'importation', errorText);
+          throw new Error(errorText.detail || 'Échec de l\'importation');
+        }
+        
+        const result = await response.json();
+        logDebug('Importation réussie', result);
+        return result;
+      });
     }
   },
+  
+  // API de vocabulaire
+  vocabulary: {
+    /**
+     * Récupère les statistiques de vocabulaire
+     */
+    getStats(range: 'week' | 'month' | 'year'): Promise<any> {
+      logDebug('Récupération des statistiques de vocabulaire', { range });
+      return apiGet(`/api/v1/vocabulary/stats/?range=${range}`);
+    },
+    
+    /**
+     * Récupère les mots de vocabulaire
+     */
+    getWords(params?: { source_language?: string; target_language?: string }): Promise<any> {
+      // Construire les paramètres de requête
+      const queryParams = new URLSearchParams();
+      if (params?.source_language) {
+        queryParams.append('source_language', params.source_language);
+      }
+      if (params?.target_language) {
+        queryParams.append('target_language', params.target_language);
+      }
+      
+      const url = `/api/v1/vocabulary/words/${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      
+      logDebug('Récupération des mots de vocabulaire', params);
+      return apiGet(url);
+    },
+    
+    /**
+     * Récupère le vocabulaire à réviser
+     */
+    getDue(limit: number = 10): Promise<any> {
+      logDebug('Récupération du vocabulaire à réviser', { limit });
+      return apiGet(`/api/v1/vocabulary/due/?limit=${limit}`);
+    },
+    
+    /**
+     * Marque un mot comme révisé
+     */
+    markWordReviewed(id: number, success: boolean): Promise<any> {
+      logDebug('Marquage d\'un mot comme révisé', { id, success });
+      return apiPost(`/api/v1/vocabulary/${id}/review/`, { success });
+    }
+  }
 };
+
+export default revisionApi;

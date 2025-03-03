@@ -28,11 +28,13 @@ import {
   MoreVertical,
   Trash,
   Pencil,
+  FileSpreadsheet,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { revisionApi } from "@/services/revisionAPI";
 import type { Flashcard, FlashcardDeck } from "@/types/revision";
 import EditCardModal from "./EditCardModal";
+import ImportExcelModal from "./ImportExcelModal";
 
 
 
@@ -55,12 +57,14 @@ const DeckSelection = ({
   selectedDeck,
   onDeckSelect,
   onDeleteDeck,
+  onImportExcel,
   isLoading,
 }: {
   decks: FlashcardDeck[];
   selectedDeck: number | null;
   onDeckSelect: (deckId: string) => void;
   onDeleteDeck: (deckId: number) => void;
+  onImportExcel: () => void;
   isLoading: boolean;
 }) => (
   <div className="flex gap-2 items-center">
@@ -125,6 +129,7 @@ const FlashcardApp = () => {
     backText: "",
     deckName: "",
   });
+  const [isImporting, setIsImporting] = useState(false);
 
   // Handlers
   const handleDeckSelect = (value: string) => {
@@ -423,12 +428,12 @@ const FlashcardApp = () => {
             selectedDeck={selectedDeck}
             onDeckSelect={handleDeckSelect}
             onDeleteDeck={handleDeleteDeck}
+            onImportExcel={() => setIsImporting(true)}
             isLoading={isLoading}
           />
 
 
 
-          
           <div className="flex gap-2">
             <Button
               onClick={() => setIsAddingDeck(true)}
@@ -442,7 +447,16 @@ const FlashcardApp = () => {
 
 
 
-
+            {selectedDeck && (
+              <Button
+                onClick={() => setIsImporting(true)}
+                className="whitespace-nowrap bg-gradient-to-r from-brand-purple to-brand-gold"
+                disabled={isLoading}
+              >
+                <FileSpreadsheet className="w-4 h-4 mr-2" />
+                Import Excel
+              </Button>
+            )}
 
 
             {selectedDeck && (
@@ -568,8 +582,8 @@ const FlashcardApp = () => {
                     reviewed:{" "}
                     {filteredCards[currentIndex].last_reviewed
                       ? new Date(
-                          filteredCards[currentIndex].last_reviewed
-                        ).toLocaleDateString()
+                        filteredCards[currentIndex].last_reviewed
+                      ).toLocaleDateString()
                       : "N/A"}
                   </div>
                 )}
@@ -737,9 +751,25 @@ const FlashcardApp = () => {
           </Card>
         </div>
       )}
+      {isImporting && selectedDeck && (
+        <ImportExcelModal
+          deckId={selectedDeck}
+          isOpen={isImporting}
+          onClose={() => setIsImporting(false)}
+          onImportSuccess={() => {
+            // Rafraîchir les cartes après un import réussi
+            if (selectedDeck) {
+              fetchCards(selectedDeck);
+            }
+            toast({
+              title: "Import Successful",
+              description: "The flashcards have been imported successfully.",
+            });
+          }}
+        />
+      )}
     </>
   );
-
   // Main render
   return (
     <div className="space-y-8">
