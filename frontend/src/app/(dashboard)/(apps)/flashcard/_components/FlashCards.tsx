@@ -1,3 +1,5 @@
+// src/app/%28dashboard%29/%28apps%29/flashcard/_components/FlashCards.tsx
+'use client';
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,6 +33,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { revisionApi } from "@/services/revisionAPI";
 import type { Flashcard, FlashcardDeck } from "@/types/revision";
 import EditCardModal from "./EditCardModal";
+
+
+
 
 // Types
 interface ApiError extends Error {
