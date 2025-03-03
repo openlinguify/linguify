@@ -17,6 +17,16 @@ const FlashcardMain = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
 
+
+
+
+
+
+
+
+
+  
+
   useEffect(() => {
     fetchDecks();
   }, []);

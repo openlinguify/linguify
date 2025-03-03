@@ -84,7 +84,19 @@ class ApiClient {
     return responseData;
   }
 
-  static get<T>(endpoint: string): Promise<T> {
+  static get<T>(endpoint: string, options?: { params?: Record<string, any> }): Promise<T> {
+    if (options?.params) {
+      const queryParams = new URLSearchParams();
+      Object.entries(options.params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          queryParams.append(key, String(value));
+        }
+      });
+      const queryString = queryParams.toString();
+      if (queryString) {
+        endpoint = `${endpoint}${endpoint.includes('?') ? '&' : '?'}${queryString}`;
+      }
+    }
     return this.request<T>('GET', endpoint);
   }
 
@@ -109,6 +121,18 @@ class ApiClient {
  * Service for interacting with the revision API.
  */
 export const revisionApi = {
+    getVocabularyStats: (range: 'week' | 'month' | 'year') => {
+      return ApiClient.get<any>(`/vocabulary/stats?range=${range}`).then(res => res.data);
+    },
+    getVocabularyWords: (params?: { source_language?: string; target_language?: string }) => {
+      return ApiClient.get<any>('/vocabulary/words', { params }).then(res => res.data);
+    },
+    getDueVocabulary: (limit: number) => {
+      return ApiClient.get<any>(`/vocabulary/due?limit=${limit}`).then(res => res.data);
+    },
+    markWordReviewed: (id: number, success: boolean) => {
+      return ApiClient.post<any>(`/vocabulary/${id}/review`, { success }).then(res => res.data);
+    },
   decks: {
     /**
      * Fetches all flashcard decks.
