@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Loader2, LogIn } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/providers/AuthProvider";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; // Ajout manquant
 import FlashcardDeckList from './FlashcardDeckList';
 import FlashcardApp from './FlashCards';
 import { revisionApi } from "@/services/revisionAPI";
@@ -15,39 +15,58 @@ import type { FlashcardDeck } from "@/types/revision";
 
 const FlashcardMain = () => {
   const { toast } = useToast();
-  const { user, isAuthenticated, isLoading: authLoading, login } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading, login, getAccessToken } = useAuth(); // Récupérer getAccessToken du hook
   const router = useRouter();
   const [activeView, setActiveView] = useState<"decks" | "flashcards">("decks");
-  const [selectedDeck, setSelectedDeck] = useState<number | null>(null);
+  const [selectedDeck, setSelectedDeck] = useState<number | null>(null); // Ajouter cette variable manquante
   const [isLoading, setIsLoading] = useState(false);
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
 
   // Utiliser notre hook d'écouteur d'échec d'authentification
   useAuthFailureListener();
 
+  // Dans FlashcardMain.tsx
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
+    if (!authLoading && isAuthenticated) {
+      // Charger les decks uniquement si l'auth est terminée et l'utilisateur est authentifié
+      fetchDecks();
+    } else if (!authLoading && !isAuthenticated) {
       // Rediriger vers la page de connexion si pas authentifié
       toast({
         title: "Authentication Required",
         description: "Please log in to access your flashcards",
         variant: "destructive"
       });
-    } else if (isAuthenticated) {
-      // Charger les decks si authentifié
-      fetchDecks();
     }
-  }, [isAuthenticated, authLoading]);
+    // Ne pas inclure fetchDecks dans les dépendances pour éviter les boucles
+  }, [isAuthenticated, authLoading, toast]);
 
+  // Dans FlashcardMain.tsx, ligne 43
   const fetchDecks = async () => {
     try {
       setIsLoading(true);
-      console.log('[Flashcard] Fetching decks...');
+      console.log('[Flashcard] Fetching decks...'); // Ajoutez des logs
+      
+      // Vérifiez que le token est disponible avant d'appeler l'API
+      const token = await getAccessToken();
+      if (!token) {
+        console.log('[Flashcard] No token available, redirecting to login');
+        router.push('/login');
+        return;
+      }
+      
       const data = await revisionApi.decks.getAll();
       console.log('[Flashcard] Fetched decks:', data);
       setDecks(data);
-    } catch (error) {
+    } catch (error: unknown) { // Type error explicitement
       console.error('[Flashcard] Error fetching decks:', error);
+      // Gérer spécifiquement les erreurs d'authentification
+      if (typeof error === 'object' && error !== null && 'toString' in error) {
+        const errorString = error.toString();
+        if (errorString.includes('401') || errorString.includes('auth')) {
+          router.push('/login');
+        }
+      }
       toast({
         title: "Error",
         description: "Failed to load decks. Please try again.",

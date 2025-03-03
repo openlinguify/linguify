@@ -174,3 +174,27 @@ export function isAuthenticated(): boolean {
   console.log(`[Auth Debug] Authentication check: ${hasToken ? 'Authenticated' : 'Not authenticated'}`);
   return hasToken;
 }
+
+// Dans auth.ts
+export function isTokenExpired(token: string): boolean {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return true;
+    
+    const payload = JSON.parse(atob(parts[1]));
+    const now = Math.floor(Date.now() / 1000);
+    
+    console.log('[Auth] Vérification de l\'expiration du token :', {
+      now,
+      expiration: payload.exp,
+      diff: payload.exp - now,
+      expired: payload.exp <= now
+    });
+    
+    // Retourne true si le token est expiré
+    return payload.exp <= now;
+  } catch (e) {
+    console.error('[Auth] Erreur lors de la vérification de l\'expiration du token :', e);
+    return true;
+  }
+}
