@@ -30,15 +30,15 @@
       "items": [
         {
           "name": "Conditions",
-          "href": "/terms"
+          "href": "/annexes/terms"
         },
         {
           "name": "Confidentialité",
-          "href": "/privacy"
+          "href": "/annexes/privacy"
         },
         {
           "name": "Mentions légales",
-          "href": "/legal"
+          "href": "/annexes/legal"
         }
       ]
     },

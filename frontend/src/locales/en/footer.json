@@ -13,9 +13,9 @@
       "legal": {
         "title": "Legal",
         "items": [
-          { "name": "Terms", "href": "/terms" },
-          { "name": "Privacy", "href": "/privacy" },
-          { "name": "Legal Notice", "href": "/legal" }
+          { "name": "Terms", "href": "/annexes/terms" },
+          { "name": "Privacy", "href": "/annexes/privacy" },
+          { "name": "Legal Notice", "href": "/annexes/legal" }
         ]
       },
       "social": {
