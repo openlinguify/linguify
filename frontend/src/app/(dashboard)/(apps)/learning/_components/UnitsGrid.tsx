@@ -8,6 +8,7 @@ import {
   RefreshCcw, 
   GraduationCap, 
   ChevronDown,
+  ChevronRight,
   Trophy,
   Star,
   Clock,
@@ -92,75 +93,77 @@ const UnitsGrid: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
       <div className="max-w-5xl mx-auto p-6">
         {/* Header with Gradient */}
-        <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-brand-purple to-brand-gold p-8 text-white mb-8">
-          <div className="absolute inset-0 bg-white/5" />
-          <div className="relative space-y-6">
-            <div className="flex justify-between items-start">
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold">Your Learning Journey</h1>
-                <p className="text-white/80">
-                  Follow the path to language mastery
-                </p>
-              </div>
-              <Button
-                variant="secondary"
-                onClick={loadUnits}
-                className="bg-white/10 hover:bg-white/20 text-white border-0"
-              >
-                <RefreshCcw className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
-            </div>
+        <div className="space-y-6 max-w-5xl mx-auto">
+  {/* Learning Journey Card - Simplified */}
+  <div className="rounded-lg bg-blue-600 p-6 text-white shadow-sm">
+    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+      <div>
+        <h1 className="text-2xl font-semibold">Your Learning Journey</h1>
+        <p className="text-blue-100 text-sm">
+          Follow the path to language mastery
+        </p>
+      </div>
+      <Button
+        variant="outline"
+        onClick={loadUnits}
+        className="bg-blue-700 hover:bg-blue-800 text-white border-0 shadow-sm self-start md:self-auto"
+        size="sm"
+      >
+        <RefreshCcw className="h-4 w-4 mr-2" />
+        Refresh
+      </Button>
+    </div>
 
-            {/* Progress Overview */}
-            <div className="bg-white/10 rounded-lg p-4">
-              <div className="grid grid-cols-4 gap-4">
-                <div className="text-center">
-                  <div className="flex items-center justify-center mb-2">
-                    <Trophy className="h-5 w-5 text-yellow-300" />
-                  </div>
-                  <div className="text-lg font-bold">{overallProgress}%</div>
-                  <div className="text-xs text-white/70">Overall Progress</div>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center mb-2">
-                    <Flame className="h-5 w-5 text-orange-400" />
-                  </div>
-                  <div className="text-lg font-bold">{streak} days</div>
-                  <div className="text-xs text-white/70">Learning Streak</div>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center mb-2">
-                    <Clock className="h-5 w-5 text-green-300" />
-                  </div>
-                  <div className="text-lg font-bold">{studyTime}</div>
-                  <div className="text-xs text-white/70">Study Time</div>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center mb-2">
-                    <Users className="h-5 w-5 text-blue-300" />
-                  </div>
-                  <div className="text-lg font-bold">{activeLearners}</div>
-                  <div className="text-xs text-white/70">Active Learners</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    {/* Progress Overview - Simplified */}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="bg-blue-700 rounded p-3 flex flex-col items-center">
+        <Trophy className="h-5 w-5 text-yellow-300 mb-2" />
+        <div className="text-lg font-semibold">{overallProgress}%</div>
+        <div className="text-xs text-blue-200">Progress</div>
+      </div>
+      
+      <div className="bg-blue-700 rounded p-3 flex flex-col items-center">
+        <Flame className="h-5 w-5 text-orange-400 mb-2" />
+        <div className="text-lg font-semibold">{streak} days</div>
+        <div className="text-xs text-blue-200">Streak</div>
+      </div>
+      
+      <div className="bg-blue-700 rounded p-3 flex flex-col items-center">
+        <Clock className="h-5 w-5 text-green-300 mb-2" />
+        <div className="text-lg font-semibold">{studyTime}</div>
+        <div className="text-xs text-blue-200">Time</div>
+      </div>
+      
+      <div className="bg-blue-700 rounded p-3 flex flex-col items-center">
+        <Users className="h-5 w-5 text-blue-300 mb-2" />
+        <div className="text-lg font-semibold">{activeLearners}</div>
+        <div className="text-xs text-blue-200">Learners</div>
+      </div>
+    </div>
+  </div>
 
-        {/* Current Level Summary */}
-        <div className="bg-white rounded-lg p-6 mb-8 shadow-sm border border-purple-100">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Current Progress</h2>
-            <Badge variant="secondary" className="bg-brand-purple/10 text-brand-purple">
-              Level {Math.ceil(overallProgress / 20)}
-            </Badge>
-          </div>
-          <Progress value={overallProgress} className="h-2 mb-2" />
-          <p className="text-sm text-muted-foreground">
-            {overallProgress}% completed - Keep going! You're making great progress.
-          </p>
-        </div>
+  {/* Current Level Summary - Simplified */}
+  <div className="bg-white rounded-lg p-5 shadow-sm border border-gray-100">
+    <div className="flex justify-between items-center mb-4">
+      <h2 className="text-lg font-semibold text-gray-800">Current Progress</h2>
+      <Badge className="bg-blue-100 text-blue-700 font-normal">
+        Level {Math.ceil(overallProgress / 20)}
+      </Badge>
+    </div>
+    
+    <Progress value={overallProgress} className="h-2 mb-3" />
+    
+    <div className="flex items-center justify-between">
+      <p className="text-sm text-gray-600">
+        <span className="font-medium">{overallProgress}% completed</span> - Keep going!
+      </p>
+      <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 p-0">
+        Details
+        <ChevronRight className="h-4 w-4 ml-1" />
+      </Button>
+    </div>
+  </div>
+</div>
 
         {/* Learning Path */}
         {units.length > 0 ? (

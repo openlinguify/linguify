@@ -20,10 +20,88 @@ from django.core.exceptions import ValidationError
 from .serializers import UserSerializer, MeSerializer, ProfileUpdateSerializer
 from django.views.decorators.csrf import csrf_exempt
 from .models import CoachProfile
+import datetime
 
 
 
 logger = logging.getLogger(__name__)
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def token_refresh(request):
+    """
+    Custom token refresh view that validates the current token 
+    and returns user information along with a new token
+    """
+    try:
+        # Get the current user
+        user = request.user
+        
+        # Extract the current token from the Authorization header
+        auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+        if not auth_header.startswith('Bearer '):
+            return Response(
+                {'error': 'Invalid authorization header'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        current_token = auth_header.split(' ')[1]
+        
+        try:
+            # Decode the current token to validate it
+            jwt.decode(
+                current_token, 
+                settings.SECRET_KEY, 
+                algorithms=['HS256']
+            )
+        except jwt.ExpiredSignatureError:
+            # Token has expired, which is expected
+            pass
+        except jwt.PyJWTError:
+            # Other JWT validation errors
+            return Response(
+                {'error': 'Invalid token'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        # Generate new token
+        new_token = jwt.encode(
+            {
+                'user_id': str(user.id),
+                # Add standard JWT claims like expiration
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
+            }, 
+            settings.SECRET_KEY, 
+            algorithm='HS256'
+        )
+        
+        # Prepare user data
+        user_data = {
+            'id': str(user.id),
+            'email': user.email,
+            'name': f"{user.first_name} {user.last_name}".strip() or user.username,
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'picture': request.build_absolute_uri(user.profile_picture.url) if hasattr(user, 'profile_picture') and user.profile_picture else None,
+            'language_level': user.language_level,
+            'native_language': user.native_language,
+            'target_language': user.target_language,
+        }
+        
+        return Response({
+            'token': new_token,
+            'user': user_data
+        }, status=status.HTTP_200_OK)
+    
+    except Exception as e:
+        logger.error(f"Token refresh error: {str(e)}")
+        return Response(
+            {'error': 'Token refresh failed', 'details': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
 
 
 class Auth0Login(APIView):

@@ -1,6 +1,6 @@
 // hooks/useRevision.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import revisionApi from '@/services/revisionAPI';
+import { revisionApi } from '@/services/revisionAPI';
 import { useToast } from '@/components/ui/use-toast';
 
 export const useVocabularyStats = (range: 'week' | 'month' | 'year' = 'week') => {
