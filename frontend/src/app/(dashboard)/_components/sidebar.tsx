@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useAuthContext } from "@/services/AuthProvider";
 
 // Grouper les routes pour une meilleure organisation
 const routes = [
@@ -115,6 +116,8 @@ const routes = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user, isAuthenticated } = useAuthContext();
+
 
   return (
     <div className="flex flex-col h-full">
@@ -154,19 +157,49 @@ export function Sidebar() {
           ))}
         </div>
       </ScrollArea>
-
-      {/* User Section - Optional */}
-      <div className="p-4 border-t border-border mt-auto">
-        <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors">
-          <div className="w-8 h-8 rounded-full bg-muted-foreground/10" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">User Name</p>
-            <p className="text-xs text-muted-foreground truncate">
-              user@email.com
-            </p>
+      {isAuthenticated && user ? (
+        <div className="p-4 border-t border-border mt-auto">
+          <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors">
+            <div className="w-8 h-8 rounded-full bg-muted-foreground/10">
+              {user.picture && (
+                <img 
+                  src={user.picture} 
+                  alt="Profile" 
+                  className="w-full h-full rounded-full object-cover" 
+                />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{user.name || "User Name"}</p>
+              <p className="text-xs text-muted-foreground truncate">
+                {user.email || "user@email.com"}
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                // Nettoyage local
+                localStorage.clear();
+                
+                // Effacer les cookies
+                document.cookie.split(";").forEach(function(c) {
+                  document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                });
+                
+                // Déconnexion Auth0 complète
+                const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
+                const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
+                const returnTo = encodeURIComponent('http://localhost:3000/home');
+                
+                // Redirection vers l'URL de déconnexion Auth0
+                window.location.href = `https://${auth0Domain}/v2/logout?client_id=${clientId}&returnTo=${returnTo}`;
+              }}
+              className="p-2 text-xs text-red-500 hover:text-red-700 hover:bg-red-50 rounded"
+            >
+              Déconnexion
+            </button>
           </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }
