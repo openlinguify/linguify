@@ -1,7 +1,15 @@
 # backend/revision/urls.py
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import FlashcardDeckViewSet, FlashcardViewSet, RevisionSessionViewSet, VocabularyWordViewSet, VocabularyListViewSet, CreateRevisionListViewSet
+from .views import (
+    FlashcardDeckViewSet, 
+    FlashcardViewSet, 
+    FlashcardImportView,
+    RevisionSessionViewSet, 
+    VocabularyWordViewSet, 
+    VocabularyListViewSet, 
+    CreateRevisionListViewSet
+)
 app_name = 'revision'
 
 router = DefaultRouter()
@@ -17,6 +25,7 @@ router.register(r'revision-lists', CreateRevisionListViewSet, basename='revision
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('decks/<int:deck_id>/import/', FlashcardImportView.as_view(), name='flashcard-import'),
 ]
 
 

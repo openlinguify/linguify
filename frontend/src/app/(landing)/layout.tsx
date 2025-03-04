@@ -3,7 +3,7 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@/providers/AuthProvider";
+import { useAuthContext } from "@/services/AuthProvider";
 import { LanguageProvider } from "@/components/LanguageContext";
 import { Navbar } from "./_components/Navbar";
 import { Footer } from "./_components/Footer";
@@ -13,7 +13,7 @@ export default function LandingLayoutClient({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading } = useAuthContext();
   const router = useRouter();
   const pathname = usePathname();
 
