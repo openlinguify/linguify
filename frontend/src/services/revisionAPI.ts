@@ -1,7 +1,8 @@
 // src/services/revisionAPI.ts
 import { Flashcard, FlashcardDeck } from '@/types/revision';
-import { apiClient, apiGet, apiPost, apiPatch, apiDelete } from '@/services/api-client';
+import { apiClient } from '@/services/api-client';
 import { getAccessToken } from '@/services/auth';
+import { apiGet, apiPost, apiPatch, apiDelete } from '@/services/api';  
 
 // Configuration de base
 const API_BASE = '/api/v1/revision';
