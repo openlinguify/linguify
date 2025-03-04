@@ -60,7 +60,7 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
             
             # Filtres optionnels
             learned = request.query_params.get('learned')
-            cards_query = deck.flashcards.all()
+            cards_query = deck.flashcards.filter(user=request.user)
             
             # Appliquer les filtres si présents
             if learned is not None:
@@ -246,19 +246,18 @@ class FlashcardImportView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 
-    def post(self, request):
+    def post(self, request, deck_id):
         try:
-            # Récupérer le fichier Excel et l'ID du deck
+            # Récupérer le fichier Excel
             excel_file = request.FILES.get('file')
-            deck_id = request.data.get('deck_id')
             
             # Vérifier si le fichier est présent
             if not excel_file:
                 return Response({"detail": "Aucun fichier n'a été fourni."}, status=status.HTTP_400_BAD_REQUEST)
             
             # Vérifier le type de fichier
-            if not excel_file.name.endswith(('.xls', '.xlsx')):
-                return Response({"detail": "Le fichier doit être au format Excel (.xls ou .xlsx)."}, 
+            if not excel_file.name.endswith(('.xls', '.xlsx', '.csv')):
+                return Response({"detail": "Le fichier doit être au format Excel (.xls, .xlsx) ou CSV (.csv)."}, 
                                status=status.HTTP_400_BAD_REQUEST)
 
             # Vérifier si le deck existe et appartient à l'utilisateur
@@ -268,21 +267,21 @@ class FlashcardImportView(APIView):
                 return Response({"detail": "Le deck spécifié n'existe pas ou ne vous appartient pas."}, 
                                status=status.HTTP_404_NOT_FOUND)
             
-            # Lire le fichier Excel
-            df = pd.read_excel(excel_file, engine='openpyxl')
+            # Lire le fichier Excel ou CSV
+            if excel_file.name.endswith('.csv'):
+                df = pd.read_csv(excel_file)
+            else:
+                df = pd.read_excel(excel_file, engine='openpyxl')
             
             # Vérifier que les colonnes nécessaires existent
-            required_columns = ['front_text', 'back_text']
-            # Si le fichier a des noms de colonnes différents (par exemple 'anglais', 'français'),
-            # on peut les mapper automatiquement aux 2 premières colonnes
+            # Si le fichier a des noms de colonnes différents, on les mappe aux 2 premières colonnes
             if len(df.columns) < 2:
                 return Response({"detail": "Le fichier doit contenir au moins 2 colonnes."}, 
-                               status=status.HTTP_400_BAD_REQUEST)
+                              status=status.HTTP_400_BAD_REQUEST)
             
-            # Si les colonnes ne sont pas nommées front_text et back_text, on les renomme
-            if df.columns[0] != 'front_text' or df.columns[1] != 'back_text':
-                df = df.iloc[:, :2]  # Prendre seulement les 2 premières colonnes
-                df.columns = ['front_text', 'back_text']
+            # Prendre les 2 premières colonnes et les renommer
+            df = df.iloc[:, :2]
+            df.columns = ['front_text', 'back_text']
             
             # Créer les flashcards
             flashcards_created = 0
@@ -306,7 +305,7 @@ class FlashcardImportView(APIView):
                     flashcards_created += 1
                 except Exception as e:
                     flashcards_failed += 1
-                    print(f"Erreur lors de la création d'une flashcard: {e}")
+                    logger.error(f"Erreur lors de la création d'une flashcard: {e}")
             
             return Response({
                 "detail": f"{flashcards_created} cartes ont été importées avec succès. {flashcards_failed} imports ont échoué.",
@@ -315,5 +314,6 @@ class FlashcardImportView(APIView):
             }, status=status.HTTP_201_CREATED)
             
         except Exception as e:
+            logger.error(f"Import error: {str(e)}")
             return Response({"detail": f"Une erreur s'est produite lors de l'importation: {str(e)}"}, 
                           status=status.HTTP_500_INTERNAL_SERVER_ERROR)

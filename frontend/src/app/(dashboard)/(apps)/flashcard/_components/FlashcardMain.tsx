@@ -10,47 +10,47 @@ import FlashcardDeckList from './FlashcardDeckList';
 import FlashcardApp from './FlashCards';
 import { revisionApi } from "@/services/revisionAPI";
 import type { FlashcardDeck } from "@/types/revision";
+import { useAuthContext } from "@/services/AuthProvider";
 
 const FlashcardMain = () => {
   const { toast } = useToast();
   const router = useRouter();
+  const { isAuthenticated, isLoading: authLoading, user } = useAuthContext();
   
   const [activeView, setActiveView] = useState<"decks" | "flashcards">("decks");
   const [selectedDeck, setSelectedDeck] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   // Set isClient to true when component mounts on client
   useEffect(() => {
     setIsClient(true);
-    
-    // Check if user is authenticated
-    const token = localStorage.getItem('auth_token');
-    setIsAuthenticated(!!token);
+  }, []);
+
+  // Handle authentication and data loading
+  useEffect(() => {
+    // Only proceed if auth state is resolved and we're on client
+    if (authLoading || !isClient) return;
     
     // If not authenticated, show notification
-    if (!token) {
+    if (!isAuthenticated) {
       toast({
         title: "Authentication Required",
         description: "Please log in to access your flashcards",
         variant: "destructive"
       });
+      return;
     }
     
     // Load decks if authenticated
-    if (token) {
-      fetchDecks();
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
+    fetchDecks();
+  }, [authLoading, isAuthenticated, isClient]);
 
   const fetchDecks = async () => {
     try {
       setIsLoading(true);
-      console.log('[Flashcard] Fetching decks...');
+      console.log('[Flashcard] Fetching decks for user:', user?.email);
       
       const data = await revisionApi.decks.getAll();
       console.log('[Flashcard] Fetched decks:', data);
@@ -59,15 +59,15 @@ const FlashcardMain = () => {
       console.error('[Flashcard] Error fetching decks:', error);
       
       // Handle auth errors
-      if (error.response?.status === 401) {
-        localStorage.removeItem('auth_token');
-        setIsAuthenticated(false);
-        
+      if (error.status === 401) {
         toast({
           title: "Session Expired",
           description: "Please log in again to continue",
           variant: "destructive"
         });
+        
+        // Redirect to login
+        router.push('/login');
       } else {
         toast({
           title: "Error",
@@ -83,15 +83,10 @@ const FlashcardMain = () => {
   const handleDeckSelect = async (deckId: number) => {
     try {
       setIsLoading(true);
-      // Fetch the cards for this deck to update the count
+      // Fetch the cards for this deck
       console.log('[Flashcard] Fetching cards for deck:', deckId);
-      const cards = await revisionApi.flashcards.getAll(deckId);
-      console.log('[Flashcard] Fetched cards:', cards);
+      await revisionApi.flashcards.getAll(deckId); // Just verify we can fetch them
       
-      // Update the decks state with the new card count
-      setDecks(prev => prev.map(deck => 
-        deck.id === deckId ? { ...deck, cards } : deck
-      ));
       setSelectedDeck(deckId);
       setActiveView("flashcards");
     } catch (error) {
@@ -129,6 +124,18 @@ const FlashcardMain = () => {
     );
   }
 
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <Card className="flex items-center justify-center p-8 h-64">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-4" />
+          <p className="text-sm text-gray-500">Checking authentication...</p>
+        </div>
+      </Card>
+    );
+  }
+
   // Show login UI if not authenticated
   if (!isAuthenticated) {
     return (
@@ -152,7 +159,7 @@ const FlashcardMain = () => {
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
-            My Flashcards
+            {user?.name || 'Your'} Flashcards
           </h1>
           {activeView === "flashcards" && (
             <Button
