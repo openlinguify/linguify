@@ -139,7 +139,7 @@ const login = async (returnTo?: string) => {
     authorizationParams: {
       redirect_uri: `${process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000'}/callback`,
       // Ajouter ce paramètre pour forcer l'authentification
-      prompt: 'login',
+      // prompt: 'login',
     },
     appState: returnTo ? { returnTo } : undefined
   });
