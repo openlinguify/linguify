@@ -16,9 +16,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Globe, User, BookOpen, Save, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useAuth } from "@/providers/AuthProvider";
-import { apiGet, apiPatch } from "@/lib/api-client";
-import { storeAuthData, getUserProfile } from "@/lib/auth";
+import { useAuth } from "@/services/AuthProvider";
+import { apiGet, apiPatch } from "@/services/api-client";
+import { storeAuthData, getUserProfile } from "@/services/auth";
 
 // Constants matching backend choices
 const LANGUAGE_CHOICES = [
