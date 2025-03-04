@@ -5,73 +5,76 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Loader2, LogIn } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { useAuth } from "@/providers/AuthProvider";
-import { useRouter } from "next/navigation"; // Ajout manquant
+import { useRouter } from "next/navigation";
 import FlashcardDeckList from './FlashcardDeckList';
 import FlashcardApp from './FlashCards';
 import { revisionApi } from "@/services/revisionAPI";
-import useAuthFailureListener from '@/hooks/useAuthFailureListener';
 import type { FlashcardDeck } from "@/types/revision";
 
 const FlashcardMain = () => {
   const { toast } = useToast();
-  const { user, isAuthenticated, isLoading: authLoading, login, getAccessToken } = useAuth(); // Récupérer getAccessToken du hook
   const router = useRouter();
+  
   const [activeView, setActiveView] = useState<"decks" | "flashcards">("decks");
-  const [selectedDeck, setSelectedDeck] = useState<number | null>(null); // Ajouter cette variable manquante
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedDeck, setSelectedDeck] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-  // Utiliser notre hook d'écouteur d'échec d'authentification
-  useAuthFailureListener();
-
-  // Dans FlashcardMain.tsx
+  // Set isClient to true when component mounts on client
   useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      // Charger les decks uniquement si l'auth est terminée et l'utilisateur est authentifié
-      fetchDecks();
-    } else if (!authLoading && !isAuthenticated) {
-      // Rediriger vers la page de connexion si pas authentifié
+    setIsClient(true);
+    
+    // Check if user is authenticated
+    const token = localStorage.getItem('auth_token');
+    setIsAuthenticated(!!token);
+    
+    // If not authenticated, show notification
+    if (!token) {
       toast({
         title: "Authentication Required",
         description: "Please log in to access your flashcards",
         variant: "destructive"
       });
     }
-    // Ne pas inclure fetchDecks dans les dépendances pour éviter les boucles
-  }, [isAuthenticated, authLoading, toast]);
+    
+    // Load decks if authenticated
+    if (token) {
+      fetchDecks();
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
 
-  // Dans FlashcardMain.tsx, ligne 43
   const fetchDecks = async () => {
     try {
       setIsLoading(true);
-      console.log('[Flashcard] Fetching decks...'); // Ajoutez des logs
-      
-      // Vérifiez que le token est disponible avant d'appeler l'API
-      const token = await getAccessToken();
-      if (!token) {
-        console.log('[Flashcard] No token available, redirecting to login');
-        router.push('/login');
-        return;
-      }
+      console.log('[Flashcard] Fetching decks...');
       
       const data = await revisionApi.decks.getAll();
       console.log('[Flashcard] Fetched decks:', data);
       setDecks(data);
-    } catch (error: unknown) { // Type error explicitement
+    } catch (error: any) {
       console.error('[Flashcard] Error fetching decks:', error);
-      // Gérer spécifiquement les erreurs d'authentification
-      if (typeof error === 'object' && error !== null && 'toString' in error) {
-        const errorString = error.toString();
-        if (errorString.includes('401') || errorString.includes('auth')) {
-          router.push('/login');
-        }
+      
+      // Handle auth errors
+      if (error.response?.status === 401) {
+        localStorage.removeItem('auth_token');
+        setIsAuthenticated(false);
+        
+        toast({
+          title: "Session Expired",
+          description: "Please log in again to continue",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to load decks. Please try again.",
+          variant: "destructive",
+        });
       }
-      toast({
-        title: "Error",
-        description: "Failed to load decks. Please try again.",
-        variant: "destructive",
-      });
     } finally {
       setIsLoading(false);
     }
@@ -111,17 +114,22 @@ const FlashcardMain = () => {
     setSelectedDeck(null);
   };
 
-  // Afficher un écran de chargement pendant la vérification de l'authentification
-  if (authLoading) {
+  const handleLogin = () => {
+    // Store current path for redirect after login
+    const currentPath = window.location.pathname;
+    router.push(`/login?returnTo=${encodeURIComponent(currentPath)}`);
+  };
+
+  // Show a minimal UI during SSR or before client hydration
+  if (!isClient) {
     return (
       <Card className="flex items-center justify-center p-8 h-64">
         <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
-        <p className="ml-2">Loading...</p>
       </Card>
     );
   }
 
-  // Afficher un écran de connexion si non authentifié
+  // Show login UI if not authenticated
   if (!isAuthenticated) {
     return (
       <Card>
@@ -130,7 +138,7 @@ const FlashcardMain = () => {
           <p className="text-center text-gray-600">
             You need to be logged in to view and manage your flashcards.
           </p>
-          <Button onClick={() => login('/flashcard')} className="mt-4">
+          <Button onClick={handleLogin} className="mt-4">
             <LogIn className="mr-2 h-4 w-4" /> Login to Continue
           </Button>
         </CardContent>
@@ -138,13 +146,13 @@ const FlashcardMain = () => {
     );
   }
 
-  // Reste du composant (contenu normal pour utilisateurs authentifiés)
+  // Main content for authenticated users
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
-            {user?.name ? `${user.name}'s Flashcards` : 'My Flashcards'}
+            My Flashcards
           </h1>
           {activeView === "flashcards" && (
             <Button

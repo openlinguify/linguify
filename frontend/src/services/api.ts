@@ -1,48 +1,5 @@
 // src/services/api.ts
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: 'http://localhost:8000',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  // Add withCredentials if using session authentication
-  withCredentials: true,
-});
-
-export interface Unit {
-  id: number;
-  title: string;
-  description: string;
-  level: string;
-  order: number;
-}
-
-export const courseAPI = {
-  getUnits: async (level?: string, targetLanguage?: string) => {
-    try {
-      const params: Record<string, string> = {};
-      if (level) params.level = level;
-      if (targetLanguage) params.target_language = targetLanguage;
-
-      const response = await api.get('/api/v1/course/units/', { params });
-      return response.data;
-    } catch (err: any) {
-      console.error('Failed to fetch units:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
-      });
-      throw new Error(`Failed to fetch units: ${err.message}`);
-    }
-  }
-};
-
-export default api;
-
-
-// src/lib/api.ts
-import { getAccessToken } from "@/lib/auth";
+import { getAccessToken } from "@/services/auth";
 
 /**
  * Wrapper for fetch that handles authentication and common error patterns
@@ -52,6 +9,16 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
     // Get access token
     const token = await getAccessToken();
     
+    // Make sure URL is properly formatted
+    const requestUrl = url.startsWith('http') 
+      ? url 
+      : `${process.env.NEXT_PUBLIC_BACKEND_URL}${url.startsWith('/') ? url : `/${url}`}`;
+    
+    // Debug info in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`API Request: ${requestUrl}`);
+    }
+    
     // Prepare headers with authorization
     const headers = {
       ...options.headers,
@@ -60,9 +27,10 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
     };
     
     // Make request
-    const response = await fetch(url, {
+    const response = await fetch(requestUrl, {
       ...options,
-      headers
+      headers,
+      credentials: 'include'
     });
     
     // Handle response

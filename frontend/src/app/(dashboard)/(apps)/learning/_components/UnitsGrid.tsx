@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { courseAPI } from "@/services/api";
+import courseAPI from "@/services/courseAPI";
 import ExpandableUnitCard from "./ExpandableUnitCard";
 
 interface Unit {
