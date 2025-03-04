@@ -1,7 +1,6 @@
 // src/services/revisionAPI.ts
 import { Flashcard, FlashcardDeck } from '@/types/revision';
-import { apiClient, apiGet, apiPost, apiPatch, apiDelete } from '@/services/api-client';
-import { getAccessToken } from '@/services/auth';
+import { apiGet, apiPost, apiPatch, apiDelete } from '@/services/api';
 
 // Configuration de base
 const API_BASE = '/api/v1/revision';
@@ -141,7 +140,7 @@ export const revisionApi = {
     /**
      * Importe des flashcards depuis un fichier Excel ou CSV
      */
-    importFromExcel(deckId: number, file: File): Promise<{ created: number, failed: number }> {
+    async importFromExcel(deckId: number, file: File, token?: string): Promise<{ created: number, failed: number }> {
       logDebug('Importation depuis Excel', { deckId, fileName: file.name });
       
       // Vérifier le format du fichier
@@ -155,28 +154,45 @@ export const revisionApi = {
       formData.append('file', file);
       formData.append('deck_id', deckId.toString());
       
-      // Utiliser directement fetch car apiClient ne gère pas facilement les FormData
-      const accessToken = getAccessToken();
-      
-      return fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${API_BASE}/decks/${deckId}/import/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': accessToken ? `Bearer ${accessToken}` : ''
-        },
-        body: formData,
-        credentials: 'include',
-      })
-      .then(async response => {
-        if (!response.ok) {
-          const errorText = await response.json();
-          logError('Erreur d\'importation', errorText);
-          throw new Error(errorText.detail || 'Échec de l\'importation');
+      try {
+        // Get the API URL for the import endpoint
+        const url = `${process.env.NEXT_PUBLIC_BACKEND_URL || ''}${API_BASE}/decks/${deckId}/import/`;
+        logDebug('Sending import request to:', { url });
+        
+        // Prepare headers with authentication
+        const headers: HeadersInit = {};
+        
+        // Add Authorization header if token is provided
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+          logDebug('Using provided auth token for import');
+        } else {
+          logDebug('No auth token provided for import - will rely on cookies');
         }
         
+        // Send the request
+        const response = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: formData,
+          credentials: 'include', // Includes cookies in the request
+        });
+        
+        // Handle errors
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+          logError('Import error response:', errorData);
+          throw new Error(errorData.detail || 'Failed to import flashcards');
+        }
+        
+        // Parse and return success response
         const result = await response.json();
-        logDebug('Importation réussie', result);
+        logDebug('Import successful:', result);
         return result;
-      });
+      } catch (error) {
+        logError('Import exception:', error);
+        throw error;
+      }
     }
   },
   
