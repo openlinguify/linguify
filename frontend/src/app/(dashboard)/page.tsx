@@ -78,6 +78,10 @@ export default function DashboardHome() {
           {/* Informations linguistiques */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
+              <p className="text-sm font-medium text-gray-500">Learning Language</p>
+              <p className="text-lg">{user?.target_language || "ENGLISH"}</p>
+            </div>
+            <div>
               <p className="text-sm font-medium text-gray-500">Native Language</p>
               <p className="text-lg">{userData.nativeLanguage}</p>
             </div>

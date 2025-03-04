@@ -133,31 +133,45 @@ export function useAuth() {
   }, [isAuthenticated, auth0Loading, auth0User, getAccessTokenSilently, backendRetries]);
 
   // Login function
-  const login = async (returnTo?: string) => {
-    await loginWithRedirect({
-      authorizationParams: {
-        redirect_uri: `${process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000'}/callback`,
-      },
-      appState: returnTo ? { returnTo } : undefined
-    });
-  };
+// Dans useAuth.ts
+const login = async (returnTo?: string) => {
+  await loginWithRedirect({
+    authorizationParams: {
+      redirect_uri: `${process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000'}/callback`,
+      // Ajouter ce paramètre pour forcer l'authentification
+      prompt: 'login',
+    },
+    appState: returnTo ? { returnTo } : undefined
+  });
+};
 
   // Logout function
-  // Logout function
-  const logout = async (options?: { returnTo?: string }) => {
-    console.log("Déconnexion locale en cours...");
+// Dans src/services/useAuth.ts
+const logout = async (options?: { returnTo?: string }) => {
+  try {
+    console.log("Déconnexion complète en cours...");
     
-    // Nettoyage local du localStorage
+    // Nettoyage local
     localStorage.clear();
-    
-    // Nettoyage de tous les cookies
     document.cookie.split(";").forEach(function(c) {
       document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
     
-    // Redirection vers home
+    // Déterminer l'URL de redirection
+    const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || "http://localhost:3000";
+    const returnTo = encodeURIComponent(`${frontendUrl}/home`);
+    const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
+    const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
+    
+    // Redirection vers l'URL de déconnexion Auth0
+    window.location.href = `https://${auth0Domain}/v2/logout?client_id=${clientId}&returnTo=${returnTo}`;
+  } catch (error) {
+    console.error("Error during Auth0 logout:", error);
+    // En cas d'erreur, redirection manuelle
     window.location.href = '/home';
-  };
+  }
+};
+
   return {
     isAuthenticated,
     isLoading: isLoading || auth0Loading,
