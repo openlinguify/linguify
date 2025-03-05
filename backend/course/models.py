@@ -54,7 +54,7 @@ class Unit(models.Model):
     description_nl = models.TextField(null=True, blank=True)
     level = models.CharField(max_length=2, choices=LEVEL_CHOICES, blank=False, null=False)
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
-    
+
     def get_formatted_titles(self):
         titles = {
             'EN': self.title_en,
@@ -364,6 +364,8 @@ class MultipleChoiceQuestion(models.Model):
 
     def __str__(self):
         return f"{self.content_lesson} - {self.question_en}"
+    
+
 class Numbers(models.Model):
     content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='numbers', default=1)
     number = models.CharField(max_length=255, blank=False, null=False)
@@ -375,6 +377,7 @@ class Numbers(models.Model):
 
     def __str__(self):
         return f"{self.content_lesson} - {self.content_lesson.title_en} - {self.number} - {self.number_en} - {self.is_reviewed}"
+    
 class ExerciseVocabularyMultipleChoice(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     question = models.TextField(blank=False, null=False, help_text="Question based on example sentence")
