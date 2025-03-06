@@ -6,10 +6,14 @@ from .progress_course_views import (
     ContentLessonProgressViewSet,
     UserProgressSummaryView
 )
+from .progress_initialize_views import (
+    InitializeProgressView
+)
 
 __all__ = [
     'UserLessonProgressViewSet',
     'UserUnitProgressViewSet',
     'ContentLessonProgressViewSet',
-    'UserProgressSummaryView'
+    'UserProgressSummaryView',
+    'InitializeProgressView'
 ]
