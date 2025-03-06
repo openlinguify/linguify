@@ -25,6 +25,8 @@ from ..serializers.progress_course_serializers import (
     ContentLessonProgressUpdateSerializer
 )
 
+import logging
+logger = logging.getLogger(__name__)
 
 class UserProgressViewSet(viewsets.ModelViewSet):
     """
@@ -35,7 +37,9 @@ class UserProgressViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         # Le queryset de base sera défini dans les sous-classes
-        pass
+        user = self.request.user
+        logger.debug(f"User {user.username} accessing progress data")
+        return None
     
     def get_serializer_class(self):
         # Le serializer sera défini dans les sous-classes
@@ -49,7 +53,9 @@ class UserLessonProgressViewSet(UserProgressViewSet):
     """Gestion de la progression des leçons pour l'utilisateur connecté"""
     
     def get_queryset(self):
-        return UserLessonProgress.objects.filter(user=self.request.user)
+        user = self.request.user
+        logger.debug(f"User {user.username} accessing lesson progress data")
+        return UserLessonProgress.objects.filter(user=user)
     
     def get_serializer_class(self):
         if self.action == 'update_progress':
@@ -120,7 +126,9 @@ class UserUnitProgressViewSet(UserProgressViewSet):
     """Gestion de la progression des unités pour l'utilisateur connecté"""
     
     def get_queryset(self):
-        return UserUnitProgress.objects.filter(user=self.request.user)
+        user = self.request.user
+        logger.debug(f"User {user.username} accessing unit progress data")
+        return UserUnitProgress.objects.filter(user=user)
     
     def get_serializer_class(self):
         if self.action == 'update_progress':
@@ -174,9 +182,11 @@ class ContentLessonProgressViewSet(UserProgressViewSet):
     
     def get_queryset(self):
         # Utilise UserCourseProgress avec un filtre sur le content_type
+        user = self.request.user
+        logger.debug(f"User {user.username} accessing content lesson progress data")
         content_type = ContentType.objects.get_for_model(ContentLesson)
         return UserCourseProgress.objects.filter(
-            user=self.request.user,
+            user=user,
             content_type=content_type
         )
     
@@ -302,8 +312,29 @@ class UserProgressSummaryView(generics.RetrieveAPIView):
     
     def retrieve(self, request, *args, **kwargs):
         user = request.user
+        logger.debug(f"User {user.username} retrieving progress summary")
         
-        # Statistiques globales
+        # Create initial unit progress entries if none exist
+        units = Unit.objects.all()
+        existing_unit_progress = UserUnitProgress.objects.filter(user=user)
+        existing_unit_ids = set(existing_unit_progress.values_list('unit_id', flat=True))
+        
+        # Create missing unit progress entries
+        new_unit_progress = []
+        for unit in units:
+            if unit.id not in existing_unit_ids:
+                new_unit_progress.append(UserUnitProgress(
+                    user=user,
+                    unit=unit,
+                    status='not_started',
+                    completion_percentage=0
+                ))
+        
+        if new_unit_progress:
+            UserUnitProgress.objects.bulk_create(new_unit_progress)
+            logger.info(f"Created {len(new_unit_progress)} initial unit progress entries for user {user.username}")
+        
+        # Refresh the queryset after potentially creating new entries
         units_progress = UserUnitProgress.objects.filter(user=user)
         lessons_progress = UserLessonProgress.objects.filter(user=user)
         
