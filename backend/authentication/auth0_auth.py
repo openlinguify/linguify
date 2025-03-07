@@ -148,29 +148,45 @@ class Auth0Authentication(authentication.BaseAuthentication):
             return None
     
     def authenticate(self, request):
+        """
+        Authenticate the request and return a two-tuple of (user, token).
+        """
         # Get the auth header
         auth_header = request.headers.get('Authorization', '')
+        
+        # Debug the auth header
+        logger.debug(f"Auth header: {auth_header[:20]}...")
+
         if not auth_header.startswith('Bearer '):
+            logger.debug("No Bearer token found in request")
             return None
 
         # Extract the token
         token = auth_header.split(' ')[1]
+        logger.debug(f"Token extracted: {token[:10]}...")
         
         try:
             # First try to verify token locally without calling Auth0
             payload = self.verify_token(token)
             
             if payload:
+                logger.debug("Token verified successfully")
                 # Get user from payload
                 user = self.get_user_from_payload(payload)
                 if user:
+                    logger.debug(f"User authenticated: {user.email}")
                     # Store user ID on request for debugging
                     request.auth0_user_id = payload.get('sub')
                     return (user, token)
+                else:
+                    logger.warning("Token valid but user not found/created")
+            else:
+                logger.warning("Token verification failed")
                     
             # If local verification fails or no user found, try Auth0 userinfo endpoint
             # as a fallback, but only if we haven't hit rate limits
             if not payload or not user:
+                logger.debug("Trying Auth0 userinfo endpoint as fallback")
                 # Check if we're rate limited
                 rate_limit_key = "auth0_rate_limited"
                 if cache.get(rate_limit_key):

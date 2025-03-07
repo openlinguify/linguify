@@ -1,8 +1,7 @@
 // src/services/progressAPI.ts
 import axios from 'axios';
-import { getAccessToken } from "@/services/auth";
 
-// Define interfaces for the progress data types
+// Réutiliser toutes vos interfaces existantes
 export interface ProgressSummary {
   summary: {
     total_units: number;
@@ -107,122 +106,229 @@ export interface ContentLessonProgress {
   xp_earned: number;
 }
 
-// Create a dedicated axios instance for progress API
-const createProgressApi = () => {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Fonction pour récupérer le token directement depuis le localStorage ou d'autres services d'authentification
+function getAuthToken(): string | null {
+  try {
+    // Solution 1: Récupérer depuis le localStorage
+    const authData = localStorage.getItem('auth_state');
+    if (authData) {
+      const parsed = JSON.parse(authData);
+      if (parsed && parsed.token) {
+        return parsed.token;
+      }
+    }
+    
+    // Solution 2: Récupérer depuis les cookies
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === 'access_token') {
+        return decodeURIComponent(value);
+      }
+    }
+    
+    // Solution 3: Récupérer depuis sessionStorage
+    const sessionToken = sessionStorage.getItem('access_token');
+    if (sessionToken) {
+      return sessionToken;
+    }
+    
+    // Aucun token trouvé
+    console.warn('Aucun token d\'authentification trouvé');
+    return null;
+  } catch (error) {
+    console.error('Erreur lors de la récupération du token:', error);
+    return null;
+  }
+}
+
+// Afficher les données d'authentification pour le débogage
+function logAuthInfo() {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('=== Auth Debug ===');
+    
+    // Vérifier localStorage
+    try {
+      const authData = localStorage.getItem('auth_state');
+      console.log('localStorage auth_state:', authData ? `présent (${authData.substring(0, 50)}...)` : 'absent');
+    } catch (e) {
+      console.log('Erreur localStorage:', e);
+    }
+    
+    // Vérifier cookies
+    console.log('Cookies:', document.cookie);
+    
+    // Vérifier sessionStorage
+    try {
+      const sessionToken = sessionStorage.getItem('access_token');
+      console.log('sessionStorage access_token:', sessionToken ? 'présent' : 'absent');
+    } catch (e) {
+      console.log('Erreur sessionStorage:', e);
+    }
+    
+    // Vérifier le token utilisé
+    const token = getAuthToken();
+    console.log('Token utilisé:', token ? `${token.substring(0, 15)}...` : 'aucun');
+    
+    console.log('=== Fin Auth Debug ===');
+  }
+}
+
+// Créer une instance Axios configurée
+const createApiClient = () => {
+  // Afficher les infos d'authentification au démarrage
+  logAuthInfo();
   
-  const instance = axios.create({
-    baseURL: API_URL,
-    withCredentials: true, // Important for cookies
+  const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+  console.log('API Base URL:', baseURL);
+  
+  const client = axios.create({
+    baseURL,
+    withCredentials: true, // Important pour envoyer automatiquement les cookies
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    timeout: 10000, // Timeout de 10 secondes
   });
-  
-  // Add auth token to each request
-  instance.interceptors.request.use(function(config) {
-    return getAccessToken().then(token => {
+
+  // Intercepteur pour ajouter le token d'authentification à chaque requête
+  client.interceptors.request.use(
+    config => {
+      const token = getAuthToken();
+      
       if (token) {
+        // S'assurer que config.headers existe
         config.headers = config.headers || {};
-        config.headers['Authorization'] = `Bearer ${token}`;
-      }
-      return config;
-    }).catch(error => {
-      console.error('Authentication error:', error);
-      return config;
-    });
-  });
-  
-  // Handle response errors
-  instance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response?.status === 401) {
-        console.error('Authentication error:', error);
-        // Optionally redirect to login
-        // window.location.href = '/login';
+        config.headers.Authorization = `Bearer ${token}`;
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Requête ${config.method?.toUpperCase()} ${config.url} avec token:`, 
+                     token.substring(0, 15) + '...');
+        }
       } else {
-        console.error('API Error:', error);
+        console.warn(`Requête ${config.method?.toUpperCase()} ${config.url} sans token d'authentification`);
       }
+      
+      return config;
+    },
+    error => {
+      console.error('Erreur dans l\'intercepteur de requête:', error);
       return Promise.reject(error);
     }
   );
-  
-  return instance;
+
+  // Intercepteur pour gérer les réponses et les erreurs
+  client.interceptors.response.use(
+    response => {
+      // Traitement des réponses réussies
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Réponse ${response.status} de ${response.config.url}`);
+      }
+      return response;
+    },
+    error => {
+      // Traitement des erreurs
+      if (error.response) {
+        // La requête a été faite et le serveur a répondu avec un code d'état
+        // qui n'est pas dans la plage 2xx
+        console.error(`Erreur ${error.response.status} de ${error.config?.url}:`, 
+                     error.response.data);
+        
+        // Si 401 Unauthorized, le token pourrait être expiré ou invalide
+        if (error.response.status === 401) {
+          console.warn('Erreur d\'authentification 401 - le token pourrait être expiré ou invalide');
+          // Actualiser l'info d'authentification pour le débogage
+          logAuthInfo();
+        }
+      } else if (error.request) {
+        // La requête a été faite mais aucune réponse n'a été reçue
+        console.error('Pas de réponse reçue:', error.request);
+      } else {
+        // Une erreur s'est produite lors de la configuration de la requête
+        console.error('Erreur lors de la configuration de la requête:', error.message);
+      }
+      
+      return Promise.reject(error);
+    }
+  );
+
+  return client;
 };
 
-// Create progress service instance
-const progressApi = createProgressApi();
+const apiClient = createApiClient();
 
-// Progress service with all API methods
+// Service Progress avec méthodes API
 export const progressService = {
-  // Get user progress summary
+  // Récupérer le résumé de la progression
   getSummary: async (): Promise<ProgressSummary> => {
     try {
-      const response = await progressApi.get('/api/v1/progress/summary/');
-      return response.data as ProgressSummary;
+      const response = await apiClient.get<ProgressSummary>('/api/v1/progress/summary/');
+      return response.data;
     } catch (error) {
-      console.error('Error fetching progress summary:', error);
+      console.error('Erreur lors de la récupération du résumé:', error);
       throw error;
     }
   },
 
-  // Initialize progress for new user or when accessing for the first time
+  // Initialiser la progression pour un nouvel utilisateur
   initializeProgress: async (): Promise<boolean> => {
     try {
-      await progressApi.post('/api/v1/progress/initialize/');
+      await apiClient.post('/api/v1/progress/initialize/');
       return true;
     } catch (error) {
-      console.error('Error initializing progress data:', error);
+      console.error('Erreur lors de l\'initialisation des données:', error);
       return false;
     }
   },
 
-  // Get unit progress
+  // Récupérer la progression des unités
   getUnitProgress: async (unitId?: number): Promise<UnitProgress[]> => {
     try {
       const url = unitId 
         ? `/api/v1/progress/units/?unit_id=${unitId}` 
         : '/api/v1/progress/units/';
-      const response = await progressApi.get(url);
-      return response.data as UnitProgress[];
+      const response = await apiClient.get<UnitProgress[]>(url);
+      return response.data;
     } catch (error) {
-      console.error('Error fetching unit progress:', error);
+      console.error('Erreur lors de la récupération de la progression des unités:', error);
       throw error;
     }
   },
 
-  // Get progress by level
+  // Récupérer la progression par niveau
   getUnitProgressByLevel: async (level: string): Promise<UnitProgress[]> => {
     try {
-      const response = await progressApi.get(`/api/v1/progress/units/by_level/?level=${level}`);
-      return response.data as UnitProgress[];
+      const response = await apiClient.get<UnitProgress[]>(`/api/v1/progress/units/by_level/?level=${level}`);
+      return response.data;
     } catch (error) {
-      console.error(`Error fetching progress for level ${level}:`, error);
+      console.error(`Erreur lors de la récupération de la progression pour le niveau ${level}:`, error);
       throw error;
     }
   },
 
-  // Get lesson progress by unit
+  // Récupérer la progression des leçons par unité
   getLessonProgressByUnit: async (unitId: number): Promise<LessonProgress[]> => {
     try {
-      const response = await progressApi.get(`/api/v1/progress/lessons/by_unit/?unit_id=${unitId}`);
-      return response.data as LessonProgress[];
+      const response = await apiClient.get<LessonProgress[]>(`/api/v1/progress/lessons/by_unit/?unit_id=${unitId}`);
+      return response.data;
     } catch (error) {
-      console.error(`Error fetching lesson progress for unit ${unitId}:`, error);
+      console.error(`Erreur lors de la récupération des leçons pour l'unité ${unitId}:`, error);
       throw error;
     }
   },
 
-  // Get content lesson progress
+  // Récupérer la progression des contenus de leçon
   getContentLessonProgress: async (lessonId: number): Promise<ContentLessonProgress[]> => {
     try {
-      const response = await progressApi.get(`/api/v1/progress/content-lessons/by_lesson/?lesson_id=${lessonId}`);
-      return response.data as ContentLessonProgress[];
+      const response = await apiClient.get<ContentLessonProgress[]>(`/api/v1/progress/content-lessons/by_lesson/?lesson_id=${lessonId}`);
+      return response.data;
     } catch (error) {
-      console.error(`Error fetching content lesson progress for lesson ${lessonId}:`, error);
+      console.error(`Erreur lors de la récupération des contenus pour la leçon ${lessonId}:`, error);
       throw error;
     }
   },
 
-  // Update lesson progress
+  // Mettre à jour la progression d'une leçon
   updateLessonProgress: async (data: {
     lesson_id: number;
     completion_percentage?: number;
@@ -231,15 +337,15 @@ export const progressService = {
     mark_completed?: boolean;
   }): Promise<LessonProgress> => {
     try {
-      const response = await progressApi.post('/api/v1/progress/lessons/update_progress/', data);
-      return response.data as LessonProgress;
+      const response = await apiClient.post<LessonProgress>('/api/v1/progress/lessons/update_progress/', data);
+      return response.data;
     } catch (error) {
-      console.error('Error updating lesson progress:', error);
+      console.error('Erreur lors de la mise à jour de la progression de la leçon:', error);
       throw error;
     }
   },
 
-  // Update content lesson progress
+  // Mettre à jour la progression d'un contenu de leçon
   updateContentLessonProgress: async (data: {
     content_lesson_id: number;
     completion_percentage?: number;
@@ -249,21 +355,21 @@ export const progressService = {
     xp_earned?: number;
   }): Promise<ContentLessonProgress> => {
     try {
-      const response = await progressApi.post('/api/v1/progress/content-lessons/update_progress/', data);
-      return response.data as ContentLessonProgress;
+      const response = await apiClient.post<ContentLessonProgress>('/api/v1/progress/content-lessons/update_progress/', data);
+      return response.data;
     } catch (error) {
-      console.error('Error updating content lesson progress:', error);
+      console.error('Erreur lors de la mise à jour du contenu de la leçon:', error);
       throw error;
     }
   },
 
-  // Get activity history for charts
+  // Récupérer l'historique d'activités pour les graphiques
   getActivityHistory: async (period: 'week' | 'month' | 'year' = 'week'): Promise<any> => {
     try {
-      const response = await progressApi.get(`/api/v1/progress/activity-history/?period=${period}`);
+      const response = await apiClient.get(`/api/v1/progress/activity-history/?period=${period}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching activity history:', error);
+      console.error('Erreur lors de la récupération de l\'historique:', error);
       throw error;
     }
   }

@@ -1,7 +1,6 @@
 // src/services/useAuth.ts
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState, useEffect } from "react";
-import { storeAuthData, getStoredAuthData, clearAuthData } from "./auth";
 
 interface AuthUser {
   id: string;
@@ -21,7 +20,7 @@ interface AuthUser {
 
 export function useAuth() {
   const {
-    isAuthenticated: auth0IsAuthenticated,
+    isAuthenticated,
     isLoading: auth0Loading,
     loginWithRedirect,
     logout: auth0Logout,
@@ -34,91 +33,50 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [backendRetries, setBackendRetries] = useState(0);
-  const [tokenLastFetched, setTokenLastFetched] = useState<number>(0);
-
-  // Check for existing token in storage first
-  useEffect(() => {
-    const checkStoredAuth = () => {
-      const storedAuth = getStoredAuthData();
-      if (storedAuth && storedAuth.token && storedAuth.user) {
-        setToken(storedAuth.token);
-        setUser(storedAuth.user);
-      }
-    };
-    
-    checkStoredAuth();
-  }, []);
 
   // Fetch user profile from backend when authenticated
   useEffect(() => {
     let isMounted = true;
     const MAX_RETRIES = 3;
     const RETRY_DELAY = 2000; // 2 seconds
-    const TOKEN_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes in milliseconds
 
     async function fetchUserProfile() {
       if (!isMounted) return;
 
-      // If we already have a user and token from localStorage, don't fetch again
-      if (user && token) {
-        setIsLoading(false);
-        return;
-      }
-
-      if (auth0IsAuthenticated && auth0User?.email) {
+      if (isAuthenticated && auth0User?.email) {
         try {
           setIsLoading(true);
 
-          // Check if we need to get a new token
-          const currentTime = new Date().getTime();
-          const needNewToken = !token || (currentTime - tokenLastFetched) > TOKEN_REFRESH_INTERVAL;
-          
-          let accessToken = token;
-          
-          if (needNewToken) {
-            // Get token
-            accessToken = await getAccessTokenSilently({
-              authorizationParams: {
-                audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE as string,
-              },
-            });
+          // Get token
+          const accessToken = await getAccessTokenSilently({
+            authorizationParams: {
+              audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE as string,
+            },
+          });
 
-            if (isMounted) {
-              setToken(accessToken);
-              setTokenLastFetched(currentTime);
-              
-              // Store token in localStorage for persistence
-              storeAuthData(accessToken, auth0User);
-            }
-          }
+          if (isMounted) setToken(accessToken);
 
           const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
           console.log("Connecting to backend at:", backendUrl);
 
-          // Only call /api/auth/me/ if we don't have a user profile yet
-          if (!user) {
-            // Get user profile from backend
-            const response = await fetch(`${backendUrl}/api/auth/me/`, {
-              headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
-              }
-            });
-
-            if (!response.ok) {
-              throw new Error(`Backend returned ${response.status}: ${await response.text()}`);
+          // Get user profile from backend
+          const response = await fetch(`${backendUrl}/api/auth/me/`, {
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json'
             }
+          });
 
-            const userProfile = await response.json();
+          if (!response.ok) {
+            throw new Error(`Backend returned ${response.status}: ${await response.text()}`);
+          }
 
-            if (isMounted) {
-              setUser(userProfile);
-              setBackendRetries(0); // Reset retry counter on success
-              console.log("User profile loaded from backend");
-              
-              // Update stored auth data with user profile
-              storeAuthData(accessToken as string, userProfile);
-            }
+          const userProfile = await response.json();
+
+          if (isMounted) {
+            setUser(userProfile);
+            setBackendRetries(0); // Reset retry counter on success
+            console.log("User profile loaded from backend");
           }
         } catch (err) {
           console.error("Error fetching user profile:", err);
@@ -154,9 +112,6 @@ export function useAuth() {
             setUser(fallbackUser);
             setError("Using fallback user data. Backend connection failed.");
             console.log("Using fallback user data from Auth0");
-            
-            // Even with fallback data, store it to avoid constant retries
-            storeAuthData(token as string, fallbackUser);
           } else if (isMounted) {
             setError("Failed to load user profile");
           }
@@ -167,9 +122,6 @@ export function useAuth() {
         setUser(null);
         setToken(null);
         setIsLoading(false);
-        
-        // Clear stored auth data when not authenticated
-        clearAuthData();
       }
     }
 
@@ -178,43 +130,50 @@ export function useAuth() {
     return () => {
       isMounted = false;
     };
-  }, [auth0IsAuthenticated, auth0Loading, auth0User, getAccessTokenSilently, backendRetries, user, token, tokenLastFetched]);
+  }, [isAuthenticated, auth0Loading, auth0User, getAccessTokenSilently, backendRetries]);
 
   // Login function
-  const login = async (returnTo?: string) => {
-    await loginWithRedirect({
-      authorizationParams: {
-        redirect_uri: `${process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000'}/callback`,
-      },
-      appState: returnTo ? { returnTo } : undefined
-    });
-  };
+// Dans useAuth.ts
+const login = async (returnTo?: string) => {
+  await loginWithRedirect({
+    authorizationParams: {
+      redirect_uri: `${process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000'}/callback`,
+      // Ajouter ce paramètre pour forcer l'authentification
+      prompt: 'login',
+    },
+    appState: returnTo ? { returnTo } : undefined
+  });
+};
 
   // Logout function
-  const logout = async (options?: { returnTo?: string }) => {
-    try {
-      console.log("Complete logout in progress...");
-      
-      // Clean up local storage and cookies
-      clearAuthData();
-      
-      // Determine redirect URL
-      const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || "http://localhost:3000";
-      const returnTo = encodeURIComponent(`${frontendUrl}/home`);
-      const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
-      const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
-      
-      // Redirect to Auth0 logout URL
-      window.location.href = `https://${auth0Domain}/v2/logout?client_id=${clientId}&returnTo=${returnTo}`;
-    } catch (error) {
-      console.error("Error during Auth0 logout:", error);
-      // Manual redirect in case of error
-      window.location.href = '/home';
-    }
-  };
+// Dans src/services/useAuth.ts
+const logout = async (options?: { returnTo?: string }) => {
+  try {
+    console.log("Déconnexion complète en cours...");
+    
+    // Nettoyage local
+    localStorage.clear();
+    document.cookie.split(";").forEach(function(c) {
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    
+    // Déterminer l'URL de redirection
+    const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || "http://localhost:3000";
+    const returnTo = encodeURIComponent(`${frontendUrl}/home`);
+    const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
+    const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
+    
+    // Redirection vers l'URL de déconnexion Auth0
+    window.location.href = `https://${auth0Domain}/v2/logout?client_id=${clientId}&returnTo=${returnTo}`;
+  } catch (error) {
+    console.error("Error during Auth0 logout:", error);
+    // En cas d'erreur, redirection manuelle
+    window.location.href = '/home';
+  }
+};
 
   return {
-    isAuthenticated: !!user && !!token,
+    isAuthenticated,
     isLoading: isLoading || auth0Loading,
     user,
     token,

@@ -1,6 +1,4 @@
 // src/services/api-client.ts
-import { getAccessToken } from "@/services/auth";
-
 type FetchOptions = {
   method?: string;
   headers?: Record<string, string>;
@@ -14,16 +12,12 @@ export class ApiClient {
     this.baseUrl = baseUrl;
   }
 
-  async request<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
-    // Get the auth token for every request
-    const token = await getAccessToken();
-    
+  async request<T>(endpoint: string, options: FetchOptions = {}, token?: string): Promise<T> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...options.headers,
     };
 
-    // Always include the token if available
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
@@ -40,10 +34,7 @@ export class ApiClient {
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        const error: any = new Error(errorData.message || 'API request failed');
-        error.status = response.status;
-        error.data = errorData;
-        throw error;
+        throw new Error(errorData.message || 'API request failed');
       }
 
       return response.json();
@@ -53,60 +44,35 @@ export class ApiClient {
     }
   }
 
-  async get<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, { method: 'GET' });
+  async get<T>(endpoint: string, token?: string): Promise<T> {
+    return this.request<T>(endpoint, { method: 'GET' }, token);
   }
 
-  async post<T>(endpoint: string, data: any): Promise<T> {
+  async post<T>(endpoint: string, data: any, token?: string): Promise<T> {
     return this.request<T>(
       endpoint,
       {
         method: 'POST',
         body: data,
-      }
+      },
+      token
     );
   }
 
-  async put<T>(endpoint: string, data: any): Promise<T> {
+  async put<T>(endpoint: string, data: any, token?: string): Promise<T> {
     return this.request<T>(
       endpoint,
       {
         method: 'PUT',
         body: data,
-      }
+      },
+      token
     );
   }
 
-  async patch<T>(endpoint: string, data: any): Promise<T> {
-    return this.request<T>(
-      endpoint,
-      {
-        method: 'PATCH',
-        body: data,
-      }
-    );
-  }
-
-  async delete<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, { method: 'DELETE' });
+  async delete<T>(endpoint: string, token?: string): Promise<T> {
+    return this.request<T>(endpoint, { method: 'DELETE' }, token);
   }
 }
-
-// Simplified versions of the main API methods that use the apiClient
-export const apiGet = async <T>(url: string): Promise<T> => {
-  return apiClient.get<T>(url);
-};
-
-export const apiPost = async <T>(url: string, data: any): Promise<T> => {
-  return apiClient.post<T>(url, data);
-};
-
-export const apiPatch = async <T>(url: string, data: any): Promise<T> => {
-  return apiClient.patch<T>(url, data);
-};
-
-export const apiDelete = async <T>(url: string): Promise<T> => {
-  return apiClient.delete<T>(url);
-};
 
 export const apiClient = new ApiClient(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000');
