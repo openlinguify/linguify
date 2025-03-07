@@ -3,9 +3,9 @@
 
 import { Auth0Provider } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
-import { ReactNode } from "react";
-import { createContext, useContext } from "react";
+import React, { ReactNode, useEffect, createContext, useContext } from "react";
 import { useAuth } from "@/services/useAuth";
+import { storeAuthData } from "@/services/auth";
 
 // Create a context to share auth state
 const AuthContext = createContext<ReturnType<typeof useAuth> | null>(null);
@@ -46,6 +46,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 // Inner provider that uses the hook and provides context
 function AuthProviderContent({ children }: { children: ReactNode }) {
   const auth = useAuth();
+  
+  // Store auth token in global state and localStorage when it changes
+  useEffect(() => {
+    if (auth.token) {
+      // Store the token with user info
+      storeAuthData(auth.token, auth.user);
+      
+      // Make the Auth0 client globally available for getTokenFromOtherSources
+      if (typeof window !== 'undefined' && auth.getAccessToken) {
+        (window as any).auth0Client = {
+          getTokenSilently: auth.getAccessToken
+        };
+      }
+    }
+  }, [auth.token, auth.user, auth.getAccessToken]);
   
   return (
     <AuthContext.Provider value={auth}>
