@@ -52,9 +52,9 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
       // Special handling for auth errors
       if (response.status === 401) {
         console.error('Authentication error:', errorMessage);
-        // Refresh token or redirect to login
-        // This will depend on your auth strategy
-        window.location.href = '/login';
+        // Clear invalid auth state
+        localStorage.removeItem('auth_state');
+        document.cookie = "auth_state=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       }
       
       throw new Error(errorMessage);
