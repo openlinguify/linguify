@@ -7,16 +7,6 @@
    - Copier `AuthProvider.tsx` dans `src/services/`
    - Copier `axiosAuthInterceptor.ts` dans `src/services/`
 
-2. **Nettoyer les anciens fichiers**
-   - Vous pouvez supprimer les fichiers suivants car ils sont remplacés :
-     - `auth.ts`
-     - `useAuth.ts`
-     - `authService.ts` (l'ancien)
-     - `unifiedAuth.ts`
-     - `auth-state.ts`
-     - `centralized-auth.ts`
-     - N'importe quel autre fichier d'authentification que vous n'utilisez plus
-
 3. **Mise à jour du fichier _app.tsx ou layout.tsx**
    ```tsx
    // Dans votre fichier racine d'application
