@@ -11,208 +11,98 @@ import FlashcardDeckList from './FlashcardDeckList';
 import FlashcardApp from './FlashCards';
 import { revisionApi } from "@/services/revisionAPI";
 import type { FlashcardDeck } from "@/types/revision";
-import { useAuth } from "@/services/useAuth";
+import { useAuthContext } from '@/services/AuthProvider';
 
 const FlashcardMain = () => {
+  const [activeView, setActiveView] = useState<"decks" | "flashcards">("decks");
+  const [selectedDeck, setSelectedDeck] = useState<FlashcardDeck | null>(null);
+  const [decks, setDecks] = useState<FlashcardDeck[]>([]);
+  const [isPageLoading, setIsPageLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  
   const { toast } = useToast();
   const router = useRouter();
-  const { 
-    isAuthenticated, 
-    isLoading: authLoading, 
-    user, 
-    login, 
-    token, 
-    getAccessToken 
-  } = useAuth();
-  
-  const [activeView, setActiveView] = useState<"decks" | "flashcards">("decks");
-  const [selectedDeck, setSelectedDeck] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [decks, setDecks] = useState<FlashcardDeck[]>([]);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);
-  const [forcedAuth, setForcedAuth] = useState(false);
+  const { isAuthenticated, isLoading: authLoading, login } = useAuthContext();
 
-  // Set isClient to true when component mounts on client
-  useEffect(() => {
-    setIsClient(true);
-    
-    // Vérification manuelle de l'authentification locale
-    const authData = localStorage.getItem('auth_state');
-    if (authData) {
-      try {
-        const authState = JSON.parse(authData);
-        if (authState.token) {
-          console.log("Auth data found in localStorage, forcing auth state");
-          setForcedAuth(true);
-        }
-      } catch (e) {
-        console.error("Error parsing auth state from localStorage:", e);
-      }
-    }
-  }, []);
-
-  // Cette fonction contourne le système d'authentification normal et utilise directement le token du localStorage
-  const getStoredToken = useCallback(() => {
-    try {
-      const authData = localStorage.getItem('auth_state');
-      if (!authData) return null;
-      
-      const authState = JSON.parse(authData);
-      return authState.token || null;
-    } catch (e) {
-      console.error("Error retrieving token from localStorage:", e);
-      return null;
-    }
-  }, []);
-
-  // Fetch decks function with manual token handling
+  // Fetch all flashcard decks
   const fetchDecks = useCallback(async () => {
     try {
-      setIsLoading(true);
+      setIsPageLoading(true);
       setLoadError(null);
       
-      // Contournement: utiliser directement le token du localStorage si nécessaire
-      let tokenToUse = token;
-      
-      if (!tokenToUse && forcedAuth) {
-        tokenToUse = getStoredToken();
-        console.log("Using stored token from localStorage:", !!tokenToUse);
-      }
-      
-      if (!tokenToUse) {
-        setIsLoading(false);
-        console.log("No token available, skipping API call");
-        return;
-      }
-      
-      // Override de l'API normale pour utiliser notre token directement
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/v1/revision/decks/`, {
-        headers: {
-          'Authorization': `Bearer ${tokenToUse}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      setDecks(data);
-    } catch (error: any) {
-      console.error('Error fetching flashcard decks:', error);
-      setLoadError("Failed to load flashcard decks. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [token, forcedAuth, getStoredToken]);
-
-  // Load data when authenticated or when forced auth is enabled
-  useEffect(() => {
-    if (isClient && (!authLoading || forcedAuth)) {
-      if (isAuthenticated || forcedAuth) {
-        console.log("User authenticated or forced auth, fetching decks...");
-        fetchDecks();
-      } else {
-        setIsLoading(false);
-      }
-    }
-  }, [isClient, authLoading, isAuthenticated, forcedAuth, fetchDecks]);
-
-  const handleDeckSelect = async (deckId: number) => {
-    try {
-      setIsLoading(true);
-      
-      // Contournement: utiliser directement le token du localStorage
-      const tokenToUse = token || (forcedAuth ? getStoredToken() : null);
-      
-      if (tokenToUse) {
-        // Vérifier manuellement que nous pouvons accéder aux cartes
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/v1/revision/flashcards/?deck=${deckId}`, {
-          headers: {
-            'Authorization': `Bearer ${tokenToUse}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
-      }
-      
-      setSelectedDeck(deckId);
-      setActiveView("flashcards");
+      const fetchedDecks = await revisionApi.decks.getAll();
+      setDecks(fetchedDecks);
     } catch (error) {
-      console.error('Error selecting deck:', error);
+      console.error('Error fetching decks:', error);
+      setLoadError("Failed to load your flashcard decks. Please try again.");
+    } finally {
+      setIsPageLoading(false);
+    }
+  }, []);
+
+  // Initial load of decks
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      fetchDecks();
+    } else if (!authLoading && !isAuthenticated) {
+      setIsPageLoading(false);
+    }
+  }, [fetchDecks, isAuthenticated, authLoading]);
+
+  // Handle deck selection
+  const handleDeckSelect = (deckId: number) => {
+    const deck = decks.find(d => d.id === deckId);
+    if (deck) {
+      setSelectedDeck(deck);
+      setActiveView("flashcards");
+    } else {
       toast({
         title: "Error",
-        description: "Failed to load cards for this deck. Please try again.",
-        variant: "destructive",
+        description: "Could not find the selected deck.",
+        variant: "destructive"
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
+  // Handle back to decks view
   const handleBackToDeck = () => {
     setActiveView("decks");
-    fetchDecks();
     setSelectedDeck(null);
   };
 
-  const handleLogin = () => {
-    login(window.location.pathname);
-  };
-
-  const handleForceAuth = () => {
-    setForcedAuth(true);
-    fetchDecks();
-  };
-
+  // Handle retry on error
   const handleRetry = () => {
     fetchDecks();
   };
 
-  // Show loading spinner during SSR or initial loading
-  if (!isClient || (authLoading && !forcedAuth)) {
+  // Handle login redirection
+  const handleLogin = () => {
+    login(window.location.pathname);
+  };
+
+  // Show login prompt if not authenticated
+  if (!authLoading && !isAuthenticated) {
     return (
-      <div className="w-full h-64 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-brand-purple" />
-        <span className="ml-2 text-brand-purple">Initializing...</span>
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Flashcards</h1>
+        
+        <Card className="border-2 border-dashed border-gray-200">
+          <CardContent className="p-8 flex flex-col items-center justify-center space-y-4">
+            <p className="text-center text-gray-600">
+              Please log in to access your flashcards.
+            </p>
+            <Button 
+              onClick={handleLogin} 
+              className="mt-4 bg-brand-purple hover:bg-brand-purple/90"
+            >
+              <LogIn className="mr-2 h-4 w-4" /> Log In
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  // Show login or bypass auth if not authenticated
-  if (!isAuthenticated && !forcedAuth) {
-    return (
-      <Card className="border-2 border-dashed border-gray-200">
-        <CardContent className="p-8 flex flex-col items-center justify-center space-y-4">
-          <h2 className="text-xl font-semibold text-center">Access your flashcards</h2>
-          <p className="text-center text-gray-600">
-            You need to be logged in to view and manage your flashcards.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Button 
-              onClick={handleLogin} 
-              className="bg-gradient-to-r from-brand-purple to-brand-gold text-white"
-            >
-              <LogIn className="mr-2 h-4 w-4" /> Sign In
-            </Button>
-            <Button 
-              onClick={handleForceAuth} 
-              variant="outline"
-            >
-              <RefreshCcw className="mr-2 h-4 w-4" /> Try Direct Access
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Main content for authenticated users
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -223,7 +113,7 @@ const FlashcardMain = () => {
           <Button
             variant="outline"
             onClick={handleBackToDeck}
-            disabled={isLoading}
+            disabled={isPageLoading}
           >
             <ChevronLeft className="h-4 w-4 mr-2" />
             Back to Decks
@@ -232,7 +122,7 @@ const FlashcardMain = () => {
           <Button
             variant="outline"
             onClick={handleRetry}
-            disabled={isLoading}
+            disabled={isPageLoading}
           >
             <RefreshCcw className="h-4 w-4 mr-2" />
             Refresh
@@ -240,7 +130,7 @@ const FlashcardMain = () => {
         )}
       </div>
 
-      {isLoading ? (
+      {isPageLoading ? (
         <div className="flex justify-center items-center h-64">
           <div className="flex flex-col items-center">
             <Loader2 className="h-8 w-8 animate-spin mb-4 text-brand-purple" />
