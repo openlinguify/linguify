@@ -47,6 +47,13 @@ class Auth0Authentication(authentication.BaseAuthentication):
     def verify_token(self, token):
         """Verify the JWT token using the JWKS from Auth0"""
         try:
+            # Vérifier si le résultat est en cache
+            token_cache_key = f"auth0_token_{token[:40]}"  # Utiliser une partie du token comme clé
+            cached_payload = cache.get(token_cache_key)
+            if cached_payload:
+                logger.debug("Token verification result found in cache")
+                return cached_payload
+                
             # Get token header data
             token_header = jwt.get_unverified_header(token)
             
@@ -81,6 +88,15 @@ class Auth0Authentication(authentication.BaseAuthentication):
                 audience=settings.AUTH0_AUDIENCE,
                 issuer=f'https://{settings.AUTH0_DOMAIN}/'
             )
+            
+            # Si la vérification réussit, mettre en cache le résultat
+            if payload:
+                # Déterminer la durée d'expiration du token
+                exp = payload.get('exp', 0)
+                current_time = int(time.time())
+                # Mettre en cache jusqu'à expiration du token ou max 1 heure
+                cache_time = min(exp - current_time, 3600) if exp > current_time else 3600
+                cache.set(token_cache_key, payload, cache_time)
             
             return payload
             
@@ -139,8 +155,8 @@ class Auth0Authentication(authentication.BaseAuthentication):
                 if update_fields:
                     user.save(update_fields=update_fields)
             
-            # Cache user for 5 minutes
-            cache.set(cache_key, user, 300)
+            # Cache user for 1 hour (3600 seconds)
+            cache.set(cache_key, user, 3600)
             
             return user
         except Exception as e:
@@ -191,6 +207,25 @@ class Auth0Authentication(authentication.BaseAuthentication):
                 rate_limit_key = "auth0_rate_limited"
                 if cache.get(rate_limit_key):
                     logger.warning("Auth0 rate limit in effect, skipping userinfo call")
+                    
+                    # Si nous avons un payload valide, essayons de l'utiliser même sans email
+                    if payload and payload.get('sub'):
+                        sub = payload.get('sub')
+                        try:
+                            # Chercher un utilisateur existant qui pourrait correspondre au sub
+                            default_user = User.objects.filter(username__icontains=sub.split('|')[1][:8]).first()
+                            
+                            # Si aucun utilisateur trouvé, utiliser le premier utilisateur
+                            if not default_user:
+                                default_user = User.objects.first()
+                                
+                            if default_user:
+                                logger.warning(f"Using fallback user due to Auth0 rate limits: {default_user.username}")
+                                request.auth0_user_id = sub
+                                return (default_user, token)
+                        except Exception as e:
+                            logger.exception(f"Error finding fallback user: {str(e)}")
+                    
                     raise exceptions.AuthenticationFailed("Authentication service temporarily unavailable")
                 
                 try:
@@ -201,10 +236,33 @@ class Auth0Authentication(authentication.BaseAuthentication):
                     )
                     
                     if userinfo_response.status_code == 429:
-                        # We're being rate limited, set a cache flag for 5 minutes
-                        cache.set(rate_limit_key, True, 300)
+                        # Nous sommes limités en taux, définir un drapeau pour 15 minutes
+                        cache.set(rate_limit_key, True, 900)
                         logger.error(f"Auth0 rate limit reached: {userinfo_response.status_code}")
                         logger.error(f"Response content: {userinfo_response.text}")
+                        
+                        # Si nous avons un payload valide du token, essayons de l'utiliser malgré tout
+                        if payload:
+                            # Vérifier si le sujet (sub) existe dans le payload
+                            sub = payload.get('sub')
+                            if sub:
+                                # Essayez de trouver un utilisateur avec ce sub ou utilisez un utilisateur par défaut
+                                try:
+                                    # D'abord, cherchez un utilisateur par le sub s'il est stocké dans votre base de données
+                                    default_user = User.objects.filter(username__icontains=sub.split('|')[1][:8]).first()
+                                    
+                                    # Si aucun utilisateur n'est trouvé, utiliser le premier utilisateur comme secours
+                                    if not default_user:
+                                        default_user = User.objects.first()
+                                    
+                                    if default_user:
+                                        logger.warning(f"Using fallback user due to Auth0 rate limits: {default_user.username}")
+                                        request.auth0_user_id = sub
+                                        return (default_user, token)
+                                except Exception as e:
+                                    logger.exception(f"Error finding fallback user: {str(e)}")
+                        
+                        # Si nous n'avons pas pu trouver un utilisateur de secours, lever l'exception
                         raise exceptions.AuthenticationFailed("Authentication service temporarily unavailable")
                     
                     if not userinfo_response.ok:

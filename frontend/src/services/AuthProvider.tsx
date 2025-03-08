@@ -158,118 +158,109 @@ function AuthContentProvider({ children }: { children: ReactNode }) {
     const MAX_RETRIES = 3;
     const RETRY_DELAY = 2000; // 2 secondes
 
-    async function fetchUserProfile() {
-      if (!isMounted) return;
+// Dans AuthProvider.tsx, modifiez la fonction fetchUserProfile:
 
-      if (auth0IsAuthenticated && auth0User?.email) {
-        try {
-          setIsLoading(true);
-          
-          // Obtenir le token
-          let accessToken;
-          
-          // Essayer d'abord le stockage local
-          accessToken = authService.getAuthToken();
-          
-          // Si pas de token en stockage, en demander un nouveau
-          if (!accessToken) {
-            accessToken = await getAccessTokenSilently({
-              authorizationParams: {
-                audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE as string,
-              }
-            });
-          }
-          
-          if (!accessToken) {
-            throw new Error("Failed to get access token");
-          }
+async function fetchUserProfile() {
+  if (!isMounted) return;
 
-          // Stocker le token
-          authService.storeAuthData(accessToken);
-          if (isMounted) setToken(accessToken);
-
-          // Récupérer le profil depuis le backend
-          try {
-            const userProfile = await authService.fetchUserProfile(accessToken);
-            
-            if (isMounted) {
-              setUser(userProfile);
-              // Stocker le profil avec le token
-              authService.storeAuthData(accessToken, userProfile);
-              setBackendRetries(0); // Réinitialiser le compteur d'essais
-              console.log("[Auth] User profile loaded from backend");
-            }
-          } catch (backendError) {
-            console.error("[Auth] Backend profile fetch error:", backendError);
-            
-            // Implémenter la logique de réessai
-            if (backendRetries < MAX_RETRIES) {
-              console.log(`[Auth] Retrying backend connection (${backendRetries + 1}/${MAX_RETRIES})...`);
-              if (isMounted) {
-                setBackendRetries(prev => prev + 1);
-                setTimeout(() => fetchUserProfile(), RETRY_DELAY);
-                return;
-              }
-            }
-            
-            // Utiliser les données Auth0 en dernier recours
-            if (auth0User && isMounted) {
-              const fallbackUser: UserProfile = {
-                id: auth0User.sub || '',
-                email: auth0User.email || '',
-                name: auth0User.name || '',
-                username: auth0User.nickname || auth0User.email?.split('@')[0] || '',
-                first_name: auth0User.given_name || '',
-                last_name: auth0User.family_name || '',
-                picture: auth0User.picture,
-                native_language: 'EN', // Valeur par défaut
-                target_language: 'FR', // Valeur par défaut
-                language_level: 'A1',  // Valeur par défaut
-                objectives: 'General', // Valeur par défaut
-                is_coach: false,
-                is_subscribed: false
-              };
-              
-              setUser(fallbackUser);
-              // Stocker le profil de secours
-              authService.storeAuthData(accessToken, fallbackUser);
-              setError("Using fallback user data. Backend connection failed.");
-            }
+  if (auth0IsAuthenticated && auth0User?.email) {
+    try {
+      setIsLoading(true);
+      
+      // Obtenir le token
+      let accessToken = authService.getAuthToken();
+      
+      if (!accessToken) {
+        accessToken = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE as string,
           }
-        } catch (err) {
-          console.error("[Auth] Error in auth flow:", err);
-          
-          // Si un token existe dans le stockage, utiliser les données utilisateur stockées
-          const storedToken = authService.getAuthToken();
-          const storedUser = authService.getStoredUserData();
-          
-          if (storedToken && storedUser) {
-            console.log("[Auth] Using cached auth data");
-            setToken(storedToken);
-            setUser(storedUser);
-          } else {
-            setError("Authentication error. Please try logging in again.");
-          }
-        } finally {
-          if (isMounted) setIsLoading(false);
-        }
-      } else if (!auth0IsLoading && isMounted) {
-        // Vérifier le stockage local lorsque Auth0 n'est pas authentifié
-        const storedToken = authService.getAuthToken();
-        const storedUser = authService.getStoredUserData();
-        
-        if (storedToken && storedUser) {
-          console.log("[Auth] Using stored auth data without Auth0");
-          setToken(storedToken);
-          setUser(storedUser);
-        } else {
-          setUser(null);
-          setToken(null);
-        }
-        
-        setIsLoading(false);
+        });
       }
+      
+      if (!accessToken) {
+        throw new Error("Failed to get access token");
+      }
+
+      // Toujours stocker le token
+      authService.storeAuthData(accessToken);
+      if (isMounted) setToken(accessToken);
+      
+      // Créer IMMÉDIATEMENT un profil utilisateur de base à partir des données Auth0
+      // pour que l'interface soit utilisable sans attendre le backend
+      if (auth0User) {
+        const fallbackUser = {
+          id: auth0User.sub || '',
+          email: auth0User.email || '',
+          name: auth0User.name || '',
+          username: auth0User.nickname || auth0User.email?.split('@')[0] || '',
+          first_name: auth0User.given_name || '',
+          last_name: auth0User.family_name || '',
+          picture: auth0User.picture,
+          native_language: 'EN', 
+          target_language: 'FR', 
+          language_level: 'A1',  
+          objectives: 'General', 
+          is_coach: false,
+          is_subscribed: false
+        };
+        
+        setUser(fallbackUser);
+        authService.storeAuthData(accessToken, fallbackUser);
+        console.log("[Auth] Using basic Auth0 profile data while waiting for backend");
+      }
+
+      // En parallèle, tenter de récupérer le profil complet du backend
+      try {
+        const userProfile = await authService.fetchUserProfile(accessToken);
+        
+        if (isMounted && userProfile) {
+          setUser(userProfile);
+          authService.storeAuthData(accessToken, userProfile);
+          console.log("[Auth] User profile loaded from backend");
+        }
+      } catch (backendError) {
+        console.error("[Auth] Backend profile fetch error:", backendError);
+        console.log("[Auth] Using Auth0 profile data due to backend unavailability");
+        // Nous avons déjà défini un profil de base, pas besoin de faire quoi que ce soit ici
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+      
+    } catch (err) {
+      console.error("[Auth] Error in auth flow:", err);
+      
+      // Si un token existe dans le stockage, utiliser les données utilisateur stockées
+      const storedToken = authService.getAuthToken();
+      const storedUser = authService.getStoredUserData();
+      
+      if (storedToken && storedUser) {
+        console.log("[Auth] Using cached auth data");
+        setToken(storedToken);
+        setUser(storedUser);
+      } else {
+        setError("Authentication error. Please try logging in again.");
+      }
+      
+      setIsLoading(false);
     }
+  } else if (!auth0IsLoading && isMounted) {
+    // Vérifier le stockage local lorsque Auth0 n'est pas authentifié
+    const storedToken = authService.getAuthToken();
+    const storedUser = authService.getStoredUserData();
+    
+    if (storedToken && storedUser) {
+      console.log("[Auth] Using stored auth data without Auth0");
+      setToken(storedToken);
+      setUser(storedUser);
+    } else {
+      setUser(null);
+      setToken(null);
+    }
+    
+    setIsLoading(false);
+  }
+}
 
     fetchUserProfile();
 

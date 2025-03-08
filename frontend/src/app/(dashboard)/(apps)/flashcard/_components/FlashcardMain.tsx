@@ -4,9 +4,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, Loader2, LogIn, RefreshCcw } from "lucide-react";
+import { ChevronLeft, Loader2, RefreshCcw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
 import FlashcardDeckList from './FlashcardDeckList';
 import FlashcardApp from './FlashCards';
 import { revisionApi } from "@/services/revisionAPI";
@@ -21,8 +20,7 @@ const FlashcardMain = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   
   const { toast } = useToast();
-  const router = useRouter();
-  const { isAuthenticated, isLoading: authLoading, login } = useAuthContext();
+  const { user } = useAuthContext();
 
   // Fetch all flashcard decks
   const fetchDecks = useCallback(async () => {
@@ -42,12 +40,8 @@ const FlashcardMain = () => {
 
   // Initial load of decks
   useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      fetchDecks();
-    } else if (!authLoading && !isAuthenticated) {
-      setIsPageLoading(false);
-    }
-  }, [fetchDecks, isAuthenticated, authLoading]);
+    fetchDecks();
+  }, [fetchDecks]);
 
   // Handle deck selection
   const handleDeckSelect = (deckId: number) => {
@@ -75,39 +69,11 @@ const FlashcardMain = () => {
     fetchDecks();
   };
 
-  // Handle login redirection
-  const handleLogin = () => {
-    login(window.location.pathname);
-  };
-
-  // Show login prompt if not authenticated
-  if (!authLoading && !isAuthenticated) {
-    return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Flashcards</h1>
-        
-        <Card className="border-2 border-dashed border-gray-200">
-          <CardContent className="p-8 flex flex-col items-center justify-center space-y-4">
-            <p className="text-center text-gray-600">
-              Please log in to access your flashcards.
-            </p>
-            <Button 
-              onClick={handleLogin} 
-              className="mt-4 bg-brand-purple hover:bg-brand-purple/90"
-            >
-              <LogIn className="mr-2 h-4 w-4" /> Log In
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold text-transparent bg-clip-text">
-          {activeView === "decks" ? "My Flashcard Decks" : "Study Flashcards"}
+          {activeView === "decks" ? `${user?.name}'s Flashcard Decks` : "Study Flashcards"}
         </h1>
         {activeView === "flashcards" ? (
           <Button
