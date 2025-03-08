@@ -1,14 +1,5 @@
 // src/services/courseAPI.ts
-import axios from 'axios';
-
-// Create the API instance
-const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true,
-});
+import apiClient from './axiosAuthInterceptor';
 
 export interface Unit {
   id: number;
@@ -34,7 +25,7 @@ const courseAPI = {
       if (level) params.level = level;
       if (targetLanguage) params.target_language = targetLanguage;
 
-      const response = await api.get('/api/v1/course/units/', { params });
+      const response = await apiClient.get('/api/v1/course/units/', { params });
       return response.data;
     } catch (err: any) {
       console.error('Failed to fetch units:', {
@@ -48,7 +39,7 @@ const courseAPI = {
   
   getLessons: async (unitId: number) => {
     try {
-      const response = await api.get(`/api/v1/course/units/${unitId}/lessons/`);
+      const response = await apiClient.get(`/api/v1/course/units/${unitId}/lessons/`);
       return response.data;
     } catch (err: any) {
       console.error('Failed to fetch lessons:', {

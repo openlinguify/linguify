@@ -1,6 +1,7 @@
 // src/services/revisionAPI.ts
+import apiClient from './axiosAuthInterceptor';
 import { Flashcard, FlashcardDeck } from '@/types/revision';
-import { apiGet, apiPost, apiPatch, apiDelete } from '@/services/api';
+import authService from './authService';
 
 // Configuration de base
 const API_BASE = '/api/v1/revision';
@@ -26,15 +27,16 @@ export const revisionApi = {
     /**
      * Récupère tous les decks de flashcards
      */
-    getAll(): Promise<FlashcardDeck[]> {
+    async getAll(): Promise<FlashcardDeck[]> {
       logDebug('Récupération de tous les decks');
-      return apiGet(`${API_BASE}/decks/`);
+      const response = await apiClient.get(`${API_BASE}/decks/`);
+      return response.data;
     },
 
     /**
      * Crée un nouveau deck
      */
-    create(data: Pick<FlashcardDeck, 'name' | 'description'>): Promise<FlashcardDeck> {
+    async create(data: Pick<FlashcardDeck, 'name' | 'description'>): Promise<FlashcardDeck> {
       const payload = {
         ...data,
         description: data.description.trim() || `Deck created on ${new Date().toLocaleDateString()}`,
@@ -42,31 +44,34 @@ export const revisionApi = {
       };
       
       logDebug('Création d\'un nouveau deck', payload);
-      return apiPost(`${API_BASE}/decks/`, payload);
+      const response = await apiClient.post(`${API_BASE}/decks/`, payload);
+      return response.data;
     },
 
     /**
      * Supprime un deck par son ID
      */
-    delete(id: number): Promise<void> {
+    async delete(id: number): Promise<void> {
       logDebug('Suppression du deck', { id });
-      return apiDelete(`${API_BASE}/decks/${id}/`);
+      await apiClient.delete(`${API_BASE}/decks/${id}/`);
     },
     
     /**
      * Met à jour un deck existant
      */
-    update(id: number, data: Partial<FlashcardDeck>): Promise<FlashcardDeck> {
+    async update(id: number, data: Partial<FlashcardDeck>): Promise<FlashcardDeck> {
       logDebug('Mise à jour du deck', { id, data });
-      return apiPatch(`${API_BASE}/decks/${id}/`, data);
+      const response = await apiClient.patch(`${API_BASE}/decks/${id}/`, data);
+      return response.data;
     },
 
     /**
      * Récupère un deck par son ID
      */
-    getById(id: number): Promise<FlashcardDeck> {
+    async getById(id: number): Promise<FlashcardDeck> {
       logDebug('Récupération du deck par ID', { id });
-      return apiGet(`${API_BASE}/decks/${id}/`);
+      const response = await apiClient.get(`${API_BASE}/decks/${id}/`);
+      return response.data;
     }
   },
 
@@ -75,19 +80,20 @@ export const revisionApi = {
     /**
      * Récupère toutes les flashcards, optionnellement filtrées par deck
      */
-    getAll(deckId?: number): Promise<Flashcard[]> {
+    async getAll(deckId?: number): Promise<Flashcard[]> {
       const url = deckId 
         ? `${API_BASE}/flashcards/?deck=${deckId}`
         : `${API_BASE}/flashcards/`;
         
       logDebug('Récupération des flashcards', { deckId });
-      return apiGet(url);
+      const response = await apiClient.get(url);
+      return response.data;
     },
 
     /**
      * Crée une nouvelle flashcard
      */
-    create(data: { front_text: string; back_text: string; deck_id: number }): Promise<Flashcard> {
+    async create(data: { front_text: string; back_text: string; deck_id: number }): Promise<Flashcard> {
       // Validation côté client
       if (!data.front_text?.trim() || !data.back_text?.trim()) {
         throw new Error('Les textes recto et verso sont obligatoires');
@@ -102,45 +108,49 @@ export const revisionApi = {
       };
 
       logDebug('Création d\'une flashcard', payload);
-      return apiPost(`${API_BASE}/flashcards/`, payload);
+      const response = await apiClient.post(`${API_BASE}/flashcards/`, payload);
+      return response.data;
     },
 
     /**
      * Change le statut "appris" d'une flashcard
      */
-    toggleLearned(id: number, success: boolean): Promise<Flashcard> {
+    async toggleLearned(id: number, success: boolean): Promise<Flashcard> {
       logDebug('Mise à jour du statut d\'apprentissage', { id, success });
-      return apiPatch(`${API_BASE}/flashcards/${id}/toggle_learned/`, { success });
+      const response = await apiClient.patch(`${API_BASE}/flashcards/${id}/toggle_learned/`, { success });
+      return response.data;
     },
 
     /**
      * Récupère les flashcards à réviser
      */
-    getDue(limit: number = 10): Promise<Flashcard[]> {
+    async getDue(limit: number = 10): Promise<Flashcard[]> {
       logDebug('Récupération des flashcards à réviser', { limit });
-      return apiGet(`${API_BASE}/flashcards/due_for_review/?limit=${limit}`);
+      const response = await apiClient.get(`${API_BASE}/flashcards/due_for_review/?limit=${limit}`);
+      return response.data;
     },
     
     /**
      * Supprime une flashcard
      */
-    delete(id: number): Promise<void> {
+    async delete(id: number): Promise<void> {
       logDebug('Suppression de la flashcard', { id });
-      return apiDelete(`${API_BASE}/flashcards/${id}/`);
+      await apiClient.delete(`${API_BASE}/flashcards/${id}/`);
     },
     
     /**
      * Met à jour une flashcard existante
      */
-    update(id: number, data: Partial<Flashcard>): Promise<Flashcard> {
+    async update(id: number, data: Partial<Flashcard>): Promise<Flashcard> {
       logDebug('Mise à jour de la flashcard', { id, data });
-      return apiPatch(`${API_BASE}/flashcards/${id}/update_card/`, data);
+      const response = await apiClient.patch(`${API_BASE}/flashcards/${id}/update_card/`, data);
+      return response.data;
     },
     
     /**
      * Importe des flashcards depuis un fichier Excel ou CSV
      */
-    async importFromExcel(deckId: number, file: File, token?: string): Promise<{ created: number, failed: number }> {
+    async importFromExcel(deckId: number, file: File): Promise<{ created: number, failed: number }> {
       logDebug('Importation depuis Excel', { deckId, fileName: file.name });
       
       // Vérifier le format du fichier
@@ -155,40 +165,29 @@ export const revisionApi = {
       formData.append('deck_id', deckId.toString());
       
       try {
-        // Get the API URL for the import endpoint
+        // Récupérer le token d'authentification
+        const token = authService.getAuthToken();
+        
+        // Construire l'URL complète
         const url = `${process.env.NEXT_PUBLIC_BACKEND_URL || ''}${API_BASE}/decks/${deckId}/import/`;
         logDebug('Sending import request to:', { url });
         
-        // Prepare headers with authentication
-        const headers: HeadersInit = {};
-        
-        // Add Authorization header if token is provided
+        // Configuration de la requête avec le token d'authentification
+        const headers: Record<string, string> = {};
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;
-          logDebug('Using provided auth token for import');
-        } else {
-          logDebug('No auth token provided for import - will rely on cookies');
         }
         
-        // Send the request
-        const response = await fetch(url, {
-          method: 'POST',
-          headers,
-          body: formData,
-          credentials: 'include', // Includes cookies in the request
+        // Utiliser apiClient avec un type de contenu multipart/form-data
+        const response = await apiClient.post(url, formData, {
+          headers: {
+            ...headers,
+            'Content-Type': 'multipart/form-data',
+          },
         });
         
-        // Handle errors
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
-          logError('Import error response:', errorData);
-          throw new Error(errorData.detail || 'Failed to import flashcards');
-        }
-        
-        // Parse and return success response
-        const result = await response.json();
-        logDebug('Import successful:', result);
-        return result;
+        logDebug('Import successful:', response.data);
+        return response.data;
       } catch (error) {
         logError('Import exception:', error);
         throw error;
@@ -201,44 +200,46 @@ export const revisionApi = {
     /**
      * Récupère les statistiques de vocabulaire
      */
-    getStats(range: 'week' | 'month' | 'year'): Promise<any> {
+    async getStats(range: 'week' | 'month' | 'year'): Promise<any> {
       logDebug('Récupération des statistiques de vocabulaire', { range });
-      return apiGet(`/api/v1/vocabulary/stats/?range=${range}`);
+      const response = await apiClient.get(`/api/v1/vocabulary/stats/?range=${range}`);
+      return response.data;
     },
     
     /**
      * Récupère les mots de vocabulaire
      */
-    getWords(params?: { source_language?: string; target_language?: string }): Promise<any> {
-      // Construire les paramètres de requête
-      const queryParams = new URLSearchParams();
+    async getWords(params?: { source_language?: string; target_language?: string }): Promise<any> {
+      // Construire les paramètres de requête pour axios
+      const queryParams: Record<string, string> = {};
       if (params?.source_language) {
-        queryParams.append('source_language', params.source_language);
+        queryParams.source_language = params.source_language;
       }
       if (params?.target_language) {
-        queryParams.append('target_language', params.target_language);
+        queryParams.target_language = params.target_language;
       }
       
-      const url = `/api/v1/vocabulary/words/${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      
       logDebug('Récupération des mots de vocabulaire', params);
-      return apiGet(url);
+      const response = await apiClient.get('/api/v1/vocabulary/words/', { params: queryParams });
+      return response.data;
     },
     
     /**
      * Récupère le vocabulaire à réviser
      */
-    getDue(limit: number = 10): Promise<any> {
+    async getDue(limit: number = 10): Promise<any> {
       logDebug('Récupération du vocabulaire à réviser', { limit });
-      return apiGet(`/api/v1/vocabulary/due/?limit=${limit}`);
+      const response = await apiClient.get(`/api/v1/vocabulary/due/?limit=${limit}`);
+      return response.data;
     },
     
     /**
      * Marque un mot comme révisé
      */
-    markWordReviewed(id: number, success: boolean): Promise<any> {
+    async markWordReviewed(id: number, success: boolean): Promise<any> {
       logDebug('Marquage d\'un mot comme révisé', { id, success });
-      return apiPost(`/api/v1/vocabulary/${id}/review/`, { success });
+      const response = await apiClient.post(`/api/v1/vocabulary/${id}/review/`, { success });
+      return response.data;
     }
   }
 };

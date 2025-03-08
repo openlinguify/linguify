@@ -9,32 +9,22 @@ import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/services/useAuth"; // Changed from useAuthContext
 
-// Import the original vocabulary revision component
+// Import the vocabulary revision component
 import VocabularyProgress from "./VocabularyProgress";
 
 const ProgressApp: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("course");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const { toast } = useToast();
-  const { isAuthenticated, isLoading: authLoading } = useAuth(); // Using useAuth instead of useAuthContext
-  
+
   useEffect(() => {
     const initializeData = async () => {
-      if (authLoading) {
-        return; // Wait until auth state is determined
-      }
-      
-      if (!isAuthenticated) {
-        setError("Please sign in to view your progress");
-        setIsLoading(false);
-        return;
-      }
-      
       try {
-        setIsLoading(true);
+        // Add a small delay to ensure any auth processes complete first
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         // Pre-fetch summary data to check if API is working and data exists
         const summary = await progressService.getSummary()
           .catch(err => {
@@ -44,17 +34,31 @@ const ProgressApp: React.FC = () => {
             if (err.response && err.response.status === 404) {
               return null; // No existing data
             }
+            
+            // For auth errors, don't treat as fatal, just return null
+            if (err.response && err.response.status === 401) {
+              console.warn("Authentication issues detected - will retry automatically");
+              return null;
+            }
+            
             throw err; // Propagate other errors
           });
 
-        // If no summary data, initialize
+        // If no summary data, try to initialize if possible
         if (!summary || !summary.summary) {
-          await progressService.initializeProgress();
-          toast({
-            title: "Data Initialized",
-            description: "Your progress tracking data has been initialized.",
-            duration: 3000,
-          });
+          try {
+            await progressService.initializeProgress();
+            toast({
+              title: "Data Initialized",
+              description: "Your progress tracking data has been initialized.",
+              duration: 3000,
+            });
+          } catch (initErr: any) {
+            // If initialization fails due to auth, just continue silently
+            if (initErr.response?.status !== 401) {
+              throw initErr;
+            }
+          }
         }
         
         setError(null);
@@ -64,9 +68,7 @@ const ProgressApp: React.FC = () => {
         // Handle different error types
         const error = err as { response?: { status?: number } };
         
-        if (error.response?.status === 401) {
-          setError("Authentication error. Please sign in again.");
-        } else if (error.response?.status === 403) {
+        if (error.response?.status === 403) {
           setError("You don't have permission to access this resource.");
         } else {
           setError("Could not connect to the progress service. Please try again later.");
@@ -77,7 +79,7 @@ const ProgressApp: React.FC = () => {
     };
     
     initializeData();
-  }, [toast, isAuthenticated, authLoading]);
+  }, [toast]);
   
   const handleRetry = () => {
     setIsLoading(true);
@@ -85,29 +87,6 @@ const ProgressApp: React.FC = () => {
     window.location.reload();
   };
   
-  if (authLoading) {
-    return (
-      <div className="flex items-center justify-center h-40">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" />
-      </div>
-    );
-  }
-  
-  if (!isAuthenticated) {
-    return (
-      <Card className="w-full">
-        <CardContent className="p-6">
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Please sign in to view your progress.
-            </AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
-    );
-  }
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-40">
@@ -148,7 +127,6 @@ const ProgressApp: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="vocabulary" className="mt-6">
-            {/* Keep the original vocabulary component for compatibility */}
             <VocabularyProgress />
           </TabsContent>
         </Tabs>
