@@ -90,10 +90,19 @@ def auth0_logout(request):
                           status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])  # Changer IsAuthenticated en AllowAny
 def get_me(request):
     """Returns the current authenticated user's information"""
     try:
+        # Vérifiez si l'utilisateur est authentifié
+        if not request.user.is_authenticated:
+            # Retournez une réponse 200 avec des informations minimales ou null
+            return JsonResponse({
+                'authenticated': False,
+                'message': 'No authenticated user',
+                # Vous pouvez éventuellement retourner des données minimales par défaut
+            })
+        
         user = request.user
         
         # Create a comprehensive response with user information
@@ -114,6 +123,7 @@ def get_me(request):
             'is_coach': user.is_coach,
             'is_subscribed': user.is_subscribed,
             'is_active': user.is_active,
+            'authenticated': True
         }
         return JsonResponse(data)
     except Exception as e:

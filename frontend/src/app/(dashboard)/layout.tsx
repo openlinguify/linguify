@@ -6,20 +6,26 @@ import { Sidebar } from "./_components/sidebar";
 import Header from "./_components/header";
 import { useRouter, usePathname } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuthContext } from "@/services/AuthProvider";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, isLoading, login } = useAuthContext();
   const router = useRouter();
   const pathname = usePathname();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated && !["/home", "/login", "/register", "/callback"].includes(pathname)) {
-      loginWithRedirect({ appState: { returnTo: pathname } });
-    }
-  }, [isAuthenticated, isLoading, pathname, loginWithRedirect]);
+    // Vous pouvez ajouter les pages publiques ici
+    const publicPages = ["/home", "/login", "/register", "/callback"];
+    const isPublicPage = publicPages.includes(pathname);
 
+    if (!isLoading && !isAuthenticated && !isPublicPage) {
+      // Rediriger vers la page de connexion en préservant l'URL de retour
+      login(pathname);
+    }
+  }, [isAuthenticated, isLoading, pathname, login]);
+
+  // Afficher l'indicateur de chargement pendant la vérification d'authentification
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">

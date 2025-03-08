@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 
 class FlashcardDeckViewSet(viewsets.ModelViewSet):
     serializer_class = FlashcardDeckSerializer
-    # Changement ici pour permettre l'accès sans authentification
     permission_classes = [AllowAny]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'description']
@@ -96,7 +95,6 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
 
 class FlashcardViewSet(viewsets.ModelViewSet):
     serializer_class = FlashcardSerializer
-    # Changement ici pour permettre l'accès sans authentification
     permission_classes = [AllowAny]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['front_text', 'back_text']
@@ -229,7 +227,7 @@ class FlashcardViewSet(viewsets.ModelViewSet):
 
       
 class FlashcardImportView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
