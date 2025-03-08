@@ -1,3 +1,4 @@
+// src/app/(auth)/callback/page.tsx
 'use client';
 
 import { useEffect, useState } from "react";

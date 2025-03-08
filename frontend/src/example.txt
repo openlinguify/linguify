@@ -1,0 +1,123 @@
+// Exemple d'utilisation du système d'authentification unifié
+
+// ---- DANS VOS COMPOSANTS ----
+import { useAuthContext } from '@/services/AuthProvider';
+import authService from '@/services/authService';
+import apiClient from '@/services/axiosAuthInterceptor';
+
+// Exemple de composant avec authentification
+function MonComposant() {
+  // Utiliser le contexte d'authentification
+  const { isAuthenticated, user, isLoading, login, logout } = useAuthContext();
+
+  // Fonction exemple pour appeler une API protégée
+  const fetchProtectedData = async () => {
+    try {
+      // Utilisation de l'instance axios préconfigurée (recommandé)
+      const response = await apiClient.get('/api/v1/progress/summary/');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  // Fonction exemple pour appeler une API avec fetch
+  const fetchWithFetch = async () => {
+    try {
+      // Utilisation de l'utilitaire fetch authentifié
+      const response = await authService.authenticatedFetch('/api/v1/progress/summary/');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  if (isLoading) {
+    return <div>Chargement...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div>
+        <h1>Vous n'êtes pas connecté</h1>
+        <button onClick={() => login()}>Se connecter</button>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h1>Bienvenue {user?.name}</h1>
+      <button onClick={() => logout()}>Se déconnecter</button>
+      <button onClick={fetchProtectedData}>Charger des données</button>
+    </div>
+  );
+}
+
+// ---- DANS VOS API SERVICES ----
+// Exemple d'un service API utilisant le client axios authentifié
+const progressService = {
+  getSummary: async () => {
+    try {
+      const response = await apiClient.get('/api/v1/progress/summary/');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch progress summary:', error);
+      throw error;
+    }
+  },
+  
+  initializeProgress: async () => {
+    try {
+      await apiClient.post('/api/v1/progress/initialize/');
+      return true;
+    } catch (error) {
+      console.error('Failed to initialize progress:', error);
+      return false;
+    }
+  }
+};
+
+// ---- POUR DES APPELS FETCH DIRECTS (SI NÉCESSAIRE) ----
+// Exemple d'utilisation directe du service d'authentification
+async function fetchSomething() {
+  // Obtenir les en-têtes d'authentification
+  const headers = authService.getAuthHeaders();
+  
+  // Faire un appel fetch
+  const response = await fetch('/api/some-endpoint', {
+    headers,
+    credentials: 'include'
+  });
+  
+  return response.json();
+}
+
+// ---- DANS VOTRE LAYOUT POUR PROTÉGER LES ROUTES ----
+// pages/dashboard/layout.tsx
+import { useAuthContext } from '@/services/AuthProvider';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuthContext();
+  const router = useRouter();
+  
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      // Rediriger vers la page de connexion avec returnTo
+      const returnTo = window.location.pathname;
+      router.push(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+    }
+  }, [isAuthenticated, isLoading, router]);
+  
+  if (isLoading) {
+    return <div>Chargement...</div>;
+  }
+  
+  if (!isAuthenticated) {
+    return null; // Le useEffect va gérer la redirection
+  }
+  
+  return <>{children}</>;
+}
