@@ -4,7 +4,7 @@ from django.db.models import Q
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 import pandas as pd
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class FlashcardDeckViewSet(viewsets.ModelViewSet):
     serializer_class = FlashcardDeckSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'description']
     ordering_fields = ['created_at', 'name']
@@ -95,7 +95,7 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
 
 class FlashcardViewSet(viewsets.ModelViewSet):
     serializer_class = FlashcardSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['front_text', 'back_text']
     ordering_fields = ['created_at', 'last_reviewed', 'review_count']
@@ -227,7 +227,7 @@ class FlashcardViewSet(viewsets.ModelViewSet):
 
       
 class FlashcardImportView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
