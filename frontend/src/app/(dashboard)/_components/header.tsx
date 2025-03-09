@@ -1,10 +1,9 @@
-// src/app/(dashboard)/_components/header.tsx
-"use client";
+// src/app/%28dashboard%29/_components/header.tsx
+'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/providers/AuthProvider";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -35,47 +34,50 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
+import { useAuthContext } from "@/services/AuthProvider";
 
-const Header: React.FC = () => {
-  const { isAuthenticated, user, logout } = useAuth();
-  const [, setForceUpdate] = useState(0);
-  const forceUpdate = () => setForceUpdate(prev => prev + 1);
+const Header = () => {
   const router = useRouter();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-  console.log("Header rendered");
-  console.log("isAuthenticated:", isAuthenticated);
-  console.log("user:", user);
-  console.log("localStorage auth_state:", localStorage.getItem('auth_state'));
-  console.log("effectivelyAuthenticated:", isAuthenticated || !!user || !!localStorage.getItem('auth_state'));
+  // Use Auth Context
+  const { user, isAuthenticated, login, logout } = useAuthContext();
+
+  // Only run client-side code after mounting
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleLanguageChange = (value: string) => {
-    console.log("Language changed to:", value);
     toast({
       title: "Language Changed",
       description: `Language set to ${value.toUpperCase()}`,
     });
   };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      console.log("Logged out successfully");
-      router.push("/");
-      toast({
-        title: "Logged out successfully",
-        description: "Come back soon!",
-      });
-    } catch (error) {
-      console.error("Logout error:", error);
-      toast({
-        variant: "destructive",
-        title: "Error logging out",
-        description: "Please try again",
-      });
-    }
+  const handleLogout = () => {
+    // Déconnexion locale
+    localStorage.clear();
+    
+    // Effacer les cookies
+    document.cookie.split(";").forEach(function(c) {
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    
+    // Redirection vers home
+    window.location.href = '/home';
+    
+    toast({
+      title: "Logged out successfully",
+      description: "Come back soon!",
+    });
+  };
+
+  const handleLogin = () => {
+    login();
   };
 
   const handleNotificationClick = () => {
@@ -85,34 +87,20 @@ const Header: React.FC = () => {
     });
   };
 
-  // Vérifier si l'utilisateur est authentifié pour la mise à jour de l'interface
-  useEffect(() => {
-    // Vérification par Auth0 ou localStorage comme solution de secours
-    console.log("Checking auth state consistency");
-    const authStateFromStorage = localStorage.getItem('auth_state');
-    console.log("localStorage auth_state:", authStateFromStorage);
-    const hasAuthInStorage = !!authStateFromStorage;
-    console.log("hasAuthInStorage:", hasAuthInStorage);
-    
-    // Si user existe mais isAuthenticated est false, ou si auth_state existe dans localStorage
-    if ((user && !isAuthenticated) || (!isAuthenticated && hasAuthInStorage)) {
-      console.log("Auth state inconsistency detected, forcing update");
-      forceUpdate();
-    }
-  }, [user, isAuthenticated]);
-
-  // Gérer la fermeture du menu mobile lors du clic à l'extérieur
+  // Manage mobile menu
   useEffect(() => {
     const handleClickOutside = () => {
       if (isMenuOpen) setIsMenuOpen(false);
     };
-    
+
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, [isMenuOpen]);
 
-  // Déterminer si l'utilisateur est réellement authentifié (fallback si isAuthenticated est incorrect)
-  const effectivelyAuthenticated = isAuthenticated || !!user || !!localStorage.getItem('auth_state');
+  // Don't render anything until client-side
+  if (!isClient) {
+    return <header className="sticky top-0 z-50 w-full h-14 border-b bg-background/95"></header>;
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:bg-gray-900/95">
@@ -166,7 +154,7 @@ const Header: React.FC = () => {
           </Select>
 
           {/* Auth-dependent UI */}
-          {effectivelyAuthenticated ? (
+          {isAuthenticated && user ? (
             <div className="flex items-center gap-4">
               {/* Notifications */}
               <Button
@@ -184,9 +172,9 @@ const Header: React.FC = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center gap-2">
                     {user?.picture ? (
-                      <img 
-                        src={user.picture} 
-                        alt="Profile" 
+                      <img
+                        src={user.picture}
+                        alt="Profile"
                         className="h-6 w-6 rounded-full object-cover"
                       />
                     ) : (
@@ -200,9 +188,9 @@ const Header: React.FC = () => {
                   <DropdownMenuLabel>
                     <div className="flex items-center gap-2">
                       {user?.picture && (
-                        <img 
-                          src={user.picture} 
-                          alt="Profile" 
+                        <img
+                          src={user.picture}
+                          alt="Profile"
                           className="h-8 w-8 rounded-full object-cover"
                         />
                       )}
@@ -227,17 +215,17 @@ const Header: React.FC = () => {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
-                  </DropdownMenuItem>
+  <LogOut className="h-4 w-4 mr-2" />
+  Déconnexion
+</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <Button 
+              <Button
                 variant="ghost"
-                onClick={() => router.push('/login')}
+                onClick={handleLogin}
               >
                 Sign In
               </Button>
@@ -245,15 +233,15 @@ const Header: React.FC = () => {
                 className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
                 onClick={() => router.push('/register')}
               >
-                Get Started 
+                Get Started
               </Button>
             </div>
           )}
 
           {/* Mobile Menu Button */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="md:hidden"
             onClick={(e) => {
               e.stopPropagation();
@@ -271,30 +259,39 @@ const Header: React.FC = () => {
           <div className="p-4 space-y-3">
             <NavItemMobile href="/learning" icon={BookOpen} label="Learn" onClick={() => setIsMenuOpen(false)} />
             <NavItemMobile href="/progress" icon={Trophy} label="Progress" onClick={() => setIsMenuOpen(false)} />
-            
-            {effectivelyAuthenticated ? (
+
+            {isAuthenticated ? (
               <>
                 <NavItemMobile href="/profile" icon={User} label="Profile" onClick={() => setIsMenuOpen(false)} />
                 <NavItemMobile href="/settings" icon={Settings} label="Settings" onClick={() => setIsMenuOpen(false)} />
                 <div className="pt-2">
-                  <Button 
-                    variant="destructive" 
-                    className="w-full justify-start"
-                    onClick={() => {
-                      handleLogout();
-                      setIsMenuOpen(false);
-                    }}
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
-                  </Button>
+                <Button
+  variant="destructive"
+  className="w-full justify-start"
+  onClick={() => {
+    // Déconnexion locale
+    localStorage.clear();
+    
+    // Effacer les cookies
+    document.cookie.split(";").forEach(function(c) {
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    
+    // Redirection vers home
+    window.location.href = '/home';
+    setIsMenuOpen(false);
+  }}
+>
+  <LogOut className="h-4 w-4 mr-2" />
+  Logout
+</Button>
                 </div>
               </>
             ) : (
               <div className="flex flex-col gap-2 pt-2">
-                <Button 
+                <Button
                   onClick={() => {
-                    router.push('/login');
+                    handleLogin();
                     setIsMenuOpen(false);
                   }}
                 >
@@ -307,7 +304,7 @@ const Header: React.FC = () => {
                     setIsMenuOpen(false);
                   }}
                 >
-                  Get Started 
+                  Get Started
                 </Button>
               </div>
             )}

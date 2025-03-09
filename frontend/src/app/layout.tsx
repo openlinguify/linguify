@@ -1,26 +1,14 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
-import { UserProvider } from '@auth0/nextjs-auth0/client';
-import { AuthProvider } from "@/providers/AuthProvider";
 import { Toaster } from "@/components/ui/toaster";
 import "@/styles/globals.css";
 import { ThemeProvider } from "next-themes";
+import { AuthProvider } from "../services/AuthProvider";
 
 export const metadata: Metadata = {
   title: "Linguify",
-  description: "Language learning platform for everyone.",
-  icons: {
-    icon: [
-      {
-        url: "/logo.png",
-        sizes: "16x16",
-      },
-      {
-        url: "/icon.png",
-        type: "image/png",
-        sizes: "192x192",
-      }
-    ]
-  }
+  description: "Language learning platform for everyone."
+  // ... other metadata
 };
 
 export default function RootLayout({
@@ -32,14 +20,12 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="bg-white dark:bg-gray-900">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange> 
-        <UserProvider>
-          <AuthProvider>
+        <AuthProvider>
             <main className="flex min-h-screen flex-col">
               {children}
             </main>
             <Toaster />
           </AuthProvider>
-        </UserProvider>
         </ThemeProvider>
       </body>
     </html>
