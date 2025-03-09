@@ -1,163 +1,134 @@
+// src/app/(dashboard)/(apps)/flashcard/_components/FlashcardMain.tsx
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, Loader2, LogIn } from "lucide-react";
+import { ChevronLeft, Loader2, RefreshCcw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { useAuth } from "@/providers/AuthProvider";
-import { useRouter } from "next/navigation";
 import FlashcardDeckList from './FlashcardDeckList';
 import FlashcardApp from './FlashCards';
 import { revisionApi } from "@/services/revisionAPI";
-import useAuthFailureListener from '@/hooks/useAuthFailureListener';
 import type { FlashcardDeck } from "@/types/revision";
+import { useAuthContext } from '@/services/AuthProvider';
 
 const FlashcardMain = () => {
-  const { toast } = useToast();
-  const { user, isAuthenticated, isLoading: authLoading, login } = useAuth();
-  const router = useRouter();
   const [activeView, setActiveView] = useState<"decks" | "flashcards">("decks");
-  const [selectedDeck, setSelectedDeck] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedDeck, setSelectedDeck] = useState<FlashcardDeck | null>(null);
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
+  const [isPageLoading, setIsPageLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  
+  const { toast } = useToast();
+  const { user } = useAuthContext();
 
-  // Utiliser notre hook d'écouteur d'échec d'authentification
-  useAuthFailureListener();
+  // Fetch all flashcard decks
+  const fetchDecks = useCallback(async () => {
+    try {
+      setIsPageLoading(true);
+      setLoadError(null);
+      
+      const fetchedDecks = await revisionApi.decks.getAll();
+      setDecks(fetchedDecks);
+    } catch (error) {
+      console.error('Error fetching decks:', error);
+      setLoadError("Failed to load your flashcard decks. Please try again.");
+    } finally {
+      setIsPageLoading(false);
+    }
+  }, []);
 
+  // Initial load of decks
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      // Rediriger vers la page de connexion si pas authentifié
+    fetchDecks();
+  }, [fetchDecks]);
+
+  // Handle deck selection
+  const handleDeckSelect = (deckId: number) => {
+    const deck = decks.find(d => d.id === deckId);
+    if (deck) {
+      setSelectedDeck(deck);
+      setActiveView("flashcards");
+    } else {
       toast({
-        title: "Authentication Required",
-        description: "Please log in to access your flashcards",
+        title: "Error",
+        description: "Could not find the selected deck.",
         variant: "destructive"
       });
-    } else if (isAuthenticated) {
-      // Charger les decks si authentifié
-      fetchDecks();
-    }
-  }, [isAuthenticated, authLoading]);
-
-  const fetchDecks = async () => {
-    try {
-      setIsLoading(true);
-      console.log('[Flashcard] Fetching decks...');
-      const data = await revisionApi.decks.getAll();
-      console.log('[Flashcard] Fetched decks:', data);
-      setDecks(data);
-    } catch (error) {
-      console.error('[Flashcard] Error fetching decks:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load decks. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const handleDeckSelect = async (deckId: number) => {
-    try {
-      setIsLoading(true);
-      // Fetch the cards for this deck to update the count
-      console.log('[Flashcard] Fetching cards for deck:', deckId);
-      const cards = await revisionApi.flashcards.getAll(deckId);
-      console.log('[Flashcard] Fetched cards:', cards);
-      
-      // Update the decks state with the new card count
-      setDecks(prev => prev.map(deck => 
-        deck.id === deckId ? { ...deck, cards } : deck
-      ));
-      setSelectedDeck(deckId);
-      setActiveView("flashcards");
-    } catch (error) {
-      console.error('[Flashcard] Error fetching cards:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load deck. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleBackToDeck = async () => {
-    if (isLoading) return;
+  // Handle back to decks view
+  const handleBackToDeck = () => {
     setActiveView("decks");
-    // Refresh decks to get updated card counts
-    await fetchDecks();
     setSelectedDeck(null);
   };
 
-  // Afficher un écran de chargement pendant la vérification de l'authentification
-  if (authLoading) {
-    return (
-      <Card className="flex items-center justify-center p-8 h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
-        <p className="ml-2">Loading...</p>
-      </Card>
-    );
-  }
+  // Handle retry on error
+  const handleRetry = () => {
+    fetchDecks();
+  };
 
-  // Afficher un écran de connexion si non authentifié
-  if (!isAuthenticated) {
-    return (
-      <Card>
-        <CardContent className="p-8 flex flex-col items-center justify-center space-y-4">
-          <h2 className="text-xl font-semibold text-center">Authentication Required</h2>
-          <p className="text-center text-gray-600">
-            You need to be logged in to view and manage your flashcards.
-          </p>
-          <Button onClick={() => login('/flashcard')} className="mt-4">
-            <LogIn className="mr-2 h-4 w-4" /> Login to Continue
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Reste du composant (contenu normal pour utilisateurs authentifiés)
   return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
-            {user?.name ? `${user.name}'s Flashcards` : 'My Flashcards'}
-          </h1>
-          {activeView === "flashcards" && (
-            <Button
-              variant="outline"
-              onClick={handleBackToDeck}
-              disabled={isLoading}
-            >
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-          )}
-        </div>
-
-        {isLoading ? (
-          <div className="flex justify-center p-4">
-            <Loader2 className="animate-spin" />
-          </div>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold text-transparent bg-clip-text">
+          {activeView === "decks" ? `${user?.name}'s Flashcard Decks` : "Study Flashcards"}
+        </h1>
+        {activeView === "flashcards" ? (
+          <Button
+            variant="outline"
+            onClick={handleBackToDeck}
+            disabled={isPageLoading}
+          >
+            <ChevronLeft className="h-4 w-4 mr-2" />
+            Back to Decks
+          </Button>
         ) : (
-          activeView === "decks" ? (
-            <FlashcardDeckList 
-              onDeckSelect={handleDeckSelect} 
-              decks={decks}
-            />
-          ) : (
-            selectedDeck && <FlashcardApp 
-              selectedDeck={selectedDeck}
-              onCardUpdate={() => fetchDecks()}
-            />
-          )
+          <Button
+            variant="outline"
+            onClick={handleRetry}
+            disabled={isPageLoading}
+          >
+            <RefreshCcw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
         )}
-      </CardContent>
-    </Card>
+      </div>
+
+      {isPageLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="flex flex-col items-center">
+            <Loader2 className="h-8 w-8 animate-spin mb-4 text-brand-purple" />
+            <p className="text-sm text-gray-500">Loading your flashcard decks...</p>
+          </div>
+        </div>
+      ) : loadError ? (
+        <Card className="border-2 border-dashed border-red-100">
+          <CardContent className="p-8 flex flex-col items-center justify-center space-y-4">
+            <p className="text-center text-red-600">{loadError}</p>
+            <Button 
+              onClick={handleRetry} 
+              className="mt-4"
+            >
+              <RefreshCcw className="mr-2 h-4 w-4" /> Try Again
+            </Button>
+          </CardContent>
+        </Card>
+      ) : activeView === "decks" ? (
+        <FlashcardDeckList 
+          onDeckSelect={handleDeckSelect} 
+          decks={decks}
+        />
+      ) : (
+        selectedDeck && (
+          <FlashcardApp 
+            selectedDeck={selectedDeck}
+            onCardUpdate={fetchDecks}
+          />
+        )
+      )}
+    </div>
   );
 };
 

@@ -1,29 +1,35 @@
 // src/app/(dashboard)/layout.tsx
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Sidebar } from "./_components/sidebar";
 import Header from "./_components/header";
-import { useAuth } from "@/providers/AuthProvider";
 import { useRouter, usePathname } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { useAuthContext } from "@/services/AuthProvider";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, login } = useAuthContext();
   const router = useRouter();
   const pathname = usePathname();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
-    console.log("Auth State:", { user, isLoading, pathname });
-    if (!user && !isLoading && pathname === '/') {
-      router.push("/home");
-    }
-  }, [user, isLoading, router, pathname]);
+    // Vous pouvez ajouter les pages publiques ici
+    const publicPages = ["/home", "/login", "/register", "/callback"];
+    const isPublicPage = publicPages.includes(pathname);
 
+    if (!isLoading && !isAuthenticated && !isPublicPage) {
+      // Rediriger vers la page de connexion en préservant l'URL de retour
+      login(pathname);
+    }
+  }, [isAuthenticated, isLoading, pathname, login]);
+
+  // Afficher l'indicateur de chargement pendant la vérification d'authentification
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg font-semibold">Loading...</p>
+        <Loader2 className="h-10 w-10 animate-spin text-purple-600" />
       </div>
     );
   }

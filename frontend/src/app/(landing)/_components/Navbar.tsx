@@ -19,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/providers/AuthProvider";
+import { useAuthContext } from "@/services/AuthProvider";
 
 // Define navigation items as a const outside the component for better performance
 const NAVIGATION_ITEMS = [
@@ -43,7 +43,7 @@ export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('fr');
   
-  const { login, isAuthenticated, logout } = useAuth();
+  const { login, isAuthenticated, logout } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -331,4 +331,4 @@ export const Navbar = () => {
       )}
     </header>
   );
-};  
+};

@@ -21,4 +21,5 @@ urlpatterns = [
     path('api/v1/chat/', include('chat.urls', namespace='chat')),
     path('api/v1/task/', include('task.urls', namespace='task')),
     path('api/contact/', views.contact_view, name='contact'),
+    path('api/v1/progress/', include('progress.urls', namespace='progress')),
 ]
