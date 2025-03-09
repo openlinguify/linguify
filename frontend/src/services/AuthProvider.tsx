@@ -131,6 +131,7 @@ function AuthContentProvider({ children }: { children: ReactNode }) {
           authorizationParams: {
             audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE as string,
           },
+          timeoutInSeconds: 10, // Temps d'attente maximum
           // Ne pas utiliser le cache
           cacheMode: 'off'
         });
