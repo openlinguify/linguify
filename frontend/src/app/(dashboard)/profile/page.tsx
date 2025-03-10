@@ -1,16 +1,17 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from "@/services/AuthProvider";
-import { useEffect, useState, useRef } from 'react';
-import { Camera, Save, X, Loader2 } from 'lucide-react';
-import { userApiService } from '@/services/userAPI';
+import { useEffect, useState } from 'react';
+import { Save, X, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PhotoUploader } from './photo-upload';
+import authService from '@/services/authService';
 
-export default function MyProfile() {
-  const { user, isAuthenticated, updateUser } = useAuthContext();
+export default function ProfilePage() {
+  const { user, isAuthenticated, isLoading } = useAuthContext();
   const router = useRouter();
-  const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState({
@@ -19,14 +20,13 @@ export default function MyProfile() {
     message: "",
   });
   
-  // États pour le formulaire
+  // Form data state
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
     email: '',
     bio: '',
     gender: '',
-    birthday: '',
     native_language: '',
     target_language: '',
     language_level: '',
@@ -35,115 +35,55 @@ export default function MyProfile() {
 
   // Redirect if not authenticated
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoading && !isAuthenticated) {
       router.push('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isLoading, router]);
 
-  // Charger les données utilisateur
+  // Load user data
   useEffect(() => {
     if (user) {
-      // Initialiser avec les données de base du user
       setFormData({
         first_name: user.first_name || '',
         last_name: user.last_name || '',
         email: user.email || '',
         bio: user.bio || '',
         gender: user.gender || '',
-        birthday: user.birthday ? new Date(user.birthday).toISOString().split('T')[0] : '',
         native_language: user.native_language || '',
         target_language: user.target_language || '',
         language_level: user.language_level || '',
         objectives: user.objectives || ''
       });
-      
-      // Essayer de charger des données supplémentaires si nécessaire
-      loadUserData();
     }
   }, [user]);
 
-  // Charger les données complètes depuis le service
-  const loadUserData = async () => {
-    try {
-      // Utiliser le nouveau service API
-      const userData = await userApiService.getCurrentUser();
-      
-      // Mettre à jour le formulaire avec les données complètes
-      setFormData({
-        first_name: userData.first_name || '',
-        last_name: userData.last_name || '',
-        email: userData.email || '',
-        bio: userData.bio || '',
-        gender: userData.gender || '',
-        birthday: userData.birthday ? new Date(userData.birthday).toISOString().split('T')[0] : '',
-        native_language: userData.native_language || '',
-        target_language: userData.target_language || '',
-        language_level: userData.language_level || '',
-        objectives: userData.objectives || ''
-      });
-    } catch (error) {
-      console.error("Erreur lors du chargement des données utilisateur:", error);
-    }
-  };
-
   // Show loading state while checking authentication
-  if (!isAuthenticated || !user) {
-    return <div className="max-w-2xl mx-auto p-6 bg-white shadow rounded-lg mt-10">Chargement...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-150px)]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
-  // Format le nom complet
+  if (!isAuthenticated || !user) {
+    return (
+      <Card className="max-w-2xl mx-auto mt-10">
+        <CardHeader>
+          <CardTitle>Authentication Required</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-4">Please log in to view your profile.</p>
+          <Button onClick={() => router.push('/login')}>Login</Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Format the full name
   const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username;
-  
-  // Fonction pour ouvrir le sélecteur de fichier
-  const handleProfilePictureClick = () => {
-    fileInputRef.current?.click();
-  };
 
-  // Fonction pour gérer l'upload de la photo
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    try {
-      setUploading(true);
-      
-      // Utiliser le nouveau service pour l'upload de photo
-      const result = await userApiService.uploadProfilePicture(file);
-      
-      // Mettre à jour l'utilisateur dans le contexte
-      if (updateUser && result.profile_picture) {
-        updateUser({
-          ...user,
-          profile_picture: result.profile_picture
-        });
-      } else {
-        window.location.reload();
-      }
-      
-      setSaveStatus({
-        show: true,
-        isError: false,
-        message: "Photo de profil mise à jour avec succès",
-      });
-      
-      // Masquer le message après quelques secondes
-      setTimeout(() => {
-        setSaveStatus(prev => ({ ...prev, show: false }));
-      }, 3000);
-      
-    } catch (error) {
-      console.error('Erreur:', error);
-      setSaveStatus({
-        show: true,
-        isError: true,
-        message: "Une erreur est survenue lors de l'upload de votre photo",
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  // Gérer les changements dans le formulaire
+  // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -152,69 +92,86 @@ export default function MyProfile() {
     }));
   };
 
-const handleSaveChanges = async () => {
-  try {
-    setIsSaving(true);
-    setSaveStatus({ show: false, isError: false, message: "" });
-    
-    // Utiliser directement la bonne URL
-    const response = await fetch('http://localhost:8000/api/auth/me/', {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-      },
-      body: JSON.stringify({
+  // Handle profile photo upload success
+  const handlePhotoSuccess = (newPhotoUrl: string) => {
+    console.log("New photo URL:", newPhotoUrl);
+    // You can update the local state here if needed
+  };
+
+  // Handle form submission - using the existing user_profile endpoint with PATCH method
+  const handleSaveChanges = async () => {
+    try {
+      setIsSaving(true);
+      setSaveStatus({ show: false, isError: false, message: "" });
+      
+      // Get auth token
+      const token = authService.getAuthToken();
+      if (!token) {
+        throw new Error('Authentication token not available');
+      }
+      
+      // Prepare data for update
+      const updateData = {
         first_name: formData.first_name,
         last_name: formData.last_name,
         bio: formData.bio,
-        gender: formData.gender,
-        birthday: formData.birthday,
+        gender: formData.gender || null,
         native_language: formData.native_language,
         target_language: formData.target_language,
         language_level: formData.language_level,
         objectives: formData.objectives
-      }),
-      credentials: 'include'
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
-    }
-    
-    const updatedUser = await response.json();
-    
-    // Mettre à jour l'utilisateur dans le contexte
-    if (updateUser) {
-      updateUser({
-        ...user,
-        ...updatedUser
+      };
+      
+      console.log("Updating profile with data:", updateData);
+      
+      // Send update request using PATCH as per the existing backend
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/auth/profile/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updateData),
+        credentials: 'include'
       });
+      
+      console.log("Update response status:", response.status);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Profile update error details:", errorData);
+        throw new Error(`HTTP Error: ${response.status} - ${errorData.error || 'Unknown error'}`);
+      }
+      
+      const updatedUser = await response.json();
+      console.log("Profile updated successfully:", updatedUser);
+      
+      // Update auth state by refreshing the page
+      authService.storeAuthData(token, updatedUser);
+      
+      setSaveStatus({
+        show: true,
+        isError: false,
+        message: "Profile updated successfully",
+      });
+      
+      setIsEditing(false);
+    } catch (error: any) {
+      console.error('Error:', error);
+      setSaveStatus({
+        show: true, 
+        isError: true,
+        message: `Error: ${error.message || "An error occurred while updating your profile"}`,
+      });
+    } finally {
+      setIsSaving(false);
+      setTimeout(() => {
+        setSaveStatus(prev => ({ ...prev, show: false }));
+      }, 3000);
     }
-    
-    setSaveStatus({
-      show: true,
-      isError: false,
-      message: "Profil mis à jour avec succès",
-    });
-    
-    setIsEditing(false);
-  } catch (error) {
-    console.error('Erreur complète:', error);
-    setSaveStatus({
-      show: true, 
-      isError: true,
-      message: `Erreur: ${error.message || "Une erreur est survenue"}`,
-    });
-  } finally {
-    setIsSaving(false);
-    setTimeout(() => {
-      setSaveStatus(prev => ({ ...prev, show: false }));
-    }, 3000);
-  }
-};
+  };
 
-  // Options pour les sélecteurs
+  // Options for selectors
   const languageOptions = [
     { value: "EN", label: "English" },
     { value: "FR", label: "French" },
@@ -226,333 +183,307 @@ const handleSaveChanges = async () => {
   ];
 
   const levelOptions = [
-    { value: "A1", label: "A1 - Débutant" },
-    { value: "A2", label: "A2 - Élémentaire" },
-    { value: "B1", label: "B1 - Intermédiaire" },
-    { value: "B2", label: "B2 - Intermédiaire avancé" },
-    { value: "C1", label: "C1 - Avancé" },
-    { value: "C2", label: "C2 - Maîtrise" },
+    { value: "A1", label: "A1 - Beginner" },
+    { value: "A2", label: "A2 - Elementary" },
+    { value: "B1", label: "B1 - Intermediate" },
+    { value: "B2", label: "B2 - Upper Intermediate" },
+    { value: "C1", label: "C1 - Advanced" },
+    { value: "C2", label: "C2 - Mastery" },
   ];
 
   const genderOptions = [
-    { value: "M", label: "Homme" },
-    { value: "F", label: "Femme" },
+    { value: "M", label: "Male" },
+    { value: "F", label: "Female" },
   ];
 
   const objectivesOptions = [
-    { value: "Travel", label: "Voyage" },
+    { value: "Travel", label: "Travel" },
     { value: "Business", label: "Business" },
-    { value: "Live Abroad", label: "Vivre à l'étranger" },
-    { value: "Exam", label: "Examen" },
-    { value: "For Fun", label: "Pour le plaisir" },
-    { value: "Work", label: "Travail" },
-    { value: "School", label: "École" },
-    { value: "Study", label: "Études" },
-    { value: "Personal", label: "Personnel" },
+    { value: "Live Abroad", label: "Live Abroad" },
+    { value: "Exam", label: "Exam" },
+    { value: "For Fun", label: "For Fun" },
+    { value: "Work", label: "Work" },
+    { value: "School", label: "School" },
+    { value: "Study", label: "Study" },
+    { value: "Personal", label: "Personal" },
   ];
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded-lg mt-10">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Profil</h1>
+    <Card className="max-w-3xl mx-auto shadow-md">
+      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+        <CardTitle className="text-2xl font-bold">My Profile</CardTitle>
         {!isEditing ? (
-          <button 
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          <Button 
             onClick={() => setIsEditing(true)}
+            variant="default"
           >
-            Modifier
-          </button>
+            Edit Profile
+          </Button>
         ) : (
           <div className="flex gap-2">
-            <button 
-              className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded flex items-center"
+            <Button 
+              variant="outline"
               onClick={() => setIsEditing(false)}
+              className="flex items-center"
             >
-              <X className="w-4 h-4 mr-1" /> Annuler
-            </button>
-            <button 
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center"
+              <X className="w-4 h-4 mr-1" /> Cancel
+            </Button>
+            <Button 
+              variant="default"
               onClick={handleSaveChanges}
               disabled={isSaving}
+              className="flex items-center"
             >
               {isSaving ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               ) : (
                 <Save className="w-4 h-4 mr-1" />
               )}
-              Enregistrer
-            </button>
+              Save Changes
+            </Button>
           </div>
         )}
-      </div>
+      </CardHeader>
 
-      {saveStatus.show && (
-        <Alert
-          className={`mb-6 ${saveStatus.isError ? 'bg-red-100 border-red-400' : 'bg-green-100 border-green-400'}`}
-        >
-          <AlertDescription>{saveStatus.message}</AlertDescription>
-        </Alert>
-      )}
+      <CardContent className="pt-6">
+        {saveStatus.show && (
+          <Alert
+            variant={saveStatus.isError ? "destructive" : "default"}
+            className="mb-6"
+          >
+            <AlertDescription>{saveStatus.message}</AlertDescription>
+          </Alert>
+        )}
 
-      <div className="flex items-center mb-6">
-        {/* Photo de profil avec upload */}
-        <div 
-          className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 mr-4 cursor-pointer"
-          onClick={handleProfilePictureClick}
-        >
-          {user.profile_picture ? (
-            <img 
-              src={user.profile_picture} 
-              alt="Photo de profil"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-              <span className="text-2xl text-gray-500">
-                {fullName.charAt(0).toUpperCase()}
-              </span>
-            </div>
-          )}
+        <div className="flex flex-col md:flex-row md:items-start gap-8 mb-8">
+          {/* Profile Photo with improved uploader */}
+          <PhotoUploader 
+            currentUrl={user.picture || user.profile_picture} 
+            username={user.username || fullName}
+            onSuccess={handlePhotoSuccess}
+          />
           
-          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 hover:opacity-100 transition-opacity">
-            <Camera className="w-6 h-6 text-white" />
+          <div className="flex-1">
+            <h2 className="text-xl font-medium">{fullName}</h2>
+            <p className="text-gray-600">{user.email}</p>
+            
+            {/* User stats */}
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="bg-gray-50 p-2 rounded">
+                <div className="text-sm text-gray-500">Learning</div>
+                <div className="font-medium">
+                  {languageOptions.find(opt => opt.value === user.target_language)?.label || 'Not set'}
+                </div>
+              </div>
+              <div className="bg-gray-50 p-2 rounded">
+                <div className="text-sm text-gray-500">Level</div>
+                <div className="font-medium">
+                  {levelOptions.find(opt => opt.value === user.language_level)?.label?.split(' ')[0] || 'Not set'}
+                </div>
+              </div>
+            </div>
           </div>
-          
-          {uploading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60">
-              <div className="w-6 h-6 border-2 border-t-blue-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-            </div>
-          )}
         </div>
         
-        {/* Input file caché */}
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          onChange={handleFileChange} 
-          className="hidden" 
-          accept="image/*"
-        />
-        
-        <div>
-          <h2 className="text-xl font-medium">{fullName}</h2>
-          <p className="text-gray-600">{user.email}</p>
-        </div>
-      </div>
-      
-      {!isEditing ? (
-        // Mode affichage
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <InfoItem label="Nom d'utilisateur" value={user.username} />
-          <InfoItem label="Prénom" value={user.first_name || 'Non spécifié'} />
-          <InfoItem label="Nom" value={user.last_name || 'Non spécifié'} />
-          <InfoItem label="Email" value={user.email} />
-          <InfoItem label="Genre" value={
-            genderOptions.find(opt => opt.value === user.gender)?.label || 'Non spécifié'
-          } />
-          <InfoItem label="Date de naissance" value={user.birthday ? new Date(user.birthday).toLocaleDateString() : 'Non spécifiée'} />
-          <InfoItem label="Langue maternelle" value={
-            languageOptions.find(opt => opt.value === user.native_language)?.label || 'Non spécifiée'
-          } />
-          <InfoItem label="Langue cible" value={
-            languageOptions.find(opt => opt.value === user.target_language)?.label || 'Non spécifiée'
-          } />
-          <InfoItem label="Niveau" value={
-            levelOptions.find(opt => opt.value === user.language_level)?.label || 'Non spécifié'
-          } />
-          <InfoItem label="Objectif" value={
-            objectivesOptions.find(opt => opt.value === user.objectives)?.label || 'Non spécifié'
-          } />
-          <InfoItem label="Membre depuis" value={new Date(user.created_at).toLocaleDateString()} />
-          
-          <div className="col-span-2">
-            <h3 className="text-lg font-semibold mb-2">Biographie</h3>
-            <p className="text-gray-700">{user.bio || 'Aucune biographie disponible'}</p>
+        {!isEditing ? (
+          // Display mode
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <InfoItem label="Username" value={user.username || 'Not specified'} />
+            <InfoItem label="First Name" value={user.first_name || 'Not specified'} />
+            <InfoItem label="Last Name" value={user.last_name || 'Not specified'} />
+            <InfoItem label="Email" value={user.email || 'Not specified'} />
+            <InfoItem label="Gender" value={
+              genderOptions.find(opt => opt.value === user.gender)?.label || 'Not specified'
+            } />
+            <InfoItem label="Native Language" value={
+              languageOptions.find(opt => opt.value === user.native_language)?.label || 'Not specified'
+            } />
+            <InfoItem label="Target Language" value={
+              languageOptions.find(opt => opt.value === user.target_language)?.label || 'Not specified'
+            } />
+            <InfoItem label="Language Level" value={
+              levelOptions.find(opt => opt.value === user.language_level)?.label || 'Not specified'
+            } />
+            <InfoItem label="Learning Objective" value={
+              objectivesOptions.find(opt => opt.value === user.objectives)?.label || 'Not specified'
+            } />
+            
+            <div className="col-span-2">
+              <h3 className="text-lg font-semibold mb-2">Biography</h3>
+              <p className="text-gray-700">{user.bio || 'No biography available'}</p>
+            </div>
           </div>
-        </div>
-      ) : (
-        // Mode édition
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="first_name">
-              Prénom
-            </label>
-            <input
-              type="text"
-              id="first_name"
-              name="first_name"
-              value={formData.first_name}
-              onChange={handleInputChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
+        ) : (
+          // Edit mode
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="first_name">
+                First Name
+              </label>
+              <input
+                type="text"
+                id="first_name"
+                name="first_name"
+                value={formData.first_name}
+                onChange={handleInputChange}
+                className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="last_name">
+                Last Name
+              </label>
+              <input
+                type="text"
+                id="last_name"
+                name="last_name"
+                value={formData.last_name}
+                onChange={handleInputChange}
+                className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                disabled
+                className="border rounded w-full py-2 px-3 bg-gray-50 text-gray-500 leading-tight"
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="gender">
+                Gender
+              </label>
+              <select
+                id="gender"
+                name="gender"
+                value={formData.gender}
+                onChange={handleInputChange}
+                className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select...</option>
+                {genderOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="native_language">
+                Native Language
+              </label>
+              <select
+                id="native_language"
+                name="native_language"
+                value={formData.native_language}
+                onChange={handleInputChange}
+                className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select...</option>
+                {languageOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="target_language">
+                Target Language
+              </label>
+              <select
+                id="target_language"
+                name="target_language"
+                value={formData.target_language}
+                onChange={handleInputChange}
+                className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select...</option>
+                {languageOptions.map(option => (
+                  <option 
+                    key={option.value} 
+                    value={option.value}
+                    disabled={option.value === formData.native_language}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="language_level">
+                Language Level
+              </label>
+              <select
+                id="language_level"
+                name="language_level"
+                value={formData.language_level}
+                onChange={handleInputChange}
+                className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select...</option>
+                {levelOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="objectives">
+                Learning Objective
+              </label>
+              <select
+                id="objectives"
+                name="objectives"
+                value={formData.objectives}
+                onChange={handleInputChange}
+                className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select...</option>
+                {objectivesOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="col-span-2 mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="bio">
+                Biography
+              </label>
+              <textarea
+                id="bio"
+                name="bio"
+                value={formData.bio || ''}
+                onChange={handleInputChange}
+                rows={4}
+                className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Tell us about yourself..."
+              ></textarea>
+            </div>
           </div>
-          
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="last_name">
-              Nom
-            </label>
-            <input
-              type="text"
-              id="last_name"
-              name="last_name"
-              value={formData.last_name}
-              onChange={handleInputChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              disabled
-              className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-50 text-gray-700 leading-tight"
-            />
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="gender">
-              Genre
-            </label>
-            <select
-              id="gender"
-              name="gender"
-              value={formData.gender}
-              onChange={handleInputChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            >
-              <option value="">Sélectionnez...</option>
-              {genderOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="birthday">
-              Date de naissance
-            </label>
-            <input
-              type="date"
-              id="birthday"
-              name="birthday"
-              value={formData.birthday}
-              onChange={handleInputChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="native_language">
-              Langue maternelle
-            </label>
-            <select
-              id="native_language"
-              name="native_language"
-              value={formData.native_language}
-              onChange={handleInputChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            >
-              <option value="">Sélectionnez...</option>
-              {languageOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="target_language">
-              Langue cible
-            </label>
-            <select
-              id="target_language"
-              name="target_language"
-              value={formData.target_language}
-              onChange={handleInputChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            >
-              <option value="">Sélectionnez...</option>
-              {languageOptions.map(option => (
-                <option 
-                  key={option.value} 
-                  value={option.value}
-                  disabled={option.value === formData.native_language}
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="language_level">
-              Niveau
-            </label>
-            <select
-              id="language_level"
-              name="language_level"
-              value={formData.language_level}
-              onChange={handleInputChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            >
-              <option value="">Sélectionnez...</option>
-              {levelOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="objectives">
-              Objectif d'apprentissage
-            </label>
-            <select
-              id="objectives"
-              name="objectives"
-              value={formData.objectives}
-              onChange={handleInputChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            >
-              <option value="">Sélectionnez...</option>
-              {objectivesOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div className="col-span-2 mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="bio">
-              Biographie
-            </label>
-            <textarea
-              id="bio"
-              name="bio"
-              value={formData.bio}
-              onChange={handleInputChange}
-              rows={3}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            ></textarea>
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
-// Composant pour afficher une ligne d'information
+// Component to display an information row
 function InfoItem({ label, value }: { label: string, value: string }) {
   return (
     <div className="mb-4">

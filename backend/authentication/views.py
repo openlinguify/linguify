@@ -2,14 +2,22 @@
 from rest_framework import status
 from django.http import JsonResponse
 from django.conf import settings
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
+from django.contrib.auth import get_user_model
+from .serializers import UserSerializer, ProfileUpdateSerializer
+
+
 from rest_framework.response import Response
 import requests
 from urllib.parse import urlencode
 import logging
 
+
 logger = logging.getLogger(__name__)
+User = get_user_model()
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -159,3 +167,74 @@ def token_refresh(request):
     except Exception as e:
         logger.error(f"Token refresh error: {str(e)}")
         return JsonResponse({'error': 'Internal server error'}, status=500)
+    
+@api_view(['GET', 'PATCH'])
+@permission_classes([IsAuthenticated])
+@parser_classes([JSONParser])
+def user_profile(request):
+    """
+    GET: Retrieve current user profile
+    PATCH: Update current user profile
+    """
+    user = request.user
+    
+    if request.method == 'GET':
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+    
+    elif request.method == 'PATCH':
+        logger.info(f"Updating profile for user {user.email}")
+        logger.debug(f"Update data: {request.data}")
+        
+        serializer = ProfileUpdateSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            logger.info(f"Profile updated successfully for {user.email}")
+            return Response(serializer.data)
+        
+        logger.error(f"Profile update validation errors: {serializer.errors}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def update_profile_picture(request):
+    """
+    Update user profile picture
+    """
+    user = request.user
+    
+    if 'profile_picture' not in request.FILES:
+        return Response({'error': 'No profile picture provided'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        # Delete existing profile picture if any
+        if user.profile_picture:
+            user.profile_picture.delete(save=False)
+        
+        # Save new profile picture
+        user.profile_picture = request.FILES['profile_picture']
+        user.save()
+        
+        # Get full URL for the profile picture
+        if user.profile_picture:
+            picture_url = request.build_absolute_uri(user.profile_picture.url)
+        else:
+            picture_url = None
+        
+        return Response({
+            'message': 'Profile picture updated successfully',
+            'profile_picture': picture_url
+        })
+        
+    except Exception as e:
+        logger.exception(f"Error updating profile picture: {str(e)}")
+        return Response(
+            {'error': 'Failed to update profile picture'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+
+
+
