@@ -61,15 +61,15 @@ const Header = () => {
   const handleLogout = () => {
     // Déconnexion locale
     localStorage.clear();
-    
+
     // Effacer les cookies
-    document.cookie.split(";").forEach(function(c) {
+    document.cookie.split(";").forEach(function (c) {
       document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
-    
+
     // Redirection vers home
     window.location.href = '/home';
-    
+
     toast({
       title: "Logged out successfully",
       description: "Come back soon!",
@@ -201,10 +201,6 @@ const Header = () => {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push('/profile')}>
-                    <User className="h-4 w-4 mr-2" />
-                    Profile
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => router.push('/learning')}>
                     <BookOpen className="h-4 w-4 mr-2" />
                     My Learning
@@ -215,9 +211,9 @@ const Header = () => {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-  <LogOut className="h-4 w-4 mr-2" />
-  Déconnexion
-</DropdownMenuItem>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Déconnexion
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -265,26 +261,26 @@ const Header = () => {
                 <NavItemMobile href="/profile" icon={User} label="Profile" onClick={() => setIsMenuOpen(false)} />
                 <NavItemMobile href="/settings" icon={Settings} label="Settings" onClick={() => setIsMenuOpen(false)} />
                 <div className="pt-2">
-                <Button
-  variant="destructive"
-  className="w-full justify-start"
-  onClick={() => {
-    // Déconnexion locale
-    localStorage.clear();
-    
-    // Effacer les cookies
-    document.cookie.split(";").forEach(function(c) {
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
-    
-    // Redirection vers home
-    window.location.href = '/home';
-    setIsMenuOpen(false);
-  }}
->
-  <LogOut className="h-4 w-4 mr-2" />
-  Logout
-</Button>
+                  <Button
+                    variant="destructive"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      // Déconnexion locale
+                      localStorage.clear();
+
+                      // Effacer les cookies
+                      document.cookie.split(";").forEach(function (c) {
+                        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                      });
+
+                      // Redirection vers home
+                      window.location.href = '/home';
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
                 </div>
               </>
             ) : (
