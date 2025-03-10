@@ -1,16 +1,18 @@
-// src/app/(dashboard)/(apps)/settings/SettingsPage.tsx
+// src/app/(dashboard)/(apps)/settings/_components/SettingsPage.tsx
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
-import { useAuthContext } from "@/services/AuthProvider";
+
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { 
@@ -23,8 +25,14 @@ import {
   Shield, 
   AlertCircle, 
   Loader2,
-  Save 
+  Save,
+  Camera,
+  Calendar,
+  MapPin,
+  Mail,
+  BookOpen
 } from "lucide-react";
+import { useAuthContext } from "@/services/AuthProvider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import apiClient from '@/services/axiosAuthInterceptor';
 
@@ -33,30 +41,53 @@ import {
   LEVEL_OPTIONS, 
   OBJECTIVES_OPTIONS,
   THEME_OPTIONS,
+  GENDER_OPTIONS,
   UserSettings,
   DEFAULT_USER_SETTINGS,
 } from '@/constants/usersettings';
 
+interface ProfileFormData {
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  bio: string | null;
+  gender: string | null;
+  birthday: string | null;
+  native_language: string;
+  target_language: string;
+  language_level: string;
+  objectives: string;
+}
 
 export default function SettingsPage() {
   const { user, isAuthenticated, isLoading, logout } = useAuthContext();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
-  const [activeTab, setActiveTab] = useState("account");
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('settingsActiveTab') || 'profile';
+  });
+  const [activeProfileTab, setActiveProfileTab] = useState('personal');
+  const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_USER_SETTINGS);
   
-  const [profileSettings, setProfileSettings] = useState({
-    username: "",
-    first_name: "",
-    last_name: "",
-    email: "",
-    native_language: "EN",
-    target_language: "FR",
-    language_level: "A1",
-    objectives: "Travel",
+  const [formData, setFormData] = useState<ProfileFormData>({
+    username: '',
+    first_name: '',
+    last_name: '',
+    email: '',
+    bio: '',
+    gender: null,
+    birthday: null,
+    native_language: 'EN',
+    target_language: 'FR',
+    language_level: 'A1',
+    objectives: 'Travel'
   });
   
   const [oldPassword, setOldPassword] = useState("");
@@ -81,19 +112,21 @@ export default function SettingsPage() {
     }
   }, [isAuthenticated, isLoading, router]);
 
-  // Load user data
+  // Initialize form with user data
   useEffect(() => {
     if (user) {
-      // Initialize with user data
-      setProfileSettings({
-        username: user.username || "",
-        first_name: user.first_name || "",
-        last_name: user.last_name || "",
-        email: user.email || "",
-        native_language: user.native_language || "EN",
-        target_language: user.target_language || "FR",
-        language_level: user.language_level || "A1",
-        objectives: user.objectives || "Travel",
+      setFormData({
+        username: user.username || '',
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
+        email: user.email || '',
+        bio: user.bio || '',
+        gender: user.gender || null,
+        birthday: user.birthday ? new Date(user.birthday).toISOString().split('T')[0] : null,
+        native_language: user.native_language || 'EN',
+        target_language: user.target_language || 'FR',
+        language_level: user.language_level || 'A1',
+        objectives: user.objectives || 'Travel'
       });
       
       // Set initial language settings from user data
@@ -107,9 +140,32 @@ export default function SettingsPage() {
       
       // Load user settings
       fetchUserSettings();
+      fetchUserProfile();
     }
   }, [user]);
 
+  // Save active tab to localStorage
+  useEffect(() => {
+    localStorage.setItem("settingsActiveTab", activeTab);
+  }, [activeTab]);
+
+  const fetchUserProfile = async () => {
+    try {
+      const response = await apiClient.get('/api/auth/profile/');
+      if (response.data) {
+        setFormData(prev => ({
+          ...prev,
+          ...response.data,
+          birthday: response.data.birthday
+            ? new Date(response.data.birthday).toISOString().split('T')[0]
+            : null
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
+  
   const fetchUserSettings = async () => {
     try {
       // Try to get user settings from localStorage first
@@ -142,6 +198,70 @@ export default function SettingsPage() {
     }
   };
 
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    // Handle the "not-specified" special case for gender
+    if (name === 'gender' && value === 'not-specified') {
+      setFormData(prev => ({ ...prev, [name]: null }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+      
+      // Also update settings for language-related fields
+      if (['native_language', 'target_language', 'language_level', 'objectives'].includes(name)) {
+        setSettings(prev => ({ ...prev, [name]: value }));
+      }
+    }
+  };
+
+  const saveProfile = async () => {
+    try {
+      setIsSaving(true);
+      setAlert({ show: false, type: 'success', message: '' });
+
+      const response = await apiClient.patch('/api/auth/profile/', {
+        username: formData.username,
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        bio: formData.bio,
+        gender: formData.gender,
+        birthday: formData.birthday,
+        native_language: formData.native_language,
+        target_language: formData.target_language,
+        language_level: formData.language_level,
+        objectives: formData.objectives
+      });
+
+      setAlert({
+        show: true,
+        type: 'success',
+        message: 'Profile updated successfully!'
+      });
+
+      setIsEditing(false);
+
+      // Clear alert after 3 seconds
+      setTimeout(() => {
+        setAlert(prev => ({ ...prev, show: false }));
+      }, 3000);
+
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setAlert({
+        show: true,
+        type: 'error',
+        message: 'Failed to update profile. Please try again.'
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const saveSettings = async () => {
     try {
       setIsSaving(true);
@@ -165,7 +285,7 @@ export default function SettingsPage() {
         objectives: settings.objectives
       };
       
-      await apiClient.patch('/api/auth/me/', languageSettings);
+      await apiClient.patch('/api/auth/profile/', languageSettings);
       
       setAlert({
         show: true,
@@ -236,6 +356,70 @@ export default function SettingsPage() {
       setIsSaving(false);
     }
   };
+  
+  const handleCancelEdit = () => {
+    // Reset form to original user data
+    if (user) {
+      setFormData({
+        username: user.username || '',
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
+        email: user.email || '',
+        bio: user.bio || '',
+        gender: user.gender || null,
+        birthday: user.birthday ? new Date(user.birthday).toISOString().split('T')[0] : null,
+        native_language: user.native_language || 'EN',
+        target_language: user.target_language || 'FR',
+        language_level: user.language_level || 'A1',
+        objectives: user.objectives || 'Travel'
+      });
+    }
+    setIsEditing(false);
+  };
+  
+  const handleProfilePictureClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+
+      // Create FormData
+      const formData = new FormData();
+      formData.append('profile_picture', file);
+
+      const response = await apiClient.post('/api/auth/profile-picture/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data && response.data.profile_picture) {
+        toast({
+          title: "Success",
+          description: "Profile picture updated successfully!",
+        });
+
+        // Refresh user data
+        fetchUserProfile();
+      }
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload profile picture. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleDeleteAccount = async () => {
     // Show confirmation dialog
@@ -284,26 +468,35 @@ export default function SettingsPage() {
     return null; // Router will redirect
   }
 
+  const fullName = `${formData.first_name || ''} ${formData.last_name || ''}`.trim() || formData.username;
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Settings</h1>
-        <Button 
-          onClick={saveSettings}
-          disabled={isSaving}
-        >
-          {isSaving ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
-            </>
+        <div className="flex gap-2">
+          {isEditing && (
+            <Button variant="outline" onClick={handleCancelEdit}>
+              Cancel
+            </Button>
           )}
-        </Button>
+          <Button 
+            onClick={activeTab === 'profile' ? saveProfile : saveSettings}
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Changes
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       {alert.show && (
@@ -320,6 +513,17 @@ export default function SettingsPage() {
           <Card>
             <CardContent className="pt-6">
               <div className="space-y-2">
+                <Button 
+                  variant={activeTab === "profile" ? "default" : "ghost"} 
+                  className="w-full justify-start" 
+                  onClick={() => {
+                    setActiveTab("profile");
+                    setIsEditing(false);
+                  }}
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  Profile
+                </Button>
                 <Button 
                   variant={activeTab === "account" ? "default" : "ghost"} 
                   className="w-full justify-start" 
@@ -399,6 +603,377 @@ export default function SettingsPage() {
 
         {/* Main content */}
         <div className="col-span-3">
+          {/* Profile Section */}
+          {activeTab === "profile" && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Left Column - Profile Summary */}
+              <div className="md:col-span-1">
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex flex-col items-center mb-6">
+                      <div className="relative">
+                        <div
+                          className="h-32 w-32 rounded-full overflow-hidden border-4 border-purple-100 cursor-pointer"
+                          onClick={handleProfilePictureClick}
+                        >
+                          {user.picture ? (
+                            <img
+                              src={user.picture}
+                              alt={fullName}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="h-full w-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center">
+                              <span className="text-3xl font-bold text-white">
+                                {fullName.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleFileChange}
+                          />
+                        </div>
+                        {isUploading && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
+                            <Loader2 className="h-10 w-10 animate-spin text-white" />
+                          </div>
+                        )}
+                        <div className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full cursor-pointer hover:bg-primary/80 transition-colors">
+                          <Camera className="h-4 w-4" />
+                        </div>
+                      </div>
+                      <h2 className="text-xl font-semibold mt-4">{fullName}</h2>
+                      <p className="text-sm text-gray-500">{formData.email}</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex items-start space-x-3">
+                        <User className="h-5 w-5 text-gray-500 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium">Username</p>
+                          <p className="text-gray-600">{formData.username}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-3">
+                        <Mail className="h-5 w-5 text-gray-500 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium">Email</p>
+                          <p className="text-gray-600">{formData.email}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-3">
+                        <Calendar className="h-5 w-5 text-gray-500 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium">Birthday</p>
+                          <p className="text-gray-600">
+                            {formData.birthday ? new Date(formData.birthday).toLocaleDateString() : 'Not specified'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-3">
+                        <MapPin className="h-5 w-5 text-gray-500 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium">Native Language</p>
+                          <p className="text-gray-600">
+                            {LANGUAGE_OPTIONS.find(opt => opt.value === formData.native_language)?.label || 'Not specified'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-3">
+                        <BookOpen className="h-5 w-5 text-gray-500 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium">Learning</p>
+                          <p className="text-gray-600">
+                            {LANGUAGE_OPTIONS.find(opt => opt.value === formData.target_language)?.label || 'Not specified'} -
+                            {LEVEL_OPTIONS.find(opt => opt.value === formData.language_level)?.label || 'Not specified'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6">
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => setIsEditing(true)}
+                      >
+                        Edit Profile
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right Column - Profile Details / Edit Form */}
+              <div className="md:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      {isEditing ? "Edit Your Profile" : "Profile Information"}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Tabs defaultValue={activeProfileTab} onValueChange={setActiveProfileTab}>
+                      <TabsList className="grid grid-cols-3 mb-6">
+                        <TabsTrigger value="personal">Personal Info</TabsTrigger>
+                        <TabsTrigger value="languages">Languages</TabsTrigger>
+                        <TabsTrigger value="learning">Learning Goals</TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="personal" className="space-y-6">
+                        {!isEditing ? (
+                          // View Mode
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <InfoItem label="First Name" value={formData.first_name || 'Not specified'} />
+                            <InfoItem label="Last Name" value={formData.last_name || 'Not specified'} />
+                            <InfoItem label="Username" value={formData.username} />
+                            <InfoItem label="Email" value={formData.email} />
+                            <InfoItem
+                              label="Gender"
+                              value={formData.gender
+                                ? GENDER_OPTIONS.find(opt => opt.value === formData.gender)?.label || 'Not specified'
+                                : 'Not specified'
+                              }
+                            />
+                            <InfoItem
+                              label="Birthday"
+                              value={formData.birthday ? new Date(formData.birthday).toLocaleDateString() : 'Not specified'}
+                            />
+
+                            <div className="col-span-full">
+                              <h3 className="text-sm font-medium mb-2">Bio</h3>
+                              <p className="text-gray-600">{formData.bio || 'No bio provided yet.'}</p>
+                            </div>
+                          </div>
+                        ) : (
+                          // Edit Mode
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <Label htmlFor="first_name">First Name</Label>
+                              <Input
+                                id="first_name"
+                                name="first_name"
+                                value={formData.first_name || ''}
+                                onChange={handleInputChange}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="last_name">Last Name</Label>
+                              <Input
+                                id="last_name"
+                                name="last_name"
+                                value={formData.last_name || ''}
+                                onChange={handleInputChange}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="username">Username</Label>
+                              <Input
+                                id="username"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleInputChange}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="email">Email (Read-only)</Label>
+                              <Input
+                                id="email"
+                                name="email"
+                                value={formData.email}
+                                disabled
+                                className="bg-gray-50"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="gender">Gender</Label>
+                              <Select
+                                value={formData.gender || 'not-specified'}
+                                onValueChange={(value) => handleSelectChange('gender', value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select gender" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="not-specified">Not specified</SelectItem>
+                                  {GENDER_OPTIONS.map(option => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="birthday">Birthday</Label>
+                              <Input
+                                id="birthday"
+                                name="birthday"
+                                type="date"
+                                value={formData.birthday || ''}
+                                onChange={handleInputChange}
+                              />
+                            </div>
+
+                            <div className="col-span-full space-y-2">
+                              <Label htmlFor="bio">Bio</Label>
+                              <Textarea
+                                id="bio"
+                                name="bio"
+                                placeholder="Tell us about yourself..."
+                                value={formData.bio || ''}
+                                onChange={handleInputChange}
+                                rows={4}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </TabsContent>
+
+                      <TabsContent value="languages" className="space-y-6">
+                        {!isEditing ? (
+                          // View Mode
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <InfoItem
+                              label="Native Language"
+                              value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.native_language)?.label || 'Not specified'}
+                            />
+                            <InfoItem
+                              label="Target Language"
+                              value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.target_language)?.label || 'Not specified'}
+                            />
+                            <InfoItem
+                              label="Language Level"
+                              value={LEVEL_OPTIONS.find(opt => opt.value === formData.language_level)?.label || 'Not specified'}
+                            />
+                          </div>
+                        ) : (
+                          // Edit Mode
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <Label htmlFor="native_language">Native Language</Label>
+                              <Select
+                                value={formData.native_language}
+                                onValueChange={(value) => handleSelectChange('native_language', value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select language" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {LANGUAGE_OPTIONS.map(option => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="target_language">Target Language</Label>
+                              <Select
+                                value={formData.target_language}
+                                onValueChange={(value) => handleSelectChange('target_language', value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select language" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {LANGUAGE_OPTIONS.map(option => (
+                                    <SelectItem
+                                      key={option.value}
+                                      value={option.value}
+                                      disabled={option.value === formData.native_language}
+                                    >
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="language_level">Language Level</Label>
+                              <Select
+                                value={formData.language_level}
+                                onValueChange={(value) => handleSelectChange('language_level', value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select level" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {LEVEL_OPTIONS.map(option => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        )}
+                      </TabsContent>
+
+                      <TabsContent value="learning" className="space-y-6">
+                        {!isEditing ? (
+                          // View Mode
+                          <div className="grid grid-cols-1 gap-6">
+                            <InfoItem
+                              label="Learning Objectives"
+                              value={OBJECTIVES_OPTIONS.find(opt => opt.value === formData.objectives)?.label || 'Not specified'}
+                            />
+
+                            {user.is_coach && (
+                              <InfoItem
+                                label="Coach Status"
+                                value="You are registered as a language coach"
+                              />
+                            )}
+                          </div>
+                        ) : (
+                          // Edit Mode
+                          <div className="grid grid-cols-1 gap-6">
+                            <div className="space-y-2">
+                              <Label htmlFor="objectives">Learning Objectives</Label>
+                              <Select
+                                value={formData.objectives}
+                                onValueChange={(value) => handleSelectChange('objectives', value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select objectives" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {OBJECTIVES_OPTIONS.map(option => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        )}
+                      </TabsContent>
+                    </Tabs>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+
           {activeTab === "account" && (
             <Card>
               <CardHeader>
@@ -413,15 +988,15 @@ export default function SettingsPage() {
                     <Label htmlFor="username">Username</Label>
                     <Input 
                       id="username" 
-                      value={profileSettings.username} 
-                      onChange={(e) => setProfileSettings({...profileSettings, username: e.target.value})}
+                      value={formData.username} 
+                      onChange={(e) => setFormData({...formData, username: e.target.value})}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input 
                       id="email" 
-                      value={profileSettings.email}
+                      value={formData.email}
                       disabled
                       className="bg-gray-50"
                     />
@@ -430,16 +1005,16 @@ export default function SettingsPage() {
                     <Label htmlFor="first_name">First Name</Label>
                     <Input 
                       id="first_name" 
-                      value={profileSettings.first_name} 
-                      onChange={(e) => setProfileSettings({...profileSettings, first_name: e.target.value})}
+                      value={formData.first_name} 
+                      onChange={(e) => setFormData({...formData, first_name: e.target.value})}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="last_name">Last Name</Label>
                     <Input 
                       id="last_name" 
-                      value={profileSettings.last_name} 
-                      onChange={(e) => setProfileSettings({...profileSettings, last_name: e.target.value})}
+                      value={formData.last_name} 
+                      onChange={(e) => setFormData({...formData, last_name: e.target.value})}
                     />
                   </div>
                 </div>
@@ -1048,6 +1623,16 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+// Helper component for displaying information in view mode
+function InfoItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <h3 className="text-sm font-medium mb-1">{label}</h3>
+      <p className="text-gray-600">{value}</p>
     </div>
   );
 }
