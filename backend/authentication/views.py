@@ -14,9 +14,9 @@ import requests
 from urllib.parse import urlencode
 import logging
 
-
-logger = logging.getLogger(__name__)
 User = get_user_model()
+logger = logging.getLogger(__name__)
+
 
 
 @api_view(['GET'])
@@ -97,47 +97,170 @@ def auth0_logout(request):
         return JsonResponse({'error': 'Logout failed'}, 
                           status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@api_view(['GET'])
-@permission_classes([AllowAny])  # Changer IsAuthenticated en AllowAny
+@api_view(['GET', 'PATCH'])
+@permission_classes([IsAuthenticated])
 def get_me(request):
-    """Returns the current authenticated user's information"""
+    """
+    GET: Returns the current authenticated user's information
+    PATCH: Updates the current authenticated user's information
+    """
     try:
-        # Vérifiez si l'utilisateur est authentifié
-        if not request.user.is_authenticated:
-            # Retournez une réponse 200 avec des informations minimales ou null
-            return JsonResponse({
-                'authenticated': False,
-                'message': 'No authenticated user',
-                # Vous pouvez éventuellement retourner des données minimales par défaut
-            })
-        
         user = request.user
         
-        # Create a comprehensive response with user information
-        data = {
-            'id': str(user.id),
-            'public_id': str(user.public_id) if hasattr(user, 'public_id') else None,
-            'email': user.email,
-            'name': f"{user.first_name} {user.last_name}".strip() or user.username,
-            'username': user.username,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'picture': request.build_absolute_uri(user.profile_picture.url) if hasattr(user, 'profile_picture') and user.profile_picture else None,
-            'language_level': user.language_level,
+        if request.method == 'GET':
+            # Create a comprehensive response with user information
+            data = {
+                'id': str(user.id),
+                'public_id': str(user.public_id) if hasattr(user, 'public_id') else None,
+                'email': user.email,
+                'name': f"{user.first_name} {user.last_name}".strip() or user.username,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'picture': request.build_absolute_uri(user.profile_picture.url) if hasattr(user, 'profile_picture') and user.profile_picture else None,
+                'language_level': user.language_level,
+                'native_language': user.native_language,
+                'target_language': user.target_language,
+                'objectives': user.objectives,
+                'bio': user.bio,
+                'is_coach': user.is_coach,
+                'is_subscribed': user.is_subscribed,
+                'is_active': user.is_active,
+                'authenticated': True
+            }
+            return JsonResponse(data)
+        
+        elif request.method == 'PATCH':
+            # Update user information
+            data = request.data
+            
+            # Update basic info
+            if 'username' in data:
+                user.username = data['username']
+            if 'first_name' in data:
+                user.first_name = data['first_name']
+            if 'last_name' in data:
+                user.last_name = data['last_name']
+            if 'bio' in data:
+                user.bio = data['bio']
+            
+            # Update language settings
+            if 'native_language' in data:
+                user.native_language = data['native_language']
+            if 'target_language' in data:
+                user.target_language = data['target_language']
+            if 'language_level' in data:
+                user.language_level = data['language_level']
+            if 'objectives' in data:
+                user.objectives = data['objectives']
+            
+            # Gender and birthday
+            if 'gender' in data:
+                user.gender = data['gender']
+            if 'birthday' in data:
+                user.birthday = data['birthday']
+            
+            user.save()
+            
+            # Return updated user info
+            return JsonResponse({
+                'id': str(user.id),
+                'email': user.email,
+                'name': f"{user.first_name} {user.last_name}".strip() or user.username,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'picture': request.build_absolute_uri(user.profile_picture.url) if hasattr(user, 'profile_picture') and user.profile_picture else None,
+                'language_level': user.language_level,
+                'native_language': user.native_language,
+                'target_language': user.target_language,
+                'objectives': user.objectives,
+                'bio': user.bio,
+                'gender': user.gender,
+                'birthday': user.birthday,
+                'is_coach': user.is_coach,
+                'is_subscribed': user.is_subscribed,
+                'authenticated': True
+            })
+            
+    except Exception as e:
+        logger.error(f"Error processing user data: {str(e)}")
+        return JsonResponse({'error': 'Internal server error'}, 
+                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def user_settings(request):
+    """
+    GET: Retrieve user settings
+    POST: Save user settings
+    """
+    user = request.user
+    
+    if request.method == 'GET':
+        # Get settings from user profile or defaults
+        settings = {
+            # Account settings
+            'email_notifications': getattr(user, 'email_notifications', True),
+            'push_notifications': getattr(user, 'push_notifications', True),
+            'interface_language': getattr(user, 'interface_language', 'en'),
+            
+            # Learning settings
+            'daily_goal': getattr(user, 'daily_goal', 15),
+            'weekday_reminders': getattr(user, 'weekday_reminders', True),
+            'weekend_reminders': getattr(user, 'weekend_reminders', False),
+            'reminder_time': getattr(user, 'reminder_time', '18:00'),
+            'speaking_exercises': getattr(user, 'speaking_exercises', True),
+            'listening_exercises': getattr(user, 'listening_exercises', True),
+            'reading_exercises': getattr(user, 'reading_exercises', True),
+            'writing_exercises': getattr(user, 'writing_exercises', True),
+            
+            # Language settings
             'native_language': user.native_language,
             'target_language': user.target_language,
+            'language_level': user.language_level,
             'objectives': user.objectives,
-            'bio': user.bio,
-            'is_coach': user.is_coach,
-            'is_subscribed': user.is_subscribed,
-            'is_active': user.is_active,
-            'authenticated': True
+            
+            # Privacy settings
+            'public_profile': getattr(user, 'public_profile', True),
+            'share_progress': getattr(user, 'share_progress', True),
+            'share_activity': getattr(user, 'share_activity', False),
         }
-        return JsonResponse(data)
-    except Exception as e:
-        logger.error(f"Error retrieving user data: {str(e)}")
-        return JsonResponse({'error': 'Internal server error'}, 
-                          status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        return Response(settings)
+    
+    elif request.method == 'POST':
+        settings_data = request.data
+        
+        # Update language settings on the user model
+        if 'native_language' in settings_data:
+            user.native_language = settings_data['native_language']
+            
+        if 'target_language' in settings_data:
+            user.target_language = settings_data['target_language']
+            
+        if 'language_level' in settings_data:
+            user.language_level = settings_data['language_level']
+            
+        if 'objectives' in settings_data:
+            user.objectives = settings_data['objectives']
+            
+        # For other settings, we'll store them as model attributes 
+        # (They'll be saved even if not in the model fields explicitly)
+        for key, value in settings_data.items():
+            if key not in ['native_language', 'target_language', 'language_level', 'objectives']:
+                setattr(user, key, value)
+                
+        user.save()
+        
+        return Response({
+            'message': 'Settings saved successfully',
+            'settings': settings_data
+        })
+
+
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

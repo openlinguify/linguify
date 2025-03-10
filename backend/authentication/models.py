@@ -188,6 +188,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     objectives = models.CharField(max_length=20, choices=OBJECTIVES_CHOICES, default=OBJECTIVES_CHOICES[0][0],
                                   help_text="Your learning objectives")
     is_coach = models.BooleanField(default=False)  # Flag to indicate if a user is a coach
+    # settings fields
+    email_notifications = models.BooleanField(default=True)
+    push_notifications = models.BooleanField(default=True)
+    interface_language = models.CharField(max_length=10, default='en')
+    daily_goal = models.IntegerField(default=15)
+    weekday_reminders = models.BooleanField(default=True)
+    weekend_reminders = models.BooleanField(default=False)
+    reminder_time = models.CharField(max_length=5, default='18:00')
+    speaking_exercises = models.BooleanField(default=True)
+    listening_exercises = models.BooleanField(default=True)
+    reading_exercises = models.BooleanField(default=True)
+    writing_exercises = models.BooleanField(default=True)
+    public_profile = models.BooleanField(default=True)
+    share_progress = models.BooleanField(default=True)
+    share_activity = models.BooleanField(default=False)
 
 
 
