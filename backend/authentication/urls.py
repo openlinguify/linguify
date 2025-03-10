@@ -1,8 +1,16 @@
 # authentication/urls.py
 from django.urls import path
-from .views import auth0_login, auth0_callback, auth0_logout, get_me, token_refresh
-from .debug_views import cors_debug
+from .views import (
+    auth0_login, 
+    auth0_callback, 
+    auth0_logout, 
+    get_me, 
+    token_refresh, 
+    user_profile, 
+    update_profile_picture
+)
 from django.conf import settings
+from .debug_views import cors_debug
 
 urlpatterns = [
     path('login/', auth0_login, name='auth0_login'),
@@ -10,6 +18,8 @@ urlpatterns = [
     path('logout/', auth0_logout, name='auth0_logout'),
     path('me/', get_me, name='get_me'),
     path('token/refresh/', token_refresh, name='token_refresh'),
+    path('profile/', user_profile, name='user_profile'),
+    path('profile-picture/', update_profile_picture, name='user_profile_picture'),
 ]
 
 if settings.DEBUG:
