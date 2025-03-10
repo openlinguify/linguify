@@ -18,8 +18,7 @@ import { useTheme } from "next-themes";
 import { 
   User, 
   Bell, 
-  Languages, 
-  Settings, 
+  Languages,
   Lock, 
   CreditCard, 
   Shield, 
@@ -30,7 +29,8 @@ import {
   Calendar,
   MapPin,
   Mail,
-  BookOpen
+  BookOpen,
+  Palette
 } from "lucide-react";
 import { useAuthContext } from "@/services/AuthProvider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -42,23 +42,11 @@ import {
   OBJECTIVES_OPTIONS,
   THEME_OPTIONS,
   GENDER_OPTIONS,
+  INTERFACE_LANGUAGE_OPTIONS,
   UserSettings,
+  ProfileFormData,
   DEFAULT_USER_SETTINGS,
 } from '@/constants/usersettings';
-
-interface ProfileFormData {
-  username: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  bio: string | null;
-  gender: string | null;
-  birthday: string | null;
-  native_language: string;
-  target_language: string;
-  language_level: string;
-  objectives: string;
-}
 
 export default function SettingsPage() {
   const { user, isAuthenticated, isLoading, logout } = useAuthContext();
@@ -87,7 +75,8 @@ export default function SettingsPage() {
     native_language: 'EN',
     target_language: 'FR',
     language_level: 'A1',
-    objectives: 'Travel'
+    objectives: 'Travel',
+    interface_language: 'en'
   });
   
   const [oldPassword, setOldPassword] = useState("");
@@ -126,7 +115,8 @@ export default function SettingsPage() {
         native_language: user.native_language || 'EN',
         target_language: user.target_language || 'FR',
         language_level: user.language_level || 'A1',
-        objectives: user.objectives || 'Travel'
+        objectives: user.objectives || 'Travel',
+        interface_language: 'en'
       });
       
       // Set initial language settings from user data
@@ -158,7 +148,8 @@ export default function SettingsPage() {
           ...response.data,
           birthday: response.data.birthday
             ? new Date(response.data.birthday).toISOString().split('T')[0]
-            : null
+            : null,
+          interface_language: prev.interface_language // Preserve interface language
         }));
       }
     } catch (error) {
@@ -176,6 +167,11 @@ export default function SettingsPage() {
           ...prev,
           ...parsedSettings
         }));
+        
+        setFormData(prev => ({
+          ...prev,
+          interface_language: parsedSettings.interface_language || prev.interface_language
+        }));
       }
       
       // Then try to get from API
@@ -185,6 +181,11 @@ export default function SettingsPage() {
           setSettings(prev => ({
             ...prev,
             ...response.data
+          }));
+          
+          setFormData(prev => ({
+            ...prev,
+            interface_language: response.data.interface_language || prev.interface_language
           }));
           
           // Update localStorage
@@ -213,8 +214,13 @@ export default function SettingsPage() {
       setFormData(prev => ({ ...prev, [name]: value }));
       
       // Also update settings for language-related fields
-      if (['native_language', 'target_language', 'language_level', 'objectives'].includes(name)) {
+      if (['native_language', 'target_language', 'language_level', 'objectives', 'interface_language'].includes(name)) {
         setSettings(prev => ({ ...prev, [name]: value }));
+        
+        // Apply theme change if interface language is changed
+        if (name === 'interface_language' && (value === 'light' || value === 'dark')) {
+          setTheme(value);
+        }
       }
     }
   };
@@ -224,6 +230,7 @@ export default function SettingsPage() {
       setIsSaving(true);
       setAlert({ show: false, type: 'success', message: '' });
 
+      // Save both profile and interface language
       const response = await apiClient.patch('/api/auth/profile/', {
         username: formData.username,
         first_name: formData.first_name,
@@ -234,8 +241,31 @@ export default function SettingsPage() {
         native_language: formData.native_language,
         target_language: formData.target_language,
         language_level: formData.language_level,
-        objectives: formData.objectives
+        objectives: formData.objectives,
+        interface_language: formData.interface_language
       });
+
+      // Update settings with interface language
+      setSettings(prev => ({
+        ...prev,
+        interface_language: formData.interface_language
+      }));
+      
+      // Save settings to localStorage
+      localStorage.setItem('userSettings', JSON.stringify({
+        ...settings,
+        interface_language: formData.interface_language
+      }));
+
+      // Try to save settings to backend
+      try {
+        await apiClient.post('/api/auth/me/settings/', {
+          ...settings,
+          interface_language: formData.interface_language
+        });
+      } catch (error) {
+        console.log('Settings API not available, saved locally only');
+      }
 
       setAlert({
         show: true,
@@ -282,7 +312,8 @@ export default function SettingsPage() {
         native_language: settings.native_language,
         target_language: settings.target_language,
         language_level: settings.language_level,
-        objectives: settings.objectives
+        objectives: settings.objectives,
+        interface_language: settings.interface_language
       };
       
       await apiClient.patch('/api/auth/profile/', languageSettings);
@@ -371,7 +402,8 @@ export default function SettingsPage() {
         native_language: user.native_language || 'EN',
         target_language: user.target_language || 'FR',
         language_level: user.language_level || 'A1',
-        objectives: user.objectives || 'Travel'
+        objectives: user.objectives || 'Travel',
+        interface_language: settings.interface_language || 'en'
       });
     }
     setIsEditing(false);
@@ -525,14 +557,6 @@ export default function SettingsPage() {
                   Profile
                 </Button>
                 <Button 
-                  variant={activeTab === "account" ? "default" : "ghost"} 
-                  className="w-full justify-start" 
-                  onClick={() => setActiveTab("account")}
-                >
-                  <User className="mr-2 h-4 w-4" />
-                  Account
-                </Button>
-                <Button 
                   variant={activeTab === "notifications" ? "default" : "ghost"} 
                   className="w-full justify-start" 
                   onClick={() => setActiveTab("notifications")}
@@ -553,7 +577,7 @@ export default function SettingsPage() {
                   className="w-full justify-start" 
                   onClick={() => setActiveTab("appearance")}
                 >
-                  <Settings className="mr-2 h-4 w-4" />
+                  <Palette className="mr-2 h-4 w-4" />
                   Appearance
                 </Button>
                 <Button 
@@ -561,7 +585,7 @@ export default function SettingsPage() {
                   className="w-full justify-start" 
                   onClick={() => setActiveTab("learning")}
                 >
-                  <Languages className="mr-2 h-4 w-4" />
+                  <BookOpen className="mr-2 h-4 w-4" />
                   Learning
                 </Button>
                 <Button 
@@ -722,10 +746,11 @@ export default function SettingsPage() {
                   </CardHeader>
                   <CardContent>
                     <Tabs defaultValue={activeProfileTab} onValueChange={setActiveProfileTab}>
-                      <TabsList className="grid grid-cols-3 mb-6">
+                      <TabsList className="grid grid-cols-4 mb-6">
                         <TabsTrigger value="personal">Personal Info</TabsTrigger>
                         <TabsTrigger value="languages">Languages</TabsTrigger>
                         <TabsTrigger value="learning">Learning Goals</TabsTrigger>
+                        <TabsTrigger value="preferences">Preferences</TabsTrigger>
                       </TabsList>
 
                       <TabsContent value="personal" className="space-y-6">
@@ -967,80 +992,68 @@ export default function SettingsPage() {
                           </div>
                         )}
                       </TabsContent>
+                      
+                      <TabsContent value="preferences" className="space-y-6">
+                        {!isEditing ? (
+                          // View Mode
+                          <div className="grid grid-cols-1 gap-6">
+                            <InfoItem
+                              label="Interface Language"
+                              value={INTERFACE_LANGUAGE_OPTIONS.find(opt => opt.value === formData.interface_language)?.label || 'English'}
+                            />
+                            <InfoItem
+                              label="Theme"
+                              value={THEME_OPTIONS.find(opt => opt.value === theme)?.label || 'System'}
+                            />
+                          </div>
+                        ) : (
+                          // Edit Mode
+                          <div className="grid grid-cols-1 gap-6">
+                            <div className="space-y-2">
+                              <Label htmlFor="interface_language">Interface Language</Label>
+                              <Select
+                                value={formData.interface_language}
+                                onValueChange={(value) => handleSelectChange('interface_language', value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select language" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {INTERFACE_LANGUAGE_OPTIONS.map(option => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label htmlFor="theme">Theme</Label>
+                              <Select
+                                value={theme || 'system'}
+                                onValueChange={(value) => setTheme(value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select theme" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {THEME_OPTIONS.map(option => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        )}
+                      </TabsContent>
                     </Tabs>
                   </CardContent>
                 </Card>
               </div>
             </div>
-          )}
-
-          {activeTab === "account" && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Account Settings</CardTitle>
-                <CardDescription>
-                  Manage your account details and preferences
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input 
-                      id="username" 
-                      value={formData.username} 
-                      onChange={(e) => setFormData({...formData, username: e.target.value})}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input 
-                      id="email" 
-                      value={formData.email}
-                      disabled
-                      className="bg-gray-50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="first_name">First Name</Label>
-                    <Input 
-                      id="first_name" 
-                      value={formData.first_name} 
-                      onChange={(e) => setFormData({...formData, first_name: e.target.value})}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="last_name">Last Name</Label>
-                    <Input 
-                      id="last_name" 
-                      value={formData.last_name} 
-                      onChange={(e) => setFormData({...formData, last_name: e.target.value})}
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="interface-language">Interface Language</Label>
-                    <Select 
-                      value={settings.interface_language}
-                      onValueChange={(value) => setSettings({...settings, interface_language: value})}
-                    >
-                      <SelectTrigger id="interface-language" className="w-[200px]">
-                        <SelectValue placeholder="Select language" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {LANGUAGE_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           )}
 
           {activeTab === "notifications" && (
@@ -1225,23 +1238,44 @@ export default function SettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="theme">Theme</Label>
-                  <Select 
-                    value={theme || 'system'}
-                    onValueChange={(value) => setTheme(value)}
-                  >
-                    <SelectTrigger id="theme" className="w-[200px]">
-                      <SelectValue placeholder="Select theme" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {THEME_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="theme">Theme</Label>
+                    <Select 
+                      value={theme || 'system'}
+                      onValueChange={(value) => setTheme(value)}
+                    >
+                      <SelectTrigger id="theme" className="w-[200px]">
+                        <SelectValue placeholder="Select theme" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {THEME_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="interface_language">Interface Language</Label>
+                    <Select 
+                      value={settings.interface_language}
+                      onValueChange={(value) => setSettings({...settings, interface_language: value})}
+                    >
+                      <SelectTrigger id="interface_language" className="w-[200px]">
+                        <SelectValue placeholder="Select language" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {INTERFACE_LANGUAGE_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </CardContent>
             </Card>

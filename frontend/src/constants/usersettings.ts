@@ -96,6 +96,22 @@ export const LANGUAGE_OPTIONS = [
     is_coach: boolean;
     is_subscribed: boolean;
     profile_picture: string | null;
+    
+  }
+
+  export interface ProfileFormData {
+    username: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    bio: string | null;
+    gender: string | null;
+    birthday: string | null;
+    native_language: string;
+    target_language: string;
+    language_level: string;
+    objectives: string;
+    interface_language: string;
   }
   
   export const DEFAULT_USER_SETTINGS: UserSettings = {
