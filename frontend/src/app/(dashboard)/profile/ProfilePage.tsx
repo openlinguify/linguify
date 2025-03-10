@@ -10,19 +10,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components/ui/select";
-import { 
-  User, 
-  Calendar, 
-  MapPin, 
-  Mail, 
-  BookOpen, 
+import {
+  User,
+  Calendar,
+  MapPin,
+  Mail,
+  BookOpen,
   Loader2,
   Save,
   Camera
@@ -30,43 +30,12 @@ import {
 import { useAuthContext } from "@/services/AuthProvider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import apiClient from '@/services/axiosAuthInterceptor';
-
-// Constants for select options
-const LANGUAGE_OPTIONS = [
-  { value: 'EN', label: 'English' },
-  { value: 'FR', label: 'French' },
-  { value: 'NL', label: 'Dutch' },
-  { value: 'DE', label: 'German' },
-  { value: 'ES', label: 'Spanish' },
-  { value: 'IT', label: 'Italian' },
-  { value: 'PT', label: 'Portuguese' },
-];
-
-const LEVEL_OPTIONS = [
-  { value: 'A1', label: 'A1 - Beginner' },
-  { value: 'A2', label: 'A2 - Elementary' },
-  { value: 'B1', label: 'B1 - Intermediate' },
-  { value: 'B2', label: 'B2 - Upper Intermediate' },
-  { value: 'C1', label: 'C1 - Advanced' },
-  { value: 'C2', label: 'C2 - Mastery' },
-];
-
-const GENDER_OPTIONS = [
-  { value: 'M', label: 'Male' },
-  { value: 'F', label: 'Female' },
-];
-
-const OBJECTIVES_OPTIONS = [
-  { value: 'Travel', label: 'Travel' },
-  { value: 'Business', label: 'Business' },
-  { value: 'Live Abroad', label: 'Live Abroad' },
-  { value: 'Exam', label: 'Exam Preparation' },
-  { value: 'For Fun', label: 'For Fun' },
-  { value: 'Work', label: 'Work' },
-  { value: 'School', label: 'School' },
-  { value: 'Study', label: 'Study' },
-  { value: 'Personal', label: 'Personal Development' },
-];
+import {
+  LANGUAGE_OPTIONS,
+  LEVEL_OPTIONS,
+  OBJECTIVES_OPTIONS,
+  GENDER_OPTIONS,
+} from '@/constants/usersettings';
 
 interface ProfileFormData {
   username: string;
@@ -90,7 +59,7 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [formData, setFormData] = useState<ProfileFormData>({
     username: '',
     first_name: '',
@@ -138,7 +107,7 @@ export default function ProfilePage() {
         language_level: user.language_level || 'A1',
         objectives: user.objectives || 'Travel'
       });
-      
+
       // Fetch more detailed profile info
       fetchUserProfile();
     }
@@ -151,8 +120,8 @@ export default function ProfilePage() {
         setFormData(prev => ({
           ...prev,
           ...response.data,
-          birthday: response.data.birthday 
-            ? new Date(response.data.birthday).toISOString().split('T')[0] 
+          birthday: response.data.birthday
+            ? new Date(response.data.birthday).toISOString().split('T')[0]
             : null
         }));
       }
@@ -169,7 +138,12 @@ export default function ProfilePage() {
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+    // Handle the "not-specified" special case for gender
+    if (name === 'gender' && value === 'not-specified') {
+      setFormData(prev => ({ ...prev, [name]: null }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSaveProfile = async () => {
@@ -177,7 +151,7 @@ export default function ProfilePage() {
       setIsSaving(true);
       setAlert({ show: false, type: 'success', message: '' });
 
-      const response = await apiClient.patch('/api/auth/me/', {
+      const response = await apiClient.patch('/api/auth/profile/', {
         username: formData.username,
         first_name: formData.first_name,
         last_name: formData.last_name,
@@ -195,14 +169,14 @@ export default function ProfilePage() {
         type: 'success',
         message: 'Profile updated successfully!'
       });
-      
+
       setIsEditing(false);
-      
+
       // Clear alert after 3 seconds
       setTimeout(() => {
         setAlert(prev => ({ ...prev, show: false }));
       }, 3000);
-      
+
     } catch (error) {
       console.error('Error updating profile:', error);
       setAlert({
@@ -247,23 +221,23 @@ export default function ProfilePage() {
 
     try {
       setIsUploading(true);
-      
+
       // Create FormData
       const formData = new FormData();
       formData.append('profile_picture', file);
-      
-      const response = await apiClient.post('/api/auth/me/profile-picture/', formData, {
+
+      const response = await apiClient.post('/api/auth/profile-picture/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      
+
       if (response.data && response.data.profile_picture) {
         toast({
           title: "Success",
           description: "Profile picture updated successfully!",
         });
-        
+
         // Refresh user data
         fetchUserProfile();
       }
@@ -293,7 +267,7 @@ export default function ProfilePage() {
   }
 
   const fullName = `${formData.first_name || ''} ${formData.last_name || ''}`.trim() || formData.username;
-  
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
@@ -339,14 +313,14 @@ export default function ProfilePage() {
             <CardContent className="pt-6">
               <div className="flex flex-col items-center mb-6">
                 <div className="relative">
-                  <div 
+                  <div
                     className="h-32 w-32 rounded-full overflow-hidden border-4 border-purple-100 cursor-pointer"
                     onClick={handleProfilePictureClick}
                   >
                     {user.picture ? (
-                      <img 
-                        src={user.picture} 
-                        alt={fullName} 
+                      <img
+                        src={user.picture}
+                        alt={fullName}
                         className="h-full w-full object-cover"
                       />
                     ) : (
@@ -356,9 +330,9 @@ export default function ProfilePage() {
                         </span>
                       </div>
                     )}
-                    <input 
+                    <input
                       ref={fileInputRef}
-                      type="file" 
+                      type="file"
                       accept="image/*"
                       className="hidden"
                       onChange={handleFileChange}
@@ -419,7 +393,7 @@ export default function ProfilePage() {
                   <div>
                     <p className="text-sm font-medium">Learning</p>
                     <p className="text-gray-600">
-                      {LANGUAGE_OPTIONS.find(opt => opt.value === formData.target_language)?.label || 'Not specified'} - 
+                      {LANGUAGE_OPTIONS.find(opt => opt.value === formData.target_language)?.label || 'Not specified'} -
                       {LEVEL_OPTIONS.find(opt => opt.value === formData.language_level)?.label || 'Not specified'}
                     </p>
                   </div>
@@ -453,15 +427,18 @@ export default function ProfilePage() {
                       <InfoItem label="Last Name" value={formData.last_name || 'Not specified'} />
                       <InfoItem label="Username" value={formData.username} />
                       <InfoItem label="Email" value={formData.email} />
-                      <InfoItem 
-                        label="Gender" 
-                        value={GENDER_OPTIONS.find(opt => opt.value === formData.gender)?.label || 'Not specified'} 
+                      <InfoItem
+                        label="Gender"
+                        value={formData.gender
+                          ? GENDER_OPTIONS.find(opt => opt.value === formData.gender)?.label || 'Not specified'
+                          : 'Not specified'
+                        }
                       />
-                      <InfoItem 
-                        label="Birthday" 
-                        value={formData.birthday ? new Date(formData.birthday).toLocaleDateString() : 'Not specified'} 
+                      <InfoItem
+                        label="Birthday"
+                        value={formData.birthday ? new Date(formData.birthday).toLocaleDateString() : 'Not specified'}
                       />
-                      
+
                       <div className="col-span-full">
                         <h3 className="text-sm font-medium mb-2">Bio</h3>
                         <p className="text-gray-600">{formData.bio || 'No bio provided yet.'}</p>
@@ -479,7 +456,7 @@ export default function ProfilePage() {
                           onChange={handleInputChange}
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="last_name">Last Name</Label>
                         <Input
@@ -489,7 +466,7 @@ export default function ProfilePage() {
                           onChange={handleInputChange}
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="username">Username</Label>
                         <Input
@@ -499,7 +476,7 @@ export default function ProfilePage() {
                           onChange={handleInputChange}
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="email">Email (Read-only)</Label>
                         <Input
@@ -510,18 +487,18 @@ export default function ProfilePage() {
                           className="bg-gray-50"
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="gender">Gender</Label>
-                        <Select 
-                          value={formData.gender || ''} 
+                        <Select
+                          value={formData.gender || 'not-specified'}
                           onValueChange={(value) => handleSelectChange('gender', value)}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select gender" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">Not specified</SelectItem>
+                            <SelectItem value="not-specified">Not specified</SelectItem>
                             {GENDER_OPTIONS.map(option => (
                               <SelectItem key={option.value} value={option.value}>
                                 {option.label}
@@ -530,7 +507,7 @@ export default function ProfilePage() {
                           </SelectContent>
                         </Select>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="birthday">Birthday</Label>
                         <Input
@@ -541,7 +518,7 @@ export default function ProfilePage() {
                           onChange={handleInputChange}
                         />
                       </div>
-                      
+
                       <div className="col-span-full space-y-2">
                         <Label htmlFor="bio">Bio</Label>
                         <Textarea
@@ -561,17 +538,17 @@ export default function ProfilePage() {
                   {!isEditing ? (
                     // View Mode
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <InfoItem 
-                        label="Native Language" 
-                        value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.native_language)?.label || 'Not specified'} 
+                      <InfoItem
+                        label="Native Language"
+                        value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.native_language)?.label || 'Not specified'}
                       />
-                      <InfoItem 
-                        label="Target Language" 
-                        value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.target_language)?.label || 'Not specified'} 
+                      <InfoItem
+                        label="Target Language"
+                        value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.target_language)?.label || 'Not specified'}
                       />
-                      <InfoItem 
-                        label="Language Level" 
-                        value={LEVEL_OPTIONS.find(opt => opt.value === formData.language_level)?.label || 'Not specified'} 
+                      <InfoItem
+                        label="Language Level"
+                        value={LEVEL_OPTIONS.find(opt => opt.value === formData.language_level)?.label || 'Not specified'}
                       />
                     </div>
                   ) : (
@@ -579,8 +556,8 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="native_language">Native Language</Label>
-                        <Select 
-                          value={formData.native_language} 
+                        <Select
+                          value={formData.native_language}
                           onValueChange={(value) => handleSelectChange('native_language', value)}
                         >
                           <SelectTrigger>
@@ -595,11 +572,11 @@ export default function ProfilePage() {
                           </SelectContent>
                         </Select>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="target_language">Target Language</Label>
-                        <Select 
-                          value={formData.target_language} 
+                        <Select
+                          value={formData.target_language}
                           onValueChange={(value) => handleSelectChange('target_language', value)}
                         >
                           <SelectTrigger>
@@ -607,8 +584,8 @@ export default function ProfilePage() {
                           </SelectTrigger>
                           <SelectContent>
                             {LANGUAGE_OPTIONS.map(option => (
-                              <SelectItem 
-                                key={option.value} 
+                              <SelectItem
+                                key={option.value}
                                 value={option.value}
                                 disabled={option.value === formData.native_language}
                               >
@@ -618,11 +595,11 @@ export default function ProfilePage() {
                           </SelectContent>
                         </Select>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="language_level">Language Level</Label>
-                        <Select 
-                          value={formData.language_level} 
+                        <Select
+                          value={formData.language_level}
                           onValueChange={(value) => handleSelectChange('language_level', value)}
                         >
                           <SelectTrigger>
@@ -645,14 +622,14 @@ export default function ProfilePage() {
                   {!isEditing ? (
                     // View Mode
                     <div className="grid grid-cols-1 gap-6">
-                      <InfoItem 
-                        label="Learning Objectives" 
-                        value={OBJECTIVES_OPTIONS.find(opt => opt.value === formData.objectives)?.label || 'Not specified'} 
+                      <InfoItem
+                        label="Learning Objectives"
+                        value={OBJECTIVES_OPTIONS.find(opt => opt.value === formData.objectives)?.label || 'Not specified'}
                       />
-                      
+
                       {user.is_coach && (
-                        <InfoItem 
-                          label="Coach Status" 
+                        <InfoItem
+                          label="Coach Status"
                           value="You are registered as a language coach"
                         />
                       )}
@@ -662,8 +639,8 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-1 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="objectives">Learning Objectives</Label>
-                        <Select 
-                          value={formData.objectives} 
+                        <Select
+                          value={formData.objectives}
                           onValueChange={(value) => handleSelectChange('objectives', value)}
                         >
                           <SelectTrigger>

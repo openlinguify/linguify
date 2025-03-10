@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -21,7 +20,6 @@ import {
   Settings, 
   Lock, 
   CreditCard, 
-  LogOut, 
   Shield, 
   AlertCircle, 
   Loader2,
@@ -30,78 +28,15 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import apiClient from '@/services/axiosAuthInterceptor';
 
-// Constants
-const LANGUAGE_OPTIONS = [
-  { value: 'EN', label: 'English' },
-  { value: 'FR', label: 'French' },
-  { value: 'NL', label: 'Dutch' },
-  { value: 'DE', label: 'German' },
-  { value: 'ES', label: 'Spanish' },
-  { value: 'IT', label: 'Italian' },
-  { value: 'PT', label: 'Portuguese' },
-];
+import { 
+  LANGUAGE_OPTIONS, 
+  LEVEL_OPTIONS, 
+  OBJECTIVES_OPTIONS,
+  THEME_OPTIONS,
+  UserSettings,
+  DEFAULT_USER_SETTINGS,
+} from '@/constants/usersettings';
 
-const INTERFACE_LANGUAGE_OPTIONS = [
-  { value: 'en', label: 'English' },
-  { value: 'fr', label: 'Français' },
-  { value: 'es', label: 'Español' },
-  { value: 'nl', label: 'Nederlands' },
-];
-
-const LEVEL_OPTIONS = [
-  { value: 'A1', label: 'A1 - Beginner' },
-  { value: 'A2', label: 'A2 - Elementary' },
-  { value: 'B1', label: 'B1 - Intermediate' },
-  { value: 'B2', label: 'B2 - Upper Intermediate' },
-  { value: 'C1', label: 'C1 - Advanced' },
-  { value: 'C2', label: 'C2 - Mastery' },
-];
-
-const OBJECTIVES_OPTIONS = [
-  { value: 'Travel', label: 'Travel' },
-  { value: 'Business', label: 'Business' },
-  { value: 'Live Abroad', label: 'Live Abroad' },
-  { value: 'Exam', label: 'Exam Preparation' },
-  { value: 'For Fun', label: 'For Fun' },
-  { value: 'Work', label: 'Work' },
-  { value: 'School', label: 'School' },
-  { value: 'Study', label: 'Study' },
-  { value: 'Personal', label: 'Personal Development' },
-];
-
-const THEME_OPTIONS = [
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-  { value: 'system', label: 'System' },
-];
-
-interface UserSettings {
-  // Account settings
-  email_notifications: boolean;
-  push_notifications: boolean;
-  interface_language: string;
-  
-  // Learning settings
-  daily_goal: number; // in minutes
-  weekday_reminders: boolean;
-  weekend_reminders: boolean;
-  reminder_time: string;
-  speaking_exercises: boolean;
-  listening_exercises: boolean;
-  reading_exercises: boolean;
-  writing_exercises: boolean;
-  
-  // Language settings
-  native_language: string;
-  target_language: string;
-  language_level: string;
-  objectives: string;
-  
-  // Privacy settings
-  public_profile: boolean;
-  share_progress: boolean;
-  share_activity: boolean;
-}
 
 export default function SettingsPage() {
   const { user, isAuthenticated, isLoading, logout } = useAuthContext();
@@ -110,31 +45,8 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("account");
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  
-  const [settings, setSettings] = useState<UserSettings>({
-    // Default values
-    email_notifications: true,
-    push_notifications: true,
-    interface_language: "en",
-    
-    daily_goal: 15,
-    weekday_reminders: true,
-    weekend_reminders: false,
-    reminder_time: "18:00",
-    speaking_exercises: true,
-    listening_exercises: true,
-    reading_exercises: true,
-    writing_exercises: true,
-    
-    native_language: "EN",
-    target_language: "FR",
-    language_level: "A1",
-    objectives: "Travel",
-    
-    public_profile: true,
-    share_progress: true,
-    share_activity: false,
-  });
+
+  const [settings, setSettings] = useState<UserSettings>(DEFAULT_USER_SETTINGS);
   
   const [profileSettings, setProfileSettings] = useState({
     username: "",
@@ -543,7 +455,7 @@ export default function SettingsPage() {
                         <SelectValue placeholder="Select language" />
                       </SelectTrigger>
                       <SelectContent>
-                        {INTERFACE_LANGUAGE_OPTIONS.map((option) => (
+                        {LANGUAGE_OPTIONS.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
                             {option.label}
                           </SelectItem>
