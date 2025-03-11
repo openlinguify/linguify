@@ -1,6 +1,8 @@
 # course/serializers.py
 from rest_framework import serializers, generics
 from .models import Unit, Lesson, ContentLesson, VocabularyList, Grammar, MultipleChoiceQuestion, Numbers, TheoryContent, ExerciseGrammarReordering
+import logging
+logger = logging.getLogger(__name__)
 
 class UnitSerializer(serializers.ModelSerializer):
     # Titre dynamique basé sur la langue cible
@@ -13,28 +15,87 @@ class UnitSerializer(serializers.ModelSerializer):
 
     # Méthode pour récupérer le titre dans la langue de l'utilisateur
     def get_title(self, obj):
-        target_language = self._get_target_language()
-        return getattr(obj, f"title_{target_language}", obj.title_en)  # Fallback à l'anglais
-
-    # Méthode pour récupérer la description dans la langue de l'utilisateur
+        target_language = self._get_target_language().lower()
+        field_name = f'title_{target_language}'
+        return getattr(obj, field_name, obj.title_en)
+    
     def get_description(self, obj):
-        target_language = self._get_target_language()
-        return getattr(obj, f"description_{target_language}", obj.description_en)  # Fallback à l'anglais
-
-    # Méthode utilitaire pour récupérer la langue cible
+        target_language = self._get_target_language().lower()
+        field_name = f"description_{target_language}"
+        value = getattr(obj, field_name, obj.description_en)
+        return value
+    
     def _get_target_language(self):
         request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            return getattr(request.user, 'target_language', 'en')  # Langue par défaut : anglais
+        target_lang = None
+        
+        # Priorité 1: contexte direct (ajouté par la vue)
+        if 'target_language' in self.context:
+            target_lang = self.context.get('target_language')
+            logger.info(f"Langue cible depuis le contexte direct: {target_lang}")
+            return target_lang
+            
+        # Priorité 2: paramètre de requête
+        if request and request.query_params.get('target_language'):
+            target_lang = request.query_params.get('target_language')
+            logger.info(f"Langue cible depuis les paramètres: {target_lang}")
+            return target_lang
+            
+        # Priorité 3: utilisateur authentifié
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            target_lang = getattr(request.user, 'target_language', 'en').lower()
+            logger.info(f"Langue cible depuis le profil utilisateur: {target_lang}")
+            return target_lang
+            
+        # Valeur par défaut
+        logger.info("Utilisation de la langue par défaut: en")
         return 'en'
 
+
+
 class LessonSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(source='title_en')  # Utilise le titre anglais par défaut
-    description = serializers.CharField(source='description_en')  # Utilise la description anglaise par défaut
+    title = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
 
     class Meta:
         model = Lesson
         fields = ['id', 'title', 'description', 'lesson_type', 'estimated_duration', 'order']
+
+    def get_title(self, obj):
+        target_language = self._get_target_language().lower()
+        field_name = f'title_{target_language}'
+        value = getattr(obj, field_name, obj.title_en)
+        
+        # Logs détaillés pour débugger
+        logger.info("======= DIAGNOSTIC LANGUE =======")
+        logger.info(f"Lesson ID: {obj.id}")
+        logger.info(f"Target language: {target_language}")
+        logger.info(f"Field name: {field_name}")
+        logger.info(f"Available fields: {[f for f in dir(obj) if f.startswith('title_')]}")
+        logger.info(f"Value retrieved: {value}")
+        logger.info("================================")
+        
+        return value
+    
+    def get_description(self, obj):
+        target_language = self._get_target_language().lower()
+        field_name = f"description_{target_language}"
+        return getattr(obj, field_name, obj.description_en)
+    
+    def _get_target_language(self):
+        request = self.context.get('request')
+        if request and request.query_params.get('target_language'):
+            return request.query_params.get('target_language')
+            
+        if request and request.user.is_authenticated:
+            return getattr(request.user, 'target_language', 'en').lower()
+            
+        target_language = self.context.get('target_language', 'en')
+        return target_language
+
+
+
+
 
 class ContentLessonSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
@@ -52,27 +113,46 @@ class ContentLessonSerializer(serializers.ModelSerializer):
         ]
 
     def get_title(self, obj):
-        return {
-            'en': obj.title_en,
-            'fr': obj.title_fr,
-            'es': obj.title_es,
-            'nl': obj.title_nl,
-        }
+        target_language = self._get_target_language().lower()
+        field_name = f'title_{target_language}'
+        value = getattr(obj, field_name, obj.title_en)
+        logger.info(f"ContentLesson {obj.id}: {field_name} = {value}")
+        return value
 
     def get_instruction(self, obj):
-        return {
-            'en': obj.instruction_en,
-            'fr': obj.instruction_fr,
-            'es': obj.instruction_es,
-            'nl': obj.instruction_nl,
-        }
+        target_language = self._get_target_language().lower()
+        field_name = f'instruction_{target_language}'
+        return getattr(obj, field_name, obj.instruction_en)
+        
+    def _get_target_language(self):
+        request = self.context.get('request')
+        
+        # Priorité 1: contexte direct (ajouté par la vue)
+        if 'target_language' in self.context:
+            target_lang = self.context.get('target_language')
+            logger.info(f"ContentLesson - Langue depuis le contexte: {target_lang}")
+            return target_lang
+            
+        # Priorité 2: paramètre de requête
+        if request and request.query_params.get('target_language'):
+            target_lang = request.query_params.get('target_language')
+            logger.info(f"ContentLesson - Langue depuis les paramètres: {target_lang}")
+            return target_lang
+            
+        # Priorité 3: utilisateur authentifié
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            target_lang = getattr(request.user, 'target_language', 'en').lower()
+            logger.info(f"ContentLesson - Langue depuis le profil: {target_lang}")
+            return target_lang
+            
+        # Valeur par défaut
+        logger.info("ContentLesson - Langue par défaut: en")
+        return 'en'
+    
 
-    def to_representation(self, instance):
-        """Add title_en et instruction_en pour faciliter l'accès direct"""
-        representation = super().to_representation(instance)
-        representation['title_en'] = instance.title_en
-        representation['instruction_en'] = instance.instruction_en
-        return representation
+
+
+
 
 class VocabularyListSerializer(serializers.ModelSerializer):
     word = serializers.SerializerMethodField()

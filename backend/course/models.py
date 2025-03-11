@@ -364,8 +364,6 @@ class MultipleChoiceQuestion(models.Model):
 
     def __str__(self):
         return f"{self.content_lesson} - {self.question_en}"
-    
-
 class Numbers(models.Model):
     content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='numbers', default=1)
     number = models.CharField(max_length=255, blank=False, null=False)
@@ -376,8 +374,7 @@ class Numbers(models.Model):
     is_reviewed = models.BooleanField(default=False, blank=False, null=False)
 
     def __str__(self):
-        return f"{self.content_lesson} - {self.content_lesson.title_en} - {self.number} - {self.number_en} - {self.is_reviewed}"
-    
+        return f"{self.content_lesson} - {self.content_lesson.title_en} - {self.number} - {self.number_en} - {self.is_reviewed}"  
 class ExerciseVocabularyMultipleChoice(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     question = models.TextField(blank=False, null=False, help_text="Question based on example sentence")

@@ -44,6 +44,10 @@ from authentication.models import User
 import random
 import django_filters
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 # par exemple, pour limiter le nombre de unités d'apprentissage retournées par page à 15
 # et pour permettre à l'utilisateur de spécifier le nombre d'unités d'apprentissage à afficher par page
 # en utilisant le paramètre de requête `page_size`
@@ -60,52 +64,59 @@ class CustomPagination(PageNumberPagination):
             'results': data
         })
 
-# class BaseTargetLanguageMixin:
-#     """
-#     Mixin pour récupérer automatiquement la langue cible depuis les paramètres
-#     de requête ou le profil utilisateur et l'injecter dans le contexte du sérialiseur.
-#     """
-#     def get_serializer_context(self):
-#         context = super().get_serializer_context()
-#         request = self.request
-#         user = request.user
-#         target_language = request.query_params.get('target_language', getattr(user, 'target_language', 'en'))
-#         context['target_language'] = target_language
-#         return context
-
 class UnitAPIView(generics.ListAPIView):
-    permission_classes = [AllowAny]  # Permettre l'accès sans authentification
-    authentication_classes = []  # Ne pas utiliser d'authentification
+    """
+    Vue pour lister les unités d'apprentissage avec support multilingue.
+    Permet de filtrer par niveau et de récupérer les titres/descriptions 
+    dans la langue cible de l'utilisateur.
+    """
+    permission_classes = [AllowAny]
     serializer_class = UnitSerializer
     
     def get_queryset(self):
+        """Filtre les unités par niveau si spécifié"""
         queryset = Unit.objects.all().order_by('order')
         
-        # Récupérer les paramètres de filtrage
+        # Filtrer par niveau
         level = self.request.query_params.get('level')
-        target_language = self.request.query_params.get('target_language')
-        
-        # Filtrer par niveau si spécifié
         if level:
             queryset = queryset.filter(level=level)
-        
-        # Si vous souhaitez filtrer par langue cible
-        # Cela dépend de comment vous avez implémenté le support multi-langue
-        # Par exemple, si vous utilisez le serializer pour gérer la langue:
-        if target_language:
-            # Le filtrage par langue peut être géré dans le serializer
-            # Vous pouvez ajouter cette information au contexte du serializer
-            pass
-        
+            
         return queryset
     
     def get_serializer_context(self):
+        """Ajoute la langue cible au contexte du sérialiseur"""
         context = super().get_serializer_context()
-        # Ajouter la langue cible au contexte pour que le serializer puisse l'utiliser
-        target_language = self.request.query_params.get('target_language', 'en').lower()
+        
+        # Priorité 1: paramètre de requête
+        target_language = self.request.query_params.get('target_language')
+        
+        # Priorité 2: utilisateur authentifié
+        if not target_language and self.request.user.is_authenticated:
+            target_language = getattr(self.request.user, 'target_language', 'en').lower()
+        
+        # Valeur par défaut si nécessaire
+        if not target_language:
+            target_language = 'en'
+            
+        logger.debug(f"Using target language: {target_language}")
         context['target_language'] = target_language
         return context
 
+    def list(self, request, *args, **kwargs):
+        """Liste les unités avec leur titre/description dans la langue cible"""
+        # Récupère le queryset filtré
+        queryset = self.get_queryset()
+        
+        # Récupère le contexte incluant la langue cible
+        context = self.get_serializer_context()
+        
+        # Sérialise les unités
+        serializer = self.get_serializer(queryset, many=True, context=context)
+        
+        # Renvoie la réponse
+        return Response(serializer.data)
+    
 class LessonAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -119,6 +130,60 @@ class LessonAPIView(generics.ListAPIView):
             except ValueError:
                 raise ValidationError({"error": "Invalid unit ID"})
         return Lesson.objects.all().order_by('order')
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        
+        # Log pour vérifier les headers
+        logger.info(f"Headers: {self.request.headers}")
+        logger.info(f"Query params: {self.request.query_params}")
+        
+        # Priorité 1: paramètre de requête
+        target_language = self.request.query_params.get('target_language')
+        
+        # Priorité 2: header Accept-Language 
+        if not target_language and 'Accept-Language' in self.request.headers:
+            accept_lang = self.request.headers['Accept-Language'].split(',')[0].split('-')[0]
+            if accept_lang in ['en', 'fr', 'es', 'nl']:
+                target_language = accept_lang
+                logger.info(f"Langue cible depuis Accept-Language: {target_language}")
+        
+        # Priorité 3: utilisateur authentifié
+        if not target_language and hasattr(self.request, 'user') and self.request.user.is_authenticated:
+            target_language = getattr(self.request.user, 'target_language', 'en').lower()
+            logger.info(f"Langue cible depuis le profil utilisateur: {target_language}")
+        
+        # Valeur par défaut
+        if not target_language:
+            target_language = 'en'
+            
+        logger.info(f"Langue cible finale: {target_language}")
+        context['target_language'] = target_language
+        return context
+
+    def list(self, request, *args, **kwargs):
+        logger.info(f"LessonAPIView.list - Paramètres: {request.query_params}")
+        logger.info(f'Query params: {request.query_params}')
+        
+        if  'target_language' in request.query_params:
+            logger.info(f"Langue cible: {request.query_params['target_language']}")
+        else:
+            logger.info("Pas de langue cible spécifiée")
+        if hasattr(request, 'user') and request.user.is_authenticated:
+            logger.info(f"Utilisateur authentifié: {request.user.username}")
+        # Récupération des données
+        queryset = self.get_queryset()
+        logger.info(f"Trouvé {queryset.count()} leçons")
+        
+        context = self.get_serializer_context()
+        serializer = self.get_serializer(queryset, many=True, context=context)
+        
+        # Log d'exemple pour vérification
+        if serializer.data:
+            logger.info(f"Exemple de réponse: {serializer.data[0]}")
+            
+        return Response(serializer.data)
+
 
 class ContentLessonViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -135,6 +200,54 @@ class ContentLessonViewSet(viewsets.ModelViewSet):
                 raise ValidationError({"error": "Invalid lesson ID"})
         return queryset.order_by('order')
     
+    def get_serializer_context(self):
+        """Assure que la langue cible est dans le contexte"""
+        context = super().get_serializer_context()
+        
+        # Log pour débugger
+        logger.info(f"ContentLessonViewSet Headers: {self.request.headers}")
+        logger.info(f"ContentLessonViewSet Query params: {self.request.query_params}")
+        
+        # Priorité 1: paramètre de requête
+        target_language = self.request.query_params.get('target_language')
+        
+        # Priorité 2: header Accept-Language 
+        if not target_language and 'Accept-Language' in self.request.headers:
+            accept_lang = self.request.headers['Accept-Language'].split(',')[0].split('-')[0]
+            if accept_lang in ['en', 'fr', 'es', 'nl']:
+                target_language = accept_lang
+                logger.info(f"ContentLessonViewSet - Langue depuis Accept-Language: {target_language}")
+        
+        # Priorité 3: utilisateur authentifié
+        if not target_language and hasattr(self.request, 'user') and self.request.user.is_authenticated:
+            target_language = getattr(self.request.user, 'target_language', 'en').lower()
+            logger.info(f"ContentLessonViewSet - Langue depuis profil: {target_language}")
+        
+        # Valeur par défaut
+        if not target_language:
+            target_language = 'en'
+            
+        logger.info(f"ContentLessonViewSet - Langue finale: {target_language}")
+        context['target_language'] = target_language
+        return context
+        
+    def list(self, request, *args, **kwargs):
+        logger.info(f"ContentLessonViewSet.list - Paramètres: {request.query_params}")
+        
+        queryset = self.get_queryset()
+        logger.info(f"ContentLessonViewSet - Trouvé {queryset.count()} contenus")
+        
+        context = self.get_serializer_context()
+        serializer = self.get_serializer(queryset, many=True, context=context)
+        
+        # Log d'exemple pour vérification
+        if serializer.data:
+            logger.info(f"ContentLessonViewSet - Exemple de réponse: {serializer.data[0]}")
+            
+        return Response(serializer.data)
+
+
+
 class TheoryContentViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -340,21 +453,6 @@ class MultipleChoiceQuestionAPIView(APIView):
 
         return Response(serializer.data)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class ExerciseGrammarReorderingViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     serializer_class = ExerciseGrammarReorderingSerializer
@@ -391,15 +489,6 @@ class ExerciseGrammarReorderingViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-
-
-
-
-
-
-
-
-
 class ExerciceVocabularyAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -418,59 +507,6 @@ class ExerciceVocabularyAPIView(APIView):
             'choices': [{'id': w.id, 'word': w.word} for w in words]
         }
         return Response(data, status=status.HTTP_200_OK)
-
-# class TestRecapAttemptListView(generics.ListCreateAPIView):
-#     queryset = TestRecapAttempt.objects.all()
-#     serializer_class = TestRecapAttemptSerializer
-
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request):
-#         user = request.user
-#         data = request.data
-#         correct_answers = 0
-#         for item in data:
-#             vocabulary_list = VocabularyList.objects.get(pk=item['id'])
-#             if vocabulary_list.word == item['word']:
-#                 correct_answers += 1
-
-#         score = correct_answers / len(data) * 100
-#         user.score = score
-#         user.save()
-
-#         return Response({'score': score}, status=status.HTTP_200_OK)
-    
-
-# class QuizAPIView(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def get(self, request, quiz_id=None):
-#         user = request.user
-#         learning_language = user.learning_language
-#         level = user.level_target_language
-#
-#         if not learning_language or not level:
-#             return Response({"error": "Please specify the learning language and level in your profile."}, status=status.HTTP_400_BAD_REQUEST)
-#
-#         vocabulary_words = Vocabulary.objects.filter(language_id=learning_language, level_target_language=level)
-#         if not vocabulary_words.exists():
-#             return Response({"error": "No words found for the specified learning language and level."}, status=status.HTTP_404_NOT_FOUND)
-#
-#         word_pair = random.choice(vocabulary_words)
-#         word = word_pair.word
-#         correct_translation = word_pair.translation
-#
-#         incorrect_translations = Quiz.objects.filter(language_id=learning_language.language_code, level=level).exclude(pk=quiz_id).values_list('translation', flat=True)[:3]
-#         options = list(incorrect_translations) + [correct_translation]
-#         random.shuffle(options)
-#
-#         data = {
-#             'language': learning_language.language_name,
-#             'word': word,
-#             'options': options,
-#             'correct_translation': correct_translation
-#         }
-#         return Response(data, status=status.HTTP_200_OK)
 
 class SearchVocabularyAPIView(APIView):
     def get(self, request):

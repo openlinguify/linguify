@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import BackButton from "@/components/ui/BackButton";
 import { Progress } from "@/components/ui/progress";
+import courseAPI from "@/services/courseAPI";
 import {
   ArrowLeft,
   Clock,
@@ -55,20 +56,20 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
     const fetchLessons = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `http://localhost:8000/api/v1/course/lesson/?unit=${unitId}`,
-          { credentials: "omit" }
-        );
+        
+        // Récupérer la langue cible depuis localStorage
+        // Dans la fonction fetchLessons()
+        const userSettingsStr = localStorage.getItem('userSettings');
+        const userSettings = userSettingsStr ? JSON.parse(userSettingsStr) : {};
+        const targetLanguage = userSettings.target_language || 'en';
+        console.log('User settings from localStorage:', userSettings);
+        console.log('Target language extracted:', targetLanguage);
 
-        if (!response.ok) throw new Error("Failed to fetch lessons");
-
-        const data = await response.json();
-        const sortedLessons = Array.isArray(data)
-          ? data.sort((a: Lesson, b: Lesson) => a.order - b.order)
-          : (data.results || []).sort(
-              (a: Lesson, b: Lesson) => a.order - b.order
-            );
-
+        const lessons = await courseAPI.getLessons(parseInt(unitId), targetLanguage);
+        const sortedLessons = Array.isArray(lessons)
+          ? lessons.sort((a: Lesson, b: Lesson) => a.order - b.order)
+          : [];
+  
         setLessons(sortedLessons);
         setError(null);
       } catch (err) {
@@ -78,7 +79,7 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
         setLoading(false);
       }
     };
-
+  
     if (unitId) fetchLessons();
   }, [unitId]);
 
