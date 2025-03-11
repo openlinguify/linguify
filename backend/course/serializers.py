@@ -4,6 +4,57 @@ from .models import Unit, Lesson, ContentLesson, VocabularyList, Grammar, Multip
 import logging
 logger = logging.getLogger(__name__)
 
+
+class TargetLanguageMixin:
+    """
+    Mixin pour récupérer automatiquement la langue cible depuis les paramètres
+    de requête, l'utilisateur ou les en-têtes HTTP.
+    """
+    def get_target_language(self):
+        # Priorité 1: paramètre de requête
+        target_language = self.request.query_params.get('target_language')
+        
+        # Ajoutez des logs pour déboguer
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"get_target_language - Lang from query params: {target_language}")
+        
+        # Priorité 2: header Accept-Language 
+        if not target_language and 'Accept-Language' in self.request.headers:
+            accept_lang = self.request.headers['Accept-Language'].split(',')[0].split('-')[0]
+            if accept_lang in ['en', 'fr', 'es', 'nl']:
+                target_language = accept_lang
+                logger.info(f"get_target_language - Lang from Accept-Language: {target_language}")
+                
+        # Priorité 3: utilisateur authentifié
+        if not target_language and hasattr(self.request, 'user') and self.request.user.is_authenticated:
+            user_lang = getattr(self.request.user, 'target_language', None)
+            if user_lang:
+                target_language = user_lang.lower()
+                logger.info(f"get_target_language - Lang from user profile: {target_language}")
+        
+        # Normaliser à minuscules
+        if target_language and target_language.upper() in ['EN', 'FR', 'ES', 'NL']:
+            target_language = target_language.lower()
+        
+        # Valeur par défaut
+        if not target_language or target_language not in ['en', 'fr', 'es', 'nl']:
+            target_language = 'en'
+            
+        logger.info(f"get_target_language - Final lang: {target_language}")
+        return target_language
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        target_language = self.get_target_language()
+        context['target_language'] = target_language
+        
+        # Log pour déboguer
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"get_serializer_context - Adding target_language to context: {target_language}")
+        
+        return context
 class UnitSerializer(serializers.ModelSerializer):
     # Titre dynamique basé sur la langue cible
     title = serializers.SerializerMethodField()
@@ -52,7 +103,6 @@ class UnitSerializer(serializers.ModelSerializer):
         return 'en'
 
 
-
 class LessonSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
@@ -62,38 +112,44 @@ class LessonSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'lesson_type', 'estimated_duration', 'order']
 
     def get_title(self, obj):
-        target_language = self._get_target_language().lower()
-        field_name = f'title_{target_language}'
-        value = getattr(obj, field_name, obj.title_en)
-        
-        # Logs détaillés pour débugger
-        logger.info("======= DIAGNOSTIC LANGUE =======")
-        logger.info(f"Lesson ID: {obj.id}")
-        logger.info(f"Target language: {target_language}")
-        logger.info(f"Field name: {field_name}")
-        logger.info(f"Available fields: {[f for f in dir(obj) if f.startswith('title_')]}")
-        logger.info(f"Value retrieved: {value}")
-        logger.info("================================")
-        
-        return value
-    
-    def get_description(self, obj):
-        target_language = self._get_target_language().lower()
-        field_name = f"description_{target_language}"
-        return getattr(obj, field_name, obj.description_en)
-    
-    def _get_target_language(self):
-        request = self.context.get('request')
-        if request and request.query_params.get('target_language'):
-            return request.query_params.get('target_language')
-            
-        if request and request.user.is_authenticated:
-            return getattr(request.user, 'target_language', 'en').lower()
-            
+        # Récupérer la langue cible du contexte
         target_language = self.context.get('target_language', 'en')
-        return target_language
+        
+        # S'assurer que la langue est en minuscules
+        if target_language.upper() in ['EN', 'FR', 'ES', 'NL']:
+            target_language = target_language.lower()
+            
+        # Construire le nom du champ dynamiquement
+        field_name = f'title_{target_language}'
+        
+        # Log pour déboguer
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"LessonSerializer.get_title - Langue: {target_language}, Field: {field_name}")
+        logger.info(f"LessonSerializer.get_title - Valeur: {getattr(obj, field_name, obj.title_en)}")
+        
+        # Retourner le titre dans la langue cible ou l'anglais par défaut
+        return getattr(obj, field_name, obj.title_en)
 
-
+    def get_description(self, obj):
+        # Récupérer la langue cible du contexte
+        target_language = self.context.get('target_language', 'en')
+        
+        # S'assurer que la langue est en minuscules
+        if target_language.upper() in ['EN', 'FR', 'ES', 'NL']:
+            target_language = target_language.lower()
+            
+        # Construire le nom du champ dynamiquement
+        field_name = f'description_{target_language}'
+        
+        # Log pour déboguer
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"LessonSerializer.get_description - Langue: {target_language}, Field: {field_name}")
+        logger.info(f"LessonSerializer.get_description - Valeur: {getattr(obj, field_name, obj.description_en)}")
+        
+        # Retourner la description dans la langue cible ou l'anglais par défaut
+        return getattr(obj, field_name, obj.description_en)
 
 
 

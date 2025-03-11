@@ -29,6 +29,7 @@ from .models import (
     ExerciseGrammarReordering,
 )
 from .serializers import (
+    TargetLanguageMixin,
     UnitSerializer, 
     LessonSerializer, 
     ContentLessonSerializer, 
@@ -64,126 +65,41 @@ class CustomPagination(PageNumberPagination):
             'results': data
         })
 
-class UnitAPIView(generics.ListAPIView):
-    """
-    Vue pour lister les unités d'apprentissage avec support multilingue.
-    Permet de filtrer par niveau et de récupérer les titres/descriptions 
-    dans la langue cible de l'utilisateur.
-    """
+class UnitAPIView(TargetLanguageMixin, generics.ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = UnitSerializer
     
     def get_queryset(self):
-        """Filtre les unités par niveau si spécifié"""
         queryset = Unit.objects.all().order_by('order')
         
-        # Filtrer par niveau
+        # Filtrer par niveau si spécifié
         level = self.request.query_params.get('level')
         if level:
             queryset = queryset.filter(level=level)
             
         return queryset
-    
-    def get_serializer_context(self):
-        """Ajoute la langue cible au contexte du sérialiseur"""
-        context = super().get_serializer_context()
-        
-        # Priorité 1: paramètre de requête
-        target_language = self.request.query_params.get('target_language')
-        
-        # Priorité 2: utilisateur authentifié
-        if not target_language and self.request.user.is_authenticated:
-            target_language = getattr(self.request.user, 'target_language', 'en').lower()
-        
-        # Valeur par défaut si nécessaire
-        if not target_language:
-            target_language = 'en'
-            
-        logger.debug(f"Using target language: {target_language}")
-        context['target_language'] = target_language
-        return context
 
-    def list(self, request, *args, **kwargs):
-        """Liste les unités avec leur titre/description dans la langue cible"""
-        # Récupère le queryset filtré
-        queryset = self.get_queryset()
-        
-        # Récupère le contexte incluant la langue cible
-        context = self.get_serializer_context()
-        
-        # Sérialise les unités
-        serializer = self.get_serializer(queryset, many=True, context=context)
-        
-        # Renvoie la réponse
-        return Response(serializer.data)
-    
-class LessonAPIView(generics.ListAPIView):
+class LessonAPIView(TargetLanguageMixin, generics.ListAPIView):
     permission_classes = [AllowAny]
-    authentication_classes = []
     serializer_class = LessonSerializer
 
     def get_queryset(self):
         unit_id = self.request.query_params.get('unit')
+        target_language = self.get_target_language()
+        logger.info(f"Récupération des leçons pour unit_id={unit_id}, langue={target_language}")
+        
         if unit_id:
             try:
-                return Lesson.objects.filter(unit_id=unit_id).order_by('order')
+                lessons = Lesson.objects.filter(unit_id=unit_id).order_by('order')
+                # Vérifier la présence des champs dans les différentes langues
+                for lesson in lessons[:3]:  # Limiter à 3 pour le log
+                    logger.info(f"Leçon ID={lesson.id}, title_en={lesson.title_en}, "
+                            f"title_fr={lesson.title_fr}, title_nl={lesson.title_nl}, "
+                            f"title_es={lesson.title_es}")
+                return lessons
             except ValueError:
                 raise ValidationError({"error": "Invalid unit ID"})
         return Lesson.objects.all().order_by('order')
-    
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        
-        # Log pour vérifier les headers
-        logger.info(f"Headers: {self.request.headers}")
-        logger.info(f"Query params: {self.request.query_params}")
-        
-        # Priorité 1: paramètre de requête
-        target_language = self.request.query_params.get('target_language')
-        
-        # Priorité 2: header Accept-Language 
-        if not target_language and 'Accept-Language' in self.request.headers:
-            accept_lang = self.request.headers['Accept-Language'].split(',')[0].split('-')[0]
-            if accept_lang in ['en', 'fr', 'es', 'nl']:
-                target_language = accept_lang
-                logger.info(f"Langue cible depuis Accept-Language: {target_language}")
-        
-        # Priorité 3: utilisateur authentifié
-        if not target_language and hasattr(self.request, 'user') and self.request.user.is_authenticated:
-            target_language = getattr(self.request.user, 'target_language', 'en').lower()
-            logger.info(f"Langue cible depuis le profil utilisateur: {target_language}")
-        
-        # Valeur par défaut
-        if not target_language:
-            target_language = 'en'
-            
-        logger.info(f"Langue cible finale: {target_language}")
-        context['target_language'] = target_language
-        return context
-
-    def list(self, request, *args, **kwargs):
-        logger.info(f"LessonAPIView.list - Paramètres: {request.query_params}")
-        logger.info(f'Query params: {request.query_params}')
-        
-        if  'target_language' in request.query_params:
-            logger.info(f"Langue cible: {request.query_params['target_language']}")
-        else:
-            logger.info("Pas de langue cible spécifiée")
-        if hasattr(request, 'user') and request.user.is_authenticated:
-            logger.info(f"Utilisateur authentifié: {request.user.username}")
-        # Récupération des données
-        queryset = self.get_queryset()
-        logger.info(f"Trouvé {queryset.count()} leçons")
-        
-        context = self.get_serializer_context()
-        serializer = self.get_serializer(queryset, many=True, context=context)
-        
-        # Log d'exemple pour vérification
-        if serializer.data:
-            logger.info(f"Exemple de réponse: {serializer.data[0]}")
-            
-        return Response(serializer.data)
-
 
 class ContentLessonViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
