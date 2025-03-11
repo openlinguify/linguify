@@ -21,6 +21,7 @@ interface AuthContextType {
   token: string | null;
   error: string | null;
   login: (returnTo?: string) => Promise<void>;
+  register: (returnTo?: string) => Promise<void>; // Nouvelle fonction d'inscription
   logout: () => Promise<void>;
   getToken: () => Promise<string | null>;
 }
@@ -93,6 +94,28 @@ function AuthContentProvider({ children }: { children: ReactNode }) {
     }
   }, [loginWithRedirect]);
 
+  const register = useCallback(async (returnTo?: string) => {
+    try {
+      console.log("[Auth] Initiating registration...");
+      await loginWithRedirect({
+        authorizationParams: {
+          redirect_uri: `${process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000'}/callback`,
+          // Forcer l'affichage de l'écran d'inscription
+          screen_hint: 'signup',
+          // Forcer une nouvelle authentification et effacer toute session existante
+          prompt: 'login',
+        },
+        // Créer un nouvel objet appState avec plus d'informations
+        appState: { 
+          returnTo: returnTo || '/',
+          mode: 'signUp'
+        }
+      });
+    } catch (err) {
+      console.error("[Auth] Registration error:", err);
+      setError("Registration failed. Please try again.");
+    }
+  }, [loginWithRedirect]);
   // Fonction de logout
   const logout = useCallback(async () => {
     try {
@@ -159,109 +182,107 @@ function AuthContentProvider({ children }: { children: ReactNode }) {
     const MAX_RETRIES = 3;
     const RETRY_DELAY = 2000; // 2 secondes
 
-// Dans AuthProvider.tsx, modifiez la fonction fetchUserProfile:
+    async function fetchUserProfile() {
+      if (!isMounted) return;
 
-async function fetchUserProfile() {
-  if (!isMounted) return;
-
-  if (auth0IsAuthenticated && auth0User?.email) {
-    try {
-      setIsLoading(true);
-      
-      // Obtenir le token
-      let accessToken = authService.getAuthToken();
-      
-      if (!accessToken) {
-        accessToken = await getAccessTokenSilently({
-          authorizationParams: {
-            audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE as string,
+      if (auth0IsAuthenticated && auth0User?.email) {
+        try {
+          setIsLoading(true);
+          
+          // Obtenir le token
+          let accessToken = authService.getAuthToken();
+          
+          if (!accessToken) {
+            accessToken = await getAccessTokenSilently({
+              authorizationParams: {
+                audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE as string,
+              }
+            });
           }
-        });
-      }
-      
-      if (!accessToken) {
-        throw new Error("Failed to get access token");
-      }
+          
+          if (!accessToken) {
+            throw new Error("Failed to get access token");
+          }
 
-      // Toujours stocker le token
-      authService.storeAuthData(accessToken);
-      if (isMounted) setToken(accessToken);
-      
-      // Créer IMMÉDIATEMENT un profil utilisateur de base à partir des données Auth0
-      // pour que l'interface soit utilisable sans attendre le backend
-      if (auth0User) {
-        const fallbackUser = {
-          id: auth0User.sub || '',
-          email: auth0User.email || '',
-          name: auth0User.name || '',
-          username: auth0User.nickname || auth0User.email?.split('@')[0] || '',
-          first_name: auth0User.given_name || '',
-          last_name: auth0User.family_name || '',
-          picture: auth0User.picture,
-          native_language: 'EN', 
-          target_language: 'FR', 
-          language_level: 'A1',  
-          objectives: 'General', 
-          is_coach: false,
-          is_subscribed: false
-        };
-        
-        setUser(fallbackUser);
-        authService.storeAuthData(accessToken, fallbackUser);
-        console.log("[Auth] Using basic Auth0 profile data while waiting for backend");
-      }
+          // Toujours stocker le token
+          authService.storeAuthData(accessToken);
+          if (isMounted) setToken(accessToken);
+          
+          // Créer IMMÉDIATEMENT un profil utilisateur de base à partir des données Auth0
+          // pour que l'interface soit utilisable sans attendre le backend
+          if (auth0User) {
+            const fallbackUser = {
+              id: auth0User.sub || '',
+              email: auth0User.email || '',
+              name: auth0User.name || '',
+              username: auth0User.nickname || auth0User.email?.split('@')[0] || '',
+              first_name: auth0User.given_name || '',
+              last_name: auth0User.family_name || '',
+              picture: auth0User.picture,
+              native_language: 'EN', 
+              target_language: 'FR', 
+              language_level: 'A1',  
+              objectives: 'General', 
+              is_coach: false,
+              is_subscribed: false
+            };
+            
+            setUser(fallbackUser);
+            authService.storeAuthData(accessToken, fallbackUser);
+            console.log("[Auth] Using basic Auth0 profile data while waiting for backend");
+          }
 
-      // En parallèle, tenter de récupérer le profil complet du backend
-      try {
-        const userProfile = await authService.fetchUserProfile(accessToken);
-        
-        if (isMounted && userProfile) {
-          setUser(userProfile);
-          authService.storeAuthData(accessToken, userProfile);
-          console.log("[Auth] User profile loaded from backend");
+          // En parallèle, tenter de récupérer le profil complet du backend
+          try {
+            const userProfile = await authService.fetchUserProfile(accessToken);
+            
+            if (isMounted && userProfile) {
+              setUser(userProfile);
+              authService.storeAuthData(accessToken, userProfile);
+              console.log("[Auth] User profile loaded from backend");
+            }
+          } catch (backendError) {
+            console.error("[Auth] Backend profile fetch error:", backendError);
+            console.log("[Auth] Using Auth0 profile data due to backend unavailability");
+            // Nous avons déjà défini un profil de base, pas besoin de faire quoi que ce soit ici
+          } finally {
+            if (isMounted) setIsLoading(false);
+          }
+          
+        } catch (err) {
+          console.error("[Auth] Error in auth flow:", err);
+          
+          // Si un token existe dans le stockage, utiliser les données utilisateur stockées
+          const storedToken = authService.getAuthToken();
+          const storedUser = authService.getStoredUserData();
+          
+          if (storedToken && storedUser) {
+            console.log("[Auth] Using cached auth data");
+            setToken(storedToken);
+            setUser(storedUser);
+          } else {
+            setError("Authentication error. Please try logging in again.");
+          }
+          
+          setIsLoading(false);
         }
-      } catch (backendError) {
-        console.error("[Auth] Backend profile fetch error:", backendError);
-        console.log("[Auth] Using Auth0 profile data due to backend unavailability");
-        // Nous avons déjà défini un profil de base, pas besoin de faire quoi que ce soit ici
-      } finally {
-        if (isMounted) setIsLoading(false);
+      } else if (!auth0IsLoading && isMounted) {
+        // Vérifier le stockage local lorsque Auth0 n'est pas authentifié
+        const storedToken = authService.getAuthToken();
+        const storedUser = authService.getStoredUserData();
+        
+        if (storedToken && storedUser) {
+          console.log("[Auth] Using stored auth data without Auth0");
+          setToken(storedToken);
+          setUser(storedUser);
+        } else {
+          setUser(null);
+          setToken(null);
+        }
+        
+        setIsLoading(false);
       }
-      
-    } catch (err) {
-      console.error("[Auth] Error in auth flow:", err);
-      
-      // Si un token existe dans le stockage, utiliser les données utilisateur stockées
-      const storedToken = authService.getAuthToken();
-      const storedUser = authService.getStoredUserData();
-      
-      if (storedToken && storedUser) {
-        console.log("[Auth] Using cached auth data");
-        setToken(storedToken);
-        setUser(storedUser);
-      } else {
-        setError("Authentication error. Please try logging in again.");
-      }
-      
-      setIsLoading(false);
     }
-  } else if (!auth0IsLoading && isMounted) {
-    // Vérifier le stockage local lorsque Auth0 n'est pas authentifié
-    const storedToken = authService.getAuthToken();
-    const storedUser = authService.getStoredUserData();
-    
-    if (storedToken && storedUser) {
-      console.log("[Auth] Using stored auth data without Auth0");
-      setToken(storedToken);
-      setUser(storedUser);
-    } else {
-      setUser(null);
-      setToken(null);
-    }
-    
-    setIsLoading(false);
-  }
-}
 
     fetchUserProfile();
 
@@ -309,6 +330,7 @@ async function fetchUserProfile() {
     token,
     error,
     login,
+    register, // Ajouter la fonction register au contexte
     logout,
     getToken
   };

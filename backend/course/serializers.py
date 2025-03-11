@@ -102,7 +102,6 @@ class UnitSerializer(serializers.ModelSerializer):
         logger.info("Utilisation de la langue par défaut: en")
         return 'en'
 
-
 class LessonSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
@@ -112,46 +111,28 @@ class LessonSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'lesson_type', 'estimated_duration', 'order']
 
     def get_title(self, obj):
-        # Récupérer la langue cible du contexte
+        # Obtenir et normaliser la langue cible
         target_language = self.context.get('target_language', 'en')
-        
-        # S'assurer que la langue est en minuscules
         if target_language.upper() in ['EN', 'FR', 'ES', 'NL']:
             target_language = target_language.lower()
-            
-        # Construire le nom du champ dynamiquement
+        
+        # Utiliser le champ correspondant à la langue
         field_name = f'title_{target_language}'
+        value = getattr(obj, field_name, obj.title_en)
         
-        # Log pour déboguer
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.info(f"LessonSerializer.get_title - Langue: {target_language}, Field: {field_name}")
-        logger.info(f"LessonSerializer.get_title - Valeur: {getattr(obj, field_name, obj.title_en)}")
+        # Log détaillé pour voir ce qui se passe
+        logger.info(f"LessonSerializer - Lesson {obj.id}, field {field_name}: {value}")
         
-        # Retourner le titre dans la langue cible ou l'anglais par défaut
-        return getattr(obj, field_name, obj.title_en)
+        return value
 
     def get_description(self, obj):
-        # Récupérer la langue cible du contexte
+        # Même approche que pour title
         target_language = self.context.get('target_language', 'en')
-        
-        # S'assurer que la langue est en minuscules
         if target_language.upper() in ['EN', 'FR', 'ES', 'NL']:
             target_language = target_language.lower()
-            
-        # Construire le nom du champ dynamiquement
+        
         field_name = f'description_{target_language}'
-        
-        # Log pour déboguer
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.info(f"LessonSerializer.get_description - Langue: {target_language}, Field: {field_name}")
-        logger.info(f"LessonSerializer.get_description - Valeur: {getattr(obj, field_name, obj.description_en)}")
-        
-        # Retourner la description dans la langue cible ou l'anglais par défaut
         return getattr(obj, field_name, obj.description_en)
-
-
 
 class ContentLessonSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()

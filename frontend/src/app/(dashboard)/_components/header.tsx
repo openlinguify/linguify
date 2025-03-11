@@ -116,12 +116,6 @@ const Header = () => {
               Linguify
             </span>
           </Link>
-
-          {/* Navigation */}
-          <nav className="hidden md:flex gap-6 ml-10">
-            <NavItem href="/learning" icon={BookOpen} label="Learn" />
-            <NavItem href="/progress" icon={Trophy} label="Progress" />
-          </nav>
         </div>
 
         {/* Right Side Actions */}
