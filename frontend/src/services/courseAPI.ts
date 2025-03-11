@@ -91,28 +91,22 @@ const courseAPI = {
         unit: unitId.toString()
       };
       
-      // Utiliser la langue spécifiée ou récupérer depuis localStorage
-      const lang = targetLanguage?.toLowerCase() || getUserLanguage();
+      // S'assurer que la langue est correctement formatée
+      const lang = targetLanguage || getUserLanguage();
       params.target_language = lang;
   
-      console.log('Fetching lessons with params:', params);
-      
-      // Correction ici : utiliser apiClient avec les params ou construire correctement l'URL
+      console.log(`API: Fetching lessons for unit ${unitId} with language ${lang}`);
       const response = await apiClient.get('/api/v1/course/lesson/', { params });
-      // OU si vous préférez utiliser fetch directement :
-      // const response = await fetch(
-      //   `http://localhost:8000/api/v1/course/lesson/?unit=${unitId}&target_language=${lang}`,
-      //   { credentials: "omit" }
-      // );
       
-      return response.data; // Si vous utilisez apiClient
-      // OU return response.json(); si vous utilisez fetch
-    } catch (err: any) {
-      console.error('Failed to fetch lessons:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
+      // Log détaillé pour debug
+      console.log('API response:', {
+        status: response.status,
+        dataLength: Array.isArray(response.data) ? response.data.length : 'not array'
       });
+      
+      return response.data;
+    } catch (err: any) {
+      console.error('Failed to fetch lessons:', err);
       throw new Error(`Failed to fetch lessons: ${err.message}`);
     }
   },

@@ -42,16 +42,16 @@ export const Navbar = () => {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('fr');
-  
+
   const { login, isAuthenticated, logout } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  console.log('Navbar Component - Initial Render', { 
-    pathname, 
-    isMenuOpen, 
-    currentLanguage, 
-    isAuthenticated 
+  console.log('Navbar Component - Initial Render', {
+    pathname,
+    isMenuOpen,
+    currentLanguage,
+    isAuthenticated
   });
   // Load language from localStorage on startup
   useEffect(() => {
@@ -98,7 +98,7 @@ export const Navbar = () => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       await login();
       // The redirect will happen automatically
     } catch (error) {
@@ -129,14 +129,14 @@ export const Navbar = () => {
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <div className="flex items-center">
-            <Link 
-              href="/home" 
+            <Link
+              href="/home"
               className="font-bold text-xl text-gray-900 dark:text-white hover:opacity-80 transition-opacity"
               aria-label="Linguify Home"
             >
               Linguify
             </Link>
-            
+
             {/* Desktop Navigation */}
             <div className="hidden sm:ml-6 sm:flex sm:space-x-2">
               <NavigationMenu>
@@ -147,8 +147,8 @@ export const Navbar = () => {
                         <NavigationMenuLink
                           className={cn(
                             navigationMenuTriggerStyle(),
-                            pathname === item.href 
-                              ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200" 
+                            pathname === item.href
+                              ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200"
                               : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                           )}
                         >
@@ -161,7 +161,7 @@ export const Navbar = () => {
               </NavigationMenu>
             </div>
           </div>
-          
+
           {/* Desktop Auth Buttons and Language Switcher */}
           <div className="hidden sm:flex sm:items-center sm:space-x-4">
             {/* Language Switcher - Desktop */}
@@ -188,11 +188,11 @@ export const Navbar = () => {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            
+
             {/* Auth Buttons */}
             {isAuthenticated ? (
-              <Button 
-                variant="destructive" 
+              <Button
+                variant="destructive"
                 onClick={handleLogout}
                 disabled={isLoading}
               >
@@ -200,25 +200,30 @@ export const Navbar = () => {
               </Button>
             ) : (
               <>
-                <Button 
+                <Button
                   variant="outline"
                   onClick={handleLogin}
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Logging in...' : 'Log In'}
+                  {isLoading ? 'Logging in...' : 'Sign In'}
                 </Button>
                 <Link href="/register">
-                  <Button>Register</Button>
+                  <Button
+                    variant="outline"
+                    className="bg-purple-600 text-white hover:bg-purple-700 dark:bg-purple-800 dark:hover:bg-purple-900"
+                  >
+                    Try it free
+                  </Button>
                 </Link>
               </>
             )}
           </div>
-          
+
           {/* Mobile Menu Toggle */}
           <div className="flex items-center sm:hidden">
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={toggleMenu}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             >
@@ -234,18 +239,18 @@ export const Navbar = () => {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div 
-          className="fixed inset-0 z-40 bg-black/50 sm:hidden" 
+        <div
+          className="fixed inset-0 z-40 bg-black/50 sm:hidden"
           onClick={() => setIsMenuOpen(false)}
           aria-hidden="true"
         >
-          <div 
+          <div
             className="absolute top-0 right-0 w-64 h-full bg-white dark:bg-gray-900 shadow-lg"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-4 border-b">
-              <Link 
-                href="/home" 
+              <Link
+                href="/home"
                 className="font-bold text-xl text-gray-900 dark:text-white"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -270,7 +275,7 @@ export const Navbar = () => {
                   </Link>
                 ))}
               </div>
-              
+
               {/* Language Switcher - Mobile */}
               <div className="mt-6 border-t pt-4">
                 <div className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -294,11 +299,11 @@ export const Navbar = () => {
                   ))}
                 </div>
               </div>
-              
+
               {/* Mobile Auth Buttons */}
               <div className="mt-6 space-y-2">
                 {isAuthenticated ? (
-                  <Button 
+                  <Button
                     onClick={handleLogout}
                     disabled={isLoading}
                     className="w-full"
@@ -315,8 +320,8 @@ export const Navbar = () => {
                     >
                       {isLoading ? 'Logging in...' : 'Log In'}
                     </Button>
-                    <Link 
-                      href="/register" 
+                    <Link
+                      href="/register"
                       className="w-full"
                       onClick={() => setIsMenuOpen(false)}
                     >

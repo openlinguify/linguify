@@ -56,45 +56,39 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
 
   useEffect(() => {
     const fetchLessons = async () => {
-      // Dans la fonction fetchLessons du composant Lessons
       try {
         setLoading(true);
-
+        
         // Récupérer la langue cible depuis localStorage
         const userSettingsStr = localStorage.getItem('userSettings');
         const userSettings = userSettingsStr ? JSON.parse(userSettingsStr) : {};
         const targetLanguage = userSettings.target_language || 'en';
-
-        console.log('Fetching lessons with language:', targetLanguage);
-
-        // Utiliser correctement l'API courseAPI
-        const response = await courseAPI.getLessons(parseInt(unitId), targetLanguage);
-
-        // Log détaillé de la réponse
-        console.log('Raw API response:', response);
-
-        // Traiter la réponse selon sa structure
-        const sortedLessons = Array.isArray(response)
-          ? response.sort((a: Lesson, b: Lesson) => a.order - b.order)
-          : response.results ? response.results.sort((a: Lesson, b: Lesson) => a.order - b.order)
-            : [];
-
-        console.log('Lessons received after sorting:', sortedLessons);
-        console.log('First lesson details:', sortedLessons.length > 0 ? JSON.stringify(sortedLessons[0]) : 'No lessons');
-
+        
+        console.log('Component: Fetching lessons with language:', targetLanguage);
+        
+        // Utiliser correctement l'API
+        const data = await courseAPI.getLessons(parseInt(unitId), targetLanguage);
+        console.log("Raw API response:", data);
+        if (data && data.length > 0) {
+          console.log("First lesson details:", data[0]);
+        }
+        // Traiter les données
+        const sortedLessons = Array.isArray(data)
+          ? data.sort((a: Lesson, b: Lesson) => a.order - b.order)
+          : (data.results || []).sort((a: Lesson, b: Lesson) => a.order - b.order);
+        
         setLessons(sortedLessons);
         setError(null);
-
       } catch (err) {
         console.error("Error fetching lessons:", err);
         setError("Failed to load lessons");
       } finally {
         setLoading(false);
       }
-
-      if (unitId) {
-        fetchLessons();
-      };
+    };
+  
+    if (unitId) {
+      fetchLessons();
     }
   }, [unitId]);
 

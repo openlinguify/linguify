@@ -79,27 +79,35 @@ class UnitAPIView(TargetLanguageMixin, generics.ListAPIView):
             
         return queryset
 
+
+
+
 class LessonAPIView(TargetLanguageMixin, generics.ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = LessonSerializer
 
     def get_queryset(self):
         unit_id = self.request.query_params.get('unit')
+        # Log pour debugger
         target_language = self.get_target_language()
-        logger.info(f"Récupération des leçons pour unit_id={unit_id}, langue={target_language}")
+        logger.info(f"LessonAPIView - Fetching lessons with language: {target_language}")
         
         if unit_id:
             try:
-                lessons = Lesson.objects.filter(unit_id=unit_id).order_by('order')
-                # Vérifier la présence des champs dans les différentes langues
-                for lesson in lessons[:3]:  # Limiter à 3 pour le log
-                    logger.info(f"Leçon ID={lesson.id}, title_en={lesson.title_en}, "
-                            f"title_fr={lesson.title_fr}, title_nl={lesson.title_nl}, "
-                            f"title_es={lesson.title_es}")
-                return lessons
+                return Lesson.objects.filter(unit_id=unit_id).order_by('order')
             except ValueError:
                 raise ValidationError({"error": "Invalid unit ID"})
         return Lesson.objects.all().order_by('order')
+    
+    # Méthode explicite pour s'assurer que le contexte contient la langue cible
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        target_language = self.get_target_language()
+        context['target_language'] = target_language
+        logger.info(f"LessonAPIView - Adding target_language to context: {target_language}")
+        return context
+
+
 
 class ContentLessonViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
