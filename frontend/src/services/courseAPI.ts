@@ -19,6 +19,29 @@ export interface Lesson {
   order: number;
 }
 
+export interface ContentLesson {
+  id: number;
+  title: {
+    en: string;
+    fr: string;
+    es: string;
+    nl: string;
+  };
+  instruction: {
+    en: string;
+    fr: string;
+    es: string;
+    nl: string;
+  };
+  content_type: string;
+  vocabulary_lists?: Array<{
+    id: number;
+    word_en: string;
+    definition_en: string;
+  }>;
+  order: number;
+}
+
 // Fonction utilitaire pour récupérer la langue depuis localStorage
 const getUserLanguage = (): string => {
   try {
@@ -38,6 +61,8 @@ const getUserLanguage = (): string => {
 
 // Course API service
 const courseAPI = {
+
+  
   getUnits: async (level?: string, targetLanguage?: string) => {
     try {
       const params: Record<string, string> = {};
@@ -69,10 +94,19 @@ const courseAPI = {
       // Utiliser la langue spécifiée ou récupérer depuis localStorage
       const lang = targetLanguage?.toLowerCase() || getUserLanguage();
       params.target_language = lang;
-
+  
       console.log('Fetching lessons with params:', params);
-      const response = await apiClient.get(`/api/v1/course/lesson/`, { params });
-      return response.data;
+      
+      // Correction ici : utiliser apiClient avec les params ou construire correctement l'URL
+      const response = await apiClient.get('/api/v1/course/lesson/', { params });
+      // OU si vous préférez utiliser fetch directement :
+      // const response = await fetch(
+      //   `http://localhost:8000/api/v1/course/lesson/?unit=${unitId}&target_language=${lang}`,
+      //   { credentials: "omit" }
+      // );
+      
+      return response.data; // Si vous utilisez apiClient
+      // OU return response.json(); si vous utilisez fetch
     } catch (err: any) {
       console.error('Failed to fetch lessons:', {
         status: err.response?.status,
