@@ -27,8 +27,6 @@ export default function Home() {
     { id: 'spanish', name: 'Español', flag: '🇪🇸', color: 'bg-red-500' },
     { id: 'english', name: 'English', flag: '🇬🇧', color: 'bg-blue-600' },
     { id: 'french', name: 'Français', flag: '🇫🇷', color: 'bg-indigo-500' },
-    { id: 'german', name: 'Deutsch', flag: '🇩🇪', color: 'bg-yellow-500' },
-    { id: 'italian', name: 'Italiano', flag: '🇮🇹', color: 'bg-green-500' },
     { id: 'dutch', name: 'Nederlands', flag: '🇳🇱', color: 'bg-orange-500' },
   ];
 
@@ -190,9 +188,15 @@ export default function Home() {
               </Button>
             </Link>
             <Link href="/features">
-              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10 font-medium px-8">
-                Découvrir nos méthodes
-              </Button>
+                <Button 
+                size="lg" 
+                variant="outline" 
+                className="text-white border-white bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all font-medium px-8 flex items-center"
+                >
+                <Globe className="mr-2 h-5 w-5" />
+                Découvrir nos apps d'apprentissage
+                <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
             </Link>
           </motion.div>
           
