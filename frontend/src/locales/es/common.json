@@ -1,27 +1,175 @@
 {
-    "header": "Características",
-    "learning": {
-      "title": "Aprendizaje",
-      "description": "Módulos de aprendizaje interactivos adaptados a tu ritmo"
+  "header": "Características",
+  "pricing": {
+    "title": "Planes adaptados a tus necesidades",
+    "subtitle": "Elige la oferta que se adapte a tus objetivos y a tu ritmo de aprendizaje.",
+    "most_popular": "El más popular",
+    "free": {
+      "name": "Gratis",
+      "price": "0€",
+      "period": "para siempre",
+      "description": "Perfecto para principiantes y probar la aplicación",
+      "feature1": "1 idioma a elección",
+      "feature2": "Acceso a lecciones básicas",
+      "feature3": "5 minutos de chat al día",
+      "feature4": "Revisiones limitadas",
+      "cta": "Comenzar gratis"
     },
-    "flashcards": {
-      "title": "Tarjetas de memoria",
-      "description": "Herramientas de memoria efectivas para una retención rápida"
+    "premium": {
+      "name": "Premium",
+      "price": "9,99€",
+      "period": "por mes",
+      "description": "Nuestra fórmula más popular para progresar",
+      "feature1": "Todos los idiomas accesibles",
+      "feature2": "Lecciones avanzadas y especializadas",
+      "feature3": "Chat ilimitado con IA",
+      "feature4": "Sistema completo de revisión",
+      "feature5": "Coaching semanal",
+      "cta": "Prueba gratuita de 7 días"
     },
-    "notebook": {
-      "title": "Cuaderno de notas",
-      "description": "Toma de notas centralizada con organización inteligente"
-    },
-    "community": {
-      "title": "Comunidad",
-      "description": "Intercambia y aprende con otros usuarios"
-    },
-    "chat": {
-      "title": "Chat",
-      "description": "Comunícate en tiempo real con tu red"
-    },
-    "coaching": {
-      "title": "Tutoría con profesores",
-      "description": "Orientación personalizada con expertos del dominio"
+    "enterprise": {
+      "name": "Empresa",
+      "price": "Personalizado",
+      "period": "",
+      "description": "Solución completa para equipos",
+      "feature1": "Formación personalizada",
+      "feature2": "Panel de control empresarial",
+      "feature3": "Seguimiento del progreso del equipo",
+      "feature4": "Integración LMS",
+      "feature5": "Soporte dedicado",
+      "cta": "Contactar con ventas"
     }
+  },
+  "testimonials": {
+    "sophie": {
+      "role": "Gerente de Marketing",
+      "text": "Linguify transformó mi aprendizaje del francés. ¡En 3 meses, alcancé un nivel que nunca creí posible!"
+    },
+    "david": {
+      "role": "Ingeniero de Software",
+      "text": "Las tarjetas y los ejercicios interactivos me ayudaron a memorizar fácilmente vocabulario técnico en Inglés."
+    },
+    "elena": {
+      "role": "Bloguera de Viajes",
+      "text": "Gracias a Linguify, pude comunicarme con la gente local durante mi viaje por España. ¡Una experiencia increíble!"
+    }
+  },
+  "stats": {
+    "countries": "Países representados"
+  },
+  "nav": {
+    "home": "Inicio",
+    "features": "Aplicaciones",
+    "pricing": "Precios",
+    "company": "Empresa",
+    "contact": "Contacto"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signInProgress": "Conectando...",
+    "logOut": "Cerrar sesión",
+    "logOutProgress": "Cerrando sesión...",
+    "tryFree": "Prueba gratis",
+    "register": "Registrarse"
+  },
+  "mobile": {
+    "language": "Idioma"
+  },
+  "learning": {
+    "title": "Aprendizaje",
+    "description": "Módulos de aprendizaje interactivos adaptados a tu ritmo"
+  },
+  "flashcards": {
+    "title": "Tarjetas de memoria",
+    "description": "Herramientas de memoria efectivas para una retención rápida"
+  },
+  "notebook": {
+    "title": "Cuaderno de notas",
+    "description": "Toma de notas centralizada con organización inteligente"
+  },
+  "community": {
+    "title": "Comunidad",
+    "description": "Intercambia y aprende con otros usuarios"
+  },
+  "chat": {
+    "title": "Chat",
+    "description": "Comunícate en tiempo real con tu red"
+  },
+  "coaching": {
+    "title": "Tutoría con profesores",
+    "description": "Orientación personalizada con expertos del dominio"
+  },
+  "hero": {
+    "title": "¡Aprende un nuevo idioma a tu propio ritmo!",
+    "subtitle": "Todo lo que necesitas para aprender un nuevo idioma dondequiera que estés.",
+    "start_button": "Comienza gratis",
+    "discover_button": "Descubre nuestras aplicaciones",
+    "screenshot_alt": "Interfaz de la aplicación Linguify",
+    "image_placeholder": "(Imagen no disponible)"
+  },
+  "stats": {
+    "languages": "Idiomas disponibles",
+    "units": "Unidades de aprendizaje",
+    "lessons": "Lecciones interactivas",
+    "words": "Palabras de vocabulario"
+  },
+  "languages": {
+    "title": "Explora nuestro catálogo de idiomas",
+    "subtitle": "Elige entre más de 25 idiomas y comienza a aprender hoy.",
+    "choose": "¿Qué idioma te gustaría aprender?",
+    "learn_minutes": "Aprende {language} en 10 minutos al día",
+    "description": "Nuestras lecciones cortas y efectivas se adaptan a tu agenda ocupada. Progresa constantemente sin dedicar horas.",
+    "benefit1": "Más de 5000 palabras y frases con pronunciación nativa",
+    "benefit2": "Ejercicios de conversación con IA para práctica ilimitada",
+    "benefit3": "Contenido cultural auténtico para una inmersión completa",
+    "start_now": "Comenzar ahora"
+  },
+  "features": {
+    "title": "Cómo Linguify te ayuda a progresar",
+    "subtitle": "Nuestro método basado en la ciencia cognitiva garantiza resultados rápidos y duraderos.",
+    "modules_title": "Módulos de aprendizaje principales",
+    "modules_description": "Descubre todas las herramientas que Linguify ofrece para hacer tu viaje de aprendizaje de idiomas efectivo y agradable.",
+    "platform_title": "Ventajas de la plataforma",
+    "platform_description": "Más allá de los métodos de aprendizaje tradicionales, Linguify ofrece beneficios únicos para acelerar tu progreso.",
+    "heading": "Descubre nuestras características",
+    "subheading": "Explora todas las herramientas y recursos disponibles para ayudarte a dominar nuevos idiomas de manera fácil y efectiva.",
+    "cta": {
+      "title": "¿Listo para transformar tu aprendizaje de idiomas?",
+      "description": "Únete a miles de estudiantes que ya han transformado su enfoque del aprendizaje de idiomas.",
+      "button": "Comienza tu viaje",
+      "pricing_button": "Ver precios"
+    }
+  },
+  "testimonials": {
+    "title": "Lo que dicen nuestros usuarios",
+    "subtitle": "Descubre cómo Linguify ha transformado el aprendizaje de idiomas para miles de usuarios."
+  },
+  "faq": {
+    "title": "Preguntas frecuentes",
+    "subtitle": "Todo lo que necesitas saber sobre Linguify.",
+    "questions": {
+      "time": {
+        "question": "¿Cuánto tiempo lleva aprender un nuevo idioma?",
+        "answer": "Los resultados varían según tu compromiso y objetivos. Nuestros usuarios generalmente notan una mejora significativa después de solo 3 meses de uso diario (10-15 minutos por día)."
+      },
+      "levels": {
+        "question": "¿Qué niveles están disponibles en Linguify?",
+        "answer": "Nuestros cursos cubren todos los niveles, desde principiante (A1) hasta avanzado (C2) según el Marco Común Europeo de Referencia para las Lenguas (MCER)."
+      },
+      "devices": {
+        "question": "¿Puedo acceder a Linguify en múltiples dispositivos?",
+        "answer": "Sí, tu suscripción te permite acceder a Linguify en todos tus dispositivos. Tu progreso se sincroniza automáticamente."
+      },
+      "teachers": {
+        "question": "¿Hay profesores reales detrás de Linguify?",
+        "answer": "Absolutamente. Nuestra plataforma combina tecnología de IA con la experiencia de profesores de idiomas certificados que crean y supervisan el contenido educativo."
+      }
+    }
+  },
+  "cta": {
+    "title": "¿Listo para transformar tu forma de aprender idiomas?",
+    "subtitle": "Únete a más de 5 millones de estudiantes y comienza tu viaje lingüístico hoy.",
+    "start_button": "Comienza gratis",
+    "plans_button": "Descubre nuestros planes"
   }
+}

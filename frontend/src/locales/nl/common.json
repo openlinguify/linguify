@@ -1,27 +1,175 @@
 {
-    "header": "Functies",
-    "learning": {
-      "title": "Leren",
-      "description": "Interactieve leermodules aangepast aan jouw tempo"
+  "header": "Functies",
+  "pricing": {
+    "title": "Plannen aangepast aan jouw behoeften",
+    "subtitle": "Kies het aanbod dat past bij jouw doelen en leertempo.",
+    "most_popular": "Meest populair",
+    "free": {
+      "name": "Gratis",
+      "price": "€0",
+      "period": "voor altijd",
+      "description": "Perfect om te beginnen en de applicatie te testen",
+      "feature1": "1 taal naar keuze",
+      "feature2": "Toegang tot basisles",
+      "feature3": "5 minuten chat per dag",
+      "feature4": "Beperkte herhalingen",
+      "cta": "Gratis beginnen"
     },
-    "flashcards": {
-      "title": "Flashcards",
-      "description": "Effectieve geheugentools voor snelle retentie"
+    "premium": {
+      "name": "Premium",
+      "price": "€9,99",
+      "period": "per maand",
+      "description": "Onze meest populaire formule om vooruitgang te boeken",
+      "feature1": "Alle talen toegankelijk",
+      "feature2": "Geavanceerde en gespecialiseerde lessen",
+      "feature3": "Onbeperkte chat met AI",
+      "feature4": "Compleet herzieningssysteem",
+      "feature5": "Wekelijkse coaching",
+      "cta": "7 dagen gratis proberen"
     },
-    "notebook": {
-      "title": "Notitieblok",
-      "description": "Gecentraliseerde aantekeningen met slimme organisatie"
-    },
-    "community": {
-      "title": "Gemeenschap",
-      "description": "Wissel uit en leer met andere gebruikers"
-    },
-    "chat": {
-      "title": "Chat",
-      "description": "Communiceer in realtime met je netwerk"
-    },
-    "coaching": {
-      "title": "Coaching met tutors",
-      "description": "Gepersonaliseerde begeleiding met domeinexperts"
+    "enterprise": {
+      "name": "Zakelijk",
+      "price": "Op maat",
+      "period": "",
+      "description": "Complete oplossing voor teams",
+      "feature1": "Aangepaste trainingen",
+      "feature2": "Bedrijfsdashboard",
+      "feature3": "Teamvoortgang bijhouden",
+      "feature4": "LMS-integratie",
+      "feature5": "Dedicated ondersteuning",
+      "cta": "Contact verkoop"
     }
+  },
+  "testimonials": {
+    "sophie": {
+      "role": "Marketing Manager",
+      "text": "Linguify heeft mijn Frans leren getransformeerd. In 3 maanden heb ik een niveau bereikt dat ik nooit voor mogelijk had gehouden!"
+    },
+    "david": {
+      "role": "Software Engineer",
+      "text": "De flashcards en interactieve oefeningen hebben me geholpen om technische Duitse woordenschat gemakkelijk te onthouden."
+    },
+    "elena": {
+      "role": "Reisblogger",
+      "text": "Dankzij Linguify kon ik communiceren met de lokale bevolking tijdens mijn reis door Spanje. Een ongelooflijke ervaring!"
+    }
+  },
+  "stats": {
+    "countries": "Vertegenwoordigde landen"
+  },
+  "nav": {
+    "home": "Home",
+    "features": "Applicaties",
+    "pricing": "Prijzen",
+    "company": "Bedrijf",
+    "contact": "Contact"
+  },
+  "auth": {
+    "signIn": "Inloggen",
+    "signInProgress": "Inloggen...",
+    "logOut": "Uitloggen",
+    "logOutProgress": "Uitloggen...",
+    "tryFree": "Gratis proberen",
+    "register": "Registreren"
+  },
+  "mobile": {
+    "language": "Taal"
+  },
+  "learning": {
+    "title": "Leren",
+    "description": "Interactieve leermodules aangepast aan jouw tempo"
+  },
+  "flashcards": {
+    "title": "Flashcards",
+    "description": "Effectieve geheugentools voor snelle retentie"
+  },
+  "notebook": {
+    "title": "Notitieblok",
+    "description": "Gecentraliseerde aantekeningen met slimme organisatie"
+  },
+  "community": {
+    "title": "Gemeenschap",
+    "description": "Wissel uit en leer met andere gebruikers"
+  },
+  "chat": {
+    "title": "Chat",
+    "description": "Communiceer in realtime met je netwerk"
+  },
+  "coaching": {
+    "title": "Coaching met tutors",
+    "description": "Gepersonaliseerde begeleiding met domeinexperts"
+  },
+  "hero": {
+    "title": "Leer een nieuwe taal op je eigen tempo!",
+    "subtitle": "Alles wat je nodig hebt om een ​​nieuwe taal te leren, waar je ook bent.",
+    "start_button": "Gratis beginnen",
+    "discover_button": "Ontdek onze applicaties",
+    "screenshot_alt": "Linguify app interface",
+    "image_placeholder": "(Afbeelding niet beschikbaar)"
+  },
+  "stats": {
+    "languages": "Beschikbare talen",
+    "units": "Cursuseenheden",
+    "lessons": "Interactieve lessen",
+    "words": "Woorden en zinnen om te leren"
+  },
+  "languages": {
+    "title": "Verken onze talencatalogus",
+    "subtitle": "Kies uit meer dan 25 talen en begin vandaag nog met leren.",
+    "choose": "Welke taal wil je leren?",
+    "learn_minutes": "Leer {language} in 10 minuten per dag",
+    "description": "Onze korte en effectieve lessen passen zich aan aan je drukke schema. Maak consistent vooruitgang zonder uren te besteden.",
+    "benefit1": "Meer dan 5000 woorden en zinnen met moedertaaluitspraak",
+    "benefit2": "AI-conversatieoefeningen voor onbeperkte praktijk",
+    "benefit3": "Authentieke culturele inhoud voor volledige onderdompeling",
+    "start_now": "Nu beginnen"
+  },
+  "features": {
+    "title": "Hoe Linguify je helpt vooruit te komen",
+    "subtitle": "Onze methode op basis van cognitieve wetenschap garandeert snelle en blijvende resultaten.",
+    "modules_title": "Kern leermodules",
+    "modules_description": "Ontdek alle tools die Linguify biedt om je taalreis effectief en plezierig te maken.",
+    "platform_title": "Platformvoordelen",
+    "platform_description": "Naast traditionele leermethoden biedt Linguify unieke voordelen om je vooruitgang te versnellen.",
+    "heading": "Ontdek onze functies",
+    "subheading": "Verken alle tools en middelen die beschikbaar zijn om je te helpen nieuwe talen gemakkelijk en effectief te beheersen.",
+    "cta": {
+      "title": "Klaar om je taalleerproces te transformeren?",
+      "description": "Sluit je aan bij duizenden leerlingen die hun benadering van talen leren al hebben getransformeerd.",
+      "button": "Begin je reis",
+      "pricing_button": "Prijzen bekijken"
+    }
+  },
+  "testimonials": {
+    "title": "Wat onze gebruikers zeggen",
+    "subtitle": "Ontdek hoe Linguify het leren van talen heeft getransformeerd voor duizenden gebruikers."
+  },
+  "faq": {
+    "title": "Veelgestelde vragen",
+    "subtitle": "Alles wat je moet weten over Linguify.",
+    "questions": {
+      "time": {
+        "question": "Hoelang duurt het om een nieuwe taal te leren?",
+        "answer": "Resultaten variëren afhankelijk van je inzet en doelen. Onze gebruikers merken doorgaans een significante verbetering na slechts 3 maanden dagelijks gebruik (10-15 minuten per dag)."
+      },
+      "levels": {
+        "question": "Welke niveaus zijn beschikbaar op Linguify?",
+        "answer": "Onze cursussen dekken alle niveaus, van beginner (A1) tot gevorderd (C2) volgens het Gemeenschappelijk Europees Referentiekader voor Talen (ERK)."
+      },
+      "devices": {
+        "question": "Kan ik Linguify op meerdere apparaten gebruiken?",
+        "answer": "Ja, je abonnement geeft je toegang tot Linguify op al je apparaten. Je voortgang wordt automatisch gesynchroniseerd."
+      },
+      "teachers": {
+        "question": "Zijn er echte docenten achter Linguify?",
+        "answer": "Absoluut. Ons platform combineert AI-technologie met de expertise van gecertificeerde taaldocenten die de educatieve content creëren en beheren."
+      }
+    }
+  },
+  "cta": {
+    "title": "Klaar om de manier waarop je talen leert te transformeren?",
+    "subtitle": "Sluit je aan bij meer dan 5 miljoen leerlingen en begin vandaag nog aan je taalreis.",
+    "start_button": "Gratis beginnen",
+    "plans_button": "Ontdek onze plannen"
   }
+}

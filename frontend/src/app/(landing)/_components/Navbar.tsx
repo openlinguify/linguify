@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Menu, X, Globe } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -13,61 +13,91 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import LanguageSwitcher from "./LanguageSwitcher";
 import { useAuthContext } from "@/services/AuthProvider";
 
-// Define navigation items as a const outside the component for better performance
-const NAVIGATION_ITEMS = [
-  { name: "Home", href: "/home" },
-  { name: "Features", href: "/features" },
-  { name: "Pricing", href: "/pricing" },
-  { name: "Company", href: "/company" },
-  { name: "Contact", href: "/contact" },
-] as const;
+// Import translations
+import enTranslations from "@/locales/en/common.json";
+import frTranslations from "@/locales/fr/common.json";
+import esTranslations from "@/locales/es/common.json";
+import nlTranslations from "@/locales/nl/common.json";
 
-// Available languages
-const LANGUAGES = [
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
-];
+// Type definitions for our translations
+type AvailableLocales = 'fr' | 'en' | 'es' | 'nl';
+type TranslationType = typeof enTranslations;
 
 export const Navbar = () => {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState('fr');
+  const [currentLocale, setCurrentLocale] = useState<AvailableLocales>('fr');
 
   const { login, isAuthenticated, logout } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  console.log('Navbar Component - Initial Render', {
-    pathname,
-    isMenuOpen,
-    currentLanguage,
-    isAuthenticated
-  });
   // Load language from localStorage on startup
   useEffect(() => {
     const savedLanguage = localStorage.getItem('language');
-    if (savedLanguage && LANGUAGES.some(lang => lang.code === savedLanguage)) {
-      setCurrentLanguage(savedLanguage);
+    if (savedLanguage && ['fr', 'en', 'es', 'nl'].includes(savedLanguage)) {
+      setCurrentLocale(savedLanguage as AvailableLocales);
     }
   }, []);
 
-  // Function to change language
-  const setLanguage = (lang: string) => {
-    setCurrentLanguage(lang);
-    localStorage.setItem('language', lang);
-    // Trigger an event for other components to react
-    window.dispatchEvent(new Event('languageChanged'));
+  // Listen for language changes from other components
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      const savedLanguage = localStorage.getItem('language');
+      if (savedLanguage && ['fr', 'en', 'es', 'nl'].includes(savedLanguage)) {
+        setCurrentLocale(savedLanguage as AvailableLocales);
+      }
+    };
+
+    window.addEventListener('languageChanged', handleLanguageChange);
+    
+    return () => {
+      window.removeEventListener('languageChanged', handleLanguageChange);
+    };
+  }, []);
+
+  // Translation helper function
+  const t = (path: string, fallback: string): string => {
+    try {
+      const translations: Record<AvailableLocales, TranslationType> = {
+        fr: frTranslations,
+        en: enTranslations,
+        es: esTranslations,
+        nl: nlTranslations
+      };
+      
+      const currentTranslation = translations[currentLocale] || translations.en;
+      
+      // Split the path (e.g., "nav.home") into parts
+      const keys = path.split('.');
+      
+      let value: any = currentTranslation;
+      // Navigate through the object using the path
+      for (const key of keys) {
+        if (!value || typeof value !== 'object') {
+          return fallback;
+        }
+        value = value[key];
+      }
+      
+      return typeof value === 'string' ? value : fallback;
+    } catch (error) {
+      console.error('Translation error:', error);
+      return fallback;
+    }
   };
+
+  // Get navigation items with translations
+  const navItems = [
+    { name: t("nav.home", "Home"), href: "/home" },
+    { name: t("nav.features", "Features"), href: "/features" },
+    { name: t("nav.pricing", "Pricing"), href: "/pricing" },
+    { name: t("nav.company", "Company"), href: "/company" },
+    { name: t("nav.contact", "Contact"), href: "/contact" },
+  ];
 
   // Close mobile menu when screen size changes to desktop
   useEffect(() => {
@@ -120,9 +150,6 @@ export const Navbar = () => {
     }
   };
 
-  // Get current language name and flag
-  const currentLangObj = LANGUAGES.find(lang => lang.code === currentLanguage) || LANGUAGES[0];
-
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -141,7 +168,7 @@ export const Navbar = () => {
             <div className="hidden sm:ml-6 sm:flex sm:space-x-2">
               <NavigationMenu>
                 <NavigationMenuList>
-                  {NAVIGATION_ITEMS.map((item) => (
+                  {navItems.map((item) => (
                     <NavigationMenuItem key={item.href}>
                       <Link href={item.href} legacyBehavior passHref>
                         <NavigationMenuLink
@@ -165,29 +192,7 @@ export const Navbar = () => {
           {/* Desktop Auth Buttons and Language Switcher */}
           <div className="hidden sm:flex sm:items-center sm:space-x-4">
             {/* Language Switcher - Desktop */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Globe className="h-4 w-4 mr-2" />
-                  <span>{currentLangObj.flag} {currentLangObj.name}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {LANGUAGES.map((lang) => (
-                  <DropdownMenuItem
-                    key={lang.code}
-                    onClick={() => setLanguage(lang.code)}
-                    className={cn(
-                      "cursor-pointer",
-                      currentLanguage === lang.code ? "bg-indigo-50 dark:bg-indigo-900" : ""
-                    )}
-                  >
-                    <span className="mr-2">{lang.flag}</span>
-                    {lang.name}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <LanguageSwitcher variant="dropdown" size="sm" showLabels={true} />
 
             {/* Auth Buttons */}
             {isAuthenticated ? (
@@ -196,7 +201,7 @@ export const Navbar = () => {
                 onClick={handleLogout}
                 disabled={isLoading}
               >
-                {isLoading ? 'Logging out...' : 'Log Out'}
+                {isLoading ? t("auth.logOutProgress", "Logging out...") : t("auth.logOut", "Log Out")}
               </Button>
             ) : (
               <>
@@ -205,14 +210,14 @@ export const Navbar = () => {
                   onClick={handleLogin}
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Logging in...' : 'Sign In'}
+                  {isLoading ? t("auth.signInProgress", "Logging in...") : t("auth.signIn", "Sign In")}
                 </Button>
                 <Link href="/register">
                   <Button
                     variant="outline"
                     className="bg-purple-600 text-white hover:bg-purple-700 dark:bg-purple-800 dark:hover:bg-purple-900"
                   >
-                    Try it free
+                    {t("auth.tryFree", "Try it free")}
                   </Button>
                 </Link>
               </>
@@ -259,7 +264,7 @@ export const Navbar = () => {
             </div>
             <nav className="p-4">
               <div className="space-y-2">
-                {NAVIGATION_ITEMS.map((item) => (
+                {navItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
@@ -279,24 +284,15 @@ export const Navbar = () => {
               {/* Language Switcher - Mobile */}
               <div className="mt-6 border-t pt-4">
                 <div className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400">
-                  Language
+                  {t("mobile.language", "Language")}
                 </div>
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  {LANGUAGES.map((lang) => (
-                    <Button
-                      key={lang.code}
-                      variant={currentLanguage === lang.code ? "default" : "outline"}
-                      size="sm"
-                      className="justify-start"
-                      onClick={() => {
-                        setLanguage(lang.code);
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      <span className="mr-2">{lang.flag}</span>
-                      {lang.name}
-                    </Button>
-                  ))}
+                <div className="mt-2">
+                  <LanguageSwitcher 
+                    variant="buttons" 
+                    size="sm" 
+                    showLabels={true} 
+                    className="w-full"
+                  />
                 </div>
               </div>
 
@@ -309,7 +305,7 @@ export const Navbar = () => {
                     className="w-full"
                     variant="destructive"
                   >
-                    {isLoading ? 'Logging out...' : 'Log Out'}
+                    {isLoading ? t("auth.logOutProgress", "Logging out...") : t("auth.logOut", "Log Out")}
                   </Button>
                 ) : (
                   <>
@@ -318,14 +314,14 @@ export const Navbar = () => {
                       disabled={isLoading}
                       className="w-full"
                     >
-                      {isLoading ? 'Logging in...' : 'Log In'}
+                      {isLoading ? t("auth.signInProgress", "Logging in...") : t("auth.signIn", "Log In")}
                     </Button>
                     <Link
                       href="/register"
                       className="w-full"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <Button className="w-full">Register</Button>
+                      <Button className="w-full">{t("auth.register", "Register")}</Button>
                     </Link>
                   </>
                 )}

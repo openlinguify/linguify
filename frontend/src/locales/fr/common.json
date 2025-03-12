@@ -1,5 +1,80 @@
 {
   "header": "Fonctionnalités",
+  "pricing": {
+    "title": "Des forfaits adaptés à vos besoins",
+    "subtitle": "Choisissez l'offre qui correspond à vos objectifs et à votre rythme d'apprentissage.",
+    "most_popular": "Le plus populaire",
+    "free": {
+      "name": "Gratuit",
+      "price": "0€",
+      "period": "pour toujours",
+      "description": "Parfait pour débuter et tester l'application",
+      "feature1": "1 langue au choix",
+      "feature2": "Accès aux leçons de base",
+      "feature3": "5 minutes de chat par jour",
+      "feature4": "Révisions limitées",
+      "cta": "Commencer gratuitement"
+    },
+    "premium": {
+      "name": "Premium",
+      "price": "9,99€",
+      "period": "par mois",
+      "description": "Notre formule la plus populaire pour progresser",
+      "feature1": "Toutes les langues accessibles",
+      "feature2": "Leçons avancées et spécialisées",
+      "feature3": "Chat illimité avec l'IA",
+      "feature4": "Système complet de révision",
+      "feature5": "Coaching hebdomadaire",
+      "cta": "Essai gratuit de 7 jours"
+    },
+    "enterprise": {
+      "name": "Entreprise",
+      "price": "Sur mesure",
+      "period": "",
+      "description": "Solution complète pour les équipes",
+      "feature1": "Formations personnalisées",
+      "feature2": "Tableau de bord d'entreprise",
+      "feature3": "Suivi des progrès de l'équipe",
+      "feature4": "Intégration LMS",
+      "feature5": "Support dédié",
+      "cta": "Contacter les ventes"
+    }
+  },
+  "testimonials": {
+    "sophie": {
+      "role": "Responsable Marketing",
+      "text": "Linguify a transformé mon apprentissage du français. En 3 mois, j'ai atteint un niveau que je n'aurais jamais cru possible !"
+    },
+    "david": {
+      "role": "Ingénieur Logiciel",
+      "text": "Les flashcards et les exercices interactifs m'ont aidé à mémoriser facilement du vocabulaire technique en anglais."
+    },
+    "elena": {
+      "role": "Blogueuse Voyage",
+      "text": "Grâce à Linguify, j'ai pu communiquer avec les locaux lors de mon voyage à travers l'Espagne. Une expérience incroyable !"
+    }
+  },
+  "stats": {
+    "countries": "Pays représentés"
+  },
+  "nav": {
+    "home": "Accueil",
+    "features": "Applications",
+    "pricing": "Tarifs",
+    "company": "Entreprise",
+    "contact": "Contact"
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signInProgress": "Connexion...",
+    "logOut": "Déconnexion",
+    "logOutProgress": "Déconnexion...",
+    "tryFree": "Essayer gratuitement",
+    "register": "S'inscrire"
+  },
+  "mobile": {
+    "language": "Langue"
+  },
   "learning": {
     "title": "Apprentissage",
     "description": "Modules d'apprentissage interactifs adaptés à votre rythme"
@@ -28,23 +103,24 @@
     "title": "Certification",
     "description": "Obtenez des certificats reconnus pour vos compétences"
   },
-
   "hero": {
-    "title": "Maîtrisez de nouvelles langues de façon naturelle",
-    "subtitle": "Linguify combine l'IA, la science cognitive et l'apprentissage adaptatif pour vous faire progresser rapidement.",
+    "title": "Apprenez une nouvelle langue à votre rythme !",
+    "subtitle": "Tout ce dont vous avez besoin pour apprendre une nouvelle langue où que vous soyez.",
     "start_button": "Commencer gratuitement",
-    "discover_button": "Découvrir nos méthodes",
-    "screenshot_alt": "Interface de l'application Linguify"
+    "discover_button": "Découvrir nos applications",
+    "screenshot_alt": "Interface de l'application Linguify",
+    "image_placeholder": "(Image non disponible)"
   },
   "stats": {
     "languages": "Langues disponibles",
-    "users": "Utilisateurs actifs",
-    "satisfaction": "Taux de satisfaction",
-    "rating": "Note moyenne"
+    "units": "Unités de cours",
+    "lessons": "Leçons interactives",
+    "words": "Mots et expressions à apprendre"
   },
   "languages": {
     "title": "Explorez notre catalogue de langues",
     "subtitle": "Choisissez parmi plus de 25 langues et commencez à apprendre dès aujourd'hui.",
+    "choose": "Quelle langue souhaitez-vous apprendre ?",
     "learn_minutes": "Apprenez {language} en 10 minutes par jour",
     "description": "Nos leçons courtes et efficaces s'adaptent à votre emploi du temps chargé. Progressez de manière constante sans y consacrer des heures.",
     "benefit1": "Plus de 5000 mots et phrases avec prononciation native",
@@ -55,21 +131,17 @@
   "features": {
     "title": "Comment Linguify vous aide à progresser",
     "subtitle": "Notre méthode basée sur la science cognitive vous garantit des résultats rapides et durables.",
-    "adaptive_learning": {
-      "title": "Apprentissage adaptatif",
-      "description": "Linguify adapte votre parcours d'apprentissage en fonction de vos forces et faiblesses."
-    },
-    "community": {
-      "title": "Communauté active",
-      "description": "Pratiquez avec des natifs et d'autres apprenants dans notre communauté mondiale."
-    },
-    "certification": {
-      "title": "Certification reconnue",
-      "description": "Obtenez des certificats reconnus qui valorisent votre niveau linguistique."
-    },
-    "coaching": {
-      "title": "Coaching personnalisé",
-      "description": "Nos tuteurs professionnels vous aident à atteindre vos objectifs linguistiques."
+    "modules_title": "Modules d'apprentissage essentiels",
+    "modules_description": "Découvrez tous les outils que Linguify propose pour rendre votre apprentissage des langues efficace et agréable.",
+    "platform_title": "Avantages de la plateforme",
+    "platform_description": "Au-delà des méthodes d'apprentissage traditionnelles, Linguify offre des avantages uniques pour accélérer votre progression.",
+    "heading": "Découvrez nos fonctionnalités",
+    "subheading": "Explorez tous les outils et ressources disponibles pour vous aider à maîtriser de nouvelles langues facilement et efficacement.",
+    "cta": {
+      "title": "Prêt à transformer votre apprentissage des langues ?",
+      "description": "Rejoignez des milliers d'apprenants qui ont déjà transformé leur approche de l'apprentissage des langues.",
+      "button": "Démarrer votre parcours",
+      "pricing_button": "Voir les tarifs"
     }
   },
   "testimonials": {
@@ -100,8 +172,8 @@
   },
   "cta": {
     "title": "Prêt à transformer votre façon d'apprendre les langues ?",
-    "subtitle": "Rejoignez plus de 5 millions d'apprenants et commencez votre voyage linguistique dès aujourd'hui.",
+    "subtitle": "Rejoignez nous et commencez votre voyage linguistique dès aujourd'hui.",
     "start_button": "Commencer gratuitement",
-    "plans_button": "Découvrir nos formules"
+    "plans_button": "Découvrir nos applications"
   }
 }

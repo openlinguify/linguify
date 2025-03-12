@@ -1,5 +1,80 @@
 {
   "header": "Features",
+  "pricing": {
+    "title": "Plans tailored to your needs",
+    "subtitle": "Choose the offer that matches your goals and learning pace.",
+    "most_popular": "Most popular",
+    "free": {
+      "name": "Free",
+      "price": "$0",
+      "period": "forever",
+      "description": "Perfect for beginners and testing the application",
+      "feature1": "1 language of your choice",
+      "feature2": "Access to basic lessons",
+      "feature3": "5 minutes of chat per day",
+      "feature4": "Limited revisions",
+      "cta": "Start for free"
+    },
+    "premium": {
+      "name": "Premium",
+      "price": "$9.99",
+      "period": "per month",
+      "description": "Our most popular plan for progressing",
+      "feature1": "All languages accessible",
+      "feature2": "Advanced and specialized lessons",
+      "feature3": "Unlimited chat with AI",
+      "feature4": "Complete revision system",
+      "feature5": "Weekly coaching",
+      "cta": "7-day free trial"
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "Custom",
+      "period": "",
+      "description": "Complete solution for teams",
+      "feature1": "Customized training",
+      "feature2": "Enterprise dashboard",
+      "feature3": "Team progress tracking",
+      "feature4": "LMS integration",
+      "feature5": "Dedicated support",
+      "cta": "Contact sales"
+    }
+  },
+  "testimonials": {
+    "sophie": {
+      "role": "Marketing Manager",
+      "text": "Linguify transformed my French learning. In 3 months, I reached a level I never thought possible!"
+    },
+    "david": {
+      "role": "Software Engineer",
+      "text": "The flashcards and interactive exercises helped me easily memorize technical vocabulary in English."
+    },
+    "elena": {
+      "role": "Travel Blogger",
+      "text": "Thanks to Linguify, I was able to communicate with locals during my trip across Spain. An incredible experience!"
+    }
+  },
+  "stats": {
+    "countries": "Countries represented"
+  },
+  "nav": {
+    "home": "Home",
+    "features": "Apps",
+    "pricing": "Pricing",
+    "company": "Company",
+    "contact": "Contact"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signInProgress": "Logging in...",
+    "logOut": "Log Out",
+    "logOutProgress": "Logging out...",
+    "tryFree": "Try it free",
+    "register": "Register"
+  },
+  "mobile": {
+    "language": "Language"
+  },
   "learning": {
     "title": "Learning",
     "description": "Interactive learning modules tailored to your pace"
@@ -25,21 +100,23 @@
     "description": "Personalized guidance with domain experts"
   },
   "hero": {
-    "title": "Master new languages naturally",
-    "subtitle": "Linguify combines AI, cognitive science, and adaptive learning to help you progress quickly.",
+    "title": "Learn a new language at your own pace!",
+    "subtitle": "Everything you need to learn a new language wherever you are.",
     "start_button": "Start for free",
-    "discover_button": "Discover our methods",
-    "screenshot_alt": "Linguify app interface"
+    "discover_button": "Discover our apps",
+    "screenshot_alt": "Linguify app interface",
+    "image_placeholder": "(Image not available)"
   },
   "stats": {
     "languages": "Available languages",
-    "users": "Active users",
-    "satisfaction": "Satisfaction rate",
-    "rating": "Average rating"
+    "units": "Learning units",
+    "lessons": "Interactive lessons",
+    "words": "Vocabulary words"
   },
   "languages": {
     "title": "Explore our language catalog",
     "subtitle": "Choose from over 25 languages and start learning today.",
+    "choose": "Which language would you like to learn?",
     "learn_minutes": "Learn {language} in 10 minutes a day",
     "description": "Our short and effective lessons adapt to your busy schedule. Progress consistently without spending hours.",
     "benefit1": "Over 5000 words and phrases with native pronunciation",
@@ -50,21 +127,17 @@
   "features": {
     "title": "How Linguify helps you progress",
     "subtitle": "Our cognitive science-based method guarantees fast and lasting results.",
-    "adaptive_learning": {
-      "title": "Adaptive learning",
-      "description": "Linguify adapts your learning path based on your strengths and weaknesses."
-    },
-    "community": {
-      "title": "Active community",
-      "description": "Practice with native speakers and other learners in our global community."
-    },
-    "certification": {
-      "title": "Recognized certification",
-      "description": "Earn recognized certificates that validate your language proficiency."
-    },
-    "coaching": {
-      "title": "Personalized coaching",
-      "description": "Our professional tutors help you achieve your language goals."
+    "modules_title": "Core learning modules",
+    "modules_description": "Discover all the tools Linguify offers to make your language learning journey effective and enjoyable.",
+    "platform_title": "Platform advantages",
+    "platform_description": "Beyond traditional learning methods, Linguify offers unique benefits to accelerate your progress.",
+    "heading": "Discover our features",
+    "subheading": "Explore all the tools and resources available to help you master new languages easily and effectively.",
+    "cta": {
+      "title": "Ready to transform your language learning?",
+      "description": "Join thousands of learners who have already transformed their approach to language learning.",
+      "button": "Start your journey",
+      "pricing_button": "View pricing"
     }
   },
   "testimonials": {
@@ -98,5 +171,16 @@
     "subtitle": "Join over 5 million learners and start your language journey today.",
     "start_button": "Start for free",
     "plans_button": "Discover our plans"
-  }
+  },
+    "future_apps": {
+      "title": "Próximamente Nuevas Aplicaciones Educativas",
+      "description": "Nuestros equipos están trabajando activamente en nuevas aplicaciones educativas innovadoras para expandir nuestro ecosistema de aprendizaje. Estas próximas herramientas proporcionarán aún más formas de dominar idiomas y mejorar tu viaje de aprendizaje.",
+      "button": "Unirse a la lista de espera",
+      "highlights": {
+        "title": "Llegando en 2025",
+        "item1": "Adquisición de idiomas basada en neurociencia",
+        "item2": "Comunidad de hablantes nativos",
+        "item3": "Certificaciones reconocidas por la industria"
+      }
+    }
 }
