@@ -158,12 +158,12 @@ export default function Home() {
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white z-10">
           <motion.h1 
-            className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-100"
+            className="text-4-xl md:text-6xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-100"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            Maîtrisez de nouvelles langues de façon naturelle
+            Maîtrisez de nouvelles langues
           </motion.h1>
           
           <motion.p 
@@ -172,7 +172,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Linguify combine l'IA, la science cognitive et l'apprentissage adaptatif pour vous faire progresser rapidement.
+            Linguify vous permet d'apprendre une nouvelle langue grâce à son apprentissage adaptatif pour vous faire progresser rapidement.
           </motion.p>
           
           <motion.div 
