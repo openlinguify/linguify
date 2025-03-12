@@ -1,3 +1,4 @@
+// src/app/(landing)/features/page.tsx
 'use client';
 
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
