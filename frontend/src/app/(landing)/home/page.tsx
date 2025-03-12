@@ -249,7 +249,7 @@ export default function Home() {
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white z-10">
         <motion.h1 
-          className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-100 whitespace-normal break-words"
+          className="text-4xl md:text-6xl font-extrabold tracking-tight mb-10 pb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-100 whitespace-normal break-words"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
