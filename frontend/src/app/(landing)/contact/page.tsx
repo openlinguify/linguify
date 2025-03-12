@@ -1,11 +1,8 @@
+'use client';
 import React from 'react';
 import ContactForm from './_components/ContactForm';
+import BugSignalButton from './_components/BugSignalButton';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
-
-export const metadata = {
-  title: 'Contact Us | Linguify',
-  description: 'Get in touch with the Linguify team for any questions, support, or feedback.',
-};
 
 export default function ContactPage() {
   return (
@@ -21,6 +18,11 @@ export default function ContactPage() {
           </p>
         </div>
 
+        {/* Bug Signal Button - Positioned more prominently and with enhanced styling */}
+        <div className="mb-12 flex justify-center">
+          <BugSignalButton />
+        </div>
+                
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Contact Information */}
           <div className="lg:col-span-1">
@@ -34,9 +36,9 @@ export default function ContactPage() {
                   </div>
                   <div className="ml-3 text-gray-700 dark:text-gray-300">
                     <p className="font-medium">Address</p>
-                    <p>1234 Language Street</p>
-                    <p>Montreal, QC H2X 1Y6</p>
-                    <p>Canada</p>
+                    <p>1300 Chemin de l'industrie</p>
+                    <p>Wavre, Brabant Walloon</p>
+                    <p>Belgium</p>
                   </div>
                 </div>
                 
@@ -46,7 +48,7 @@ export default function ContactPage() {
                   </div>
                   <div className="ml-3 text-gray-700 dark:text-gray-300">
                     <p className="font-medium">Phone</p>
-                    <p>+1 (514) 555-0123</p>
+                    <p>+1 473 48 81 00</p>
                   </div>
                 </div>
                 
@@ -66,7 +68,7 @@ export default function ContactPage() {
                   </div>
                   <div className="ml-3 text-gray-700 dark:text-gray-300">
                     <p className="font-medium">Hours</p>
-                    <p>Monday - Friday: 9AM - 5PM EST</p>
+                    <p>Monday - Friday: 9AM - 5PM GMT +2</p>
                     <p>Saturday - Sunday: Closed</p>
                   </div>
                 </div>
@@ -115,7 +117,7 @@ export default function ContactPage() {
         <div className="mt-16">
           <div className="rounded-xl overflow-hidden shadow-md h-96 bg-gray-300">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2796.286175018218!2d-73.57747712346549!3d45.50399557107616!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4cc91a4498735da5%3A0x6e4d339cd5d550b1!2sMcGill%20University!5e0!3m2!1sen!2sca!4v1708964862915!5m2!1sen!2sca"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2528.0203932117015!2d4.604693976442829!3d50.7145183795091!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c17d9ede58b1a9%3A0x2fe60af82dae1be7!2sChemin%20de%20l&#39;Industrie%2C%20Wavre!5e0!3m2!1sfr!2sbe!4v1711045623347!5m2!1sfr!2sbe"
               width="100%"
               height="100%"
               style={{ border: 0 }}

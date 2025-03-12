@@ -1,4 +1,4 @@
-// src/app/(landing)/layout-client.tsx
+// src/app/(landing)/layout.tsx
 'use client';
 
 import { useEffect } from "react";
