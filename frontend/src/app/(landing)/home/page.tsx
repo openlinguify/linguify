@@ -3,22 +3,22 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { 
-  ArrowRight, 
-  CheckCircle, 
-  BookOpen, 
-  Users, 
-  Award, 
-  MessageCircle, 
-  Brain, 
-  Globe, 
-  Star 
+import {
+  ArrowRight,
+  CheckCircle,
+  BookOpen,
+  Users,
+  Award,
+  MessageCircle,
+  Brain,
+  Globe,
+  Star
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import NewInfo from '../_components/NewInfo';  // Adjust the import path as needed
-
+import LanguageSwitcher from '../_components/LanguageSwitcher';
 
 // Import translations
 import enTranslations from "@/locales/en/common.json";
@@ -51,7 +51,7 @@ export default function Home() {
     const savedLanguage = localStorage.getItem('language');
     if (savedLanguage && ['fr', 'en', 'es', 'nl'].includes(savedLanguage)) {
       setCurrentLocale(savedLanguage as AvailableLocales);
-      
+
       // Also set the active language based on the UI language
       const matching = languages.find(l => l.code === savedLanguage);
       if (matching) {
@@ -70,7 +70,7 @@ export default function Home() {
     };
 
     window.addEventListener('languageChanged', handleLanguageChange);
-    
+
     return () => {
       window.removeEventListener('languageChanged', handleLanguageChange);
     };
@@ -84,14 +84,14 @@ export default function Home() {
         en: enTranslations,
         es: esTranslations,
         nl: nlTranslations,
-        
+
       };
-      
+
       const currentTranslation = translations[currentLocale] || translations.en;
-      
+
       // Split the path (e.g., "hero.title") into parts
       const keys = path.split('.');
-      
+
       let value: any = currentTranslation;
       // Navigate through the object using the path
       for (const key of keys) {
@@ -100,7 +100,7 @@ export default function Home() {
         }
         value = value[key];
       }
-      
+
       return typeof value === 'string' ? value : fallback;
     } catch (error) {
       console.error('Translation error:', error);
@@ -132,25 +132,25 @@ export default function Home() {
 
   // Features
   const features = useMemo(() => [
-    { 
-      icon: <BookOpen className="h-6 w-6 text-indigo-600" />, 
-      title: t('features.adaptive_learning.title', "Apprentissage adaptatif"), 
-      description: t('features.adaptive_learning.description', "Linguify adapte votre parcours d'apprentissage en fonction de vos forces et faiblesses.") 
+    {
+      icon: <BookOpen className="h-6 w-6 text-indigo-600" />,
+      title: t('features.adaptive_learning.title', "Apprentissage adaptatif"),
+      description: t('features.adaptive_learning.description', "Linguify adapte votre parcours d'apprentissage en fonction de vos forces et faiblesses.")
     },
-    { 
-      icon: <Users className="h-6 w-6 text-indigo-600" />, 
-      title: t('features.community.title', "Communauté active"), 
-      description: t('features.community.description', "Pratiquez avec des natifs et d'autres apprenants dans notre communauté mondiale.") 
+    {
+      icon: <Users className="h-6 w-6 text-indigo-600" />,
+      title: t('features.community.title', "Communauté active"),
+      description: t('features.community.description', "Pratiquez avec des natifs et d'autres apprenants dans notre communauté mondiale.")
     },
-    { 
-      icon: <Award className="h-6 w-6 text-indigo-600" />, 
-      title: t('features.certification.title', "Certification reconnue"), 
-      description: t('features.certification.description', "Obtenez des certificats reconnus qui valorisent votre niveau linguistique.") 
+    {
+      icon: <Award className="h-6 w-6 text-indigo-600" />,
+      title: t('features.certification.title', "Certification reconnue"),
+      description: t('features.certification.description', "Obtenez des certificats reconnus qui valorisent votre niveau linguistique.")
     },
-    { 
-      icon: <MessageCircle className="h-6 w-6 text-indigo-600" />, 
-      title: t('features.coaching.title', "Coaching personnalisé"), 
-      description: t('features.coaching.description', "Nos tuteurs professionnels vous aident à atteindre vos objectifs linguistiques.") 
+    {
+      icon: <MessageCircle className="h-6 w-6 text-indigo-600" />,
+      title: t('features.coaching.title', "Coaching personnalisé"),
+      description: t('features.coaching.description', "Nos tuteurs professionnels vous aident à atteindre vos objectifs linguistiques.")
     },
   ], [currentLocale, t]);
 
@@ -240,26 +240,26 @@ export default function Home() {
       {/* Hero Section - Enhanced with animated gradient */}
       <section className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0 opacity-20 bg-[url('/pattern.svg')]"></div>
-        <div 
+        <div
           className="absolute inset-0 opacity-30"
           style={{
             backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 25%), radial-gradient(circle at 70% 65%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 30%)'
           }}
         ></div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white z-10">
-        <motion.h1 
-          className="text-4xl md:text-6xl font-extrabold tracking-tight mb-10 pb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-100 whitespace-normal break-words"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          {t('hero.title', 'Apprenez une nouvelle langue à votre rythme !')}
-        </motion.h1>
+          <motion.h1
+            className="text-4xl md:text-6xl font-extrabold tracking-tight mb-10 pb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-100 whitespace-normal break-words"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {t('hero.title', 'Apprenez une nouvelle langue à votre rythme !')}
+          </motion.h1>
 
 
-          
-          <motion.p 
+
+          <motion.p
             className="text-xl md:text-2xl max-w-3xl mx-auto mb-8 text-indigo-100"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -267,8 +267,8 @@ export default function Home() {
           >
             {t('hero.subtitle', "Tout ce dont vous avez besoin pour apprendre une langue étrangère, à votre rythme et où que vous soyez.")}
           </motion.p>
-          
-          <motion.div 
+
+          <motion.div
             className="flex flex-col sm:flex-row justify-center gap-4 mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -281,20 +281,20 @@ export default function Home() {
               </Button>
             </Link>
             <Link href="/features">
-                <Button 
-                size="lg" 
-                variant="outline" 
+              <Button
+                size="lg"
+                variant="outline"
                 className="text-white border-white bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all font-medium px-8 flex items-center"
-                >
+              >
                 <Globe className="mr-2 h-5 w-5" />
                 {t('hero.discover_button', 'Découvrir nos applications')}
                 <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+              </Button>
             </Link>
           </motion.div>
-          
+
           {/* Interactive app demo */}
-          <motion.div 
+          <motion.div
             className="relative mx-auto w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -305,11 +305,11 @@ export default function Home() {
                 {isVideoPlaying ? (
                   <div className="w-full h-full bg-black">
                     {/* Video player would go here */}
-                    <iframe 
-                      className="w-full h-full" 
-                      src="about:blank" 
-                      frameBorder="0" 
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    <iframe
+                      className="w-full h-full"
+                      src="about:blank"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                     ></iframe>
                   </div>
@@ -322,7 +322,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <button 
+                      <button
                         onClick={playVideo}
                         className="bg-black/60 rounded-full p-4 cursor-pointer hover:bg-black/70 transition-colors transform hover:scale-105"
                       >
@@ -345,12 +345,12 @@ export default function Home() {
               key={lang.id}
               className={`absolute bottom-0 ${lang.color} rounded-full flex items-center justify-center w-14 h-14 opacity-80`}
               initial={{ y: 100 }}
-              animate={{ 
-                y: [100, -50, -20, -30, -25], 
+              animate={{
+                y: [100, -50, -20, -30, -25],
                 x: [index * 50, index * 60, index * 55, index * 58, index * 56],
                 opacity: [0, 0.8, 0.7, 0.85, 0.8]
               }}
-              transition={{ 
+              transition={{
                 duration: 10,
                 repeat: Infinity,
                 repeatType: 'reverse',
@@ -374,11 +374,10 @@ export default function Home() {
               {languages.map((lang) => (
                 <motion.button
                   key={lang.id}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
-                    activeLanguage === lang.id
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${activeLanguage === lang.id
                       ? `${lang.color} text-white`
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                    }`}
                   onClick={() => handleLanguageChange(lang.id)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -394,26 +393,26 @@ export default function Home() {
 
       {/* Statistics Section - Improved visual presentation */}
       <section className="py-16 bg-gradient-to-b from-indigo-50 to-white flex justify-center items-center">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
-        >
-          {stats.map((stat, index) => (
-            <div 
-              key={index}
-              className="flex flex-col items-center p-6 rounded-lg bg-white shadow-sm border border-indigo-50"
-            >
-              <div className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                {stat.figure}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
+          >
+            {stats.map((stat, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center p-6 rounded-lg bg-white shadow-sm border border-indigo-50"
+              >
+                <div className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                  {stat.figure}
+                </div>
+                <div className="text-gray-600">
+                  {stat.label}
+                </div>
               </div>
-              <div className="text-gray-600">
-                {stat.label}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
 
 
@@ -422,7 +421,7 @@ export default function Home() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <motion.h2 
+            <motion.h2
               className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
               initial="hidden"
               whileInView="visible"
@@ -432,7 +431,7 @@ export default function Home() {
             >
               {t('features.title', 'Pourquoi choisir Linguify ?')}
             </motion.h2>
-            <motion.p 
+            <motion.p
               className="text-xl text-gray-600 max-w-3xl mx-auto"
               initial="hidden"
               whileInView="visible"
@@ -444,7 +443,7 @@ export default function Home() {
             </motion.p>
           </div>
 
-          <motion.div 
+          <motion.div
             className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
             initial="hidden"
             whileInView="visible"
@@ -458,7 +457,7 @@ export default function Home() {
             }}
           >
             {features.map((feature, index) => (
-              <motion.div 
+              <motion.div
                 key={index}
                 className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
                 variants={fadeIn}
@@ -473,7 +472,7 @@ export default function Home() {
             ))}
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="mt-12 text-center"
             initial="hidden"
             whileInView="visible"
@@ -491,15 +490,15 @@ export default function Home() {
         </div>
       </section>
 
-            {/* New Info Component */}
-            <NewInfo variant="compact" />
+      {/* New Info Component */}
+      <NewInfo variant="compact" />
 
 
       {/* Testimonials Section - Improved with animated cards */}
       <section className="py-20 bg-indigo-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <motion.h2 
+            <motion.h2
               className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
               initial="hidden"
               whileInView="visible"
@@ -509,7 +508,7 @@ export default function Home() {
             >
               {t('testimonials.title', 'Ce que nos utilisateurs disent')}
             </motion.h2>
-            <motion.p 
+            <motion.p
               className="text-xl text-gray-600 max-w-3xl mx-auto"
               initial="hidden"
               whileInView="visible"
@@ -521,7 +520,7 @@ export default function Home() {
             </motion.p>
           </div>
 
-          <motion.div 
+          <motion.div
             className="grid md:grid-cols-3 gap-8"
             initial="hidden"
             whileInView="visible"
@@ -535,7 +534,7 @@ export default function Home() {
             }}
           >
             {testimonials.map((testimonial, index) => (
-              <motion.div 
+              <motion.div
                 key={index}
                 className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow relative"
                 variants={fadeIn}
@@ -572,7 +571,7 @@ export default function Home() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <motion.h2 
+            <motion.h2
               className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
               initial="hidden"
               whileInView="visible"
@@ -582,7 +581,7 @@ export default function Home() {
             >
               {t('pricing.title', 'Des forfaits adaptés à vos besoins')}
             </motion.h2>
-            <motion.p 
+            <motion.p
               className="text-xl text-gray-600 max-w-3xl mx-auto"
               initial="hidden"
               whileInView="visible"
@@ -594,7 +593,7 @@ export default function Home() {
             </motion.p>
           </div>
 
-          <motion.div 
+          <motion.div
             className="grid md:grid-cols-3 gap-8"
             initial="hidden"
             whileInView="visible"
@@ -608,13 +607,12 @@ export default function Home() {
             }}
           >
             {pricingPlans.map((plan, index) => (
-              <motion.div 
+              <motion.div
                 key={index}
-                className={`bg-white rounded-xl overflow-hidden ${
-                  plan.popular 
-                    ? 'border-2 border-indigo-500 shadow-lg relative' 
+                className={`bg-white rounded-xl overflow-hidden ${plan.popular
+                    ? 'border-2 border-indigo-500 shadow-lg relative'
                     : 'border border-gray-200 shadow-sm'
-                }`}
+                  }`}
                 variants={fadeIn}
                 transition={{ duration: 0.5 }}
                 whileHover={{ y: -5 }}
@@ -626,7 +624,7 @@ export default function Home() {
                     </Badge>
                   </div>
                 )}
-                
+
                 <div className="p-8">
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
                   <div className="flex items-end">
@@ -636,7 +634,7 @@ export default function Home() {
                     )}
                   </div>
                   <p className="mt-4 text-gray-600">{plan.description}</p>
-                  
+
                   <div className="mt-6 space-y-4">
                     {plan.features.map((feature, i) => (
                       <div key={i} className="flex items-start">
@@ -645,15 +643,14 @@ export default function Home() {
                       </div>
                     ))}
                   </div>
-                  
+
                   <div className="mt-8">
                     <Link href={index === 2 ? "/contact" : "/register"}>
-                      <Button 
-                        className={`w-full ${
-                          plan.popular 
-                            ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
+                      <Button
+                        className={`w-full ${plan.popular
+                            ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
                             : 'bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50'
-                        }`}
+                          }`}
                         size="lg"
                       >
                         {plan.cta}
@@ -670,7 +667,7 @@ export default function Home() {
       {/* Call-to-Action Section */}
       <section className="py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.h2 
+          <motion.h2
             className="text-3xl md:text-4xl font-bold mb-6"
             initial="hidden"
             whileInView="visible"
@@ -680,7 +677,7 @@ export default function Home() {
           >
             {t('cta.title', 'Prêt à commencer votre voyage linguistique ?')}
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-xl text-indigo-100 mb-8 max-w-3xl mx-auto"
             initial="hidden"
             whileInView="visible"
@@ -706,6 +703,16 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Language Switcher (desktop only) */}
+      <div className="fixed bottom-6 right-6 hidden md:block z-10">
+        <LanguageSwitcher
+          variant="dropdown"
+          size="sm"
+          className="shadow-md"
+        />
+      </div>
     </div>
+
   );
 }

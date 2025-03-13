@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Container } from "../_components/Container";
 import { Check, X } from "lucide-react";
+import LanguageSwitcher from '../_components/LanguageSwitcher';
 
 export default function Pricing() {
     const [isAnnual, setIsAnnual] = useState(false);
@@ -130,8 +131,8 @@ export default function Pricing() {
                 <div className="flex items-center gap-3 mb-12 bg-gray-50 dark:bg-gray-800 p-2 rounded-full">
                     <button
                         className={`px-4 py-2 rounded-full transition-all ${!isAnnual
-                                ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-white'
-                                : 'text-gray-600 dark:text-gray-400'
+                            ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-white'
+                            : 'text-gray-600 dark:text-gray-400'
                             }`}
                         onClick={() => setIsAnnual(false)}
                     >
@@ -139,8 +140,8 @@ export default function Pricing() {
                     </button>
                     <button
                         className={`px-4 py-2 rounded-full transition-all ${isAnnual
-                                ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-white'
-                                : 'text-gray-600 dark:text-gray-400'
+                            ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-white'
+                            : 'text-gray-600 dark:text-gray-400'
                             }`}
                         onClick={() => setIsAnnual(true)}
                     >
@@ -157,8 +158,8 @@ export default function Pricing() {
                         <div
                             key={plan.name}
                             className={`relative flex flex-col p-8 bg-white dark:bg-gray-800 rounded-xl ${plan.popular
-                                    ? 'border-2 border-indigo-600 shadow-xl'
-                                    : 'border border-gray-200 dark:border-gray-700'
+                                ? 'border-2 border-indigo-600 shadow-xl'
+                                : 'border border-gray-200 dark:border-gray-700'
                                 }`}
                         >
                             {plan.popular && (
@@ -210,8 +211,8 @@ export default function Pricing() {
                                         ) : (
                                             <X className="w-5 h-5 text-red-500" />)}
                                         <span className={`${feature.included
-                                                ? 'text-gray-600 dark:text-gray-300'
-                                                : 'text-gray-400 dark:text-gray-500'
+                                            ? 'text-gray-600 dark:text-gray-300'
+                                            : 'text-gray-400 dark:text-gray-500'
                                             }`}>
                                             {feature.text}
                                         </span>
@@ -227,8 +228,8 @@ export default function Pricing() {
 
                             <button
                                 className={`w-full py-4 px-6 rounded-lg font-semibold transition-all transform hover:scale-[1.02] ${plan.popular
-                                        ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30'
-                                        : 'bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600'
+                                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30'
+                                    : 'bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600'
                                     }`}
                             >
                                 {plan.price.monthly === 0 ? 'Get Started Free' : 'Get Premium Access'}
@@ -254,6 +255,16 @@ export default function Pricing() {
                     </p>
                 </div>
             </div>
+            {/* Language Switcher (desktop only) */}
+            <div className="fixed bottom-6 right-6 hidden md:block z-10">
+                <LanguageSwitcher
+                    variant="dropdown"
+                    size="sm"
+                    className="shadow-md"
+                />
+            </div>
         </Container>
+
+
     );
 }

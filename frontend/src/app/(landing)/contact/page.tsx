@@ -3,6 +3,7 @@ import React from 'react';
 import ContactForm from './_components/ContactForm';
 import BugSignalButton from './_components/BugSignalButton';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import LanguageSwitcher from '../_components/LanguageSwitcher';
 
 export default function ContactPage() {
   return (
@@ -22,13 +23,13 @@ export default function ContactPage() {
         <div className="mb-12 flex justify-center">
           <BugSignalButton />
         </div>
-                
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Contact Information */}
           <div className="lg:col-span-1">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 h-full">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Contact Information</h2>
-              
+
               <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
@@ -41,7 +42,7 @@ export default function ContactPage() {
                     <p>Belgium</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
                     <Phone className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
@@ -51,7 +52,7 @@ export default function ContactPage() {
                     <p>+1 473 48 81 00</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
                     <Mail className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
@@ -61,7 +62,7 @@ export default function ContactPage() {
                     <p>linguify.info@gmail.com</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
                     <Clock className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
@@ -73,7 +74,7 @@ export default function ContactPage() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Social Media Links */}
               <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Follow Us</h3>
@@ -106,13 +107,13 @@ export default function ContactPage() {
               </div>
             </div>
           </div>
-          
+
           {/* Contact Form */}
           <div className="lg:col-span-2">
             <ContactForm />
           </div>
         </div>
-        
+
         {/* Map Section */}
         <div className="mt-16">
           <div className="rounded-xl overflow-hidden shadow-md h-96 bg-gray-300">
@@ -128,6 +129,14 @@ export default function ContactPage() {
             ></iframe>
           </div>
         </div>
+      </div>
+      {/* Language Switcher (desktop only) */}
+      <div className="fixed bottom-6 right-6 hidden md:block z-10">
+        <LanguageSwitcher
+          variant="dropdown"
+          size="sm"
+          className="shadow-md"
+        />
       </div>
     </div>
   );
