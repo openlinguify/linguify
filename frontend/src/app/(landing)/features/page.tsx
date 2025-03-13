@@ -4,21 +4,12 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import {
-  BookOpen,
-  NotebookPen,
-  Brain,
-  Users,
-  MessageCircle,
-  UserCog,
-  Clock,
-  Award,
-  ChevronRight,
-  ArrowRight
-} from 'lucide-react';
+import { ArrowRight, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import LanguageSwitcher from '../_components/LanguageSwitcher';
 import NewInfo from '../_components/NewInfo';
+import { getAppFeatures, FEATURE_ICONS, Feature } from '../constants/features';
+
 // Import translations
 import frTranslations from '@/locales/fr/common.json';
 import enTranslations from '@/locales/en/common.json';
@@ -28,26 +19,6 @@ import nlTranslations from '@/locales/nl/common.json';
 // Type definitions
 type AvailableLocales = 'fr' | 'en' | 'es' | 'nl';
 type TranslationType = typeof enTranslations;
-
-interface Feature {
-  id: keyof typeof FEATURE_ICONS;
-  title: string;
-  description: string;
-  href: string; // Added href for navigation
-}
-
-// Constants
-const FEATURE_ICONS = {
-  learning: BookOpen,
-  flashcards: Brain,
-  notebook: NotebookPen,
-  progress: Clock,
-  community: Users,
-  chat: MessageCircle,
-  coaching: UserCog,
-  certification: Award,
-  adaptive_learning: Clock
-};
 
 // Animation variants
 const containerVariants = {
@@ -130,35 +101,10 @@ export default function Features() {
   }, [currentLocale]);
 
   // Generate features list with translations
-  const features = useMemo<Feature[]>(() => [
-    {
-      id: 'learning',
-      title: t("learning.title", "Learning"),
-      description: t("learning.description", "Interactive learning modules tailored to your pace"),
-      href: "features/apps/learning"
-    },
-    {
-      id: 'flashcards',
-      title: t("flashcards.title", "Flashcards"),
-      description: t("flashcards.description", "Effective memory tools for quick retention"),
-      href: "/apps/flashcards"
-    },
-    {
-      id: 'notebook',
-      title: t("notebook.title", "Notebook"),
-      description: t("notebook.description", "Centralized note-taking with smart organization"),
-      href: "/apps/notebook"
-    },
-    {
-      id: 'progress',
-      title: t("progress.title", "Progress tracking"),
-      description: t("progress.description", "Visualize your progress and set achievable goals"),
-      href: "/apps/progress"
-    }
-  ], [t]);
+  const features = useMemo(() => getAppFeatures(t), [t]);
 
   const FeatureCard = useCallback(({ feature }: { feature: Feature }) => {
-    const FeatureIcon = FEATURE_ICONS[feature.id] || BookOpen;
+    const FeatureIcon = FEATURE_ICONS[feature.id] || FEATURE_ICONS.learning;
   
     return (
       <Link href={feature.href} className="h-full">
@@ -204,18 +150,6 @@ export default function Features() {
             <p className="text-xl text-indigo-100 max-w-3xl mx-auto">
               {t("features.modules_description", "Discover all the tools Linguify offers to make your language learning journey effective and enjoyable.")}
             </p>
-            <div className="mt-6">
-              <Link href="/features">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-white text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all font-medium px-8 items-center"
-                >
-                  {t("features.view_all_apps", "View All Applications")}
-                  <ChevronRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-            </div>
           </div>
 
           <motion.div
@@ -268,7 +202,7 @@ export default function Features() {
               </Link>
             </div>
             <div className="mt-6">
-              <Link href="/apps" className="text-indigo-600 hover:text-indigo-800 flex items-center justify-center">
+              <Link href="/features" className="text-indigo-600 hover:text-indigo-800 flex items-center justify-center">
                 <span>{t("features.explore_all_apps", "Explore all our applications")}</span>
                 <ChevronRight className="ml-1 h-4 w-4" />
               </Link>

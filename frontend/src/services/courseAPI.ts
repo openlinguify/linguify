@@ -1,6 +1,7 @@
-// src/services/courseAPI.ts - version corrigée
+// src/services/courseAPI.ts
 
 import apiClient from './axiosAuthInterceptor';
+import { normalizeLanguageCode, getUserTargetLanguage } from '../utils/languageUtils';
 
 export interface Unit {
   id: number;
@@ -42,38 +43,28 @@ export interface ContentLesson {
   order: number;
 }
 
-// Fonction utilitaire pour récupérer la langue depuis localStorage
-const getUserLanguage = (): string => {
-  try {
-    const userSettingsStr = localStorage.getItem('userSettings');
-    if (userSettingsStr) {
-      const userSettings = JSON.parse(userSettingsStr);
-      if (userSettings.target_language) {
-        console.log('Langue récupérée depuis localStorage:', userSettings.target_language);
-        return userSettings.target_language.toLowerCase();
-      }
-    }
-  } catch (error) {
-    console.error('Error parsing user settings from localStorage:', error);
-  }
-  return 'en'; // langue par défaut
-};
-
 // Course API service
 const courseAPI = {
-
-  
   getUnits: async (level?: string, targetLanguage?: string) => {
     try {
       const params: Record<string, string> = {};
       if (level) params.level = level;
       
-      // Utiliser la langue spécifiée ou récupérer depuis localStorage
-      const lang = targetLanguage?.toLowerCase() || getUserLanguage();
+      // Normaliser la langue spécifiée ou récupérer depuis localStorage
+      const lang = normalizeLanguageCode(targetLanguage) || getUserTargetLanguage();
       params.target_language = lang;
 
-      console.log('Fetching units with params:', params);
+      console.log('API: Fetching units with params:', params);
       const response = await apiClient.get('/api/v1/course/units/', { params });
+      
+      if (response.data && response.data.length > 0) {
+        console.log('API: Received units data. First unit:', {
+          id: response.data[0].id,
+          title: response.data[0].title,
+          language: lang
+        });
+      }
+      
       return response.data;
     } catch (err: any) {
       console.error('Failed to fetch units:', {
@@ -91,22 +82,40 @@ const courseAPI = {
         unit: unitId.toString()
       };
       
-      // S'assurer que la langue est correctement formatée
-      const lang = targetLanguage || getUserLanguage();
+      // Normaliser la langue spécifiée ou récupérer depuis localStorage
+      const lang = normalizeLanguageCode(targetLanguage) || getUserTargetLanguage();
       params.target_language = lang;
   
-      console.log(`API: Fetching lessons for unit ${unitId} with language ${lang}`);
-      const response = await apiClient.get('/api/v1/course/lesson/', { params });
+      console.log(`API: Fetching lessons for unit ${unitId} with language: ${lang}`);
+      
+      // Inclure explicitement l'en-tête Accept-Language
+      const headers = {
+        'Accept-Language': lang
+      };
+      
+      const response = await apiClient.get('/api/v1/course/lesson/', { 
+        params,
+        headers
+      });
       
       // Log détaillé pour debug
-      console.log('API response:', {
-        status: response.status,
-        dataLength: Array.isArray(response.data) ? response.data.length : 'not array'
-      });
+      if (response.data && response.data.length > 0) {
+        console.log('API: Received lessons data. First lesson:', {
+          id: response.data[0].id,
+          title: response.data[0].title,
+          language: lang
+        });
+      } else {
+        console.log('API: Received empty or invalid lessons data');
+      }
       
       return response.data;
     } catch (err: any) {
-      console.error('Failed to fetch lessons:', err);
+      console.error('Failed to fetch lessons:', {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message
+      });
       throw new Error(`Failed to fetch lessons: ${err.message}`);
     }
   },
@@ -117,12 +126,29 @@ const courseAPI = {
         lesson: lessonId.toString()
       };
       
-      // Utiliser la langue spécifiée ou récupérer depuis localStorage
-      const lang = targetLanguage?.toLowerCase() || getUserLanguage();
+      // Normaliser la langue spécifiée ou récupérer depuis localStorage
+      const lang = normalizeLanguageCode(targetLanguage) || getUserTargetLanguage();
       params.target_language = lang;
       
-      console.log(`Fetching content lessons for lesson ${lessonId} with language: ${lang}`);
-      const response = await apiClient.get(`/api/v1/course/content-lesson/`, { params });
+      // Inclure explicitement l'en-tête Accept-Language
+      const headers = {
+        'Accept-Language': lang
+      };
+      
+      console.log(`API: Fetching content lessons for lesson ${lessonId} with language: ${lang}`);
+      const response = await apiClient.get(`/api/v1/course/content-lesson/`, { 
+        params,
+        headers
+      });
+      
+      if (response.data && response.data.length > 0) {
+        console.log('API: Received content lessons data. First content:', {
+          id: response.data[0].id,
+          title: response.data[0].title,
+          language: lang
+        });
+      }
+      
       return response.data;
     } catch (err: any) {
       console.error('Failed to fetch content lessons:', {

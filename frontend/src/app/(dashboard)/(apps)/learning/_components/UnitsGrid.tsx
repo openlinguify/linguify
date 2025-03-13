@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import courseAPI from "@/services/courseAPI";
 import ExpandableUnitCard from "./ExpandableUnitCard";
 import LearningJourney from "./LearningJourney";
+import { getUserTargetLanguage } from "@/utils/languageUtils";
 
 interface Unit {
   id: number;
@@ -26,12 +27,32 @@ const UnitsGrid: React.FC = () => {
   const [units, setUnits] = useState<Unit[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [targetLanguage, setTargetLanguage] = useState<string>('en');
+
+  // Détecter la langue au chargement du composant
+  useEffect(() => {
+    // Récupérer la langue cible de l'utilisateur
+    const userLang = getUserTargetLanguage();
+    setTargetLanguage(userLang);
+    console.log('UnitsGrid: User target language set to:', userLang);
+  }, []);
 
   const loadUnits = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await courseAPI.getUnits();
+      
+      console.log(`UnitsGrid: Loading units with language: ${targetLanguage}`);
+      const data = await courseAPI.getUnits(undefined, targetLanguage);
+      
+      if (data && data.length > 0) {
+        console.log('UnitsGrid: First unit received:', {
+          id: data[0].id,
+          title: data[0].title,
+          language: targetLanguage
+        });
+      }
+      
       setUnits(data as Unit[]);
     } catch (err) {
       console.error("Error loading units:", err);
@@ -39,11 +60,13 @@ const UnitsGrid: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [targetLanguage]);
 
   useEffect(() => {
-    loadUnits();
-  }, [loadUnits]);
+    if (targetLanguage) {
+      loadUnits();
+    }
+  }, [loadUnits, targetLanguage]);
 
   const handleLessonClick = useCallback((unitId: number, lessonId: number) => {
     router.push(`/learning/${unitId}/${lessonId}`);
@@ -80,8 +103,12 @@ const UnitsGrid: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
       <div className="max-w-5xl mx-auto p-6">
         {/* Header with Gradient */}
-
         <LearningJourney />
+
+        {/* Debug Language Info */}
+        <div className="mb-4 p-2 bg-blue-50 rounded text-sm text-blue-800">
+          Current language: <strong>{targetLanguage}</strong>
+        </div>
 
         {/* Learning Path */}
         {units.length > 0 ? (

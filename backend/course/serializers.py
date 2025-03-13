@@ -55,6 +55,8 @@ class TargetLanguageMixin:
         logger.info(f"get_serializer_context - Adding target_language to context: {target_language}")
         
         return context
+    
+
 class UnitSerializer(serializers.ModelSerializer):
     # Titre dynamique basé sur la langue cible
     title = serializers.SerializerMethodField()
@@ -111,17 +113,21 @@ class LessonSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'lesson_type', 'estimated_duration', 'order']
 
     def get_title(self, obj):
-        # Obtenir et normaliser la langue cible
+        # Get target language from context
         target_language = self.context.get('target_language', 'en')
-        if target_language.upper() in ['EN', 'FR', 'ES', 'NL']:
+        
+        # Normalize to lowercase
+        if target_language and target_language.upper() in ['EN', 'FR', 'ES', 'NL']:
             target_language = target_language.lower()
         
-        # Utiliser le champ correspondant à la langue
+        # Get the field name based on language
         field_name = f'title_{target_language}'
+        
+        # Get the value, fallback to title_en if not found
         value = getattr(obj, field_name, obj.title_en)
         
-        # Log détaillé pour voir ce qui se passe
-        logger.info(f"LessonSerializer - Lesson {obj.id}, field {field_name}: {value}")
+        # Log for debugging
+        logger.info(f"LessonSerializer - Lesson {obj.id}, target_language: {target_language}, field: {field_name}, value: {value}")
         
         return value
 
@@ -150,43 +156,22 @@ class ContentLessonSerializer(serializers.ModelSerializer):
         ]
 
     def get_title(self, obj):
-        target_language = self._get_target_language().lower()
-        field_name = f'title_{target_language}'
-        value = getattr(obj, field_name, obj.title_en)
-        logger.info(f"ContentLesson {obj.id}: {field_name} = {value}")
-        return value
+        # Retourner un dictionnaire avec toutes les traductions
+        return {
+            'en': obj.title_en,
+            'fr': obj.title_fr,
+            'es': obj.title_es,
+            'nl': obj.title_nl
+        }
 
     def get_instruction(self, obj):
-        target_language = self._get_target_language().lower()
-        field_name = f'instruction_{target_language}'
-        return getattr(obj, field_name, obj.instruction_en)
-        
-    def _get_target_language(self):
-        request = self.context.get('request')
-        
-        # Priorité 1: contexte direct (ajouté par la vue)
-        if 'target_language' in self.context:
-            target_lang = self.context.get('target_language')
-            logger.info(f"ContentLesson - Langue depuis le contexte: {target_lang}")
-            return target_lang
-            
-        # Priorité 2: paramètre de requête
-        if request and request.query_params.get('target_language'):
-            target_lang = request.query_params.get('target_language')
-            logger.info(f"ContentLesson - Langue depuis les paramètres: {target_lang}")
-            return target_lang
-            
-        # Priorité 3: utilisateur authentifié
-        if request and hasattr(request, 'user') and request.user.is_authenticated:
-            target_lang = getattr(request.user, 'target_language', 'en').lower()
-            logger.info(f"ContentLesson - Langue depuis le profil: {target_lang}")
-            return target_lang
-            
-        # Valeur par défaut
-        logger.info("ContentLesson - Langue par défaut: en")
-        return 'en'
-    
-
+        # Retourner un dictionnaire avec toutes les traductions
+        return {
+            'en': obj.instruction_en,
+            'fr': obj.instruction_fr,
+            'es': obj.instruction_es,
+            'nl': obj.instruction_nl
+        }
 
 
 
@@ -270,7 +255,6 @@ class ContentLessonDetailSerializer(ContentLessonSerializer):
     
     class Meta(ContentLessonSerializer.Meta):
         fields = ContentLessonSerializer.Meta.fields + ['vocabulary_lists']
-
 
 class MultipleChoiceQuestionSerializer(serializers.ModelSerializer):
     question = serializers.SerializerMethodField()
@@ -358,7 +342,6 @@ class MultipleChoiceQuestionSerializer(serializers.ModelSerializer):
             'hint': data['hint_answer']
         }
 
-
 class NumbersSerializer(serializers.ModelSerializer):
     number = serializers.SerializerMethodField()
 
@@ -382,11 +365,6 @@ class ExerciseGrammarReorderingSerializer(serializers.ModelSerializer):
         model = ExerciseGrammarReordering
         fields = ['id', 'content_lesson', 'sentence_en', 'sentence_fr', 'sentence_es', 'sentence_nl', 'explanation', 'hint']
     
-
-
-
-
-
 class GrammarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grammar
