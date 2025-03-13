@@ -159,16 +159,16 @@ export default function Features() {
 
   const FeatureCard = useCallback(({ feature }: { feature: Feature }) => {
     const FeatureIcon = FEATURE_ICONS[feature.id] || BookOpen;
-
+  
     return (
-      <Link href={feature.href}>
+      <Link href={feature.href} className="h-full">
         <motion.div
           key={feature.id}
-          className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
+          className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col"
           variants={itemVariants}
         >
-          <div className="p-8">
-            <div className="flex flex-col items-center text-center">
+          <div className="p-8 flex flex-col flex-grow">
+            <div className="flex flex-col items-center text-center h-full">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <FeatureIcon className="h-8 w-8 text-white" />
               </div>
@@ -176,7 +176,7 @@ export default function Features() {
                 {feature.title}
                 <ArrowRight className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1" />
               </h3>
-              <p className="text-gray-600">{feature.description}</p>
+              <p className="text-gray-600 flex-grow">{feature.description}</p>
             </div>
           </div>
         </motion.div>
