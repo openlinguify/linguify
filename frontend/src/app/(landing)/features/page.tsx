@@ -13,7 +13,8 @@ import {
   UserCog,
   Clock,
   Award,
-  ChevronRight
+  ChevronRight,
+  ArrowRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import LanguageSwitcher from '../_components/LanguageSwitcher';
@@ -32,6 +33,7 @@ interface Feature {
   id: keyof typeof FEATURE_ICONS;
   title: string;
   description: string;
+  href: string; // Added href for navigation
 }
 
 // Constants
@@ -133,21 +135,25 @@ export default function Features() {
       id: 'learning',
       title: t("learning.title", "Learning"),
       description: t("learning.description", "Interactive learning modules tailored to your pace"),
+      href: "features/apps/learning"
     },
     {
       id: 'flashcards',
       title: t("flashcards.title", "Flashcards"),
       description: t("flashcards.description", "Effective memory tools for quick retention"),
+      href: "/apps/flashcards"
     },
     {
       id: 'notebook',
       title: t("notebook.title", "Notebook"),
       description: t("notebook.description", "Centralized note-taking with smart organization"),
+      href: "/apps/notebook"
     },
     {
       id: 'progress',
       title: t("progress.title", "Progress tracking"),
       description: t("progress.description", "Visualize your progress and set achievable goals"),
+      href: "/apps/progress"
     }
   ], [t]);
 
@@ -155,21 +161,26 @@ export default function Features() {
     const FeatureIcon = FEATURE_ICONS[feature.id] || BookOpen;
 
     return (
-      <motion.div
-        key={feature.id}
-        className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
-        variants={itemVariants}
-      >
-        <div className="p-8">
-          <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-              <FeatureIcon className="h-8 w-8 text-white" />
+      <Link href={feature.href}>
+        <motion.div
+          key={feature.id}
+          className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
+          variants={itemVariants}
+        >
+          <div className="p-8">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <FeatureIcon className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                {feature.title}
+                <ArrowRight className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1" />
+              </h3>
+              <p className="text-gray-600">{feature.description}</p>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-            <p className="text-gray-600">{feature.description}</p>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </Link>
     );
   }, []);
 
@@ -188,11 +199,23 @@ export default function Features() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
           <div className="text-center mb-16">
             <h1 className="text-4xl font-bold text-white lg:text-5xl mb-6">
-              {t("features.modules_title", "Core learning modules")}
+              {t("features.modules_title", "All Linguify Apps")}
             </h1>
             <p className="text-xl text-indigo-100 max-w-3xl mx-auto">
               {t("features.modules_description", "Discover all the tools Linguify offers to make your language learning journey effective and enjoyable.")}
             </p>
+            <div className="mt-6">
+              <Link href="/features">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="border-white text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all font-medium px-8 items-center"
+                >
+                  {t("features.view_all_apps", "View All Applications")}
+                  <ChevronRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
           </div>
 
           <motion.div
@@ -205,6 +228,10 @@ export default function Features() {
               <FeatureCard key={feature.id} feature={feature} />
             ))}
           </motion.div>
+          
+          <div className="text-center mt-8 text-white">
+            <p>{t("features.click_to_explore", "Click on any feature to explore its dedicated application")}</p>
+          </div>
         </div>
       </section>
 
@@ -238,6 +265,12 @@ export default function Features() {
                 <Button variant="outline" size="lg">
                   {t("features.cta.pricing_button", "View pricing")}
                 </Button>
+              </Link>
+            </div>
+            <div className="mt-6">
+              <Link href="/apps" className="text-indigo-600 hover:text-indigo-800 flex items-center justify-center">
+                <span>{t("features.explore_all_apps", "Explore all our applications")}</span>
+                <ChevronRight className="ml-1 h-4 w-4" />
               </Link>
             </div>
           </motion.div>
