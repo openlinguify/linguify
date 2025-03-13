@@ -1,11 +1,12 @@
 import React from "react";
-import { 
-  Globe, 
-  GraduationCap, 
-  Users, 
-  Heart 
+import {
+  Globe,
+  GraduationCap,
+  Users,
+  Heart
 } from "lucide-react";
 import FounderImage from "./_components/FounderImage";
+import LanguageSwitcher from '../_components/LanguageSwitcher';
 
 export default function Company() {
   const values = [
@@ -30,7 +31,7 @@ export default function Company() {
       icon: <Heart className="w-6 h-6" />,
     }
   ];
-  
+
   const founders = [
     {
       name: "Louis-Philippe Lalou",
@@ -116,6 +117,14 @@ export default function Company() {
             ))}
           </div>
         </div>
+      </div>
+      {/* Language Switcher (desktop only) */}
+      <div className="fixed bottom-6 right-6 hidden md:block z-10">
+        <LanguageSwitcher
+          variant="dropdown"
+          size="sm"
+          className="shadow-md"
+        />
       </div>
     </div>
   );

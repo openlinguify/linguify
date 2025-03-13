@@ -206,9 +206,9 @@ export default function Features() {
             </p>
             <div className="mt-6">
               <Link href="/features">
-                <Button 
-                  variant="outline" 
-                  size="lg" 
+                <Button
+                  variant="outline"
+                  size="lg"
                   className="border-white text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all font-medium px-8 items-center"
                 >
                   {t("features.view_all_apps", "View All Applications")}
@@ -228,7 +228,7 @@ export default function Features() {
               <FeatureCard key={feature.id} feature={feature} />
             ))}
           </motion.div>
-          
+
           <div className="text-center mt-8 text-white">
             <p>{t("features.click_to_explore", "Click on any feature to explore its dedicated application")}</p>
           </div>
