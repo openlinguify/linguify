@@ -15,6 +15,7 @@ import {
   AlertCircle,
   CheckCircle
 } from "lucide-react";
+import { getUserTargetLanguage } from "@/utils/languageUtils";
 
 interface Unit {
   id: number;
@@ -55,23 +56,57 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonC
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [targetLanguage, setTargetLanguage] = useState<string>('en');
   
   // Mock progress - replace with real data
   const progress = Math.floor(Math.random() * 100);
+
+  // Détecter la langue au chargement du composant
+  useEffect(() => {
+    // Récupérer la langue cible de l'utilisateur
+    const userLang = getUserTargetLanguage();
+    setTargetLanguage(userLang);
+    console.log('ExpandableUnitCard: User target language set to:', userLang);
+  }, []);
 
   useEffect(() => {
     const fetchLessons = async () => {
       if (expanded && lessons.length === 0) {
         setLoading(true);
         try {
-          const response = await fetch(
-            `http://localhost:8000/api/v1/course/lesson/?unit=${unit.id}`,
-            { credentials: "omit" }
-          );
+          console.log(`ExpandableUnitCard: Fetching lessons for unit ${unit.id} with language: ${targetLanguage}`);
+          
+          // Construire l'URL avec le paramètre de langue
+          const url = new URL(`http://localhost:8000/api/v1/course/lesson/`);
+          url.searchParams.append('unit', unit.id.toString());
+          url.searchParams.append('target_language', targetLanguage);
+          
+          // Ajouter l'en-tête Accept-Language pour les API qui s'appuient sur cet en-tête
+          const headers = new Headers({
+            'Accept-Language': targetLanguage,
+            'Content-Type': 'application/json'
+          });
+          
+          const response = await fetch(url.toString(), { 
+            credentials: "omit",
+            headers: headers
+          });
           
           if (!response.ok) throw new Error("Failed to fetch lessons");
           
           const data = await response.json();
+          
+          // Vérifier et déboguer les données reçues
+          if (data && data.length > 0) {
+            console.log('ExpandableUnitCard: First lesson received:', {
+              id: data[0].id,
+              title: data[0].title,
+              language: targetLanguage
+            });
+          } else {
+            console.log('ExpandableUnitCard: No lessons received or empty data');
+          }
+          
           const sortedLessons = Array.isArray(data)
             ? data.sort((a: Lesson, b: Lesson) => a.order - b.order)
             : (data.results || []).sort((a: Lesson, b: Lesson) => a.order - b.order);
@@ -79,8 +114,9 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonC
           setLessons(sortedLessons);
           setError(null);
         } catch (err) {
-          setError("Failed to load lessons");
-          console.error("Error fetching lessons:", err);
+          const errorMessage = err instanceof Error ? err.message : "Failed to load lessons";
+          setError(errorMessage);
+          console.error("ExpandableUnitCard: Error fetching lessons:", err);
         } finally {
           setLoading(false);
         }
@@ -88,7 +124,7 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonC
     };
 
     fetchLessons();
-  }, [expanded, unit.id, lessons.length]);
+  }, [expanded, unit.id, lessons.length, targetLanguage]);
 
   return (
     <Card className="group overflow-hidden border-2 border-transparent hover:border-brand-purple/20 transition-all duration-300">

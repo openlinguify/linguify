@@ -211,6 +211,10 @@ class ContentLesson(models.Model):
         if self.estimated_duration < 1:
             self.estimated_duration = 1
         super().save(*args, **kwargs)
+
+
+
+        
 class TheoryContent(models.Model):
     content_lesson = models.OneToOneField(ContentLesson, on_delete=models.CASCADE, related_name='theory_content', default=1)
     content_en = models.TextField(blank=False, null=False)

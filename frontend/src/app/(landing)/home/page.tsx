@@ -1,25 +1,20 @@
+// src/app/(landing)/home/page.tsx
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
   ArrowRight,
   CheckCircle,
-  BookOpen,
-  Users,
-  Award,
-  MessageCircle,
-  Brain,
   Globe,
   Star
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import NewInfo from '../_components/NewInfo';  // Adjust the import path as needed
+import NewInfo from '../_components/NewInfo';
 import LanguageSwitcher from '../_components/LanguageSwitcher';
-
+import { getAppFeatures } from '../constants/features';
 // Import translations
 import enTranslations from "@/locales/en/common.json";
 import frTranslations from "@/locales/fr/common.json";
@@ -111,49 +106,27 @@ export default function Home() {
   // Testimonials
   const testimonials = useMemo(() => [
     {
-      name: 'Sophie M.',
-      role: t('testimonials.sophie.role', 'Marketing Manager'),
-      text: t('testimonials.sophie.text', "Linguify a transformé mon apprentissage du français. En 3 mois, j'ai atteint un niveau que je n'aurais jamais cru possible !"),
+      name: 'Louis',
+      role: t('testimonials.louis.role', 'Customer Service Manager'),
+      text: t('testimonials.louis.text', "Linguify a transformé mon apprentissage du français. En 3 mois, j'ai atteint un niveau que je n'aurais jamais cru possible !"),
       avatar: '/img/avatar1.png',
     },
     {
-      name: 'David L.',
-      role: t('testimonials.david.role', 'Software Engineer'),
-      text: t('testimonials.david.text', "Les flashcards et les exercices interactifs m'ont aidé à mémoriser facilement du vocabulaire technique en allemand."),
+      name: 'Victor',
+      role: t('testimonials.victor.role', 'Project Director'),
+      text: t('testimonials.victor.text', "Les flashcards et les exercices interactifs m'ont aidé à mémoriser facilement du vocabulaire technique en allemand."),
       avatar: '/img/avatar2.png',
     },
     {
-      name: 'Elena R.',
-      role: t('testimonials.elena.role', 'Travel Blogger'),
-      text: t('testimonials.elena.text', "Grâce à Linguify, j'ai pu communiquer avec les locaux lors de mon voyage à travers l'Espagne. Une expérience incroyable !"),
+      name: 'Camille',
+      role: t('testimonials.camille.role', 'Risk and Strategic Analyst'),
+      text: t('testimonials.camille.text', "Grâce à Linguify, j'ai pu communiquer avec les locaux lors de mon voyage à travers l'Espagne. Une expérience incroyable !"),
       avatar: '/img/avatar3.png',
     },
   ], [currentLocale, t]);
 
   // Features
-  const features = useMemo(() => [
-    {
-      icon: <BookOpen className="h-6 w-6 text-indigo-600" />,
-      title: t('features.adaptive_learning.title', "Apprentissage adaptatif"),
-      description: t('features.adaptive_learning.description', "Linguify adapte votre parcours d'apprentissage en fonction de vos forces et faiblesses.")
-    },
-    {
-      icon: <Users className="h-6 w-6 text-indigo-600" />,
-      title: t('features.community.title', "Communauté active"),
-      description: t('features.community.description', "Pratiquez avec des natifs et d'autres apprenants dans notre communauté mondiale.")
-    },
-    {
-      icon: <Award className="h-6 w-6 text-indigo-600" />,
-      title: t('features.certification.title', "Certification reconnue"),
-      description: t('features.certification.description', "Obtenez des certificats reconnus qui valorisent votre niveau linguistique.")
-    },
-    {
-      icon: <MessageCircle className="h-6 w-6 text-indigo-600" />,
-      title: t('features.coaching.title', "Coaching personnalisé"),
-      description: t('features.coaching.description', "Nos tuteurs professionnels vous aident à atteindre vos objectifs linguistiques.")
-    },
-  ], [currentLocale, t]);
-
+  const features = useMemo(() => getAppFeatures(t), [t]);
   // Pricing plans
   const pricingPlans = useMemo(() => [
     {
@@ -307,7 +280,7 @@ export default function Home() {
                     {/* Video player would go here */}
                     <iframe
                       className="w-full h-full"
-                      src="about:blank"
+                      src="landing/video/intro.mp4"
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
@@ -336,30 +309,6 @@ export default function Home() {
               </div>
             </div>
           </motion.div>
-        </div>
-
-        {/* Floating language bubbles - decorative element */}
-        <div className="absolute bottom-0 left-0 right-0 h-20 overflow-hidden">
-          {languages.map((lang, index) => (
-            <motion.div
-              key={lang.id}
-              className={`absolute bottom-0 ${lang.color} rounded-full flex items-center justify-center w-14 h-14 opacity-80`}
-              initial={{ y: 100 }}
-              animate={{
-                y: [100, -50, -20, -30, -25],
-                x: [index * 50, index * 60, index * 55, index * 58, index * 56],
-                opacity: [0, 0.8, 0.7, 0.85, 0.8]
-              }}
-              transition={{
-                duration: 10,
-                repeat: Infinity,
-                repeatType: 'reverse',
-                delay: index * 0.5
-              }}
-            >
-              <span className="text-2xl">{lang.flag}</span>
-            </motion.div>
-          ))}
         </div>
       </section>
 
@@ -463,9 +412,7 @@ export default function Home() {
                 variants={fadeIn}
                 transition={{ duration: 0.5 }}
               >
-                <div className="bg-indigo-50 w-12 h-12 rounded-full flex items-center justify-center mb-4">
-                  {feature.icon}
-                </div>
+
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>
               </motion.div>

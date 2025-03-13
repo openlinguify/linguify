@@ -1,12 +1,11 @@
-// src/app/%28dashboard%29/%28apps%29/learning/_components/Lessons.tsx
-"use client";
+'use client';
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import BackButton from "@/components/ui/BackButton";
 import { Progress } from "@/components/ui/progress";
+import { getUserTargetLanguage } from "@/utils/languageUtils";
 import courseAPI from "@/services/courseAPI";
 import {
   ArrowLeft,
@@ -50,49 +49,61 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [progress, setProgress] = useState(30);
+  const [progress] = useState(30);
+  const [targetLanguage, setTargetLanguage] = useState('en');
   const router = useRouter();
 
+  useEffect(() => {
+    // Récupérer la langue cible au chargement du composant
+    const userLang = getUserTargetLanguage();
+    setTargetLanguage(userLang);
+    console.log('Component: User target language set to:', userLang);
+  }, []);
 
   useEffect(() => {
     const fetchLessons = async () => {
+      if (!unitId || !targetLanguage) return;
+      
       try {
         setLoading(true);
+        console.log(`Component: Fetching lessons for unit ${unitId} with language: ${targetLanguage}`);
         
-        // Récupérer la langue cible depuis localStorage
-        const userSettingsStr = localStorage.getItem('userSettings');
-        const userSettings = userSettingsStr ? JSON.parse(userSettingsStr) : {};
-        const targetLanguage = userSettings.target_language || 'en';
-        
-        console.log('Component: Fetching lessons with language:', targetLanguage);
-        
-        // Utiliser correctement l'API
+        // Passer explicitement la langue
         const data = await courseAPI.getLessons(parseInt(unitId), targetLanguage);
-        console.log("Raw API response:", data);
-        if (data && data.length > 0) {
-          console.log("First lesson details:", data[0]);
+        
+        // Vérifier les données reçues
+        if (!data || !Array.isArray(data)) {
+          console.error('Component: Invalid data received:', data);
+          setError("Received invalid data format from API");
+          return;
         }
+        
         // Traiter les données
-        const sortedLessons = Array.isArray(data)
-          ? data.sort((a: Lesson, b: Lesson) => a.order - b.order)
-          : (data.results || []).sort((a: Lesson, b: Lesson) => a.order - b.order);
+        const sortedLessons = data.sort((a: Lesson, b: Lesson) => a.order - b.order);
+        
+        // Afficher un échantillon de données pour debug
+        if (sortedLessons.length > 0) {
+          console.log('Component: First lesson received:', {
+            id: sortedLessons[0].id,
+            title: sortedLessons[0].title,
+            language: targetLanguage
+          });
+        } else {
+          console.log('Component: No lessons received for unit', unitId);
+        }
         
         setLessons(sortedLessons);
         setError(null);
       } catch (err) {
-        console.error("Error fetching lessons:", err);
-        setError("Failed to load lessons");
+        console.error("Component: Error fetching lessons:", err);
+        setError(err instanceof Error ? err.message : "Failed to load lessons");
       } finally {
         setLoading(false);
       }
     };
   
-    if (unitId) {
-      fetchLessons();
-    }
-  }, [unitId]);
-
-
+    fetchLessons();
+  }, [unitId, targetLanguage]);
 
   const handleBack = () => {
     router.push("/learning");
@@ -165,6 +176,11 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
             </span>
           </div>
           <Progress value={progress} className="h-2 bg-purple-100" />
+        </div>
+
+        {/* Debug Language Info */}
+        <div className="mb-4 p-2 bg-blue-50 rounded text-sm text-blue-800">
+          Current target language: <strong>{targetLanguage}</strong>
         </div>
 
         {/* Lessons Grid */}
