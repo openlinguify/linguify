@@ -1,15 +1,15 @@
-# Guide d'implémentation du système d'authentification unifié
+# Unified Authentication System Implementation Guide
 
-## Étapes d'implémentation
+## Implementation Steps
 
-1. **Créer les fichiers principaux**
-   - Copier `authService.ts` dans `src/services/`
-   - Copier `AuthProvider.tsx` dans `src/services/`
-   - Copier `axiosAuthInterceptor.ts` dans `src/services/`
+1. **Create the main files**
+   - Copy `authService.ts` into `src/services/`
+   - Copy `AuthProvider.tsx` into `src/services/`
+   - Copy `axiosAuthInterceptor.ts` into `src/services/`
 
-3. **Mise à jour du fichier _app.tsx ou layout.tsx**
+3. **Update the _app.tsx or layout.tsx file**
    ```tsx
-   // Dans votre fichier racine d'application
+   // In your root application file
    import { AuthProvider } from '@/services/AuthProvider';
 
    function MyApp({ Component, pageProps }) {
@@ -21,8 +21,8 @@
    }
    ```
 
-4. **Vérifier les variables d'environnement**
-   Assurez-vous que les variables Auth0 suivantes sont définies dans votre fichier `.env.local` :
+4. **Check environment variables**
+   Ensure the following Auth0 variables are defined in your `.env.local` file:
    ```
    NEXT_PUBLIC_AUTH0_DOMAIN=your-domain.auth0.com
    NEXT_PUBLIC_AUTH0_CLIENT_ID=your-client-id
@@ -31,10 +31,10 @@
    NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
    ```
 
-## Points importants à vérifier
+## Key Points to Check
 
-### 1. Vérifier les routes protégées
-Pour les routes qui nécessitent une authentification, ajoutez ce code au début de votre composant ou dans votre layout :
+### 1. Verify protected routes
+For routes requiring authentication, add this code at the beginning of your component or in your layout:
 
 ```tsx
 const { isAuthenticated, isLoading } = useAuthContext();
@@ -48,8 +48,8 @@ useEffect(() => {
 }, [isAuthenticated, isLoading, router]);
 ```
 
-### 2. Configuration du callback Auth0
-Assurez-vous que votre page de callback est correctement configurée pour traiter la redirection après authentification :
+### 2. Configure the Auth0 callback
+Ensure your callback page is correctly set up to handle redirection after authentication:
 
 ```tsx
 // pages/callback.tsx
@@ -64,64 +64,65 @@ export default function Callback() {
   useEffect(() => {
     if (!isLoading) {
       if (isAuthenticated) {
-        // Rediriger vers la page de destination ou la page d'accueil
-        const returnTo = router.query.state 
-          ? JSON.parse(router.query.state as string)?.returnTo 
+        // Redirect to destination page or home page
+        const returnTo = router.query.state
+          ? JSON.parse(router.query.state as string)?.returnTo
           : '/';
         router.replace(returnTo || '/');
       } else {
-        // Problème d'authentification
+        // Authentication issue
         router.replace('/login?error=authentication_failed');
       }
     }
   }, [isAuthenticated, isLoading, router]);
 
-  return <div>Chargement...</div>;
+  return <div>Loading...</div>;
 }
 ```
 
-### 3. Mettre à jour les services API
-Remplacez tous vos appels API par l'utilisation de `apiClient` :
+### 3. Update API services
+Replace all your API calls to use `apiClient`:
 
 ```ts
-// Avant
+// Before
 const response = await fetch('api/endpoint', {
   headers: { Authorization: `Bearer ${token}` }
 });
 
-// Après
+// After
 import apiClient from '@/services/axiosAuthInterceptor';
 const response = await apiClient.get('/api/endpoint');
 ```
 
-## Dépannage
+## Troubleshooting
 
-### Problème : L'authentification ne persiste pas entre les pages
+### Issue: Authentication does not persist between pages
 
-1. **Vérifier le stockage local** : Ouvrez la console du navigateur, allez dans l'onglet Application -> Local Storage et vérifiez que la clé `auth_state` existe et contient un token valide.
+1. **Check local storage**: Open the browser console, go to the Application tab -> Local Storage, and ensure the `auth_state` key exists and contains a valid token.
 
-2. **Vérifier les cookies** : Dans l'onglet Application -> Cookies, vérifiez que le cookie `access_token` existe.
+2. **Check cookies**: In the Application tab -> Cookies, ensure the `access_token` cookie exists.
 
-3. **Désactiver les blocages de cookies tiers** : Certains navigateurs bloquent les cookies tiers. Assurez-vous que les cookies sont autorisés pour votre domaine.
+3. **Disable third-party cookie blocking**: Some browsers block third-party cookies. Ensure cookies are allowed for your domain.
 
-4. **Vérifier les logs** : Activez les logs de débogage en dev et vérifiez les messages `[Auth]` dans la console.
+4. **Check logs**: Enable debug logs in dev and check for `[Auth]` messages in the console.
 
-### Problème : Erreurs 401 persistantes
+### Issue: Persistent 401 errors
 
-1. **Vérifier l'expiration du token** : Le token pourrait être expiré. Assurez-vous que la configuration Auth0 est correcte avec `useRefreshTokens: true`.
+1. **Check token expiration**: The token may have expired. Ensure Auth0 is configured with `useRefreshTokens: true`.
 
-2. **Vérifier la configuration CORS** : Le backend doit autoriser les requêtes depuis le frontend avec les en-têtes d'authentification.
+2. **Check CORS configuration**: The backend must allow requests from the frontend with authentication headers.
 
-3. **Vérifier l'audience du token** : Assurez-vous que l'audience configurée dans Auth0 correspond à celle attendue par le backend.
+3. **Check token audience**: Ensure the audience configured in Auth0 matches the one expected by the backend.
 
-### Problème : Erreurs "Invalid State" lors de l'authentification
+### Issue: "Invalid State" errors during authentication
 
-Cela peut se produire quand le state Auth0 n'est pas correctement géré. Assurez-vous d'utiliser `cacheLocation: "localstorage"` dans la configuration Auth0.
+This can occur when Auth0 state is not correctly handled. Ensure `cacheLocation: "localstorage"` is used in the Auth0 configuration.
 
-## Tests à effectuer
+## Tests to Perform
 
-1. **Test de la connexion** : Connectez-vous et vérifiez que vous êtes redirigé correctement.
-2. **Test de navigation** : Naviguez entre plusieurs pages protégées sans être déconnecté.
-3. **Test après rechargement** : Rechargez la page et vérifiez que vous restez connecté.
-4. **Test de déconnexion** : Déconnectez-vous et vérifiez que vous êtes redirigé vers la page d'accueil.
-5. **Test d'expiration** : Attendez que le token expire et vérifiez qu'il est automatiquement renouvelé.
+1. **Login test**: Log in and verify you are correctly redirected.
+2. **Navigation test**: Navigate between several protected pages without being logged out.
+3. **Reload test**: Reload the page and ensure you remain logged in.
+4. **Logout test**: Log out and verify you are redirected to the home page.
+5. **Expiration test**: Wait for the token to expire and ensure it is automatically renewed.
+
