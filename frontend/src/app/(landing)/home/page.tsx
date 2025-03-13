@@ -287,7 +287,7 @@ export default function Home() {
                 className="text-white border-white bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all font-medium px-8 flex items-center"
                 >
                 <Globe className="mr-2 h-5 w-5" />
-                {t('hero.discover_button', 'Découvrir nos méthodes')}
+                {t('hero.discover_button', 'Découvrir nos applications')}
                 <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
             </Link>
