@@ -27,12 +27,19 @@ const UnitsGrid: React.FC = () => {
   const [levelGroups, setLevelGroups] = useState<LevelGroup[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [activeFilter, setActiveFilter] = useState<string>("all");
+  const [availableLevels, setAvailableLevels] = useState<string[]>([]);
+  const [layout, setLayout] = useState<"list" | "grid">("list");
 
   const loadUnits = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
       const data = await courseAPI.getUnits();
+      
+      // Extraire les niveaux disponibles
+      const levels = Array.from(new Set((data as Unit[]).map(unit => unit.level)));
+      setAvailableLevels(levels.sort());
       
       // Regrouper les unités par niveau
       const groupedUnits: Record<string, Unit[]> = {};
@@ -69,9 +76,26 @@ const UnitsGrid: React.FC = () => {
     loadUnits();
   }, [loadUnits]);
 
+  const handleLayoutChange = (newLayout: "list" | "grid") => {
+    setLayout(newLayout);
+    // Optionnellement, enregistrez la préférence dans localStorage
+    localStorage.setItem("units_layout_preference", newLayout);
+  };
   const handleLessonClick = useCallback((unitId: number, lessonId: number) => {
     router.push(`/learning/${unitId}/${lessonId}`);
   }, [router]);
+
+  // Filtrer les groupes de niveau en fonction du filtre actif
+  const filteredLevelGroups = activeFilter === "all" 
+    ? levelGroups 
+    : levelGroups.filter(group => group.level === activeFilter);
+
+    useEffect(() => {
+      const savedLayout = localStorage.getItem("units_layout_preference");
+      if (savedLayout === "list" || savedLayout === "grid") {
+        setLayout(savedLayout);
+      }
+    }, []);
 
   if (isLoading) {
     return (
@@ -102,11 +126,17 @@ const UnitsGrid: React.FC = () => {
   return (
     <div className="w-full space-y-6">
       <div className="w-full">
-        <LearningJourney />
+        <LearningJourney 
+          levelFilter={activeFilter}
+          onLevelFilterChange={setActiveFilter}
+          availableLevels={availableLevels}
+          layout={layout}
+          onLayoutChange={handleLayoutChange}
+        />
 
         {levelGroups.length > 0 ? (
           <div className="relative bg-white rounded-lg p-6 shadow-sm border border-purple-100">
-            {levelGroups.map((group) => (
+            {filteredLevelGroups.map((group) => (
               <div key={group.level} className="mb-8 last:mb-0">
                 <div className="flex items-center mb-4">
                   <h2 className="text-xl font-bold text-gray-900 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
@@ -115,12 +145,13 @@ const UnitsGrid: React.FC = () => {
                   <div className="h-px flex-1 bg-gradient-to-r from-indigo-600/20 via-purple-600/20 to-pink-400/20 ml-4"></div>
                 </div>
                 
-                <div className="space-y-6">
+                <div className={layout === "list" ? "space-y-6" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
                   {group.units.map((unit) => (
                     <div key={unit.id}>
                       <ExpandableUnitCard
                         unit={unit}
                         onLessonClick={handleLessonClick}
+                        showLevelBadge={false}
                       />
                     </div>
                   ))}
