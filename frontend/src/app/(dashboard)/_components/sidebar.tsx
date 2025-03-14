@@ -6,14 +6,11 @@ import { usePathname } from "next/navigation";
 import {
   BookOpen, // Learning
   LayoutDashboard, // Dashboard
-  MessageCircle, // Chat
-  Settings, // Settings
-  Users, // Community
-  StickyNote, // Notes
-  UserCog, // Coaching
-  BarChart, // Progress
-  CheckSquare, // Tasks
-  BookMarked, // Revision
+  Settings, // Settings App
+  Brain, // Flashcard App
+  BarChart, // Progress App
+  BookMarked, // Revision App
+  NotebookPen, // Notebook App
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -49,27 +46,10 @@ const routes = [
       },
       {
         label: "Flashcard",
-        icon: BookOpen,
+        icon: Brain,
         href: "/flashcard",
         description: "Practice with flashcards",
       }
-    ],
-  },
-  {
-    label: "Interaction",
-    routes: [
-      {
-        label: "Chat",
-        icon: MessageCircle,
-        href: "/chat",
-        description: "Practice conversations",
-      },
-      {
-        label: "Community",
-        icon: Users,
-        href: "/community",
-        description: "Connect with other learners",
-      },
     ],
   },
   {
@@ -77,27 +57,15 @@ const routes = [
     routes: [
       {
         label: "Notes",
-        icon: StickyNote,
+        icon: NotebookPen,
         href: "/notebook",
         description: "Your learning notes",
-      },
-      {
-        label: "Coaching",
-        icon: UserCog,
-        href: "/coaching",
-        description: "Personal language coaching",
       },
       {
         label: "Progress",
         icon: BarChart,
         href: "/progress",
         description: "Track your progress",
-      },
-      {
-        label: "Tasks",
-        icon: CheckSquare,
-        href: "/task",
-        description: "Daily learning tasks",
       },
     ],
   },
@@ -180,17 +148,17 @@ export function Sidebar() {
                 // Nettoyage local
                 localStorage.clear();
                 
-                // Effacer les cookies
+                // Erase all cookies
                 document.cookie.split(";").forEach(function(c) {
                   document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
                 });
                 
-                // Déconnexion Auth0 complète
+                // Logout Auth0 configuration
                 const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
                 const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
                 const returnTo = encodeURIComponent('http://localhost:3000/home');
                 
-                // Redirection vers l'URL de déconnexion Auth0
+                // Redirection to Auth0 logout
                 window.location.href = `https://${auth0Domain}/v2/logout?client_id=${clientId}&returnTo=${returnTo}`;
               }}
               className="p-2 text-xs text-red-500 hover:text-red-700 hover:bg-red-50 rounded"

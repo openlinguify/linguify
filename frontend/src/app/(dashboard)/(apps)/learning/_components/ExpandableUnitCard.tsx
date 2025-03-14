@@ -16,6 +16,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { getUserTargetLanguage } from "@/utils/languageUtils";
+import courseAPI from "@/services/courseAPI";
 
 interface Unit {
   id: number;
@@ -56,45 +57,19 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonC
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [targetLanguage, setTargetLanguage] = useState<string>('en');
   
   // Mock progress - replace with real data
   const progress = Math.floor(Math.random() * 100);
-
-  // Détecter la langue au chargement du composant
-  useEffect(() => {
-    // Récupérer la langue cible de l'utilisateur
-    const userLang = getUserTargetLanguage();
-    setTargetLanguage(userLang);
-    console.log('ExpandableUnitCard: User target language set to:', userLang);
-  }, []);
 
   useEffect(() => {
     const fetchLessons = async () => {
       if (expanded && lessons.length === 0) {
         setLoading(true);
         try {
+          const targetLanguage = getUserTargetLanguage();
           console.log(`ExpandableUnitCard: Fetching lessons for unit ${unit.id} with language: ${targetLanguage}`);
           
-          // Construire l'URL avec le paramètre de langue
-          const url = new URL(`http://localhost:8000/api/v1/course/lesson/`);
-          url.searchParams.append('unit', unit.id.toString());
-          url.searchParams.append('target_language', targetLanguage);
-          
-          // Ajouter l'en-tête Accept-Language pour les API qui s'appuient sur cet en-tête
-          const headers = new Headers({
-            'Accept-Language': targetLanguage,
-            'Content-Type': 'application/json'
-          });
-          
-          const response = await fetch(url.toString(), { 
-            credentials: "omit",
-            headers: headers
-          });
-          
-          if (!response.ok) throw new Error("Failed to fetch lessons");
-          
-          const data = await response.json();
+          const data = await courseAPI.getLessons(unit.id, targetLanguage);
           
           // Vérifier et déboguer les données reçues
           if (data && data.length > 0) {
@@ -124,7 +99,7 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonC
     };
 
     fetchLessons();
-  }, [expanded, unit.id, lessons.length, targetLanguage]);
+  }, [expanded, unit.id, lessons.length]);
 
   return (
     <Card className="group overflow-hidden border-2 border-transparent hover:border-brand-purple/20 transition-all duration-300">
@@ -141,7 +116,7 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonC
         }}
       >
         <div className="flex items-center justify-between">
-          <Badge className="bg-gradient-to-r from-brand-purple to-brand-gold text-white">
+          <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white">
             Level {unit.level}
           </Badge>
           {progress > 0 && (
@@ -168,7 +143,13 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonC
 
         {progress > 0 && (
           <div className="w-full">
-            <Progress value={progress} className="h-1 bg-brand-purple/10" />
+            <Progress 
+              value={progress} 
+              className="h-1.5"
+              style={{
+                "--progress-background": "linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234), rgb(244, 114, 182))"
+              } as React.CSSProperties}
+            />
           </div>
         )}
       </div>
@@ -177,7 +158,7 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonC
         <div className="border-t border-gray-100 bg-gray-50/50">
           {loading ? (
             <div className="p-6 text-center text-muted-foreground">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-purple mx-auto mb-2"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-2"></div>
               Loading lessons...
             </div>
           ) : error ? (
@@ -201,7 +182,7 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonC
                   }}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-purple/10 text-brand-purple shrink-0">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-600 shrink-0">
                       {getLessonTypeIcon(lesson.lesson_type)}
                     </div>
                     
@@ -223,7 +204,7 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonC
                           <Clock className="h-3 w-3" />
                           {lesson.estimated_duration} min
                         </span>
-                        <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-brand-purple/10 text-brand-purple">
+                        <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-700">
                           {getLessonTypeIcon(lesson.lesson_type)}
                           {lesson.lesson_type}
                         </span>

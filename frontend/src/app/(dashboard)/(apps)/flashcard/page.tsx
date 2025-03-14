@@ -1,4 +1,4 @@
-// src/app/(apps)/flashcard/page.tsx
+// src/app/(dashboard)/(apps)/flashcard/page.tsx
 "use client";
 
 import FlashcardMain from './_components/FlashcardMain';

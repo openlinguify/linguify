@@ -45,7 +45,8 @@ export default function LearningJourney() {
   return (
     <div className="space-y-6">
       {/* Learning Journey Card */}
-      <div className="rounded-lg bg-gradient-to-r from-brand-purple to-brand-gold p-6 text-white shadow-md">
+      <div className="rounded-lg bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 p-6 text-white shadow-md">
+
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-semibold">Your Learning Journey</h1>

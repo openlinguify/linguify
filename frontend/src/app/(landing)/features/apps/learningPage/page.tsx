@@ -17,7 +17,6 @@ import {
   Calendar
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 
 // Import translations
 import frTranslations from '@/locales/fr/common.json';
@@ -166,15 +165,16 @@ export default function LearningFeature() {
         ></div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+          <Link
+            href="/features"
+            className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            {t("features.back_to_features", "Back to all features")}
+          </Link>
           <div className="text-center">
-            <Link 
-              href="/features"
-              className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {t("features.back_to_features", "Back to all features")}
-            </Link>
-            
+
+
             <motion.div
               initial="hidden"
               animate="visible"
@@ -185,16 +185,15 @@ export default function LearningFeature() {
                   <BookOpen className="h-10 w-10 text-white" />
                 </div>
               </div>
-              
+
               <h1 className="text-4xl font-bold text-white lg:text-5xl mb-6">
                 {t("learning.title", "Learning")}
-                <Badge className="ml-3 bg-white/20 text-white text-xs uppercase">Premium</Badge>
               </h1>
-              
+
               <p className="text-xl text-indigo-100 max-w-3xl mx-auto mb-8">
                 {t("learning.detailed_description", "Our adaptive learning system tailors lessons to your pace, goals, and learning style. Master vocabulary, grammar, and practical language skills through interactive exercises.")}
               </p>
-              
+
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link href="/register">
                   <Button size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700">
@@ -203,11 +202,11 @@ export default function LearningFeature() {
                   </Button>
                 </Link>
                 <Link href="/pricing">
-                  <Button 
-                    variant="outline" 
-                    size="lg" 
+                  <Button
+                    variant="outline"
+                    size="lg"
                     className="text-white border-white bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all font-medium px-8 flex items-center"
-                    >
+                  >
                     {t("learning.pricing_button", "View pricing")}
                   </Button>
                 </Link>
@@ -220,7 +219,7 @@ export default function LearningFeature() {
       {/* Learning Paths Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             className="text-center mb-12"
             initial="hidden"
             whileInView="visible"
@@ -235,7 +234,7 @@ export default function LearningFeature() {
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 md:grid-cols-2 gap-8"
             initial="hidden"
             whileInView="visible"
@@ -243,7 +242,7 @@ export default function LearningFeature() {
             variants={staggerContainer}
           >
             {learningPaths.map((path) => (
-              <motion.div 
+              <motion.div
                 key={path.id}
                 className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all p-6 border border-gray-100"
                 variants={fadeIn}
@@ -281,7 +280,7 @@ export default function LearningFeature() {
       {/* Benefits Section */}
       <section className="py-20 bg-gradient-to-r from-indigo-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             className="text-center mb-12"
             initial="hidden"
             whileInView="visible"
@@ -296,7 +295,7 @@ export default function LearningFeature() {
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="bg-white rounded-2xl shadow-lg p-8 md:p-12 border border-indigo-100"
             initial="hidden"
             whileInView="visible"
@@ -305,7 +304,7 @@ export default function LearningFeature() {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {benefits.map((benefit, index) => (
-                <motion.div 
+                <motion.div
                   key={index}
                   className="flex items-start gap-4"
                   initial={{ opacity: 0, x: -20 }}
@@ -327,7 +326,7 @@ export default function LearningFeature() {
       {/* Demo or Screenshot Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
             initial="hidden"
             whileInView="visible"
@@ -376,8 +375,8 @@ export default function LearningFeature() {
                 </Link>
               </div>
             </motion.div>
-            
-            <motion.div 
+
+            <motion.div
               className="bg-gray-200 rounded-xl overflow-hidden shadow-md h-96 flex items-center justify-center"
               variants={fadeIn}
             >

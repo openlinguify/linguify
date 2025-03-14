@@ -18,7 +18,7 @@ const progressVariants = cva(
         lg: "h-3",
       },
       status: {
-        low: "bg-red-500",
+        low: "bg-purple-500",
         medium: "bg-yellow-500",
         high: "bg-emerald-500",
         complete: "bg-brand-purple",
@@ -91,7 +91,7 @@ export const UserProgress = ({
     if (value === 100) return "text-brand-purple";
     if (value >= 75) return "text-emerald-600";
     if (value >= 25) return "text-yellow-600";
-    return "text-red-600";
+    return "text-purple-600";
   };
 
   const progressBar = (

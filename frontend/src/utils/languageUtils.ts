@@ -1,44 +1,55 @@
 // src/utils/languageUtils.ts
 
 /**
- * Normalise le code de langue pour l'API
- * 
- * Convertit un code de langue (en majuscules ou minuscules)
- * en format approprié pour les requêtes API
- * 
- * @param code Code de langue à normaliser (ex: 'EN', 'fr', 'NL')
- * @returns Code normalisé en minuscules ('en', 'fr', 'nl')
+ * Récupère la langue cible de l'utilisateur depuis les paramètres stockés
+ * Normalise la langue au format attendu par l'API (en, fr, es, nl)
  */
-export function normalizeLanguageCode(code: string | undefined): string {
-    if (!code) return 'en';
-    
-    // Convertir en minuscules
-    const lowercaseCode = code.toLowerCase();
-    
-    // Valider si c'est une langue supportée
-    const supportedLanguages = ['en', 'fr', 'es', 'nl'];
-    return supportedLanguages.includes(lowercaseCode) ? lowercaseCode : 'en';
-  }
-  
-  /**
-   * Récupère la langue cible depuis les paramètres utilisateur
-   * stockés dans localStorage
-   * 
-   * @returns Code de langue normalisé
-   */
-  export function getUserTargetLanguage(): string {
-    try {
-      const userSettingsStr = localStorage.getItem('userSettings');
-      if (userSettingsStr) {
-        const userSettings = JSON.parse(userSettingsStr);
-        if (userSettings.target_language) {
-          // Normaliser la langue avant de la retourner
-          return normalizeLanguageCode(userSettings.target_language);
+export function getUserTargetLanguage(): string {
+  try {
+    // Récupérer depuis localStorage
+    const userSettingsStr = localStorage.getItem('userSettings');
+    if (userSettingsStr) {
+      const userSettings = JSON.parse(userSettingsStr);
+      if (userSettings.target_language) {
+        // Normaliser le format (EN -> en, FR -> fr, etc.)
+        const lang = userSettings.target_language.toLowerCase();
+        // Vérifier que c'est une langue supportée
+        if (['en', 'fr', 'es', 'nl'].includes(lang)) {
+          return lang;
         }
       }
-    } catch (error) {
-      console.error('Error retrieving target language from localStorage:', error);
     }
-    
-    return 'en'; // langue par défaut
+  } catch (error) {
+    console.error('Error getting user target language:', error);
   }
+  
+  // Valeur par défaut si aucune langue valide n'est trouvée
+  return 'en';
+}
+
+/**
+ * Configure les en-têtes HTTP appropriés pour les requêtes API
+ * avec la langue cible de l'utilisateur
+ */
+export function getLanguageHeaders(targetLanguage?: string): Headers {
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+  });
+  
+  // Utiliser la langue spécifiée ou récupérer depuis les paramètres utilisateur
+  const lang = targetLanguage || getUserTargetLanguage();
+  
+  // Ajouter l'en-tête Accept-Language pour les API qui s'appuient sur cet en-tête
+  headers.append('Accept-Language', lang);
+  
+  return headers;
+}
+
+/**
+ * Ajoute le paramètre de langue cible à une URL d'API
+ */
+export function addLanguageParam(url: URL, targetLanguage?: string): URL {
+  const lang = targetLanguage || getUserTargetLanguage();
+  url.searchParams.append('target_language', lang);
+  return url;
+}

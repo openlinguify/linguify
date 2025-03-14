@@ -22,7 +22,6 @@ import {
   LogOut,
   Menu,
   ChevronDown,
-  GlobeIcon,
 } from "lucide-react";
 import {
   Select,
@@ -44,7 +43,7 @@ const Header = () => {
   const [isClient, setIsClient] = useState(false);
 
   // Use Auth Context
-  const { user, isAuthenticated, login, logout } = useAuthContext();
+  const { user, isAuthenticated, login } = useAuthContext();
 
   // Only run client-side code after mounting
   useEffect(() => {
@@ -111,12 +110,14 @@ const Header = () => {
             href="/"
             className="flex items-center gap-2 hover:opacity-90 transition-all"
           >
-            <GlobeIcon className="h-6 w-6 text-brand-purple" />
-            <span className="text-xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 bg-clip-text text-transparent">
+            
               Linguify
             </span>
           </Link>
         </div>
+
+
 
         {/* Right Side Actions */}
         <div className="flex items-center gap-4">
@@ -305,23 +306,6 @@ const Header = () => {
   );
 };
 
-const NavItem = ({
-  href,
-  icon: Icon,
-  label,
-}: {
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-}) => (
-  <Link
-    href={href}
-    className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
-  >
-    <Icon className="h-4 w-4" />
-    {label}
-  </Link>
-);
 
 const NavItemMobile = ({
   href,
