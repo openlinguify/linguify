@@ -10,6 +10,7 @@ import {
   Award
 } from 'lucide-react';
 
+
 // Définition du type Feature
 export interface Feature {
   id: keyof typeof FEATURE_ICONS;

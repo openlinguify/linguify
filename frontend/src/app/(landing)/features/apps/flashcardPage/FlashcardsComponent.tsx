@@ -118,6 +118,7 @@ const FlashcardsPageComponent = () => {
       <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white">
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 py-20 lg:py-32">
+
           <div className="absolute inset-0 opacity-20 bg-[url('/pattern.svg')]"></div>
           <div
             className="absolute inset-0 opacity-30"

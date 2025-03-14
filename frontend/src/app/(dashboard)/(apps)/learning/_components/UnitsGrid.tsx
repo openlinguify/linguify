@@ -8,7 +8,8 @@ import {
   RefreshCcw,
   GraduationCap,
   ChevronDown,
-  Star} from "lucide-react";
+  Star,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import courseAPI from "@/services/courseAPI";
 import ExpandableUnitCard from "./ExpandableUnitCard";
@@ -29,12 +30,11 @@ const UnitsGrid: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [targetLanguage, setTargetLanguage] = useState<string>('en');
 
-  // Détecter la langue au chargement du composant
+  // Récupérer la langue cible au chargement
   useEffect(() => {
-    // Récupérer la langue cible de l'utilisateur
     const userLang = getUserTargetLanguage();
     setTargetLanguage(userLang);
-    console.log('UnitsGrid: User target language set to:', userLang);
+    console.log('UnitsGrid: Using target language:', userLang);
   }, []);
 
   const loadUnits = useCallback(async () => {
@@ -42,17 +42,11 @@ const UnitsGrid: React.FC = () => {
       setIsLoading(true);
       setError(null);
       
-      console.log(`UnitsGrid: Loading units with language: ${targetLanguage}`);
-      const data = await courseAPI.getUnits(undefined, targetLanguage);
+      // Récupérer la langue cible actuelle (pourrait avoir changé)
+      const currentLang = getUserTargetLanguage();
       
-      if (data && data.length > 0) {
-        console.log('UnitsGrid: First unit received:', {
-          id: data[0].id,
-          title: data[0].title,
-          language: targetLanguage
-        });
-      }
-      
+      console.log('UnitsGrid: Loading units with language:', currentLang);
+      const data = await courseAPI.getUnits(undefined, currentLang);
       setUnits(data as Unit[]);
     } catch (err) {
       console.error("Error loading units:", err);
@@ -60,12 +54,27 @@ const UnitsGrid: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [targetLanguage]);
+  }, []);
 
+  // Charger les unités au chargement et quand la langue change
   useEffect(() => {
-    if (targetLanguage) {
-      loadUnits();
-    }
+    loadUnits();
+    
+    // Écouter les changements de langue dans localStorage
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'userSettings') {
+        const newLang = getUserTargetLanguage();
+        if (newLang !== targetLanguage) {
+          setTargetLanguage(newLang);
+          loadUnits();
+        }
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [loadUnits, targetLanguage]);
 
   const handleLessonClick = useCallback((unitId: number, lessonId: number) => {
@@ -100,15 +109,10 @@ const UnitsGrid: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
-      <div className="max-w-5xl mx-auto p-6">
+    <div className="w-full space-y-6">
+      <div className="w-full">
         {/* Header with Gradient */}
         <LearningJourney />
-
-        {/* Debug Language Info */}
-        <div className="mb-4 p-2 bg-blue-50 rounded text-sm text-blue-800">
-          Current language: <strong>{targetLanguage}</strong>
-        </div>
 
         {/* Learning Path */}
         {units.length > 0 ? (
@@ -116,17 +120,17 @@ const UnitsGrid: React.FC = () => {
             <h2 className="text-xl font-bold text-gray-900 mb-6">Learning Path</h2>
 
             {/* Vertical connecting line */}
-            <div className="absolute left-14 top-24 bottom-12 w-1 bg-gradient-to-b from-brand-purple to-brand-gold opacity-20" />
+            <div className="absolute left-14 top-24 bottom-12 w-1 bg-gradient-to-b from-indigo-600 via-purple-600 to-pink-400 opacity-20" />
 
             <div className="space-y-6">
               {units.map((unit, index) => (
                 <div key={unit.id} className="relative">
                   {/* Status indicator */}
-                  <div className="absolute left-14 top-12 flex items-center justify-center w-6 h-6 rounded-full bg-white border-2 border-brand-purple transform -translate-x-[11px] z-10">
+                  <div className="absolute left-14 top-12 flex items-center justify-center w-6 h-6 rounded-full bg-white border-2 border-purple-600 transform -translate-x-[11px] z-10">
                     {index === 0 ? (
-                      <Star className="w-3 h-3 text-brand-purple" />
+                      <Star className="w-3 h-3 text-purple-600" />
                     ) : (
-                      <div className="w-2 h-2 rounded-full bg-brand-purple" />
+                      <div className="w-2 h-2 rounded-full bg-purple-600" />
                     )}
                   </div>
 
@@ -141,7 +145,7 @@ const UnitsGrid: React.FC = () => {
                   {/* Connecting arrow for non-last items */}
                   {index !== units.length - 1 && (
                     <div className="absolute left-14 bottom-0 transform -translate-x-[8px]">
-                      <ChevronDown className="w-4 h-4 text-brand-purple opacity-50" />
+                      <ChevronDown className="w-4 h-4 text-purple-600 opacity-50" />
                     </div>
                   )}
                 </div>
@@ -151,8 +155,8 @@ const UnitsGrid: React.FC = () => {
         ) : (
           <div className="text-center py-12 bg-white rounded-lg shadow-sm">
             <div className="max-w-md mx-auto">
-              <GraduationCap className="h-12 w-12 mx-auto text-brand-purple opacity-50" />
-              <h3 className="text-xl font-bold mt-4 bg-gradient-to-r from-brand-purple to-brand-gold text-transparent bg-clip-text">
+              <GraduationCap className="h-12 w-12 mx-auto text-purple-600 opacity-50" />
+              <h3 className="text-xl font-bold mt-4 bg-gradient-to-r from-purple-600 to-pink-400 text-transparent bg-clip-text">
                 Start Your Journey
               </h3>
               <p className="text-muted-foreground mt-2">

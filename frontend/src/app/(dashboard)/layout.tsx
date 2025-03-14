@@ -55,7 +55,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </aside>
 
-        <main className="flex-1 md:pl-56 bg-purple-50 min-h-[calc(100vh-56px)]">
+        <main className="flex-1 md:pl-56 bg-white dark:bg-[rgb(128,0,128)] dark:text-white">
           <div className="p-6 w-full">{children}</div>
         </main>
       </div>

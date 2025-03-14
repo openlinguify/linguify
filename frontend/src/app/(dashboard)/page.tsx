@@ -70,31 +70,6 @@ export default function DashboardHome() {
           </Link>
         ))}
       </div>
-
-      {/* User Profile Section */}
-      <Card className="p-6">
-        <div className="space-y-4">
-          {/* Informations linguistiques */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <p className="text-sm font-medium text-gray-500">Learning Language</p>
-              <p className="text-lg">{user?.target_language || "ENGLISH"}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Native Language</p>
-              <p className="text-lg">{userData.nativeLanguage}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Current Level</p>
-              <p className="text-lg">{userData.level}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Learning Goals</p>
-              <p className="text-lg">{userData.goals}</p>
-            </div>
-          </div>
-        </div>
-      </Card>
     </div>
   );
 }
