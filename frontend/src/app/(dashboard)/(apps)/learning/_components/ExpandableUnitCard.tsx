@@ -1,5 +1,6 @@
+// src/app/(dashboard)/(apps)/learning/_components/ExpandableUnitCard.tsx
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
@@ -17,6 +18,7 @@ import {
 } from "lucide-react";
 import { getUserTargetLanguage } from "@/utils/languageUtils";
 import courseAPI from "@/services/courseAPI";
+import progressAPI from "@/services/progressAPI";
 
 interface Unit {
   id: number;
@@ -34,10 +36,21 @@ interface Lesson {
   order: number;
 }
 
+interface LessonProgress {
+  id: number;
+  status: string; // Changed from union type to string to match API response
+  completion_percentage: number;
+  lesson_details: {
+    id: number;
+    title: string;
+  };
+}
+
 interface ExpandableUnitCardProps {
   unit: Unit;
   onLessonClick: (unitId: number, lessonId: number) => void;
   showLevelBadge?: boolean;
+  refreshTrigger?: number; // Pour forcer un rafraîchissement des données
 }
 
 const getLessonTypeIcon = (type: string) => {
@@ -56,19 +69,68 @@ const getLessonTypeIcon = (type: string) => {
 const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ 
   unit, 
   onLessonClick,
-  showLevelBadge = false
+  showLevelBadge = false,
+  refreshTrigger = 0
  }) => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [lessonProgress, setLessonProgress] = useState<Record<number, LessonProgress>>({});
   const [loading, setLoading] = useState<boolean>(false);
+  const [progressLoading, setProgressLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [unitProgress, setUnitProgress] = useState<number>(0);
   
-  // Mock progress - replace with real data
-  const progress = Math.floor(Math.random() * 100);
+  // Fonction pour récupérer la progression de l'unité
+  const fetchUnitProgress = useCallback(async () => {
+    try {
+      setProgressLoading(true);
+      const progressData = await progressAPI.getUnitProgress(unit.id);
+      
+      if (progressData && progressData.length > 0) {
+        setUnitProgress(progressData[0].completion_percentage || 0);
+      } else {
+        setUnitProgress(0);
+      }
+    } catch (err) {
+      console.error(`Error fetching progress for unit ${unit.id}:`, err);
+      setUnitProgress(0);
+    } finally {
+      setProgressLoading(false);
+    }
+  }, [unit.id]);
 
+  // Fonction pour récupérer la progression des leçons
+  const fetchLessonProgress = useCallback(async () => {
+    if (!expanded) return;
+    
+    try {
+      const progressData = await progressAPI.getLessonProgressByUnit(unit.id);
+      
+      if (progressData && progressData.length > 0) {
+        // Convertir le tableau en un objet avec les IDs de leçon comme clés
+        const progressMap: Record<number, LessonProgress> = {};
+        progressData.forEach(item => {
+          progressMap[item.lesson_details.id] = item;
+        });
+        
+        setLessonProgress(progressMap);
+      }
+    } catch (err) {
+      console.error(`Error fetching lesson progress for unit ${unit.id}:`, err);
+    }
+  }, [unit.id, expanded]);
+
+  // Récupérer la progression de l'unité au chargement et quand refreshTrigger change
+  useEffect(() => {
+    fetchUnitProgress();
+  }, [fetchUnitProgress, refreshTrigger]);
+
+  // Récupérer les leçons et leur progression quand l'unité est déployée
   useEffect(() => {
     const fetchLessons = async () => {
-      if (expanded && lessons.length === 0) {
+      if (!expanded) return;
+      
+      if (lessons.length === 0) {
         setLoading(true);
         try {
           const targetLanguage = getUserTargetLanguage();
@@ -76,23 +138,15 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
           
           const data = await courseAPI.getLessons(unit.id, targetLanguage);
           
-          // Vérifier et déboguer les données reçues
-          if (data && data.length > 0) {
-            console.log('ExpandableUnitCard: First lesson received:', {
-              id: data[0].id,
-              title: data[0].title,
-              language: targetLanguage
-            });
-          } else {
-            console.log('ExpandableUnitCard: No lessons received or empty data');
-          }
-          
           const sortedLessons = Array.isArray(data)
             ? data.sort((a: Lesson, b: Lesson) => a.order - b.order)
             : (data.results || []).sort((a: Lesson, b: Lesson) => a.order - b.order);
           
           setLessons(sortedLessons);
           setError(null);
+          
+          // Récupérer la progression des leçons après avoir chargé les leçons
+          fetchLessonProgress();
         } catch (err) {
           const errorMessage = err instanceof Error ? err.message : "Failed to load lessons";
           setError(errorMessage);
@@ -100,16 +154,57 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
         } finally {
           setLoading(false);
         }
+      } else {
+        // Rafraîchir la progression même si nous avons déjà les leçons
+        fetchLessonProgress();
       }
     };
 
     fetchLessons();
-  }, [expanded, unit.id, lessons.length]);
+  }, [expanded, unit.id, lessons.length, fetchLessonProgress, refreshTrigger]);
+
+  // Déterminer le style de la leçon en fonction de sa progression
+  const getLessonStyle = (lessonId: number) => {
+    const progress = lessonProgress[lessonId];
+    
+    if (!progress) {
+      return {
+        statusBadge: null,
+        statusClass: '', 
+        progressValue: 0
+      };
+    }
+    
+    let statusBadge = null;
+    let statusClass = '';
+    
+    if (progress.status === 'completed') {
+      statusBadge = (
+        <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
+          <CheckCircle className="h-3 w-3" />
+          Completed
+        </span>
+      );
+      statusClass = 'border-l-4 border-green-500';
+    } else if (progress.status === 'in_progress') {
+      statusBadge = (
+        <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700">
+          <Clock className="h-3 w-3" />
+          In Progress
+        </span>
+      );
+      statusClass = 'border-l-4 border-amber-500';
+    }
+    
+    return {
+      statusBadge,
+      statusClass,
+      progressValue: progress.completion_percentage
+    };
+  };
 
   return (
-    // Make sure the Card maintains relative positioning and width containment
     <Card className="group overflow-hidden border-2 border-transparent hover:border-brand-purple/20 transition-all duration-300 relative w-full">
-      {/* Header section that triggers expand/collapse */}
       <div 
         className="p-6 space-y-4 cursor-pointer"
         onClick={() => setExpanded(!expanded)}
@@ -128,9 +223,9 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
                 Level {unit.level}
               </Badge>
             )}
-          {progress > 0 && (
+          {unitProgress > 0 && (
             <span className="text-sm text-muted-foreground">
-              {progress}% complete
+              {unitProgress}% complete
             </span>
           )}
         </div>
@@ -145,26 +240,24 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
               <ChevronRight className="h-5 w-5 text-brand-purple transition-transform duration-200" />
             }
           </div>
-          {/* If you want to display the description, uncomment the following line */}
-          {/* <p className="text-muted-foreground line-clamp-2">
-            {unit.description}
-          </p> */}
+          {/* Unit description is optional */}
+          {unit.description && (
+            <p className="text-muted-foreground line-clamp-2">
+              {unit.description}
+            </p>
+          )}
         </div>
 
-        {progress > 0 && (
+        {!progressLoading && unitProgress > 0 && (
           <div className="w-full">
             <Progress 
-              value={progress} 
-              className="h-1.5"
-              style={{
-                "--progress-background": "linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234), rgb(244, 114, 182))"
-              } as React.CSSProperties}
+              value={unitProgress} 
+              className="h-1.5 [&>div]:bg-gradient-to-r [&>div]:from-indigo-600 [&>div]:via-purple-600 [&>div]:to-pink-400"
             />
           </div>
         )}
       </div>
 
-      {/* The expanded lessons section - ensure it stays contained within the Card */}
       {expanded && (
         <div className="border-t border-gray-100 bg-gray-50/50 w-full">
           {loading ? (
@@ -183,55 +276,68 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
             </div>
           ) : (
             <div className="p-4 space-y-3">
-              {lessons.map((lesson, index) => (
-                <div
-                  key={lesson.id}
-                  className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onLessonClick(unit.id, lesson.id);
-                  }}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-600 shrink-0">
-                      {getLessonTypeIcon(lesson.lesson_type)}
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <h4 className="font-medium text-gray-900">
-                            {lesson.title}
-                          </h4>
-                          {/* If you want to display the description, uncomment the following line */}
-                          
-                          {/* <p className="text-sm text-muted-foreground mt-1">
-                            {lesson.description}
-                          </p> */}
-                        </div>
-                        <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
+              {lessons.map((lesson, index) => {
+                const { statusBadge, statusClass, progressValue } = getLessonStyle(lesson.id);
+                
+                return (
+                  <div
+                    key={lesson.id}
+                    className={`bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer ${statusClass}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onLessonClick(unit.id, lesson.id);
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-600 shrink-0">
+                        {getLessonTypeIcon(lesson.lesson_type)}
                       </div>
                       
-                      <div className="flex flex-wrap items-center gap-3 mt-2">
-                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Clock className="h-3 w-3" />
-                          {lesson.estimated_duration} min
-                        </span>
-                        <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-700">
-                          {getLessonTypeIcon(lesson.lesson_type)}
-                          {lesson.lesson_type}
-                        </span>
-                        {index === 0 && (
-                          <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
-                            <CheckCircle className="h-3 w-3" />
-                            Start Here
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <h4 className="font-medium text-gray-900">
+                              {lesson.title}
+                            </h4>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
+                        </div>
+                        
+                        <div className="flex flex-wrap items-center gap-3 mt-2">
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3" />
+                            {lesson.estimated_duration} min
                           </span>
+                          
+                          <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-700">
+                            {getLessonTypeIcon(lesson.lesson_type)}
+                            {lesson.lesson_type}
+                          </span>
+                          
+                          {index === 0 && !statusBadge && (
+                            <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                              <CheckCircle className="h-3 w-3" />
+                              Start Here
+                            </span>
+                          )}
+                          
+                          {statusBadge}
+                        </div>
+                        
+                        {/* Afficher la barre de progression si la progression > 0 */}
+                        {progressValue > 0 && (
+                          <div className="mt-2">
+                            <Progress 
+                              value={progressValue} 
+                              className="h-1 [&>div]:bg-gradient-to-r [&>div]:from-indigo-600 [&>div]:via-purple-600 [&>div]:to-pink-400"
+                            />
+                          </div>
                         )}
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

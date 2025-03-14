@@ -503,7 +503,7 @@ export default function SettingsPage() {
   const fullName = `${formData.first_name || ''} ${formData.last_name || ''}`.trim() || formData.username;
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="w-full space-y-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Settings</h1>
         <div className="flex gap-2">
