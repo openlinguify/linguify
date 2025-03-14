@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { 
   AlertCircle, 
   ArrowLeft, 
@@ -11,7 +13,9 @@ import {
   GraduationCap, 
   Calculator, 
   Gamepad2, 
-  ArrowRightLeft 
+  ArrowRightLeft,
+  CheckCircle,
+  Clock
 } from "lucide-react";
 import BackButton from "@/components/ui/BackButton";
 import TheoryContent from "./TheoryContent";
@@ -22,7 +26,10 @@ import NumbersGame from "./NumbersGame";
 import ReorderingContent from "./ReorderingContent";
 import { getUserTargetLanguage } from "@/utils/languageUtils";
 import courseAPI from "@/services/courseAPI";
+import progressAPI from "@/services/progressAPI";
+import lessonCompletionService from "@/services/lessonCompletionService";
 import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
 
 // Content type mapping for consistent handling
 const CONTENT_TYPES = {
@@ -36,12 +43,12 @@ const CONTENT_TYPES = {
 
 // Map content types to icons
 const CONTENT_TYPE_ICONS: Record<string, React.ReactNode> = {
-  'theory': <BookOpen className="h-5 w-5" />,
-  'vocabulary': <FileText className="h-5 w-5" />,
-  'multiple choice': <GraduationCap className="h-5 w-5" />,
-  'numbers': <Calculator className="h-5 w-5" />,
-  'numbers_game': <Gamepad2 className="h-5 w-5" />,
-  'reordering': <ArrowRightLeft className="h-5 w-5" />,
+  'theory': <BookOpen className="h-4 w-4" />,
+  'vocabulary': <FileText className="h-4 w-4" />,
+  'multiple choice': <GraduationCap className="h-4 w-4" />,
+  'numbers': <Calculator className="h-4 w-4" />,
+  'numbers_game': <Gamepad2 className="h-4 w-4" />,
+  'reordering': <ArrowRightLeft className="h-4 w-4" />,
 };
 
 interface ContentLesson {
@@ -69,10 +76,12 @@ interface ContentLesson {
 
 interface LessonContentProps {
   lessonId: string;
+  unitId: string;
   language?: 'en' | 'fr' | 'es' | 'nl';
 }
 
-export default function LessonContent({ lessonId, language }: LessonContentProps) {
+export default function LessonContent({ lessonId, unitId, language }: LessonContentProps) {
+  const router = useRouter();
   const [contents, setContents] = useState<ContentLesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -81,18 +90,17 @@ export default function LessonContent({ lessonId, language }: LessonContentProps
     id: number;
   } | null>(null);
   const [targetLanguage, setTargetLanguage] = useState<'en' | 'fr' | 'es' | 'nl'>('en');
+  const [completedContents, setCompletedContents] = useState<Set<number>>(new Set());
+  const [lessonProgress, setLessonProgress] = useState(0);
+  const [lessonTitle, setLessonTitle] = useState("");
 
   // Détecter la langue au chargement du composant
   useEffect(() => {
-    // Priorité 1: paramètre direct passé au composant
     if (language && ['en', 'fr', 'es', 'nl'].includes(language)) {
       setTargetLanguage(language);
-      console.log('LessonContent: Using passed language:', language);
     } else {
-      // Priorité 2: langue de l'utilisateur dans localStorage
       const userLang = getUserTargetLanguage();
       setTargetLanguage(userLang as 'en' | 'fr' | 'es' | 'nl');
-      console.log('LessonContent: Using localStorage language:', userLang);
     }
   }, [language]);
 
@@ -102,35 +110,37 @@ export default function LessonContent({ lessonId, language }: LessonContentProps
       if (!lessonId || !targetLanguage) return;
 
       try {
-        console.log(`LessonContent: Fetching content for lesson ${lessonId} with language: ${targetLanguage}`);
+        console.log(`Fetching content for lesson ${lessonId} with language: ${targetLanguage}`);
+        
+        // Fetch lesson title first
+        try {
+          const lessonResponse = await courseAPI.getLessons(parseInt(unitId), targetLanguage);
+          if (Array.isArray(lessonResponse)) {
+            const lesson = lessonResponse.find(l => l.id === parseInt(lessonId));
+            if (lesson) {
+              setLessonTitle(lesson.title);
+            }
+          }
+        } catch (err) {
+          console.warn("Could not fetch lesson title:", err);
+        }
         
         const data = await courseAPI.getContentLessons(parseInt(lessonId), targetLanguage);
         
         if (!data || !Array.isArray(data)) {
-          console.error('LessonContent: Invalid data received:', data);
           setError("Received invalid data format from API");
           return;
         }
         
         const sortedContents = data.sort((a, b) => a.order - b.order);
         
-        // Debug logs
-        console.log("Contents received:", sortedContents);
-        if (sortedContents.length > 0) {
-          console.log('Content languages available:', {
-            id: sortedContents[0].id,
-            en: !!sortedContents[0].title.en,
-            fr: !!sortedContents[0].title.fr,
-            es: !!sortedContents[0].title.es,
-            nl: !!sortedContents[0].title.nl,
-            targetLanguage
-          });
-        }
-        
         setContents(sortedContents);
         setError(null);
+        
+        // Une fois que nous avons les contenus, récupérer les progressions
+        fetchProgressData(sortedContents);
       } catch (err) {
-        console.error("LessonContent: Error fetching content:", err);
+        console.error("Error fetching content:", err);
         setError(err instanceof Error ? err.message : "Failed to load lesson content");
       } finally {
         setLoading(false);
@@ -138,33 +148,113 @@ export default function LessonContent({ lessonId, language }: LessonContentProps
     };
 
     fetchContents();
-  }, [lessonId, targetLanguage]);
+  }, [lessonId, targetLanguage, unitId]);
+  
+  // Récupérer les données de progression
+  const fetchProgressData = async (contents: ContentLesson[]) => {
+    try {
+      const progressData = await progressAPI.getContentLessonProgress(parseInt(lessonId));
+      
+      // Créer un ensemble des IDs de contenus complétés
+      const completedSet = new Set<number>();
+      let totalCompletion = 0;
+      
+      if (progressData && Array.isArray(progressData)) {
+        progressData.forEach(item => {
+          if (item.status === 'completed') {
+            completedSet.add(item.content_lesson_details.id);
+          }
+          
+          // Calculer la progression totale de la leçon
+          if (item.content_lesson_details.lesson_id === parseInt(lessonId)) {
+            totalCompletion += item.completion_percentage;
+          }
+        });
+        
+        // Calculer le pourcentage global
+        const lessonCompletion = contents.length > 0 
+          ? Math.round(totalCompletion / contents.length) 
+          : 0;
+        
+        setLessonProgress(lessonCompletion);
+        setCompletedContents(completedSet);
+      }
+    } catch (err) {
+      console.error("Error fetching progress data:", err);
+    }
+  };
 
   const handleBack = () => {
     if (selectedContent) {
       setSelectedContent(null);
+      
+      // Lors du retour au sommaire, rafraîchir les données de progression
+      if (contents.length > 0) {
+        fetchProgressData(contents);
+      }
     } else {
-      window.history.back();
+      // Si on revient à la liste des leçons, mettre à jour la progression de la leçon
+      if (lessonProgress > 0) {
+        lessonCompletionService.updateLessonProgress(
+          parseInt(lessonId),
+          parseInt(unitId),
+          lessonProgress,
+          undefined, 
+          lessonProgress === 100 
+        ).then(() => {
+          router.push(`/learning/${unitId}`);
+        });
+      } else {
+        router.push(`/learning/${unitId}`);
+      }
     }
   };
 
   const handleContentClick = (contentType: string, contentId: number) => {
     setSelectedContent({ type: contentType, id: contentId });
   };
+  
+  const handleContentComplete = async (contentId: number) => {
+    // Marquer le contenu comme complété
+    await lessonCompletionService.updateContentProgress(
+      contentId,
+      100,
+      undefined,
+      10,
+      true
+    );
+    
+    // Mettre à jour notre état local
+    setCompletedContents(prev => new Set(prev).add(contentId));
+    
+    // Recalculer la progression de la leçon
+    const newCompletedCount = completedContents.size + (completedContents.has(contentId) ? 0 : 1);
+    const newProgress = Math.round((newCompletedCount / contents.length) * 100);
+    setLessonProgress(newProgress);
+    
+    // Si tous les contenus sont complétés, mettre à jour la leçon
+    if (newCompletedCount === contents.length) {
+      await lessonCompletionService.updateLessonProgress(
+        parseInt(lessonId),
+        parseInt(unitId),
+        100,
+        undefined,
+        true
+      );
+    }
+  };
 
   const getContentTypeIcon = (contentType: string) => {
-    return CONTENT_TYPE_ICONS[contentType] || <FileText className="h-5 w-5" />;
+    return CONTENT_TYPE_ICONS[contentType] || <FileText className="h-4 w-4" />;
   };
 
   // Loading state
   if (loading) {
     return (
-      <div className="p-6">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-pulse flex flex-col items-center">
-            <div className="w-12 h-12 rounded-full bg-purple-200 animate-spin mb-4"></div>
-            <div className="text-lg font-medium text-purple-800">Loading content...</div>
-          </div>
+      <div className="min-h-screen w-full bg-purple-50 flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          <p className="text-purple-600 font-medium">Loading lesson content...</p>
         </div>
       </div>
     );
@@ -173,8 +263,8 @@ export default function LessonContent({ lessonId, language }: LessonContentProps
   // Error state
   if (error) {
     return (
-      <div className="p-6">
-        <Alert variant="destructive">
+      <div className="min-h-screen w-full bg-purple-50 p-4">
+        <Alert variant="destructive" className="max-w-2xl mx-auto">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
@@ -186,58 +276,74 @@ export default function LessonContent({ lessonId, language }: LessonContentProps
   if (selectedContent) {
     const commonProps = {
       lessonId: selectedContent.id.toString(),
-      language: targetLanguage
+      language: targetLanguage,
+      onComplete: () => handleContentComplete(selectedContent.id),
+      unitId: unitId
     };
 
     return (
-      <div>
-        <div className="p-6">
+      <div className="min-h-screen bg-purple-50">
+        <div className="px-8 py-6 max-w-7xl mx-auto">
           <BackButton
             onClick={handleBack}
             iconLeft={<ArrowLeft className="h-4 w-4" />}
           >
-            Back to Lessons
+            Back to Lesson
           </BackButton>
           
-          {/* Debug Language Info - Remove in production */}
-          <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-800">
-            Language: <strong>{targetLanguage}</strong>
+          <div className="mt-4 mb-8 flex flex-wrap items-center gap-2">
+            <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white">
+              {targetLanguage.toUpperCase()}
+            </Badge>
+            
+            <Badge className="bg-white text-purple-600 border border-purple-200">
+              {selectedContent.type}
+            </Badge>
+          </div>
+
+          {selectedContent.type === CONTENT_TYPES.THEORY && (
+            <TheoryContent {...commonProps} />
+          )}
+
+          {selectedContent.type === CONTENT_TYPES.VOCABULARY && (
+            <VocabularyLesson {...commonProps} />
+          )}
+
+          {selectedContent.type === CONTENT_TYPES.MULTIPLE_CHOICE && (
+            <MultipleChoiceQuestion {...commonProps} />
+          )}
+
+          {selectedContent.type === CONTENT_TYPES.NUMBERS && (
+            <NumberComponent {...commonProps} />
+          )}
+
+          {selectedContent.type === CONTENT_TYPES.NUMBERS_GAME && (
+            <NumbersGame {...commonProps} />
+          )}
+
+          {selectedContent.type === CONTENT_TYPES.REORDERING && (
+            <ReorderingContent {...commonProps} />
+          )}
+
+          {/* Bouton de complétion fixe */}
+          <div className="fixed bottom-6 right-6">
+            <Button 
+              onClick={() => handleContentComplete(selectedContent.id)}
+              className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white shadow-lg hover:shadow-xl transition-all hover:opacity-90"
+            >
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Mark as Complete
+            </Button>
           </div>
         </div>
-
-        {selectedContent.type === CONTENT_TYPES.THEORY && (
-          <TheoryContent {...commonProps} />
-        )}
-
-        {selectedContent.type === CONTENT_TYPES.VOCABULARY && (
-          <VocabularyLesson {...commonProps} />
-        )}
-
-        {selectedContent.type === CONTENT_TYPES.MULTIPLE_CHOICE && (
-          <MultipleChoiceQuestion {...commonProps} />
-        )}
-
-        {selectedContent.type === CONTENT_TYPES.NUMBERS && (
-          <NumberComponent {...commonProps} />
-        )}
-
-        {selectedContent.type === CONTENT_TYPES.NUMBERS_GAME && (
-          <NumbersGame {...commonProps} />
-        )}
-
-        {selectedContent.type === CONTENT_TYPES.REORDERING && (
-          <ReorderingContent {...commonProps} />
-        )}
-
-        {/* Ajout de nouveaux types de contenu ici */}
       </div>
     );
   }
 
   // Main content list
   return (
-    <div className="p-6 bg-gradient-to-b from-purple-50 to-white min-h-screen">
-      <div className="max-w-4xl mx-auto">
+    <div className="w-full space-y-6">
+      <div className="w-full">
         <div className="mb-8">
           <BackButton
             onClick={handleBack}
@@ -245,106 +351,157 @@ export default function LessonContent({ lessonId, language }: LessonContentProps
           >
             Back to Lessons
           </BackButton>
+        </div>
+
+        {/* Header avec titre et progression */}
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-amber-500 text-transparent bg-clip-text">
+            {lessonTitle || "Lesson Content"}
+          </h1>
           
-          {/* Lesson Language Badge */}
-          <div className="mt-4 flex items-center">
-            <Badge className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-3 py-1">
-              Language: {targetLanguage.toUpperCase()}
+          <div className="flex items-center gap-3">
+            <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white px-3 py-1.5">
+              {targetLanguage.toUpperCase()}
             </Badge>
+            
+            <div className="flex items-center text-gray-600 text-sm">
+              <Clock className="h-4 w-4 mr-1" />
+              {contents.length} modules
+            </div>
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold mb-6 text-purple-800">Lesson Content</h1>
+        {/* Progress bar */}
+        <div className="bg-white rounded-lg p-4 mb-8 shadow-sm">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium text-gray-600">Lesson Progress</span>
+            <span className="text-sm font-medium text-purple-600">{lessonProgress}%</span>
+          </div>
+          <Progress 
+            value={lessonProgress} 
+            className="h-2 bg-purple-100" 
+            style={{
+              "--progress-background": "linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234), rgb(244, 114, 182))"
+            } as React.CSSProperties}
+          />
+        </div>
 
-        <div className="grid gap-6">
+        {/* Contents List */}
+        <div className="space-y-4">
           {contents.length === 0 ? (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                No content found for this lesson.
-              </AlertDescription>
-            </Alert>
+            <div className="bg-white rounded-lg p-6 shadow-sm text-center">
+              <AlertCircle className="h-8 w-8 text-purple-500 mx-auto mb-2" />
+              <p className="text-lg font-medium text-gray-700">No content found for this lesson.</p>
+            </div>
           ) : (
-            contents.map((content) => {
+            contents.map((content, index) => {
               const isClickable = Object.values(CONTENT_TYPES).includes(content.content_type as any);
               const fallbackTitle = content.title.en || "Content Title";
               const fallbackInstruction = content.instruction.en || "Content Instructions";
               const title = content.title[targetLanguage] || fallbackTitle;
               const instruction = content.instruction[targetLanguage] || fallbackInstruction;
               const usingFallback = !content.title[targetLanguage] || !content.instruction[targetLanguage];
+              const isCompleted = completedContents.has(content.id);
               
               return (
                 <Card
                   key={content.id}
-                  className={`overflow-hidden transition-all duration-300 shadow-md hover:shadow-xl ${
-                    isClickable ? 'cursor-pointer transform hover:scale-[1.01]' : ''
-                  }`}
+                  className={`bg-white overflow-hidden border-2 transition-all duration-300 shadow-sm hover:shadow-md ${
+                    isClickable ? 'cursor-pointer' : ''
+                  } ${isCompleted ? 'border-green-400' : 'border-transparent hover:border-brand-purple/20'}`}
                   onClick={() => {
                     if (isClickable) {
                       handleContentClick(content.content_type, content.id);
                     }
                   }}
                 >
-                  {/* Card Header with Type Badge */}
-                  <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-2 border-b flex items-center justify-between">
-                    <Badge variant="outline" className="bg-white">
-                      {content.content_type}
-                    </Badge>
-                    {usingFallback && (
-                      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">
-                        Showing English fallback
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  {/* Card Content */}
                   <div className="p-6">
                     <div className="flex items-start gap-4">
                       {/* Content Type Icon */}
-                      <div className="flex-shrink-0 w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-700">
-                        {getContentTypeIcon(content.content_type)}
+                      <div className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 ${
+                        isCompleted 
+                          ? 'bg-green-100 text-green-600' 
+                          : 'bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-600'
+                      }`}>
+                        {isCompleted ? <CheckCircle className="h-4 w-4" /> : getContentTypeIcon(content.content_type)}
                       </div>
                       
                       {/* Content Details */}
-                      <div className="flex-grow">
-                        <h3 className="text-xl font-bold text-purple-800 mb-2">
-                          {title}
-                        </h3>
-                        <p className="text-gray-700">
-                          {instruction}
-                        </p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="text-xl font-bold text-gray-900">
+                                {title}
+                              </h3>
+                              
+                              {isCompleted && (
+                                <Badge className="bg-green-100 text-green-700 border-none">
+                                  Completed
+                                </Badge>
+                              )}
+                              
+                              {usingFallback && (
+                                <Badge variant="outline" className="text-orange-600 bg-orange-50 border-orange-200">
+                                  Fallback
+                                </Badge>
+                              )}
+                            </div>
+                            
+                            <p className="text-gray-600 mt-1 line-clamp-2">
+                              {instruction}
+                            </p>
+                          </div>
+                          
+                          {isClickable && <ArrowRightLeft className="h-4 w-4 text-purple-400 shrink-0 mt-1" />}
+                        </div>
                         
-                        {/* Vocabulary Preview */}
+                        {/* Vocabulary Preview Section (conditionally) */}
                         {content.vocabulary_lists && content.vocabulary_lists.length > 0 && (
-                          <div className="mt-6 pt-4 border-t border-gray-100">
-                            <h4 className="font-medium mb-3 text-purple-700">
-                              Vocabulary Preview ({content.vocabulary_lists.length} words)
-                            </h4>
+                          <div className="mt-4 pt-3 border-t border-gray-100">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-medium text-sm text-purple-600">
+                                Vocabulary Preview
+                              </h4>
+                              <span className="text-xs text-gray-500">
+                                {content.vocabulary_lists.length} words
+                              </span>
+                            </div>
+                            
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                               {content.vocabulary_lists.slice(0, 4).map((vocab) => (
-                                <div key={vocab.id} className="bg-white p-3 rounded shadow-sm border border-purple-100">
-                                  <div className="font-medium text-purple-800">{vocab.word_en}</div>
-                                  <div className="text-gray-600 text-sm">{vocab.definition_en}</div>
+                                <div key={vocab.id} className="bg-gray-50 p-2 rounded-md text-sm">
+                                  <span className="font-medium text-purple-800">{vocab.word_en}</span>
+                                  <span className="text-gray-500 ml-2">- {vocab.definition_en.substring(0, 30)}{vocab.definition_en.length > 30 ? '...' : ''}</span>
                                 </div>
                               ))}
                             </div>
+                            
                             {content.vocabulary_lists.length > 4 && (
-                              <div className="text-purple-600 text-sm mt-2 font-medium">
+                              <p className="text-xs text-purple-600 mt-2">
                                 + {content.vocabulary_lists.length - 4} more words
-                              </div>
+                              </p>
                             )}
                           </div>
                         )}
+                        
+                        {/* Bottom badges/info */}
+                        <div className="flex flex-wrap items-center gap-2 mt-3">
+                          <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-700">
+                            {getContentTypeIcon(content.content_type)}
+                            {content.content_type}
+                          </span>
+                          
+                          {index === 0 && !isCompleted && (
+                            <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                              <CheckCircle className="h-3 w-3" />
+                              Start Here
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Card Footer */}
-                  {isClickable && (
-                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-2 border-t text-right">
-                      <span className="text-sm text-purple-700 font-medium">Click to view content</span>
-                    </div>
-                  )}
                 </Card>
               );
             })
