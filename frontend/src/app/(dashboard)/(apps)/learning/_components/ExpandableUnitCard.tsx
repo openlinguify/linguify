@@ -37,6 +37,7 @@ interface Lesson {
 interface ExpandableUnitCardProps {
   unit: Unit;
   onLessonClick: (unitId: number, lessonId: number) => void;
+  showLevelBadge?: boolean;
 }
 
 const getLessonTypeIcon = (type: string) => {
@@ -52,7 +53,11 @@ const getLessonTypeIcon = (type: string) => {
   }
 };
 
-const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonClick }) => {
+const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ 
+  unit, 
+  onLessonClick,
+  showLevelBadge = false
+ }) => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -116,9 +121,11 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonC
         }}
       >
         <div className="flex items-center justify-between">
-          <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white">
-            Level {unit.level}
-          </Badge>
+          {showLevelBadge && (
+              <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white">
+                Level {unit.level}
+              </Badge>
+            )}
           {progress > 0 && (
             <span className="text-sm text-muted-foreground">
               {progress}% complete
@@ -136,9 +143,10 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonC
               <ChevronRight className="h-5 w-5 text-brand-purple transition-transform duration-200" />
             }
           </div>
-          <p className="text-muted-foreground line-clamp-2">
+          {/* If you want to display the description, uncomment the following line */}
+          {/* <p className="text-muted-foreground line-clamp-2">
             {unit.description}
-          </p>
+          </p> */}
         </div>
 
         {progress > 0 && (
@@ -192,9 +200,11 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({ unit, onLessonC
                           <h4 className="font-medium text-gray-900">
                             {lesson.title}
                           </h4>
-                          <p className="text-sm text-muted-foreground mt-1">
+                          {/* If you want to display the description, uncomment the following line */}
+                          
+                          {/* <p className="text-sm text-muted-foreground mt-1">
                             {lesson.description}
-                          </p>
+                          </p> */}
                         </div>
                         <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
                       </div>
