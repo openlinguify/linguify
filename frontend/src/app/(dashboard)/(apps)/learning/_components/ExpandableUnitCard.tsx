@@ -107,7 +107,9 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
   }, [expanded, unit.id, lessons.length]);
 
   return (
-    <Card className="group overflow-hidden border-2 border-transparent hover:border-brand-purple/20 transition-all duration-300">
+    // Make sure the Card maintains relative positioning and width containment
+    <Card className="group overflow-hidden border-2 border-transparent hover:border-brand-purple/20 transition-all duration-300 relative w-full">
+      {/* Header section that triggers expand/collapse */}
       <div 
         className="p-6 space-y-4 cursor-pointer"
         onClick={() => setExpanded(!expanded)}
@@ -162,8 +164,9 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
         )}
       </div>
 
+      {/* The expanded lessons section - ensure it stays contained within the Card */}
       {expanded && (
-        <div className="border-t border-gray-100 bg-gray-50/50">
+        <div className="border-t border-gray-100 bg-gray-50/50 w-full">
           {loading ? (
             <div className="p-6 text-center text-muted-foreground">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-2"></div>
