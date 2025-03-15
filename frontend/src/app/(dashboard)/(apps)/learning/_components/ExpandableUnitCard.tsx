@@ -19,6 +19,7 @@ import {
 import { getUserTargetLanguage } from "@/utils/languageUtils";
 import courseAPI from "@/services/courseAPI";
 import progressAPI from "@/services/progressAPI";
+import { Cache } from "@/utils/cacheUtils";
 
 interface Unit {
   id: number;
@@ -38,7 +39,7 @@ interface Lesson {
 
 interface LessonProgress {
   id: number;
-  status: string; // Changed from union type to string to match API response
+  status: string;
   completion_percentage: number;
   lesson_details: {
     id: number;
@@ -50,7 +51,9 @@ interface ExpandableUnitCardProps {
   unit: Unit;
   onLessonClick: (unitId: number, lessonId: number) => void;
   showLevelBadge?: boolean;
-  refreshTrigger?: number; // Pour forcer un rafraîchissement des données
+  refreshTrigger?: number;
+  // Nouvelle prop pour contrôler la durée de vie du cache
+  cacheTTL?: number;
 }
 
 const getLessonTypeIcon = (type: string) => {
@@ -70,8 +73,9 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
   unit, 
   onLessonClick,
   showLevelBadge = false,
-  refreshTrigger = 0
- }) => {
+  refreshTrigger = 0,
+  cacheTTL = 5 * 60 * 1000, // 5 minutes by default
+}) => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [lessonProgress, setLessonProgress] = useState<Record<number, LessonProgress>>({});
@@ -80,16 +84,45 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [unitProgress, setUnitProgress] = useState<number>(0);
   
+  // Clés de cache
+  const unitProgressCacheKey = `unit_${unit.id}_progress`;
+  const lessonsCacheKey = `unit_${unit.id}_lessons_${getUserTargetLanguage()}`;
+  const lessonProgressCacheKey = `unit_${unit.id}_lesson_progress`;
+  
+  // Invalider le cache quand refreshTrigger change
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      console.log(`Invalidating cache for unit ${unit.id} due to refresh trigger`);
+      Cache.invalidateUnit(unit.id);
+    }
+  }, [refreshTrigger, unit.id]);
+  
   // Fonction pour récupérer la progression de l'unité
   const fetchUnitProgress = useCallback(async () => {
     try {
       setProgressLoading(true);
+      
+      // Vérifier si les données sont en cache
+      const cachedProgress = Cache.get<number>(unitProgressCacheKey, cacheTTL);
+      if (cachedProgress !== null) {
+        console.log(`Using cached unit progress for unit ${unit.id}`);
+        setUnitProgress(cachedProgress);
+        setProgressLoading(false);
+        return;
+      }
+      
+      // Pas de cache, récupérer depuis l'API
       const progressData = await progressAPI.getUnitProgress(unit.id);
       
       if (progressData && progressData.length > 0) {
-        setUnitProgress(progressData[0].completion_percentage || 0);
+        const progress = progressData[0].completion_percentage || 0;
+        setUnitProgress(progress);
+        
+        // Stocker dans le cache
+        Cache.set(unitProgressCacheKey, progress);
       } else {
         setUnitProgress(0);
+        Cache.set(unitProgressCacheKey, 0);
       }
     } catch (err) {
       console.error(`Error fetching progress for unit ${unit.id}:`, err);
@@ -97,13 +130,26 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
     } finally {
       setProgressLoading(false);
     }
-  }, [unit.id]);
+  }, [unit.id, unitProgressCacheKey, cacheTTL]);
 
   // Fonction pour récupérer la progression des leçons
   const fetchLessonProgress = useCallback(async () => {
     if (!expanded) return;
     
     try {
+      // Vérifier si les données sont en cache
+      const cachedProgress = Cache.get<Record<number, LessonProgress>>(
+        lessonProgressCacheKey, 
+        cacheTTL
+      );
+      
+      if (cachedProgress !== null) {
+        console.log(`Using cached lesson progress for unit ${unit.id}`);
+        setLessonProgress(cachedProgress);
+        return;
+      }
+      
+      // Pas de cache, récupérer depuis l'API
       const progressData = await progressAPI.getLessonProgressByUnit(unit.id);
       
       if (progressData && progressData.length > 0) {
@@ -114,11 +160,14 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
         });
         
         setLessonProgress(progressMap);
+        
+        // Stocker dans le cache
+        Cache.set(lessonProgressCacheKey, progressMap);
       }
     } catch (err) {
       console.error(`Error fetching lesson progress for unit ${unit.id}:`, err);
     }
-  }, [unit.id, expanded]);
+  }, [unit.id, expanded, lessonProgressCacheKey, cacheTTL]);
 
   // Récupérer la progression de l'unité au chargement et quand refreshTrigger change
   useEffect(() => {
@@ -130,27 +179,41 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
     const fetchLessons = async () => {
       if (!expanded) return;
       
+      // Si les leçons ne sont pas encore chargées
       if (lessons.length === 0) {
         setLoading(true);
         try {
           const targetLanguage = getUserTargetLanguage();
-          console.log(`ExpandableUnitCard: Fetching lessons for unit ${unit.id} with language: ${targetLanguage}`);
           
-          const data = await courseAPI.getLessons(unit.id, targetLanguage);
+          // Vérifier si les leçons sont en cache
+          const cachedLessons = Cache.get<Lesson[]>(lessonsCacheKey, cacheTTL);
           
-          const sortedLessons = Array.isArray(data)
-            ? data.sort((a: Lesson, b: Lesson) => a.order - b.order)
-            : (data.results || []).sort((a: Lesson, b: Lesson) => a.order - b.order);
-          
-          setLessons(sortedLessons);
-          setError(null);
+          if (cachedLessons !== null) {
+            console.log(`Using cached lessons for unit ${unit.id}`);
+            setLessons(cachedLessons);
+            setError(null);
+          } else {
+            // Pas de cache, récupérer depuis l'API
+            console.log(`Fetching lessons for unit ${unit.id} with language: ${targetLanguage}`);
+            const data = await courseAPI.getLessons(unit.id, targetLanguage);
+            
+            const sortedLessons = Array.isArray(data)
+              ? data.sort((a: Lesson, b: Lesson) => a.order - b.order)
+              : (data.results || []).sort((a: Lesson, b: Lesson) => a.order - b.order);
+            
+            setLessons(sortedLessons);
+            setError(null);
+            
+            // Stocker dans le cache
+            Cache.set(lessonsCacheKey, sortedLessons);
+          }
           
           // Récupérer la progression des leçons après avoir chargé les leçons
           fetchLessonProgress();
         } catch (err) {
           const errorMessage = err instanceof Error ? err.message : "Failed to load lessons";
           setError(errorMessage);
-          console.error("ExpandableUnitCard: Error fetching lessons:", err);
+          console.error("Error fetching lessons:", err);
         } finally {
           setLoading(false);
         }
@@ -161,7 +224,7 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
     };
 
     fetchLessons();
-  }, [expanded, unit.id, lessons.length, fetchLessonProgress, refreshTrigger]);
+  }, [expanded, unit.id, lessons.length, fetchLessonProgress, refreshTrigger, lessonsCacheKey, cacheTTL]);
 
   // Déterminer le style de la leçon en fonction de sa progression
   const getLessonStyle = (lessonId: number) => {
@@ -219,10 +282,10 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
       >
         <div className="flex items-center justify-between">
           {showLevelBadge && (
-              <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white">
-                Level {unit.level}
-              </Badge>
-            )}
+            <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white">
+              Level {unit.level}
+            </Badge>
+          )}
           {unitProgress > 0 && (
             <span className="text-sm text-muted-foreground">
               {unitProgress}% complete
@@ -285,6 +348,9 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
                     className={`bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer ${statusClass}`}
                     onClick={(e) => {
                       e.stopPropagation();
+                      // Invalider le cache des leçons lorsque l'utilisateur clique sur une leçon
+                      // car la progression pourrait changer
+                      Cache.invalidate(lessonProgressCacheKey);
                       onLessonClick(unit.id, lesson.id);
                     }}
                   >

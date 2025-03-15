@@ -1,3 +1,4 @@
+// src/app/(dashboard)/(apps)/learning/_components/LessonContent.tsx
 'use client';
 
 import React, { useState, useEffect } from "react";
@@ -76,7 +77,7 @@ interface ContentLesson {
 
 interface LessonContentProps {
   lessonId: string;
-  unitId: string;
+  unitId?: string;  // Make unitId optional to handle cases when it's not provided
   language?: 'en' | 'fr' | 'es' | 'nl';
 }
 
@@ -93,6 +94,23 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
   const [completedContents, setCompletedContents] = useState<Set<number>>(new Set());
   const [lessonProgress, setLessonProgress] = useState(0);
   const [lessonTitle, setLessonTitle] = useState("");
+  const [validUnitId, setValidUnitId] = useState<number | null>(null);
+
+  // Validate and parse unitId
+  useEffect(() => {
+    if (unitId) {
+      const parsedId = parseInt(unitId);
+      if (!isNaN(parsedId)) {
+        setValidUnitId(parsedId);
+      } else {
+        console.error("Invalid unitId provided:", unitId);
+        setError("Invalid unit ID. Please check the URL.");
+      }
+    } else {
+      // If no unitId is provided, we'll try to continue without it
+      console.warn("No unitId provided to LessonContent component");
+    }
+  }, [unitId]);
 
   // Détecter la langue au chargement du composant
   useEffect(() => {
@@ -112,17 +130,19 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
       try {
         console.log(`Fetching content for lesson ${lessonId} with language: ${targetLanguage}`);
         
-        // Fetch lesson title first
-        try {
-          const lessonResponse = await courseAPI.getLessons(parseInt(unitId), targetLanguage);
-          if (Array.isArray(lessonResponse)) {
-            const lesson = lessonResponse.find(l => l.id === parseInt(lessonId));
-            if (lesson) {
-              setLessonTitle(lesson.title);
+        // Fetch lesson title first - only if we have a valid unitId
+        if (validUnitId !== null) {
+          try {
+            const lessonResponse = await courseAPI.getLessons(validUnitId, targetLanguage);
+            if (Array.isArray(lessonResponse)) {
+              const lesson = lessonResponse.find(l => l.id === parseInt(lessonId));
+              if (lesson) {
+                setLessonTitle(lesson.title);
+              }
             }
+          } catch (err) {
+            console.warn("Could not fetch lesson title:", err);
           }
-        } catch (err) {
-          console.warn("Could not fetch lesson title:", err);
         }
         
         const data = await courseAPI.getContentLessons(parseInt(lessonId), targetLanguage);
@@ -148,7 +168,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
     };
 
     fetchContents();
-  }, [lessonId, targetLanguage, unitId]);
+  }, [lessonId, targetLanguage, validUnitId]);
   
   // Récupérer les données de progression
   const fetchProgressData = async (contents: ContentLesson[]) => {
@@ -194,18 +214,18 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
       }
     } else {
       // Si on revient à la liste des leçons, mettre à jour la progression de la leçon
-      if (lessonProgress > 0) {
+      if (lessonProgress > 0 && validUnitId !== null) {
         lessonCompletionService.updateLessonProgress(
           parseInt(lessonId),
-          parseInt(unitId),
+          validUnitId,
           lessonProgress,
           undefined, 
           lessonProgress === 100 
         ).then(() => {
-          router.push(`/learning/${unitId}`);
+          router.push(validUnitId ? `/learning/${validUnitId}` : '/learning');
         });
       } else {
-        router.push(`/learning/${unitId}`);
+        router.push(validUnitId ? `/learning/${validUnitId}` : '/learning');
       }
     }
   };
@@ -233,10 +253,10 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
     setLessonProgress(newProgress);
     
     // Si tous les contenus sont complétés, mettre à jour la leçon
-    if (newCompletedCount === contents.length) {
+    if (newCompletedCount === contents.length && validUnitId !== null) {
       await lessonCompletionService.updateLessonProgress(
         parseInt(lessonId),
-        parseInt(unitId),
+        validUnitId,
         100,
         undefined,
         true
@@ -278,7 +298,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
       lessonId: selectedContent.id.toString(),
       language: targetLanguage,
       onComplete: () => handleContentComplete(selectedContent.id),
-      unitId: unitId
+      unitId: validUnitId?.toString()
     };
 
     return (

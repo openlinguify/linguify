@@ -1,3 +1,4 @@
+// src/app/(dashboard)/(apps)/learning/_components/Lessons.tsx
 'use client';
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
