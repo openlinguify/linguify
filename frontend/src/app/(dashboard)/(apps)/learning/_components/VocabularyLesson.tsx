@@ -62,7 +62,7 @@ interface VocabularyItem {
   antonymous_nl: string;
 }
 
-const VocabularyLesson = ({ lessonId, unitId, language, onComplete }: VocabularyLessonProps) => {
+const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProps) => {
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -365,72 +365,74 @@ const VocabularyLesson = ({ lessonId, unitId, language, onComplete }: Vocabulary
       <GradientCard className="h-full relative overflow-hidden">
         {/* Celebration Overlay */}
         <AnimatePresence>
-          {showCelebration && (
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              className="absolute inset-0 flex items-center justify-center z-10"
-            >
-              <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
-              <motion.div
-                initial={{ y: -20, opacity: 0 }}
-                animate={{
-                  y: 0,
-                  opacity: 1,
-                  scale: [1, 1.2, 1],
-                  rotate: [0, -5, 5, -5, 0],
-                }}
-                transition={{ duration: 0.8 }}
-                className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 p-6 rounded-lg shadow-xl text-white text-2xl font-bold z-20 flex items-center gap-3"
-              >
-                <Sparkles className="h-6 w-6" />
-                Lesson Complete!
-                <Sparkles className="h-6 w-6" />
-              </motion.div>
-            </motion.div>
-          )}
+  {showCelebration && (
+    <motion.div
+      key="celebration" // Add this unique key
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0, opacity: 0 }}
+      className="absolute inset-0 flex items-center justify-center z-10"
+    >
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{
+          y: 0,
+          opacity: 1,
+          scale: [1, 1.2, 1],
+          rotate: [0, -5, 5, -5, 0],
+        }}
+        transition={{ duration: 0.8 }}
+        className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 p-6 rounded-lg shadow-xl text-white text-2xl font-bold z-20 flex items-center gap-3"
+      >
+        <Sparkles className="h-6 w-6" />
+        Lesson Complete!
+        <Sparkles className="h-6 w-6" />
+      </motion.div>
+    </motion.div>
+  )}
 
-          {showCompletionMessage && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 flex items-center justify-center z-10"
-            >
-              <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -20, opacity: 0 }}
-                className="bg-white p-8 rounded-lg shadow-xl z-20 text-center space-y-4 max-w-md"
-              >
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
-                  🎉 Vocabulary Mastered! 🎉
-                </h3>
-                <p className="text-gray-600">
-                  Great work! You've completed all the vocabulary in this
-                  lesson.
-                </p>
-                <div className="pt-2 flex justify-center space-x-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowCompletionMessage(false)}
-                    className="border-brand-purple text-brand-purple hover:bg-brand-purple/10"
-                  >
-                    Keep Reviewing
-                  </Button>
-                  <Button
-                    onClick={handleComplete}
-                    className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white border-none"
-                  >
-                    Complete Lesson
-                  </Button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+  {showCompletionMessage && (
+    <motion.div
+      key="completion" // Add this unique key
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="absolute inset-0 flex items-center justify-center z-10"
+    >
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -20, opacity: 0 }}
+        className="bg-white p-8 rounded-lg shadow-xl z-20 text-center space-y-4 max-w-md"
+      >
+        <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
+          🎉 Vocabulary Mastered! 🎉
+        </h3>
+        <p className="text-gray-600">
+          Great work! You've completed all the vocabulary in this
+          lesson.
+        </p>
+        <div className="pt-2 flex justify-center space-x-4">
+          <Button
+            variant="outline"
+            onClick={() => setShowCompletionMessage(false)}
+            className="border-brand-purple text-brand-purple hover:bg-brand-purple/10"
+          >
+            Keep Reviewing
+          </Button>
+          <Button
+            onClick={handleComplete}
+            className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white border-none"
+          >
+            Complete Lesson
+          </Button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
         <div className="p-6 flex flex-col gap-4 h-full">
           {/* Progress Section */}

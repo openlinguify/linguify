@@ -72,17 +72,25 @@ const courseAPI = {
     }
   },
   
-  getLessons: async (unitId: number, targetLanguage?: string) => {
+  getLessons: async (unitId: number | string, targetLanguage?: string) => {
     try {
+      // Validate unit ID to prevent NaN being sent to the API
+      const parsedUnitId = Number(unitId);
+      
+      if (isNaN(parsedUnitId)) {
+        console.error(`Invalid unit ID provided: ${unitId}`);
+        return []; // Return empty array instead of failing completely
+      }
+      
       const params: Record<string, string> = {
-        unit: unitId.toString()
+        unit: parsedUnitId.toString()
       };
       
       // Utiliser la langue spécifiée ou récupérer depuis localStorage
       const lang = targetLanguage || getUserTargetLanguage();
       params.target_language = lang;
   
-      console.log(`API: Fetching lessons for unit ${unitId} with language ${lang}`);
+      console.log(`API: Fetching lessons for unit ${parsedUnitId} with language ${lang}`);
       const response = await apiClient.get('/api/v1/course/lesson/', { 
         params,
         headers: {
@@ -93,21 +101,29 @@ const courseAPI = {
       return response.data;
     } catch (err: any) {
       console.error('Failed to fetch lessons:', err);
-      throw new Error(`Failed to fetch lessons: ${err.message}`);
+      return []; // Return empty array on error to prevent cascade failures
     }
   },
   
-  getContentLessons: async (lessonId: number, targetLanguage?: string) => {
+  getContentLessons: async (lessonId: number | string, targetLanguage?: string) => {
     try {
+      // Validate lesson ID
+      const parsedLessonId = Number(lessonId);
+      
+      if (isNaN(parsedLessonId)) {
+        console.error(`Invalid lesson ID provided: ${lessonId}`);
+        return [];
+      }
+      
       const params: Record<string, string> = {
-        lesson: lessonId.toString()
+        lesson: parsedLessonId.toString()
       };
       
       // Utiliser la langue spécifiée ou récupérer depuis localStorage
       const lang = targetLanguage || getUserTargetLanguage();
       params.target_language = lang;
       
-      console.log(`Fetching content lessons for lesson ${lessonId} with language: ${lang}`);
+      console.log(`Fetching content lessons for lesson ${parsedLessonId} with language: ${lang}`);
       const response = await apiClient.get(`/api/v1/course/content-lesson/`, { 
         params,
         headers: {
@@ -121,21 +137,29 @@ const courseAPI = {
         data: err.response?.data,
         message: err.message
       });
-      throw new Error(`Failed to fetch content lessons: ${err.message}`);
+      return []; // Return empty array on error
     }
   },
   
-  getTheoryContent: async (contentLessonId: number, targetLanguage?: string) => {
+  getTheoryContent: async (contentLessonId: number | string, targetLanguage?: string) => {
     try {
+      // Validate content lesson ID
+      const parsedContentLessonId = Number(contentLessonId);
+      
+      if (isNaN(parsedContentLessonId)) {
+        console.error(`Invalid content lesson ID provided: ${contentLessonId}`);
+        return [];
+      }
+      
       const params: Record<string, string> = {
-        content_lesson: contentLessonId.toString()
+        content_lesson: parsedContentLessonId.toString()
       };
       
       // Utiliser la langue spécifiée ou récupérer depuis localStorage
       const lang = targetLanguage || getUserTargetLanguage();
       params.target_language = lang;
       
-      console.log(`Fetching theory content for content lesson ${contentLessonId} with language: ${lang}`);
+      console.log(`Fetching theory content for content lesson ${parsedContentLessonId} with language: ${lang}`);
       const response = await apiClient.get(`/api/v1/course/theory-content/`, { 
         params,
         headers: {
@@ -145,21 +169,29 @@ const courseAPI = {
       return response.data;
     } catch (err: any) {
       console.error('Failed to fetch theory content:', err);
-      throw new Error(`Failed to fetch theory content: ${err.message}`);
+      return []; // Return empty array on error
     }
   },
   
-  getVocabularyContent: async (contentLessonId: number, targetLanguage?: string) => {
+  getVocabularyContent: async (contentLessonId: number | string, targetLanguage?: string) => {
     try {
+      // Validate content lesson ID
+      const parsedContentLessonId = Number(contentLessonId);
+      
+      if (isNaN(parsedContentLessonId)) {
+        console.error(`Invalid content lesson ID provided: ${contentLessonId}`);
+        return { results: [] }; // Match expected API response format
+      }
+      
       const params: Record<string, string> = {
-        content_lesson: contentLessonId.toString()
+        content_lesson: parsedContentLessonId.toString()
       };
       
       // Utiliser la langue spécifiée ou récupérer depuis localStorage
       const lang = targetLanguage || getUserTargetLanguage();
       params.target_language = lang;
       
-      console.log(`Fetching vocabulary for content lesson ${contentLessonId} with language: ${lang}`);
+      console.log(`Fetching vocabulary for content lesson ${parsedContentLessonId} with language: ${lang}`);
       const response = await apiClient.get(`/api/v1/course/vocabulary-list/`, { 
         params,
         headers: {
@@ -169,7 +201,7 @@ const courseAPI = {
       return response.data;
     } catch (err: any) {
       console.error('Failed to fetch vocabulary content:', err);
-      throw new Error(`Failed to fetch vocabulary content: ${err.message}`);
+      return { results: [] }; // Match expected API response format
     }
   }
 };
