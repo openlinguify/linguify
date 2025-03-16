@@ -1,11 +1,11 @@
-// src/app/(dashboard)/(apps)/flashcard/_components/FlashcardMain.tsx
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, Loader2, RefreshCcw } from "lucide-react";
+import { ChevronLeft, Loader2, RefreshCcw, Dumbbell, BookOpen, Clock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 import FlashcardDeckList from './FlashcardDeckList';
 import FlashcardApp from './FlashCards';
 import { revisionApi } from "@/services/revisionAPI";
@@ -21,6 +21,7 @@ const FlashcardMain = () => {
   
   const { toast } = useToast();
   const { user } = useAuthContext();
+  const router = useRouter();
 
   // Fetch all flashcard decks
   const fetchDecks = useCallback(async () => {
@@ -64,9 +65,75 @@ const FlashcardMain = () => {
     setSelectedDeck(null);
   };
 
+  // Handle redirect to study modes
+  const navigateToStudyMode = (mode: string) => {
+    if (!selectedDeck) return;
+    router.push(`/${mode}/${selectedDeck.id}`);
+  };
+
   // Handle retry on error
   const handleRetry = () => {
     fetchDecks();
+  };
+
+  // Render study modes section 
+  const renderStudyModes = () => {
+    if (!selectedDeck) return null;
+    
+    return (
+      <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4">Study Modes</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {/* Mode Révision */}
+          <div 
+            className="p-4 border rounded-lg hover:shadow-md cursor-pointer transition-all hover:border-purple-500"
+            onClick={() => navigateToStudyMode('review')}
+          >
+            <div className="flex items-center mb-2">
+              <div className="bg-purple-100 p-2 rounded-lg text-purple-600 mr-3">
+                <Dumbbell size={20} />
+              </div>
+              <h3 className="font-medium">Review Mode</h3>
+            </div>
+            <p className="text-sm text-gray-600">
+              Smart spaced repetition for long-term memory
+            </p>
+          </div>
+          
+          {/* Mode Apprentissage */}
+          <div 
+            className="p-4 border rounded-lg hover:shadow-md cursor-pointer transition-all hover:border-blue-500"
+            onClick={() => navigateToStudyMode('learn')}
+          >
+            <div className="flex items-center mb-2">
+              <div className="bg-blue-100 p-2 rounded-lg text-blue-600 mr-3">
+                <BookOpen size={20} />
+              </div>
+              <h3 className="font-medium">Learn Mode</h3>
+            </div>
+            <p className="text-sm text-gray-600">
+              Multiple choice questions to test your knowledge
+            </p>
+          </div>
+          
+          {/* Mode Match */}
+          <div 
+            className="p-4 border rounded-lg hover:shadow-md cursor-pointer transition-all hover:border-amber-500"
+            onClick={() => navigateToStudyMode('match')}
+          >
+            <div className="flex items-center mb-2">
+              <div className="bg-amber-100 p-2 rounded-lg text-amber-600 mr-3">
+                <Clock size={20} />
+              </div>
+              <h3 className="font-medium">Match Game</h3>
+            </div>
+            <p className="text-sm text-gray-600">
+              Pair terms and definitions against the clock
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -122,10 +189,13 @@ const FlashcardMain = () => {
         />
       ) : (
         selectedDeck && (
-          <FlashcardApp 
-            selectedDeck={selectedDeck}
-            onCardUpdate={fetchDecks}
-          />
+          <>
+            {renderStudyModes()}
+            <FlashcardApp 
+              selectedDeck={selectedDeck}
+              onCardUpdate={fetchDecks}
+            />
+          </>
         )
       )}
     </div>
