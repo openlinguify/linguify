@@ -2,6 +2,7 @@
 import apiClient from './axiosAuthInterceptor';
 import { Flashcard, FlashcardDeck } from '@/types/revision';
 import authService from './authService';
+import { a } from 'node_modules/@tanstack/react-query-devtools/build/modern/ReactQueryDevtools-Cn7cKi7o';
 
 // Configuration de base
 const API_BASE = '/api/v1/revision';
@@ -150,8 +151,12 @@ export const revisionApi = {
     /**
      * Importe des flashcards depuis un fichier Excel ou CSV
      */
-    async importFromExcel(deckId: number, file: File): Promise<{ created: number, failed: number }> {
-      logDebug('Importation depuis Excel', { deckId, fileName: file.name });
+    async importFromExcel(
+      deckId: number, 
+      file: File,
+      options: { hasHeader?: boolean; previewOnly?: boolean } = {}
+    ): Promise<{ created: number, failed: number, preview?: any[] }> {
+      logDebug('Importation depuis Excel', { deckId, fileName: file.name, options });
       
       // Vérifier le format du fichier
       if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls') && !file.name.endsWith('.csv')) {
@@ -162,7 +167,11 @@ export const revisionApi = {
       // Créer un FormData pour l'upload
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('deck_id', deckId.toString());
+      formData.append('has_header', String(options.hasHeader ?? true));
+
+      if (options.previewOnly) {
+        formData.append('preview_only', 'true');
+      }
       
       try {
         // Récupérer le token d'authentification

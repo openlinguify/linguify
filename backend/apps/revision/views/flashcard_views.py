@@ -230,19 +230,19 @@ class FlashcardImportView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 
-    def post(self, request):
+    def post(self, request, deck_id=None):
         try:
             # Récupérer le fichier Excel et l'ID du deck
             excel_file = request.FILES.get('file')
-            deck_id = request.data.get('deck_id')
+            has_header = request.data.get('has_header', 'true').lower() == 'true'
             
             # Vérifier si le fichier est présent
             if not excel_file:
                 return Response({"detail": "Aucun fichier n'a été fourni."}, status=status.HTTP_400_BAD_REQUEST)
             
-            # Vérifier le type de fichier
-            if not excel_file.name.endswith(('.xls', '.xlsx')):
-                return Response({"detail": "Le fichier doit être au format Excel (.xls ou .xlsx)."}, 
+            # Vérifier le type de fichier (.xls | .xlsx | .csv)
+            if not (excel_file.name.endswith('.xls') or excel_file.name.endswith('.xlsx') or excel_file.name.endswith('.csv')):
+                return Response({"detail": "Le fichier doit être au format Excel (.xls, .xlsx) ou CSV."},
                                status=status.HTTP_400_BAD_REQUEST)
 
             # Vérifier si le deck existe et appartient à l'utilisateur
@@ -252,8 +252,22 @@ class FlashcardImportView(APIView):
                 return Response({"detail": "Le deck spécifié n'existe pas ou ne vous appartient pas."}, 
                                status=status.HTTP_404_NOT_FOUND)
             
-            # Lire le fichier Excel
-            df = pd.read_excel(excel_file, engine='openpyxl')
+            # to read the file taking into account the file type and the presence of a header
+            if excel_file.name.endswith('.csv'):
+                df = pd.read_csv(excel_file, header=0 if has_header else None)
+            else:
+                df=pd.read_excel(excel_file, engine='openpyxl', header=0 if has_header else None)
+
+            if not has_header:
+                df.columns = ['front_text', 'back_text'] + [f'col_{i}' for i in range(2, len(df.columns))]
+            
+            preview_data = df.head(5).to_dict(orient='records')
+            if request.data.get('preview_only', 'false').lower() == 'true':
+                return Response({
+                    "preview": preview_data,
+                    "total_rows": len(df),
+                    "columns": list(df.columns),
+                }, status=status.HTTP_200_OK)
             
             # Vérifier que les colonnes nécessaires existent
             required_columns = ['front_text', 'back_text']
@@ -295,9 +309,10 @@ class FlashcardImportView(APIView):
             return Response({
                 "detail": f"{flashcards_created} cartes ont été importées avec succès. {flashcards_failed} imports ont échoué.",
                 "created": flashcards_created,
-                "failed": flashcards_failed
+                "failed": flashcards_failed,
+                "preview": preview_data[:3]  # Renvoyer quelques exemples des données importées
             }, status=status.HTTP_201_CREATED)
             
         except Exception as e:
             return Response({"detail": f"Une erreur s'est produite lors de l'importation: {str(e)}"}, 
-                          status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
