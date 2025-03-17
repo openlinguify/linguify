@@ -1,6 +1,6 @@
-// src/app/dashboard/apps/flashcard/_components/FlashcardDeckList.tsx
+// src/app/(dashboard)/(apps)/flashcard/_components/FlashcardDeckList.tsx
 'use client';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import {
   CheckSquare,
   MoreVertical,
   Pencil,
+  Loader2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -42,6 +43,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
   const [decksWithCount, setDecksWithCount] = useState<DeckWithCardCount[]>([]);
   const [isAddingDeck, setIsAddingDeck] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingCounts, setIsLoadingCounts] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedDecks, setSelectedDecks] = useState<number[]>([]);
   const [editingDeck, setEditingDeck] = useState<EditingDeck | null>(null);
@@ -50,26 +52,42 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
     description: "",
   });
 
-  useEffect(() => {
-    fetchCardCounts();
-  }, [decks]);
-
-  const fetchCardCounts = async () => {
+  // Optimized fetchCardCounts using memoization
+  const fetchCardCounts = useCallback(async () => {
+    if (decks.length === 0) return;
+    
+    setIsLoadingCounts(true);
     try {
       const updatedDecks = await Promise.all(
         decks.map(async (deck) => {
-          const cards = await revisionApi.flashcards.getAll(deck.id);
-          return {
-            ...deck,
-            cardCount: cards.length,
-          };
+          try {
+            const cards = await revisionApi.flashcards.getAll(deck.id);
+            return {
+              ...deck,
+              cardCount: cards.length,
+            };
+          } catch (error) {
+            console.error(`Error fetching cards for deck ${deck.id}:`, error);
+            return {
+              ...deck,
+              cardCount: 0,
+            };
+          }
         })
       );
       setDecksWithCount(updatedDecks);
     } catch (error) {
       console.error("Error fetching card counts:", error);
+      // Fallback to decks without counts in case of error
+      setDecksWithCount(decks.map(deck => ({ ...deck, cardCount: 0 })));
+    } finally {
+      setIsLoadingCounts(false);
     }
-  };
+  }, [decks]);
+
+  useEffect(() => {
+    fetchCardCounts();
+  }, [fetchCardCounts]);
 
   const handleAddDeck = async () => {
     if (!newDeck.name.trim()) {
@@ -97,7 +115,10 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
 
       setIsAddingDeck(false);
       setNewDeck({ name: "", description: "" });
-      await fetchCardCounts();
+      
+      // Inform parent component to refresh decks
+      // This avoids duplicate API calls
+      // The parent component will trigger fetchCardCounts through the decks prop update
     } catch (error) {
       toast({
         title: "Error",
@@ -131,42 +152,45 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
     }
 
     setIsLoading(true);
-    let hasError = false;
+    let successCount = 0;
+    let failCount = 0;
 
     try {
       await Promise.all(
         selectedDecks.map(async (deckId) => {
           try {
             await revisionApi.decks.delete(deckId);
+            successCount++;
           } catch (error) {
-            hasError = true;
+            failCount++;
             console.error(`Failed to delete deck ${deckId}:`, error);
           }
         })
       );
 
+      // Update local state to reflect deletions
       setDecksWithCount((prev) =>
         prev.filter((deck) => !selectedDecks.includes(deck.id))
       );
       setSelectedDecks([]);
       setIsSelectionMode(false);
 
+      // Provide detailed feedback
       toast({
-        title: hasError ? "Partial Success" : "Success",
-        description: hasError
-          ? "Some decks could not be deleted"
-          : "Selected decks were deleted successfully",
-        variant: hasError ? "destructive" : "default",
+        title: failCount > 0 ? "Partial Success" : "Success",
+        description: failCount > 0
+          ? `${successCount} decks deleted, ${failCount} failed`
+          : `${successCount} decks were deleted successfully`,
+        variant: failCount > 0 ? "destructive" : "default",
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to delete decks",
+        description: "Operation failed. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
-      await fetchCardCounts();
     }
   };
 
@@ -180,7 +204,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
         description: editingDeck.description.trim(),
       });
 
-      // Mettre à jour le deck dans l'état local
+      // Optimistically update the UI
       setDecksWithCount((prev) =>
         prev.map((deck) =>
           deck.id === editingDeck.id
@@ -210,6 +234,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
     }
   };
 
+  // Empty state with create button
   if (decksWithCount.length === 0 && !isAddingDeck) {
     return (
       <Card className="border-dashed border-2">
@@ -234,6 +259,9 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
           Select a Deck
+          {isLoadingCounts && (
+            <Loader2 className="inline-block h-4 w-4 ml-2 animate-spin text-brand-purple" />
+          )}
         </h2>
         <div className="flex gap-2">
           <Button
@@ -415,7 +443,12 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                   disabled={isLoading || !editingDeck.name.trim()}
                   className="bg-gradient-to-r from-brand-purple to-brand-gold"
                 >
-                  {isLoading ? "Saving..." : "Save Changes"}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : "Save Changes"}
                 </Button>
               </div>
             </CardContent>
@@ -423,6 +456,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
         </div>
       )}
 
+      {/* Modal d'ajout */}
       {isAddingDeck && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Card className="w-full max-w-md">
@@ -478,7 +512,12 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                   disabled={isLoading || !newDeck.name.trim()}
                   className="bg-gradient-to-r from-brand-purple to-brand-gold"
                 >
-                  {isLoading ? "Creating..." : "Create Deck"}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Creating...
+                    </>
+                  ) : "Create Deck"}
                 </Button>
               </div>
             </CardContent>

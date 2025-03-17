@@ -3,19 +3,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, Loader2, RefreshCcw, Dumbbell, BookOpen, Clock } from "lucide-react";
+import { ChevronLeft, Loader2, RefreshCcw, Dumbbell, BookOpen, Clock, Search } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 import FlashcardDeckList from './FlashcardDeckList';
 import FlashcardApp from './FlashCards';
+import FlashcardStats from './FlashcardStats';
 import { revisionApi } from "@/services/revisionAPI";
 import type { FlashcardDeck } from "@/types/revision";
 import { useAuthContext } from '@/services/AuthProvider';
+import StudyModes from './StudyModes';
 
 const FlashcardMain = () => {
   const [activeView, setActiveView] = useState<"decks" | "flashcards">("decks");
   const [selectedDeck, setSelectedDeck] = useState<FlashcardDeck | null>(null);
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
+  const [filteredDecks, setFilteredDecks] = useState<FlashcardDeck[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   
@@ -31,6 +36,7 @@ const FlashcardMain = () => {
       
       const fetchedDecks = await revisionApi.decks.getAll();
       setDecks(fetchedDecks);
+      setFilteredDecks(fetchedDecks);
     } catch (error) {
       console.error('Error fetching decks:', error);
       setLoadError("Failed to load your flashcard decks. Please try again.");
@@ -38,6 +44,20 @@ const FlashcardMain = () => {
       setIsPageLoading(false);
     }
   }, []);
+
+  // Search functionality
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredDecks(decks);
+    } else {
+      const query = searchQuery.toLowerCase();
+      const filtered = decks.filter(deck => 
+        deck.name.toLowerCase().includes(query) || 
+        deck.description.toLowerCase().includes(query)
+      );
+      setFilteredDecks(filtered);
+    }
+  }, [searchQuery, decks]);
 
   // Initial load of decks
   useEffect(() => {
@@ -68,7 +88,7 @@ const FlashcardMain = () => {
   // Handle redirect to study modes
   const navigateToStudyMode = (mode: string) => {
     if (!selectedDeck) return;
-    router.push(`/${mode}/${selectedDeck.id}`);
+    router.push(`/flashcard/${mode}/${selectedDeck.id}`);
   };
 
   // Handle retry on error
@@ -79,59 +99,22 @@ const FlashcardMain = () => {
   // Render study modes section 
   const renderStudyModes = () => {
     if (!selectedDeck) return null;
+    return <StudyModes deckId={selectedDeck.id} />;
+  };
+
+  // Render search bar for decks view
+  const renderSearchBar = () => {
+    if (activeView !== "decks" || isPageLoading || loadError) return null;
     
     return (
-      <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Study Modes</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {/* Mode Révision */}
-          <div 
-            className="p-4 border rounded-lg hover:shadow-md cursor-pointer transition-all hover:border-purple-500"
-            onClick={() => navigateToStudyMode('review')}
-          >
-            <div className="flex items-center mb-2">
-              <div className="bg-purple-100 p-2 rounded-lg text-purple-600 mr-3">
-                <Dumbbell size={20} />
-              </div>
-              <h3 className="font-medium">Review Mode</h3>
-            </div>
-            <p className="text-sm text-gray-600">
-              Smart spaced repetition for long-term memory
-            </p>
-          </div>
-          
-          {/* Mode Apprentissage */}
-          <div 
-            className="p-4 border rounded-lg hover:shadow-md cursor-pointer transition-all hover:border-blue-500"
-            onClick={() => navigateToStudyMode('learn')}
-          >
-            <div className="flex items-center mb-2">
-              <div className="bg-blue-100 p-2 rounded-lg text-blue-600 mr-3">
-                <BookOpen size={20} />
-              </div>
-              <h3 className="font-medium">Learn Mode</h3>
-            </div>
-            <p className="text-sm text-gray-600">
-              Multiple choice questions to test your knowledge
-            </p>
-          </div>
-          
-          {/* Mode Match */}
-          <div 
-            className="p-4 border rounded-lg hover:shadow-md cursor-pointer transition-all hover:border-amber-500"
-            onClick={() => navigateToStudyMode('match')}
-          >
-            <div className="flex items-center mb-2">
-              <div className="bg-amber-100 p-2 rounded-lg text-amber-600 mr-3">
-                <Clock size={20} />
-              </div>
-              <h3 className="font-medium">Match Game</h3>
-            </div>
-            <p className="text-sm text-gray-600">
-              Pair terms and definitions against the clock
-            </p>
-          </div>
-        </div>
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Input
+          className="pl-10 bg-white"
+          placeholder="Search your decks..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
     );
   };
@@ -163,6 +146,8 @@ const FlashcardMain = () => {
         )}
       </div>
 
+      {renderSearchBar()}
+
       {isPageLoading ? (
         <div className="flex justify-center items-center h-64">
           <div className="flex flex-col items-center">
@@ -185,12 +170,18 @@ const FlashcardMain = () => {
       ) : activeView === "decks" ? (
         <FlashcardDeckList 
           onDeckSelect={handleDeckSelect} 
-          decks={decks}
+          decks={filteredDecks}
         />
       ) : (
         selectedDeck && (
           <>
+            {/* Statistiques du deck */}
+            <FlashcardStats deckId={selectedDeck.id} />
+            
+            {/* Modes d'étude */}
             {renderStudyModes()}
+            
+            {/* Application de flashcards */}
             <FlashcardApp 
               selectedDeck={selectedDeck}
               onCardUpdate={fetchDecks}

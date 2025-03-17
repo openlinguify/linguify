@@ -9,6 +9,9 @@ export interface FlashcardDeck {
     created_at: string;
     updated_at: string;
     is_active: boolean;
+    user?: any;
+    card_count?: number;
+    learned_count?: number;
     cards?: Flashcard[];
   }
   
@@ -83,4 +86,11 @@ export interface EditingDeck {
   id: number;
   name: string;
   description: string;
+}
+
+export interface StudyProgress {
+  totalCards: number;
+  learnedCards: number;
+  toReviewCards: number;
+  completionPercentage: number;
 }
