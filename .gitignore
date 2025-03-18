@@ -5,6 +5,8 @@ env/
 venv/
 .venv/
 backend/.env
+backend/venv/
+backend/myvenv/
 .notes_commandes
 
 # Fichiers de cache
