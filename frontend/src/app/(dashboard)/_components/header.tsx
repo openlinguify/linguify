@@ -34,6 +34,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
 import { useAuthContext } from "@/services/AuthProvider";
+import EnhancedLessons from "../(apps)/learning/_components/Lessons";
 
 const Header = () => {
   const router = useRouter();
@@ -111,11 +112,25 @@ const Header = () => {
             className="flex items-center gap-2 hover:opacity-90 transition-all"
           >
             <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 bg-clip-text text-transparent">
-            
+
               Linguify
             </span>
           </Link>
+
+          {/* Navigation Section */}
+            {/* Navigation Section - moved with more space from logo */}
+            <div className="hidden md:flex items-center ml-10">
+            <nav className="flex items-center gap-6">
+              <Link
+              href="/learning/AllLessons"
+              className="text-gray-600 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400"
+              >
+              All Lessons
+              </Link>
+            </nav>
+            </div>
         </div>
+
 
 
 
