@@ -1,12 +1,19 @@
 db.sqlite3
 
 # Virtual Environment files
+
+# backend
 env/
 venv/
 .venv/
 backend/.env
 backend/venv/
-backend/myvenv/
+
+# frontend
+frontend/node_modules/
+frontend/.env.local
+frontend/public/
+
 .notes_commandes
 
 # Fichiers de cache
