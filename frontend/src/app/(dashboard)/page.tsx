@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserProgress } from "./_components/user-progress";
 import { Card } from "@/components/ui/card";
-import { BookOpen, MessageCircle, Star, Trophy } from "lucide-react";
+import { BookOpen, MessageCircle, Star, Trophy, Brain, NotebookPen } from "lucide-react";
 import Link from "next/link";
 import { useAuthContext } from "@/services/AuthProvider";
 
@@ -34,9 +34,9 @@ export default function DashboardHome() {
 
   const quickActions = [
     { title: "Continue Learning", description: "Resume your last lesson", icon: BookOpen, href: "/learning" },
-    { title: "Practice Speaking", description: "Start a conversation", icon: MessageCircle, href: "/chat" },
+    { title: "Flashcards", description: "Practice with flashcards", icon: Brain, href: "/flashcard" },
+    { title: "Notes", description: "Review your notes", icon: NotebookPen, href: "/notebook" },
     { title: "Review Progress", description: "Check your achievements", icon: Trophy, href: "/progress" },
-    { title: "Daily Tasks", description: "Complete your goals", icon: Star, href: "/task" },
   ];
 
   return (
