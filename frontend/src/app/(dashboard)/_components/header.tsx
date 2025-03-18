@@ -115,20 +115,7 @@ const Header = () => {
 
               Linguify
             </span>
-          </Link>
-
-          {/* Navigation Section */}
-            {/* Navigation Section - moved with more space from logo */}
-            <div className="hidden md:flex items-center ml-10">
-            <nav className="flex items-center gap-6">
-              <Link
-              href="/learning/AllLessons"
-              className="text-gray-600 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400"
-              >
-              All Lessons
-              </Link>
-            </nav>
-            </div>
+          </Link>      
         </div>
 
 
