@@ -1,7 +1,8 @@
 // src/app/(dashboard)/(apps)/flashcard/_components/StudyModes.tsx
+
 import React from "react";
 import Link from "next/link";
-import { Clock, BookOpen, FlaskConical, Dumbbell, TimerOff, Layers } from "lucide-react";
+import { Clock, BookOpen, Dumbbell, Layers } from "lucide-react";
 
 interface StudyModeProps {
   deckId: number;
@@ -25,16 +26,15 @@ const StudyModeCard = ({
   return (
     <Link
       href={`/flashcard/${path}/${deckId}`}
-      className="p-6 border rounded-lg transition-colors hover:border-brand-purple cursor-pointer flex flex-col group"
+      className="flex items-center gap-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors"
     >
-      <div className="flex justify-between items-center mb-4">
-        <div className="text-brand-purple p-2 bg-brand-purple/10 rounded-lg">
-          {icon}
-        </div>
-        <div className="text-xs italic text-gray-400">Study Mode</div>
+      <div className="rounded-md p-2 bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400">
+        {icon}
       </div>
-      <div className="font-semibold text-lg mb-2 group-hover:text-brand-purple transition-colors">{name}</div>
-      <div className="text-sm text-gray-600">{description}</div>
+      <div>
+        <h4 className="font-medium text-sm">{name}</h4>
+        <p className="text-xs text-gray-500">{description}</p>
+      </div>
     </Link>
   );
 };
@@ -42,33 +42,33 @@ const StudyModeCard = ({
 export default function StudyModes({ deckId }: StudyModeProps) {
   return (
     <div className="mb-8">
-      <h3 className="text-xl font-semibold mb-4">Choose a Study Mode</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <h3 className="text-base font-semibold mb-4">Study Modes</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <StudyModeCard
           name="Flashcards"
-          description="Classic flashcards. Test your knowledge by flipping between the term and definition."
-          icon={<Layers size={20} />}
+          description="Flip between terms and definitions"
+          icon={<Layers className="h-5 w-5 text-white" />}
           path="flashcards"
           deckId={deckId}
         />
         <StudyModeCard
           name="Learn"
-          description="Multiple choice questions that adapt to your learning. Master terms at your own pace."
-          icon={<BookOpen size={20} />}
+          description="Adaptive multiple choice questions"
+          icon={<BookOpen className="h-5 w-5 text-white" />}
           path="learn"
           deckId={deckId}
         />
         <StudyModeCard
           name="Match"
-          description="Race against the clock to match terms with definitions as quickly as possible."
-          icon={<Clock size={20} />}
+          description="Match terms with definitions quickly"
+          icon={<Clock className="h-5 w-5 text-white" />}
           path="match"
           deckId={deckId}
         />
         <StudyModeCard
           name="Review"
-          description="Smart repetition algorithm that focuses on the cards you need to review. Optimized for long-term retention."
-          icon={<Dumbbell size={20} />}
+          description="Spaced repetition for better retention"
+          icon={<Dumbbell className="h-5 w-5 text-white" />}
           path="review"
           deckId={deckId}
         />
