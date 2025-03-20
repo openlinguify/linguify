@@ -223,9 +223,62 @@ class FlashcardViewSet(viewsets.ModelViewSet):
                 {"error": f"Failed to fetch due cards: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+    
+    @action(detail=False, methods=['get'])
+    def ids(self, request):
+        """Récupérer uniquement les IDs des flashcards, optionnellement filtrées par deck."""
+        try:
+            deck_id = request.query_params.get('deck')
+            
+            # Appliquer les filtres
+            queryset = self.get_queryset()
+            if deck_id:
+                queryset = queryset.filter(deck_id=deck_id)
+            
+            # Récupérer seulement les IDs pour optimiser les performances
+            card_ids = queryset.values_list('id', flat=True)
+            
+            return Response(list(card_ids))
+            
+        except Exception as e:
+            logger.error(f"Error fetching card IDs: {str(e)}")
+            return Response(
+                {"error": f"Failed to fetch card IDs: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-      
+    @action(detail=False, methods=['post'])
+    def batch_delete(self, request):
+        """Supprimer plusieurs flashcards en une seule requête."""
+        try:
+            card_ids = request.data.get('cardIds', [])
+            
+            if not card_ids:
+                return Response(
+                    {"error": "No card IDs provided"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Vérifier que l'utilisateur est autorisé à supprimer ces cartes
+            queryset = self.get_queryset().filter(id__in=card_ids)
+            
+            # Stocker le nombre de cartes trouvées
+            count = queryset.count()
+            
+            # Supprimer les cartes
+            deleted_count, _ = queryset.delete()
+            
+            return Response(
+                {"message": f"Successfully deleted {deleted_count} cards", "deleted": deleted_count},
+                status=status.HTTP_200_OK
+            )
+            
+        except Exception as e:
+            logger.error(f"Error batch deleting cards: {str(e)}")
+            return Response(
+                {"error": f"Failed to delete cards: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 class FlashcardImportView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
