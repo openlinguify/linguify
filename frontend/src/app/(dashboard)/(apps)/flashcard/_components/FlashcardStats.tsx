@@ -1,6 +1,5 @@
-// src/app/(dashboard)/(apps)/flashcard/_components/FlashcardStats.tsx
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Dumbbell, BookOpen, GraduationCap, Flame } from "lucide-react";
 import { revisionApi } from "@/services/revisionAPI";
@@ -27,7 +26,6 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
         setIsLoading(true);
         const cards = await revisionApi.flashcards.getAll(deckId);
         
-        // Calculer les statistiques
         const totalCards = cards.length;
         const learnedCards = cards.filter(card => card.learned).length;
         const toReviewCards = cards.filter(card => !card.learned && card.review_count > 0).length;
@@ -40,8 +38,7 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
           completionPercentage
         });
         
-        // Simuler une séquence d'études (à remplacer par des données réelles)
-        setStreak(3); // Exemple: 3 jours d'affilée
+        setStreak(3);
       } catch (error) {
         console.error("Failed to load statistics:", error);
       } finally {
@@ -56,10 +53,10 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
 
   if (isLoading || !progress) {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex justify-center items-center h-40">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <Card className="mb-4">
+        <CardContent className="p-4">
+          <div className="flex justify-center items-center h-20">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-700"></div>
           </div>
         </CardContent>
       </Card>
@@ -67,48 +64,58 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Study Progress</CardTitle>
-        <CardDescription>
-          Track your learning progress and keep your streak going
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          {/* Progression globale */}
-          <div>
-            <div className="flex justify-between mb-2">
-              <span className="text-sm font-medium">Overall completion</span>
-              <span className="text-sm font-medium">{progress.completionPercentage}%</span>
-            </div>
-            <Progress value={progress.completionPercentage} className="h-2" />
+    <Card className="mb-4">
+      <CardContent className="p-4">
+        <h3 className="text-sm font-medium mb-2">Study Progress</h3>
+        
+        {/* Progression globale */}
+        <div className="mb-3">
+          <div className="flex justify-between mb-1 text-xs">
+            <span className="text-gray-600">Overall completion</span>
+            <span className="font-medium">{progress.completionPercentage}%</span>
           </div>
+          <Progress value={progress.completionPercentage} className="h-1.5" />
+        </div>
 
-          {/* Statistiques détaillées */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-gray-50 p-4 rounded-lg flex flex-col items-center">
-              <GraduationCap className="h-6 w-6 text-green-600 mb-2" />
-              <span className="text-xl font-bold">{progress.totalCards}</span>
-              <span className="text-xs text-gray-500">Total Cards</span>
+        {/* Statistiques détaillées en ligne */}
+        <div className="flex justify-between">
+          <div className="flex items-center">
+            <div className="rounded-full p-1.5 bg-gradient-to-r from-indigo-600/80 via-purple-500/80 to-pink-400/80 mr-2">
+              <GraduationCap className="h-3.5 w-3.5 text-white" />
             </div>
-            
-            <div className="bg-gray-50 p-4 rounded-lg flex flex-col items-center">
-              <BookOpen className="h-6 w-6 text-blue-600 mb-2" />
-              <span className="text-xl font-bold">{progress.learnedCards}</span>
-              <span className="text-xs text-gray-500">Learned</span>
+            <div>
+              <span className="font-medium text-sm block leading-none">{progress.totalCards}</span>
+              <span className="text-xs text-gray-500 leading-none">Total</span>
             </div>
-            
-            <div className="bg-gray-50 p-4 rounded-lg flex flex-col items-center">
-              <Dumbbell className="h-6 w-6 text-amber-600 mb-2" />
-              <span className="text-xl font-bold">{progress.toReviewCards}</span>
-              <span className="text-xs text-gray-500">To Review</span>
+          </div>
+          
+          <div className="flex items-center">
+            <div className="rounded-full p-1.5 bg-gradient-to-r from-indigo-600/80 via-purple-500/80 to-pink-400/80 mr-2">
+              <BookOpen className="h-3.5 w-3.5 text-white" />
             </div>
-            
-            <div className="bg-gray-50 p-4 rounded-lg flex flex-col items-center">
-              <Flame className="h-6 w-6 text-red-600 mb-2" />
-              <span className="text-xl font-bold">{streak}</span>
-              <span className="text-xs text-gray-500">Day Streak</span>
+            <div>
+              <span className="font-medium text-sm block leading-none">{progress.learnedCards}</span>
+              <span className="text-xs text-gray-500 leading-none">Learned</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center">
+            <div className="rounded-full p-1.5 bg-gradient-to-r from-indigo-600/80 via-purple-500/80 to-pink-400/80 mr-2">
+              <Dumbbell className="h-3.5 w-3.5 text-white" />
+            </div>
+            <div>
+              <span className="font-medium text-sm block leading-none">{progress.toReviewCards}</span>
+              <span className="text-xs text-gray-500 leading-none">Review</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center">
+            <div className="rounded-full p-1.5 bg-gradient-to-r from-indigo-600/80 via-purple-500/80 to-pink-400/80 mr-2">
+              <Flame className="h-3.5 w-3.5 text-white" />
+            </div>
+            <div>
+              <span className="font-medium text-sm block leading-none">{streak}</span>
+              <span className="text-xs text-gray-500 leading-none">Streak</span>
             </div>
           </div>
         </div>

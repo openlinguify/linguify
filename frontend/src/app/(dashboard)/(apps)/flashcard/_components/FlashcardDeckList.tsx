@@ -15,6 +15,8 @@ import {
   MoreVertical,
   Pencil,
   Loader2,
+  List,
+  ExternalLink
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -29,6 +31,7 @@ import type { FlashcardDeck, EditingDeck } from "@/types/revision";
 interface FlashcardDeckListProps {
   decks: FlashcardDeck[];
   onDeckSelect: (deckId: number) => void;
+  onViewAllCards?: (deckId: number) => void;  // Nouvelle prop pour la navigation avancée
 }
 
 interface DeckWithCardCount extends FlashcardDeck {
@@ -38,6 +41,7 @@ interface DeckWithCardCount extends FlashcardDeck {
 const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
   decks,
   onDeckSelect,
+  onViewAllCards
 }) => {
   const { toast } = useToast();
   const [decksWithCount, setDecksWithCount] = useState<DeckWithCardCount[]>([]);
@@ -360,6 +364,18 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                         <Pencil className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
+                      {/* Option pour voir toutes les cartes du deck */}
+                      {onViewAllCards && (
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onViewAllCards(deck.id);
+                          }}
+                        >
+                          <List className="mr-2 h-4 w-4" />
+                          View All Cards
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem
                         className="text-red-600"
                         onClick={(e) => {
@@ -384,6 +400,25 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                   Created {new Date(deck.created_at).toLocaleDateString()}
                 </span>
               </div>
+              
+              {/* Bouton de raccourci vers la vue liste des cartes */}
+              {onViewAllCards && (
+                <div className="pt-2 flex justify-end">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onViewAllCards(deck.id);
+                    }}
+                  >
+                    <List className="mr-1 h-4 w-4" />
+                    View All Cards
+                    <ExternalLink className="ml-1 h-3 w-3" />
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}

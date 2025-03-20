@@ -169,9 +169,15 @@ export default function MatchPage() {
   };
 
   // Retour au deck
+
+
   const backToDeck = () => {
-    if (timerInterval) clearInterval(timerInterval);
-    router.push("/flashcard");
+    if (id) {
+      router.push(`/flashcard/deck/${id}`);
+    } else {
+      // Fallback to main flashcard page if no deck id is available
+      router.push("/flashcard");
+    }
   };
 
   // Nettoyer le timer à la destruction du composant

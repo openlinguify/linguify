@@ -255,6 +255,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
   const renderHeader = () => (
     <div className="bg-white rounded-lg shadow-sm border">
       <div className="p-6 flex flex-wrap gap-2 justify-end">
+        <h1 className="flex">Component Flashcard.tsx</h1>
         <Button
           onClick={() => setIsImporting(true)}
           className="whitespace-nowrap bg-gradient-to-r from-brand-purple to-brand-gold"

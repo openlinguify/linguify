@@ -1,23 +1,19 @@
+// src/app/(dashboard)/(apps)/flashcard/_components/FlashcardMain.tsx
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, Loader2, RefreshCcw, Dumbbell, BookOpen, Clock, Search } from "lucide-react";
+import { ChevronLeft, Loader2, RefreshCcw, Search } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import FlashcardDeckList from './FlashcardDeckList';
-import FlashcardApp from './FlashCards';
-import FlashcardStats from './FlashcardStats';
 import { revisionApi } from "@/services/revisionAPI";
 import type { FlashcardDeck } from "@/types/revision";
 import { useAuthContext } from '@/services/AuthProvider';
-import StudyModes from './StudyModes';
 
 const FlashcardMain = () => {
-  const [activeView, setActiveView] = useState<"decks" | "flashcards">("decks");
-  const [selectedDeck, setSelectedDeck] = useState<FlashcardDeck | null>(null);
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
   const [filteredDecks, setFilteredDecks] = useState<FlashcardDeck[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,31 +60,10 @@ const FlashcardMain = () => {
     fetchDecks();
   }, [fetchDecks]);
 
-  // Handle deck selection
+  // Handle deck selection - UPDATED to navigate directly to all cards view
   const handleDeckSelect = (deckId: number) => {
-    const deck = decks.find(d => d.id === deckId);
-    if (deck) {
-      setSelectedDeck(deck);
-      setActiveView("flashcards");
-    } else {
-      toast({
-        title: "Error",
-        description: "Could not find the selected deck.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  // Handle back to decks view
-  const handleBackToDeck = () => {
-    setActiveView("decks");
-    setSelectedDeck(null);
-  };
-
-  // Handle redirect to study modes
-  const navigateToStudyMode = (mode: string) => {
-    if (!selectedDeck) return;
-    router.push(`/flashcard/${mode}/${selectedDeck.id}`);
+    // Redirect directly to the flashcard list view instead of the deck details
+    router.push(`/flashcard/deck/${deckId}`);
   };
 
   // Handle retry on error
@@ -96,15 +71,9 @@ const FlashcardMain = () => {
     fetchDecks();
   };
 
-  // Render study modes section 
-  const renderStudyModes = () => {
-    if (!selectedDeck) return null;
-    return <StudyModes deckId={selectedDeck.id} />;
-  };
-
   // Render search bar for decks view
   const renderSearchBar = () => {
-    if (activeView !== "decks" || isPageLoading || loadError) return null;
+    if (isPageLoading || loadError) return null;
     
     return (
       <div className="relative mb-4">
@@ -123,27 +92,17 @@ const FlashcardMain = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold text-transparent bg-clip-text">
-          {activeView === "decks" ? `${user?.name}'s Flashcard Decks` : "Study Flashcards"}
+          {`${user?.name}'s Flashcard Decks`}
         </h1>
-        {activeView === "flashcards" ? (
-          <Button
-            variant="outline"
-            onClick={handleBackToDeck}
-            disabled={isPageLoading}
-          >
-            <ChevronLeft className="h-4 w-4 mr-2" />
-            Back to Decks
-          </Button>
-        ) : (
-          <Button
-            variant="outline"
-            onClick={handleRetry}
-            disabled={isPageLoading}
-          >
-            <RefreshCcw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-        )}
+        <h1>Ce component est associé à FlashcardMain.tsx</h1>
+        <Button
+          variant="outline"
+          onClick={handleRetry}
+          disabled={isPageLoading}
+        >
+          <RefreshCcw className="h-4 w-4 mr-2" />
+          Refresh
+        </Button>
       </div>
 
       {renderSearchBar()}
@@ -167,27 +126,11 @@ const FlashcardMain = () => {
             </Button>
           </CardContent>
         </Card>
-      ) : activeView === "decks" ? (
+      ) : (
         <FlashcardDeckList 
           onDeckSelect={handleDeckSelect} 
           decks={filteredDecks}
         />
-      ) : (
-        selectedDeck && (
-          <>
-            {/* Statistiques du deck */}
-            <FlashcardStats deckId={selectedDeck.id} />
-            
-            {/* Modes d'étude */}
-            {renderStudyModes()}
-            
-            {/* Application de flashcards */}
-            <FlashcardApp 
-              selectedDeck={selectedDeck}
-              onCardUpdate={fetchDecks}
-            />
-          </>
-        )
       )}
     </div>
   );
