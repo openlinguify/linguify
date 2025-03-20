@@ -8,6 +8,7 @@ venv/
 .venv/
 backend/.env
 backend/venv/
+backend/myenv/
 
 # frontend
 frontend/node_modules/
