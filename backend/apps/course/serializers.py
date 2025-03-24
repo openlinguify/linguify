@@ -383,92 +383,104 @@ class GrammarSerializer(serializers.ModelSerializer):
         model = Grammar
         fields = ['title', 'description', 'example']
 
+# Update this section in course/serializers.py
+
 class FillBlankExerciseSerializer(serializers.ModelSerializer):
     """
-    Sérialiseur pour les exercices de type "fill in the blank"
-    Prend en charge la sélection automatique de la langue selon le contexte
+    Serializer for fill in the blank exercises with enhanced API compatibility
+    Provides both nested content field and direct fields for frontend flexibility
     """
     available_languages = serializers.SerializerMethodField()
     content = serializers.SerializerMethodField()
+    
+    # Add direct field accessors for simpler API responses
+    instruction = serializers.SerializerMethodField()
+    sentence = serializers.SerializerMethodField()
+    options = serializers.SerializerMethodField()
+    correct_answer = serializers.SerializerMethodField()
+    hint = serializers.SerializerMethodField()
+    explanation = serializers.SerializerMethodField()
     
     class Meta:
         model = FillBlankExercise
         fields = [
             'id', 'content_lesson', 'order', 'difficulty', 
             'content', 'available_languages', 'tags',
-            'created_at', 'updated_at'
+            'created_at', 'updated_at',
+            # Add direct field accessors
+            'instruction', 'sentence', 'options', 'correct_answer',
+            'hint', 'explanation'
         ]
     
     def get_available_languages(self, obj):
-        """Renvoie les langues disponibles pour l'exercice"""
+        """Returns the list of available languages for this exercise"""
         return obj.get_available_languages()
     
     def get_content(self, obj):
-        """Renvoie le contenu adapté à la langue de la requête"""
-        # Détecter la langue à partir du contexte
+        """Returns the full content for a specific language"""
         target_language = self._get_target_language()
-        
-        # Récupérer le contenu dans la langue cible
         return obj.get_content_for_language(target_language)
+    
+    # Direct field access methods
+    def get_instruction(self, obj):
+        """Returns the instruction in the target language"""
+        target_language = self._get_target_language()
+        return obj.instructions.get(target_language, obj.instructions.get('en', "Fill in the blank"))
+    
+    def get_sentence(self, obj):
+        """Returns the sentence with blank in the target language"""
+        target_language = self._get_target_language()
+        return obj.sentences.get(target_language, obj.sentences.get('en', ""))
+    
+    def get_options(self, obj):
+        """Returns the options in the target language"""
+        target_language = self._get_target_language()
+        return obj.answer_options.get(target_language, obj.answer_options.get('en', []))
+    
+    def get_correct_answer(self, obj):
+        """Returns the correct answer in the target language"""
+        target_language = self._get_target_language()
+        return obj.correct_answers.get(target_language, obj.correct_answers.get('en', ""))
+    
+    def get_hint(self, obj):
+        """Returns the hint in the target language if available"""
+        if not obj.hints:
+            return ""
+        target_language = self._get_target_language()
+        return obj.hints.get(target_language, obj.hints.get('en', ""))
+    
+    def get_explanation(self, obj):
+        """Returns the explanation in the target language if available"""
+        if not obj.explanations:
+            return ""
+        target_language = self._get_target_language()
+        return obj.explanations.get(target_language, obj.explanations.get('en', ""))
     
     def _get_target_language(self):
         """
-        Détermine la langue cible à partir de diverses sources
-        Ordre de priorité :
-        1. Paramètre de requête 'language' ou 'target_language'
-        2. En-tête 'Accept-Language'
-        3. Préférence utilisateur stockée dans le profil
-        4. Valeur par défaut 'en'
+        Determines the target language from the request context
+        Returns 'en' as fallback if no language is specified
         """
         request = self.context.get('request')
         if not request:
             return 'en'
-        
-        # 1. Vérifier les paramètres de requête
-        target_language = request.query_params.get('language') or request.query_params.get('target_language')
-        if target_language:
-            return target_language.lower()
-        
-        # 2. Vérifier l'en-tête Accept-Language
+            
+        # Check request parameters first
+        language = request.query_params.get('language') or request.query_params.get('target_language')
+        if language:
+            return language.lower()
+            
+        # Check Accept-Language header
         if 'Accept-Language' in request.headers:
-            # Prendre le premier code langue (avant la virgule et le point-virgule)
             accept_lang = request.headers['Accept-Language'].split(',')[0].split(';')[0].strip()
-            # Prendre les 2 premiers caractères (code langue de base)
             if accept_lang and len(accept_lang) >= 2:
                 return accept_lang[:2].lower()
         
-        # 3. Vérifier le profil utilisateur
+        # Check authenticated user preferences
         if hasattr(request, 'user') and request.user.is_authenticated:
             user_language = getattr(request.user, 'target_language', None)
             if user_language:
                 return user_language.lower()
         
-        # 4. Valeur par défaut
+        # Default fallback
         return 'en'
-
-    def to_representation(self, instance):
-        """Personnaliser la représentation pour l'API"""
-        rep = super().to_representation(instance)
-        
-        # Ajouter la langue utilisée
-        target_language = self._get_target_language()
-        rep['language'] = target_language
-        
-        # Si on a une vue détaillée (detail=True), inclure toutes les langues disponibles
-        # Sinon, simplifier la réponse pour les listings
-        if self.context.get('view') and self.context['view'].action == 'retrieve':
-            # Pour la vue détaillée, garder toutes les informations
-            return rep
-        else:
-            # Pour les listings, simplifier en ne gardant que le contenu de la langue cible
-            simplified = {
-                'id': rep['id'],
-                'content_lesson': rep['content_lesson'],
-                'order': rep['order'],
-                'difficulty': rep['difficulty'],
-                'language': rep['language'],
-                'instruction': rep['content']['instruction'],
-                'sentence': rep['content']['sentence'],
-                'options': rep['content']['options'],
-            }
-            return simplified

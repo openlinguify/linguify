@@ -8,19 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { getUserTargetLanguage } from "@/utils/languageUtils";
 import lessonCompletionService from "@/services/lessonCompletionService";
+import apiClient from "@/services/axiosAuthInterceptor";
 
-
+// Updated interface to match the API response
 interface Exercise {
   id: number;
   content_lesson: number;
   order: number;
   difficulty: string;
-  instructions?: Record<string, string>;
-  sentences: Record<string, string>;
-  answer_options: Record<string, string[]>;
-  correct_answers: Record<string, string>;
-  hints?: Record<string, string>;
-  explanations?: Record<string, string>;
+  language?: string;
+  // For the list endpoint, these fields come directly
+  instruction?: string;
+  sentence?: string;
+  options?: string[];
+  // The correct answer (from list view)
+  correct_answer?: string;
 }
 
 interface FillBlankExerciseProps {
@@ -48,6 +50,7 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
   const [startTime] = useState(Date.now());
   const [timeSpent, setTimeSpent] = useState(0);
   const [exerciseCompleted, setExerciseCompleted] = useState(false);
+  const [apiError, setApiError] = useState(false);
 
   // Initialize target language
   useEffect(() => {
@@ -75,27 +78,26 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
       
       try {
         setLoading(true);
+        setApiError(false);
         
-        const response = await fetch(
-          `http://localhost:8000/api/v1/course/fill-blank/?content_lesson=${lessonId}&language=${targetLanguage}`,
-          {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'Accept-Language': targetLanguage,
+        // Use axios interceptor to handle authentication
+        const response = await apiClient.get(
+          `/api/v1/course/fill-blank/`, {
+            params: {
+              content_lesson: lessonId,
+              language: targetLanguage
             },
+            headers: {
+              'Accept-Language': targetLanguage
+            }
           }
         );
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch exercises: ${response.status}`);
-        }
-
-        const data = await response.json();
+        // For debugging - understand the actual structure
+        console.log('API response data:', response.data);
         
         // Handle both array or paginated results
-        const exercisesArray = Array.isArray(data) ? data : (data.results || []);
+        const exercisesArray = Array.isArray(response.data) ? response.data : (response.data.results || []);
         
         if (exercisesArray.length === 0) {
           setError('No fill in the blank exercises available for this lesson.');
@@ -116,6 +118,7 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
       } catch (err) {
         console.error('Error fetching fill in the blank exercises:', err);
         setError(typeof err === 'string' ? err : (err instanceof Error ? err.message : 'Failed to load exercises'));
+        setApiError(true);
       } finally {
         setLoading(false);
       }
@@ -164,7 +167,8 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
     const currentExercise = getCurrentExercise();
     if (!currentExercise) return;
     
-    const isCorrect = answer === currentExercise.correct_answers[targetLanguage];
+    // Client-side answer checking
+    const isCorrect = answer === currentExercise.correct_answer;
     setIsAnswerCorrect(isCorrect);
     setShowFeedback(true);
   };
@@ -219,12 +223,14 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
     );
   }
 
-  // Error state
-  if (error) {
+  // API Error state
+  if (apiError) {
     return (
-      <Alert variant="destructive">
+      <Alert variant="destructive" className="mb-6">
         <AlertCircle className="h-4 w-4" />
-        <AlertDescription>{error}</AlertDescription>
+        <AlertDescription>
+          There was a problem connecting to the exercise service. Please try again later.
+        </AlertDescription>
       </Alert>
     );
   }
@@ -242,12 +248,11 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
   const currentExercise = getCurrentExercise();
   if (!currentExercise) return null;
 
-  // Get localized content for the current exercise
-  const instruction = currentExercise.instructions?.[targetLanguage] || 'Fill in the blank with the correct option';
-  const sentence = currentExercise.sentences[targetLanguage] || '';
-  const options = currentExercise.answer_options[targetLanguage] || [];
-  const hint = currentExercise.hints?.[targetLanguage] || '';
-  const explanation = currentExercise.explanations?.[targetLanguage] || '';
+  // Get content from the current exercise
+  const instruction = currentExercise.instruction || 'Fill in the blank with the correct option';
+  const sentence = currentExercise.sentence || '';
+  const options = currentExercise.options || [];
+  const correctAnswer = currentExercise.correct_answer || '';
 
   return (
     <div className="w-full space-y-6">
@@ -303,7 +308,7 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
                     ? isAnswerCorrect
                       ? "border-2 border-green-500 bg-green-50"
                       : "border-2 border-red-500 bg-red-50"
-                    : selectedAnswer && option === currentExercise.correct_answers[targetLanguage]
+                    : selectedAnswer && option === correctAnswer
                     ? "border-2 border-green-500 bg-green-50" // Show correct answer if user was wrong
                     : ""
                 }
@@ -311,7 +316,7 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
                 disabled={selectedAnswer !== null}
               >
                 {option}
-                {selectedAnswer && option === currentExercise.correct_answers[targetLanguage] && (
+                {selectedAnswer && option === correctAnswer && (
                   <CheckCircle className="ml-2 h-4 w-4 text-green-600" />
                 )}
                 {selectedAnswer === option && !isAnswerCorrect && (
@@ -330,22 +335,9 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
               
               {!isAnswerCorrect && (
                 <p className="text-gray-700 mt-1">
-                  The correct answer is: <span className="font-medium">{currentExercise.correct_answers[targetLanguage]}</span>
+                  The correct answer is: <span className="font-medium">{correctAnswer}</span>
                 </p>
               )}
-              
-              {explanation && (
-                <p className="mt-2 text-gray-600">
-                  {explanation}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Hint section */}
-          {hint && !showFeedback && (
-            <div className="bg-blue-50 p-3 rounded-md text-blue-700 text-sm">
-              <strong>Hint:</strong> {hint}
             </div>
           )}
 
