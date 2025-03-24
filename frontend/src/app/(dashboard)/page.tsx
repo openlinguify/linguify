@@ -1,10 +1,11 @@
+// frontend/src/app/dashboard/page.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserProgress } from "./_components/user-progress";
 import { Card } from "@/components/ui/card";
-import { BookOpen, MessageCircle, Star, Trophy, Brain, NotebookPen } from "lucide-react";
+import { BookOpen, BarChart, Brain, NotebookPen } from "lucide-react";
 import Link from "next/link";
 import { useAuthContext } from "@/services/AuthProvider";
 
@@ -33,10 +34,10 @@ export default function DashboardHome() {
   }, [isAuthenticated, isLoading, user, router]);
 
   const quickActions = [
-    { title: "Continue Learning", description: "Resume your last lesson", icon: BookOpen, href: "/learning" },
+    { title: "Learning", description: "Access to all lessons", icon: BookOpen, href: "/learning" },
     { title: "Flashcards", description: "Practice with flashcards", icon: Brain, href: "/flashcard" },
     { title: "Notes", description: "Review your notes", icon: NotebookPen, href: "/notebook" },
-    { title: "Review Progress", description: "Check your achievements", icon: Trophy, href: "/progress" },
+    { title: "Progress", description: "Check your achievements", icon: BarChart, href: "/progress" },
   ];
 
   return (
