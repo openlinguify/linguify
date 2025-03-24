@@ -9,6 +9,7 @@ from .views import (
     MultipleChoiceQuestionAPIView,
     NumbersViewSet,
     ExerciseGrammarReorderingViewSet,
+    FillBlankExerciseViewSet,
     ExerciceVocabularyAPIView,
     SearchVocabularyAPIView,
 )
@@ -28,4 +29,5 @@ urlpatterns = [
     path('reordering/random/', ExerciseGrammarReorderingViewSet.as_view({'get': 'random'}), name='reordering-random'),
     path('exercice-vocabulary/', ExerciceVocabularyAPIView.as_view(), name='api-exercice-vocabulary'),
     path('search-vocabulary/', SearchVocabularyAPIView.as_view(), name='api-search-vocabulary'),
+    path('fill-blank/', FillBlankExerciseViewSet.as_view({'get': 'list'}), name='fill-blank'),
 ]
