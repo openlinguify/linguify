@@ -89,6 +89,113 @@ class Unit(models.Model):
             case _:
                 return "Language not supported"
 
+    def generate_description_from_lessons(self, target_language='en'):
+        """
+        Génère automatiquement une description de l'unité basée sur les leçons qu'elle contient.
+
+        Args:
+            target_language (str): Langue cible ('en', 'fr', 'es', 'nl')
+
+        Returns:
+            str: Description générée dans la langue cible
+        """
+        # Récupérer les leçons de l'unité, triées par ordre
+        lessons = self.lessons.all().order_by('order')
+
+        # Si aucune leçon n'est disponible, retourner un message par défaut
+        if not lessons:
+            default_messages = {
+                'en': "No lessons available for this unit yet.",
+                'fr': "Aucune leçon n'est disponible pour cette unité pour le moment.",
+                'es': "Aún no hay lecciones disponibles para esta unidad.",
+                'nl': "Er zijn nog geen lessen beschikbaar voor deze unit."
+            }
+            return default_messages.get(target_language, default_messages['en'])
+
+        # Texte d'introduction selon la langue
+        intro_text = {
+            'en': f"This {self.level} level unit covers the following topics:",
+            'fr': f"Cette unité de niveau {self.level} couvre les sujets suivants :",
+            'es': f"Esta unidad de nivel {self.level} cubre los siguientes temas:",
+            'nl': f"Deze unit van niveau {self.level} behandelt de volgende onderwerpen:"
+        }.get(target_language, f"This {self.level} level unit covers the following topics:")
+
+        # Générer la liste des leçons avec leur type et durée estimée
+        lesson_type_names = {
+            'theory': {'en': 'Theory', 'fr': 'Théorie', 'es': 'Teoría', 'nl': 'Theorie'},
+            'vocabulary': {'en': 'Vocabulary', 'fr': 'Vocabulaire', 'es': 'Vocabulario', 'nl': 'Woordenschat'},
+            'grammar': {'en': 'Grammar', 'fr': 'Grammaire', 'es': 'Gramática', 'nl': 'Grammatica'},
+            'pronunciation': {'en': 'Pronunciation', 'fr': 'Prononciation', 'es': 'Pronunciación', 'nl': 'Uitspraak'},
+            'listening': {'en': 'Listening', 'fr': 'Écoute', 'es': 'Comprensión auditiva', 'nl': 'Luisteren'},
+            'speaking': {'en': 'Speaking', 'fr': 'Expression orale', 'es': 'Expresión oral', 'nl': 'Spreken'},
+            'reading': {'en': 'Reading', 'fr': 'Lecture', 'es': 'Lectura', 'nl': 'Lezen'},
+            'writing': {'en': 'Writing', 'fr': 'Écriture', 'es': 'Escritura', 'nl': 'Schrijven'},
+            'test': {'en': 'Test', 'fr': 'Test', 'es': 'Evaluación', 'nl': 'Toets'}
+        }
+
+        duration_text = {
+            'en': "min",
+            'fr': "min",
+            'es': "min",
+            'nl': "min"
+        }
+
+        lesson_items = []
+
+        for lesson in lessons:
+            # Obtenir le titre dans la langue cible
+            title = getattr(lesson, f'title_{target_language}', lesson.title_en)
+
+            # Obtenir le type de leçon traduit
+            lesson_type = lesson_type_names.get(lesson.lesson_type, {}).get(target_language,
+                                                                            lesson_type_names.get(lesson.lesson_type, {}).get('en', lesson.lesson_type.capitalize()))
+
+            # Durée estimée
+            duration = f"{lesson.estimated_duration} {duration_text.get(target_language, 'min')}"
+
+            # Formater l'élément de liste
+            lesson_items.append(f"• {title} ({lesson_type}, {duration})")
+
+        # Total des leçons et durée estimée totale
+        total_duration = sum(lesson.estimated_duration for lesson in lessons)
+
+        total_info = {
+            'en': f"Total: {len(lessons)} lessons, approximately {total_duration} minutes of learning content.",
+            'fr': f"Total : {len(lessons)} leçons, environ {total_duration} minutes de contenu d'apprentissage.",
+            'es': f"Total: {len(lessons)} lecciones, aproximadamente {total_duration} minutos de contenido de aprendizaje.",
+            'nl': f"Totaal: {len(lessons)} lessen, ongeveer {total_duration} minuten aan leerinhoud."
+        }.get(target_language, f"Total: {len(lessons)} lessons, approximately {total_duration} minutes of learning content.")
+
+        # Assembler la description complète
+        full_description = f"{intro_text}\n\n" + "\n".join(lesson_items) + f"\n\n{total_info}"
+
+        return full_description
+
+    # Méthode pour mettre à jour la description dans la langue spécifiée
+    def update_description(self, target_language='en'):
+        """
+        Met à jour le champ de description de l'unité pour la langue spécifiée
+
+        Args:
+            target_language (str): Langue cible ('en', 'fr', 'es', 'nl')
+        """
+        description = self.generate_description_from_lessons(target_language)
+        setattr(self, f'description_{target_language}', description)
+
+    # Méthode pour mettre à jour toutes les descriptions dans toutes les langues
+    def update_all_descriptions(self):
+        """Met à jour les descriptions de l'unité dans toutes les langues supportées"""
+        languages = ['en', 'fr', 'es', 'nl']
+        for lang in languages:
+            self.update_description(lang)
+        self.save()
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.update_all_descriptions()
+        # Utiliser update=False pour éviter une boucle infinie
+        super().save(update_fields=['description_en', 'description_fr', 'description_es', 'description_nl'], *args, **kwargs)
+
 class Lesson(models.Model):
     LESSON_TYPE = [
         ('theory', 'Theory'),
