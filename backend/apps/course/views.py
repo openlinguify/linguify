@@ -27,6 +27,7 @@ from .models import (
     MultipleChoiceQuestion, 
     Numbers,
     ExerciseGrammarReordering,
+    FillBlankExercise
 )
 from .serializers import (
     TargetLanguageMixin,
@@ -39,6 +40,7 @@ from .serializers import (
     NumbersSerializer, 
     TheoryContentSerializer,
     ExerciseGrammarReorderingSerializer,
+    FillBlankExerciseSerializer
 )
 from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
@@ -79,9 +81,6 @@ class UnitAPIView(TargetLanguageMixin, generics.ListAPIView):
             
         return queryset
 
-
-
-
 class LessonAPIView(TargetLanguageMixin, generics.ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = LessonSerializer
@@ -106,8 +105,6 @@ class LessonAPIView(TargetLanguageMixin, generics.ListAPIView):
         context['target_language'] = target_language
         logger.info(f"LessonAPIView - Adding target_language to context: {target_language}")
         return context
-
-
 
 class ContentLessonViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -169,8 +166,6 @@ class ContentLessonViewSet(viewsets.ModelViewSet):
             logger.info(f"ContentLessonViewSet - Exemple de réponse: {serializer.data[0]}")
             
         return Response(serializer.data)
-
-
 
 class TheoryContentViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -438,3 +433,133 @@ class SearchVocabularyAPIView(APIView):
         vocabulary_list = VocabularyList.objects.filter(word__icontains=query) if query else VocabularyList.objects.all()
         data = VocabularyListSerializer(vocabulary_list, many=True).data
         return Response({'query': query, 'vocabularies': data}, status=status.HTTP_200_OK)
+
+class FillBlankExerciseViewSet(viewsets.ModelViewSet):
+    """
+    API pour les exercices de type "fill in the blank"
+    Permet de lister, créer, récupérer, mettre à jour et supprimer des exercices
+    """
+    queryset = FillBlankExercise.objects.all()
+    serializer_class = FillBlankExerciseSerializer
+    permission_classes = [AllowAny]  # À ajuster selon vos besoins de sécurité
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['content_lesson', 'difficulty', 'tags']
+    search_fields = ['sentences', 'tags']
+    ordering_fields = ['order', 'created_at', 'updated_at']
+    
+    def get_queryset(self):
+        """Personnaliser le queryset avec des filtres supplémentaires"""
+        queryset = super().get_queryset()
+        
+        # Filtrer par leçon
+        content_lesson_id = self.request.query_params.get('content_lesson')
+        if content_lesson_id:
+            queryset = queryset.filter(content_lesson_id=content_lesson_id)
+        
+        # Filtrer par langue disponible
+        language = self.request.query_params.get('language') or self.request.query_params.get('target_language')
+        if language:
+            # Filtrer les exercices qui ont du contenu dans cette langue
+            queryset = queryset.filter(sentences__has_key=language, answer_options__has_key=language)
+        
+        return queryset
+    
+    @action(detail=False, methods=['GET'], url_path='by-lesson/(?P<lesson_id>[^/.]+)')
+    def by_lesson(self, request, lesson_id=None):
+        """Récupère tous les exercices d'une leçon donnée"""
+        try:
+            # Vérifier que la leçon existe
+            content_lesson = ContentLesson.objects.get(pk=lesson_id)
+            
+            # Récupérer les exercices de cette leçon
+            exercises = self.get_queryset().filter(content_lesson=content_lesson).order_by('order')
+            
+            # Sérialiser les résultats
+            serializer = self.get_serializer(exercises, many=True)
+            
+            return Response(serializer.data)
+        except ContentLesson.DoesNotExist:
+            return Response(
+                {"error": f"Content lesson with ID {lesson_id} does not exist"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+    
+    @action(detail=False, methods=['GET'], url_path='random')
+    def random(self, request):
+        """Récupère un exercice aléatoire en appliquant les filtres actuels"""
+        queryset = self.filter_queryset(self.get_queryset())
+        
+        # Si aucun exercice ne correspond aux critères
+        if not queryset.exists():
+            return Response(
+                {"error": "No exercises match the current filters"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Sélectionner un exercice aléatoirement
+        random_exercise = queryset.order_by('?').first()
+        serializer = self.get_serializer(random_exercise)
+        
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['POST'], url_path='check-answer')
+    def check_answer(self, request, pk=None):
+        """
+        Vérifie si une réponse est correcte
+        
+        Attend un corps de requête au format:
+        {
+            "answer": "is not",
+            "language": "en"  // Optionnel, utilise la langue de la requête par défaut
+        }
+        """
+        exercise = self.get_object()
+        
+        # Valider les données de la requête
+        if 'answer' not in request.data:
+            return Response(
+                {"error": "Missing 'answer' field in request body"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        user_answer = request.data['answer']
+        language = request.data.get('language') or self._get_target_language(request)
+        
+        # Vérifier la réponse
+        is_correct = exercise.check_answer(user_answer, language)
+        
+        # Préparer la réponse
+        response_data = {
+            "is_correct": is_correct,
+            "correct_answer": exercise.correct_answers.get(language, exercise.correct_answers.get('en', "")),
+        }
+        
+        # Ajouter l'explication si disponible
+        if exercise.explanations and language in exercise.explanations:
+            response_data["explanation"] = exercise.explanations[language]
+        elif exercise.explanations and 'en' in exercise.explanations:
+            response_data["explanation"] = exercise.explanations['en']
+        
+        return Response(response_data)
+    
+    def _get_target_language(self, request):
+        """Détermine la langue cible pour une requête"""
+        # 1. Vérifier les paramètres de requête
+        target_language = request.query_params.get('language') or request.query_params.get('target_language')
+        if target_language:
+            return target_language.lower()
+        
+        # 2. Vérifier l'en-tête Accept-Language
+        if 'Accept-Language' in request.headers:
+            accept_lang = request.headers['Accept-Language'].split(',')[0].split(';')[0].strip()
+            if accept_lang and len(accept_lang) >= 2:
+                return accept_lang[:2].lower()
+        
+        # 3. Vérifier le profil utilisateur
+        if hasattr(request, 'user') and request.user.is_authenticated:
+            user_language = getattr(request.user, 'target_language', None)
+            if user_language:
+                return user_language.lower()
+        
+        # 4. Valeur par défaut
+        return 'en'

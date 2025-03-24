@@ -16,7 +16,8 @@ import {
   Gamepad2, 
   ArrowRightLeft,
   CheckCircle,
-  Clock
+  Clock,
+  PencilLine
 } from "lucide-react";
 import BackButton from "@/components/ui/BackButton";
 import TheoryContent from "./TheoryContent";
@@ -25,6 +26,7 @@ import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
 import NumberComponent from "./Numbers";
 import NumbersGame from "./NumbersGame";
 import ReorderingContent from "./ReorderingContent";
+import FillBlankExercise from "./FillBlankExercise";
 import { getUserTargetLanguage } from "@/utils/languageUtils";
 import courseAPI from "@/services/courseAPI";
 import progressAPI from "@/services/progressAPI";
@@ -40,6 +42,7 @@ const CONTENT_TYPES = {
   NUMBERS: 'numbers',
   NUMBERS_GAME: 'numbers',
   REORDERING: 'reordering',
+  FILL_BLANK: 'fill_blank',
 } as const;
 
 // Map content types to icons
@@ -50,6 +53,7 @@ const CONTENT_TYPE_ICONS: Record<string, React.ReactNode> = {
   'numbers': <Calculator className="h-4 w-4" />,
   'numbers_game': <Gamepad2 className="h-4 w-4" />,
   'reordering': <ArrowRightLeft className="h-4 w-4" />,
+  'fill_blank': <PencilLine className="h-4 w-4" />,
 };
 
 interface ContentLesson {
@@ -343,6 +347,10 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
 
           {selectedContent.type === CONTENT_TYPES.REORDERING && (
             <ReorderingContent {...commonProps} />
+          )}
+
+          {selectedContent.type === CONTENT_TYPES.FILL_BLANK && (
+            <FillBlankExercise {...commonProps} />
           )}
 
           {/* Bouton de complétion fixe */}
