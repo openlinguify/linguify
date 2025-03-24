@@ -89,6 +89,8 @@ class Unit(models.Model):
             case _:
                 return "Language not supported"
 
+    # Ajoutez ces méthodes dans votre classe Unit existante dans backend/apps/course/models.py
+
     def generate_description_from_lessons(self, target_language='en'):
         """
         Génère automatiquement une description de l'unité basée sur les leçons qu'elle contient.
@@ -148,7 +150,7 @@ class Unit(models.Model):
 
             # Obtenir le type de leçon traduit
             lesson_type = lesson_type_names.get(lesson.lesson_type, {}).get(target_language,
-                                                                            lesson_type_names.get(lesson.lesson_type, {}).get('en', lesson.lesson_type.capitalize()))
+                                                                        lesson_type_names.get(lesson.lesson_type, {}).get('en', lesson.lesson_type.capitalize()))
 
             # Durée estimée
             duration = f"{lesson.estimated_duration} {duration_text.get(target_language, 'min')}"
@@ -171,7 +173,6 @@ class Unit(models.Model):
 
         return full_description
 
-    # Méthode pour mettre à jour la description dans la langue spécifiée
     def update_description(self, target_language='en'):
         """
         Met à jour le champ de description de l'unité pour la langue spécifiée
@@ -182,19 +183,33 @@ class Unit(models.Model):
         description = self.generate_description_from_lessons(target_language)
         setattr(self, f'description_{target_language}', description)
 
-    # Méthode pour mettre à jour toutes les descriptions dans toutes les langues
     def update_all_descriptions(self):
         """Met à jour les descriptions de l'unité dans toutes les langues supportées"""
         languages = ['en', 'fr', 'es', 'nl']
         for lang in languages:
             self.update_description(lang)
-        self.save()
 
     def save(self, *args, **kwargs):
+        # Vérifier si nous sommes en train de faire une mise à jour spécifique des descriptions
+        is_description_update = kwargs.get('update_fields') and all(
+            field.startswith('description_') for field in kwargs.get('update_fields', [])
+        )
+        
+        # Sauvegarder normalement
         super().save(*args, **kwargs)
-        self.update_all_descriptions()
-        # Utiliser update=False pour éviter une boucle infinie
-        super().save(update_fields=['description_en', 'description_fr', 'description_es', 'description_nl'], *args, **kwargs)
+        
+        # Ne pas mettre à jour les descriptions si nous sommes déjà en train de le faire
+        if not is_description_update:
+            # Mettre à jour les descriptions
+            descriptions_updated = {}
+            for lang in ['en', 'fr', 'es', 'nl']:
+                new_description = self.generate_description_from_lessons(lang)
+                # Stocker la nouvelle description pour la mise à jour
+                descriptions_updated[f'description_{lang}'] = new_description
+            
+            # Mettre à jour directement sans rappeler save()
+            if descriptions_updated:
+                Unit.objects.filter(pk=self.pk).update(**descriptions_updated)
 
 class Lesson(models.Model):
     LESSON_TYPE = [
