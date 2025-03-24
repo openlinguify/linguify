@@ -46,6 +46,8 @@ from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
 import random
 import django_filters
+from django.db import models
+
 
 import logging
 
@@ -434,6 +436,26 @@ class SearchVocabularyAPIView(APIView):
         data = VocabularyListSerializer(vocabulary_list, many=True).data
         return Response({'query': query, 'vocabularies': data}, status=status.HTTP_200_OK)
 
+class FillBlankExerciseFilterSet(django_filters.FilterSet):
+    class Meta:
+        model = FillBlankExercise
+        fields = {
+            'content_lesson': ['exact'],
+            'difficulty': ['exact'],
+            # Exclude the JSONField 'tags' from automatic filtering
+            # We'll handle it manually if needed
+        }
+        
+        # Override the filter types for JSONField
+        filter_overrides = {
+            models.JSONField: {
+                'filter_class': django_filters.CharFilter,
+                'extra': lambda f: {
+                    'lookup_expr': 'icontains',
+                }
+            },
+        }
+
 class FillBlankExerciseViewSet(viewsets.ModelViewSet):
     """
     API pour les exercices de type "fill in the blank"
@@ -441,10 +463,10 @@ class FillBlankExerciseViewSet(viewsets.ModelViewSet):
     """
     queryset = FillBlankExercise.objects.all()
     serializer_class = FillBlankExerciseSerializer
-    permission_classes = [AllowAny]  # À ajuster selon vos besoins de sécurité
+    permission_classes = [AllowAny]  
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['content_lesson', 'difficulty', 'tags']
-    search_fields = ['sentences', 'tags']
+    filterset_class = FillBlankExerciseFilterSet  
+    search_fields = ['sentences'] 
     ordering_fields = ['order', 'created_at', 'updated_at']
     
     def get_queryset(self):

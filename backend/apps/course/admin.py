@@ -2,6 +2,14 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django import forms
+from django.urls import path
+from django.shortcuts import redirect, render, get_object_or_404
+from django.contrib import messages
+from django.http import HttpResponse, JsonResponse
+from django.template.response import TemplateResponse
+from django.core.serializers.json import DjangoJSONEncoder
+import csv, io, json
+
 from .widgets import AdminJSONFormField
 from .models import (
     Unit, 
@@ -15,11 +23,6 @@ from .models import (
     ExerciseGrammarReordering,
     FillBlankExercise,
 )
-import csv, io, json
-from django.contrib import messages
-from django.urls import path
-from django.template.response import TemplateResponse
-from django.shortcuts import redirect
 
 class LessonInline(admin.TabularInline):
     model = Lesson
@@ -216,44 +219,45 @@ class ExerciseVocabularyMultipleChoiceAdmin(admin.ModelAdmin):
     list_filter = ('lesson__unit',)
     search_fields = ('question', 'correct_answer')
 
+
 class FillBlankExerciseAdminForm(forms.ModelForm):
-    """Formulaire personnalisé pour l'admin des exercices à trous"""
+    """Enhanced custom form for Fill in the Blank exercises admin"""
     
     instructions = AdminJSONFormField(
         label="Instructions",
-        help_text="Instructions dans différentes langues"
+        help_text="Instructions for each language (e.g. 'Select the right word')"
     )
     
     sentences = AdminJSONFormField(
-        label="Phrases avec trous",
-        help_text="Phrases avec ___ pour indiquer l'emplacement du trou"
+        label="Sentences with Blanks",
+        help_text="Use ___ to mark where the blank should appear (e.g. 'Paris is ___ in France.')"
     )
     
     answer_options = AdminJSONFormField(
-        label="Options de réponse",
-        help_text="Tableau d'options pour chaque langue"
+        label="Answer Options",
+        help_text="List of possible answers for each language"
     )
     
     correct_answers = AdminJSONFormField(
-        label="Réponses correctes",
-        help_text="Réponse correcte pour chaque langue"
+        label="Correct Answers",
+        help_text="The correct answer for each language"
     )
     
     hints = AdminJSONFormField(
-        label="Indices",
-        help_text="Indices optionnels pour chaque langue",
+        label="Hints",
+        help_text="Optional hints to help users (shown when they're stuck)",
         required=False
     )
     
     explanations = AdminJSONFormField(
-        label="Explications",
-        help_text="Explications des réponses pour chaque langue",
+        label="Explanations",
+        help_text="Explanations why the answer is correct (shown after answering)",
         required=False
     )
     
     tags = AdminJSONFormField(
         label="Tags",
-        help_text="Tags pour catégoriser l'exercice",
+        help_text="Tags for categorizing this exercise (e.g. ['grammar', 'beginner'])",
         required=False
     )
     
@@ -261,51 +265,123 @@ class FillBlankExerciseAdminForm(forms.ModelForm):
         model = FillBlankExercise
         fields = '__all__'
 
+    def clean(self):
+        """Advanced validation to ensure consistency"""
+        cleaned_data = super().clean()
+        
+        sentences = cleaned_data.get('sentences', {})
+        answer_options = cleaned_data.get('answer_options', {})
+        correct_answers = cleaned_data.get('correct_answers', {})
+        
+        errors = []
+        
+        # For each language, verify that:
+        # 1. The sentence contains the blank marker
+        # 2. The correct answer is in the options list
+        # 3. The blank can fit the longest option reasonably
+        for lang in sentences.keys():
+            sentence = sentences.get(lang, '')
+            options = answer_options.get(lang, [])
+            correct = correct_answers.get(lang, '')
+            
+            if '___' not in sentence:
+                errors.append(f"The sentence for language '{lang}' does not contain a blank (___)")
+            
+            if options and correct and correct not in options:
+                errors.append(f"The correct answer '{correct}' for language '{lang}' is not in the options list")
+            
+            if options:
+                max_option_len = max([len(opt) for opt in options]) if options else 0
+                if max_option_len > 50:  # Arbitrary threshold for very long options
+                    errors.append(f"Some options for language '{lang}' are very long. Consider shortening them.")
+        
+        if errors:
+            raise forms.ValidationError(errors)
+            
+        return cleaned_data
+
 @admin.register(FillBlankExercise)
 class FillBlankExerciseAdmin(admin.ModelAdmin):
-    """Interface d'administration pour les exercices à trous multilingues"""
+    """Enhanced admin interface for Fill in the Blank exercises"""
     form = FillBlankExerciseAdminForm
-    list_display = ('id', 'get_content_lesson', 'get_available_languages', 'difficulty', 'order', 'created_at')
-    list_filter = ('difficulty', 'content_lesson__lesson__unit', 'created_at')
-    search_fields = ('id', 'content_lesson__title_en', 'content_lesson__lesson__title_en')
+    
+    list_display = ('id', 'get_content_lesson', 'get_example_sentence', 'get_available_languages', 
+                   'difficulty', 'order', 'created_at')
+    list_filter = ('difficulty', 'content_lesson__lesson__unit', 'content_lesson__lesson__unit__level', 'created_at')
+    search_fields = ('id', 'content_lesson__title_en', 'content_lesson__lesson__title_en', 'sentences')
     ordering = ('content_lesson', 'order')
-    readonly_fields = ('created_at', 'updated_at', 'json_preview', 'lang_consistency_check')
+    readonly_fields = ('created_at', 'updated_at', 'json_preview', 'lang_consistency_check', 
+                       'live_preview', 'answer_validation')
     save_on_top = True
+    actions = ['duplicate_exercises', 'export_as_csv', 'export_as_json']
     
     fieldsets = (
-        ('Relations', {
+        ('Basic Information', {
             'fields': ('content_lesson', 'order', 'difficulty')
         }),
-        ('Contenu multilingue', {
+        ('Multilingual Content', {
             'fields': ('instructions', 'sentences', 'answer_options', 'correct_answers'),
-            'description': 'Configurez le contenu dans différentes langues (EN, FR, ES, NL, etc.)'
+            'description': 'Set up content in multiple languages (EN, FR, ES, NL, etc.)'
         }),
-        ('Aides pédagogiques', {
+        ('Learning Aids', {
             'fields': ('hints', 'explanations'),
-            'description': 'Facultatif - Aidez l\'utilisateur à comprendre l\'exercice',
+            'description': 'Optional - Help the user understand the exercise',
             'classes': ('collapse',),
         }),
-        ('Métadonnées', {
-            'fields': ('tags', 'created_at', 'updated_at'),
+        ('Live Preview', {
+            'fields': ('live_preview',),
+            'description': 'See how this exercise will appear to users',
+        }),
+        ('Validation', {
+            'fields': ('answer_validation', 'lang_consistency_check'),
+            'description': 'Verify the correctness of your exercise',
             'classes': ('collapse',),
         }),
-        ('Vérifications', {
-            'fields': ('json_preview', 'lang_consistency_check'),
+        ('Metadata', {
+            'fields': ('tags', 'created_at', 'updated_at', 'json_preview'),
+            'description': 'Additional information and raw data',
             'classes': ('collapse',),
         }),
     )
     
     def get_content_lesson(self, obj):
-        """Afficher le titre de la leçon liée"""
-        return obj.content_lesson.title_en
-    get_content_lesson.short_description = 'Leçon'
+        """Display the lesson title with unit info"""
+        try:
+            unit = obj.content_lesson.lesson.unit
+            return format_html(
+                '<span title="Unit: {}">[{}] {}</span>',
+                unit.title_en,
+                unit.level,
+                obj.content_lesson.title_en
+            )
+        except:
+            return obj.content_lesson.title_en if obj.content_lesson else "—"
+    get_content_lesson.short_description = 'Lesson'
     get_content_lesson.admin_order_field = 'content_lesson__title_en'
     
+    def get_example_sentence(self, obj):
+        """Display a preview of the exercise sentence"""
+        # Try to get English sentence, fallback to first available language
+        languages = obj.get_available_languages()
+        sentence = ''
+        if 'en' in languages and 'en' in obj.sentences:
+            sentence = obj.sentences['en']
+        elif languages and languages[0] in obj.sentences:
+            sentence = obj.sentences[languages[0]]
+        
+        if not sentence:
+            return '—'
+        
+        # Replace blank with visual indicator
+        formatted = sentence.replace('___', '<span style="color: #e91e63; font-weight: bold;">___</span>')
+        return format_html('<span style="font-size: 0.85em;">{}</span>', formatted)
+    get_example_sentence.short_description = 'Example'
+    
     def get_available_languages(self, obj):
-        """Afficher les langues disponibles avec des badges colorés"""
+        """Display available languages with colored badges"""
         languages = obj.get_available_languages()
         
-        # Mappings pour les noms complets des langues et couleurs
+        # Mappings for language names and colors
         language_names = {
             'en': 'English',
             'fr': 'French',
@@ -318,36 +394,32 @@ class FillBlankExerciseAdmin(admin.ModelAdmin):
             'zh': 'Chinese',
             'ja': 'Japanese',
             'ar': 'Arabic',
-            # Ajoutez d'autres langues au besoin
         }
         
         colors = {
-            'en': 'blue',
-            'fr': 'red',
-            'es': 'orange',
-            'nl': 'purple',
-            'de': 'green',
-            'it': 'brown',
-            'pt': 'teal',
-            # Ajoutez d'autres couleurs au besoin
+            'en': '#2196F3', # Blue
+            'fr': '#F44336', # Red
+            'es': '#FF9800', # Orange
+            'nl': '#9C27B0', # Purple
+            'de': '#4CAF50', # Green
+            'it': '#795548', # Brown
+            'pt': '#009688', # Teal
         }
         
         html = []
         for lang in languages:
-            color = colors.get(lang, 'gray')
+            color = colors.get(lang, '#607D8B')  # Gray as default
             name = language_names.get(lang, lang.upper())
             html.append(
                 f'<span style="background-color: {color}; color: white; padding: 2px 6px; '
-                f'border-radius: 3px; margin: 0 2px;">{name}</span>'
+                f'border-radius: 3px; margin: 0 2px; font-size: 0.85em;">{name}</span>'
             )
         
-        return format_html(' '.join(html) if html else 'Aucune langue')
-    get_available_languages.short_description = 'Langues disponibles'
+        return format_html(' '.join(html) if html else '<span style="color: #999;">None</span>')
+    get_available_languages.short_description = 'Languages'
     
     def json_preview(self, obj):
-        """Afficher un aperçu JSON formaté des données de l'exercice"""
-        import json
-        
+        """Display a formatted JSON preview of the exercise data"""
         sample_data = {
             'instructions': obj.instructions,
             'sentences': obj.sentences,
@@ -363,119 +435,473 @@ class FillBlankExerciseAdmin(admin.ModelAdmin):
             'max-height: 400px; overflow-y: auto;">{}</div>',
             formatted_json
         )
-    json_preview.short_description = 'Aperçu JSON'
+    json_preview.short_description = 'JSON Data'
     
     def lang_consistency_check(self, obj):
-        """Vérifie la cohérence des langues entre les différents champs"""
+        """Check consistency between languages in different fields"""
         sentence_langs = set(obj.sentences.keys() if obj.sentences else [])
         answer_langs = set(obj.correct_answers.keys() if obj.correct_answers else [])
         options_langs = set(obj.answer_options.keys() if obj.answer_options else [])
+        instruction_langs = set(obj.instructions.keys() if obj.instructions else [])
         
-        all_langs = sentence_langs.union(answer_langs).union(options_langs)
+        all_langs = sentence_langs.union(answer_langs).union(options_langs).union(instruction_langs)
         
-        # Créer un tableau HTML pour la vérification
+        # Create HTML table for verification
         html = ['<table class="lang-consistency-table" style="width: 100%; border-collapse: collapse;">']
         
-        # En-tête du tableau
-        html.append('<thead><tr style="background-color: #417690; color: white;">')
-        html.append('<th style="padding: 8px; text-align: left;">Langue</th>')
-        html.append('<th style="padding: 8px;">Phrase</th>')
-        html.append('<th style="padding: 8px;">Options</th>')
-        html.append('<th style="padding: 8px;">Réponse</th>')
-        html.append('<th style="padding: 8px;">État</th>')
+        # Table header
+        html.append('<thead><tr style="background-color: #263238; color: white;">')
+        html.append('<th style="padding: 8px; text-align: left;">Language</th>')
+        html.append('<th style="padding: 8px; text-align: center;">Instructions</th>')
+        html.append('<th style="padding: 8px; text-align: center;">Sentence</th>')
+        html.append('<th style="padding: 8px; text-align: center;">Options</th>')
+        html.append('<th style="padding: 8px; text-align: center;">Answer</th>')
+        html.append('<th style="padding: 8px; text-align: center;">Status</th>')
         html.append('</tr></thead><tbody>')
         
-        # Corps du tableau
+        # Table body
         for lang in sorted(all_langs):
+            has_instruction = lang in instruction_langs
             has_sentence = lang in sentence_langs
             has_options = lang in options_langs
             has_answer = lang in answer_langs
             
-            is_complete = has_sentence and has_options and has_answer
-            status_label = 'Complet' if is_complete else 'Incomplet'
+            is_complete = has_instruction and has_sentence and has_options and has_answer
+            status_label = 'Complete' if is_complete else 'Incomplete'
             bg_color = '#e8f5e9' if is_complete else '#ffebee'
             
             html.append(f'<tr style="background-color: {bg_color};">')
-            html.append(f'<td style="padding: 8px; font-weight: bold;">{lang}</td>')
-            html.append(f'<td style="padding: 8px; text-align: center;">{("✓" if has_sentence else "✗")}</td>')
-            html.append(f'<td style="padding: 8px; text-align: center;">{("✓" if has_options else "✗")}</td>')
-            html.append(f'<td style="padding: 8px; text-align: center;">{("✓" if has_answer else "✗")}</td>')
+            html.append(f'<td style="padding: 8px; font-weight: bold;">{lang.upper()}</td>')
             
-            status_color = '#2e7d32' if is_complete else '#c62828'
+            for has_item in [has_instruction, has_sentence, has_options, has_answer]:
+                icon = "✓" if has_item else "✗"
+                color = "#4CAF50" if has_item else "#F44336"
+                html.append(f'<td style="padding: 8px; text-align: center; color: {color}; font-weight: bold;">{icon}</td>')
+            
+            status_color = '#2E7D32' if is_complete else '#C62828'
             html.append(f'<td style="padding: 8px; text-align: center; font-weight: bold; color: {status_color};">{status_label}</td>')
             html.append('</tr>')
         
         html.append('</tbody></table>')
         
-        # Ajouter un résumé
-        complete_langs = sum(1 for lang in all_langs if lang in sentence_langs and lang in options_langs and lang in answer_langs)
+        # Summary section
+        complete_langs = sum(1 for lang in all_langs if lang in sentence_langs and lang in options_langs 
+                           and lang in answer_langs and lang in instruction_langs)
         
         html.append('<div style="margin-top: 15px; padding: 10px; background-color: #f9f9f9; border-radius: 4px;">')
-        html.append(f'<p>{complete_langs} langues complètes sur {len(all_langs)} langues détectées.</p>')
+        html.append(f'<p style="margin: 5px 0;"><strong>{complete_langs}</strong> complete languages out of <strong>{len(all_langs)}</strong> languages detected.</p>')
         
         if complete_langs < len(all_langs):
-            html.append('<p style="color: #c62828;">⚠️ Attention : certaines langues sont incomplètes.</p>')
+            html.append('<p style="margin: 5px 0; color: #C62828;"><strong>⚠️ Warning:</strong> Some languages are incomplete.</p>')
+            
+            # Add specific recommendations
+            for lang in all_langs:
+                missing = []
+                if lang not in instruction_langs: missing.append("instructions")
+                if lang not in sentence_langs: missing.append("sentence")
+                if lang not in options_langs: missing.append("options")
+                if lang not in answer_langs: missing.append("correct answer")
+                
+                if missing:
+                    html.append(f'<p style="margin: 3px 0; color: #555;">Language <strong>{lang.upper()}</strong> is missing: {", ".join(missing)}</p>')
+        
+        html.append('</div>')
+        
+        # Add quick fix buttons
+        if complete_langs < len(all_langs):
+            html.append('<div style="margin-top: 10px;">')
+            html.append('<p><strong>Quick Actions:</strong></p>')
+            html.append('<div style="display: flex; gap: 5px; flex-wrap: wrap;">')
+            
+            for lang in all_langs:
+                if lang in sentence_langs and lang in options_langs and lang in answer_langs and lang in instruction_langs:
+                    continue  # Skip complete languages
+                    
+                html.append(f'<button type="button" class="button" onclick="completeLanguage(\'{lang}\')" '
+                           f'style="background-color: #2196F3; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer;">'
+                           f'Complete {lang.upper()}</button>')
+            
+            html.append('</div>')
+            html.append('</div>')
+            
+            # Add simple JavaScript for the demo
+            html.append('''
+            <script>
+            function completeLanguage(lang) {
+                alert("This would complete the missing fields for language: " + lang.toUpperCase() + 
+                      "\\n\\nIn a real implementation, this would copy from other languages or generate placeholders.");
+            }
+            </script>
+            ''')
+        
+        return format_html(''.join(html))
+    lang_consistency_check.short_description = 'Language Consistency'
+    
+    def live_preview(self, obj):
+        """Create an interactive preview of how the exercise will look"""
+        languages = obj.get_available_languages()
+        if not languages:
+            return format_html('<div style="padding: 20px; text-align: center; color: #666; background-color: #f5f5f5; border-radius: 4px;">'
+                              'No language content available to preview</div>')
+        
+        # Create tabs for each language
+        html = ['<div class="exercise-preview">']
+        
+        # Language selector tabs
+        html.append('<div class="language-tabs" style="display: flex; gap: 5px; margin-bottom: 10px;">')
+        for i, lang in enumerate(languages):
+            active = 'active' if i == 0 else ''
+            html.append(f'<button type="button" class="lang-tab {active}" data-lang="{lang}" '
+                       f'style="background-color: {active and "#2196F3" or "#e0e0e0"}; color: {active and "white" or "#333"}; '
+                       f'border: none; padding: 8px 12px; border-radius: 4px 4px 0 0; cursor: pointer;">'
+                       f'{lang.upper()}</button>')
+        html.append('</div>')
+        
+        # Exercise content for each language
+        html.append('<div class="preview-content" style="border: 1px solid #ddd; border-radius: 0 4px 4px 4px; padding: 20px; background-color: white;">')
+        for i, lang in enumerate(languages):
+            display = 'block' if i == 0 else 'none'
+            
+            sentence = obj.sentences.get(lang, '')
+            options = obj.answer_options.get(lang, [])
+            instruction = obj.instructions.get(lang, 'Select the correct answer')
+            correct = obj.correct_answers.get(lang, '')
+            
+            # Format sentence with blank
+            parts = sentence.split('___')
+            formatted_sentence = (parts[0] + 
+                                 '<span class="blank" style="border-bottom: 2px dashed #2196F3; padding: 0 5px; color: transparent;">___</span>' + 
+                                 parts[1]) if len(parts) > 1 else sentence
+            
+            html.append(f'<div class="lang-content" data-lang="{lang}" style="display: {display};">')
+            html.append(f'<h3 style="margin-top: 0; color: #333;">{instruction}</h3>')
+            html.append(f'<p class="sentence" style="font-size: 18px; margin: 20px 0;">{formatted_sentence}</p>')
+            
+            # Options
+            html.append('<div class="options" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px;">')
+            for option in options:
+                is_correct = option == correct
+                data_attr = f'data-correct="{is_correct}"'
+                html.append(f'<button type="button" class="option-btn" {data_attr} '
+                           f'style="background-color: #f5f5f5; border: 1px solid #ddd; padding: 8px 12px; '
+                           f'border-radius: 4px; cursor: pointer; font-size: 16px;">{option}</button>')
+            html.append('</div>')
+            
+            # Feedback area (initially hidden)
+            html.append('<div class="feedback" style="margin-top: 20px; padding: 12px; border-radius: 4px; display: none;"></div>')
+            
+            html.append('</div>')
+        html.append('</div>')
+        
+        # Add JavaScript for interactivity
+        html.append('''
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Switch tabs
+            document.querySelectorAll('.lang-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const lang = this.dataset.lang;
+                    
+                    // Update tab styling
+                    document.querySelectorAll('.lang-tab').forEach(t => {
+                        t.style.backgroundColor = '#e0e0e0';
+                        t.style.color = '#333';
+                        t.classList.remove('active');
+                    });
+                    this.style.backgroundColor = '#2196F3';
+                    this.style.color = 'white';
+                    this.classList.add('active');
+                    
+                    // Show selected content
+                    document.querySelectorAll('.lang-content').forEach(content => {
+                        content.style.display = content.dataset.lang === lang ? 'block' : 'none';
+                    });
+                });
+            });
+            
+            // Handle option selection
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const isCorrect = this.dataset.correct === 'true';
+                    const content = this.closest('.lang-content');
+                    const feedback = content.querySelector('.feedback');
+                    const sentence = content.querySelector('.sentence');
+                    const blank = sentence.querySelector('.blank');
+                    
+                    // Update blank with the selected option
+                    blank.textContent = this.textContent;
+                    blank.style.color = 'inherit';
+                    blank.style.borderBottom = 'none';
+                    blank.style.backgroundColor = isCorrect ? '#E8F5E9' : '#FFEBEE';
+                    
+                    // Disable all buttons
+                    content.querySelectorAll('.option-btn').forEach(b => {
+                        b.style.opacity = '0.5';
+                        b.style.cursor = 'default';
+                        b.disabled = true;
+                    });
+                    
+                    // Highlight the clicked button
+                    this.style.opacity = '1';
+                    this.style.backgroundColor = isCorrect ? '#4CAF50' : '#F44336';
+                    this.style.color = 'white';
+                    
+                    // Show feedback
+                    feedback.style.display = 'block';
+                    feedback.style.backgroundColor = isCorrect ? '#E8F5E9' : '#FFEBEE';
+                    feedback.style.color = isCorrect ? '#2E7D32' : '#C62828';
+                    feedback.innerHTML = isCorrect ? 
+                        '<strong>Correct!</strong> Well done.' : 
+                        '<strong>Incorrect.</strong> Try again.';
+                });
+            });
+        });
+        </script>
+        ''')
         
         html.append('</div>')
         
         return format_html(''.join(html))
-    lang_consistency_check.short_description = 'Vérification des langues'
+    live_preview.short_description = 'Exercise Preview'
+    
+    def answer_validation(self, obj):
+        """Validate that correct answers are in the options and other checks"""
+        languages = obj.get_available_languages()
+        if not languages:
+            return format_html('<div style="padding: 10px; color: #666;">No content to validate</div>')
+        
+        issues = []
+        
+        # Check for each language
+        for lang in languages:
+            sentence = obj.sentences.get(lang, '')
+            options = obj.answer_options.get(lang, [])
+            correct = obj.correct_answers.get(lang, '')
+            
+            # Check if sentence has a blank
+            if '___' not in sentence:
+                issues.append((
+                    'error', 
+                    f'The sentence for language <strong>{lang.upper()}</strong> does not contain a blank marker (___)'
+                ))
+            
+            # Check if correct answer is in options
+            if options and correct and correct not in options:
+                issues.append((
+                    'error',
+                    f'The correct answer <strong>"{correct}"</strong> for language <strong>{lang.upper()}</strong> is not in the options list'
+                ))
+            
+            # Check if options contain duplicates
+            if options and len(options) != len(set(options)):
+                issues.append((
+                    'warning',
+                    f'The options for language <strong>{lang.upper()}</strong> contain duplicate values'
+                ))
+            
+            # Check if blank is too small for options
+            if options:
+                max_len = max([len(opt) for opt in options])
+                if max_len > 30:  # Arbitrary threshold
+                    issues.append((
+                        'warning',
+                        f'Some answer options for language <strong>{lang.upper()}</strong> are very long ({max_len} chars)'
+                    ))
+        
+        # Build the output HTML
+        html = ['<div class="validation-results">']
+        
+        if not issues:
+            html.append('<div style="padding: 10px; background-color: #E8F5E9; color: #2E7D32; border-radius: 4px;">'
+                        '<strong>✓ All validation checks passed!</strong> No issues found.'
+                        '</div>')
+        else:
+            html.append('<div style="padding: 10px; background-color: #FFF3E0; color: #E65100; border-radius: 4px;">'
+                        f'<strong>⚠️ {len(issues)} issue(s) found</strong>'
+                        '</div>')
+            
+            html.append('<ul style="list-style-type: none; padding-left: 0;">')
+            for issue_type, message in issues:
+                icon = '❌' if issue_type == 'error' else '⚠️'
+                color = '#C62828' if issue_type == 'error' else '#F57F17'
+                html.append(f'<li style="margin: 8px 0; padding: 8px; background-color: {issue_type == "error" and "#FFEBEE" or "#FFF8E1"}; '
+                           f'border-radius: 4px; color: {color};">{icon} {message}</li>')
+            html.append('</ul>')
+        
+        html.append('</div>')
+        
+        return format_html(''.join(html))
+    answer_validation.short_description = 'Validation Results'
     
     def save_model(self, request, obj, form, change):
-        """Valider et nettoyer les données JSON avant enregistrement"""
-        # Vérifier que les langues sont cohérentes entre sentences et correct_answers
+        """Validate and clean JSON data before saving"""
+        # Ensure instructions field exists for all languages
+        if not hasattr(obj, 'instructions') or not obj.instructions:
+            obj.instructions = {}
+        
+        # For each language in sentences, ensure it has instructions
+        for lang in obj.sentences.keys():
+            if lang not in obj.instructions:
+                # Add default instruction based on language
+                if lang == 'en':
+                    obj.instructions[lang] = "Select the correct answer to fill in the blank."
+                elif lang == 'fr':
+                    obj.instructions[lang] = "Sélectionnez la bonne réponse pour compléter la phrase."
+                elif lang == 'es':
+                    obj.instructions[lang] = "Selecciona la respuesta correcta para completar el espacio en blanco."
+                elif lang == 'nl':
+                    obj.instructions[lang] = "Selecteer het juiste antwoord om de zin aan te vullen."
+                else:
+                    obj.instructions[lang] = "Select the correct answer."
+        
+        # Check for inconsistencies between fields
         sentence_langs = set(obj.sentences.keys() if obj.sentences else [])
         answer_langs = set(obj.correct_answers.keys() if obj.correct_answers else [])
         options_langs = set(obj.answer_options.keys() if obj.answer_options else [])
         
-        # Vérifier les incohérences
+        # Identify missing elements
         missing_sentences = answer_langs.difference(sentence_langs)
         missing_answers = sentence_langs.difference(answer_langs)
         missing_options = sentence_langs.difference(options_langs)
         
+        # Display warnings for inconsistencies
         warnings = []
         
         if missing_sentences:
-            warnings.append(f"Phrases manquantes pour les langues: {', '.join(missing_sentences)}")
+            warnings.append(f"Missing sentences for languages: {', '.join(missing_sentences)}")
         
         if missing_answers:
-            warnings.append(f"Réponses correctes manquantes pour les langues: {', '.join(missing_answers)}")
+            warnings.append(f"Missing correct answers for languages: {', '.join(missing_answers)}")
             
         if missing_options:
-            warnings.append(f"Options de réponse manquantes pour les langues: {', '.join(missing_options)}")
+            warnings.append(f"Missing answer options for languages: {', '.join(missing_options)}")
         
-        # Afficher les avertissements
         for warning in warnings:
             self.message_user(
                 request, 
                 f"⚠️ {warning}",
-                level='WARNING'
+                level=messages.WARNING
             )
         
         super().save_model(request, obj, form, change)
     
-    class Media:
-        css = {
-            'all': ('admin/css/json_prettify.css',)
-        }
-        js = ('admin/js/json_prettify.js',)
-
-
-
+    # Custom actions
+    def duplicate_exercises(self, request, queryset):
+        """Create copies of selected exercises"""
+        count = 0
+        for exercise in queryset:
+            # Create new object
+            new_exercise = FillBlankExercise.objects.create(
+                content_lesson=exercise.content_lesson,
+                order=exercise.order + 1000,  # Temporary high order to avoid collision
+                difficulty=exercise.difficulty,
+                instructions=exercise.instructions,
+                sentences=exercise.sentences,
+                answer_options=exercise.answer_options,
+                correct_answers=exercise.correct_answers,
+                hints=exercise.hints,
+                explanations=exercise.explanations,
+                tags=exercise.tags
+            )
+            count += 1
+        
+        # Reorder exercises
+        self._reorder_exercises()
+        
+        self.message_user(request, f"Successfully duplicated {count} exercise(s).", messages.SUCCESS)
+    duplicate_exercises.short_description = "Duplicate selected exercises"
+    
+    def export_as_csv(self, request, queryset):
+        """Export selected exercises as CSV"""
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="exercises.csv"'
+        
+        writer = csv.writer(response)
+        # Write header
+        writer.writerow([
+            'ID', 'Content Lesson', 'Order', 'Difficulty', 
+            'Languages', 'Created', 'Updated'
+        ])
+        
+        for obj in queryset:
+            writer.writerow([
+                obj.id,
+                obj.content_lesson.title_en if obj.content_lesson else '',
+                obj.order,
+                obj.difficulty,
+                ', '.join(obj.get_available_languages()),
+                obj.created_at.strftime('%Y-%m-%d %H:%M'),
+                obj.updated_at.strftime('%Y-%m-%d %H:%M')
+            ])
+        
+        return response
+    export_as_csv.short_description = "Export selected as CSV"
+    
+    def export_as_json(self, request, queryset):
+        """Export selected exercises as JSON"""
+        data = []
+        for obj in queryset:
+            data.append({
+                'id': obj.id,
+                'content_lesson_id': obj.content_lesson_id,
+                'order': obj.order,
+                'difficulty': obj.difficulty,
+                'instructions': obj.instructions,
+                'sentences': obj.sentences,
+                'answer_options': obj.answer_options,
+                'correct_answers': obj.correct_answers,
+                'hints': obj.hints,
+                'explanations': obj.explanations,
+                'tags': obj.tags,
+                'created_at': obj.created_at.isoformat(),
+                'updated_at': obj.updated_at.isoformat()
+            })
+        
+        response = HttpResponse(
+            json.dumps(data, indent=2, ensure_ascii=False),
+            content_type='application/json'
+        )
+        response['Content-Disposition'] = 'attachment; filename="exercises.json"'
+        return response
+    export_as_json.short_description = "Export selected as JSON"
+    
+    def _reorder_exercises(self):
+        """Reorder exercises by content_lesson to ensure consistent ordering"""
+        from django.db.models import F, Window
+        from django.db.models.functions import RowNumber
+        
+        # Group by content_lesson and assign new order values
+        content_lessons = FillBlankExercise.objects.values_list('content_lesson', flat=True).distinct()
+        
+        for content_lesson_id in content_lessons:
+            exercises = FillBlankExercise.objects.filter(content_lesson_id=content_lesson_id).order_by('order')
+            
+            # Update order sequentially
+            for i, exercise in enumerate(exercises, 1):
+                if exercise.order != i:
+                    exercise.order = i
+                    exercise.save(update_fields=['order'])
+    
+    # Custom views
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
             path('import-csv/', self.admin_site.admin_view(self.import_csv_view), name='fillblankexercise_import_csv'),
+            path('export-template/', self.admin_site.admin_view(self.export_template_view), name='fillblankexercise_export_template'),
+            path('bulk-create/', self.admin_site.admin_view(self.bulk_create_view), name='fillblankexercise_bulk_create'),
+            path('preview/<int:pk>/', self.admin_site.admin_view(self.preview_view), name='fillblankexercise_preview'),
         ]
         return custom_urls + urls
     
     def import_csv_view(self, request):
-        """Vue pour importer des exercices à trous depuis un fichier CSV"""
+        """Improved view for importing exercises from CSV"""
         context = {
             **self.admin_site.each_context(request),
             'opts': self.model._meta,
-            'title': 'Importer des exercices à trous depuis CSV',
-            'content_lessons': ContentLesson.objects.all().order_by('lesson__unit__level', 'lesson__unit__order', 'lesson__order', 'order'),
+            'title': 'Import Fill in the Blank Exercises',
+            'content_lessons': ContentLesson.objects.select_related('lesson__unit').order_by(
+                'lesson__unit__level', 'lesson__unit__order', 'lesson__order', 'order'
+            ),
         }
         
         if request.method == 'POST':
@@ -483,41 +909,44 @@ class FillBlankExerciseAdmin(admin.ModelAdmin):
             content_lesson_id = request.POST.get('content_lesson')
             
             if not csv_file:
-                messages.error(request, "Aucun fichier CSV sélectionné")
+                messages.error(request, "No CSV file selected")
                 return TemplateResponse(request, "admin/fillblankexercise/import_csv.html", context)
             
             if not content_lesson_id:
-                messages.error(request, "Aucune leçon sélectionnée")
+                messages.error(request, "No content lesson selected")
                 return TemplateResponse(request, "admin/fillblankexercise/import_csv.html", context)
             
             try:
                 content_lesson = ContentLesson.objects.get(id=content_lesson_id)
                 
-                # Lire le fichier CSV
+                # Parse CSV file
                 csv_data = csv_file.read().decode('utf-8')
                 reader = csv.DictReader(io.StringIO(csv_data))
                 
-                # Traiter chaque ligne
+                # Process each row
                 exercises_created = []
                 errors = []
                 
                 for i, row in enumerate(reader, start=1):
                     try:
-                        # Préparer les données
+                        # Extract languages from headers
                         languages = self._extract_languages_from_headers(reader.fieldnames)
                         
-                        # Vérifications de base
+                        # Basic validation
                         if not self._validate_csv_row(row, languages):
-                            errors.append(f"Ligne {i}: Données incomplètes ou invalides")
+                            errors.append(f"Row {i}: Incomplete or invalid data")
                             continue
                         
-                        # Créer les dictionnaires pour chaque langue
+                        # Prepare data structures
                         sentences = {}
                         options = {}
                         answers = {}
+                        hints = {}
+                        explanations = {}
                         
+                        # Populate data for each language
                         for lang in languages:
-                            # Récupérer les données pour chaque langue
+                            # Required fields
                             sentence_key = f'sentence_{lang}'
                             options_key = f'options_{lang}'
                             answer_key = f'answer_{lang}'
@@ -526,21 +955,13 @@ class FillBlankExerciseAdmin(admin.ModelAdmin):
                                 sentences[lang] = row[sentence_key]
                             
                             if options_key in row and row[options_key]:
-                                # Convertir la liste d'options séparées par des virgules en tableau
+                                # Convert comma-separated options to list
                                 options[lang] = [opt.strip() for opt in row[options_key].split(',')]
                             
                             if answer_key in row and row[answer_key]:
                                 answers[lang] = row[answer_key]
-                        
-                        # Créer l'exercice
-                        order = int(row.get('order', 1))
-                        difficulty = row.get('difficulty', 'medium')
-                        
-                        # Récupérer les champs facultatifs
-                        hints = {}
-                        explanations = {}
-                        
-                        for lang in languages:
+                            
+                            # Optional fields
                             hint_key = f'hint_{lang}'
                             explanation_key = f'explanation_{lang}'
                             
@@ -550,7 +971,26 @@ class FillBlankExerciseAdmin(admin.ModelAdmin):
                             if explanation_key in row and row[explanation_key]:
                                 explanations[lang] = row[explanation_key]
                         
-                        # Créer ou mettre à jour l'exercice
+                        # Get metadata
+                        order = int(row.get('order', 1))
+                        difficulty = row.get('difficulty', 'medium')
+                        tags = row.get('tags', '').split(',') if row.get('tags') else []
+                        
+                        # Create default instructions if not provided
+                        instructions = {}
+                        for lang in languages:
+                            if lang == 'en':
+                                instructions[lang] = "Select the correct answer to fill in the blank."
+                            elif lang == 'fr':
+                                instructions[lang] = "Sélectionnez la bonne réponse pour compléter la phrase."
+                            elif lang == 'es':
+                                instructions[lang] = "Selecciona la respuesta correcta para completar el espacio en blanco."
+                            elif lang == 'nl':
+                                instructions[lang] = "Selecteer het juiste antwoord om de zin aan te vullen."
+                            else:
+                                instructions[lang] = "Select the correct answer."
+                        
+                        # Create or update exercise
                         exercise, created = FillBlankExercise.objects.update_or_create(
                             content_lesson=content_lesson,
                             order=order,
@@ -561,41 +1001,184 @@ class FillBlankExerciseAdmin(admin.ModelAdmin):
                                 'difficulty': difficulty,
                                 'hints': hints or None,
                                 'explanations': explanations or None,
-                                'instructions': {
-                                    lang: "Select the right answer." if lang == 'en' else "Sélectionnez la bonne réponse."
-                                    for lang in languages
-                                }
+                                'instructions': instructions,
+                                'tags': tags
                             }
                         )
                         
                         exercises_created.append(exercise)
                     except Exception as e:
-                        errors.append(f"Ligne {i}: {str(e)}")
+                        errors.append(f"Row {i}: {str(e)}")
                 
-                # Afficher les résultats
+                # Show results
                 if exercises_created:
                     messages.success(
                         request, 
-                        f"{len(exercises_created)} exercices importés avec succès pour la leçon '{content_lesson.title_en}'"
+                        f"Successfully imported {len(exercises_created)} exercises for lesson '{content_lesson.title_en}'"
                     )
                 
                 if errors:
                     messages.warning(
                         request, 
-                        f"{len(errors)} erreurs lors de l'importation: {', '.join(errors[:5])}" +
-                        (f"... et {len(errors) - 5} autres" if len(errors) > 5 else "")
+                        f"{len(errors)} errors during import: {', '.join(errors[:5])}" +
+                        (f"... and {len(errors) - 5} more" if len(errors) > 5 else "")
                     )
                 
-                # Rediriger vers la liste des exercices
+                # Redirect to list view
                 return redirect('admin:course_fillblankexercise_changelist')
                 
             except Exception as e:
-                messages.error(request, f"Erreur lors de l'importation: {str(e)}")
+                messages.error(request, f"Error during import: {str(e)}")
+        
+        # Add sample CSV data to context
+        context['sample_csv'] = self._get_sample_csv()
         
         return TemplateResponse(request, "admin/fillblankexercise/import_csv.html", context)
     
+    def export_template_view(self, request):
+        """Export a CSV template for importing exercises"""
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="fill_blank_template.csv"'
+        
+        writer = csv.writer(response)
+        writer.writerow([
+            'order', 'difficulty', 'tags',
+            'sentence_en', 'options_en', 'answer_en', 'hint_en', 'explanation_en',
+            'sentence_fr', 'options_fr', 'answer_fr', 'hint_fr', 'explanation_fr',
+            'sentence_es', 'options_es', 'answer_es', 'hint_es', 'explanation_es',
+            'sentence_nl', 'options_nl', 'answer_nl', 'hint_nl', 'explanation_nl'
+        ])
+        
+        # Add sample row
+        writer.writerow([
+            '1', 'medium', 'grammar,article,beginner',
+            'Paris is ___ in France.', 'located,situated,found,placed', 'located', 'Think about position', 'We use "located" to describe the position of a place',
+            'Paris est ___ en France.', 'situé,localisé,placé,trouvé', 'situé', 'Pensez à la position', 'Nous utilisons "situé" pour décrire la position d\'un lieu',
+            'París está ___ en Francia.', 'ubicado,situado,localizado,encontrado', 'ubicado', 'Piensa en la posición', 'Usamos "ubicado" para describir la posición de un lugar',
+            'Parijs is ___ in Frankrijk.', 'gelegen,gesitueerd,geplaatst,gevonden', 'gelegen', 'Denk aan positie', 'We gebruiken "gelegen" om de positie van een plaats te beschrijven'
+        ])
+        
+        return response
+    
+    def bulk_create_view(self, request):
+        """View for creating multiple exercises at once"""
+        context = {
+            **self.admin_site.each_context(request),
+            'opts': self.model._meta,
+            'title': 'Bulk Create Fill in the Blank Exercises',
+            'content_lessons': ContentLesson.objects.select_related('lesson__unit').order_by(
+                'lesson__unit__level', 'lesson__unit__order', 'lesson__order', 'order'
+            ),
+        }
+        
+        if request.method == 'POST':
+            content_lesson_id = request.POST.get('content_lesson')
+            bulk_data = request.POST.get('bulk_data', '')
+            
+            if not content_lesson_id:
+                messages.error(request, "No content lesson selected")
+                return TemplateResponse(request, "admin/fillblankexercise/bulk_create.html", context)
+            
+            if not bulk_data.strip():
+                messages.error(request, "No data provided")
+                return TemplateResponse(request, "admin/fillblankexercise/bulk_create.html", context)
+            
+            try:
+                content_lesson = ContentLesson.objects.get(id=content_lesson_id)
+                
+                # Process bulk data (one exercise per paragraph)
+                exercises_created = []
+                errors = []
+                
+                # Split into paragraphs
+                paragraphs = [p.strip() for p in bulk_data.split('\n\n') if p.strip()]
+                
+                for i, paragraph in enumerate(paragraphs, 1):
+                    try:
+                        lines = [line.strip() for line in paragraph.split('\n') if line.strip()]
+                        
+                        if len(lines) < 3:  # Need at least sentence, options and answer
+                            errors.append(f"Paragraph {i}: Not enough data (need at least sentence, options, answer)")
+                            continue
+                        
+                        # Parse data (simple format)
+                        sentence = lines[0]
+                        options = [opt.strip() for opt in lines[1].split(',')]
+                        answer = lines[2]
+                        
+                        # Optional hint and explanation
+                        hint = lines[3] if len(lines) > 3 else None
+                        explanation = lines[4] if len(lines) > 4 else None
+                        
+                        # Create exercise (English only in this simple implementation)
+                        # In a real implementation, you'd handle multiple languages
+                        exercise = FillBlankExercise.objects.create(
+                            content_lesson=content_lesson,
+                            order=i,
+                            difficulty='medium',
+                            instructions={'en': 'Select the correct answer to fill in the blank.'},
+                            sentences={'en': sentence},
+                            answer_options={'en': options},
+                            correct_answers={'en': answer}
+                        )
+                        
+                        if hint:
+                            exercise.hints = {'en': hint}
+                            
+                        if explanation:
+                            exercise.explanations = {'en': explanation}
+                            
+                        exercise.save()
+                        exercises_created.append(exercise)
+                        
+                    except Exception as e:
+                        errors.append(f"Paragraph {i}: {str(e)}")
+                
+                # Show results
+                if exercises_created:
+                    messages.success(
+                        request, 
+                        f"Successfully created {len(exercises_created)} exercises for lesson '{content_lesson.title_en}'"
+                    )
+                
+                if errors:
+                    messages.warning(
+                        request, 
+                        f"{len(errors)} errors during creation: {', '.join(errors[:5])}" +
+                        (f"... and {len(errors) - 5} more" if len(errors) > 5 else "")
+                    )
+                
+                # Redirect to list view
+                return redirect('admin:course_fillblankexercise_changelist')
+                
+            except Exception as e:
+                messages.error(request, f"Error creating exercises: {str(e)}")
+        
+        # Add sample bulk data to context
+        context['sample_data'] = "Paris is ___ in France.\nlocated,situated,found,placed\nlocated\nThink about position\nWe use 'located' to describe the position of a place\n\nThe weather ___ very nice today.\nis,are,were,have been\nis\nConsider singular/plural\n'Weather' is a singular noun so we use 'is'"
+        
+        return TemplateResponse(request, "admin/fillblankexercise/bulk_create.html", context)
+    
+    def preview_view(self, request, pk):
+        """Standalone preview view for an exercise"""
+        try:
+            exercise = FillBlankExercise.objects.get(pk=pk)
+        except FillBlankExercise.DoesNotExist:
+            messages.error(request, "Exercise not found")
+            return redirect('admin:course_fillblankexercise_changelist')
+        
+        context = {
+            **self.admin_site.each_context(request),
+            'opts': self.model._meta,
+            'title': f'Preview Exercise #{pk}',
+            'exercise': exercise,
+            'languages': exercise.get_available_languages(),
+        }
+        
+        return TemplateResponse(request, "admin/fillblankexercise/preview.html", context)
+    
     def _extract_languages_from_headers(self, headers):
-        """Extrait les codes de langue depuis les en-têtes du CSV"""
+        """Extract language codes from CSV headers"""
         languages = set()
         
         for header in headers:
@@ -608,8 +1191,7 @@ class FillBlankExerciseAdmin(admin.ModelAdmin):
         return languages
     
     def _validate_csv_row(self, row, languages):
-        """Valide une ligne du CSV pour s'assurer qu'elle contient les données minimales requises"""
-        # Vérifier qu'au moins une langue a des données complètes
+        """Validate CSV row has required data for at least one language"""
         for lang in languages:
             sentence_key = f'sentence_{lang}'
             options_key = f'options_{lang}'
@@ -622,8 +1204,26 @@ class FillBlankExerciseAdmin(admin.ModelAdmin):
         
         return False
     
-    # Ajouter un bouton d'importation dans la liste d'exercices
+    def _get_sample_csv(self):
+        """Generate sample CSV data"""
+        return (
+            "order,difficulty,tags,sentence_en,options_en,answer_en,hint_en,explanation_en\n"
+            "1,easy,grammar,She ___ to school every day.,goes,walks,runs,drives,goes,Think about regular actions,We use 'goes' for regular actions\n"
+            "2,medium,prepositions,The book is ___ the table.,on,in,at,under,on,Think about position,We use 'on' when something is supported by a surface"
+        )
+    
+    # Add the export template button to the change list
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
-        extra_context['show_import_button'] = True
+        extra_context['show_export_template_button'] = True
+        extra_context['show_bulk_create_button'] = True
         return super().changelist_view(request, extra_context=extra_context)
+    
+    class Media:
+        css = {
+            'all': ('admin/css/json_prettify.css',)
+        }
+        js = ('admin/js/json_prettify.js',)
+
+
+
