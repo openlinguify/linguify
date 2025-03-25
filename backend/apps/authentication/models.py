@@ -188,15 +188,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objectives = models.CharField(max_length=20, choices=OBJECTIVES_CHOICES, default=OBJECTIVES_CHOICES[0][0],
                                   help_text="Your learning objectives")
     is_coach = models.BooleanField(default=False)  # Flag to indicate if a user is a coach
-    """
-      settings fields
-    """
-    # Field to change the style of the description of the units
-    DESCRIPTION_STYLE_CHOICES = [
-        ('concise', 'Concise'),
-        ('detailed', 'Detailed'),
-    ]
-    description_style = models.CharField(max_length=10, choices=DESCRIPTION_STYLE_CHOICES, default='concise', verbose_name="Description Style")
+    # settings fields
     email_notifications = models.BooleanField(default=True)
     push_notifications = models.BooleanField(default=True)
     interface_language = models.CharField(max_length=10, default='en')
