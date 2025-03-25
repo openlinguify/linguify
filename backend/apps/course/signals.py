@@ -1,5 +1,3 @@
-# backend/apps/course/signals.py
-
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from .models import Lesson, Unit
@@ -32,20 +30,18 @@ def update_unit_description_on_lesson_change(sender, instance, created, **kwargs
     """
     Met à jour les descriptions des unités concernées quand une leçon est ajoutée ou modifiée
     """
-    # Ne pas utiliser transaction.on_commit pour mise à jour immédiate
-    
     # Mise à jour de la nouvelle unité
     if instance.unit:
-        logger.info(f"Mise à jour de l'unité actuelle {instance.unit.id}")
-        instance.unit.update_unit_descriptions()
+        logger.info(f"Signal: Mise à jour de l'unité {instance.unit.id}")
+        instance.unit.save(update_descriptions=True)
     
     # Mise à jour de l'ancienne unité
     previous_unit_id = getattr(instance, '_previous_unit_id', None)
     if previous_unit_id and previous_unit_id != getattr(instance.unit, 'id', None):
         try:
             previous_unit = Unit.objects.get(id=previous_unit_id)
-            logger.info(f"Mise à jour de l'unité précédente {previous_unit.id}")
-            previous_unit.update_unit_descriptions()
+            logger.info(f"Signal: Mise à jour de l'unité précédente {previous_unit.id}")
+            previous_unit.save(update_descriptions=True)
         except Unit.DoesNotExist:
             logger.warning(f"L'unité précédente {previous_unit_id} n'existe plus")
 
@@ -57,8 +53,7 @@ def update_unit_description_on_lesson_delete(sender, instance, **kwargs):
     if instance.unit_id:
         try:
             unit = Unit.objects.get(id=instance.unit_id)
-            # Ne pas utiliser transaction.on_commit
-            unit.update_unit_descriptions()
-            logger.info(f"Mise à jour de l'unité {unit.id} après suppression de leçon")
+            logger.info(f"Signal: Mise à jour de l'unité {unit.id} après suppression")
+            unit.save(update_descriptions=True)
         except Unit.DoesNotExist:
             logger.warning(f"L'unité {instance.unit_id} n'existe plus")
