@@ -5,6 +5,10 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext as _
 from authentication.models import User
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 """
 Learning Path Overview:
 -----------------------
@@ -203,12 +207,14 @@ class Unit(models.Model):
         languages = ['en', 'fr', 'es', 'nl']
         
         for lang in languages:
+            # Générer la description dans la langue spécifiée
             unit_desc = self.generate_unit_description(lang)
-            setattr(self, f'unit_description_{lang}', unit_desc)
+            # Mettre à jour l'attribut de l'instance
+            setattr(self, f'description_{lang}', unit_desc)
         
-        # Mise à jour sans déclencher une récursion
+        # Mise à jour en base de données sans déclencher de récursion
         Unit.objects.filter(pk=self.pk).update(**{
-            f'unit_description_{lang}': getattr(self, f'unit_description_{lang}')
+            f'description_{lang}': getattr(self, f'description_{lang}')
             for lang in languages
         })
 
