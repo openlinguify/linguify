@@ -89,127 +89,144 @@ class Unit(models.Model):
             case _:
                 return "Language not supported"
 
-    # Ajoutez ces méthodes dans votre classe Unit existante dans backend/apps/course/models.py
-
-    def generate_description_from_lessons(self, target_language='en'):
+ 
+    def generate_unit_description(self, target_language='en'):
         """
-        Génère automatiquement une description de l'unité basée sur les leçons qu'elle contient.
-
+        Generates a description focusing on what the learner will achieve
+        
         Args:
-            target_language (str): Langue cible ('en', 'fr', 'es', 'nl')
-
+            target_language (str): Target language code ('en', 'fr', 'es', 'nl')
+            
         Returns:
-            str: Description générée dans la langue cible
+            str: A description
         """
-        # Récupérer les leçons de l'unité, triées par ordre
         lessons = self.lessons.all().order_by('order')
-
-        # Si aucune leçon n'est disponible, retourner un message par défaut
+        
         if not lessons:
-            default_messages = {
-                'en': "No lessons available for this unit yet.",
-                'fr': "Aucune leçon n'est disponible pour cette unité pour le moment.",
-                'es': "Aún no hay lecciones disponibles para esta unidad.",
-                'nl': "Er zijn nog geen lessen beschikbaar voor deze unit."
+            unit_messages = {
+                'en': "This unit is coming soon! Stay tuned for new content.",
+                'fr': "Cette unité arrive bientôt ! Restez à l'écoute pour du nouveau contenu.",
+                'es': "¡Esta unidad estará disponible pronto! Mantente atento para nuevo contenido.",
+                'nl': "Deze unit komt binnenkort! Blijf op de hoogte voor nieuwe inhoud."
             }
-            return default_messages.get(target_language, default_messages['en'])
-
-        # Texte d'introduction selon la langue
-        intro_text = {
-            'en': f"This {self.level} level unit covers the following topics:",
-            'fr': f"Cette unité de niveau {self.level} couvre les sujets suivants :",
-            'es': f"Esta unidad de nivel {self.level} cubre los siguientes temas:",
-            'nl': f"Deze unit van niveau {self.level} behandelt de volgende onderwerpen:"
-        }.get(target_language, f"This {self.level} level unit covers the following topics:")
-
-        # Générer la liste des leçons avec leur type et durée estimée
-        lesson_type_names = {
-            'theory': {'en': 'Theory', 'fr': 'Théorie', 'es': 'Teoría', 'nl': 'Theorie'},
-            'vocabulary': {'en': 'Vocabulary', 'fr': 'Vocabulaire', 'es': 'Vocabulario', 'nl': 'Woordenschat'},
-            'grammar': {'en': 'Grammar', 'fr': 'Grammaire', 'es': 'Gramática', 'nl': 'Grammatica'},
-            'pronunciation': {'en': 'Pronunciation', 'fr': 'Prononciation', 'es': 'Pronunciación', 'nl': 'Uitspraak'},
-            'listening': {'en': 'Listening', 'fr': 'Écoute', 'es': 'Comprensión auditiva', 'nl': 'Luisteren'},
-            'speaking': {'en': 'Speaking', 'fr': 'Expression orale', 'es': 'Expresión oral', 'nl': 'Spreken'},
-            'reading': {'en': 'Reading', 'fr': 'Lecture', 'es': 'Lectura', 'nl': 'Lezen'},
-            'writing': {'en': 'Writing', 'fr': 'Écriture', 'es': 'Escritura', 'nl': 'Schrijven'},
-            'test': {'en': 'Test', 'fr': 'Test', 'es': 'Evaluación', 'nl': 'Toets'}
+            return unit_messages.get(target_language, unit_messages['en'])
+        
+        # Create unit introduction based on unit level and language
+        intro_phrases = {
+            'en': {
+                'A1': "Start your language journey with essential basics.",
+                'A2': "Build your elementary knowledge with practical topics.",
+                'B1': "Expand your intermediate skills with more complex content.",
+                'B2': "Strengthen your upper-intermediate abilities with nuanced material.",
+                'C1': "Refine your advanced language skills with sophisticated topics.",
+                'C2': "Master professional-level language with specialized content."
+            },
+            'fr': {
+                'A1': "Commencez votre parcours linguistique avec les bases essentielles.",
+                'A2': "Développez vos connaissances élémentaires avec des sujets pratiques.",
+                'B1': "Élargissez vos compétences intermédiaires avec un contenu plus complexe.",
+                'B2': "Renforcez vos capacités intermédiaires-supérieures avec un matériel nuancé.",
+                'C1': "Affinez vos compétences linguistiques avancées avec des sujets sophistiqués.",
+                'C2': "Maîtrisez la langue au niveau professionnel avec un contenu spécialisé."
+            },
+            'es': {
+                'A1': "Inicia tu viaje lingüístico con los fundamentos esenciales.",
+                'A2': "Construye tu conocimiento elemental con temas prácticos.",
+                'B1': "Amplía tus habilidades intermedias con contenido más complejo.",
+                'B2': "Fortalece tus capacidades intermedias-avanzadas con material matizado.",
+                'C1': "Perfecciona tus habilidades avanzadas con temas sofisticados.",
+                'C2': "Domina el nivel profesional del idioma con contenido especializado."
+            },
+            'nl': {
+                'A1': "Begin je taalreis met essentiële basisvaardigheden.",
+                'A2': "Bouw je elementaire kennis op met praktische onderwerpen.",
+                'B1': "Breid je tussentijdse vaardigheden uit met complexere inhoud.",
+                'B2': "Versterk je hogere-tussentijdse vaardigheden met genuanceerd materiaal.",
+                'C1': "Verfijn je geavanceerde taalvaardigheden met geavanceerde onderwerpen.",
+                'C2': "Beheers taal op professioneel niveau met gespecialiseerde inhoud."
+            }
         }
-
-        duration_text = {
-            'en': "min",
-            'fr': "min",
-            'es': "min",
-            'nl': "min"
-        }
-
-        lesson_items = []
-
+        
+        # Get the intro phrase for this unit's level
+        level_phrases = intro_phrases.get(target_language, intro_phrases['en'])
+        intro_text = level_phrases.get(self.level, level_phrases['A1'])
+        
+        # Extract main themes from lesson titles
+        main_topics = []
         for lesson in lessons:
-            # Obtenir le titre dans la langue cible
-            title = getattr(lesson, f'title_{target_language}', lesson.title_en)
-
-            # Obtenir le type de leçon traduit
-            lesson_type = lesson_type_names.get(lesson.lesson_type, {}).get(target_language,
-                                                                        lesson_type_names.get(lesson.lesson_type, {}).get('en', lesson.lesson_type.capitalize()))
-
-            # Durée estimée
-            duration = f"{lesson.estimated_duration} {duration_text.get(target_language, 'min')}"
-
-            # Formater l'élément de liste
-            lesson_items.append(f"• {title} ({lesson_type}, {duration})")
-
-        # Total des leçons et durée estimée totale
+            title_field = f"title_{target_language}"
+            title = getattr(lesson, title_field, getattr(lesson, "title_en", ""))
+            main_topics.append(title)
+        
+        # Pick top 3-4 topics if there are more
+        if len(main_topics) > 4:
+            main_topics = main_topics[:4]
+        
+        # Craft the topics text based on language
+        topics_connector = {
+            'en': "You'll learn about",
+            'fr': "Vous apprendrez",
+            'es': "Aprenderás sobre",
+            'nl': "Je leert over"
+        }.get(target_language, "You'll learn about")
+        
+        topics_text = f"{topics_connector} {', '.join(main_topics[:-1])}"
+        if len(main_topics) > 1:
+            and_text = {
+                'en': "and",
+                'fr': "et",
+                'es': "y",
+                'nl': "en"
+            }.get(target_language, "and")
+            topics_text += f" {and_text} {main_topics[-1]}."
+        else:
+            topics_text += "."
+        
+        # Add time commitment information
         total_duration = sum(lesson.estimated_duration for lesson in lessons)
+        lesson_count = len(lessons)
+        
+        time_text = {
+            'en': f"Complete in {total_duration} minutes across {lesson_count} engaging lessons.",
+            'fr': f"Terminez en {total_duration} minutes avec {lesson_count} leçons captivantes.",
+            'es': f"Completa en {total_duration} minutos a través de {lesson_count} lecciones interesantes.",
+            'nl': f"Voltooi in {total_duration} minuten verdeeld over {lesson_count} boeiende lessen."
+        }.get(target_language, f"Complete in {total_duration} minutes across {lesson_count} engaging lessons.")
+        
+        # Compile the unit description
+        unit_description = f"{intro_text} {topics_text} {time_text}"
+        
+        return unit_description
 
-        total_info = {
-            'en': f"Total: {len(lessons)} lessons, approximately {total_duration} minutes of learning content.",
-            'fr': f"Total : {len(lessons)} leçons, environ {total_duration} minutes de contenu d'apprentissage.",
-            'es': f"Total: {len(lessons)} lecciones, aproximadamente {total_duration} minutos de contenido de aprendizaje.",
-            'nl': f"Totaal: {len(lessons)} lessen, ongeveer {total_duration} minuten aan leerinhoud."
-        }.get(target_language, f"Total: {len(lessons)} lessons, approximately {total_duration} minutes of learning content.")
-
-        # Assembler la description complète
-        full_description = f"{intro_text}\n\n" + "\n".join(lesson_items) + f"\n\n{total_info}"
-
-        return full_description
-
-    def update_description(self, target_language='en'):
-        """
-        Met à jour le champ de description de l'unité pour la langue spécifiée
-
-        Args:
-            target_language (str): Langue cible ('en', 'fr', 'es', 'nl')
-        """
-        description = self.generate_description_from_lessons(target_language)
-        setattr(self, f'description_{target_language}', description)
-
-    def update_all_descriptions(self):
+    def update_unit_descriptions(self):
         """Met à jour les descriptions de l'unité dans toutes les langues supportées"""
         languages = ['en', 'fr', 'es', 'nl']
+        
         for lang in languages:
-            self.update_description(lang)
+            unit_desc = self.generate_unit_description(lang)
+            setattr(self, f'unit_description_{lang}', unit_desc)
+        
+        # Mise à jour sans déclencher une récursion
+        Unit.objects.filter(pk=self.pk).update(**{
+            f'unit_description_{lang}': getattr(self, f'unit_description_{lang}')
+            for lang in languages
+        })
+
+    # You'll need to add these fields to your Unit model:
+    """
+    unit_description_en = models.TextField(blank=True, null=True)
+    unit_description_fr = models.TextField(blank=True, null=True)
+    unit_description_es = models.TextField(blank=True, null=True)
+    unit_description_nl = models.TextField(blank=True, null=True)
+    """
 
     def save(self, *args, **kwargs):
-        # Vérifier si nous sommes en train de faire une mise à jour spécifique des descriptions
-        is_description_update = kwargs.get('update_fields') and all(
-            field.startswith('description_') for field in kwargs.get('update_fields', [])
-        )
-        
-        # Sauvegarder normalement
+        # Appel à la méthode save d'origine
         super().save(*args, **kwargs)
         
-        # Ne pas mettre à jour les descriptions si nous sommes déjà en train de le faire
-        if not is_description_update:
-            # Mettre à jour les descriptions
-            descriptions_updated = {}
-            for lang in ['en', 'fr', 'es', 'nl']:
-                new_description = self.generate_description_from_lessons(lang)
-                # Stocker la nouvelle description pour la mise à jour
-                descriptions_updated[f'description_{lang}'] = new_description
-            
-            # Mettre à jour directement sans rappeler save()
-            if descriptions_updated:
-                Unit.objects.filter(pk=self.pk).update(**descriptions_updated)
+        # Mise à jour des descriptions des unités
+        if not kwargs.get('update_fields') or not all(f'unit_description_{lang}' in kwargs['update_fields'] for lang in ['en', 'fr', 'es', 'nl']):
+            self.update_unit_descriptions()
 
 class Lesson(models.Model):
     LESSON_TYPE = [
@@ -259,6 +276,11 @@ class Lesson(models.Model):
             'nl': self.description_nl,
         }
         return switch.get(target_language, self.description_en)
+
+
+
+
+
 
 class ContentLesson(models.Model):
     '''
