@@ -217,10 +217,6 @@ class Lesson(models.Model):
         return switch.get(target_language, self.description_en)
 
 
-
-
-
-
 class ContentLesson(models.Model):
     '''
     Content lesson model
@@ -468,27 +464,257 @@ class ExerciseVocabularyMultipleChoice(models.Model):
             explanation=f"{vocab.word_en} means {vocab.definition_en}",
         )
 
-class ExerciseVocabularyFillBlank(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    sentence_fill_blank_en = models.TextField(blank=False, null=False, help_text="Sentence with a blank space")
-    sentence_fill_blank_fr = models.TextField(blank=False, null=False, help_text="Sentence with a blank space")
-    sentence_fill_blank_es = models.TextField(blank=False, null=False, help_text="Sentence with a blank space")
-    sentence_fill_blank_nl = models.TextField(blank=False, null=False, help_text="Sentence with a blank space")
-    correct_answer_en = models.CharField(max_length=255, blank=False, null=False, help_text="Correct answer for the blank space")
-    correct_answer_fr = models.CharField(max_length=255, blank=False, null=False)
-    correct_answer_es = models.CharField(max_length=255, blank=False, null=False)
-    correct_answer_nl = models.CharField(max_length=255, blank=False, null=False)
-    explanation_en = models.TextField(blank=True, null=True)
-    explanation_fr = models.TextField(blank=True, null=True)
-    explanation_es = models.TextField(blank=True, null=True)
-    explanation_nl = models.TextField(blank=True, null=True)
-    hint_en = models.TextField(blank=True, null=True)
-    hint_fr = models.TextField(blank=True, null=True)
-    hint_es = models.TextField(blank=True, null=True)
-    hint_nl = models.TextField(blank=True, null=True)
-
+class MatchingExercise(models.Model):
+    """
+    Modèle pour les exercices d'association entre mots en langue cible et langue native.
+    
+    Les instructions sont standardisées et calculées dynamiquement pour toutes les instances,
+    indépendamment de leur identifiant. Cela assure une expérience utilisateur cohérente
+    tout en réduisant la complexité de gestion des données.
+    """
+    # Relation avec la leçon
+    content_lesson = models.ForeignKey(
+        ContentLesson, 
+        on_delete=models.CASCADE, 
+        related_name='matching_exercises',
+        verbose_name="Leçon associée"
+    )
+    
+    # Paramètres de configuration
+    difficulty = models.CharField(
+        max_length=10, 
+        choices=[('easy', 'Easy'), ('medium', 'Medium'), ('hard', 'Hard')],
+        default='medium',
+        verbose_name="Difficulté",
+        help_text="Niveau de difficulté de l'exercice"
+    )
+    
+    order = models.PositiveIntegerField(
+        default=1, 
+        validators=[MinValueValidator(1)],
+        verbose_name="Ordre",
+        help_text="Position de l'exercice dans la séquence de leçon"
+    )
+    
+    # Titres personnalisables (contrairement aux instructions qui sont standardisées)
+    title_en = models.CharField(
+        max_length=255, 
+        default="Match words with their translations",
+        verbose_name="Titre (EN)"
+    )
+    
+    title_fr = models.CharField(
+        max_length=255, 
+        default="Associez les mots à leurs traductions",
+        verbose_name="Titre (FR)"
+    )
+    
+    title_es = models.CharField(
+        max_length=255, 
+        default="Relaciona las palabras con sus traducciones",
+        verbose_name="Titre (ES)"
+    )
+    
+    title_nl = models.CharField(
+        max_length=255, 
+        default="Koppel woorden aan hun vertalingen",
+        verbose_name="Titre (NL)"
+    )
+    
+    # Configuration de l'exercice
+    vocabulary_words = models.ManyToManyField(
+        VocabularyList, 
+        related_name='used_in_matching_exercises',
+        verbose_name="Mots de vocabulaire",
+        help_text="Sélectionnez les mots à inclure dans cet exercice"
+    )
+    
+    pairs_count = models.PositiveIntegerField(
+        default=8,
+        validators=[MinValueValidator(4), MaxValueValidator(20)],
+        verbose_name="Nombre de paires",
+        help_text="Nombre maximal de paires mot-traduction à afficher"
+    )
+    
+    # Métadonnées
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Dernière modification")
+    
+    class Meta:
+        ordering = ['content_lesson', 'order']
+        verbose_name = "Exercice d'association"
+        verbose_name_plural = "Exercices d'association"
+        indexes = [
+            models.Index(fields=['content_lesson', 'order']),
+            models.Index(fields=['difficulty']),
+        ]
+    
     def __str__(self):
-        return f"{self.lesson.title_en} - {self.sentence_fill_blank_en}"
+        return f"Association - {self.content_lesson.title_en} ({self.order})"
+    
+    # Instructions standardisées sous forme de propriétés calculées
+    @property
+    def instruction_en(self):
+        return "Match each word in the language you're learning with its translation in your native language. Drag the items to create pairs."
+    
+    @property
+    def instruction_fr(self):
+        return "Associez chaque mot dans la langue que vous apprenez avec sa traduction dans votre langue maternelle. Faites glisser les éléments pour créer des paires."
+    
+    @property
+    def instruction_es(self):
+        return "Relaciona cada palabra en el idioma que estás aprendiendo con su traducción en tu idioma nativo. Arrastra los elementos para crear pares."
+    
+    @property
+    def instruction_nl(self):
+        return "Koppel elk woord in de taal die je leert aan de vertaling in je moedertaal. Sleep de items om paren te maken."
+    
+    def get_title(self, language_code='en'):
+        field_name = f'title_{language_code}'
+        return getattr(self, field_name, self.title_en)
+    
+    def get_instruction(self, language_code='en'):
+        property_name = f'instruction_{language_code}'
+        if hasattr(self, property_name):
+            return getattr(self, property_name)
+        return self.instruction_en  # Fallback sur l'anglais
+    
+    def get_matching_pairs(self, native_language='en', target_language='fr'):
+        """
+        Génère les paires de mots à associer entre la langue cible et la langue native.
+        
+        Args:
+            native_language (str): Code de la langue maternelle de l'utilisateur
+            target_language (str): Code de la langue que l'utilisateur apprend
+            
+        Returns:
+            tuple: (target_words, native_words, correct_pairs)
+                - target_words: Liste des mots dans la langue cible
+                - native_words: Liste des mots dans la langue native (mélangés)
+                - correct_pairs: Dictionnaire de correspondance {target_word: native_word}
+        """
+        # Obtenir les mots de vocabulaire pour l'exercice
+        vocabulary_items = self.vocabulary_words.all()
+        
+        # Si le nombre d'éléments dépasse pairs_count, sélectionner aléatoirement
+        if vocabulary_items.count() > self.pairs_count:
+            import random
+            vocabulary_items = random.sample(list(vocabulary_items), self.pairs_count)
+        
+        # Générer les paires de mots
+        target_words = []
+        native_words = []
+        correct_pairs = {}
+        
+        for vocab in vocabulary_items:
+            # Récupérer le mot dans la langue cible
+            target_word = getattr(vocab, f'word_{target_language}', None)
+            
+            # Récupérer le mot dans la langue native
+            native_word = getattr(vocab, f'word_{native_language}', None)
+            
+            # Vérifier que les deux valeurs sont disponibles
+            if target_word and native_word:
+                target_words.append(target_word)
+                native_words.append(native_word)
+                correct_pairs[target_word] = native_word
+        
+        # Mélanger la liste des mots natifs pour l'exercice
+        import random
+        shuffled_native_words = native_words.copy()
+        random.shuffle(shuffled_native_words)
+        
+        return target_words, shuffled_native_words, correct_pairs
+    
+    def get_exercise_data(self, native_language='en', target_language='fr'):
+        """
+        Prépare toutes les données formatées nécessaires pour l'exercice.
+        
+        Args:
+            native_language (str): Code de la langue maternelle de l'utilisateur
+            target_language (str): Code de la langue que l'utilisateur apprend
+            
+        Returns:
+            dict: Données formatées pour l'API
+        """
+        # Récupérer les paires de mots
+        target_words, shuffled_native_words, correct_pairs = self.get_matching_pairs(
+            native_language, target_language
+        )
+        
+        # Construire la réponse complète
+        return {
+            'id': self.id,
+            'title': self.get_title(native_language),
+            'instruction': self.get_instruction(native_language),
+            'difficulty': self.difficulty,
+            'target_language': target_language,
+            'native_language': native_language,
+            'target_language_name': self._get_language_name(target_language),
+            'native_language_name': self._get_language_name(native_language),
+            'target_words': target_words,
+            'native_words': shuffled_native_words,
+            'correct_pairs': correct_pairs,
+            'total_pairs': len(target_words)
+        }
+    
+    def _get_language_name(self, language_code):
+        """
+        Traduit un code de langue en nom complet.
+        
+        Args:
+            language_code (str): Code de langue ('en', 'fr', 'es', 'nl')
+            
+        Returns:
+            str: Nom complet de la langue
+        """
+        language_names = {
+            'en': 'English',
+            'fr': 'French',
+            'es': 'Spanish',
+            'nl': 'Dutch'
+        }
+        return language_names.get(language_code, 'Unknown')
+    
+    @classmethod
+    def create_from_content_lesson(cls, content_lesson, vocabulary_ids=None, pairs_count=8):
+        """
+        Crée un nouvel exercice d'association à partir d'une leçon et de mots de vocabulaire.
+        
+        Args:
+            content_lesson: L'instance ContentLesson à associer
+            vocabulary_ids: Liste des IDs de vocabulaire à inclure (optionnel)
+            pairs_count: Nombre maximal de paires à inclure
+            
+        Returns:
+            MatchingExercise: L'instance nouvellement créée
+        """
+        # Déterminer l'ordre du nouvel exercice
+        order = cls.objects.filter(content_lesson=content_lesson).count() + 1
+        
+        # Créer l'exercice
+        exercise = cls.objects.create(
+            content_lesson=content_lesson,
+            title_en=f"Matching Exercise - {content_lesson.title_en}",
+            title_fr=f"Exercice d'association - {content_lesson.title_fr}",
+            title_es=f"Ejercicio de correspondencia - {content_lesson.title_es}",
+            title_nl=f"Matching oefening - {content_lesson.title_nl}",
+            pairs_count=pairs_count,
+            difficulty='medium',  # Valeur par défaut
+            order=order
+        )
+        
+        # Ajouter le vocabulaire à l'exercice
+        if vocabulary_ids:
+            vocabulary_items = VocabularyList.objects.filter(id__in=vocabulary_ids)
+        else:
+            vocabulary_items = VocabularyList.objects.filter(content_lesson=content_lesson)
+        
+        # Limiter au nombre spécifié
+        for vocab in vocabulary_items[:pairs_count]:
+            exercise.vocabulary_words.add(vocab)
+        
+        return exercise
 
 '''
 GRAMMAR LESSON :

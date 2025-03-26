@@ -26,6 +26,7 @@ from .models import (
     VocabularyList, 
     MultipleChoiceQuestion, 
     Numbers,
+    MatchingExercise,
     ExerciseGrammarReordering,
     FillBlankExercise
 )
@@ -38,6 +39,7 @@ from .serializers import (
     ContentLessonDetailSerializer, 
     MultipleChoiceQuestionSerializer, 
     NumbersSerializer, 
+    MatchingExerciseSerializer,
     TheoryContentSerializer,
     ExerciseGrammarReorderingSerializer,
     FillBlankExerciseSerializer
@@ -346,6 +348,194 @@ class NumbersViewSet(viewsets.ModelViewSet):
         number.is_reviewed = not number.is_reviewed
         number.save()
         return Response({'message': 'Number reviewed'}, status=status.HTTP_200_OK)
+
+class MatchingExerciseViewSet(viewsets.ModelViewSet):
+    """
+    API pour la gestion des exercices d'association.
+    
+    Permet de lister, créer, modifier, supprimer et interagir avec les exercices
+    d'association entre langue maternelle et langue cible. Supporte le filtrage
+    par leçon, difficulté et autres paramètres.
+    """
+    queryset = MatchingExercise.objects.all()
+    serializer_class = MatchingExerciseSerializer
+    permission_classes = [AllowAny]  # Ajuster selon votre stratégie d'authentification
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['content_lesson', 'difficulty']
+    search_fields = ['title_en', 'title_fr', 'title_es', 'title_nl']
+    ordering_fields = ['order', 'created_at', 'updated_at']
+    
+    def get_serializer_context(self):
+        """Ajoute la requête au contexte du sérialiseur pour accéder aux paramètres."""
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+    
+    def get_queryset(self):
+        """
+        Filtre le queryset en fonction des paramètres de requête.
+        Supporte le filtrage par leçon, unité, et difficulté.
+        """
+        queryset = super().get_queryset()
+        
+        # Filtrage par leçon
+        content_lesson_id = self.request.query_params.get('content_lesson')
+        if content_lesson_id:
+            queryset = queryset.filter(content_lesson_id=content_lesson_id)
+        
+        # Filtrage par unité (relation indirecte)
+        unit_id = self.request.query_params.get('unit')
+        if unit_id:
+            queryset = queryset.filter(content_lesson__lesson__unit_id=unit_id)
+        
+        return queryset
+    
+    @action(detail=True, methods=['POST'], url_path='check-answers')
+    def check_answers(self, request, pk=None):
+        """
+        Endpoint pour vérifier les réponses soumises par l'utilisateur.
+        
+        Exemple de payload:
+        {
+            "answers": {
+                "mot1": "word1",
+                "mot2": "word2",
+                ...
+            }
+        }
+        
+        Retourne un résultat détaillé avec score et feedback.
+        """
+        exercise = self.get_object()
+        
+        # Récupérer les langues depuis les paramètres
+        native_language = request.query_params.get('native_language', 'en')
+        target_language = request.query_params.get('target_language', 'fr')
+        
+        # Valider les langues
+        supported_languages = ['en', 'fr', 'es', 'nl']
+        if native_language not in supported_languages:
+            native_language = 'en'
+        if target_language not in supported_languages:
+            target_language = 'fr'
+        
+        # Récupérer les réponses utilisateur
+        user_answers = request.data.get('answers', {})
+        if not isinstance(user_answers, dict) or not user_answers:
+            return Response(
+                {"error": "Invalid or empty answers provided"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Récupérer les paires correctes
+        _, _, correct_pairs = exercise.get_matching_pairs(native_language, target_language)
+        
+        # Calculer les résultats
+        correct_count = 0
+        wrong_count = 0
+        feedback = {}
+        
+        for target_word, user_translation in user_answers.items():
+            expected_translation = correct_pairs.get(target_word)
+            is_correct = user_translation == expected_translation
+            
+            if is_correct:
+                correct_count += 1
+            else:
+                wrong_count += 1
+            
+            feedback[target_word] = {
+                'is_correct': is_correct,
+                'user_answer': user_translation,
+                'correct_answer': expected_translation
+            }
+        
+        # Calculer le score final
+        total_count = len(correct_pairs)
+        score_percentage = (correct_count / total_count * 100) if total_count > 0 else 0
+        
+        # Créer le message de résultat
+        if score_percentage >= 90:
+            message = "Excellent! Perfect match!"
+        elif score_percentage >= 75:
+            message = "Good job! Keep practicing to improve!"
+        elif score_percentage >= 50:
+            message = "Not bad, but you need more practice."
+        else:
+            message = "Keep trying! You'll get better with practice."
+        
+        # Construire la réponse
+        result = {
+            'score': score_percentage,
+            'message': message,
+            'correct_count': correct_count,
+            'wrong_count': wrong_count,
+            'total_count': total_count,
+            'feedback': feedback
+        }
+        
+        return Response(result)
+    
+    @action(detail=False, methods=['POST'], url_path='auto_create')
+    def auto_create(self, request):
+        """
+        Crée automatiquement un exercice d'association à partir du vocabulaire
+        d'une leçon existante.
+        
+        Paramètres attendus dans le corps de la requête:
+        - content_lesson_id: ID de la leçon de contenu (obligatoire)
+        - vocabulary_ids: Liste des IDs de vocabulaire à inclure (optionnel)
+        - pairs_count: Nombre maximal de paires à inclure (optionnel, défaut=8)
+        """
+        content_lesson_id = request.data.get('content_lesson_id')
+        if not content_lesson_id:
+            return Response(
+                {"error": "Le paramètre content_lesson_id est obligatoire"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Valider que la leçon existe
+        try:
+            content_lesson = ContentLesson.objects.get(id=content_lesson_id)
+        except ContentLesson.DoesNotExist:
+            return Response(
+                {"error": f"La leçon de contenu avec ID {content_lesson_id} n'existe pas"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Récupérer les paramètres optionnels
+        vocabulary_ids = request.data.get('vocabulary_ids')
+        pairs_count = int(request.data.get('pairs_count', 8))
+        
+        # Déterminer les mots de vocabulaire à utiliser
+        if vocabulary_ids:
+            # Utiliser les IDs spécifiés
+            vocabulary_items = VocabularyList.objects.filter(id__in=vocabulary_ids)
+        else:
+            # Utiliser tout le vocabulaire de la leçon
+            vocabulary_items = VocabularyList.objects.filter(content_lesson=content_lesson)
+        
+        # Vérifier si du vocabulaire est disponible
+        if not vocabulary_items.exists():
+            return Response(
+                {"error": "Aucun vocabulaire disponible pour cette leçon"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Créer l'exercice en utilisant la méthode de classe
+        exercise = MatchingExercise.create_from_content_lesson(
+            content_lesson=content_lesson,
+            vocabulary_ids=[v.id for v in vocabulary_items[:pairs_count]],
+            pairs_count=min(pairs_count, vocabulary_items.count())
+        )
+        
+        # Sérialiser et renvoyer la réponse
+        serializer = self.get_serializer(exercise)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
 
 class MultipleChoiceQuestionAPIView(APIView):
     permission_classes = [AllowAny]

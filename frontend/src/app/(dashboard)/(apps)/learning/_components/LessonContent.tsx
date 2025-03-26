@@ -6,18 +6,19 @@ import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { 
-  AlertCircle, 
-  ArrowLeft, 
-  BookOpen, 
-  FileText, 
-  GraduationCap, 
-  Calculator, 
-  Gamepad2, 
+import {
+  AlertCircle,
+  ArrowLeft,
+  BookOpen,
+  FileText,
+  GraduationCap,
+  Calculator,
+  Gamepad2,
   ArrowRightLeft,
   CheckCircle,
   Clock,
-  PencilLine
+  PencilLine,
+  Infinity
 } from "lucide-react";
 import BackButton from "@/components/ui/BackButton";
 import TheoryContent from "./TheoryContent";
@@ -33,6 +34,8 @@ import progressAPI from "@/services/progressAPI";
 import lessonCompletionService from "@/services/lessonCompletionService";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
+import { ContentLesson, LessonContentProps } from "@/types/learning";
+import MatchingExercise from "./MatchingExercise";
 
 // Content type mapping for consistent handling
 const CONTENT_TYPES = {
@@ -43,6 +46,7 @@ const CONTENT_TYPES = {
   NUMBERS_GAME: 'numbers',
   REORDERING: 'reordering',
   FILL_BLANK: 'fill_blank',
+  MATCHING: 'matching',
 } as const;
 
 // Map content types to icons
@@ -54,36 +58,8 @@ const CONTENT_TYPE_ICONS: Record<string, React.ReactNode> = {
   'numbers_game': <Gamepad2 className="h-4 w-4" />,
   'reordering': <ArrowRightLeft className="h-4 w-4" />,
   'fill_blank': <PencilLine className="h-4 w-4" />,
+  'matching': <Infinity className="h-4 w-4" />,
 };
-
-interface ContentLesson {
-  id: number;
-  title: {
-    en: string;
-    fr: string;
-    es: string;
-    nl: string;
-  };
-  instruction: {
-    en: string;
-    fr: string;
-    es: string;
-    nl: string;
-  };
-  content_type: string;
-  vocabulary_lists?: Array<{
-    id: number;
-    word_en: string;
-    definition_en: string;
-  }>;
-  order: number;
-}
-
-interface LessonContentProps {
-  lessonId: string;
-  unitId?: string;  // Make unitId optional to handle cases when it's not provided
-  language?: 'en' | 'fr' | 'es' | 'nl';
-}
 
 export default function LessonContent({ lessonId, unitId, language }: LessonContentProps) {
   const router = useRouter();
@@ -133,7 +109,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
 
       try {
         console.log(`Fetching content for lesson ${lessonId} with language: ${targetLanguage}`);
-        
+
         // Fetch lesson title first - only if we have a valid unitId
         if (validUnitId !== null) {
           try {
@@ -148,19 +124,19 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
             console.warn("Could not fetch lesson title:", err);
           }
         }
-        
+
         const data = await courseAPI.getContentLessons(parseInt(lessonId), targetLanguage);
-        
+
         if (!data || !Array.isArray(data)) {
           setError("Received invalid data format from API");
           return;
         }
-        
+
         const sortedContents = data.sort((a, b) => a.order - b.order);
-        
+
         setContents(sortedContents);
         setError(null);
-        
+
         // Une fois que nous avons les contenus, récupérer les progressions
         fetchProgressData(sortedContents);
       } catch (err) {
@@ -173,33 +149,33 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
 
     fetchContents();
   }, [lessonId, targetLanguage, validUnitId]);
-  
+
   // Récupérer les données de progression
   const fetchProgressData = async (contents: ContentLesson[]) => {
     try {
       const progressData = await progressAPI.getContentLessonProgress(parseInt(lessonId));
-      
+
       // Créer un ensemble des IDs de contenus complétés
       const completedSet = new Set<number>();
       let totalCompletion = 0;
-      
+
       if (progressData && Array.isArray(progressData)) {
         progressData.forEach(item => {
           if (item.status === 'completed') {
             completedSet.add(item.content_lesson_details.id);
           }
-          
+
           // Calculer la progression totale de la leçon
           if (item.content_lesson_details.lesson_id === parseInt(lessonId)) {
             totalCompletion += item.completion_percentage;
           }
         });
-        
+
         // Calculer le pourcentage global
-        const lessonCompletion = contents.length > 0 
-          ? Math.round(totalCompletion / contents.length) 
+        const lessonCompletion = contents.length > 0
+          ? Math.round(totalCompletion / contents.length)
           : 0;
-        
+
         setLessonProgress(lessonCompletion);
         setCompletedContents(completedSet);
       }
@@ -211,7 +187,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
   const handleBack = () => {
     if (selectedContent) {
       setSelectedContent(null);
-      
+
       // Lors du retour au sommaire, rafraîchir les données de progression
       if (contents.length > 0) {
         fetchProgressData(contents);
@@ -223,8 +199,8 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
           parseInt(lessonId),
           validUnitId,
           lessonProgress,
-          undefined, 
-          lessonProgress === 100 
+          undefined,
+          lessonProgress === 100
         ).then(() => {
           router.push(validUnitId ? `/learning/${validUnitId}` : '/learning');
         });
@@ -237,7 +213,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
   const handleContentClick = (contentType: string, contentId: number) => {
     setSelectedContent({ type: contentType, id: contentId });
   };
-  
+
   const handleContentComplete = async (contentId: number) => {
     // Marquer le contenu comme complété
     await lessonCompletionService.updateContentProgress(
@@ -247,15 +223,15 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
       10,
       true
     );
-    
+
     // Mettre à jour notre état local
     setCompletedContents(prev => new Set(prev).add(contentId));
-    
+
     // Recalculer la progression de la leçon
     const newCompletedCount = completedContents.size + (completedContents.has(contentId) ? 0 : 1);
     const newProgress = Math.round((newCompletedCount / contents.length) * 100);
     setLessonProgress(newProgress);
-    
+
     // Si tous les contenus sont complétés, mettre à jour la leçon
     if (newCompletedCount === contents.length && validUnitId !== null) {
       await lessonCompletionService.updateLessonProgress(
@@ -314,12 +290,12 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
           >
             Back to Lesson
           </BackButton>
-          
+
           <div className="mt-4 mb-8 flex flex-wrap items-center gap-2">
             <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white">
               {targetLanguage.toUpperCase()}
             </Badge>
-            
+
             <Badge className="bg-white text-purple-600 border border-purple-200">
               {selectedContent.type}
             </Badge>
@@ -353,9 +329,20 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
             <FillBlankExercise {...commonProps} />
           )}
 
+          {selectedContent.type === CONTENT_TYPES.MATCHING && (
+            <MatchingExercise
+              lessonId={selectedContent.id.toString()}
+              language={targetLanguage}
+              unitId={validUnitId?.toString()}
+              onComplete={() => handleContentComplete(selectedContent.id)}
+            />
+          )}
+
+
+
           {/* Bouton de complétion fixe */}
           <div className="fixed bottom-6 right-6">
-            <Button 
+            <Button
               onClick={() => handleContentComplete(selectedContent.id)}
               className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white shadow-lg hover:shadow-xl transition-all hover:opacity-90"
             >
@@ -386,12 +373,12 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
           <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-amber-500 text-transparent bg-clip-text">
             {lessonTitle || "Lesson Content"}
           </h1>
-          
+
           <div className="flex items-center gap-3">
             <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white px-3 py-1.5">
               {targetLanguage.toUpperCase()}
             </Badge>
-            
+
             <div className="flex items-center text-gray-600 text-sm">
               <Clock className="h-4 w-4 mr-1" />
               {contents.length} modules
@@ -405,9 +392,9 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
             <span className="text-sm font-medium text-gray-600">Lesson Progress</span>
             <span className="text-sm font-medium text-purple-600">{lessonProgress}%</span>
           </div>
-          <Progress 
-            value={lessonProgress} 
-            className="h-2 bg-purple-100" 
+          <Progress
+            value={lessonProgress}
+            className="h-2 bg-purple-100"
             style={{
               "--progress-background": "linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234), rgb(244, 114, 182))"
             } as React.CSSProperties}
@@ -430,13 +417,12 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
               const instruction = content.instruction[targetLanguage] || fallbackInstruction;
               const usingFallback = !content.title[targetLanguage] || !content.instruction[targetLanguage];
               const isCompleted = completedContents.has(content.id);
-              
+
               return (
                 <Card
                   key={content.id}
-                  className={`bg-white overflow-hidden border-2 transition-all duration-300 shadow-sm hover:shadow-md ${
-                    isClickable ? 'cursor-pointer' : ''
-                  } ${isCompleted ? 'border-green-400' : 'border-transparent hover:border-brand-purple/20'}`}
+                  className={`bg-white overflow-hidden border-2 transition-all duration-300 shadow-sm hover:shadow-md ${isClickable ? 'cursor-pointer' : ''
+                    } ${isCompleted ? 'border-green-400' : 'border-transparent hover:border-brand-purple/20'}`}
                   onClick={() => {
                     if (isClickable) {
                       handleContentClick(content.content_type, content.id);
@@ -446,14 +432,13 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
                   <div className="p-6">
                     <div className="flex items-start gap-4">
                       {/* Content Type Icon */}
-                      <div className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 ${
-                        isCompleted 
-                          ? 'bg-green-100 text-green-600' 
-                          : 'bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-600'
-                      }`}>
+                      <div className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 ${isCompleted
+                        ? 'bg-green-100 text-green-600'
+                        : 'bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-600'
+                        }`}>
                         {isCompleted ? <CheckCircle className="h-4 w-4" /> : getContentTypeIcon(content.content_type)}
                       </div>
-                      
+
                       {/* Content Details */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
@@ -462,28 +447,28 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
                               <h3 className="text-xl font-bold text-gray-900">
                                 {title}
                               </h3>
-                              
+
                               {isCompleted && (
                                 <Badge className="bg-green-100 text-green-700 border-none">
                                   Completed
                                 </Badge>
                               )}
-                              
+
                               {usingFallback && (
                                 <Badge variant="outline" className="text-orange-600 bg-orange-50 border-orange-200">
                                   Fallback
                                 </Badge>
                               )}
                             </div>
-                            
+
                             <p className="text-gray-600 mt-1 line-clamp-2">
                               {instruction}
                             </p>
                           </div>
-                          
+
                           {isClickable && <ArrowRightLeft className="h-4 w-4 text-purple-400 shrink-0 mt-1" />}
                         </div>
-                        
+
                         {/* Vocabulary Preview Section (conditionally) */}
                         {content.vocabulary_lists && content.vocabulary_lists.length > 0 && (
                           <div className="mt-4 pt-3 border-t border-gray-100">
@@ -495,7 +480,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
                                 {content.vocabulary_lists.length} words
                               </span>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                               {content.vocabulary_lists.slice(0, 4).map((vocab) => (
                                 <div key={vocab.id} className="bg-gray-50 p-2 rounded-md text-sm">
@@ -504,7 +489,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
                                 </div>
                               ))}
                             </div>
-                            
+
                             {content.vocabulary_lists.length > 4 && (
                               <p className="text-xs text-purple-600 mt-2">
                                 + {content.vocabulary_lists.length - 4} more words
@@ -512,14 +497,14 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
                             )}
                           </div>
                         )}
-                        
+
                         {/* Bottom badges/info */}
                         <div className="flex flex-wrap items-center gap-2 mt-3">
                           <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-700">
                             {getContentTypeIcon(content.content_type)}
                             {content.content_type}
                           </span>
-                          
+
                           {index === 0 && !isCompleted && (
                             <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
                               <CheckCircle className="h-3 w-3" />
