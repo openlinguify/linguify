@@ -7,6 +7,7 @@ from .models import (
     VocabularyList, 
     Grammar, 
     MultipleChoiceQuestion, 
+    MatchingExercise,
     Numbers, 
     TheoryContent, 
     ExerciseGrammarReordering,
@@ -372,7 +373,49 @@ class NumbersSerializer(serializers.ModelSerializer):
         # if user and user.is_authenticated:
         return obj.is_reviewed
         # return False
+
+class MatchingExerciseSerializer(serializers.ModelSerializer):
+    """
+    Sérialiseur pour les exercices d'association entre langues.
+    Expose l'exercice formaté en fonction des langues de l'utilisateur.
+    """
+    exercise_data = serializers.SerializerMethodField()
     
+    class Meta:
+        model = MatchingExercise
+        fields = [
+            'id', 'content_lesson', 'difficulty', 'pairs_count', 
+            'order', 'exercise_data'
+        ]
+    
+    def get_exercise_data(self, obj):
+        """
+        Récupère les données formatées de l'exercice en fonction des langues spécifiées.
+        Si aucune langue n'est spécifiée, utilise les valeurs par défaut (en/fr).
+        """
+        request = self.context.get('request')
+        if not request:
+            return obj.get_exercise_data()
+        
+        # Récupérer les langues depuis les paramètres de requête
+        native_language = request.query_params.get('native_language', 'en')
+        target_language = request.query_params.get('target_language', 'fr')
+        
+        # Valider les langues supportées
+        supported_languages = ['en', 'fr', 'es', 'nl']
+        if native_language not in supported_languages:
+            native_language = 'en'
+        if target_language not in supported_languages:
+            target_language = 'fr'
+        
+        # Éviter que les deux langues soient identiques
+        if native_language == target_language:
+            # Choisir une langue cible différente
+            languages = [lang for lang in supported_languages if lang != native_language]
+            target_language = languages[0] if languages else 'fr'
+        
+        return obj.get_exercise_data(native_language, target_language)  
+
 class ExerciseGrammarReorderingSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExerciseGrammarReordering

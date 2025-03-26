@@ -20,6 +20,7 @@ from .models import (
     ExerciseVocabularyMultipleChoice, 
     MultipleChoiceQuestion, 
     Numbers,
+    MatchingExercise,
     ExerciseGrammarReordering,
     FillBlankExercise,
 )
@@ -169,6 +170,73 @@ class NumbersAdmin(admin.ModelAdmin):
     search_fields = ('number', 'number_en', 'number_fr')
     list_editable = ('is_reviewed',)
 
+@admin.register(MatchingExercise)
+class MatchingExerciseAdmin(admin.ModelAdmin):
+    """Interface d'administration pour les exercices d'association."""
+    
+    # Affichage dans la liste
+    list_display = ('id', 'get_content_lesson_title', 'difficulty', 'pairs_count', 'order', 'created_at')
+    list_filter = ('difficulty', 'content_lesson__lesson__unit__level')
+    search_fields = ('title_en', 'title_fr', 'content_lesson__title_en')
+    
+    # Mise en page du formulaire
+    fieldsets = (
+        ('Informations de base', {
+            'fields': ('content_lesson', 'difficulty', 'order')
+        }),
+        ('Titres', {
+            'fields': ('title_en', 'title_fr', 'title_es', 'title_nl'),
+            'description': 'Les titres peuvent être personnalisés pour chaque exercice.'
+        }),
+        ('Configuration', {
+            'fields': ('pairs_count', 'vocabulary_words'),
+            'description': 'Sélectionnez les mots à inclure dans l\'exercice.'
+        }),
+    )
+    
+    # Relations
+    filter_horizontal = ('vocabulary_words',)
+    
+    def get_content_lesson_title(self, obj):
+        """Affiche le titre de la leçon associée pour faciliter l'identification."""
+        return obj.content_lesson.title_en
+    get_content_lesson_title.short_description = 'Leçon'
+    get_content_lesson_title.admin_order_field = 'content_lesson__title_en'
+    
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        """
+        Filtre les mots disponibles en fonction de la leçon sélectionnée,
+        pour simplifier la création des exercices.
+        """
+        if db_field.name == 'vocabulary_words':
+            if request._obj is not None:
+                kwargs['queryset'] = VocabularyList.objects.filter(
+                    content_lesson=request._obj.content_lesson
+                )
+            elif 'content_lesson' in request.GET:
+                content_lesson_id = request.GET.get('content_lesson')
+                kwargs['queryset'] = VocabularyList.objects.filter(
+                    content_lesson_id=content_lesson_id
+                )
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+    
+    def get_form(self, request, obj=None, **kwargs):
+        """Conserve une référence à l'objet en cours d'édition pour le filtrage."""
+        request._obj = obj
+        return super().get_form(request, obj, **kwargs)
+    
+    def add_view(self, request, form_url='', extra_context=None):
+        """
+        Personnalise la vue d'ajout pour inclure des informations supplémentaires
+        sur les instructions standardisées.
+        """
+        extra_context = extra_context or {}
+        extra_context['instructions_note'] = (
+            "Les instructions d'utilisation sont standardisées et identiques "
+            "pour tous les exercices d'association, conformément aux exigences pédagogiques."
+        )
+        return super().add_view(request, form_url, extra_context)
+
 @admin.register(MultipleChoiceQuestion)
 class MultipleChoiceQuestionAdmin(admin.ModelAdmin):
     list_display = ('id', 'question_en', 'correct_answer_en', 'content_lesson')
@@ -218,7 +286,6 @@ class ExerciseVocabularyMultipleChoiceAdmin(admin.ModelAdmin):
     list_display = ('id', 'question', 'correct_answer', 'lesson')
     list_filter = ('lesson__unit',)
     search_fields = ('question', 'correct_answer')
-
 
 class FillBlankExerciseAdminForm(forms.ModelForm):
     """Enhanced custom form for Fill in the Blank exercises admin"""

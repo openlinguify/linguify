@@ -22,9 +22,8 @@ export function getUserTargetLanguage(): string {
   } catch (error) {
     console.error('Error getting user target language:', error);
   }
-  
-  // Valeur par défaut si aucune langue valide n'est trouvée
-  return 'en';
+  // return 'en' by default
+  return 'fr';
 }
 
 /**
@@ -52,4 +51,20 @@ export function addLanguageParam(url: URL, targetLanguage?: string): URL {
   const lang = targetLanguage || getUserTargetLanguage();
   url.searchParams.append('target_language', lang);
   return url;
+}
+
+
+export function getUserNativeLanguage(): string {
+  // Récupérer depuis localStorage ou utiliser 'en' par défaut
+  const userSettingsStr = localStorage.getItem('userSettings');
+  if (userSettingsStr) {
+    try {
+      const settings = JSON.parse(userSettingsStr);
+      return settings.native_language?.toLowerCase() || 'en';
+    } catch (e) {
+      console.error("Error parsing user settings:", e);
+    }
+  }
+  // return 'en' by default
+  return 'en';
 }

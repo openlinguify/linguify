@@ -1,62 +1,8 @@
 // src/services/courseAPI.ts
 
 import apiClient from './axiosAuthInterceptor';
-import { getUserTargetLanguage } from '@/utils/languageUtils';
-
-export interface Unit {
-  id: number;
-  title: string;
-  description: string;
-  level: string;
-  order: number;
-}
-
-export interface Lesson {
-  id: number;
-  title: string;
-  description: string;
-  lesson_type: string;
-  estimated_duration: number;
-  order: number;
-}
-
-export interface ContentLesson {
-  id: number;
-  title: {
-    en: string;
-    fr: string;
-    es: string;
-    nl: string;
-  };
-  instruction: {
-    en: string;
-    fr: string;
-    es: string;
-    nl: string;
-  };
-  content_type: string;
-  vocabulary_lists?: Array<{
-    id: number;
-    word_en: string;
-    definition_en: string;
-  }>;
-  order: number;
-}
-
-export interface FillBlankExercise {
-  id: number;
-  content_lesson: number;
-  order: number;
-  difficulty: string;
-  instructions: Record<string, string>;
-  sentences: Record<string, string>;
-  answer_options: Record<string, string[]>;
-  correct_answers: Record<string, string>;
-  hints?: Record<string, string>;
-  explanations?: Record<string, string>;
-  created_at: string;
-  updated_at: string;
-}
+import { getUserTargetLanguage, getUserNativeLanguage } from '@/utils/languageUtils';
+import { MatchingExercise, MatchingAnswers, MatchingResult } from '../types/learning';
 
 // Course API service
 const courseAPI = {
@@ -220,7 +166,6 @@ const courseAPI = {
     }
   },
   
-  // New method for fetching fill in the blank exercises
   getFillBlankExercises: async (contentLessonId: number | string, targetLanguage?: string) => {
     try {
       // Validate content lesson ID
@@ -258,7 +203,6 @@ const courseAPI = {
     }
   },
   
-  // Method for checking a fill in the blank answer
   checkFillBlankAnswer: async (exerciseId: number, answer: string, language?: string) => {
     try {
       // Validate exercise ID
@@ -284,6 +228,167 @@ const courseAPI = {
         message: err.message
       });
       return { is_correct: false, error: 'Failed to check answer' };
+    }
+  },
+
+  getMatchingExercises: async (contentLessonId: number | string, targetLanguage?: string): Promise<MatchingExercise[]> => {
+    try {
+      // Valider l'ID de la leçon
+      const parsedContentLessonId = Number(contentLessonId);
+      
+      if (isNaN(parsedContentLessonId)) {
+        console.error(`Invalid content lesson ID provided: ${contentLessonId}`);
+        return [];
+      }
+      
+      const params: Record<string, string> = {
+        content_lesson: parsedContentLessonId.toString()
+      };
+      
+      // Utiliser la langue spécifiée ou récupérer depuis localStorage
+      const nativeLanguage = getUserNativeLanguage();
+      const targetLang = targetLanguage || getUserTargetLanguage();
+      
+      params.native_language = nativeLanguage;
+      params.target_language = targetLang;
+      
+      console.log(`Fetching matching exercises for content lesson ${parsedContentLessonId} with native language: ${nativeLanguage}, target language: ${targetLang}`);
+      
+      const response = await apiClient.get('/api/v1/course/matching/', { 
+        params,
+        headers: {
+          'Accept-Language': targetLang
+        }
+      });
+      
+      return response.data;
+    } catch (err: any) {
+      console.error('Failed to fetch matching exercises:', {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message
+      });
+      return [];
+    }
+  },
+  
+  getMatchingExercise: async (exerciseId: number | string, targetLanguage?: string): Promise<MatchingExercise | null> => {
+    try {
+      // Valider l'ID de l'exercice
+      const parsedExerciseId = Number(exerciseId);
+      
+      if (isNaN(parsedExerciseId)) {
+        console.error(`Invalid matching exercise ID provided: ${exerciseId}`);
+        return null;
+      }
+      
+      const params: Record<string, string> = {};
+      
+      // Utiliser la langue spécifiée ou récupérer depuis localStorage
+      const nativeLanguage = getUserNativeLanguage();
+      const targetLang = targetLanguage || getUserTargetLanguage();
+      
+      params.native_language = nativeLanguage;
+      params.target_language = targetLang;
+      
+      console.log(`Fetching matching exercise ${parsedExerciseId} with native language: ${nativeLanguage}, target language: ${targetLang}`);
+      
+      const response = await apiClient.get(`/api/v1/course/matching/${parsedExerciseId}/`, { 
+        params,
+        headers: {
+          'Accept-Language': targetLang
+        }
+      });
+      
+      return response.data;
+    } catch (err: any) {
+      console.error(`Failed to fetch matching exercise #${exerciseId}:`, {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message
+      });
+      return null;
+    }
+  },
+  
+  checkMatchingAnswers: async (
+    exerciseId: number | string, 
+    answers: MatchingAnswers,
+    targetLanguage?: string
+  ): Promise<MatchingResult> => {
+    try {
+      // Valider l'ID de l'exercice
+      const parsedExerciseId = Number(exerciseId);
+      
+      if (isNaN(parsedExerciseId)) {
+        console.error(`Invalid matching exercise ID provided: ${exerciseId}`);
+        throw new Error('Invalid exercise ID');
+      }
+      
+      const params: Record<string, string> = {};
+      
+      // Utiliser la langue spécifiée ou récupérer depuis localStorage
+      const nativeLanguage = getUserNativeLanguage();
+      const targetLang = targetLanguage || getUserTargetLanguage();
+      
+      params.native_language = nativeLanguage;
+      params.target_language = targetLang;
+      
+      console.log(`Checking matching answers for exercise ${parsedExerciseId}`);
+      
+      const response = await apiClient.post(
+        `/api/v1/course/matching/${parsedExerciseId}/check-answers/`,
+        { answers },
+        {
+          params,
+          headers: {
+            'Accept-Language': targetLang
+          }
+        }
+      );
+      
+      return response.data;
+    } catch (err: any) {
+      console.error('Failed to check matching answers:', {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message
+      });
+      throw new Error('Failed to check answers');
+    }
+  },
+  
+  createMatchingExercise: async (
+    contentLessonId: number | string,
+    vocabularyIds?: number[],
+    pairsCount?: number
+  ): Promise<MatchingExercise | null> => {
+    try {
+      // Valider l'ID de la leçon
+      const parsedContentLessonId = Number(contentLessonId);
+      
+      if (isNaN(parsedContentLessonId)) {
+        console.error(`Invalid content lesson ID provided: ${contentLessonId}`);
+        return null;
+      }
+      
+      console.log(`Creating matching exercise for content lesson ${parsedContentLessonId}`);
+      
+      // URL correcte avec /auto-create/ à la fin
+      const response = await apiClient.post('/api/v1/course/matching/auto-create/', {
+        content_lesson_id: parsedContentLessonId,
+        vocabulary_ids: vocabularyIds,
+        pairs_count: pairsCount
+      });
+      
+      return response.data;
+    } catch (err: any) {
+      console.error('Failed to create matching exercise:', {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message
+      });
+      return null;
     }
   }
 };
