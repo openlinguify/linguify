@@ -6,21 +6,26 @@ import { useAuthContext } from "@/services/AuthProvider";
 import { Filter, Loader2, LayoutGrid, LayoutList } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { User, Language } from "@/types/user";
+import { LearningJourneyProps } from "@/types/learning";
+import { UserProfile } from "@/services/authService";
 
-interface UserData {
-  language_level: string;
-  target_language: string;
-}
-
-// Définir des propriétés pour communiquer avec le composant parent
-interface LearningJourneyProps {
-  levelFilter?: string;
-  onLevelFilterChange?: (level: string) => void;
-  availableLevels?: string[];
-  layout?: "list" | "grid";
-  onLayoutChange?: (layout: "list" | "grid") => void;
-}
+// Helper function to convert UserProfile to partial User
+const mapUserProfileToUser = (profile: UserProfile): Partial<User> => {
+  return {
+    username: profile.username,
+    first_name: profile.first_name,
+    last_name: profile.last_name,
+    email: profile.email,
+    is_coach: profile.is_coach,
+    is_subscribed: profile.is_subscribed,
+    native_language: profile.native_language as Language,
+    target_language: profile.target_language as Language,
+    language_level: profile.language_level,
+    objectives: profile.objectives,
+    name: profile.name
+  };
+};
 
 export default function LearningJourney({
   levelFilter = "all",
@@ -31,11 +36,16 @@ export default function LearningJourney({
 }: LearningJourneyProps) {
   const { user, isAuthenticated, isLoading } = useAuthContext();
   const router = useRouter();
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<Partial<User> | null>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) router.push("/login");
-    if (user) setUserData(user as UserData);
+    
+    if (user) {
+      // Convert UserProfile to User (partial)
+      const partialUser = mapUserProfileToUser(user);
+      setUserData(partialUser);
+    }
   }, [isAuthenticated, isLoading, user, router]);
 
   if (isLoading) {

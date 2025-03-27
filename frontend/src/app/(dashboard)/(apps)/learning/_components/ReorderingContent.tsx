@@ -5,11 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface ReorderingExerciseProps {
-  lessonId: string;
-  language?: 'en' | 'fr' | 'es' | 'nl';
-}
+import { ReorderingExerciseProps } from "@/types/learning";
 
 interface Exercise {
   id: number;

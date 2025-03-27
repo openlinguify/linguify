@@ -7,21 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Volume2, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-interface Number {
-    id: number;
-    number: string;
-    number_en: string;
-    number_fr: string;
-    number_es: string;
-    number_nl: string;
-    is_reviewed: boolean;
-}
-
-interface FlashcardProps {
-    lessonId: string;
-    language?: 'en' | 'fr' | 'es' | 'nl';
-}
+import { Number, FlashcardProps } from "@/types/learning";
 
 const NumbersGame = ({ lessonId, language = 'en' }: FlashcardProps) => {
     const [numbers, setNumbers] = useState<Number[]>([]);

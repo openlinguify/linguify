@@ -6,21 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { GradientCard } from "@/components/ui/gradient-card";
 import { GradientText } from "@/components/ui/gradient-text";
-
 import { commonStyles } from "@/styles/gradient_style";
+import { Question, MultipleChoiceProps } from "@/types/learning";
 
-interface Question {
-  id: number;
-  question: string;
-  answers: string[];
-  correct_answer: string;
-  hint: string;
-}
-
-interface MultipleChoiceProps {
-  lessonId: string;
-  language?: 'en' | 'fr' | 'es' | 'nl';
-}
 
 const MultipleChoice = ({ lessonId, language = 'en' }: MultipleChoiceProps) => {
   const [questions, setQuestions] = useState<Question[]>([]);

@@ -1,4 +1,5 @@
 // src/types/progress.ts
+import { Lesson } from './learning';
 
 // Statuts de progression
 export type ProgressStatus = 'not_started' | 'in_progress' | 'completed';
@@ -12,17 +13,7 @@ export interface UnitInfo {
   order: number;
 }
 
-// Informations sur une leçon
-export interface LessonInfo {
-  id: number;
-  title: string;
-  description: string;
-  lesson_type: string;
-  estimated_duration: number;
-  order: number;
-  unit_id: number;
-  unit_title: string;
-}
+
 
 // Informations sur un contenu de leçon
 export interface ContentLessonInfo {
@@ -55,12 +46,24 @@ export interface UnitProgress {
   };
 }
 
+
+// Informations sur une leçon
+export interface LessonInfo {
+  id: number;
+  title: string;
+  description: string;
+  lesson_type: string;
+  estimated_duration: number;
+  order: number;
+  unit_id: number;
+  unit_title: string;
+}
 // Progression de leçon
 export interface LessonProgress {
   id: number;
   user: number;
   lesson: number;
-  lesson_details: LessonInfo;
+  lesson_details: Lesson;
   status: ProgressStatus;
   completion_percentage: number;
   score: number;

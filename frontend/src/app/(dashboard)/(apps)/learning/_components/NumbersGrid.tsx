@@ -11,21 +11,9 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { Number, NumberProps } from "@/types/learning";
 
-interface Number {
-    id: number;
-    number: string;
-    number_en: string;
-    number_fr: string;
-    number_es: string;
-    number_nl: string;
-    is_reviewed: boolean;
-}
 
-interface NumberProps {
-    lessonId: string;
-    language?: 'en' | 'fr' | 'es' | 'nl';
-}
 
 const NumbersGridView = ({ lessonId, language = 'en' }: NumberProps) => {
     const [numbers, setNumbers] = useState<Number[]>([]);

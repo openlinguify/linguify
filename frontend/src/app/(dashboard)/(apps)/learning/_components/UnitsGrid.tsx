@@ -8,19 +8,8 @@ import { Button } from "@/components/ui/button";
 import courseAPI from "@/services/courseAPI";
 import ExpandableUnitCard from "./ExpandableUnitCard";
 import LearningJourney from "./LearningJourney";
+import { Unit, LevelGroup } from "@/types/learning"; 
 
-interface Unit {
-  id: number;
-  title: string;
-  description: string;
-  level: string;
-  order: number;
-}
-
-interface LevelGroup {
-  level: string;
-  units: Unit[];
-}
 
 const UnitsGrid: React.FC = () => {
   const router = useRouter();

@@ -2,12 +2,6 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import { 
-  DragDropContext, 
-  Droppable, 
-  Draggable, 
-  DropResult 
-} from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -18,7 +12,8 @@ import {
   CheckCircle, 
   XCircle, 
   RotateCcw, 
-  ChevronRight 
+  ChevronRight,
+  ArrowRight 
 } from "lucide-react";
 import courseAPI from "@/services/courseAPI";
 import lessonCompletionService from "@/services/lessonCompletionService";
@@ -37,7 +32,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
   unitId,
   onComplete 
 }) => {
-  // États
+  // States
   const [exercise, setExercise] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,8 +40,9 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
   const [result, setResult] = useState<any>(null);
   const [timeSpent, setTimeSpent] = useState<number>(0);
   const [startTime] = useState<number>(Date.now());
+  const [selectedWord, setSelectedWord] = useState<string | null>(null);
 
-  // Tracker le temps passé
+  // Track time spent
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeSpent(Math.floor((Date.now() - startTime) / 1000));
@@ -55,94 +51,94 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
     return () => clearInterval(timer);
   }, [startTime]);
 
-// Dans la fonction loadExercise de MatchingExercise.tsx
-useEffect(() => {
-  const loadExercise = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      console.log(`Loading matching exercises for content lesson: ${lessonId}`);
-      const exercises = await courseAPI.getMatchingExercises(lessonId, language);
+  // Load exercise data
+  useEffect(() => {
+    const loadExercise = async () => {
+      setLoading(true);
+      setError(null);
       
-      // Si des exercices existent, utiliser le premier
-      if (exercises && exercises.length > 0) {
-        setExercise(exercises[0]);
-      } 
-      // Sinon, tenter d'en créer un automatiquement
-      else {
-        console.log("No matching exercises found, attempting to create one");
-        const createdExercise = await courseAPI.createMatchingExercise(lessonId);
+      try {
+        console.log(`Loading matching exercises for content lesson: ${lessonId}`);
+        const exercises = await courseAPI.getMatchingExercises(lessonId, language);
         
-        if (createdExercise) {
-          setExercise(createdExercise);
-        } else {
-          // Vérifier si la leçon contient des mots de vocabulaire
-          const vocabData = await courseAPI.getVocabularyContent(lessonId, language);
+        // If exercises exist, use the first one
+        if (exercises && exercises.length > 0) {
+          setExercise(exercises[0]);
+        } 
+        // Otherwise, try to create one automatically
+        else {
+          console.log("No matching exercises found, attempting to create one");
+          const createdExercise = await courseAPI.createMatchingExercise(lessonId);
           
-          if (vocabData && vocabData.results && vocabData.results.length > 0) {
-            // Collecter les IDs des mots de vocabulaire
-            const vocabIds = vocabData.results.map((item: any) => item.id);
-            // Tenter de créer avec des IDs spécifiques
-            const newExercise = await courseAPI.createMatchingExercise(
-              lessonId, 
-              vocabIds.slice(0, 8) // Limiter à 8 mots maximum
-            );
-            
-            if (newExercise) {
-              setExercise(newExercise);
-            } else {
-              setError("Impossible de créer un exercice d'association. Aucun vocabulaire disponible.");
-            }
+          if (createdExercise) {
+            setExercise(createdExercise);
           } else {
-            setError("Impossible de créer un exercice d'association. Cette leçon ne contient pas de vocabulaire.");
+            // Check if the lesson contains vocabulary words
+            const vocabData = await courseAPI.getVocabularyContent(lessonId, language);
+            
+            if (vocabData && vocabData.results && vocabData.results.length > 0) {
+              // Collect vocabulary IDs
+              const vocabIds = vocabData.results.map((item: any) => item.id);
+              // Try to create with specific IDs
+              const newExercise = await courseAPI.createMatchingExercise(
+                lessonId, 
+                vocabIds.slice(0, 8) // Limit to 8 words maximum
+              );
+              
+              if (newExercise) {
+                setExercise(newExercise);
+              } else {
+                setError("Unable to create a matching exercise. No vocabulary available.");
+              }
+            } else {
+              setError("Unable to create a matching exercise. This lesson doesn't contain vocabulary.");
+            }
           }
         }
+        
+        // Initialize progress tracking
+        if (parseInt(lessonId)) {
+          lessonCompletionService.updateContentProgress(
+            parseInt(lessonId),
+            1, // 1% to indicate start
+            0,
+            0,
+            false
+          ).catch(err => console.error('Error updating initial progress:', err));
+        }
+      } catch (err) {
+        console.error("Error loading or creating matching exercise:", err);
+        setError("An error occurred while loading or creating the exercise");
+      } finally {
+        setLoading(false);
       }
-      
-      // Initialiser le suivi de progression
-      if (parseInt(lessonId)) {
-        lessonCompletionService.updateContentProgress(
-          parseInt(lessonId),
-          1, // 1% pour indiquer le début
-          0,
-          0,
-          false
-        ).catch(err => console.error('Error updating initial progress:', err));
-      }
-    } catch (err) {
-      console.error("Error loading or creating matching exercise:", err);
-      setError("Une erreur est survenue lors du chargement ou de la création de l'exercice");
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  loadExercise();
-}, [lessonId, language]);
+    };
+    
+    loadExercise();
+  }, [lessonId, language]);
 
-  // Gestion du drag-and-drop
-  const handleDragEnd = (result: DropResult) => {
-    const { source, destination, draggableId } = result;
+  // Handle word selection
+  const handleWordSelect = (word: string, wordType: 'target' | 'native') => {
+    // Don't allow selection if exercise is completed
+    if (result) return;
     
-    // Abandonner si pas de destination valide ou l'exercice n'est pas chargé
-    if (!destination || !exercise) return;
-    
-    // Si on déplace d'un mot cible à la zone de destination
-    if (source.droppableId === 'target-words' && destination.droppableId === 'native-words') {
-      // Récupérer les mots à associer
-      const targetWord = exercise.exercise_data.target_words[source.index];
-      const nativeWord = exercise.exercise_data.native_words[destination.index];
-      
-      // Enregistrer l'association
+    if (wordType === 'target') {
+      // If a target word is selected
+      setSelectedWord(word);
+    } else if (wordType === 'native' && selectedWord) {
+      // If a native word is selected while a target word is already selected
+      // Create the match
       setMatches(prev => ({
         ...prev,
-        [targetWord]: nativeWord
+        [selectedWord]: word
       }));
+      
+      // Reset selection
+      setSelectedWord(null);
     }
   };
 
-  // Vérification des réponses
+  // Check answers
   const checkAnswers = async () => {
     if (!exercise) return;
     
@@ -150,17 +146,17 @@ useEffect(() => {
       const result = await courseAPI.checkMatchingAnswers(exercise.id, matches);
       setResult(result);
       
-      // Si score suffisant, marquer comme complété
+      // If score is sufficient, mark as completed
       if (result.score >= 70) {
         await lessonCompletionService.updateContentProgress(
           parseInt(lessonId),
-          100, // 100% pour complétion
+          100, // 100% for completion
           timeSpent,
-          Math.round(result.score / 10), // XP basés sur score
-          true // Marqué comme complété
+          Math.round(result.score / 10), // XP based on score
+          true // Marked as completed
         );
         
-        // Mettre à jour la leçon parent si unitId fourni
+        // Update parent lesson if unitId is provided
         if (unitId) {
           await lessonCompletionService.updateLessonProgress(
             parseInt(lessonId),
@@ -171,193 +167,186 @@ useEffect(() => {
           );
         }
         
-        // Notifier que l'exercice est complété
+        // Notify that the exercise is completed
         if (onComplete) {
           onComplete();
         }
       }
     } catch (err) {
       console.error("Error checking answers:", err);
-      setError("Une erreur est survenue lors de la vérification des réponses");
+      setError("An error occurred while checking answers");
     }
   };
 
-  // Réinitialiser l'exercice
+  // Reset exercise
   const resetExercise = () => {
     setMatches({});
+    setSelectedWord(null);
     setResult(null);
   };
 
-  // État de chargement
+  // Loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-pulse">Chargement de l'exercice d'association...</div>
+        <div className="animate-pulse">Loading matching exercise...</div>
       </div>
     );
   }
 
-  // État d'erreur
-  if (error || !exercise) {
+  // Error state
+  if (error || !exercise || !exercise.exercise_data) {
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          {error || "Impossible de charger l'exercice d'association"}
+          {error || "Unable to load matching exercise"}
         </AlertDescription>
       </Alert>
     );
   }
 
-  // Données de l'exercice
-  const { target_words, native_words } = exercise.exercise_data;
+  // Exercise data
+  const { target_words = [], native_words = [] } = exercise.exercise_data;
   
-  // Calcul du pourcentage de complétion
+  // Calculate completion percentage
   const completionPercentage = Object.keys(matches).length / target_words.length * 100;
   
-  // Vérifier si tous les mots sont associés
+  // Check if all words are matched
   const allMatched = Object.keys(matches).length === target_words.length;
 
   return (
     <div className="w-full space-y-6">
-      {/* Barre de progression */}
+      {/* Progress bar */}
       <div className="w-full">
         <Progress 
           value={completionPercentage} 
           className="h-2" 
         />
         <div className="flex justify-between text-xs text-gray-500 mt-1">
-          <span>{Object.keys(matches).length} / {target_words.length} associés</span>
-          <span>{completionPercentage.toFixed(0)}% complété</span>
+          <span>{Object.keys(matches).length} / {target_words.length} matched</span>
+          <span>{completionPercentage.toFixed(0)}% completed</span>
         </div>
       </div>
 
-      {/* Carte principale */}
+      {/* Main card */}
       <Card className="bg-white shadow-sm">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-gray-800">
-            {exercise.exercise_data.title}
+            {exercise.exercise_data.title || "Match words with their translations"}
           </CardTitle>
           <p className="text-gray-600 mt-2">
-            {exercise.exercise_data.instruction}
+            {exercise.exercise_data.instruction || "Match each word in the language you're learning with its translation in your native language."}
           </p>
         </CardHeader>
         
         <CardContent>
-          {/* Interface de drag-and-drop */}
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              {/* Colonne des mots à apprendre (langue cible) */}
-              <div>
-                <h3 className="text-lg font-semibold mb-3 text-gray-700">
-                  Mots à apprendre ({exercise.exercise_data.target_language.toUpperCase()})
-                </h3>
-                
-                <Droppable droppableId="target-words">
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className="space-y-2 min-h-[300px]"
-                    >
-                      {target_words.map((word: string, index: number) => (
-                        <Draggable key={word} draggableId={word} index={index}>
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className={`
-                                p-4 rounded-lg border-2 shadow-sm 
-                                ${snapshot.isDragging ? 'shadow-md bg-indigo-50' : 'bg-white'} 
-                                ${matches[word] ? 'border-indigo-500' : 'border-gray-200'}
-                                ${result?.feedback?.[word]?.is_correct === true ? 'border-green-500 bg-green-50' : ''}
-                                ${result?.feedback?.[word]?.is_correct === false ? 'border-red-500 bg-red-50' : ''}
-                              `}
-                            >
-                              <div className="flex justify-between items-center">
-                                <span className="font-medium">{word}</span>
-                                
-                                {matches[word] && !result && (
-                                  <Badge variant="outline" className="border-indigo-300 text-indigo-700">
-                                    {matches[word]}
-                                  </Badge>
-                                )}
-                                
-                                {result?.feedback?.[word]?.is_correct === true && (
-                                  <CheckCircle className="h-5 w-5 text-green-600" />
-                                )}
-                                
-                                {result?.feedback?.[word]?.is_correct === false && (
-                                  <XCircle className="h-5 w-5 text-red-600" />
-                                )}
-                              </div>
-                              
-                              {/* Réponse correcte en cas d'erreur */}
-                              {result?.feedback?.[word]?.is_correct === false && (
-                                <div className="mt-2 text-sm text-red-700">
-                                  Correct: <span className="font-semibold">{result.feedback[word].correct_answer}</span>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            {/* Target language words column */}
+            <div>
+              <h3 className="text-lg font-semibold mb-3 text-gray-700">
+                Words to learn ({exercise.exercise_data.target_language?.toUpperCase() || "ES"})
+              </h3>
               
-              {/* Colonne des traductions (langue native) */}
-              <div>
-                <h3 className="text-lg font-semibold mb-3 text-gray-700">
-                  Traductions ({exercise.exercise_data.native_language.toUpperCase()})
-                </h3>
-                
-                <Droppable droppableId="native-words">
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className="space-y-2 min-h-[300px]"
-                    >
-                      {native_words.map((word: string, index: number) => (
-                        <Draggable key={`native-${word}`} draggableId={`native-${word}`} index={index}>
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className={`
-                                p-4 rounded-lg border-2 shadow-sm 
-                                ${snapshot.isDragging ? 'shadow-md bg-pink-50' : 'bg-white'} 
-                                ${Object.values(matches).includes(word) ? 'border-pink-500' : 'border-gray-200'}
-                              `}
-                            >
-                              <span className="font-medium">{word}</span>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
+              <div className="space-y-2 min-h-[300px]">
+                {target_words.map((word: string, index: number) => (
+                  <div
+                    key={`target-${index}`}
+                    onClick={() => handleWordSelect(word, 'target')}
+                    className={`
+                      p-4 rounded-lg border-2 shadow-sm cursor-pointer transition-all
+                      ${selectedWord === word ? 'bg-indigo-50 border-indigo-500' : 'bg-white border-gray-200'} 
+                      ${matches[word] ? 'border-indigo-500' : ''}
+                      ${result?.feedback?.[word]?.is_correct === true ? 'border-green-500 bg-green-50' : ''}
+                      ${result?.feedback?.[word]?.is_correct === false ? 'border-red-500 bg-red-50' : ''}
+                      hover:bg-indigo-50
+                    `}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">{word}</span>
+                      
+                      {matches[word] && (
+                        <div className="flex items-center text-indigo-700">
+                          <ArrowRight className="h-4 w-4 mx-1" />
+                          <Badge 
+                            variant="outline" 
+                            className={`
+                              ${result?.feedback?.[word]?.is_correct ? 'border-green-500 bg-green-50 text-green-700' : 
+                               result?.feedback?.[word]?.is_correct === false ? 'border-red-500 bg-red-50 text-red-700' : 
+                               'border-indigo-300 text-indigo-700'}
+                            `}
+                          >
+                            {matches[word]}
+                          </Badge>
+                        </div>
+                      )}
+                      
+                      {result?.feedback?.[word]?.is_correct === true && (
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      )}
+                      
+                      {result?.feedback?.[word]?.is_correct === false && (
+                        <XCircle className="h-5 w-5 text-red-600" />
+                      )}
                     </div>
-                  )}
-                </Droppable>
+                    
+                    {/* Show correct answer if wrong */}
+                    {result?.feedback?.[word]?.is_correct === false && (
+                      <div className="mt-2 text-sm text-red-700">
+                        Correct: <span className="font-semibold">{result.feedback[word].correct_answer}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
-          </DragDropContext>
+            
+            {/* Native language translations column */}
+            <div>
+              <h3 className="text-lg font-semibold mb-3 text-gray-700">
+                Translations ({exercise.exercise_data.native_language?.toUpperCase() || "EN"})
+              </h3>
+              
+              <div className="space-y-2 min-h-[300px]">
+                {native_words.map((word: string, index: number) => (
+                  <div
+                    key={`native-${index}`}
+                    onClick={() => handleWordSelect(word, 'native')}
+                    className={`
+                      p-4 rounded-lg border-2 shadow-sm cursor-pointer transition-all
+                      ${Object.values(matches).includes(word) ? 'border-pink-500 bg-pink-50' : 'bg-white border-gray-200'} 
+                      ${selectedWord ? 'hover:bg-pink-50' : ''}
+                      ${!selectedWord && Object.values(matches).includes(word) ? 'opacity-75' : ''}
+                      ${result ? 'cursor-default' : ''}
+                    `}
+                  >
+                    <span className="font-medium">{word}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
           
-          {/* Résultat de l'exercice */}
+          {/* Selected word indicator */}
+          {selectedWord && !result && (
+            <div className="mt-4 p-2 bg-indigo-50 border border-indigo-200 rounded-md">
+              <p className="text-indigo-700">
+                Selected: <span className="font-bold">{selectedWord}</span>
+                <span className="text-gray-500 ml-2">— Now select a translation</span>
+              </p>
+            </div>
+          )}
+          
+          {/* Exercise results */}
           {result && (
             <div className="mt-8 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg shadow-sm">
               <h3 className="text-xl font-bold text-gray-800 mb-2">
-                Résultat: {result.score.toFixed(1)}%
+                Result: {result.score.toFixed(1)}%
               </h3>
               
               <div className="flex items-center gap-2 text-gray-700">
                 <span className="font-medium">
-                  {result.correct_count}/{result.total_count} corrects
+                  {result.correct_count}/{result.total_count} correct
                 </span>
                 
                 {result.score >= 70 ? (
@@ -370,18 +359,18 @@ useEffect(() => {
               <div className="mt-4">
                 {result.score >= 70 ? (
                   <p className="text-green-700">
-                    Bravo ! Vous avez réussi cet exercice d'association.
+                    Great job! You've successfully completed this matching exercise.
                   </p>
                 ) : (
                   <p className="text-orange-700">
-                    Continuez à vous entraîner ! Révisez les associations incorrectes.
+                    Keep practicing! Review the incorrect matches.
                   </p>
                 )}
               </div>
             </div>
           )}
           
-          {/* Boutons d'action */}
+          {/* Action buttons */}
           <div className="flex justify-between mt-10">
             <Button
               variant="outline"
@@ -390,7 +379,7 @@ useEffect(() => {
               disabled={Object.keys(matches).length === 0}
             >
               <RotateCcw className="h-4 w-4 mr-2" />
-              Réinitialiser
+              Reset
             </Button>
             
             <Button
@@ -399,13 +388,13 @@ useEffect(() => {
               className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white hover:opacity-90"
             >
               <ChevronRight className="h-4 w-4 mr-2" />
-              Vérifier
+              Check
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Bouton de validation pour marquer l'exercice comme terminé */}
+      {/* Complete exercise button */}
       <div className="mt-8 flex justify-end">
         {result && result.score >= 70 && (
           <Button
@@ -413,7 +402,7 @@ useEffect(() => {
             className="bg-green-600 hover:bg-green-700 text-white"
           >
             <CheckCircle className="h-4 w-4 mr-2" />
-            Terminer l'exercice
+            Complete Exercise
           </Button>
         )}
       </div>

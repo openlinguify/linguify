@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import BackButton from "@/components/ui/BackButton";
 import { Progress } from "@/components/ui/progress";
 import { getUserTargetLanguage } from "@/utils/languageUtils";
+import { Lesson, LessonsProps } from "@/types/learning";
 import courseAPI from "@/services/courseAPI";
 import {
   ArrowLeft,
@@ -19,19 +20,6 @@ import {
   Video,
   FileText,
 } from "lucide-react";
-
-interface Lesson {
-  id: number;
-  title: string;
-  description: string;
-  lesson_type: string;
-  estimated_duration: number;
-  order: number;
-}
-
-interface LessonsProps {
-  unitId: string;
-}
 
 const getLessonTypeIcon = (type: string) => {
   switch (type.toLowerCase()) {

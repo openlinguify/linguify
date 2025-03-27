@@ -15,21 +15,8 @@ import { Progress } from "@/components/ui/progress";
 import { GradientCard } from "@/components/ui/gradient-card";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { Number, NumbersLessonProps } from "@/types/learning";
 
-interface Number {
-    id: number;
-    number: string;
-    number_en: string;
-    number_fr: string;
-    number_es: string;
-    number_nl: string;
-    is_reviewed: boolean;
-}
-
-interface NumbersLessonProps {
-    lessonId: string;
-    language?: 'en' | 'fr' | 'es' | 'nl';
-}
 
 const NumberComponent = ({ lessonId, language = 'en' }: NumbersLessonProps) => {
     const [numbers, setNumbers] = useState<Number[]>([]);

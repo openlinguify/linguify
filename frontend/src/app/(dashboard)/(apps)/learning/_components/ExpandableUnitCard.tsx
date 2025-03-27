@@ -20,41 +20,10 @@ import { getUserTargetLanguage } from "@/utils/languageUtils";
 import courseAPI from "@/services/courseAPI";
 import progressAPI from "@/services/progressAPI";
 import { Cache } from "@/utils/cacheUtils";
+import { Lesson, ExpandableUnitCardProps } from "@/types/learning";
+import { LessonProgress, ProgressStatus } from "@/types/progress";
 
-interface Unit {
-  id: number;
-  title: string;
-  description: string;
-  level: string;
-}
 
-interface Lesson {
-  id: number;
-  title: string;
-  description: string;
-  lesson_type: string;
-  estimated_duration: number;
-  order: number;
-}
-
-interface LessonProgress {
-  id: number;
-  status: string;
-  completion_percentage: number;
-  lesson_details: {
-    id: number;
-    title: string;
-  };
-}
-
-interface ExpandableUnitCardProps {
-  unit: Unit;
-  onLessonClick: (unitId: number, lessonId: number) => void;
-  showLevelBadge?: boolean;
-  refreshTrigger?: number;
-  // Nouvelle prop pour contrôler la durée de vie du cache
-  cacheTTL?: number;
-}
 
 const getLessonTypeIcon = (type: string) => {
   switch (type.toLowerCase()) {
@@ -156,7 +125,10 @@ const ExpandableUnitCard: React.FC<ExpandableUnitCardProps> = ({
         // Convertir le tableau en un objet avec les IDs de leçon comme clés
         const progressMap: Record<number, LessonProgress> = {};
         progressData.forEach(item => {
-          progressMap[item.lesson_details.id] = item;
+          progressMap[item.lesson_details.id] = {
+            ...item,
+            status: item.status as ProgressStatus,
+          };
         });
         
         setLessonProgress(progressMap);
