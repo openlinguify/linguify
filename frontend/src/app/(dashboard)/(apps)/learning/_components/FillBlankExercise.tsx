@@ -9,28 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { getUserTargetLanguage } from "@/utils/languageUtils";
 import lessonCompletionService from "@/services/lessonCompletionService";
 import apiClient from "@/services/axiosAuthInterceptor";
-
-// Updated interface to match the API response
-interface Exercise {
-  id: number;
-  content_lesson: number;
-  order: number;
-  difficulty: string;
-  language?: string;
-  // For the list endpoint, these fields come directly
-  instruction?: string;
-  sentence?: string;
-  options?: string[];
-  // The correct answer (from list view)
-  correct_answer?: string;
-}
-
-interface FillBlankExerciseProps {
-  lessonId: string;
-  unitId?: string;
-  language?: 'en' | 'fr' | 'es' | 'nl';
-  onComplete?: () => void;
-}
+import { Exercise, FillBlankExerciseProps } from '@/types/learning';
 
 const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({ 
   lessonId,

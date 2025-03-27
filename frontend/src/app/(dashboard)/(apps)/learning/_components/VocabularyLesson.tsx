@@ -18,49 +18,7 @@ import { GradientCard } from "@/components/ui/gradient-card";
 import { commonStyles } from "@/styles/gradient_style";
 import { motion, AnimatePresence } from "framer-motion";
 import lessonCompletionService from "@/services/lessonCompletionService";
-
-
-interface VocabularyLessonProps {
-  lessonId: string;
-  unitId?: string;
-  language?: 'en' | 'fr' | 'es' | 'nl';
-  onComplete?: () => void;
-}
-
-interface VocabularyItem {
-  id: number;
-  content_lesson: number;
-  word: string;
-  definition: string;
-  example_sentence: string;
-  word_type: string;
-  synonymous: string;
-  antonymous: string;
-  word_en: string;
-  word_fr: string;
-  word_es: string;
-  word_nl: string;
-  definition_en: string;
-  definition_fr: string;
-  definition_es: string;
-  definition_nl: string;
-  example_sentence_en: string;
-  example_sentence_fr: string;
-  example_sentence_es: string;
-  example_sentence_nl: string;
-  word_type_en: string;
-  word_type_fr: string;
-  word_type_es: string;
-  word_type_nl: string;
-  synonymous_en: string;
-  synonymous_fr: string;
-  synonymous_es: string;
-  synonymous_nl: string;
-  antonymous_en: string;
-  antonymous_fr: string;
-  antonymous_es: string;
-  antonymous_nl: string;
-}
+import { VocabularyItem, VocabularyLessonProps } from "@/types/learning";
 
 const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProps) => {
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
@@ -449,7 +407,7 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
           {/* Main Content */}
           <div className="flex-1 flex flex-col justify-center gap-6">
             {/* Word Card */}
-            <div className={commonStyles.contentBox}>
+            <div>
               <div className={commonStyles.gradientBackground} />
               <div className="relative p-8 text-center">
                 <div className="text-lg font-medium text-brand-purple mb-2">

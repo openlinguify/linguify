@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,50 +20,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-
-interface TheoryData {
-  content_lesson: {
-    id: number;
-    title: {
-      en: string;
-      fr: string;
-      es: string;
-      nl: string;
-    };
-    instruction: {
-      en: string;
-      fr: string;
-      es: string;
-      nl: string;
-    };
-    content_type: string;
-  };
-  content_en: string;
-  content_fr: string;
-  content_es: string;
-  content_nl: string;
-  explication_en: string;
-  explication_fr: string;
-  explication_es: string;
-  explication_nl: string;
-  formula_en: string | null;
-  formula_fr: string | null;
-  formula_es: string | null;
-  formula_nl: string | null;
-  example_en: string | null;
-  example_fr: string | null;
-  example_es: string | null;
-  example_nl: string | null;
-  exception_en: string | null;
-  exception_fr: string | null;
-  exception_es: string | null;
-  exception_nl: string | null;
-}
-
-interface TheoryContentProps {
-  lessonId: string;
-  language?: 'en' | 'fr' | 'es' | 'nl';
-}
+import { TheoryData, TheoryContentProps } from "@/types/learning";
 
 export default function TheoryContent({ lessonId, language = 'en' }: TheoryContentProps) {
   // 1. Tous les hooks d'état
