@@ -8,8 +8,12 @@ import { OnboardingProvider } from "@/components/onboarding/OnboardingProvider";
 
 export const metadata: Metadata = {
   title: "Linguify",
-  description: "Language learning platform for everyone."
-  // ... other metadata
+  description: "Language learning platform for everyone.",
+  icons: {
+    icon: [
+      { url: '/logo/logo2.svg', type: 'image/svg+xml' },
+    ],
+  }
 };
 
 export default function RootLayout({
@@ -19,6 +23,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/logo/logo2.svg" type="image/svg+xml" />
+      </head>
       <body className="bg-white dark:bg-black text-black dark:text-white">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
         <AuthProvider>
