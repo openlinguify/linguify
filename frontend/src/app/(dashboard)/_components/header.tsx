@@ -34,7 +34,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
 import { useAuthContext } from "@/services/AuthProvider";
-import EnhancedLessons from "../(apps)/learning/_components/Lessons";
 
 const Header = () => {
   const router = useRouter();
