@@ -57,3 +57,5 @@ def update_unit_description_on_lesson_delete(sender, instance, **kwargs):
             unit.save(update_descriptions=True)
         except Unit.DoesNotExist:
             logger.warning(f"L'unité {instance.unit_id} n'existe plus")
+
+
