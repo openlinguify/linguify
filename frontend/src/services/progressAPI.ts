@@ -23,6 +23,15 @@ export interface ProgressSummary {
   recent_activity: RecentActivity[];
 }
 
+interface ApiOptions {
+  showErrorToast?: boolean;
+  retryOnNetworkError?: boolean;
+  maxRetries?: number;
+  fallbackData?: any;
+  cacheResults?: boolean;
+  params?: Record<string, string>; // Ajout du champ params pour les paramètres HTTP
+}
+
 export interface RecentActivity {
   id: number;
   content_details: {
@@ -235,6 +244,7 @@ export const progressService = {
       retryOnNetworkError = true,
       maxRetries = 3,
       cacheResults = true,
+      params = {}, // Ajout du paramètre params pour les paramètres supplémentaires
       fallbackData = {
         summary: {
           total_units: 0,
@@ -248,22 +258,36 @@ export const progressService = {
         recent_activity: []
       } as ProgressSummary
     } = options;
-
-    const cacheKey = 'progress-summary';
+  
+    // Construction de la clé de cache personnalisée incluant la langue cible
+    const targetLanguage = params.target_language;
+    const cacheKey = targetLanguage 
+      ? `progress-summary-${targetLanguage}` 
+      : 'progress-summary';
     
     // Vérifier d'abord le cache
     if (cacheResults) {
       const cachedData = getFromCache<ProgressSummary>(cacheKey);
       if (cachedData) {
-        console.log('Résumé de progression récupéré depuis le cache');
+        console.log(`Résumé de progression récupéré depuis le cache (langue: ${targetLanguage || 'toutes'})`);
         return cachedData;
       }
     }
-
+  
+    // Construction de l'URL avec les paramètres
+    let url = '/api/v1/progress/summary/';
+    const queryParams: Record<string, string> = {};
+    
+    // Ajouter le paramètre de langue s'il est spécifié
+    if (targetLanguage) {
+      queryParams.target_language = targetLanguage;
+    }
+    
     // Fonction pour effectuer la requête
     const fetchData = async (retryCount = 0): Promise<ProgressSummary> => {
       try {
-        const response = await apiClient.get<ProgressSummary>('/api/v1/progress/summary/');
+        // Utiliser apiClient.get avec les paramètres
+        const response = await apiClient.get<ProgressSummary>(url, { params: queryParams });
         return withCache(cacheKey, response.data, cacheResults);
       } catch (error: unknown) {
         // Si c'est une erreur réseau et qu'on a encore des essais
@@ -285,7 +309,7 @@ export const progressService = {
           await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
           return fetchData(retryCount + 1);
         }
-
+  
         // Gérer l'erreur avec notre utilitaire
         const result = handleApiError<ProgressSummary>(
           error,
@@ -296,11 +320,11 @@ export const progressService = {
             retryCallback: () => fetchData(0)
           }
         );
-
+  
         return result.fallbackData as ProgressSummary;
       }
     };
-
+  
     return fetchData();
   },
 
