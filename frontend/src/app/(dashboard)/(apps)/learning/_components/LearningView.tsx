@@ -53,10 +53,22 @@ interface FilteredContentLesson {
   status?: 'not_started' | 'in_progress' | 'completed';
 }
 
-// Interface for grouping units by level
+// Interface pour regrouper les unités par niveau
 interface LevelGroupType {
   level: string;
   units: FilteredUnit[];
+}
+
+// Interface pour les résultats de l'API getLessonsByContentType
+interface LessonResult {
+  id: number;
+  title: string;
+  lesson_type: string;
+  estimated_duration: number;
+  unit_id?: number;
+  unit_title?: string;
+  unit_level?: string;
+  content_count?: number;
 }
 
 export default function LearningView() {
@@ -71,13 +83,11 @@ export default function LearningView() {
   const [viewMode, setViewMode] = useState<"units" | "lessons">("units");
   const [unitProgressData, setUnitProgressData] = useState<Record<number, UnitProgress>>({});
   const [lessonProgressData, setLessonProgressData] = useState<Record<number, LessonProgress>>({});
-  const [contentProgressData, setContentProgressData] = useState<Record<number, ContentLessonProgress>>({});
-  const [progressLoading, setProgressLoading] = useState<boolean>(true);
+  const [_contentProgressData, setContentProgressData] = useState<Record<number, ContentLessonProgress>>({});
+  const [_progressLoading, setProgressLoading] = useState<boolean>(true);
   const [filteredLessonsByType, setFilteredLessonsByType] = useState<FilteredLesson[]>([]);
   const [isLoadingFilteredLessons, setIsLoadingFilteredLessons] = useState<boolean>(false);
 
-  // Use a ref to track if we're currently loading content to prevent duplicate loads
-  const isLoadingContentRef = useRef<boolean>(false);
   // Create a map to track which units have already had their lessons loaded
   const loadedUnitsRef = useRef<Set<number>>(new Set());
 
@@ -365,69 +375,86 @@ export default function LearningView() {
     return unitsWithProgress > 0 ? Math.round(totalProgress / unitsWithProgress) : 0;
   };
 
+  // Méthode optimisée pour charger les leçons par type de contenu
   const loadLessonsByContentType = useCallback(async (contentType: string): Promise<void> => {
     if (contentType === "all") {
-      // Si "all" est sélectionné, ne rien faire
+      setFilteredLessonsByType([]);
       return;
     }
-  
+
     setIsLoadingFilteredLessons(true);
-  
+    setError(null);
+
     try {
       console.log(`Loading lessons with content type: ${contentType}`);
-  
-      // Utiliser la nouvelle API pour récupérer directement les leçons par type de contenu
-      const lessonsData = await courseAPI.getLessonsByContentType(contentType);
-  
-      if (!Array.isArray(lessonsData) || lessonsData.length === 0) {
+
+      // Utiliser la nouvelle API qui fournit toutes les données nécessaires en une seule requête
+      const response = await courseAPI.getLessonsByContentType(contentType, levelFilter);
+      
+      // Vérifier si la réponse contient une erreur dans les métadonnées
+      if (response.metadata && 'error' in response.metadata && response.metadata.error) {
+        throw new Error(response.metadata.error);
+      }
+
+      if (!response.results || !Array.isArray(response.results) || response.results.length === 0) {
         console.log(`No lessons found with content type: ${contentType}`);
         setFilteredLessonsByType([]);
         return;
       }
-  
-      console.log(`Found ${lessonsData.length} lessons with content type: ${contentType}`);
-  
-      // Formatter les leçons reçues sans charger tous les contenus détaillés
-      const formattedLessons: FilteredLesson[] = lessonsData.map(lesson => {
-        // Vérifier si nous avons des données de progression pour cette leçon
-        const lessonProgress = lessonProgressData[lesson.id];
-  
-        return {
-          id: lesson.id,
-          title: lesson.title,
-          lesson_type: lesson.lesson_type,
-          unit_id: lesson.unit,
-          unitTitle: lesson.unit_title || '',
-          unitLevel: lesson.unit_level || '',
-          estimated_duration: lesson.estimated_duration,
-          contentLessons: [], // On n'a pas besoin de charger tous les contenus immédiatement
-          progress: lessonProgress?.completion_percentage,
-          status: lessonProgress?.status as 'not_started' | 'in_progress' | 'completed' | undefined,
-          // Indication que cette leçon contient le type de contenu recherché
-          filteredContents: [{ 
-            id: 0, // ID temporaire
-            title: contentType, 
-            content_type: contentType,
-            lesson_id: lesson.id,
-            order: 0,
-            status: 'not_started'
-          }]
-        };
-      });
-  
-      // Mettre à jour l'état avec les leçons filtrées
-      setFilteredLessonsByType(formattedLessons);
-  
+
+      try {
+        // Les données sont déjà enrichies par le backend, simplement mapper vers le format attendu
+        const formattedLessons: FilteredLesson[] = response.results.map((lesson: LessonResult) => {
+          // Récupérer les données de progression de la leçon si disponible
+          const lessonProgress = lessonProgressData[lesson.id];
+
+          return {
+            id: lesson.id,
+            title: lesson.title,
+            lesson_type: lesson.lesson_type,
+            unit_id: lesson.unit_id || 0,
+            unitTitle: lesson.unit_title || '',
+            unitLevel: lesson.unit_level || '',
+            estimated_duration: lesson.estimated_duration,
+            contentLessons: [],
+            progress: lessonProgress?.completion_percentage,
+            status: lessonProgress?.status as 'not_started' | 'in_progress' | 'completed' | undefined,
+            filteredContents: Array(lesson.content_count || 0).fill(null).map(() => ({
+              id: 0,
+              title: '',
+              content_type: contentType,
+              lesson_id: lesson.id,
+              order: 0,
+              progress: 0,
+              status: 'not_started'
+            } as FilteredContentLesson))
+          };
+        });
+
+        setFilteredLessonsByType(formattedLessons);
+
+        // Si des métadonnées sont fournies et qu'elles contiennent les niveaux disponibles
+        if (response.metadata?.available_levels?.length > 0) {
+          setAvailableLevels(response.metadata.available_levels);
+        }
+      } catch (mappingError) {
+        const errorMessage = mappingError instanceof Error 
+          ? mappingError.message 
+          : 'Erreur inconnue';
+          
+        console.error("Error during lesson data mapping:", mappingError);
+        setError(`Erreur lors du traitement des données: ${errorMessage}`);
+        setFilteredLessonsByType([]);
+      }
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
       console.error(`Error loading lessons by content type ${contentType}:`, err);
-      setError(`Erreur lors du chargement des leçons de type ${contentType}`);
+      setError(`Erreur lors du chargement des leçons de type "${contentType}": ${errorMessage}`);
       setFilteredLessonsByType([]);
     } finally {
       setIsLoadingFilteredLessons(false);
     }
-  }, [lessonProgressData]);
-
-
+  }, [levelFilter, lessonProgressData]);
 
   // Initial effect to load units
   useEffect(() => {
@@ -445,7 +472,7 @@ export default function LearningView() {
   useEffect(() => {
     const savedLayout = localStorage.getItem("units_layout_preference");
     if (savedLayout === "list" || savedLayout === "grid") {
-      setLayout(savedLayout);
+      setLayout(savedLayout as "list" | "grid");
     }
   }, []);
 
@@ -761,8 +788,8 @@ export default function LearningView() {
                             <div className="mt-3 pt-2 border-t border-gray-100">
                               <p className="text-xs text-muted-foreground mb-1">Contenus disponibles:</p>
                               <div className="flex flex-wrap gap-1">
-                                {lesson.filteredContents.map(content => (
-                                  <Badge key={content.id} variant="secondary" className="text-xs">
+                                {lesson.filteredContents.map((content, index) => (
+                                  <Badge key={`${content.id || index}`} variant="secondary" className="text-xs">
                                     {content.content_type}
                                   </Badge>
                                 ))}

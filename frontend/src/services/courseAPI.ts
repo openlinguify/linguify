@@ -2,8 +2,33 @@
 
 import apiClient from './axiosAuthInterceptor';
 import { getUserTargetLanguage, getUserNativeLanguage } from '@/utils/languageUtils';
-import { MatchingExercise, MatchingAnswers, MatchingResult } from '../types/learning';
 import { Cache } from "@/utils/cacheUtils";
+
+// Interface pour la structure d'une leçon
+interface Lesson {
+  id: number;
+  title: string;
+  description?: string;
+  lesson_type: string;
+  estimated_duration: number;
+  order: number;
+  unit_id?: number;
+  unit_title?: string;
+  unit_level?: string;
+  content_count?: number;
+}
+
+// Interface pour la réponse enrichie de l'API
+interface LessonsByContentResponse {
+  results: Lesson[];
+  metadata: {
+    content_type: string;
+    target_language: string;
+    available_levels: string[];
+    total_count: number;
+    error?: string; // Champ error optionnel pour les messages d'erreur
+  };
+}
 
 // Course API service
 const courseAPI = {
@@ -81,55 +106,106 @@ const courseAPI = {
     }
   },
 
-  getLessonsByContentType: async (contentType: string, targetLanguage?: string) => {
+  // Méthode optimisée pour récupérer les leçons par type de contenu
+  getLessonsByContentType: async (contentType: string, level?: string): Promise<LessonsByContentResponse> => {
     try {
       if (!contentType) {
         console.error('Content type parameter is required');
-        return [];
+        return { 
+          results: [], 
+          metadata: { 
+            content_type: '', 
+            target_language: '', 
+            available_levels: [], 
+            total_count: 0 
+          } 
+        };
       }
-  
-      // Utiliser la langue spécifiée ou récupérer depuis localStorage
-      const lang = targetLanguage || getUserTargetLanguage();
-      
+
       // Générer une clé de cache unique pour cette requête
-      const cacheKey = `lessons_by_content_${contentType}_${lang}`;
-      
+      const lang = getUserTargetLanguage();
+      const levelParam = level && level !== "all" ? level : "";
+      const cacheKey = `lessons_by_content_${contentType}_${lang}_${levelParam}`;
+
       // Vérifier si les données sont déjà en cache
       const cachedData = Cache.get(cacheKey);
       if (cachedData) {
         console.log(`Using cached lessons for content type ${contentType} with language ${lang}`);
-        return cachedData;
+        return cachedData as LessonsByContentResponse;
       }
-  
+
       console.log(`API: Fetching lessons with content type ${contentType} with language ${lang}`);
       
+      // Préparer les paramètres de requête
       const params: Record<string, string> = {
         content_type: contentType,
         target_language: lang
       };
-  
-      // Ajouter un timeout plus long pour cette requête (10 secondes)
+      
+      // Ajouter le filtre de niveau si spécifié
+      if (level && level !== "all") {
+        params.level = level;
+      }
+
+      // Utiliser la nouvelle API basée sur une classe
       const response = await apiClient.get('/api/v1/course/lessons-by-content/', {
         params,
         headers: {
           'Accept-Language': lang
-        },
-        timeout: 10000 // 10 secondes pour éviter les timeouts
+        }
       });
-  
-      // Mettre les données en cache pour les futures requêtes
-      if (response.data && Array.isArray(response.data)) {
-        Cache.set(cacheKey, response.data);
+
+      // Vérifier que la réponse a le format attendu
+      let responseData: LessonsByContentResponse;
+      
+      if (response.data && response.data.results) {
+        // La réponse est déjà au bon format
+        responseData = response.data as LessonsByContentResponse;
+      } else if (Array.isArray(response.data)) {
+        // La réponse est un tableau brut, le formater
+        responseData = {
+          results: response.data,
+          metadata: {
+            content_type: contentType,
+            target_language: lang,
+            available_levels: [],
+            total_count: response.data.length
+          }
+        };
+      } else {
+        // Format de réponse inattendu, créer une structure vide
+        responseData = {
+          results: [],
+          metadata: {
+            content_type: contentType,
+            target_language: lang,
+            available_levels: [],
+            total_count: 0
+          }
+        };
       }
-  
-      return response.data;
+
+      // Mettre les données en cache pour les futures requêtes
+      Cache.set(cacheKey, responseData);
+
+      return responseData;
     } catch (err: any) {
-      console.error('Failed to fetch lessons by content type:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
-      });
-      return []; // Return empty array on error to prevent cascade failures
+      // Capture détaillée de l'erreur
+      const errorMessage = err.message || 'Unknown error';
+      
+      console.error('Failed to fetch lessons by content type:', err);
+      
+      // L'objet de réponse inclut maintenant un champ error valide
+      return { 
+        results: [], 
+        metadata: { 
+          content_type: contentType || '', 
+          target_language: getUserTargetLanguage(), 
+          available_levels: [], 
+          total_count: 0,
+          error: errorMessage 
+        } 
+      };
     }
   },
 
@@ -298,7 +374,7 @@ const courseAPI = {
     }
   },
 
-  getMatchingExercises: async (contentLessonId: number | string, targetLanguage?: string): Promise<MatchingExercise[]> => {
+  getMatchingExercises: async (contentLessonId: number | string, targetLanguage?: string) => {
     try {
       // Valider l'ID de la leçon
       const parsedContentLessonId = Number(contentLessonId);
@@ -339,7 +415,7 @@ const courseAPI = {
     }
   },
 
-  getMatchingExercise: async (exerciseId: number | string, targetLanguage?: string): Promise<MatchingExercise | null> => {
+  getMatchingExercise: async (exerciseId: number | string, targetLanguage?: string) => {
     try {
       // Valider l'ID de l'exercice
       const parsedExerciseId = Number(exerciseId);
@@ -380,9 +456,9 @@ const courseAPI = {
 
   checkMatchingAnswers: async (
     exerciseId: number | string,
-    answers: MatchingAnswers,
+    answers: Record<string, string>,
     targetLanguage?: string
-  ): Promise<MatchingResult> => {
+  ) => {
     try {
       // Valider l'ID de l'exercice
       const parsedExerciseId = Number(exerciseId);
@@ -429,7 +505,7 @@ const courseAPI = {
     contentLessonId: number | string,
     vocabularyIds?: number[],
     pairsCount?: number
-  ): Promise<MatchingExercise | null> => {
+  ) => {
     try {
       // Valider l'ID de la leçon
       const parsedContentLessonId = Number(contentLessonId);

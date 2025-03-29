@@ -22,7 +22,6 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import progressAPI, { ProgressSummary } from "@/services/progressAPI";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { convertUnitProgressArray } from "@/utils/progressAdapter";
 
 /**
  * Obtient le nom complet d'une langue à partir de son code
@@ -35,13 +34,6 @@ function getLanguageFullName(languageCode: string): string {
     'FR': 'French',
     'ES': 'Spanish',
     'NL': 'Dutch',
-    'DE': 'German',
-    'IT': 'Italian',
-    'PT': 'Portuguese',
-    'RU': 'Russian',
-    'ZH': 'Chinese',
-    'JA': 'Japanese',
-    'AR': 'Arabic'
   };
 
   // Normaliser le code de langue en majuscules
