@@ -358,7 +358,7 @@ export default function EnhancedLearningJourney({
             </div>
           )}
 
-          {/* Filtre de type de contenu */}
+          {/* Filter of the content lesson */}
           {onContentTypeChange && (
             <div className="flex items-center gap-2 flex-grow">
               <span className="text-sm font-medium">Content:</span>
