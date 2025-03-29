@@ -1,6 +1,6 @@
-// src/app/(dashboard)/(apps)/learning/_components/FilteredLearningView.tsx
+// src/app/(dashboard)/(apps)/learning/_components/LearningView.tsx
 'use client';
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2, BookOpen, Clock, CheckCircle } from "lucide-react";
@@ -11,7 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import courseAPI from "@/services/courseAPI";
 import progressAPI from "@/services/progressAPI";
 import LearningJourney from "./LearningJourney";
-import { Unit, Lesson, ContentLesson } from "@/types/learning";
+import { Unit, Lesson } from "@/types/learning";
 import { UnitProgress, LessonProgress, ContentLessonProgress } from "@/types/progress";
 import {
   createUnitProgressMap,
@@ -38,6 +38,9 @@ interface FilteredLesson {
   contentLessons: FilteredContentLesson[];
   progress?: number;
   status?: 'not_started' | 'in_progress' | 'completed';
+  unitTitle?: string;
+  unitLevel?: string;
+  filteredContents?: FilteredContentLesson[];
 }
 
 interface FilteredContentLesson {
@@ -49,13 +52,14 @@ interface FilteredContentLesson {
   progress?: number;
   status?: 'not_started' | 'in_progress' | 'completed';
 }
-// À ajouter en haut du fichier avec les autres interfaces
-interface LevelGroup {
+
+// Interface for grouping units by level
+interface LevelGroupType {
   level: string;
   units: FilteredUnit[];
 }
 
-export default function FilteredLearningView() {
+export default function LearningView() {
   const router = useRouter();
   const [units, setUnits] = useState<FilteredUnit[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -69,230 +73,36 @@ export default function FilteredLearningView() {
   const [lessonProgressData, setLessonProgressData] = useState<Record<number, LessonProgress>>({});
   const [contentProgressData, setContentProgressData] = useState<Record<number, ContentLessonProgress>>({});
   const [progressLoading, setProgressLoading] = useState<boolean>(true);
+  const [filteredLessonsByType, setFilteredLessonsByType] = useState<FilteredLesson[]>([]);
+  const [isLoadingFilteredLessons, setIsLoadingFilteredLessons] = useState<boolean>(false);
 
-  // Fonction pour regrouper les unités par niveau
-  const groupUnitsByLevel = (units: FilteredUnit[]) => {
-    // Structure pour stocker les unités par niveau
-    const groupedByLevel: Record<string, FilteredUnit[]> = {};
+  // Use a ref to track if we're currently loading content to prevent duplicate loads
+  const isLoadingContentRef = useRef<boolean>(false);
+  // Create a map to track which units have already had their lessons loaded
+  const loadedUnitsRef = useRef<Set<number>>(new Set());
 
-    // Regrouper les unités par niveau
-    units.forEach(unit => {
-      if (!groupedByLevel[unit.level]) {
-        groupedByLevel[unit.level] = [];
-      }
-      groupedByLevel[unit.level].push(unit);
-    });
-
-    // Convertir en tableau trié par niveau (A1, A2, B1, B2, etc.)
-    return Object.entries(groupedByLevel)
-      .sort(([levelA], [levelB]) => {
-        // Tri intelligent des niveaux linguistiques
-        const levelAKey = levelA.charAt(0) + parseInt(levelA.substring(1));
-        const levelBKey = levelB.charAt(0) + parseInt(levelB.substring(1));
-        return levelAKey.localeCompare(levelBKey);
-      })
-      .map(([level, units]) => ({
-        level,
-        units: units.sort((a, b) => a.order - b.order) // Tri par ordre au sein du niveau
-      }));
-  };
-  // Charger les données des unités
-  const loadUnits = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      // Récupérer les unités
-      const unitsData = await courseAPI.getUnits();
-
-      // Extraire les niveaux disponibles
-      const levels = Array.from(new Set((unitsData as Unit[]).map(unit => unit.level)));
-      setAvailableLevels(levels.sort());
-
-      // Transformer en format enrichi avec des listes vides pour les leçons
-      const formattedUnits: FilteredUnit[] = (unitsData as Unit[]).map(unit => ({
-        id: unit.id,
-        title: unit.title,
-        level: unit.level,
-        lessons: [],
-        order: unit.order || 0, // Ajout de la propriété order requise, avec fallback à 0
-      }));
-
-      setUnits(formattedUnits);
-
-      // Charger les données de progression
-      await loadProgressData();
-    } catch (err) {
-      console.error("Error loading units:", err);
-      setError("Impossible de charger les unités d'apprentissage. Veuillez réessayer plus tard.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Charger les données de progression
-  const loadProgressData = async () => {
-    try {
-      setProgressLoading(true);
-
-      // 1. Charger les progressions d'unités
-      const unitProgressItems = await progressAPI.getUnitProgress();
-
-      // Convertir en map pour un accès facile
-      const unitProgressMap = createUnitProgressMap(unitProgressItems);
-      setUnitProgressData(unitProgressMap);
-
-      // 2. Si nous avons déjà les leçons chargées, charger aussi leurs progressions
-      const unitIds = Object.keys(unitProgressMap).map(id => parseInt(id));
-
-      // Pour chaque unité avec progression, charger les progressions de leçons
-      const lessonProgressPromises = unitIds.map(unitId =>
-        progressAPI.getLessonProgressByUnit(unitId)
-      );
-
-      // Attendre que toutes les promesses soient résolues
-      const lessonProgressResults = await Promise.all(lessonProgressPromises);
-
-      // Fusionner tous les résultats en une seule map
-      const lessonProgressMap = {};
-      lessonProgressResults.forEach(lessonProgresses => {
-        const convertedMap = createLessonProgressMap(lessonProgresses);
-        Object.assign(lessonProgressMap, convertedMap);
-      });
-
-      setLessonProgressData(lessonProgressMap);
-
-      // 3. Charger également la progression des contenus de leçon si nécessaire
-      // Cela pourrait être fait à la demande lors du développement du contenu
-
-    } catch (err) {
-      console.error("Erreur lors du chargement des données de progression:", err);
-    } finally {
-      setProgressLoading(false);
-    }
-  };
-
-  // Fonction pour calculer la progression moyenne d'un niveau
-const calculateLevelProgress = (units: FilteredUnit[]): number => {
-  const totalUnits = units.length;
-  if (totalUnits === 0) return 0;
-  
-  let totalProgress = 0;
-  let unitsWithProgress = 0;
-  
-  units.forEach(unit => {
-    if (unitProgressData[unit.id]) {
-      totalProgress += unitProgressData[unit.id].completion_percentage;
-      unitsWithProgress++;
-    }
-  });
-  
-  return unitsWithProgress > 0 ? Math.round(totalProgress / unitsWithProgress) : 0;
-}
-  // Charger les leçons pour une unité spécifique
-  const loadLessonsForUnit = async (unitId: number) => {
-    try {
-      // Vérifier si les leçons sont déjà chargées
-      const unitIndex = units.findIndex(u => u.id === unitId);
-      if (unitIndex >= 0 && units[unitIndex].lessons.length > 0) {
-        // Leçons déjà chargées, ne rien faire
-        return;
-      }
-
-      const lessonsData = await courseAPI.getLessons(unitId);
-
-      // Enrichir avec des listes vides pour les contenus et les données de progression
-      const formattedLessons: FilteredLesson[] = (lessonsData as Lesson[]).map(lesson => {
-        const lessonProgress = lessonProgressData[lesson.id];
-
-        return {
-          id: lesson.id,
-          title: lesson.title,
-          lesson_type: lesson.lesson_type,
-          unit_id: unitId,
-          estimated_duration: lesson.estimated_duration,
-          contentLessons: [],
-          // Ajouter les données de progression si elles existent
-          progress: lessonProgress?.completion_percentage,
-          status: lessonProgress?.status as 'not_started' | 'in_progress' | 'completed' | undefined
-        };
-      });
-
-      // Mettre à jour l'unité avec ses leçons
-      setUnits(prevUnits =>
-        prevUnits.map(unit =>
-          unit.id === unitId
-            ? { ...unit, lessons: formattedLessons }
-            : unit
-        )
-      );
-
-      // Pour chaque leçon, charger les contenus de leçon
-      for (const lesson of formattedLessons) {
-        loadContentLessonsForLesson(lesson.id);
-      }
-    } catch (err) {
-      console.error(`Erreur lors du chargement des leçons pour l'unité ${unitId}:`, err);
-    }
-  };
-
-  // Charger les contenus pour une leçon spécifique
-  const loadContentLessonsForLesson = async (lessonId: number) => {
-    try {
-      const contentData = await courseAPI.getContentLessons(lessonId);
-
-      const formattedContents: FilteredContentLesson[] = (contentData as ContentLesson[]).map(content => ({
-        id: content.id,
-        title: typeof content.title === 'object' ? content.title.fr || content.title.en : content.title,
-        content_type: content.content_type,
-        lesson_id: lessonId,
-        order: content.order,
-        // Données de progression à remplir plus tard
-        progress: 0,
-        status: 'not_started'
-      }));
-
-      // Mettre à jour la leçon avec ses contenus
-      setUnits(prevUnits =>
-        prevUnits.map(unit => ({
-          ...unit,
-          lessons: unit.lessons.map(lesson =>
-            lesson.id === lessonId
-              ? { ...lesson, contentLessons: formattedContents }
-              : lesson
-          )
-        }))
-      );
-
-      // Charger la progression des contenus pour cette leçon
-      loadContentProgress(lessonId);
-    } catch (err) {
-      console.error(`Erreur lors du chargement des contenus pour la leçon ${lessonId}:`, err);
-    }
-  };
-
-  // Charger la progression des contenus pour une leçon
-  const loadContentProgress = async (lessonId: number) => {
+  // Declare loadContentProgress first to avoid circular dependency
+  const loadContentProgress = useCallback(async (lessonId: number) => {
     try {
       const contentProgressItems = await progressAPI.getContentLessonProgress(lessonId);
 
-      // Si aucune donnée de progression n'est disponible, sortir
+      // If no progression data is available, exit
       if (!contentProgressItems || contentProgressItems.length === 0) return;
 
-      // Créer une map des progressions de contenu avec conversion appropriée
+      // Create a map of content progressions with appropriate conversion
       const contentProgressMap = createContentProgressMap(contentProgressItems);
 
-      // Mettre à jour les données de progression dans l'état
+      // Update progression data in state
       setContentProgressData(prev => ({ ...prev, ...contentProgressMap }));
 
-      // Mettre à jour les contenus avec leurs progressions
+      // Update contents with their progressions
       setUnits(prevUnits =>
         prevUnits.map(unit => ({
           ...unit,
           lessons: unit.lessons.map(lesson => {
             if (lesson.id !== lessonId) return lesson;
 
-            // Mettre à jour les contenus de cette leçon avec leurs progressions
+            // Update contents of this lesson with their progressions
             const updatedContents = lesson.contentLessons.map(content => {
               const contentProgress = contentProgressMap[content.id];
               if (!contentProgress) return content;
@@ -309,33 +119,329 @@ const calculateLevelProgress = (units: FilteredUnit[]): number => {
         }))
       );
     } catch (err) {
-      console.error(`Erreur lors du chargement des progressions de contenu pour la leçon ${lessonId}:`, err);
+      console.error(`Error loading content progression for lesson ${lessonId}:`, err);
+    }
+  }, []);
+
+  // Now declare loadContentLessonsForLesson which depends on loadContentProgress
+  const loadContentLessonsForLesson = useCallback(async (lessonId: number) => {
+    try {
+      console.log(`Loading contents for lesson ${lessonId}...`);
+
+      const contentData = await courseAPI.getContentLessons(lessonId);
+
+      if (!Array.isArray(contentData) || contentData.length === 0) {
+        console.log(`No content found for lesson ${lessonId}`);
+        return;
+      }
+
+      console.log(`Found ${contentData.length} contents for lesson ${lessonId}`);
+
+      // Log some debugging information about content types
+      const contentTypes = contentData.map(c => c.content_type);
+      const uniqueTypes = [...new Set(contentTypes)];
+      console.log(`Content types found: ${uniqueTypes.join(', ')}`);
+
+      const formattedContents: FilteredContentLesson[] = (contentData as any[]).map(content => {
+        // Extract title correctly
+        let title = '';
+        if (typeof content.title === 'object') {
+          // Try fr language first, then en if available
+          title = content.title.fr || content.title.en || 'No title';
+        } else {
+          title = content.title || 'No title';
+        }
+
+        // Normalize content type for consistent matching
+        // Important: make sure it's a string and convert to lowercase
+        const normalizedContentType = String(content.content_type).toLowerCase();
+
+        return {
+          id: content.id,
+          title: title,
+          content_type: normalizedContentType,
+          lesson_id: lessonId,
+          order: content.order || 0,
+          // Progression data to be filled later
+          progress: 0,
+          status: 'not_started'
+        };
+      });
+
+      // Update the lesson with its contents
+      setUnits(prevUnits =>
+        prevUnits.map(unit => ({
+          ...unit,
+          lessons: unit.lessons.map(lesson =>
+            lesson.id === lessonId
+              ? { ...lesson, contentLessons: formattedContents }
+              : lesson
+          )
+        }))
+      );
+
+      // Load content progression for this lesson
+      await loadContentProgress(lessonId);
+    } catch (err) {
+      console.error(`Error loading contents for lesson ${lessonId}:`, err);
+    }
+  }, [loadContentProgress]);
+
+  // Load lessons for a specific unit
+  const loadLessonsForUnit = useCallback(async (unitId: number): Promise<void> => {
+    // Check if this unit has already been loaded
+    if (loadedUnitsRef.current.has(unitId)) {
+      // If unit already loaded, check if lessons are actually in the state
+      const unit = units.find(u => u.id === unitId);
+      if (unit && unit.lessons.length > 0) {
+        console.log(`Unit ${unitId} lessons already loaded, skipping`);
+        return;
+      }
+    }
+
+    try {
+      console.log(`Loading lessons for unit ${unitId}...`);
+      const lessonsData = await courseAPI.getLessons(unitId);
+
+      // Enrich with empty lists for contents and progression data
+      const formattedLessons: FilteredLesson[] = (lessonsData as Lesson[]).map(lesson => {
+        const lessonProgress = lessonProgressData[lesson.id];
+
+        return {
+          id: lesson.id,
+          title: lesson.title,
+          lesson_type: lesson.lesson_type,
+          unit_id: unitId,
+          estimated_duration: lesson.estimated_duration,
+          contentLessons: [],
+          // Add progression data if it exists
+          progress: lessonProgress?.completion_percentage,
+          status: lessonProgress?.status as 'not_started' | 'in_progress' | 'completed' | undefined
+        };
+      });
+
+      // Update the unit with its lessons
+      setUnits(prevUnits =>
+        prevUnits.map(unit =>
+          unit.id === unitId
+            ? { ...unit, lessons: formattedLessons }
+            : unit
+        )
+      );
+
+      // Mark this unit as having its lessons loaded
+      loadedUnitsRef.current.add(unitId);
+
+      // For each lesson, load lesson contents
+      const contentPromises = formattedLessons.map(lesson =>
+        loadContentLessonsForLesson(lesson.id)
+      );
+
+      // Wait for all content to load for this unit
+      await Promise.all(contentPromises);
+
+      console.log(`Successfully loaded all lessons and content for unit ${unitId}`);
+    } catch (err) {
+      console.error(`Error loading lessons for unit ${unitId}:`, err);
+      throw err; // Re-throw to be handled by caller
+    }
+  }, [loadContentLessonsForLesson, lessonProgressData, units]);
+
+  // Function to group units by level
+  const groupUnitsByLevel = useCallback((units: FilteredUnit[]): LevelGroupType[] => {
+    // Structure to store units by level
+    const groupedByLevel: Record<string, FilteredUnit[]> = {};
+
+    // Group units by level
+    units.forEach(unit => {
+      if (!groupedByLevel[unit.level]) {
+        groupedByLevel[unit.level] = [];
+      }
+      groupedByLevel[unit.level].push(unit);
+    });
+
+    // Convert to sorted array by level (A1, A2, B1, B2, etc.)
+    return Object.entries(groupedByLevel)
+      .sort(([levelA], [levelB]) => {
+        // Intelligent sorting of language levels
+        const levelAKey = levelA.charAt(0) + parseInt(levelA.substring(1));
+        const levelBKey = levelB.charAt(0) + parseInt(levelB.substring(1));
+        return levelAKey.localeCompare(levelBKey);
+      })
+      .map(([level, units]) => ({
+        level,
+        units: units.sort((a, b) => a.order - b.order) // Sort by order within level
+      }));
+  }, []);
+
+  // Load unit data
+  const loadUnits = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // Get units
+      const unitsData = await courseAPI.getUnits();
+
+      // Extract available levels
+      const levels = Array.from(new Set((unitsData as Unit[]).map(unit => unit.level)));
+      setAvailableLevels(levels.sort());
+
+      // Transform to enriched format with empty lists for lessons
+      const formattedUnits: FilteredUnit[] = (unitsData as Unit[]).map(unit => ({
+        id: unit.id,
+        title: unit.title,
+        level: unit.level,
+        lessons: [],
+        order: unit.order || 0,
+      }));
+
+      setUnits(formattedUnits);
+
+      // Load progression data
+      await loadProgressData();
+    } catch (err) {
+      console.error("Error loading units:", err);
+      setError("Impossible de charger les unités d'apprentissage. Veuillez réessayer plus tard.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Load progression data
+  const loadProgressData = async () => {
+    try {
+      setProgressLoading(true);
+
+      // 1. Load unit progressions
+      const unitProgressItems = await progressAPI.getUnitProgress();
+
+      // Convert to map for easy access
+      const unitProgressMap = createUnitProgressMap(unitProgressItems);
+      setUnitProgressData(unitProgressMap);
+
+      // 2. If we already have loaded lessons, also load their progressions
+      const unitIds = Object.keys(unitProgressMap).map(id => parseInt(id));
+
+      // For each unit with progression, load lesson progressions
+      const lessonProgressPromises = unitIds.map(unitId =>
+        progressAPI.getLessonProgressByUnit(unitId)
+      );
+
+      // Wait for all promises to resolve
+      const lessonProgressResults = await Promise.all(lessonProgressPromises);
+
+      // Merge all results into a single map
+      const lessonProgressMap = {};
+      lessonProgressResults.forEach(lessonProgresses => {
+        const convertedMap = createLessonProgressMap(lessonProgresses);
+        Object.assign(lessonProgressMap, convertedMap);
+      });
+
+      setLessonProgressData(lessonProgressMap);
+
+    } catch (err) {
+      console.error("Error loading progression data:", err);
+    } finally {
+      setProgressLoading(false);
     }
   };
 
-  // Effet initial pour charger les unités
+  // Function to calculate average progression of a level
+  const calculateLevelProgress = (units: FilteredUnit[]): number => {
+    const totalUnits = units.length;
+    if (totalUnits === 0) return 0;
+
+    let totalProgress = 0;
+    let unitsWithProgress = 0;
+
+    units.forEach(unit => {
+      if (unitProgressData[unit.id]) {
+        totalProgress += unitProgressData[unit.id].completion_percentage;
+        unitsWithProgress++;
+      }
+    });
+
+    return unitsWithProgress > 0 ? Math.round(totalProgress / unitsWithProgress) : 0;
+  };
+
+  const loadLessonsByContentType = useCallback(async (contentType: string): Promise<void> => {
+    if (contentType === "all") {
+      // Si "all" est sélectionné, ne rien faire
+      return;
+    }
+  
+    setIsLoadingFilteredLessons(true);
+  
+    try {
+      console.log(`Loading lessons with content type: ${contentType}`);
+  
+      // Utiliser la nouvelle API pour récupérer directement les leçons par type de contenu
+      const lessonsData = await courseAPI.getLessonsByContentType(contentType);
+  
+      if (!Array.isArray(lessonsData) || lessonsData.length === 0) {
+        console.log(`No lessons found with content type: ${contentType}`);
+        setFilteredLessonsByType([]);
+        return;
+      }
+  
+      console.log(`Found ${lessonsData.length} lessons with content type: ${contentType}`);
+  
+      // Formatter les leçons reçues sans charger tous les contenus détaillés
+      const formattedLessons: FilteredLesson[] = lessonsData.map(lesson => {
+        // Vérifier si nous avons des données de progression pour cette leçon
+        const lessonProgress = lessonProgressData[lesson.id];
+  
+        return {
+          id: lesson.id,
+          title: lesson.title,
+          lesson_type: lesson.lesson_type,
+          unit_id: lesson.unit,
+          unitTitle: lesson.unit_title || '',
+          unitLevel: lesson.unit_level || '',
+          estimated_duration: lesson.estimated_duration,
+          contentLessons: [], // On n'a pas besoin de charger tous les contenus immédiatement
+          progress: lessonProgress?.completion_percentage,
+          status: lessonProgress?.status as 'not_started' | 'in_progress' | 'completed' | undefined,
+          // Indication que cette leçon contient le type de contenu recherché
+          filteredContents: [{ 
+            id: 0, // ID temporaire
+            title: contentType, 
+            content_type: contentType,
+            lesson_id: lesson.id,
+            order: 0,
+            status: 'not_started'
+          }]
+        };
+      });
+  
+      // Mettre à jour l'état avec les leçons filtrées
+      setFilteredLessonsByType(formattedLessons);
+  
+    } catch (err) {
+      console.error(`Error loading lessons by content type ${contentType}:`, err);
+      setError(`Erreur lors du chargement des leçons de type ${contentType}`);
+      setFilteredLessonsByType([]);
+    } finally {
+      setIsLoadingFilteredLessons(false);
+    }
+  }, [lessonProgressData]);
+
+
+
+  // Initial effect to load units
   useEffect(() => {
     loadUnits();
   }, [loadUnits]);
 
-  // Charger les leçons pour toutes les unités lorsque le mode de vue change
+  // Effect to handle content type filter changes
   useEffect(() => {
-    if (viewMode === "lessons" && units.length > 0) {
-      // Charger les leçons pour chaque unité
-      units.forEach(unit => {
-        if (unit.lessons.length === 0) {
-          loadLessonsForUnit(unit.id);
-        }
-      });
+    if (contentTypeFilter !== "all") {
+      loadLessonsByContentType(contentTypeFilter);
     }
-  }, [viewMode, units]);
+  }, [contentTypeFilter, loadLessonsByContentType]);
 
-  // Effet pour changer de mode de vue en fonction du filtre de contenu
-  useEffect(() => {
-    setViewMode(contentTypeFilter === "all" ? "units" : "lessons");
-  }, [contentTypeFilter]);
-
-  // Récupérer les préférences de disposition depuis localStorage
+  // Get layout preferences from localStorage
   useEffect(() => {
     const savedLayout = localStorage.getItem("units_layout_preference");
     if (savedLayout === "list" || savedLayout === "grid") {
@@ -343,18 +449,41 @@ const calculateLevelProgress = (units: FilteredUnit[]): number => {
     }
   }, []);
 
-  // Navigation vers une leçon
+  // Filter units by level
+  const filteredUnits = useMemo(() => {
+    return levelFilter === "all"
+      ? units
+      : units.filter(unit => unit.level === levelFilter);
+  }, [units, levelFilter]);
+
+  // Content type change
+  const handleContentTypeChange = (value: string) => {
+    console.log(`Content type filter changing to: ${value}`);
+
+    // If user selects "all", reset to units view
+    if (value === "all") {
+      setContentTypeFilter("all");
+      setViewMode("units");
+      return;
+    }
+
+    // Otherwise, switch to lessons view and set the filter
+    setContentTypeFilter(value);
+    setViewMode("lessons");
+  };
+
+  // Navigate to a lesson
   const handleLessonClick = (unitId: number, lessonId: number) => {
     router.push(`/learning/${unitId}/${lessonId}`);
   };
 
-  // Changement de disposition
+  // Change layout
   const handleLayoutChange = (newLayout: "list" | "grid") => {
     setLayout(newLayout);
     localStorage.setItem("units_layout_preference", newLayout);
   };
 
-  // Chargement initial
+  // Initial loading
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-brand-purple">
@@ -364,7 +493,7 @@ const calculateLevelProgress = (units: FilteredUnit[]): number => {
     );
   }
 
-  // Gestion des erreurs
+  // Error handling
   if (error) {
     return (
       <Alert variant="destructive" className="m-6">
@@ -382,37 +511,6 @@ const calculateLevelProgress = (units: FilteredUnit[]): number => {
     );
   }
 
-  // Filtrer les unités par niveau
-  const filteredUnits = levelFilter === "all"
-    ? units
-    : units.filter(unit => unit.level === levelFilter);
-
-  // Filtrer et aplatir toutes les leçons pour l'affichage en mode leçons
-  const filteredLessons = filteredUnits.flatMap(unit =>
-    unit.lessons
-      // Ne filtrer que les leçons dont les contenus sont déjà chargés
-      .filter(lesson => lesson.contentLessons && lesson.contentLessons.length > 0)
-      // Appliquer le filtre de contenu
-      .filter(lesson => {
-        // Si le filtre de contenu est 'all', afficher toutes les leçons
-        if (contentTypeFilter === "all") return true;
-
-        // Sinon, vérifier si la leçon contient des contenus du type spécifié
-        return lesson.contentLessons.some(content =>
-          content.content_type === contentTypeFilter
-        );
-      })
-      .map(lesson => ({
-        ...lesson,
-        unitTitle: units.find(u => u.id === lesson.unit_id)?.title || '',
-        unitLevel: units.find(u => u.id === lesson.unit_id)?.level || '',
-        // Filtrer les contenus de leçon si un filtre de contenu est appliqué
-        filteredContents: contentTypeFilter === "all"
-          ? lesson.contentLessons
-          : lesson.contentLessons.filter(content => content.content_type === contentTypeFilter)
-      }))
-  );
-
   return (
     <div className="w-full space-y-6">
       <div className="w-full">
@@ -422,165 +520,163 @@ const calculateLevelProgress = (units: FilteredUnit[]): number => {
           availableLevels={availableLevels}
           layout={layout}
           onLayoutChange={handleLayoutChange}
-          onContentTypeChange={setContentTypeFilter}
+          onContentTypeChange={handleContentTypeChange}
         />
 
-{/* Affichage des unités (mode par défaut) */}
-{viewMode === "units" && filteredUnits.length > 0 && (
-  <div className="relative bg-white rounded-lg p-6 shadow-sm border border-purple-100">
-    {/* Utilisation du regroupement par niveau */}
-    {groupUnitsByLevel(filteredUnits).map((levelGroup) => (
-      <div key={levelGroup.level} className="mb-12 last:mb-0">
-{/* En-tête du niveau avec progression */}
-<div className="flex items-center mb-6">
-  <div className="flex-1">
-    <div className="flex items-center">
-      <h2 className="text-xl font-bold text-gray-900 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
-        Niveau {levelGroup.level}
-      </h2>
-      
-      <div className="flex items-center ml-4">
-        <Badge className="bg-purple-100 text-purple-800 font-medium">
-          {levelGroup.units.length} unités
-        </Badge>
-        
-        <div className="flex items-center ml-3">
-          <span className="text-sm text-muted-foreground mr-2">
-            {calculateLevelProgress(levelGroup.units)}%
-          </span>
-          <div className="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-indigo-600 to-purple-600" 
-              style={{ width: `${calculateLevelProgress(levelGroup.units)}%` }}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div className="h-px flex-1 bg-gradient-to-r from-indigo-600/20 via-purple-600/20 to-pink-400/20 ml-4"></div>
-</div>
-        
-        {/* Affichage des unités du niveau */}
-        <div className="space-y-6">
-          {levelGroup.units.map((unit) => (
-            <div key={unit.id} className="mb-8 last:mb-0">
-              {/* Carte principale de l'unité - sans répéter le niveau */}
-              <Card 
-                className="mb-4 cursor-pointer hover:shadow-md transition-shadow" 
-                onClick={() => loadLessonsForUnit(unit.id)}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-                        <BookOpen className="h-6 w-6 text-purple-600" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-medium">{unit.title}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {unit.lessons.length > 0 
-                            ? `${unit.lessons.length} leçons disponibles`
-                            : "Cliquez pour charger les leçons"
-                          }
-                        </p>
+        {/* Units display (default mode) */}
+        {viewMode === "units" && filteredUnits.length > 0 && (
+          <div className="relative bg-white rounded-lg p-6 shadow-sm border border-purple-100">
+            {/* Use level grouping */}
+            {groupUnitsByLevel(filteredUnits).map((levelGroup) => (
+              <div key={levelGroup.level} className="mb-12 last:mb-0">
+                {/* Level header with progression */}
+                <div className="flex items-center mb-6">
+                  <div className="flex-1">
+                    <div className="flex items-center">
+                      <h2 className="text-xl font-bold text-gray-900 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
+                        Niveau {levelGroup.level}
+                      </h2>
+
+                      <div className="flex items-center ml-4">
+                        <Badge className="bg-purple-100 text-purple-800 font-medium">
+                          {levelGroup.units.length} unités
+                        </Badge>
+
+                        <div className="flex items-center ml-3">
+                          <span className="text-sm text-muted-foreground mr-2">
+                            {calculateLevelProgress(levelGroup.units)}%
+                          </span>
+                          <div className="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-indigo-600 to-purple-600"
+                              style={{ width: `${calculateLevelProgress(levelGroup.units)}%` }}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div>
-                      {unitProgressData[unit.id] && (
-                        <div className="flex items-center text-sm">
-                          <span className="text-muted-foreground mr-2">Progression:</span>
-                          <span className="font-medium">
-                            {unitProgressData[unit.id].completion_percentage}%
-                          </span>
+                  </div>
+                  <div className="h-px flex-1 bg-gradient-to-r from-indigo-600/20 via-purple-600/20 to-pink-400/20 ml-4"></div>
+                </div>
+
+                {/* Display level units */}
+                <div className="space-y-6">
+                  {levelGroup.units.map((unit) => (
+                    <div key={unit.id} className="mb-8 last:mb-0">
+                      {/* Main unit card - without repeating level */}
+                      <Card
+                        className="mb-4 cursor-pointer hover:shadow-md transition-shadow"
+                        onClick={() => loadLessonsForUnit(unit.id)}
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                                <BookOpen className="h-6 w-6 text-purple-600" />
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-medium">{unit.title}</h3>
+                                <p className="text-sm text-muted-foreground">
+                                  {loadedUnitsRef.current.has(unit.id) && unit.lessons.length > 0
+                                    ? `${unit.lessons.length} leçons disponibles`
+                                    : "Cliquez pour charger les leçons"
+                                  }
+                                </p>
+                              </div>
+                            </div>
+
+                            <div>
+                              {unitProgressData[unit.id] && (
+                                <div className="flex items-center text-sm">
+                                  <span className="text-muted-foreground mr-2">Progression:</span>
+                                  <span className="font-medium">
+                                    {unitProgressData[unit.id].completion_percentage}%
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {unitProgressData[unit.id] && (
+                            <Progress
+                              className="mt-4 h-2"
+                              value={unitProgressData[unit.id].completion_percentage}
+                            />
+                          )}
+                        </CardContent>
+                      </Card>
+
+                      {/* Unit lessons (if loaded) */}
+                      {loadedUnitsRef.current.has(unit.id) && unit.lessons.length > 0 && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                          {unit.lessons.map(lesson => (
+                            <Card
+                              key={lesson.id}
+                              className={`cursor-pointer hover:shadow-md transition-shadow ${lesson.status === 'completed'
+                                  ? 'border-l-4 border-green-500'
+                                  : lesson.status === 'in_progress'
+                                    ? 'border-l-4 border-amber-500'
+                                    : ''
+                                }`}
+                              onClick={() => handleLessonClick(unit.id, lesson.id)}
+                            >
+                              <CardContent className="p-4">
+                                <div className="flex items-start gap-3">
+                                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${lesson.status === 'completed'
+                                      ? 'bg-green-100'
+                                      : 'bg-purple-100'
+                                    }`}>
+                                    {lesson.status === 'completed'
+                                      ? <CheckCircle className="h-5 w-5 text-green-600" />
+                                      : <BookOpen className="h-5 w-5 text-purple-600" />
+                                    }
+                                  </div>
+                                  <div>
+                                    <h4 className="font-medium">{lesson.title}</h4>
+                                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                                      <Badge variant="outline" className="text-xs">
+                                        {lesson.lesson_type}
+                                      </Badge>
+                                      <span className="text-xs text-muted-foreground flex items-center">
+                                        <Clock className="h-3 w-3 mr-1" />
+                                        {lesson.estimated_duration} min
+                                      </span>
+
+                                      {lesson.status === 'in_progress' && (
+                                        <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                                          En cours
+                                        </Badge>
+                                      )}
+
+                                      {lesson.status === 'completed' && (
+                                        <Badge className="bg-green-100 text-green-800 border-green-200">
+                                          Terminé
+                                        </Badge>
+                                      )}
+                                    </div>
+
+                                    {lesson.progress !== undefined && lesson.progress > 0 && (
+                                      <Progress
+                                        className="mt-3 h-1.5"
+                                        value={lesson.progress}
+                                      />
+                                    )}
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
                         </div>
                       )}
                     </div>
-                  </div>
-                  
-                  {unitProgressData[unit.id] && (
-                    <Progress 
-                      className="mt-4 h-2"
-                      value={unitProgressData[unit.id].completion_percentage}
-                    />
-                  )}
-                </CardContent>
-              </Card>
-              
-              {/* Leçons de l'unité (si chargées) */}
-              {unit.lessons.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                  {unit.lessons.map(lesson => (
-                    <Card 
-                      key={lesson.id}
-                      className={`cursor-pointer hover:shadow-md transition-shadow ${
-                        lesson.status === 'completed' 
-                          ? 'border-l-4 border-green-500' 
-                          : lesson.status === 'in_progress'
-                          ? 'border-l-4 border-amber-500'
-                          : ''
-                      }`}
-                      onClick={() => handleLessonClick(unit.id, lesson.id)}
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                            lesson.status === 'completed'
-                              ? 'bg-green-100'
-                              : 'bg-purple-100'
-                          }`}>
-                            {lesson.status === 'completed' 
-                              ? <CheckCircle className="h-5 w-5 text-green-600" /> 
-                              : <BookOpen className="h-5 w-5 text-purple-600" />
-                            }
-                          </div>
-                          <div>
-                            <h4 className="font-medium">{lesson.title}</h4>
-                            <div className="flex flex-wrap items-center gap-2 mt-2">
-                              <Badge variant="outline" className="text-xs">
-                                {lesson.lesson_type}
-                              </Badge>
-                              <span className="text-xs text-muted-foreground flex items-center">
-                                <Clock className="h-3 w-3 mr-1" />
-                                {lesson.estimated_duration} min
-                              </span>
-                              
-                              {lesson.status === 'in_progress' && (
-                                <Badge className="bg-amber-100 text-amber-800 border-amber-200">
-                                  En cours
-                                </Badge>
-                              )}
-                              
-                              {lesson.status === 'completed' && (
-                                <Badge className="bg-green-100 text-green-800 border-green-200">
-                                  Terminé
-                                </Badge>
-                              )}
-                            </div>
-                            
-                            {lesson.progress !== undefined && lesson.progress > 0 && (
-                              <Progress 
-                                className="mt-3 h-1.5"
-                                value={lesson.progress}
-                              />
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
                   ))}
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    ))}
-  </div>
-)}
+              </div>
+            ))}
+          </div>
+        )}
 
-        {/* Affichage des leçons (quand un filtre de contenu est activé) */}
+        {/* Lessons display (when content filter is active) */}
         {viewMode === "lessons" && (
           <div className="relative bg-white rounded-lg p-6 shadow-sm border border-purple-100">
             <div className="mb-4">
@@ -589,7 +685,12 @@ const calculateLevelProgress = (units: FilteredUnit[]): number => {
               </h2>
             </div>
 
-            {filteredLessons.length === 0 ? (
+            {isLoadingFilteredLessons ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin mb-4 text-purple-600" />
+                <p className="text-muted-foreground">Chargement des leçons en cours...</p>
+              </div>
+            ) : filteredLessonsByType.length === 0 ? (
               <div className="text-center py-12">
                 <AlertCircle className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                 <p className="text-muted-foreground">
@@ -598,14 +699,14 @@ const calculateLevelProgress = (units: FilteredUnit[]): number => {
               </div>
             ) : (
               <div className={layout === "list" ? "space-y-4" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"}>
-                {filteredLessons.map(lesson => (
+                {filteredLessonsByType.map(lesson => (
                   <Card
                     key={lesson.id}
                     className={`cursor-pointer hover:shadow-md transition-shadow ${lesson.status === 'completed'
-                        ? 'border-l-4 border-green-500'
-                        : lesson.status === 'in_progress'
-                          ? 'border-l-4 border-amber-500'
-                          : ''
+                      ? 'border-l-4 border-green-500'
+                      : lesson.status === 'in_progress'
+                        ? 'border-l-4 border-amber-500'
+                        : ''
                       }`}
                     onClick={() => handleLessonClick(lesson.unit_id, lesson.id)}
                   >
@@ -655,7 +756,7 @@ const calculateLevelProgress = (units: FilteredUnit[]): number => {
                             />
                           )}
 
-                          {/* Afficher les types de contenu disponibles */}
+                          {/* Display available content types */}
                           {lesson.filteredContents && lesson.filteredContents.length > 0 && (
                             <div className="mt-3 pt-2 border-t border-gray-100">
                               <p className="text-xs text-muted-foreground mb-1">Contenus disponibles:</p>
@@ -678,7 +779,7 @@ const calculateLevelProgress = (units: FilteredUnit[]): number => {
           </div>
         )}
 
-        {/* Message si aucune unité n'est disponible */}
+        {/* Message if no units are available */}
         {filteredUnits.length === 0 && viewMode === "units" && (
           <div className="text-center py-12 bg-white rounded-lg shadow-sm">
             <div className="max-w-md mx-auto">

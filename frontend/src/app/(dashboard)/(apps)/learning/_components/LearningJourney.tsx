@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { User, Language } from "@/types/user";
 import { LearningJourneyProps } from "@/types/learning";
 import { UserProfile } from "@/services/authService";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -43,10 +43,10 @@ function getLanguageFullName(languageCode: string): string {
     'JA': 'Japanese',
     'AR': 'Arabic'
   };
-  
+
   // Normaliser le code de langue en majuscules
   const normalizedCode = languageCode.toUpperCase();
-  
+
   // Retourner le nom complet ou le code si non trouvé
   return languageMap[normalizedCode] || languageCode;
 }
@@ -58,31 +58,31 @@ function getLanguageFullName(languageCode: string): string {
  */
 function formatLearningTime(minutes: number): string {
   if (minutes < 1) return "0 minutes";
-  
+
   // Cas simple - moins d'une heure
   if (minutes < 60) {
     return `${minutes} minute${minutes > 1 ? 's' : ''}`;
   }
-  
+
   // Cas intermédiaire - quelques heures
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
-  
+
   if (hours < 24) {
     if (remainingMinutes === 0) {
       return `${hours} hour${hours > 1 ? 's' : ''}`;
     }
     return `${hours} hour${hours > 1 ? 's' : ''} ${remainingMinutes} minute${remainingMinutes > 1 ? 's' : ''}`;
   }
-  
+
   // Cas avancé - jours
   const days = Math.floor(hours / 24);
   const remainingHours = hours % 24;
-  
+
   if (remainingHours === 0) {
     return `${days} day${days > 1 ? 's' : ''}`;
   }
-  
+
   return `${days} day${days > 1 ? 's' : ''} ${remainingHours} hour${remainingHours > 1 ? 's' : ''}`;
 }
 
@@ -131,7 +131,7 @@ export default function EnhancedLearningJourney({
 }: EnhancedLearningJourneyProps) {
   const { user, isAuthenticated, isLoading } = useAuthContext();
   const router = useRouter();
-  
+
   // États du composant
   const [userData, setUserData] = useState<Partial<User> | null>(null);
   const [selectedTypes, setSelectedTypes] = useState<string[]>(["all"]);
@@ -145,7 +145,7 @@ export default function EnhancedLearningJourney({
   const loadProgressData = async () => {
     try {
       setIsProgressLoading(true);
-      
+
       // Récupérer le résumé de progression depuis l'API avec paramètre de langue
       const summary = await progressAPI.getSummary({
         cacheResults: true,
@@ -155,9 +155,9 @@ export default function EnhancedLearningJourney({
           target_language: userData?.target_language?.toLowerCase() || ""
         }
       });
-      
+
       setProgressData(summary);
-      
+
       // Calculer les données affichées
       calculateDerivedStats(summary);
     } catch (error) {
@@ -173,23 +173,23 @@ export default function EnhancedLearningJourney({
     // Ici on simule avec une valeur entre 1 et 10
     const streakValue = Math.floor(Math.random() * 10) + 1;
     setStreak(streakValue);
-    
+
     // Extraire l'XP du jour à partir des activités récentes
     if (summary.recent_activity && summary.recent_activity.length > 0) {
       // Filtrer les activités d'aujourd'hui
       const today = new Date().toISOString().split('T')[0];
-      const todayActivities = summary.recent_activity.filter(activity => 
+      const todayActivities = summary.recent_activity.filter(activity =>
         activity.last_accessed.startsWith(today)
       );
-      
+
       // Calculer l'XP total obtenu aujourd'hui
-      const todayXp = todayActivities.reduce((total, activity) => 
+      const todayXp = todayActivities.reduce((total, activity) =>
         total + (activity.xp_earned || 0), 0
       );
-      
+
       setDailyXp(todayXp);
     }
-    
+
     // Note: Le temps total d'apprentissage est déjà correctement calculé par l'API backend
     // comme la somme des temps passés sur chaque contenu de leçon (ContentLesson)
     // La valeur summary.total_time_spent_minutes est donc utilisée directement
@@ -197,33 +197,43 @@ export default function EnhancedLearningJourney({
 
   // Gérer le changement de type de contenu
   const handleContentTypeChange = (value: string) => {
-    // Si "all" est sélectionné, effacer les autres sélections
+    // If "all" is selected, clear other selections
     if (value === "all") {
       setSelectedTypes(["all"]);
       if (onContentTypeChange) onContentTypeChange("all");
       return;
     }
 
-    // Gérer la sélection/déselection
-    let newSelection = selectedTypes.includes("all") 
-      ? [value] 
-      : selectedTypes.includes(value)
-        ? selectedTypes.filter(type => type !== value) // Supprimer si déjà sélectionné
-        : [...selectedTypes, value]; // Ajouter si pas encore sélectionné
-    
-    // Si aucun type n'est sélectionné, revenir à "all"
+    // If we're currently on "all", and selecting something else, replace with the new selection
+    let newSelection: string[];
+    if (selectedTypes.includes("all")) {
+      newSelection = [value];
+    } else {
+      // Toggle the selection
+      newSelection = selectedTypes.includes(value)
+        ? selectedTypes.filter(type => type !== value) // Remove if already selected
+        : [...selectedTypes, value]; // Add if not selected
+    }
+
+    // If no type is selected, default back to "all"
     if (newSelection.length === 0) {
       newSelection = ["all"];
     }
-    
+
     setSelectedTypes(newSelection);
-    
-    // Transmettre au composant parent si le callback existe
+
+    // For the parent component, we currently only support single filter value
+    // So we'll send the first selected type or "all" if multiple are selected
     if (onContentTypeChange) {
-      if (newSelection.includes("all")) {
-        onContentTypeChange("all");
+      if (newSelection.length === 1) {
+        onContentTypeChange(newSelection[0]);
       } else {
-        onContentTypeChange(newSelection.join(","));
+        // For now, we'll just use the first selected type when multiple are selected
+        // You could enhance this later to support comma-separated filters
+        onContentTypeChange(newSelection[0]);
+
+        // Alternatively, you could pass a comma-separated list:
+        // onContentTypeChange(newSelection.join(","));
       }
     }
   };
@@ -235,29 +245,29 @@ export default function EnhancedLearningJourney({
       router.push("/login");
       return;
     }
-    
+
     // Configurer les données utilisateur
     if (user) {
       const partialUser = mapUserProfileToUser(user);
       setUserData(partialUser);
-      
+
       // Réinitialiser les données de progression à chaque changement d'utilisateur
       // pour forcer un rechargement
       setProgressData(null);
     }
   }, [isAuthenticated, isLoading, user, router]);
-  
+
   // Effet séparé pour charger les données de progression après avoir défini userData
   useEffect(() => {
     if (userData) {
       // Charger les données de progression
       loadProgressData();
-      
+
       // Définir un intervalle pour rafraîchir les données périodiquement (toutes les 5 minutes)
       const refreshInterval = setInterval(() => {
         loadProgressData();
       }, 5 * 60 * 1000);
-      
+
       // Nettoyer l'intervalle à la destruction du composant
       return () => clearInterval(refreshInterval);
     }
@@ -273,8 +283,8 @@ export default function EnhancedLearningJourney({
   }
 
   // Calculer le pourcentage global de progression
-  const overallProgress = progressData?.summary?.completed_units 
-    ? Math.round((progressData.summary.completed_units / Math.max(progressData.summary.total_units, 1)) * 100) 
+  const overallProgress = progressData?.summary?.completed_units
+    ? Math.round((progressData.summary.completed_units / Math.max(progressData.summary.total_units, 1)) * 100)
     : 0;
 
   return (
@@ -287,7 +297,7 @@ export default function EnhancedLearningJourney({
             Level {userData?.language_level || "A1"}
           </Badge>
         </div>
-        
+
         {/* Statistiques principales */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           {/* Progression globale */}
@@ -298,8 +308,8 @@ export default function EnhancedLearningJourney({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div className="w-14 h-14 flex items-center justify-center bg-white/20 rounded-full text-white font-bold text-lg">
-                      {isProgressLoading ? 
-                        <Loader2 className="animate-spin h-5 w-5" /> : 
+                      {isProgressLoading ?
+                        <Loader2 className="animate-spin h-5 w-5" /> :
                         `${overallProgress}%`
                       }
                     </div>
@@ -311,26 +321,26 @@ export default function EnhancedLearningJourney({
               </TooltipProvider>
             </div>
           </div>
-          
+
           {/* Streak de jours */}
           <div className="bg-white/15 rounded-lg px-3 py-3 text-center">
             <div className="text-sm font-medium mb-1">Daily Streak</div>
             <div className="flex items-center justify-center gap-1">
               <Flame className="h-5 w-5 text-amber-300" />
               <div className="text-2xl font-bold">
-                {isProgressLoading ? <Loader2 className="animate-spin h-5 w-5" /> : streak} 
+                {isProgressLoading ? <Loader2 className="animate-spin h-5 w-5" /> : streak}
                 <span className="text-sm font-normal ml-1">days</span>
               </div>
             </div>
           </div>
-          
+
           {/* XP du jour */}
           <div className="bg-white/15 rounded-lg px-3 py-3 text-center">
             <div className="text-sm font-medium mb-1">Today's XP</div>
             <div className="flex items-center justify-center gap-1">
               <Sparkles className="h-5 w-5 text-amber-300" />
               <div className="text-2xl font-bold">
-                {isProgressLoading ? <Loader2 className="animate-spin h-5 w-5" /> : dailyXp} 
+                {isProgressLoading ? <Loader2 className="animate-spin h-5 w-5" /> : dailyXp}
                 <span className="text-sm font-normal ml-1">pts</span>
               </div>
             </div>
@@ -405,17 +415,17 @@ export default function EnhancedLearningJourney({
           {/* Bascule de disposition */}
           {onLayoutChange && (
             <div className="flex gap-1 ml-auto">
-              <Button 
-                variant={layout === "list" ? "default" : "outline"} 
-                size="icon" 
+              <Button
+                variant={layout === "list" ? "default" : "outline"}
+                size="icon"
                 className="h-8 w-8 bg-white/20 border-white/20 hover:bg-white/30"
                 onClick={() => onLayoutChange("list")}
               >
                 <LayoutList className="h-4 w-4" />
               </Button>
-              <Button 
-                variant={layout === "grid" ? "default" : "outline"} 
-                size="icon" 
+              <Button
+                variant={layout === "grid" ? "default" : "outline"}
+                size="icon"
                 className="h-8 w-8 bg-white/20 border-white/20 hover:bg-white/30"
                 onClick={() => onLayoutChange("grid")}
               >
@@ -441,14 +451,14 @@ export default function EnhancedLearningJourney({
               </Badge>
             </div>
           </div>
-          
+
           {/* Objectif quotidien */}
           <div>
             <h3 className="text-sm font-medium text-gray-500">Daily Goal</h3>
             <div className="flex items-center mt-1">
-              <Progress 
-                className="w-32 h-2 mr-2" 
-                value={Math.min(100, (dailyXp / xpGoal) * 100)} 
+              <Progress
+                className="w-32 h-2 mr-2"
+                value={Math.min(100, (dailyXp / xpGoal) * 100)}
               />
               <span className="text-sm font-medium">
                 {dailyXp}/{xpGoal} XP
@@ -456,20 +466,20 @@ export default function EnhancedLearningJourney({
               <Trophy className={`h-4 w-4 ml-2 ${dailyXp >= xpGoal ? 'text-amber-500' : 'text-gray-300'}`} />
             </div>
           </div>
-          
+
           {/* Temps total d'apprentissage */}
           <div>
             <h3 className="text-sm font-medium text-gray-500">Total Learning Time</h3>
             <div className="mt-1 text-lg font-semibold text-gray-700">
-              {isProgressLoading 
-                ? <Loader2 className="animate-spin h-4 w-4" /> 
+              {isProgressLoading
+                ? <Loader2 className="animate-spin h-4 w-4" />
                 : formatLearningTime(progressData?.summary?.total_time_spent_minutes || 0)
               }
             </div>
           </div>
         </div>
       </div>
-      
+
       {/* Affichage des niveaux et progressions */}
       {progressData && progressData.level_progression && Object.keys(progressData.level_progression).length > 0 && (
         <div className="bg-white rounded-lg shadow-sm border border-purple-100 p-4">

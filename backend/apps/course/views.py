@@ -1,12 +1,12 @@
 # course/views.py
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, serializers
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status, filters, generics
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.exceptions import ValidationError
 from rest_framework.authentication import TokenAuthentication
@@ -16,6 +16,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
+
 
 
 from .models import (
@@ -109,6 +110,8 @@ class LessonAPIView(TargetLanguageMixin, generics.ListAPIView):
         context['target_language'] = target_language
         logger.info(f"LessonAPIView - Adding target_language to context: {target_language}")
         return context
+    
+
 
 class ContentLessonViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -647,6 +650,7 @@ class FillBlankExerciseFilterSet(django_filters.FilterSet):
         }
 
 class FillBlankExerciseViewSet(viewsets.ModelViewSet):
+
     """
     API pour les exercices de type "fill in the blank"
     Permet de lister, créer, récupérer, mettre à jour et supprimer des exercices
@@ -775,3 +779,39 @@ class FillBlankExerciseViewSet(viewsets.ModelViewSet):
         
         # 4. Valeur par défaut
         return 'en'
+    
+@api_view(['GET'])
+def lessons_by_content(request):
+    from rest_framework import serializers  # Ajouter cet import ici
+    
+    content_type = request.query_params.get('content_type')
+    target_language = request.query_params.get('target_language', 'en')
+    
+    if not content_type:
+        return Response({"error": "content_type parameter is required"}, status=400)
+    
+    # Trouver toutes les leçons contenant un type de contenu spécifique
+    lessons = Lesson.objects.filter(
+        content_lessons__content_type__iexact=content_type
+    ).distinct()
+    
+    # Récupérer les unités pour inclure les titres et niveaux
+    units = Unit.objects.filter(lessons__in=lessons).distinct()
+    unit_dict = {u.id: {'title': u.get_unit_title(target_language), 'level': u.level} for u in units}
+    
+    # Enrichir le serializer de leçon pour inclure les infos d'unité
+    class EnhancedLessonSerializer(LessonSerializer):
+        unit_title = serializers.SerializerMethodField()
+        unit_level = serializers.SerializerMethodField()
+        
+        class Meta(LessonSerializer.Meta):
+            fields = LessonSerializer.Meta.fields + ['unit_title', 'unit_level', 'unit']
+        
+        def get_unit_title(self, obj):
+            return unit_dict.get(obj.unit_id, {}).get('title', '')
+        
+        def get_unit_level(self, obj):
+            return unit_dict.get(obj.unit_id, {}).get('level', '')
+    
+    serializer = EnhancedLessonSerializer(lessons, many=True, context={'target_language': target_language})
+    return Response(serializer.data)
