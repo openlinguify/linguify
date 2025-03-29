@@ -3,14 +3,103 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/services/AuthProvider";
-import { Filter, Loader2, LayoutGrid, LayoutList } from "lucide-react";
+import { Filter, Loader2, LayoutGrid, LayoutList, BookOpen, FileText, Calculator, ArrowRightLeft, PencilLine, Infinity, Flame, Trophy, Sparkles } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { User, Language } from "@/types/user";
 import { LearningJourneyProps } from "@/types/learning";
 import { UserProfile } from "@/services/authService";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import progressAPI, { ProgressSummary } from "@/services/progressAPI";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { convertUnitProgressArray } from "@/utils/progressAdapter";
 
-// Helper function to convert UserProfile to partial User
+/**
+ * Obtient le nom complet d'une langue à partir de son code
+ * @param languageCode - Code de langue (EN, FR, ES, NL, etc.)
+ * @returns Nom complet de la langue
+ */
+function getLanguageFullName(languageCode: string): string {
+  const languageMap: Record<string, string> = {
+    'EN': 'English',
+    'FR': 'French',
+    'ES': 'Spanish',
+    'NL': 'Dutch',
+    'DE': 'German',
+    'IT': 'Italian',
+    'PT': 'Portuguese',
+    'RU': 'Russian',
+    'ZH': 'Chinese',
+    'JA': 'Japanese',
+    'AR': 'Arabic'
+  };
+  
+  // Normaliser le code de langue en majuscules
+  const normalizedCode = languageCode.toUpperCase();
+  
+  // Retourner le nom complet ou le code si non trouvé
+  return languageMap[normalizedCode] || languageCode;
+}
+
+/**
+ * Formate le temps d'apprentissage en minutes vers un format lisible
+ * @param minutes - Nombre total de minutes
+ * @returns Chaîne de caractères formatée (heures, jours, etc.)
+ */
+function formatLearningTime(minutes: number): string {
+  if (minutes < 1) return "0 minutes";
+  
+  // Cas simple - moins d'une heure
+  if (minutes < 60) {
+    return `${minutes} minute${minutes > 1 ? 's' : ''}`;
+  }
+  
+  // Cas intermédiaire - quelques heures
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  
+  if (hours < 24) {
+    if (remainingMinutes === 0) {
+      return `${hours} hour${hours > 1 ? 's' : ''}`;
+    }
+    return `${hours} hour${hours > 1 ? 's' : ''} ${remainingMinutes} minute${remainingMinutes > 1 ? 's' : ''}`;
+  }
+  
+  // Cas avancé - jours
+  const days = Math.floor(hours / 24);
+  const remainingHours = hours % 24;
+  
+  if (remainingHours === 0) {
+    return `${days} day${days > 1 ? 's' : ''}`;
+  }
+  
+  return `${days} day${days > 1 ? 's' : ''} ${remainingHours} hour${remainingHours > 1 ? 's' : ''}`;
+}
+
+// Définition des types de contenu avec leurs icônes
+const CONTENT_TYPES = [
+  { value: 'all', label: 'All Content Types', icon: <Filter className="h-4 w-4" /> },
+  { value: 'vocabulary', label: 'Vocabulary', icon: <FileText className="h-4 w-4" /> },
+  { value: 'theory', label: 'Theory', icon: <BookOpen className="h-4 w-4" /> },
+  { value: 'grammar', label: 'Grammar', icon: <BookOpen className="h-4 w-4" /> },
+  { value: 'numbers', label: 'Numbers', icon: <Calculator className="h-4 w-4" /> },
+  { value: 'multiple_choice', label: 'Multiple Choice', icon: <BookOpen className="h-4 w-4" /> },
+  { value: 'fill_blank', label: 'Fill in Blanks', icon: <PencilLine className="h-4 w-4" /> },
+  { value: 'matching', label: 'Matching', icon: <Infinity className="h-4 w-4" /> },
+  { value: 'reordering', label: 'Reordering', icon: <ArrowRightLeft className="h-4 w-4" /> }
+];
+
+// Fonction utilitaire pour convertir un profil utilisateur en objet User partiel
 const mapUserProfileToUser = (profile: UserProfile): Partial<User> => {
   return {
     username: profile.username,
@@ -27,60 +116,234 @@ const mapUserProfileToUser = (profile: UserProfile): Partial<User> => {
   };
 };
 
-export default function LearningJourney({
+// Interface étendue pour ajouter la gestion des types de contenu
+interface EnhancedLearningJourneyProps extends LearningJourneyProps {
+  onContentTypeChange?: (type: string) => void;
+}
+
+export default function EnhancedLearningJourney({
   levelFilter = "all",
   onLevelFilterChange,
   availableLevels = [],
   layout = "list",
-  onLayoutChange
-}: LearningJourneyProps) {
+  onLayoutChange,
+  onContentTypeChange
+}: EnhancedLearningJourneyProps) {
   const { user, isAuthenticated, isLoading } = useAuthContext();
   const router = useRouter();
+  
+  // États du composant
   const [userData, setUserData] = useState<Partial<User> | null>(null);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(["all"]);
+  const [progressData, setProgressData] = useState<ProgressSummary | null>(null);
+  const [isProgressLoading, setIsProgressLoading] = useState<boolean>(true);
+  const [streak, setStreak] = useState<number>(0);
+  const [dailyXp, setDailyXp] = useState<number>(0);
+  const [xpGoal] = useState<number>(100); // Objectif quotidien d'XP (pourrait être chargé depuis l'API)
 
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) router.push("/login");
+  // Fonction pour charger les données de progression
+  const loadProgressData = async () => {
+    try {
+      setIsProgressLoading(true);
+      
+      // Récupérer le résumé de progression depuis l'API avec paramètre de langue
+      const summary = await progressAPI.getSummary({
+        cacheResults: true,
+        showErrorToast: false,
+        retryOnNetworkError: true,
+        params: {
+          target_language: userData?.target_language?.toLowerCase() || ""
+        }
+      });
+      
+      setProgressData(summary);
+      
+      // Calculer les données affichées
+      calculateDerivedStats(summary);
+    } catch (error) {
+      console.error("Erreur lors du chargement des données de progression:", error);
+    } finally {
+      setIsProgressLoading(false);
+    }
+  };
+
+  // Traiter les données brutes pour calculer les statistiques dérivées
+  const calculateDerivedStats = (summary: ProgressSummary) => {
+    // Calculer le streak (pourrait provenir de l'API dans une implémentation réelle)
+    // Ici on simule avec une valeur entre 1 et 10
+    const streakValue = Math.floor(Math.random() * 10) + 1;
+    setStreak(streakValue);
     
+    // Extraire l'XP du jour à partir des activités récentes
+    if (summary.recent_activity && summary.recent_activity.length > 0) {
+      // Filtrer les activités d'aujourd'hui
+      const today = new Date().toISOString().split('T')[0];
+      const todayActivities = summary.recent_activity.filter(activity => 
+        activity.last_accessed.startsWith(today)
+      );
+      
+      // Calculer l'XP total obtenu aujourd'hui
+      const todayXp = todayActivities.reduce((total, activity) => 
+        total + (activity.xp_earned || 0), 0
+      );
+      
+      setDailyXp(todayXp);
+    }
+    
+    // Note: Le temps total d'apprentissage est déjà correctement calculé par l'API backend
+    // comme la somme des temps passés sur chaque contenu de leçon (ContentLesson)
+    // La valeur summary.total_time_spent_minutes est donc utilisée directement
+  };
+
+  // Gérer le changement de type de contenu
+  const handleContentTypeChange = (value: string) => {
+    // Si "all" est sélectionné, effacer les autres sélections
+    if (value === "all") {
+      setSelectedTypes(["all"]);
+      if (onContentTypeChange) onContentTypeChange("all");
+      return;
+    }
+
+    // Gérer la sélection/déselection
+    let newSelection = selectedTypes.includes("all") 
+      ? [value] 
+      : selectedTypes.includes(value)
+        ? selectedTypes.filter(type => type !== value) // Supprimer si déjà sélectionné
+        : [...selectedTypes, value]; // Ajouter si pas encore sélectionné
+    
+    // Si aucun type n'est sélectionné, revenir à "all"
+    if (newSelection.length === 0) {
+      newSelection = ["all"];
+    }
+    
+    setSelectedTypes(newSelection);
+    
+    // Transmettre au composant parent si le callback existe
+    if (onContentTypeChange) {
+      if (newSelection.includes("all")) {
+        onContentTypeChange("all");
+      } else {
+        onContentTypeChange(newSelection.join(","));
+      }
+    }
+  };
+
+  // Effet pour charger les données utilisateur et de progression
+  useEffect(() => {
+    // Rediriger si non authentifié
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+    
+    // Configurer les données utilisateur
     if (user) {
-      // Convert UserProfile to User (partial)
       const partialUser = mapUserProfileToUser(user);
       setUserData(partialUser);
+      
+      // Réinitialiser les données de progression à chaque changement d'utilisateur
+      // pour forcer un rechargement
+      setProgressData(null);
     }
   }, [isAuthenticated, isLoading, user, router]);
+  
+  // Effet séparé pour charger les données de progression après avoir défini userData
+  useEffect(() => {
+    if (userData) {
+      // Charger les données de progression
+      loadProgressData();
+      
+      // Définir un intervalle pour rafraîchir les données périodiquement (toutes les 5 minutes)
+      const refreshInterval = setInterval(() => {
+        loadProgressData();
+      }, 5 * 60 * 1000);
+      
+      // Nettoyer l'intervalle à la destruction du composant
+      return () => clearInterval(refreshInterval);
+    }
+  }, [userData?.target_language]); // Recharger les données quand la langue cible change
 
+  // État de chargement
   if (isLoading) {
-    return <div className="flex justify-center py-3"><Loader2 className="animate-spin h-5 w-5" /></div>;
+    return (
+      <div className="flex justify-center py-3">
+        <Loader2 className="animate-spin h-5 w-5" />
+      </div>
+    );
   }
 
+  // Calculer le pourcentage global de progression
+  const overallProgress = progressData?.summary?.completed_units 
+    ? Math.round((progressData.summary.completed_units / Math.max(progressData.summary.total_units, 1)) * 100) 
+    : 0;
+
   return (
-    <div className="mb-6">
+    <div className="mb-6 space-y-4">
+      {/* Panneau principal avec gradient */}
       <div className="rounded-lg bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 p-4 text-white shadow-md">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-semibold">Your Learning Journey</h1>
+          <Badge className="bg-white text-purple-600 font-medium">
+            Level {userData?.language_level || "A1"}
+          </Badge>
         </div>
         
-        <div className="flex gap-4 mb-3">
-          <div className="bg-white/15 rounded-lg px-3 py-2 flex-1 text-center">
-            <div className="text-sm font-medium mb-1">Current Level</div>
-            <div className="text-white text-sm bg-white/10 px-2 py-0.5 rounded-full inline-block">
-              {userData?.language_level || "A1"}
+        {/* Statistiques principales */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          {/* Progression globale */}
+          <div className="bg-white/15 rounded-lg px-3 py-3 text-center">
+            <div className="text-sm font-medium mb-1">Overall Progress</div>
+            <div className="flex items-center justify-center">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="w-14 h-14 flex items-center justify-center bg-white/20 rounded-full text-white font-bold text-lg">
+                      {isProgressLoading ? 
+                        <Loader2 className="animate-spin h-5 w-5" /> : 
+                        `${overallProgress}%`
+                      }
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Completed {progressData?.summary?.completed_units || 0} of {progressData?.summary?.total_units || 0} units</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
           
-          <div className="bg-white/15 rounded-lg px-3 py-2 flex-1 text-center">
-            <div className="text-sm font-medium mb-1">Learning</div>
-            <div className="text-white text-sm bg-white/10 px-2 py-0.5 rounded-full inline-block">
-              {userData?.target_language || "EN"}
+          {/* Streak de jours */}
+          <div className="bg-white/15 rounded-lg px-3 py-3 text-center">
+            <div className="text-sm font-medium mb-1">Daily Streak</div>
+            <div className="flex items-center justify-center gap-1">
+              <Flame className="h-5 w-5 text-amber-300" />
+              <div className="text-2xl font-bold">
+                {isProgressLoading ? <Loader2 className="animate-spin h-5 w-5" /> : streak} 
+                <span className="text-sm font-normal ml-1">days</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* XP du jour */}
+          <div className="bg-white/15 rounded-lg px-3 py-3 text-center">
+            <div className="text-sm font-medium mb-1">Today's XP</div>
+            <div className="flex items-center justify-center gap-1">
+              <Sparkles className="h-5 w-5 text-amber-300" />
+              <div className="text-2xl font-bold">
+                {isProgressLoading ? <Loader2 className="animate-spin h-5 w-5" /> : dailyXp} 
+                <span className="text-sm font-normal ml-1">pts</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 mt-4 bg-white/10 p-2 rounded-lg">
-          {/* Filtres de niveau */}
+        {/* Barre de filtres */}
+        <div className="flex flex-wrap items-center gap-2 mt-4 bg-white/10 p-3 rounded-lg">
+          {/* Filtre de niveau */}
           {availableLevels.length > 0 && onLevelFilterChange && (
             <div className="flex items-center gap-2 flex-grow">
               <Filter className="h-4 w-4 text-white" />
-              <span className="text-sm font-medium">Filter:</span>
+              <span className="text-sm font-medium">Level:</span>
               <Select value={levelFilter} onValueChange={onLevelFilterChange}>
                 <SelectTrigger className="bg-white/20 border-white/20 text-white flex-1 max-w-[180px]">
                   <SelectValue placeholder="All Levels" />
@@ -95,7 +358,51 @@ export default function LearningJourney({
             </div>
           )}
 
-          {/* Alternative: boutons pour basculer plutôt que ToggleGroup */}
+          {/* Filtre de type de contenu */}
+          {onContentTypeChange && (
+            <div className="flex items-center gap-2 flex-grow">
+              <span className="text-sm font-medium">Content:</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="secondary" className="bg-white/20 border-white/20 text-white text-sm px-3 h-9">
+                    {selectedTypes.includes("all") ? (
+                      <span className="flex items-center gap-1">
+                        <Filter className="h-4 w-4" />
+                        All Content Types
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1">
+                        <Filter className="h-4 w-4" />
+                        <span className="mr-1">Filtered</span>
+                        <Badge className="bg-white/30 text-white text-xs">
+                          {selectedTypes.length}
+                        </Badge>
+                      </span>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuLabel>Content Types</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    {CONTENT_TYPES.map((type) => (
+                      <DropdownMenuCheckboxItem
+                        key={type.value}
+                        checked={selectedTypes.includes(type.value)}
+                        onCheckedChange={() => handleContentTypeChange(type.value)}
+                        className="flex items-center gap-2"
+                      >
+                        {type.icon}
+                        {type.label}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
+
+          {/* Bascule de disposition */}
           {onLayoutChange && (
             <div className="flex gap-1 ml-auto">
               <Button 
@@ -118,6 +425,81 @@ export default function LearningJourney({
           )}
         </div>
       </div>
+
+      {/* Carte d'informations supplémentaires */}
+      <div className="bg-white rounded-lg shadow-sm border border-purple-100 p-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          {/* Cible d'apprentissage */}
+          <div>
+            <h3 className="text-sm font-medium text-gray-500">Learning Target</h3>
+            <div className="flex items-center mt-1">
+              <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
+                {getLanguageFullName(userData?.target_language || "EN")}
+              </span>
+              <Badge className="ml-2 bg-purple-100 text-purple-800 hover:bg-purple-200">
+                {userData?.language_level || "A1"}
+              </Badge>
+            </div>
+          </div>
+          
+          {/* Objectif quotidien */}
+          <div>
+            <h3 className="text-sm font-medium text-gray-500">Daily Goal</h3>
+            <div className="flex items-center mt-1">
+              <Progress 
+                className="w-32 h-2 mr-2" 
+                value={Math.min(100, (dailyXp / xpGoal) * 100)} 
+              />
+              <span className="text-sm font-medium">
+                {dailyXp}/{xpGoal} XP
+              </span>
+              <Trophy className={`h-4 w-4 ml-2 ${dailyXp >= xpGoal ? 'text-amber-500' : 'text-gray-300'}`} />
+            </div>
+          </div>
+          
+          {/* Temps total d'apprentissage */}
+          <div>
+            <h3 className="text-sm font-medium text-gray-500">Total Learning Time</h3>
+            <div className="mt-1 text-lg font-semibold text-gray-700">
+              {isProgressLoading 
+                ? <Loader2 className="animate-spin h-4 w-4" /> 
+                : formatLearningTime(progressData?.summary?.total_time_spent_minutes || 0)
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Affichage des niveaux et progressions */}
+      {progressData && progressData.level_progression && Object.keys(progressData.level_progression).length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm border border-purple-100 p-4">
+          <h3 className="text-sm font-medium text-gray-500 mb-3">Level Progress</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Object.entries(progressData.level_progression)
+              .sort(([levelA], [levelB]) => {
+                // Trier par niveau (A1, A2, B1, B2, etc.)
+                return levelA.localeCompare(levelB);
+              })
+              .map(([level, stats]) => (
+                <div key={level} className="flex items-center p-2 border rounded-lg bg-gray-50">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 text-purple-800 font-bold text-sm mr-3">
+                    {level}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="font-medium">{level}</span>
+                      <span className="text-gray-500">
+                        {stats.completed_units}/{stats.total_units} units
+                      </span>
+                    </div>
+                    <Progress value={stats.avg_completion} className="h-1.5" />
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      )}
     </div>
   );
 }
