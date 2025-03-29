@@ -780,38 +780,100 @@ class FillBlankExerciseViewSet(viewsets.ModelViewSet):
         # 4. Valeur par défaut
         return 'en'
     
-@api_view(['GET'])
-def lessons_by_content(request):
-    from rest_framework import serializers  # Ajouter cet import ici
+class LessonsByContentView(TargetLanguageMixin, generics.ListAPIView):
+    """
+    Vue API pour récupérer des leçons filtrées par type de contenu.
     
-    content_type = request.query_params.get('content_type')
-    target_language = request.query_params.get('target_language', 'en')
+    Récupère toutes les leçons qui contiennent un type de contenu spécifique
+    et enrichit les données avec les informations d'unité associées.
+    """
+    permission_classes = [AllowAny]
+    serializer_class = LessonSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title_en', 'title_fr', 'title_es', 'title_nl']
+    ordering_fields = ['order', 'unit__level', 'unit__order']
     
-    if not content_type:
-        return Response({"error": "content_type parameter is required"}, status=400)
-    
-    # Trouver toutes les leçons contenant un type de contenu spécifique
-    lessons = Lesson.objects.filter(
-        content_lessons__content_type__iexact=content_type
-    ).distinct()
-    
-    # Récupérer les unités pour inclure les titres et niveaux
-    units = Unit.objects.filter(lessons__in=lessons).distinct()
-    unit_dict = {u.id: {'title': u.get_unit_title(target_language), 'level': u.level} for u in units}
-    
-    # Enrichir le serializer de leçon pour inclure les infos d'unité
-    class EnhancedLessonSerializer(LessonSerializer):
-        unit_title = serializers.SerializerMethodField()
-        unit_level = serializers.SerializerMethodField()
+    def get_queryset(self):
+        # Récupérer le type de contenu depuis les paramètres de requête
+        content_type = self.request.query_params.get('content_type')
         
-        class Meta(LessonSerializer.Meta):
-            fields = LessonSerializer.Meta.fields + ['unit_title', 'unit_level', 'unit']
+        if not content_type:
+            # Lever une exception si le paramètre obligatoire est manquant
+            raise ValidationError({"error": "content_type parameter is required"})
         
-        def get_unit_title(self, obj):
-            return unit_dict.get(obj.unit_id, {}).get('title', '')
+        # Construire le queryset filtré
+        queryset = Lesson.objects.filter(
+            content_lessons__content_type__iexact=content_type
+        ).distinct().select_related('unit')
         
-        def get_unit_level(self, obj):
-            return unit_dict.get(obj.unit_id, {}).get('level', '')
+        # Filtrer davantage par niveau si spécifié
+        level = self.request.query_params.get('level')
+        if level and level != "all":
+            queryset = queryset.filter(unit__level=level)
+        
+        # Ordonner par unité et ordre de leçon pour un affichage cohérent
+        return queryset.order_by('unit__order', 'order')
     
-    serializer = EnhancedLessonSerializer(lessons, many=True, context={'target_language': target_language})
-    return Response(serializer.data)
+    def get_serializer_class(self):
+        """Utiliser un sérialiseur enrichi qui inclut les informations d'unité"""
+        
+        class EnhancedLessonSerializer(LessonSerializer):
+            unit_title = serializers.SerializerMethodField()
+            unit_level = serializers.SerializerMethodField()
+            unit_id = serializers.IntegerField(source='unit.id')
+            content_count = serializers.SerializerMethodField()
+            
+            class Meta(LessonSerializer.Meta):
+                fields = LessonSerializer.Meta.fields + [
+                    'unit_title', 'unit_level', 'unit_id', 'content_count'
+                ]
+            
+            def get_unit_title(self, obj):
+                target_language = self.context.get('target_language', 'en')
+                field_name = f'title_{target_language}'
+                return getattr(obj.unit, field_name, obj.unit.title_en)
+            
+            def get_unit_level(self, obj):
+                return obj.unit.level
+                
+            def get_content_count(self, obj):
+                """Renvoie le nombre de contenus du type demandé dans cette leçon"""
+                content_type = self.context.get('request').query_params.get('content_type')
+                return obj.content_lessons.filter(content_type__iexact=content_type).count()
+        
+        return EnhancedLessonSerializer
+    
+    def get_serializer_context(self):
+        """
+        Ajouter des informations supplémentaires au contexte pour personnaliser la sérialisation
+        """
+        context = super().get_serializer_context()
+        context['content_type'] = self.request.query_params.get('content_type', '')
+        return context
+    
+    def list(self, request, *args, **kwargs):
+        """Personnaliser la réponse pour inclure des métadonnées utiles"""
+        # Exécuter la logique de liste standard
+        response = super().list(request, *args, **kwargs)
+        
+        # Enrichir la réponse avec des métadonnées
+        content_type = request.query_params.get('content_type', '')
+        target_language = self.get_target_language()
+        
+        # Obtenir les niveaux disponibles pour ce type de contenu
+        available_levels = Lesson.objects.filter(
+            content_lessons__content_type__iexact=content_type
+        ).values_list('unit__level', flat=True).distinct().order_by('unit__level')
+        
+        # Ajouter des métadonnées à la réponse
+        response.data = {
+            'results': response.data,
+            'metadata': {
+                'content_type': content_type,
+                'target_language': target_language,
+                'available_levels': list(available_levels),
+                'total_count': len(response.data)
+            }
+        }
+        
+        return response
