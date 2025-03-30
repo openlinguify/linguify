@@ -57,26 +57,26 @@ const Header = () => {
     console.log("Language changed to:", value);
     changeLanguage(value as any);
     toast({
-      title: "Language Changed",
-      description: `Language set to ${value.toUpperCase()}`,
+      title: t('dashboard.header.languageChanged'),
+      description: t('dashboard.header.languageSetTo', { language: value.toUpperCase() }),
     });
   };
 
   const handleLogout = () => {
-    // Déconnexion locale
+    // Local logout
     localStorage.clear();
 
-    // Effacer les cookies
+    // Clear cookies
     document.cookie.split(";").forEach(function (c) {
       document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
 
-    // Redirection vers home
+    // Redirect to home
     window.location.href = '/home';
 
     toast({
-      title: "Logged out successfully",
-      description: "Come back soon!",
+      title: t('auth.logoutSuccess'),
+      description: t('auth.comeBackSoon'),
     });
   };
 
@@ -86,8 +86,8 @@ const Header = () => {
 
   const handleNotificationClick = () => {
     toast({
-      title: "No new notifications",
-      description: "Check back later for updates",
+      title: t('dashboard.header.noNewNotifications'),
+      description: t('dashboard.header.checkBackLater'),
     });
   };
 
@@ -140,13 +140,13 @@ const Header = () => {
           {/* Language Selector */}
           <Select onValueChange={handleLanguageChange} defaultValue={locale}>
             <SelectTrigger className="w-32">
-              <SelectValue placeholder="Language" />
+              <SelectValue placeholder={t('dashboard.header.language')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="fr">Français</SelectItem>
-              <SelectItem value="es">Español</SelectItem>
-              <SelectItem value="nl">Nederlands</SelectItem>
+              <SelectItem value="en">{t('dashboard.header.english')}</SelectItem>
+              <SelectItem value="fr">{t('dashboard.header.french')}</SelectItem>
+              <SelectItem value="es">{t('dashboard.header.spanish')}</SelectItem>
+              <SelectItem value="nl">{t('dashboard.header.dutch')}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -171,13 +171,13 @@ const Header = () => {
                     {user?.picture ? (
                       <img
                         src={user.picture}
-                        alt="Profile"
+                        alt={t('dashboard.header.profile')}
                         className="h-6 w-6 rounded-full object-cover"
                       />
                     ) : (
                       <User className="h-4 w-4" />
                     )}
-                    <span className="max-w-[100px] truncate">{user?.name || 'Profile'}</span>
+                    <span className="max-w-[100px] truncate">{user?.name || t('dashboard.header.profile')}</span>
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -187,7 +187,7 @@ const Header = () => {
                       {user?.picture && (
                         <img
                           src={user.picture}
-                          alt="Profile"
+                          alt={t('dashboard.header.profile')}
                           className="h-8 w-8 rounded-full object-cover"
                         />
                       )}
@@ -255,7 +255,7 @@ const Header = () => {
 
             {isAuthenticated ? (
               <>
-                <NavItemMobile href="/profile" icon={User} label="Profile" onClick={() => setIsMenuOpen(false)} />
+                <NavItemMobile href="/profile" icon={User} label={t('dashboard.header.profile')} onClick={() => setIsMenuOpen(false)} />
                 <NavItemMobile href="/settings" icon={Settings} label={t('sidebar.settings')} onClick={() => setIsMenuOpen(false)} />
                 <div className="pt-2">
                   <Button

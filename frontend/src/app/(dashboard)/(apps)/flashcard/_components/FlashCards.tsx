@@ -6,18 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Plus,
   ChevronLeft,
   ChevronRight,
   Check,
   RefreshCw,
-  MoreVertical,
   Trash,
   Pencil,
   FileSpreadsheet,
@@ -27,6 +20,7 @@ import { revisionApi } from "@/services/revisionAPI";
 import type { Flashcard, FlashcardDeck } from "@/types/revision";
 import EditCardModal from "./EditCardModal";
 import ImportExcelModal from "./ImportExcelModal";
+import { useTranslation } from "@/hooks/useTranslations";
 
 // Types
 interface FlashcardAppProps {
@@ -47,6 +41,7 @@ interface FormData {
 // Main FlashcardApp Component
 const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate }) => {
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   // State
   const [cards, setCards] = useState<Flashcard[]>([]);
@@ -64,7 +59,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
 
   // Handlers
   const handleDeleteCard = async (cardId: number) => {
-    if (!window.confirm("Are you sure you want to delete this card?")) {
+    if (!window.confirm(t('dashboard.flashcards.confirmDeleteCard'))) {
       return;
     }
 
@@ -74,16 +69,16 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
       setCards((prev) => prev.filter((card) => card.id !== cardId));
 
       toast({
-        title: "Success",
-        description: "Card deleted successfully",
+        title: t('dashboard.flashcards.successTitle'),
+        description: t('dashboard.flashcards.deleteSuccess'),
       });
       
       // Inform parent component about the change
       onCardUpdate();
     } catch (err) {
       toast({
-        title: "Error",
-        description: "Failed to delete card",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.deleteError'),
         variant: "destructive",
       });
     } finally {
@@ -95,8 +90,8 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
     e.preventDefault();
     if (!selectedDeck) {
       toast({
-        title: "Error",
-        description: "No deck selected",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.noDeckSelected'),
         variant: "destructive",
       });
       return;
@@ -104,8 +99,8 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
 
     if (!formData.frontText.trim() || !formData.backText.trim()) {
       toast({
-        title: "Error",
-        description: "Front and back text are required",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.textRequired'),
         variant: "destructive",
       });
       return;
@@ -127,8 +122,8 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
       setIsAddingCard(false);
 
       toast({
-        title: "Success",
-        description: "Card created successfully",
+        title: t('dashboard.flashcards.successTitle'),
+        description: t('dashboard.flashcards.createSuccess'),
       });
       
       // Inform parent component about the change
@@ -139,10 +134,10 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
       const errorMessage =
         apiError.data?.detail ||
         apiError.data?.error ||
-        "Failed to create card";
+        t('dashboard.flashcards.createError');
 
       toast({
-        title: "Error",
+        title: t('dashboard.flashcards.errorTitle'),
         description: errorMessage,
         variant: "destructive",
       });
@@ -160,7 +155,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
         cardData
       );
 
-      // Mettre à jour la carte dans l'état local
+      // Update the card in local state
       setCards((prev) =>
         prev.map((card) => (card.id === updatedCard.id ? updatedCard : card))
       );
@@ -183,19 +178,19 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
         )
       );
       toast({
-        title: "Success",
+        title: t('dashboard.flashcards.successTitle'),
         description: success
-          ? "Card marked as known"
-          : "Card marked for review",
+          ? t('dashboard.flashcards.markedKnown')
+          : t('dashboard.flashcards.markedReview'),
       });
       
       // Inform parent component about the change
       onCardUpdate();
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Failed to update card status";
+        err instanceof Error ? err.message : t('dashboard.flashcards.updateStatusError');
       toast({
-        title: "Error",
+        title: t('dashboard.flashcards.errorTitle'),
         description: message,
         variant: "destructive",
       });
@@ -216,9 +211,9 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
       setFilter("all");
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Failed to load flashcards";
+        err instanceof Error ? err.message : t('dashboard.flashcards.loadError');
       toast({
-        title: "Error",
+        title: t('dashboard.flashcards.errorTitle'),
         description: message,
         variant: "destructive",
       });
@@ -255,14 +250,13 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
   const renderHeader = () => (
     <div className="bg-white rounded-lg shadow-sm border">
       <div className="p-6 flex flex-wrap gap-2 justify-end">
-        <h1 className="flex">Component Flashcard.tsx</h1>
         <Button
           onClick={() => setIsImporting(true)}
           className="whitespace-nowrap bg-gradient-to-r from-brand-purple to-brand-gold"
           disabled={isLoading}
         >
           <FileSpreadsheet className="w-4 h-4 mr-2" />
-          Import Excel
+          {t('dashboard.flashcards.importExcel')}
         </Button>
         
         <Button
@@ -271,7 +265,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
           disabled={isLoading}
         >
           <Plus className="w-4 h-4 mr-2" />
-          Add Card
+          {t('dashboard.flashcards.addCard')}
         </Button>
         
         {filteredCards.length > 0 && (
@@ -280,7 +274,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
             variant="outline"
             className="whitespace-nowrap"
           >
-            <Trash className="w-4 h-4 mr-2" /> Delete Card
+            <Trash className="w-4 h-4 mr-2" /> {t('dashboard.flashcards.deleteCard')}
           </Button>
         )}
       </div>
@@ -293,14 +287,14 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
             onClick={() => setFilter("all")}
             className="w-full justify-center"
           >
-            All ({stats.total})
+            {t('dashboard.flashcards.filter.all')} ({stats.total})
           </Button>
           <Button
             variant={filter === "new" ? "default" : "outline"}
             onClick={() => setFilter("new")}
             className="w-full justify-center"
           >
-            New ({stats.new})
+            {t('dashboard.flashcards.filter.new')} ({stats.new})
           </Button>
           <Button
             variant={filter === "review" ? "default" : "outline"}
@@ -312,7 +306,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
             }}
           >
             <RefreshCw className="w-4 h-4 mr-2" />
-            To Review ({stats.review})
+            {t('dashboard.flashcards.filter.toReview')} ({stats.review})
           </Button>
           <Button
             variant={filter === "known" ? "default" : "outline"}
@@ -324,7 +318,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
             }}
           >
             <Check className="w-4 h-4 mr-2" />
-            Known ({stats.known})
+            {t('dashboard.flashcards.filter.known')} ({stats.known})
           </Button>
         </div>
       </div>
@@ -339,13 +333,13 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
         </div>
       ) : cards.length === 0 ? (
         <div className="text-center text-gray-500 py-12">
-          <div className="mb-4">No cards in this deck yet</div>
+          <div className="mb-4">{t('dashboard.flashcards.noCards')}</div>
           <Button
             onClick={() => setIsAddingCard(true)}
             className="whitespace-nowrap"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Your First Card
+            {t('dashboard.flashcards.addFirstCard')}
           </Button>
         </div>
       ) : filteredCards.length > 0 ? (
@@ -372,16 +366,15 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
                     ? filteredCards[currentIndex].back_text
                     : filteredCards[currentIndex].front_text}
                 </div>
-                <div className="text-sm text-gray-500 mt-4">Click to flip</div>
+                <div className="text-sm text-gray-500 mt-4">{t('dashboard.flashcards.clickToFlip')}</div>
                 {filteredCards[currentIndex].review_count > 0 && (
                   <div className="mt-2">
-                    Reviews: {filteredCards[currentIndex].review_count} | Last
-                    reviewed:{" "}
+                    {t('dashboard.flashcards.reviews')}: {filteredCards[currentIndex].review_count} | {t('dashboard.flashcards.lastReviewed')}:{" "}
                     {filteredCards[currentIndex].last_reviewed
                       ? new Date(
                         filteredCards[currentIndex].last_reviewed
                       ).toLocaleDateString()
-                      : "N/A"}
+                      : t('dashboard.flashcards.na')}
                   </div>
                 )}
               </div>
@@ -399,7 +392,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
               className="w-32"
             >
               <ChevronLeft className="w-4 h-4 mr-2" />
-              Previous
+              {t('dashboard.flashcards.previous')}
             </Button>
             <Button
               variant="outline"
@@ -410,7 +403,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
               disabled={currentIndex === filteredCards.length - 1}
               className="w-32"
             >
-              Next
+              {t('dashboard.flashcards.next')}
               <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
           </div>
@@ -423,7 +416,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
               }
             >
               <RefreshCw className="w-4 h-4 mr-2" />
-              Review Later
+              {t('dashboard.flashcards.reviewLater')}
             </Button>
             <Button
               className="w-40 bg-green-500 hover:bg-green-600 text-white"
@@ -432,17 +425,20 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
               }
             >
               <Check className="w-4 h-4 mr-2" />
-              Mark as Known
+              {t('dashboard.flashcards.markKnown')}
             </Button>
           </div>
 
           <div className="text-center text-sm text-gray-500">
-            Card {currentIndex + 1} of {filteredCards.length}
+            {t('dashboard.flashcards.cardCount', { 
+              current: String(currentIndex + 1), 
+              total: String(filteredCards.length) 
+            })}
           </div>
         </div>
       ) : (
         <div className="text-center text-gray-500 py-12">
-          No cards match the current filter
+          {t('dashboard.flashcards.noMatchingCards')}
         </div>
       )}
     </div>
@@ -453,9 +449,9 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
       {isAddingCard && (
         <Card className="mt-8">
           <CardContent className="p-6 space-y-4">
-            <h3 className="text-lg font-medium">New Card</h3>
+            <h3 className="text-lg font-medium">{t('dashboard.flashcards.newCard')}</h3>
             <div className="space-y-2">
-              <Label htmlFor="frontText">Front</Label>
+              <Label htmlFor="frontText">{t('dashboard.flashcards.front')}</Label>
               <Input
                 id="frontText"
                 value={formData.frontText}
@@ -465,18 +461,18 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
                     frontText: e.target.value,
                   }))
                 }
-                placeholder="Front text"
+                placeholder={t('dashboard.flashcards.frontText')}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="backText">Back</Label>
+              <Label htmlFor="backText">{t('dashboard.flashcards.back')}</Label>
               <Input
                 id="backText"
                 value={formData.backText}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, backText: e.target.value }))
                 }
-                placeholder="Back text"
+                placeholder={t('dashboard.flashcards.backText')}
               />
             </div>
             <div className="flex gap-2">
@@ -487,14 +483,14 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
                   !formData.frontText || !formData.backText || isLoading
                 }
               >
-                Add
+                {t('dashboard.flashcards.add')}
               </Button>
               <Button
                 variant="outline"
                 className="flex-1"
                 onClick={() => setIsAddingCard(false)}
               >
-                Cancel
+                {t('dashboard.flashcards.cancel')}
               </Button>
             </div>
           </CardContent>

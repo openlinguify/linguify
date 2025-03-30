@@ -13,6 +13,8 @@
   "auth": {
     "logout": "Déconnexion",
     "login": "Connexion",
-    "register": "S'inscrire"
+    "register": "Inscription",
+    "logoutSuccess": "Déconnexion réussie",
+    "comeBackSoon": "Revenez bientôt !"
   }
-}
+  }

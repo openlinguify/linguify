@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Clock, BookOpen, Dumbbell, Layers } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslations";
 
 interface StudyModeProps {
   deckId: number;
@@ -40,34 +41,36 @@ const StudyModeCard = ({
 };
 
 export default function StudyModes({ deckId }: StudyModeProps) {
+  const { t } = useTranslation();
+  
   return (
     <div className="mb-8">
-      <h3 className="text-base font-semibold mb-4">Study Modes</h3>
+      <h3 className="text-base font-semibold mb-4">{t('dashboard.flashcards.studyModes')}</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <StudyModeCard
-          name="Flashcards"
-          description="Flip between terms and definitions"
+          name={t('dashboard.flashcards.modes.flashcards.name')}
+          description={t('dashboard.flashcards.modes.flashcards.description')}
           icon={<Layers className="h-5 w-5 text-white" />}
           path="flashcards"
           deckId={deckId}
         />
         <StudyModeCard
-          name="Learn"
-          description="Adaptive multiple choice questions"
+          name={t('dashboard.flashcards.modes.learn.name')}
+          description={t('dashboard.flashcards.modes.learn.description')}
           icon={<BookOpen className="h-5 w-5 text-white" />}
           path="learn"
           deckId={deckId}
         />
         <StudyModeCard
-          name="Match"
-          description="Match terms with definitions quickly"
+          name={t('dashboard.flashcards.modes.match.name')}
+          description={t('dashboard.flashcards.modes.match.description')}
           icon={<Clock className="h-5 w-5 text-white" />}
           path="match"
           deckId={deckId}
         />
         <StudyModeCard
-          name="Review"
-          description="Spaced repetition for better retention"
+          name={t('dashboard.flashcards.modes.review.name')}
+          description={t('dashboard.flashcards.modes.review.description')}
           icon={<Dumbbell className="h-5 w-5 text-white" />}
           path="review"
           deckId={deckId}

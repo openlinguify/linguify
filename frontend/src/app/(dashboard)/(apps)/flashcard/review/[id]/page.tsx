@@ -1,3 +1,4 @@
+// src/app/(dashboard)/(apps)/flashcard/review/[id]/page.tsx
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -23,8 +24,10 @@ import { cn } from "@/lib/utils";
 import { Flashcard } from "@/types/revision";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTranslation } from "@/hooks/useTranslations";
 
 export default function ReviewPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -71,14 +74,14 @@ export default function ReviewPage() {
     } catch (error) {
       console.error("Failed to load flashcards:", error);
       toast({
-        title: "Error",
-        description: "Failed to load flashcards for review",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.modes.review.failedToLoadReview'),
         variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
-  }, [id, toast]);
+  }, [id, toast, t]);
 
   useEffect(() => {
     loadCards();
@@ -137,30 +140,30 @@ export default function ReviewPage() {
       setCurrentIndex(prev => prev + 1);
       
       toast({
-        title: success ? "Good job!" : "Keep practicing!",
+        title: success ? t('dashboard.flashcards.modes.review.goodJob') : t('dashboard.flashcards.modes.review.keepPracticing'),
         description: success 
-          ? "Card marked as known" 
-          : "Card will be shown again later",
+          ? t('dashboard.flashcards.markedKnown') 
+          : t('dashboard.flashcards.modes.review.cardForLater'),
       });
     } catch (error) {
       console.error("Failed to update card status:", error);
       toast({
-        title: "Error",
-        description: "Failed to update card status",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.updateStatusError'),
         variant: "destructive"
       });
     }
   };
 
   const getTotalReviewTime = (): string => {
-    if (!reviewStartTime) return "N/A";
+    if (!reviewStartTime) return t('dashboard.flashcards.modes.review.na');
     
     const now = new Date();
     const diffMs = now.getTime() - reviewStartTime.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffSecs = Math.floor((diffMs % 60000) / 1000);
     
-    return `${diffMins}m ${diffSecs}s`;
+    return t('dashboard.flashcards.modes.review.timeFormat', { minutes: String(diffMins), seconds: String(diffSecs) });
   };
 
   const restartReview = () => {
@@ -196,10 +199,10 @@ export default function ReviewPage() {
       <div className="container mx-auto py-8">
         <div className="flex items-center justify-between mb-4">
           <Button variant="outline" onClick={backToDeck} disabled>
-            <ChevronLeft className="mr-2 h-4 w-4" /> Back to Decks
+            <ChevronLeft className="mr-2 h-4 w-4" /> {t('dashboard.flashcards.modes.review.backToDecks')}
           </Button>
           <div className="text-sm text-gray-500">
-            Loading cards...
+            {t('dashboard.flashcards.modes.review.loadingCards')}
           </div>
         </div>
         
@@ -223,12 +226,12 @@ export default function ReviewPage() {
           <CardHeader>
             <Badge className="w-fit mx-auto mb-2" variant="outline">
               <Award className="h-4 w-4 mr-2 text-yellow-500" />
-              No cards due
+              {t('dashboard.flashcards.modes.review.noCardsDue')}
             </Badge>
-            <h2 className="text-2xl font-bold mb-2">All caught up!</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('dashboard.flashcards.modes.review.allCaughtUp')}</h2>
             <p className="text-gray-600">
-              Great job! You've completed all your scheduled reviews.
-              Your current streak: {streak} days.
+              {t('dashboard.flashcards.modes.review.greatJobCompleted')}
+              {t('dashboard.flashcards.modes.review.currentStreak', { count: String(streak) })}
             </p>
           </CardHeader>
           <CardContent className="flex flex-col items-center py-8">
@@ -236,12 +239,12 @@ export default function ReviewPage() {
               <Check className="h-12 w-12 text-green-600" />
             </div>
             <p className="text-sm text-gray-500 max-w-xs">
-              Come back later for more cards to review, or explore other decks.
+              {t('dashboard.flashcards.modes.review.comeBackLater')}
             </p>
           </CardContent>
           <CardFooter className="flex justify-center pt-4">
             <Button onClick={backToDeck}>
-              <ChevronLeft className="mr-2 h-4 w-4" /> Back to Decks
+              <ChevronLeft className="mr-2 h-4 w-4" /> {t('dashboard.flashcards.modes.review.backToDecks')}
             </Button>
           </CardFooter>
         </Card>
@@ -255,41 +258,43 @@ export default function ReviewPage() {
     
     return (
       <div className="container mx-auto py-8 max-w-4xl">
-        <h2 className="text-2xl font-bold mb-4">Review completed!</h2>
+        <h2 className="text-2xl font-bold mb-4">{t('dashboard.flashcards.modes.review.reviewCompleted')}</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card className="border-green-100">
             <CardHeader className="pb-2">
-              <h3 className="text-sm font-medium text-gray-500">Correct Cards</h3>
+              <h3 className="text-sm font-medium text-gray-500">{t('dashboard.flashcards.modes.review.correctCards')}</h3>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-green-600">{correct}</div>
               <div className="text-sm text-gray-500">
-                {Math.round((correct / totalReviewed) * 100)}% success rate
+                {t('dashboard.flashcards.modes.review.successRate', { rate: String(Math.round((correct / totalReviewed) * 100)) })}
               </div>
             </CardContent>
           </Card>
           
           <Card className="border-red-100">
             <CardHeader className="pb-2">
-              <h3 className="text-sm font-medium text-gray-500">Cards to Review</h3>
+              <h3 className="text-sm font-medium text-gray-500">{t('dashboard.flashcards.modes.review.cardsToReview')}</h3>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-red-600">{totalReviewed - correct}</div>
               <div className="text-sm text-gray-500">
-                Will be shown again soon
+                {t('dashboard.flashcards.modes.review.willBeShownAgain')}
               </div>
             </CardContent>
           </Card>
           
           <Card className="border-blue-100">
             <CardHeader className="pb-2">
-              <h3 className="text-sm font-medium text-gray-500">Review Time</h3>
+              <h3 className="text-sm font-medium text-gray-500">{t('dashboard.flashcards.modes.review.reviewTime')}</h3>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-blue-600">{getTotalReviewTime()}</div>
               <div className="text-sm text-gray-500">
-                {Math.round(totalReviewed / (Math.max(1, (new Date().getTime() - (reviewStartTime?.getTime() || 0)) / 60000)))} cards/minute
+                {t('dashboard.flashcards.modes.review.cardsPerMinute', { 
+                  rate: String(Math.round(totalReviewed / (Math.max(1, (new Date().getTime() - (reviewStartTime?.getTime() || 0)) / 60000))))
+                })}
               </div>
             </CardContent>
           </Card>
@@ -297,11 +302,11 @@ export default function ReviewPage() {
         
         <Card className="mb-8">
           <CardHeader>
-            <h3 className="text-lg font-bold">Performance Summary</h3>
+            <h3 className="text-lg font-bold">{t('dashboard.flashcards.modes.review.performanceSummary')}</h3>
           </CardHeader>
           <CardContent>
             <div className="mb-6">
-              <div className="text-sm font-medium mb-2">Success Rate</div>
+              <div className="text-sm font-medium mb-2">{t('dashboard.flashcards.modes.review.successRate')}</div>
               <div className="relative pt-1">
                 <div className="flex items-center justify-between mb-2">
                   <div>
@@ -314,9 +319,9 @@ export default function ReviewPage() {
                     </span>
                   </div>
                   <div className="text-xs text-right">
-                    {successRate >= 80 ? "Excellent!" : 
-                     successRate >= 60 ? "Good progress" : 
-                     "Keep practicing"}
+                    {successRate >= 80 ? t('dashboard.flashcards.modes.review.excellent') : 
+                     successRate >= 60 ? t('dashboard.flashcards.modes.review.goodProgress') : 
+                     t('dashboard.flashcards.modes.review.keepPracticing')}
                   </div>
                 </div>
                 <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
@@ -334,20 +339,22 @@ export default function ReviewPage() {
             
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <div className="text-sm font-medium mb-2">Streak</div>
+                <div className="text-sm font-medium mb-2">{t('dashboard.flashcards.streak')}</div>
                 <div className="flex items-center">
                   <Calendar className="h-5 w-5 mr-2 text-indigo-500" />
-                  <span className="text-xl font-bold">{streak} days</span>
+                  <span className="text-xl font-bold">{t('dashboard.flashcards.modes.review.daysCount', { count: String(streak) })}</span>
                 </div>
               </div>
               <div>
-                <div className="text-sm font-medium mb-2">Time per Card</div>
+                <div className="text-sm font-medium mb-2">{t('dashboard.flashcards.modes.review.timePerCard')}</div>
                 <div className="flex items-center">
                   <Clock className="h-5 w-5 mr-2 text-indigo-500" />
                   <span className="text-xl font-bold">
                     {reviewStartTime ? 
-                      Math.round((new Date().getTime() - reviewStartTime.getTime()) / (totalReviewed * 1000)) : 0
-                    }s
+                      t('dashboard.flashcards.modes.review.secondsValue', { 
+                        seconds: String(Math.round((new Date().getTime() - reviewStartTime.getTime()) / (totalReviewed * 1000)))
+                      }) : "0s"
+                    }
                   </span>
                 </div>
               </div>
@@ -355,17 +362,17 @@ export default function ReviewPage() {
             
             <div className="text-sm text-gray-600 mt-4">
               {successRate >= 80 
-                ? "Excellent work! You're mastering these cards well!" 
+                ? t('dashboard.flashcards.modes.review.excellentWorkMessage') 
                 : successRate >= 60 
-                  ? "Good progress! Continue reviewing the cards you missed." 
-                  : "Keep practicing! Consistent review will help you improve."}
+                  ? t('dashboard.flashcards.modes.review.goodProgressMessage') 
+                  : t('dashboard.flashcards.modes.review.keepPracticingMessage')}
             </div>
           </CardContent>
         </Card>
         
         <Card className="mb-8">
           <CardHeader>
-            <h3 className="text-lg font-bold">Cards Reviewed</h3>
+            <h3 className="text-lg font-bold">{t('dashboard.flashcards.modes.review.cardsReviewed')}</h3>
           </CardHeader>
           <CardContent className="max-h-80 overflow-y-auto">
             <div className="space-y-2">
@@ -400,21 +407,21 @@ export default function ReviewPage() {
             onClick={restartReview}
           >
             <RotateCcw className="w-4 h-4 mr-2" />
-            Review Again
+            {t('dashboard.flashcards.modes.review.reviewAgain')}
           </Button>
           <Button 
             variant="outline" 
             onClick={loadNewCards}
           >
             <RefreshCw className="w-4 h-4 mr-2" />
-            Load New Cards
+            {t('dashboard.flashcards.modes.review.loadNewCards')}
           </Button>
           <Button 
             variant="outline" 
             onClick={backToDeck}
           >
             <Undo2 className="w-4 h-4 mr-2" />
-            Back to Decks
+            {t('dashboard.flashcards.modes.review.backToDecks')}
           </Button>
         </div>
       </div>
@@ -426,7 +433,7 @@ export default function ReviewPage() {
     <div className="container mx-auto py-8">
       <div className="flex items-center justify-between mb-4">
         <Button variant="outline" onClick={backToDeck}>
-          <ChevronLeft className="mr-2 h-4 w-4" /> Back to Decks
+          <ChevronLeft className="mr-2 h-4 w-4" /> {t('dashboard.flashcards.modes.review.backToDecks')}
         </Button>
         <div className="flex items-center space-x-2">
           <Badge variant="outline" className="text-gray-500">
@@ -434,7 +441,7 @@ export default function ReviewPage() {
             {getTotalReviewTime()}
           </Badge>
           <div className="text-sm bg-gray-100 rounded-full px-3 py-1">
-            {currentIndex + 1} / {flashcards.length}
+            {t('dashboard.flashcards.modes.review.cardPosition', { current: String(currentIndex + 1), total: String(flashcards.length) })}
           </div>
         </div>
       </div>
@@ -454,7 +461,7 @@ export default function ReviewPage() {
         <CardContent className="flex items-center justify-center h-full p-6">
           <div className="text-center">
             <div className="absolute top-4 left-4 text-xs font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-600">
-              {isFlipped ? "DEFINITION" : "TERM"}
+              {isFlipped ? t('dashboard.flashcards.modes.review.definition') : t('dashboard.flashcards.modes.review.term')}
             </div>
             
             <div className="text-3xl font-medium">
@@ -462,17 +469,17 @@ export default function ReviewPage() {
             </div>
             
             <div className="text-sm text-gray-500 mt-4">
-              Click to flip card (or press Space)
+              {t('dashboard.flashcards.modes.review.clickToFlip')}
             </div>
             
             {currentCard.review_count > 0 && (
               <div className="mt-4 flex items-center justify-center text-sm text-gray-500">
                 <Badge variant="outline" className="mr-2">
-                  Reviews: {currentCard.review_count}
+                  {t('dashboard.flashcards.reviews')}: {currentCard.review_count}
                 </Badge>
                 {currentCard.last_reviewed && (
                   <Badge variant="outline">
-                    Last: {new Date(currentCard.last_reviewed).toLocaleDateString()}
+                    {t('dashboard.flashcards.lastReviewedShort')}: {new Date(currentCard.last_reviewed).toLocaleDateString()}
                   </Badge>
                 )}
               </div>
@@ -491,11 +498,11 @@ export default function ReviewPage() {
                 disabled={!isFlipped}
               >
                 <X className="w-4 h-4 mr-2" />
-                Still Learning
+                {t('dashboard.flashcards.modes.review.stillLearning')}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Mark as "Still Learning" (use Left Arrow)</p>
+              <p>{t('dashboard.flashcards.modes.review.markAsStillLearning')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -509,11 +516,11 @@ export default function ReviewPage() {
                 disabled={!isFlipped}
               >
                 <Check className="w-4 h-4 mr-2" />
-                Got it!
+                {t('dashboard.flashcards.modes.review.gotIt')}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Mark as "Got it!" (use Right Arrow)</p>
+              <p>{t('dashboard.flashcards.modes.review.markAsGotIt')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -526,30 +533,30 @@ export default function ReviewPage() {
           onClick={() => setShowKeyboardShortcuts(!showKeyboardShortcuts)}
           className="text-xs text-gray-400 hover:text-gray-600"
         >
-          {showKeyboardShortcuts ? "Hide Keyboard Shortcuts" : "Show Keyboard Shortcuts"}
+          {showKeyboardShortcuts ? t('dashboard.flashcards.modes.review.hideKeyboardShortcuts') : t('dashboard.flashcards.modes.review.showKeyboardShortcuts')}
         </Button>
       </div>
       
       {showKeyboardShortcuts && (
         <Card className="mt-4 bg-gray-50 mx-auto max-w-md">
           <CardContent className="pt-4">
-            <h4 className="text-sm font-medium mb-2">Keyboard Shortcuts</h4>
+            <h4 className="text-sm font-medium mb-2">{t('dashboard.flashcards.modes.review.keyboardShortcuts')}</h4>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="flex items-center">
                 <kbd className="px-2 py-1 bg-white rounded border mr-2">Space</kbd>
-                <span>Flip card</span>
+                <span>{t('dashboard.flashcards.modes.review.flipCard')}</span>
               </div>
               <div className="flex items-center">
                 <kbd className="px-2 py-1 bg-white rounded border mr-2">→</kbd>
-                <span>Mark as "Got it!"</span>
+                <span>{t('dashboard.flashcards.modes.review.markAsGotIt')}</span>
               </div>
               <div className="flex items-center">
                 <kbd className="px-2 py-1 bg-white rounded border mr-2">←</kbd>
-                <span>Mark as "Still Learning"</span>
+                <span>{t('dashboard.flashcards.modes.review.markAsStillLearning')}</span>
               </div>
               <div className="flex items-center">
                 <kbd className="px-2 py-1 bg-white rounded border mr-2">?</kbd>
-                <span>Toggle shortcuts</span>
+                <span>{t('dashboard.flashcards.modes.review.toggleShortcuts')}</span>
               </div>
             </div>
           </CardContent>
@@ -558,10 +565,10 @@ export default function ReviewPage() {
       
       <div className="flex justify-between items-center mt-8">
         <div className="text-sm">
-          <strong>Current streak:</strong> {streak} days
+          <strong>{t('dashboard.flashcards.modes.review.currentStreak')}:</strong> {t('dashboard.flashcards.modes.review.daysCount', { count: String(streak) })}
         </div>
         <div className="text-sm text-right">
-          <strong>Correct:</strong> {correct}/{totalReviewed} 
+          <strong>{t('dashboard.flashcards.modes.review.correct')}:</strong> {correct}/{totalReviewed} 
           {totalReviewed > 0 && ` (${Math.round((correct / totalReviewed) * 100)}%)`}
         </div>
       </div>

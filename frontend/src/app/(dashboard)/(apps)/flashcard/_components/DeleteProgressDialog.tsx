@@ -12,6 +12,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Trash2, AlertTriangle, Loader2, Check, Timer } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslations";
 
 interface DeleteProgressDialogProps {
   isOpen: boolean;
@@ -31,6 +32,8 @@ const DeleteProgressDialog: React.FC<DeleteProgressDialogProps> = ({
   totalCards,
   progress
 }) => {
+  const { t } = useTranslation();
+  
   // Determine if we're in deletion progress mode or confirmation mode
   const isDeleting = progress > 0;
   const isComplete = progress >= 100;
@@ -46,22 +49,26 @@ const DeleteProgressDialog: React.FC<DeleteProgressDialogProps> = ({
     if (secondsRemaining <= 0) return null;
     
     if (secondsRemaining < 60) {
-      return `About ${secondsRemaining} second${secondsRemaining === 1 ? '' : 's'} remaining`;
+      return t('dashboard.flashcards.secondsRemaining', { seconds: secondsRemaining.toLocaleString() });
     } else {
       const minutes = Math.floor(secondsRemaining / 60);
       const seconds = secondsRemaining % 60;
-      return `About ${minutes} minute${minutes === 1 ? '' : 's'}${seconds > 0 ? ` ${seconds} seconds` : ''} remaining`;
+      if (seconds > 0) {
+        return t('dashboard.flashcards.minutesSecondsRemaining', { minutes: minutes.toString(), seconds: seconds.toString() });
+      } else {
+        return t('dashboard.flashcards.minutesRemaining', { minutes: minutes.toString() });
+      }
     }
   };
   
   // Get the appropriate status message based on progress
   const getStatusMessage = () => {
-    if (progress <= 0) return "Preparing to delete...";
-    if (progress < 25) return "Starting deletion process...";
-    if (progress < 50) return "Deleting cards...";
-    if (progress < 75) return "Continuing to process cards...";
-    if (progress < 100) return "Finalizing deletion...";
-    return "Deletion complete!";
+    if (progress <= 0) return t('dashboard.flashcards.preparingToDelete');
+    if (progress < 25) return t('dashboard.flashcards.startingDeletion');
+    if (progress < 50) return t('dashboard.flashcards.deletingCards');
+    if (progress < 75) return t('dashboard.flashcards.continuingToProcess');
+    if (progress < 100) return t('dashboard.flashcards.finalizingDeletion');
+    return t('dashboard.flashcards.deletionComplete');
   };
   
   // Get progress color based on the current progress
@@ -86,10 +93,10 @@ const DeleteProgressDialog: React.FC<DeleteProgressDialogProps> = ({
               <AlertTriangle className="h-5 w-5 text-red-600" />
             )}
             {isComplete 
-              ? "Deletion Complete" 
+              ? t('dashboard.flashcards.deletionComplete') 
               : isDeleting
-                ? "Deleting Flashcards"
-                : "Confirm Deletion"}
+                ? t('dashboard.flashcards.deletingFlashcards')
+                : t('dashboard.flashcards.confirmDeletion')}
           </AlertDialogTitle>
           <AlertDialogDescription className="space-y-4">
             {isDeleting ? (
@@ -115,7 +122,7 @@ const DeleteProgressDialog: React.FC<DeleteProgressDialogProps> = ({
                 {/* Card counter with visual indicator */}
                 <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600 font-medium">Progress</span>
+                    <span className="text-gray-600 font-medium">{t('dashboard.flashcards.progress')}</span>
                     <span className="text-gray-800 font-bold">{processedCards}/{totalCards}</span>
                   </div>
                   <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -141,7 +148,7 @@ const DeleteProgressDialog: React.FC<DeleteProgressDialogProps> = ({
                       <Check className="h-6 w-6" />
                     </div>
                     <p className="font-medium text-center">
-                      Successfully deleted {totalCards} cards!
+                      {t('dashboard.flashcards.successfullyDeleted', { count: totalCards.toString() })}
                     </p>
                   </div>
                 )}
@@ -150,17 +157,17 @@ const DeleteProgressDialog: React.FC<DeleteProgressDialogProps> = ({
               <div className="space-y-4">
                 <div className="bg-red-50 p-4 rounded-lg border border-red-100">
                   <p className="mb-2 text-gray-700">
-                    Are you sure you want to delete <strong>{totalCards}</strong> flashcards?
+                    {t('dashboard.flashcards.deleteConfirmationQuestion', { count: totalCards.toString() })}
                   </p>
                   <p className="text-red-600 font-medium flex items-center">
                     <AlertTriangle className="h-4 w-4 mr-2" />
-                    This action cannot be undone.
+                    {t('dashboard.flashcards.actionCannotBeUndone')}
                   </p>
                 </div>
                 
                 <div className="bg-amber-50 p-3 rounded-lg border border-amber-100">
                   <p className="text-amber-700 text-sm">
-                    All progress data associated with these flashcards will be permanently removed.
+                    {t('dashboard.flashcards.progressDataRemoved')}
                   </p>
                 </div>
               </div>
@@ -170,7 +177,7 @@ const DeleteProgressDialog: React.FC<DeleteProgressDialogProps> = ({
         
         {!isDeleting && onConfirm && (
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('dashboard.flashcards.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
@@ -179,7 +186,7 @@ const DeleteProgressDialog: React.FC<DeleteProgressDialogProps> = ({
               className="bg-red-600 hover:bg-red-700 text-white"
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              Delete {totalCards} flashcards
+              {t('dashboard.flashcards.deleteCountFlashcards', { count: totalCards.toString() })}
             </AlertDialogAction>
           </AlertDialogFooter>
         )}
@@ -188,7 +195,7 @@ const DeleteProgressDialog: React.FC<DeleteProgressDialogProps> = ({
           <AlertDialogFooter>
             <Button onClick={onClose} className="w-full bg-green-600 hover:bg-green-700 text-white">
               <Check className="h-4 w-4 mr-2" />
-              Done
+              {t('dashboard.flashcards.done')}
             </Button>
           </AlertDialogFooter>
         )}
