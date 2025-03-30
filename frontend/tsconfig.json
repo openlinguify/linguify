@@ -29,7 +29,7 @@
       "@services/*": ["./src/services/*"],
       "@components/*": ["./src/components/*"],
       "@shared/components/*": ["./src/shared/components/*"],
-
+      "@/i18n/*": ["./src/i18n/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/(dashboard)/(apps)/learning/_components/lesson-type"],

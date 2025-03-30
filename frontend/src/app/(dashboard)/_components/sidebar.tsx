@@ -1,6 +1,6 @@
-// src/app/(dashboard)/_components/sidebar.tsx
 "use client";
 
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -15,14 +15,15 @@ import {
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuthContext } from "@/services/AuthProvider";
+import { useTranslation } from "@/hooks/useTranslations";
 
 // Grouper les routes pour une meilleure organisation
 const routes = [
   {
-    label: "Main",
+    label: "main",
     routes: [
       {
-        label: "Dashboard",
+        label: "dashboard",
         icon: LayoutDashboard,
         href: "/",
         description: "Overview of your learning progress",
@@ -30,22 +31,22 @@ const routes = [
     ],
   },
   {
-    label: "Learning",
+    label: "learning",
     routes: [
       {
-        label: "Learning",
+        label: "learning",
         icon: BookOpen,
         href: "/learning",
         description: "Start your learning journey",
       },
       {
-        label: "Revision",
+        label: "revision",
         icon: BookMarked,
         href: "/revision",
         description: "Review your learned materials",
       },
       {
-        label: "Flashcard",
+        label: "flashcard",
         icon: Brain,
         href: "/flashcard",
         description: "Practice with flashcards",
@@ -53,16 +54,16 @@ const routes = [
     ],
   },
   {
-    label: "Tools",
+    label: "tools",
     routes: [
       {
-        label: "Notes",
+        label: "notes",
         icon: NotebookPen,
         href: "/notebook",
         description: "Your learning notes",
       },
       {
-        label: "Progress",
+        label: "progress",
         icon: BarChart,
         href: "/progress",
         description: "Track your progress",
@@ -70,10 +71,10 @@ const routes = [
     ],
   },
   {
-    label: "Settings",
+    label: "settings",
     routes: [
       {
-        label: "Settings",
+        label: "settings",
         icon: Settings,
         href: "/settings",
         description: "Customize your experience",
@@ -85,7 +86,28 @@ const routes = [
 export function Sidebar() {
   const pathname = usePathname();
   const { user, isAuthenticated } = useAuthContext();
+  const { t, locale, changeLanguage } = useTranslation();
 
+  // État pour forcer le re-rendu
+  const [, forceUpdate] = useState({});
+
+  // Écouteur d'événement pour le changement de langue
+  useEffect(() => {
+    // Fonction pour mettre à jour la sidebar quand la langue change
+    const handleLanguageChange = () => {
+      console.log("Language changed event detected in sidebar");
+      // Forcer un re-rendu
+      forceUpdate({});
+    };
+
+    // Écouter l'événement de changement de langue
+    window.addEventListener('languageChanged', handleLanguageChange);
+    
+    // Nettoyage
+    return () => {
+      window.removeEventListener('languageChanged', handleLanguageChange);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col h-full">
@@ -95,7 +117,7 @@ export function Sidebar() {
           {routes.map((group) => (
             <div key={group.label} className="space-y-2">
               <h2 className="px-4 text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-                {group.label}
+                {t(`sidebar.${group.label}`)}
               </h2>
               {group.routes.map((route) => (
                 <Link
@@ -118,7 +140,7 @@ export function Sidebar() {
                         : "text-muted-foreground group-hover:text-brand-purple"
                     )}
                   />
-                  {route.label}
+                  {t(`sidebar.${route.label}`)}
                 </Link>
               ))}
             </div>
@@ -150,7 +172,9 @@ export function Sidebar() {
                 
                 // Erase all cookies
                 document.cookie.split(";").forEach(function(c) {
-                  document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                  document.cookie = c
+                    .replace(/^ +/, "")
+                    .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
                 });
                 
                 // Logout Auth0 configuration
@@ -163,7 +187,7 @@ export function Sidebar() {
               }}
               className="p-2 text-xs text-red-500 hover:text-red-700 hover:bg-red-50 rounded"
             >
-              Déconnexion
+              {t('auth.logout')}
             </button>
           </div>
         </div>

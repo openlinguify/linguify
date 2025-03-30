@@ -1,4 +1,3 @@
-// src/app/%28dashboard%29/_components/header.tsx
 'use client';
 
 import React, { useState, useEffect } from "react";
@@ -34,6 +33,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
 import { useAuthContext } from "@/services/AuthProvider";
+import { useTranslation } from "@/hooks/useTranslations";
 
 const Header = () => {
   const router = useRouter();
@@ -41,6 +41,9 @@ const Header = () => {
   const { theme, setTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  
+  // Use Translation Hook
+  const { t, locale, changeLanguage } = useTranslation();
 
   // Use Auth Context
   const { user, isAuthenticated, login } = useAuthContext();
@@ -51,6 +54,8 @@ const Header = () => {
   }, []);
 
   const handleLanguageChange = (value: string) => {
+    console.log("Language changed to:", value);
+    changeLanguage(value as any);
     toast({
       title: "Language Changed",
       description: `Language set to ${value.toUpperCase()}`,
@@ -111,14 +116,10 @@ const Header = () => {
             className="flex items-center gap-2 hover:opacity-90 transition-all"
           >
             <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 bg-clip-text text-transparent">
-
               Linguify
             </span>
           </Link>      
         </div>
-
-
-
 
         {/* Right Side Actions */}
         <div className="flex items-center gap-4">
@@ -137,15 +138,15 @@ const Header = () => {
           </Button>
 
           {/* Language Selector */}
-          <Select onValueChange={handleLanguageChange} defaultValue="en">
+          <Select onValueChange={handleLanguageChange} defaultValue={locale}>
             <SelectTrigger className="w-32">
               <SelectValue placeholder="Language" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="en">English</SelectItem>
-              <SelectItem value="fr">French</SelectItem>
-              <SelectItem value="es">Spanish</SelectItem>
-              <SelectItem value="nl">Dutch</SelectItem>
+              <SelectItem value="fr">Français</SelectItem>
+              <SelectItem value="es">Español</SelectItem>
+              <SelectItem value="nl">Nederlands</SelectItem>
             </SelectContent>
           </Select>
 
@@ -199,16 +200,16 @@ const Header = () => {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => router.push('/learning')}>
                     <BookOpen className="h-4 w-4 mr-2" />
-                    My Learning
+                    {t('sidebar.learning')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => router.push('/settings')}>
                     <Settings className="h-4 w-4 mr-2" />
-                    Settings
+                    {t('sidebar.settings')}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                     <LogOut className="h-4 w-4 mr-2" />
-                    Déconnexion
+                    {t('auth.logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -219,13 +220,13 @@ const Header = () => {
                 variant="ghost"
                 onClick={handleLogin}
               >
-                Sign In
+                {t('auth.login')}
               </Button>
               <Button
                 className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
                 onClick={() => router.push('/register')}
               >
-                Get Started
+                {t('auth.register')}
               </Button>
             </div>
           )}
@@ -249,33 +250,28 @@ const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden border-t dark:border-gray-700">
           <div className="p-4 space-y-3">
-            <NavItemMobile href="/learning" icon={BookOpen} label="Learn" onClick={() => setIsMenuOpen(false)} />
-            <NavItemMobile href="/progress" icon={Trophy} label="Progress" onClick={() => setIsMenuOpen(false)} />
+            <NavItemMobile href="/learning" icon={BookOpen} label={t('sidebar.learning')} onClick={() => setIsMenuOpen(false)} />
+            <NavItemMobile href="/progress" icon={Trophy} label={t('sidebar.progress')} onClick={() => setIsMenuOpen(false)} />
 
             {isAuthenticated ? (
               <>
                 <NavItemMobile href="/profile" icon={User} label="Profile" onClick={() => setIsMenuOpen(false)} />
-                <NavItemMobile href="/settings" icon={Settings} label="Settings" onClick={() => setIsMenuOpen(false)} />
+                <NavItemMobile href="/settings" icon={Settings} label={t('sidebar.settings')} onClick={() => setIsMenuOpen(false)} />
                 <div className="pt-2">
                   <Button
                     variant="destructive"
                     className="w-full justify-start"
                     onClick={() => {
-                      // Déconnexion locale
                       localStorage.clear();
-
-                      // Effacer les cookies
                       document.cookie.split(";").forEach(function (c) {
                         document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
                       });
-
-                      // Redirection vers home
                       window.location.href = '/home';
                       setIsMenuOpen(false);
                     }}
                   >
                     <LogOut className="h-4 w-4 mr-2" />
-                    Logout
+                    {t('auth.logout')}
                   </Button>
                 </div>
               </>
@@ -287,7 +283,7 @@ const Header = () => {
                     setIsMenuOpen(false);
                   }}
                 >
-                  Sign In
+                  {t('auth.login')}
                 </Button>
                 <Button
                   className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
@@ -296,7 +292,7 @@ const Header = () => {
                     setIsMenuOpen(false);
                   }}
                 >
-                  Get Started
+                  {t('auth.register')}
                 </Button>
               </div>
             )}
@@ -306,7 +302,6 @@ const Header = () => {
     </header>
   );
 };
-
 
 const NavItemMobile = ({
   href,

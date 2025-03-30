@@ -5,10 +5,10 @@ import Link from 'next/link';
 import LanguageSwitcher from './LanguageSwitcher';
 
 // Import translations
-import enTranslations from '@/locales/en/footer.json';
-import esTranslations from '@/locales/es/footer.json';
-import frTranslations from '@/locales/fr/footer.json';
-import nlTranslations from '@/locales/nl/footer.json';
+import enTranslations from '@/i18n/en/footer.json';
+import esTranslations from '@/i18n/es/footer.json';
+import frTranslations from '@/i18n/fr/footer.json';
+import nlTranslations from '@/i18n/nl/footer.json';
 
 interface NavItem {
   name: string;
