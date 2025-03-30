@@ -1,0 +1,18 @@
+{
+    "sidebar": {
+        "main": "Hoofdmenu",
+        "dashboard": "Dashboard",
+        "learning": "Leren",
+        "revision": "Herhaling",
+        "flashcard": "Geheugenkaarten",
+        "tools": "Gereedschap",
+        "notes": "Notities",
+        "progress": "Voortgang",
+        "settings": "Instellingen"
+    },
+    "auth": {
+        "logout": "Uitloggen",
+        "login": "Inloggen",
+        "register": "Registreren"
+    }
+}

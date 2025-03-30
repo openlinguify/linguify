@@ -1,0 +1,24 @@
+{
+    "welcome": "Bienvenue, {name} !",
+    "targetLanguage": "Langue cible",
+    "learningCard": {
+      "title": "Apprentissage",
+      "description": "Accès à toutes les leçons"
+    },
+    "flashcardsCard": {
+      "title": "Cartes mémoire",
+      "description": "Entraînez-vous avec les cartes mémoire"
+    },
+    "notesCard": {
+      "title": "Notes",
+      "description": "Consultez vos notes"
+    },
+    "progressCard": {
+      "title": "Progrès",
+      "description": "Vérifiez vos accomplissements"
+    },
+    "learningLanguage": "Langue d'apprentissage",
+    "nativeLanguage": "Langue maternelle",
+    "currentLevel": "Niveau actuel",
+    "learningGoals": "Objectifs d'apprentissage"
+  }

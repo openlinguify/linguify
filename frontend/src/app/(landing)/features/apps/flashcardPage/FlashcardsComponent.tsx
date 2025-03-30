@@ -9,10 +9,10 @@ import { Button } from '@/components/ui/button';
 import LanguageSwitcher from '@/app/(landing)/_components/LanguageSwitcher';
 
 // Import translations
-import frTranslations from '@/locales/fr/common.json';
-import enTranslations from '@/locales/en/common.json';
-import esTranslations from '@/locales/es/common.json';
-import nlTranslations from '@/locales/nl/common.json';
+import frTranslations from '@/i18n/fr/common.json';
+import enTranslations from '@/i18n/en/common.json';
+import esTranslations from '@/i18n/es/common.json';
+import nlTranslations from '@/i18n/nl/common.json';
 
 // Type definitions
 type AvailableLocales = 'fr' | 'en' | 'es' | 'nl';

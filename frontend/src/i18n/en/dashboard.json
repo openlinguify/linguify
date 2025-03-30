@@ -1,0 +1,24 @@
+{
+    "welcome": "Welcome, {name}!",
+    "targetLanguage": "Target language",
+    "learningCard": {
+      "title": "Learning",
+      "description": "Access to all lessons"
+    },
+    "flashcardsCard": {
+      "title": "Flashcards",
+      "description": "Practice with flashcards"
+    },
+    "notesCard": {
+      "title": "Notes",
+      "description": "View your notes"
+    },
+    "progressCard": {
+      "title": "Progress",
+      "description": "Check your achievements"
+    },
+    "learningLanguage": "Learning language",
+    "nativeLanguage": "Native language",
+    "currentLevel": "Current level",
+    "learningGoals": "Learning goals"
+}

@@ -1,0 +1,24 @@
+{
+    "welcome": "Welkom, {name}!",
+    "targetLanguage": "Doeltaal",
+    "learningCard": {
+      "title": "Leren",
+      "description": "Toegang tot alle lessen"
+    },
+    "flashcardsCard": {
+      "title": "Flashcards",
+      "description": "Oefen met flashcards"
+    },
+    "notesCard": {
+      "title": "Notities",
+      "description": "Bekijk je notities"
+    },
+    "progressCard": {
+      "title": "Voortgang",
+      "description": "Bekijk je prestaties"
+    },
+    "learningLanguage": "Leertaal",
+    "nativeLanguage": "Moedertaal",
+    "currentLevel": "Huidig niveau",
+    "learningGoals": "Leerdoelen"
+}

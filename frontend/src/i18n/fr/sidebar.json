@@ -1,0 +1,18 @@
+{
+  "sidebar": {
+    "main": "Principal",
+    "dashboard": "Tableau de bord",
+    "learning": "Apprendre",
+    "revision": "Révision",
+    "flashcard": "Cartes mémoire",
+    "tools": "Outils",
+    "notes": "Notes",
+    "progress": "Progrès",
+    "settings": "Paramètres"
+  },
+  "auth": {
+    "logout": "Déconnexion",
+    "login": "Connexion",
+    "register": "S'inscrire"
+  }
+}
