@@ -12,6 +12,7 @@ import FlashcardDeckList from './FlashcardDeckList';
 import { revisionApi } from "@/services/revisionAPI";
 import type { FlashcardDeck } from "@/types/revision";
 import { useAuthContext } from '@/services/AuthProvider';
+import { useTranslation } from "@/hooks/useTranslations";
 
 const FlashcardMain = () => {
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
@@ -19,7 +20,7 @@ const FlashcardMain = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { user } = useAuthContext();
   const router = useRouter();
@@ -35,11 +36,11 @@ const FlashcardMain = () => {
       setFilteredDecks(fetchedDecks);
     } catch (error) {
       console.error('Error fetching decks:', error);
-      setLoadError("Failed to load your flashcard decks. Please try again.");
+      setLoadError(t('dashboard.flashcards.errorLoading'));
     } finally {
       setIsPageLoading(false);
     }
-  }, []);
+  }, [t]);
 
   // Search functionality
   useEffect(() => {
@@ -80,7 +81,7 @@ const FlashcardMain = () => {
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
           className="pl-10 bg-white"
-          placeholder="Search your decks..."
+          placeholder={t('dashboard.flashcards.searchPlaceholder')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -92,16 +93,15 @@ const FlashcardMain = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold text-transparent bg-clip-text">
-          {`${user?.name}'s Flashcard Decks`}
+          {t('dashboard.flashcards.userDecks', { name: user?.name || '' })}
         </h1>
-        <h1>Ce component est associé à FlashcardMain.tsx</h1>
         <Button
           variant="outline"
           onClick={handleRetry}
           disabled={isPageLoading}
         >
           <RefreshCcw className="h-4 w-4 mr-2" />
-          Refresh
+          {t('dashboard.flashcards.refresh')}
         </Button>
       </div>
 
@@ -111,7 +111,7 @@ const FlashcardMain = () => {
         <div className="flex justify-center items-center h-64">
           <div className="flex flex-col items-center">
             <Loader2 className="h-8 w-8 animate-spin mb-4 text-brand-purple" />
-            <p className="text-sm text-gray-500">Loading your flashcard decks...</p>
+            <p className="text-sm text-gray-500">{t('dashboard.flashcards.loading')}</p>
           </div>
         </div>
       ) : loadError ? (
@@ -122,7 +122,7 @@ const FlashcardMain = () => {
               onClick={handleRetry} 
               className="mt-4"
             >
-              <RefreshCcw className="mr-2 h-4 w-4" /> Try Again
+              <RefreshCcw className="mr-2 h-4 w-4" /> {t('dashboard.flashcards.tryAgain')}
             </Button>
           </CardContent>
         </Card>

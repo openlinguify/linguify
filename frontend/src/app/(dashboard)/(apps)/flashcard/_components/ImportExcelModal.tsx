@@ -1,3 +1,5 @@
+// src/app/(dashboard)/(apps)/flashcard/_components/ImportExcelModal.tsx
+'use client';
 import React, { useState, useRef, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,6 +40,7 @@ import {
 } from "@/components/ui/dialog";
 import { revisionApi } from "@/services/revisionAPI";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslations";
 
 interface ImportExcelModalProps {
   deckId: number;
@@ -58,6 +61,7 @@ export default function ImportExcelModal({
   onClose,
   onImportSuccess,
 }: ImportExcelModalProps) {
+  const { t } = useTranslation();
   // States
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -133,8 +137,8 @@ export default function ImportExcelModal({
         type = 'csv';
       } else {
         toast({
-          title: "Invalid format",
-          description: "Please select an Excel (.xlsx, .xls) or CSV (.csv) file",
+          title: t('dashboard.flashcards.excelImport.invalidFormat'),
+          description: t('dashboard.flashcards.excelImport.invalidFormatDesc'),
           variant: "destructive",
         });
         return;
@@ -184,19 +188,19 @@ export default function ImportExcelModal({
         setStep('map');
         setLastValidStep('map');
       } else {
-        setError("No valid columns detected in the file.");
+        setError(t('dashboard.flashcards.excelImport.noColumnsDesc'));
         toast({
-          title: "Invalid file structure",
-          description: "No columns detected in the file. Please check your file format.",
+          title: t('dashboard.flashcards.excelImport.invalidFileStructure'),
+          description: t('dashboard.flashcards.excelImport.noColumnsDesc'),
           variant: "destructive",
         });
       }
       
     } catch (error: any) {
-      setError(error.message || "An error occurred during file analysis");
+      setError(error.message || t('dashboard.flashcards.excelImport.analysisError'));
       toast({
-        title: "Analysis error",
-        description: error.message || "An error occurred during file analysis",
+        title: t('dashboard.flashcards.excelImport.analysisError'),
+        description: error.message || t('dashboard.flashcards.excelImport.analysisError'),
         variant: "destructive",
       });
     } finally {
@@ -262,8 +266,11 @@ export default function ImportExcelModal({
       setProgress(100);
       
       toast({
-        title: "Import successful",
-        description: `${result.created} cards imported successfully.${result.failed > 0 ? ` ${result.failed} imports failed.` : ''}`,
+        title: t('dashboard.flashcards.excelImport.importSuccess'),
+        description: t('dashboard.flashcards.excelImport.importCreated', { 
+          created: String(result.created),
+          failed: String(result.failed)
+        }),
       });
 
       // Notify parent component
@@ -281,10 +288,10 @@ export default function ImportExcelModal({
       }, 2000);
       
     } catch (error: any) {
-      setError(error.message || "An error occurred during import");
+      setError(error.message || t('dashboard.flashcards.excelImport.analysisError'));
       toast({
-        title: "Import error",
-        description: error.message || "An error occurred during import",
+        title: t('dashboard.flashcards.excelImport.errorTitle'),
+        description: error.message || t('dashboard.flashcards.excelImport.analysisError'),
         variant: "destructive",
       });
     } finally {
@@ -340,7 +347,7 @@ export default function ImportExcelModal({
       <div className="flex items-center space-x-2 overflow-x-auto py-2 w-full">
         <StepBadge 
           number={1} 
-          label="File" 
+          label={t('dashboard.flashcards.excelImport.fileLabel')} 
           active={step === 'upload'} 
           completed={lastValidStep !== 'upload'} 
           onClick={() => {
@@ -352,7 +359,7 @@ export default function ImportExcelModal({
         <ArrowRightIcon size={12} className="text-white/70" />
         <StepBadge 
           number={2} 
-          label="Mapping" 
+          label={t('dashboard.flashcards.excelImport.mappingLabel')} 
           active={step === 'map'} 
           completed={lastValidStep === 'preview' || lastValidStep === 'import'} 
           onClick={() => {
@@ -364,7 +371,7 @@ export default function ImportExcelModal({
         <ArrowRightIcon size={12} className="text-white/70" />
         <StepBadge 
           number={3} 
-          label="Preview" 
+          label={t('dashboard.flashcards.excelImport.previewLabel')} 
           active={step === 'preview'} 
           completed={lastValidStep === 'import'} 
           onClick={() => {
@@ -376,7 +383,7 @@ export default function ImportExcelModal({
         <ArrowRightIcon size={12} className="text-white/70" />
         <StepBadge 
           number={4} 
-          label="Import" 
+          label={t('dashboard.flashcards.excelImport.importLabel')} 
           active={step === 'import'} 
           completed={false}
         />
@@ -428,7 +435,7 @@ export default function ImportExcelModal({
           <AlertTriangle className="h-5 w-5 text-red-400" aria-hidden="true" />
         </div>
         <div className="ml-3">
-          <h3 className="text-sm font-medium text-red-800">Import Error</h3>
+          <h3 className="text-sm font-medium text-red-800">{t('dashboard.flashcards.excelImport.errorTitle')}</h3>
           <div className="mt-2 text-sm text-red-700">
             <p>{message}</p>
           </div>
@@ -454,10 +461,10 @@ export default function ImportExcelModal({
                     {getStepTitle()}
                   </CardTitle>
                   <CardDescription>
-                    {step === 'upload' && "Select an Excel or CSV file containing your flashcards"}
-                    {step === 'map' && "Define which columns to use for the front and back of the cards"}
-                    {step === 'preview' && "Check the data before final import"}
-                    {step === 'import' && "Import completed!"}
+                    {step === 'upload' && t('dashboard.flashcards.excelImport.descUpload')}
+                    {step === 'map' && t('dashboard.flashcards.excelImport.descMap')}
+                    {step === 'preview' && t('dashboard.flashcards.excelImport.descPreview')}
+                    {step === 'import' && t('dashboard.flashcards.excelImport.descImport')}
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
@@ -469,7 +476,7 @@ export default function ImportExcelModal({
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
-                        <p>The file must contain at least 2 columns. You'll be able to specify which column to use for the front and back of the cards.</p>
+                        <p>{t('dashboard.flashcards.excelImport.tooltipHelp')}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -514,11 +521,14 @@ export default function ImportExcelModal({
                         </div>
                         <p className="text-lg font-medium bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-pink-500">{selectedFile.name}</p>
                         <p className="text-sm text-gray-500 mt-1">
-                          {(selectedFile.size / 1024).toFixed(1)} KB • {
-                            fileType === 'xlsx' ? 'Excel File' : 
-                            fileType === 'csv' ? 'CSV File' : 
-                            'Supported File'
-                          }
+                          {t('dashboard.flashcards.excelImport.fileStats', {
+                            size: (selectedFile.size / 1024).toFixed(1),
+                            type: fileType === 'xlsx' 
+                              ? t('dashboard.flashcards.excelImport.excelType')
+                              : fileType === 'csv' 
+                                ? t('dashboard.flashcards.excelImport.csvType')
+                                : t('dashboard.flashcards.excelImport.supportedType')
+                          })}
                         </p>
                         <div className="flex mt-4 space-x-2">
                           <Button 
@@ -529,7 +539,7 @@ export default function ImportExcelModal({
                             className="text-sm"
                           >
                             <X className="h-3 w-3 mr-1" />
-                            Change file
+                            {t('dashboard.flashcards.excelImport.changeFile')}
                           </Button>
                           <Button 
                             variant="default"
@@ -541,11 +551,11 @@ export default function ImportExcelModal({
                             {isUploading ? (
                               <>
                                 <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                                Analyzing...
+                                {t('dashboard.flashcards.excelImport.analyzing')}
                               </>
                             ) : (
                               <>
-                                Analyze file
+                                {t('dashboard.flashcards.excelImport.analyzeBtn')}
                                 <ArrowRight className="ml-2 h-3 w-3" />
                               </>
                             )}
@@ -558,14 +568,16 @@ export default function ImportExcelModal({
                           <Upload className="h-8 w-8" />
                         </div>
                         <h3 className="text-lg font-medium mb-2">
-                          {dragActive ? "Drop your file here" : "Drag and drop or"}
+                          {dragActive 
+                            ? t('dashboard.flashcards.excelImport.dragActive') 
+                            : t('dashboard.flashcards.excelImport.dragInactive')}
                         </h3>
                         <Button 
                           onClick={() => fileInputRef.current?.click()}
                           className="bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 text-white"
                         >
                           <File className="mr-2 h-4 w-4" />
-                          Select a file
+                          {t('dashboard.flashcards.excelImport.selectFile')}
                         </Button>
                         <input
                           ref={fileInputRef}
@@ -576,7 +588,7 @@ export default function ImportExcelModal({
                           disabled={isUploading}
                         />
                         <p className="text-sm text-gray-500 mt-4">
-                          Supported formats: Excel (.xlsx, .xls) or CSV (.csv)
+                          {t('dashboard.flashcards.excelImport.supportedFormats')}
                         </p>
                       </div>
                     )}
@@ -590,10 +602,10 @@ export default function ImportExcelModal({
                     />
                     <div>
                       <Label htmlFor="has-header" className="font-medium">
-                        First row contains column headers
+                        {t('dashboard.flashcards.excelImport.hasHeaderLabel')}
                       </Label>
                       <p className="text-sm text-gray-500">
-                        Check this box if your file contains a header row (which won't be imported)
+                        {t('dashboard.flashcards.excelImport.hasHeaderDesc')}
                       </p>
                     </div>
                   </div>
@@ -608,11 +620,11 @@ export default function ImportExcelModal({
                         {isUploading ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Analysis in progress...
+                            {t('dashboard.flashcards.excelImport.analyzing')}
                           </>
                         ) : (
                           <>
-                            Analyze and continue
+                            {t('dashboard.flashcards.excelImport.analyzeContinue')}
                             <ArrowRight className="ml-2 h-4 w-4" />
                           </>
                         )}
@@ -628,14 +640,14 @@ export default function ImportExcelModal({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <Label htmlFor="front-column" className="text-base font-medium mb-2 block">
-                        Column for front side
+                        {t('dashboard.flashcards.excelImport.frontColumnLabel')}
                       </Label>
                       <Select 
                         value={columnMapping.frontColumn} 
                         onValueChange={(value) => setColumnMapping({...columnMapping, frontColumn: value})}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a column" />
+                          <SelectValue placeholder={t('dashboard.flashcards.excelImport.selectColumn')} />
                         </SelectTrigger>
                         <SelectContent>
                           {columns.map((col) => (
@@ -644,19 +656,19 @@ export default function ImportExcelModal({
                         </SelectContent>
                       </Select>
                       <p className="text-sm text-gray-500 mt-1">
-                        This column will be used for the front of the cards (question)
+                        {t('dashboard.flashcards.excelImport.frontColumnDesc')}
                       </p>
                     </div>
                     <div>
                       <Label htmlFor="back-column" className="text-base font-medium mb-2 block">
-                        Column for back side
+                        {t('dashboard.flashcards.excelImport.backColumnLabel')}
                       </Label>
                       <Select 
                         value={columnMapping.backColumn} 
                         onValueChange={(value) => setColumnMapping({...columnMapping, backColumn: value})}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a column" />
+                          <SelectValue placeholder={t('dashboard.flashcards.excelImport.selectColumn')} />
                         </SelectTrigger>
                         <SelectContent>
                           {columns.map((col) => (
@@ -665,7 +677,7 @@ export default function ImportExcelModal({
                         </SelectContent>
                       </Select>
                       <p className="text-sm text-gray-500 mt-1">
-                        This column will be used for the back of the cards (answer)
+                        {t('dashboard.flashcards.excelImport.backColumnDesc')}
                       </p>
                     </div>
                   </div>
@@ -679,10 +691,14 @@ export default function ImportExcelModal({
                             <TableHead key={col}>
                               {col}
                               {col === columnMapping.frontColumn && (
-                                <Badge variant="outline" className="ml-2 bg-indigo-100 text-indigo-800 border-indigo-300">Front</Badge>
+                                <Badge variant="outline" className="ml-2 bg-indigo-100 text-indigo-800 border-indigo-300">
+                                  {t('dashboard.flashcards.excelImport.frontBadge')}
+                                </Badge>
                               )}
                               {col === columnMapping.backColumn && (
-                                <Badge variant="outline" className="ml-2 bg-purple-100 text-purple-800 border-purple-300">Back</Badge>
+                                <Badge variant="outline" className="ml-2 bg-purple-100 text-purple-800 border-purple-300">
+                                  {t('dashboard.flashcards.excelImport.backBadge')}
+                                </Badge>
                               )}
                             </TableHead>
                           ))}
@@ -713,11 +729,10 @@ export default function ImportExcelModal({
                     </div>
                     <div>
                       <h4 className="text-sm font-medium text-indigo-800">
-                        How mapping works
+                        {t('dashboard.flashcards.excelImport.howMappingWorks')}
                       </h4>
                       <p className="text-sm mt-1 text-indigo-700">
-                        Select the columns that contain the front (question) and back (answer) of your cards.
-                        The preview above shows how your data will be interpreted.
+                        {t('dashboard.flashcards.excelImport.mappingDesc')}
                       </p>
                     </div>
                   </div>
@@ -732,11 +747,11 @@ export default function ImportExcelModal({
                       {isUploading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Generating...
+                          {t('dashboard.flashcards.excelImport.generating')}
                         </>
                       ) : (
                         <>
-                          Generate preview
+                          {t('dashboard.flashcards.excelImport.generatePreview')}
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </>
                       )}
@@ -744,7 +759,7 @@ export default function ImportExcelModal({
                     
                     {columnMapping.frontColumn === columnMapping.backColumn && columnMapping.frontColumn !== '' && (
                       <p className="text-sm text-red-500 mt-2">
-                        Front and back columns must be different
+                        {t('dashboard.flashcards.excelImport.columnsMustDiffer')}
                       </p>
                     )}
                   </div>
@@ -762,14 +777,19 @@ export default function ImportExcelModal({
                           <FileSpreadsheet className="h-6 w-6" />
                         </div>
                         <div>
-                          <h3 className="font-bold text-lg">{validCardsCount} Cards Ready to Import</h3>
+                            <h3 className="font-bold text-lg">
+                            {t('dashboard.flashcards.excelImport.cardsReadyToImport', { count: String(validCardsCount) })}
+                            </h3>
                           <p className="text-white/80 text-sm">
-                            {totalRows} total rows • {invalidRows.length} invalid rows
+                            {t('dashboard.flashcards.excelImport.totalRowsStats', { 
+                              total: String(totalRows), 
+                              invalid: String(invalidRows.length) 
+                            })}
                           </p>
                         </div>
                       </div>
                       <Badge className="bg-white text-indigo-700 px-3 py-1.5">
-                        Preview
+                        {t('dashboard.flashcards.excelImport.previewBadge')}
                       </Badge>
                     </div>
                   </div>
@@ -779,9 +799,9 @@ export default function ImportExcelModal({
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-12">#</TableHead>
-                          <TableHead>Front</TableHead>
-                          <TableHead>Back</TableHead>
-                          <TableHead className="w-16">Status</TableHead>
+                          <TableHead>{t('dashboard.flashcards.excelImport.frontBadge')}</TableHead>
+                          <TableHead>{t('dashboard.flashcards.excelImport.backBadge')}</TableHead>
+                          <TableHead className="w-16">{t('dashboard.flashcards.excelImport.statusColumn')}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -794,12 +814,12 @@ export default function ImportExcelModal({
                               {invalidRows.includes(index) ? (
                                 <Badge variant="destructive" className="flex items-center">
                                   <X className="h-3 w-3 mr-1" />
-                                  Invalid
+                                  {t('dashboard.flashcards.excelImport.invalidBadge')}
                                 </Badge>
                               ) : (
                                 <Badge variant="outline" className="bg-green-50 flex items-center text-green-700 border-green-300">
                                   <Check className="h-3 w-3 mr-1" />
-                                  Valid
+                                  {t('dashboard.flashcards.excelImport.validBadge')}
                                 </Badge>
                               )}
                             </TableCell>
@@ -817,11 +837,10 @@ export default function ImportExcelModal({
                       </div>
                       <div>
                         <h4 className="text-sm font-medium text-red-800">
-                          {invalidRows.length} invalid rows detected
+                          {t('dashboard.flashcards.excelImport.invalidRowsAlert', { count: String(invalidRows.length) })}
                         </h4>
                         <p className="text-sm mt-1 text-red-700">
-                          These rows will not be imported because they don't contain valid data for the front or back.
-                          Check that your mapping is correct or modify your source file.
+                          {t('dashboard.flashcards.excelImport.invalidRowsDesc')}
                         </p>
                       </div>
                     </div>
@@ -834,10 +853,10 @@ export default function ImportExcelModal({
                     </div>
                     <div>
                       <h4 className="text-sm font-medium text-indigo-800">
-                        {validCardsCount} cards ready to import
+                        {t('dashboard.flashcards.excelImport.readyToImport', { count: String(validCardsCount) })}
                       </h4>
                       <p className="text-sm mt-1 text-indigo-700">
-                        These cards will be added to your deck. Click "Import" to confirm.
+                        {t('dashboard.flashcards.excelImport.readyToImportDesc')}
                       </p>
                     </div>
                   </div>
@@ -852,12 +871,12 @@ export default function ImportExcelModal({
                       {isUploading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Importing...
+                          {t('dashboard.flashcards.excelImport.importing')}
                         </>
                       ) : (
                         <>
                           <Save className="mr-2 h-4 w-4" />
-                          Import {validCardsCount} cards
+                          {t('dashboard.flashcards.excelImport.importBtn', { count: String(validCardsCount) })}
                         </>
                       )}
                     </Button>
@@ -872,10 +891,10 @@ export default function ImportExcelModal({
                     <Check className="h-12 w-12 text-white" />
                   </div>
                   <h3 className="text-xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-pink-500">
-                    Import completed successfully!
+                    {t('dashboard.flashcards.excelImport.successTitle')}
                   </h3>
                   <p className="text-gray-600">
-                    Your cards have been added to your deck and are ready to use.
+                    {t('dashboard.flashcards.excelImport.successDesc')}
                   </p>
                   <div className="pt-4">
                     <Button 
@@ -883,7 +902,7 @@ export default function ImportExcelModal({
                       className="px-8 bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 text-white"
                     >
                       <Home className="mr-2 h-4 w-4" />
-                      Finish
+                      {t('dashboard.flashcards.excelImport.finishBtn')}
                     </Button>
                   </div>
                 </div>
@@ -916,7 +935,7 @@ export default function ImportExcelModal({
                       className="border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
                     >
                       <ArrowLeftIcon className="h-4 w-4 mr-2" />
-                      Back
+                      {t('dashboard.flashcards.excelImport.backBtn')}
                     </Button>
                   )}
                 </div>
@@ -928,7 +947,7 @@ export default function ImportExcelModal({
                     disabled={isUploading}
                     className="border-pink-200 hover:bg-pink-50 hover:text-pink-700"
                   >
-                    Cancel
+                    {t('dashboard.flashcards.excelImport.cancelBtn')}
                   </Button>
                 </div>
               </CardFooter>
@@ -943,10 +962,10 @@ export default function ImportExcelModal({
           <div className="bg-white rounded-xl overflow-hidden">
             <DialogHeader className="pt-6 px-6">
               <DialogTitle className="text-xl bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-pink-500">
-                Abandon import?
+                {t('dashboard.flashcards.excelImport.abandonTitle')}
               </DialogTitle>
               <DialogDescription>
-                You have unsaved changes. If you leave now, your changes will be lost.
+                {t('dashboard.flashcards.excelImport.abandonDesc')}
               </DialogDescription>
             </DialogHeader>
             <div className="flex justify-end space-x-2 p-6">
@@ -955,7 +974,7 @@ export default function ImportExcelModal({
                 onClick={() => setShowCancelDialog(false)}
                 className="border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
               >
-                Continue importing
+                {t('dashboard.flashcards.excelImport.continueImportingBtn')}
               </Button>
               <Button 
                 variant="destructive" 
@@ -969,7 +988,7 @@ export default function ImportExcelModal({
                 }}
                 className="bg-pink-500 hover:bg-pink-600"
               >
-                Abandon
+                {t('dashboard.flashcards.excelImport.abandonBtn')}
               </Button>
             </div>
           </div>
@@ -981,21 +1000,21 @@ export default function ImportExcelModal({
   // Utility functions
   function getStepTitle() {
     switch(step) {
-      case 'upload': return "Import flashcards";
-      case 'map': return "Map columns";
-      case 'preview': return "Preview data";
-      case 'import': return "Import successful";
-      default: return "Import flashcards";
+      case 'upload': return t('dashboard.flashcards.excelImport.title');
+      case 'map': return t('dashboard.flashcards.excelImport.mapColumns');
+      case 'preview': return t('dashboard.flashcards.excelImport.previewData');
+      case 'import': return t('dashboard.flashcards.excelImport.importSuccessful');
+      default: return t('dashboard.flashcards.excelImport.title');
     }
   }
 
   function getProgressLabel() {
     switch(step) {
-      case 'upload': return "Analyzing file...";
-      case 'map': return "Processing data...";
-      case 'preview': return "Preparing preview...";
-      case 'import': return "Importing...";
-      default: return "Processing...";
+      case 'upload': return t('dashboard.flashcards.excelImport.analyzingFileProgress');
+      case 'map': return t('dashboard.flashcards.excelImport.processingDataProgress');
+      case 'preview': return t('dashboard.flashcards.excelImport.preparingPreviewProgress');
+      case 'import': return t('dashboard.flashcards.excelImport.importingProgress');
+      default: return t('dashboard.flashcards.excelImport.processingLabel');
     }
   }
 }

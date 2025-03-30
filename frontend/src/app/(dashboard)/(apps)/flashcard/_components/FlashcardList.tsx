@@ -59,6 +59,7 @@ import type { Flashcard, FlashcardDeck } from "@/types/revision";
 import EditCardModal from "./EditCardModal";
 import ImportExcelModal from "./ImportExcelModal";
 import DeleteProgressDialog from './DeleteProgressDialog';
+import { useTranslation } from "@/hooks/useTranslations";
 
 // Type definitions
 interface FlashcardListProps {
@@ -97,6 +98,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
   onCardUpdate
 }) => {
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   // ======= State ======= 
   // Filtering and display
@@ -157,15 +159,15 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       } catch (error) {
         console.error("Error fetching deck details:", error);
         toast({
-          title: "Error",
-          description: "Failed to load deck information. Please refresh the page.",
+          title: t('dashboard.flashcards.errorTitle'),
+          description: t('dashboard.flashcards.errorLoadingDeck'),
           variant: "destructive"
         });
       }
     };
 
     fetchDeckDetails();
-  }, [deckId, toast]);
+  }, [deckId, toast, t]);
 
   // Apply filtering and sorting to cards
   useEffect(() => {
@@ -329,20 +331,20 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       setIsAllCardsSelected(true);
 
       toast({
-        title: "Success",
-        description: `${allCardIds.length} cards selected.`,
+        title: t('dashboard.flashcards.successTitle'),
+        description: t('dashboard.flashcards.allCardsSelected', { count: allCardIds.length.toString() }),
       });
     } catch (error) {
       console.error("Error selecting all cards:", error);
       toast({
-        title: "Error",
-        description: "Unable to select all cards.",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.errorSelectingAll'),
         variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
-  }, [deckId, toast]);
+  }, [deckId, toast, t]);
 
   // Card Management Handlers
   const handleCreateCard = useCallback(async (cardData: Partial<Flashcard>) => {
@@ -357,8 +359,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       setIsAddingCard(false);
 
       toast({
-        title: "Success",
-        description: "Card created successfully"
+        title: t('dashboard.flashcards.successTitle'),
+        description: t('dashboard.flashcards.createSuccess')
       });
 
       // Refresh the card list
@@ -366,14 +368,14 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
     } catch (error: any) {
       console.error("Error creating card:", error);
       toast({
-        title: "Error",
-        description: error.message || "Failed to create card",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: error.message || t('dashboard.flashcards.createError'),
         variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
-  }, [deckId, onCardUpdate, toast]);
+  }, [deckId, onCardUpdate, toast, t]);
 
   const handleUpdateCard = useCallback(async (cardData: Partial<Flashcard>) => {
     if (!editingCard) return;
@@ -385,22 +387,22 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       setEditingCard(null);
 
       toast({
-        title: "Success",
-        description: "Card updated successfully"
+        title: t('dashboard.flashcards.successTitle'),
+        description: t('dashboard.flashcards.updateSuccess')
       });
 
       // Refresh the card list
       await onCardUpdate();
     } catch (err) {
       toast({
-        title: "Error",
-        description: "Failed to update card",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.updateError'),
         variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
-  }, [editingCard, onCardUpdate, toast]);
+  }, [editingCard, onCardUpdate, toast, t]);
 
   const handleCardStatusUpdate = useCallback(async (cardId: number, learned: boolean) => {
     try {
@@ -408,24 +410,24 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       await revisionApi.flashcards.toggleLearned(cardId, learned);
 
       toast({
-        title: "Success",
+        title: t('dashboard.flashcards.successTitle'),
         description: learned
-          ? "Card marked as learned"
-          : "Card marked for review",
+          ? t('dashboard.flashcards.markedKnown')
+          : t('dashboard.flashcards.markedReview'),
       });
 
       // Refresh the card list
       await onCardUpdate();
     } catch (err) {
       toast({
-        title: "Error",
-        description: "Failed to update card status",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.updateStatusError'),
         variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
-  }, [onCardUpdate, toast]);
+  }, [onCardUpdate, toast, t]);
 
   // Bulk Actions
   const handleBulkStatusUpdate = useCallback(async (learned: boolean) => {
@@ -455,8 +457,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       }
       
       toast({
-        title: "Success",
-        description: `${successCount} cards ${learned ? "marked as learned" : "marked for review"}`,
+        title: t('dashboard.flashcards.successTitle'),
+        description: t(learned ? 'dashboard.flashcards.bulkMarkedKnown' : 'dashboard.flashcards.bulkMarkedReview', { count: successCount.toString() }),
       });
       
       // Refresh the card list
@@ -464,17 +466,16 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to update cards status",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.bulkUpdateError'),
         variant: "destructive"
       });
     } finally {
       setSelectedCards([]);
       setIsLoading(false);
     }
-  }, [selectedCards, onCardUpdate, toast]);
+  }, [selectedCards, onCardUpdate, toast, t]);
 
-  // Deletion Handlers
   // Deletion Handlers
   const confirmDelete = useCallback(() => {
     if (selectedCards.length > 0) {
@@ -500,9 +501,6 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
   
     try {
       console.log("Starting deletion process", { count: selectedCards.length });
-      
-      // Close confirmation dialog first
-      //setIsDeleteDialogOpen(false);
       
       // Set initial progress and reopen dialog in progress mode
       setDeleteProgress(5);
@@ -610,10 +608,10 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       
       // Show success message
       toast({
-        title: "Success",
+        title: t('dashboard.flashcards.successTitle'),
         description: failed > 0 
-          ? `${processed} card(s) deleted (${failed} failed)` 
-          : `${processed} card(s) deleted successfully`,
+          ? t('dashboard.flashcards.partialDeleteSuccess', { success: processed.toString(), fail: failed.toString() })
+          : t('dashboard.flashcards.deleteCardsSuccess', { count: processed.toString() }),
         variant: "default",
       });
   
@@ -624,8 +622,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       console.error("Error deleting cards:", error);
       
       toast({
-        title: "Error",
-        description: "Failed to delete cards",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.deleteError'),
         variant: "destructive"
       });
   
@@ -638,19 +636,23 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       setIsLoading(false);
       // Dialog is closed by the user through closeDeleteDialog
     }
-  }, [selectedCards, onCardUpdate, toast]);
+  }, [selectedCards, onCardUpdate, toast, t]);
 
   // Export Handlers
   const handleExportCSV = useCallback(() => {
     // Prepare CSV data
     const csvContent = [
-      ['Front', 'Back', 'Status', 'Reviews', 'Last Reviewed'],
+      [t('dashboard.flashcards.front'), t('dashboard.flashcards.back'), t('dashboard.flashcards.status'), t('dashboard.flashcards.reviews'), t('dashboard.flashcards.lastReviewed')],
       ...allFilteredCards.map(card => [
         card.front_text.replace(/"/g, '""'),
         card.back_text.replace(/"/g, '""'),
-        card.learned ? 'Learned' : card.review_count > 0 ? 'To Review' : 'New',
+        card.learned 
+          ? t('dashboard.flashcards.filter.known') 
+          : card.review_count > 0 
+            ? t('dashboard.flashcards.filter.toReview') 
+            : t('dashboard.flashcards.filter.new'),
         card.review_count || 0,
-        card.last_reviewed ? new Date(card.last_reviewed).toLocaleDateString() : 'Never'
+        card.last_reviewed ? new Date(card.last_reviewed).toLocaleDateString() : t('dashboard.flashcards.never')
       ])
     ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
 
@@ -668,10 +670,10 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
     document.body.removeChild(link);
     
     toast({
-      title: "Export Complete",
-      description: `${allFilteredCards.length} cards exported to CSV`
+      title: t('dashboard.flashcards.exportComplete'),
+      description: t('dashboard.flashcards.exportSuccess', { count: allFilteredCards.length.toString() })
     });
-  }, [allFilteredCards, deck]);
+  }, [allFilteredCards, deck, t]);
 
   // ======= Render Helpers =======
   const renderTableHead = () => (
@@ -685,12 +687,12 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
               onCheckedChange={handleToggleSelectAll}
               aria-label={
                 bulkSelectMode 
-                  ? (isAllCardsSelected ? "Deselect all cards" : "Select all cards") 
-                  : (isCurrentPageSelected ? "Deselect all cards on this page" : "Select all cards on this page")
+                  ? (isAllCardsSelected ? t('dashboard.flashcards.deselectAll') : t('dashboard.flashcards.selectAll')) 
+                  : (isCurrentPageSelected ? t('dashboard.flashcards.deselectCurrentPage') : t('dashboard.flashcards.selectCurrentPage'))
               }
             />
             {bulkSelectMode && (
-              <span className="ml-2 text-xs text-purple-600">Bulk</span>
+              <span className="ml-2 text-xs text-purple-600">{t('dashboard.flashcards.bulk')}</span>
             )}
           </div>
         </TableHead>
@@ -699,7 +701,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
           onClick={() => handleSort('front_text')}
         >
           <div className="flex items-center">
-            Front
+            {t('dashboard.flashcards.front')}
             {sortConfig.key === 'front_text' && (
               sortConfig.direction === 'asc' 
                 ? <SortAsc className="ml-1 h-4 w-4" /> 
@@ -712,7 +714,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
           onClick={() => handleSort('back_text')}
         >
           <div className="flex items-center">
-            Back
+            {t('dashboard.flashcards.back')}
             {sortConfig.key === 'back_text' && (
               sortConfig.direction === 'asc' 
                 ? <SortAsc className="ml-1 h-4 w-4" /> 
@@ -725,7 +727,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
           onClick={() => handleSort('learned')}
         >
           <div className="flex items-center">
-            Status
+            {t('dashboard.flashcards.status')}
             {sortConfig.key === 'learned' && (
               sortConfig.direction === 'asc' 
                 ? <SortAsc className="ml-1 h-4 w-4" /> 
@@ -738,7 +740,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
           onClick={() => handleSort('review_count')}
         >
           <div className="flex items-center">
-            Reviews
+            {t('dashboard.flashcards.reviews')}
             {sortConfig.key === 'review_count' && (
               sortConfig.direction === 'asc' 
                 ? <SortAsc className="ml-1 h-4 w-4" /> 
@@ -746,7 +748,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
             )}
           </div>
         </TableHead>
-        <TableHead className="w-[100px] text-right">Actions</TableHead>
+        <TableHead className="w-[100px] text-right">{t('dashboard.flashcards.actions')}</TableHead>
       </TableRow>
     </TableHeader>
   );
@@ -757,7 +759,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
         <Checkbox
           checked={selectedCards.includes(card.id)}
           onCheckedChange={() => handleToggleSelect(card.id)}
-          aria-label={`Select card ${card.front_text}`}
+          aria-label={t('dashboard.flashcards.selectCard', { card: card.front_text })}
         />
       </TableCell>
       <TableCell className="font-medium">{card.front_text}</TableCell>
@@ -765,15 +767,15 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       <TableCell>
         {card.learned ? (
           <Badge variant="outline" className="bg-green-50 text-green-700">
-            <Check className="h-3 w-3 mr-1" /> Learned
+            <Check className="h-3 w-3 mr-1" /> {t('dashboard.flashcards.filter.known')}
           </Badge>
         ) : card.review_count > 0 ? (
           <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
-            <Clock className="h-3 w-3 mr-1" /> To Review
+            <Clock className="h-3 w-3 mr-1" /> {t('dashboard.flashcards.filter.toReview')}
           </Badge>
         ) : (
           <Badge variant="outline" className="bg-blue-50 text-blue-700">
-            <Layers className="h-3 w-3 mr-1" /> New
+            <Layers className="h-3 w-3 mr-1" /> {t('dashboard.flashcards.filter.new')}
           </Badge>
         )}
       </TableCell>
@@ -781,7 +783,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
         {card.review_count || 0}
         {card.last_reviewed && (
           <span className="text-xs text-gray-500 block">
-            Last: {new Date(card.last_reviewed).toLocaleDateString()}
+            {t('dashboard.flashcards.lastReviewedShort')}: {new Date(card.last_reviewed).toLocaleDateString()}
           </span>
         )}
       </TableCell>
@@ -790,7 +792,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
           variant="ghost"
           size="icon"
           onClick={() => setEditingCard(card)}
-          aria-label="Edit card"
+          aria-label={t('dashboard.flashcards.editCard')}
         >
           <Edit className="h-4 w-4" />
         </Button>
@@ -798,8 +800,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
           variant="ghost"
           size="icon"
           onClick={() => handleCardStatusUpdate(card.id, !card.learned)}
-          aria-label={card.learned ? "Mark for review" : "Mark as learned"}
-          title={card.learned ? "Mark for review" : "Mark as learned"}
+          aria-label={card.learned ? t('dashboard.flashcards.markForReview') : t('dashboard.flashcards.markAsLearned')}
+          title={card.learned ? t('dashboard.flashcards.markForReview') : t('dashboard.flashcards.markAsLearned')}
         >
           {card.learned ? (
             <RefreshCw className="h-4 w-4 text-yellow-600" />
@@ -817,406 +819,408 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
         {isLoading ? (
           <div className="flex justify-center items-center">
             <LoaderCircle className="animate-spin h-8 w-8 text-brand-purple" />
-            <span className="ml-2">Loading cards...</span>
+            <span className="ml-2">{t('dashboard.flashcards.loadingCards')}</span>
           </div>
-        ) : searchQuery ? (
-          <div className="flex flex-col items-center">
-            <Search className="h-12 w-12 text-gray-300 mb-3" />
-            <p className="text-gray-500 mb-2">No cards match your search "{searchQuery}"</p>
-            <Button
-              variant="link"
-              onClick={() => setSearchQuery("")}
-            >
-              Clear search
-            </Button>
-          </div>
-        ) : activeFilter !== 'all' ? (
-          <div className="flex flex-col items-center">
-            <HelpCircle className="h-12 w-12 text-gray-300 mb-3" />
-            <p className="text-gray-500 mb-2">No cards in this category</p>
-            <Button
-              variant="link"
-              onClick={() => setActiveFilter('all')}
-            >
-              Show all cards
-            </Button>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center">
-            <PlusCircle className="h-12 w-12 text-gray-300 mb-3" />
-            <p className="text-gray-500 mb-2">No cards in this deck yet</p>
-            <Button
-              onClick={() => setIsAddingCard(true)}
-              className="bg-brand-purple hover:bg-brand-purple-dark mt-2"
-            >
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Add Your First Card
-            </Button>
-          </div>
-        )}
-      </TableCell>
-    </TableRow>
-  );
 
-  const renderActionToolbar = () => (
-    <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
-      {/* Left side - Search and primary actions */}
-      <div className="flex flex-wrap gap-2">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search cards..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8"
-            aria-label="Search cards"
-          />
-        </div>
-        
-        {/* Primary action button */}
-        <Button
-          onClick={() => setIsAddingCard(true)}
-          className="bg-brand-purple hover:bg-brand-purple-dark"
-          disabled={isLoading}
-        >
-          <PlusCircle className="h-4 w-4 mr-2" />
-          Add Card
-        </Button>
-        
-        {/* Filters dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon" title="Filter options">
-              <Filter className="h-4 w-4" />
-              <span className="sr-only">Filter options</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-48">
-            <DropdownMenuLabel>Filter Options</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setActiveFilter('all')}>
-              <Layers className="mr-2 h-4 w-4" /> 
-              All Cards
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setActiveFilter('new')}>
-              <Tag className="mr-2 h-4 w-4 text-blue-600" /> 
-              New Cards
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setActiveFilter('review')}>
-              <Clock className="mr-2 h-4 w-4 text-yellow-600" /> 
-              Review Cards
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setActiveFilter('learned')}>
-              <Check className="mr-2 h-4 w-4 text-green-600" /> 
-              Learned Cards
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+
+) : searchQuery ? (
+  <div className="flex flex-col items-center">
+    <Search className="h-12 w-12 text-gray-300 mb-3" />
+    <p className="text-gray-500 mb-2">{t('dashboard.flashcards.noMatchingSearch', { query: searchQuery })}</p>
+    <Button
+      variant="link"
+      onClick={() => setSearchQuery("")}
+    >
+      {t('dashboard.flashcards.clearSearch')}
+    </Button>
+  </div>
+) : activeFilter !== 'all' ? (
+  <div className="flex flex-col items-center">
+    <HelpCircle className="h-12 w-12 text-gray-300 mb-3" />
+    <p className="text-gray-500 mb-2">{t('dashboard.flashcards.noCardsInCategory')}</p>
+    <Button
+      variant="link"
+      onClick={() => setActiveFilter('all')}
+    >
+      {t('dashboard.flashcards.showAllCards')}
+    </Button>
+  </div>
+) : (
+  <div className="flex flex-col items-center">
+    <PlusCircle className="h-12 w-12 text-gray-300 mb-3" />
+    <p className="text-gray-500 mb-2">{t('dashboard.flashcards.noCards')}</p>
+    <Button
+      onClick={() => setIsAddingCard(true)}
+      className="bg-brand-purple hover:bg-brand-purple-dark mt-2"
+    >
+      <PlusCircle className="h-4 w-4 mr-2" />
+      {t('dashboard.flashcards.addFirstCard')}
+    </Button>
+  </div>
+)}
+</TableCell>
+</TableRow>
+);
+
+const renderActionToolbar = () => (
+<div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
+{/* Left side - Search and primary actions */}
+<div className="flex flex-wrap gap-2">
+<div className="relative flex-1 min-w-[200px]">
+  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+  <Input
+    placeholder={t('dashboard.flashcards.searchCards')}
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    className="pl-8"
+    aria-label={t('dashboard.flashcards.searchCards')}
+  />
+</div>
+
+{/* Primary action button */}
+<Button
+  onClick={() => setIsAddingCard(true)}
+  className="bg-brand-purple hover:bg-brand-purple-dark"
+  disabled={isLoading}
+>
+  <PlusCircle className="h-4 w-4 mr-2" />
+  {t('dashboard.flashcards.addCard')}
+</Button>
+
+{/* Filters dropdown */}
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="outline" size="icon" title={t('dashboard.flashcards.filterOptions')}>
+      <Filter className="h-4 w-4" />
+      <span className="sr-only">{t('dashboard.flashcards.filterOptions')}</span>
+    </Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="start" className="w-48">
+    <DropdownMenuLabel>{t('dashboard.flashcards.filterOptions')}</DropdownMenuLabel>
+    <DropdownMenuSeparator />
+    <DropdownMenuItem onClick={() => setActiveFilter('all')}>
+      <Layers className="mr-2 h-4 w-4" /> 
+      {t('dashboard.flashcards.allCards')}
+    </DropdownMenuItem>
+    <DropdownMenuItem onClick={() => setActiveFilter('new')}>
+      <Tag className="mr-2 h-4 w-4 text-blue-600" /> 
+      {t('dashboard.flashcards.newCards')}
+    </DropdownMenuItem>
+    <DropdownMenuItem onClick={() => setActiveFilter('review')}>
+      <Clock className="mr-2 h-4 w-4 text-yellow-600" /> 
+      {t('dashboard.flashcards.reviewCards')}
+    </DropdownMenuItem>
+    <DropdownMenuItem onClick={() => setActiveFilter('learned')}>
+      <Check className="mr-2 h-4 w-4 text-green-600" /> 
+      {t('dashboard.flashcards.learnedCards')}
+    </DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+</div>
+
+{/* Right side - Selection management and secondary actions */}
+<div className="flex flex-wrap gap-2 items-center">
+{/* Selection Actions - Conditional rendering based on selection state */}
+{selectedCards.length > 0 ? (
+  <>
+    <Button
+      variant="outline"
+      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+      onClick={confirmDelete}
+      disabled={isLoading}
+    >
+      <Trash2 className="h-4 w-4 mr-2" />
+      {t('dashboard.flashcards.deleteWithCount', { count: selectedCards.length.toString() })}
+    </Button>
+    
+    {/* Only show these options if multiple cards are selected */}
+    {selectedCards.length > 1 && (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline">
+            <Settings className="h-4 w-4 mr-2" />
+            {t('dashboard.flashcards.bulkActions')}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => handleBulkStatusUpdate(true)}>
+            <Check className="mr-2 h-4 w-4 text-green-600" />
+            {t('dashboard.flashcards.markAllAsLearned')}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleBulkStatusUpdate(false)}>
+            <RefreshCw className="mr-2 h-4 w-4 text-yellow-600" />
+            {t('dashboard.flashcards.markAllForReview')}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setSelectedCards([])}>
+            {t('dashboard.flashcards.clearSelection')}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )}
+    
+    {/* Clear selection button */}
+    <Button
+      variant="outline"
+      onClick={() => setSelectedCards([])}
+      disabled={isLoading}
+    >
+      {t('dashboard.flashcards.clearSelection')}
+    </Button>
+  </>
+) : (
+  /* Actions dropdown - when no selection */
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <Button variant="outline">
+        <MoreHorizontal className="h-4 w-4 mr-2" />
+        {t('dashboard.flashcards.actions')}
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuLabel>{t('dashboard.flashcards.cardManagement')}</DropdownMenuLabel>
+      <DropdownMenuSeparator />
       
-      {/* Right side - Selection management and secondary actions */}
-      <div className="flex flex-wrap gap-2 items-center">
-        {/* Selection Actions - Conditional rendering based on selection state */}
-        {selectedCards.length > 0 ? (
-          <>
-            <Button
-              variant="outline"
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-              onClick={confirmDelete}
-              disabled={isLoading}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete ({selectedCards.length})
-            </Button>
-            
-            {/* Only show these options if multiple cards are selected */}
-            {selectedCards.length > 1 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Bulk Actions
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => handleBulkStatusUpdate(true)}>
-                    <Check className="mr-2 h-4 w-4 text-green-600" />
-                    Mark all as Learned
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleBulkStatusUpdate(false)}>
-                    <RefreshCw className="mr-2 h-4 w-4 text-yellow-600" />
-                    Mark all for Review
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setSelectedCards([])}>
-                    Clear selection
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-            
-            {/* Clear selection button */}
-            <Button
-              variant="outline"
-              onClick={() => setSelectedCards([])}
-              disabled={isLoading}
-            >
-              Clear selection
-            </Button>
-          </>
-        ) : (
-          /* Actions dropdown - when no selection */
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <MoreHorizontal className="h-4 w-4 mr-2" />
-                Actions
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Card Management</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              
-              {/* Import/Export section */}
-              <DropdownMenuItem onClick={() => setIsImporting(true)}>
-                <FileInput className="mr-2 h-4 w-4" />
-                Import from Excel/CSV
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={handleExportCSV}
-                disabled={allFilteredCards.length === 0}
-              >
-                <FileOutput className="mr-2 h-4 w-4" />
-                Export to CSV
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              
-              {/* Selection modes */}
-              <DropdownMenuItem onClick={toggleBulkSelectMode}>
-                <CheckSquare className="mr-2 h-4 w-4" />
-                {bulkSelectMode ? "Normal selection mode" : "Bulk selection mode"}
-              </DropdownMenuItem>
-              
-              {bulkSelectMode && (
-                <DropdownMenuItem onClick={selectAllDeckCards}>
-                  <CheckSquare className="mr-2 h-4 w-4" />
-                  Select all cards in deck
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-      </div>
-    </div>
-  );
+      {/* Import/Export section */}
+      <DropdownMenuItem onClick={() => setIsImporting(true)}>
+        <FileInput className="mr-2 h-4 w-4" />
+        {t('dashboard.flashcards.importFromExcel')}
+      </DropdownMenuItem>
+      <DropdownMenuItem 
+        onClick={handleExportCSV}
+        disabled={allFilteredCards.length === 0}
+      >
+        <FileOutput className="mr-2 h-4 w-4" />
+        {t('dashboard.flashcards.exportToCsv')}
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
+      
+      {/* Selection modes */}
+      <DropdownMenuItem onClick={toggleBulkSelectMode}>
+        <CheckSquare className="mr-2 h-4 w-4" />
+        {bulkSelectMode ? t('dashboard.flashcards.normalSelectionMode') : t('dashboard.flashcards.bulkSelectionMode')}
+      </DropdownMenuItem>
+      
+      {bulkSelectMode && (
+        <DropdownMenuItem onClick={selectAllDeckCards}>
+          <CheckSquare className="mr-2 h-4 w-4" />
+          {t('dashboard.flashcards.selectAllCardsInDeck')}
+        </DropdownMenuItem>
+      )}
+    </DropdownMenuContent>
+  </DropdownMenu>
+)}
+</div>
+</div>
+);
 
-  const renderPagination = () => {
-    const { currentPage, totalPages, pageSize, totalItems } = pagination;
+const renderPagination = () => {
+const { currentPage, totalPages, pageSize, totalItems } = pagination;
 
-    // Calculate display ranges for better UX
-    const startItem = Math.min(totalItems, (currentPage - 1) * pageSize + 1);
-    const endItem = Math.min(currentPage * pageSize, totalItems);
+// Calculate display ranges for better UX
+const startItem = Math.min(totalItems, (currentPage - 1) * pageSize + 1);
+const endItem = Math.min(currentPage * pageSize, totalItems);
 
-    return (
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4">
-        <div className="text-sm text-gray-500">
-          {totalItems > 0
-            ? `Showing ${startItem} to ${endItem} of ${totalItems} cards`
-            : "No cards to display"
-          }
-        </div>
+return (
+<div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4">
+<div className="text-sm text-gray-500">
+  {totalItems > 0
+    ? t('dashboard.flashcards.showingItems', { start: startItem.toString(), end: endItem.toString(), total: totalItems.toString() })
+    : t('dashboard.flashcards.noCardsToDisplay')
+  }
+</div>
 
-        {totalItems > 0 && (
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => goToPage(1)}
-                disabled={currentPage === 1}
-                className="h-8 w-8"
-                aria-label="First page"
-              >
-                <ChevronsLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => goToPage(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="h-8 w-8"
-                aria-label="Previous page"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
+{totalItems > 0 && (
+  <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1">
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => goToPage(1)}
+        disabled={currentPage === 1}
+        className="h-8 w-8"
+        aria-label={t('dashboard.flashcards.firstPage')}
+      >
+        <ChevronsLeft className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => goToPage(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="h-8 w-8"
+        aria-label={t('dashboard.flashcards.previousPage')}
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </Button>
 
-              <div className="flex items-center mx-2">
-                <span className="text-sm mx-1">Page</span>
-                <Input
-                  className="h-8 w-12 text-center"
-                  type="number"
-                  min={1}
-                  max={totalPages}
-                  value={currentPage}
-                  onChange={(e) => {
-                    const page = parseInt(e.target.value);
-                    if (!isNaN(page) && page >= 1 && page <= totalPages) {
-                      goToPage(page);
-                    }
-                  }}
-                  aria-label={`Page ${currentPage} of ${totalPages}`}
-                />
-                <span className="text-sm mx-1">of {totalPages}</span>
-              </div>
-
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="h-8 w-8"
-                aria-label="Next page"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => goToPage(totalPages)}
-                disabled={currentPage === totalPages}
-                className="h-8 w-8"
-                aria-label="Last page"
-              >
-                <ChevronsRight className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <Select
-              value={pageSize.toString()}
-              onValueChange={handlePageSizeChange}
-            >
-              <SelectTrigger className="h-8 w-[100px]">
-                <SelectValue placeholder="Per page" />
-              </SelectTrigger>
-              <SelectContent side="top">
-                {PAGE_SIZE_OPTIONS.map(size => (
-                  <SelectItem key={size} value={size.toString()}>
-                    {size} per page
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // ======= Main Render =======
-  return (
-    <>
-      <Card className="shadow-md">
-        <CardHeader>
-          <CardTitle className="flex justify-between items-center mb-2">
-            <div className="flex gap-1">
-              <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                <Tag className="h-3 w-3 mr-1" />
-                New: {stats.new}
-              </Badge>
-              <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
-                <Clock className="h-3 w-3 mr-1" />
-                Review: {stats.review}
-              </Badge>
-              <Badge variant="outline" className="bg-green-50 text-green-700">
-                <Check className="h-3 w-3 mr-1" />
-                Learned: {stats.learned}
-              </Badge>
-            </div>
-          </CardTitle>
-          <Tabs
-            value={activeFilter}
-            onValueChange={(v) => setActiveFilter(v as FilterType)}
-            className="mt-2"
-          >
-            <TabsList className="grid grid-cols-4">
-              <TabsTrigger value="all">All ({stats.total})</TabsTrigger>
-              <TabsTrigger value="new">New ({stats.new})</TabsTrigger>
-              <TabsTrigger value="review">Review ({stats.review})</TabsTrigger>
-              <TabsTrigger value="learned">Learned ({stats.learned})</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </CardHeader>
-        <CardContent>
-          {renderActionToolbar()}
-
-          <div className="rounded-md border">
-            <Table>
-              {renderTableHead()}
-              <TableBody>
-                {displayedCards.length > 0
-                  ? displayedCards.map(renderCardRow)
-                  : renderEmptyState()
-                }
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Pagination */}
-          {renderPagination()}
-        </CardContent>
-      </Card>
-
-      {/* Add Card Modal */}
-      {isAddingCard && (
-        <EditCardModal
-          card={{
-            id: -1,
-            deck: deck ? deck.id : deckId,
-            front_text: "",
-            back_text: "",
-            learned: false,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            review_count: 0,
-            last_reviewed: "",
-            next_review: null
+      <div className="flex items-center mx-2">
+        <span className="text-sm mx-1">{t('dashboard.flashcards.page')}</span>
+        <Input
+          className="h-8 w-12 text-center"
+          type="number"
+          min={1}
+          max={totalPages}
+          value={currentPage}
+          onChange={(e) => {
+            const page = parseInt(e.target.value);
+            if (!isNaN(page) && page >= 1 && page <= totalPages) {
+              goToPage(page);
+            }
           }}
-          isOpen={isAddingCard}
-          onClose={() => setIsAddingCard(false)}
-          onSave={handleCreateCard}
+          aria-label={t('dashboard.flashcards.pageXofY', { current: currentPage.toString(), total: totalPages.toString() })}
         />
-      )}
+        <span className="text-sm mx-1">{t('dashboard.flashcards.ofPages', { total: totalPages.toString() })}</span>
+      </div>
 
-      {/* Edit Card Modal */}
-      {editingCard && (
-        <EditCardModal
-          card={editingCard}
-          isOpen={!!editingCard}
-          onClose={() => setEditingCard(null)}
-          onSave={handleUpdateCard}
-        />
-      )}
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => goToPage(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="h-8 w-8"
+        aria-label={t('dashboard.flashcards.nextPage')}
+      >
+        <ChevronRight className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => goToPage(totalPages)}
+        disabled={currentPage === totalPages}
+        className="h-8 w-8"
+        aria-label={t('dashboard.flashcards.lastPage')}
+      >
+        <ChevronsRight className="h-4 w-4" />
+      </Button>
+    </div>
 
-      {/* Import Modal */}
-      {isImporting && (
-        <ImportExcelModal
-          deckId={deckId}
-          isOpen={isImporting}
-          onClose={() => setIsImporting(false)}
-          onImportSuccess={onCardUpdate}
-        />
-      )}
+    <Select
+      value={pageSize.toString()}
+      onValueChange={handlePageSizeChange}
+    >
+      <SelectTrigger className="h-8 w-[100px]">
+        <SelectValue placeholder={t('dashboard.flashcards.perPage')} />
+      </SelectTrigger>
+      <SelectContent side="top">
+        {PAGE_SIZE_OPTIONS.map(size => (
+          <SelectItem key={size} value={size.toString()}>
+            {t('dashboard.flashcards.itemsPerPage', { count: size.toString() })}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  </div>
+)}
+</div>
+);
+};
 
-      {/* Delete Progress Dialog */}
-      <DeleteProgressDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={closeDeleteDialog}
-        progress={deleteProgress}
-        totalCards={selectedCards.length}
-        onConfirm={handleDeleteCards}
-      />
-    </>
-  );
+// ======= Main Render =======
+return (
+<>
+<Card className="shadow-md">
+<CardHeader>
+  <CardTitle className="flex justify-between items-center mb-2">
+    <div className="flex gap-1">
+      <Badge variant="outline" className="bg-blue-50 text-blue-700">
+        <Tag className="h-3 w-3 mr-1" />
+        {t('dashboard.flashcards.filter.new')}: {stats.new}
+      </Badge>
+      <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
+        <Clock className="h-3 w-3 mr-1" />
+        {t('dashboard.flashcards.filter.toReview')}: {stats.review}
+      </Badge>
+      <Badge variant="outline" className="bg-green-50 text-green-700">
+        <Check className="h-3 w-3 mr-1" />
+        {t('dashboard.flashcards.filter.known')}: {stats.learned}
+      </Badge>
+    </div>
+  </CardTitle>
+  <Tabs
+    value={activeFilter}
+    onValueChange={(v) => setActiveFilter(v as FilterType)}
+    className="mt-2"
+  >
+    <TabsList className="grid grid-cols-4">
+      <TabsTrigger value="all">{t('dashboard.flashcards.filter.all')} ({stats.total})</TabsTrigger>
+      <TabsTrigger value="new">{t('dashboard.flashcards.filter.new')} ({stats.new})</TabsTrigger>
+      <TabsTrigger value="review">{t('dashboard.flashcards.filter.toReview')} ({stats.review})</TabsTrigger>
+      <TabsTrigger value="learned">{t('dashboard.flashcards.filter.known')} ({stats.learned})</TabsTrigger>
+    </TabsList>
+  </Tabs>
+</CardHeader>
+<CardContent>
+  {renderActionToolbar()}
+
+  <div className="rounded-md border">
+    <Table>
+      {renderTableHead()}
+      <TableBody>
+        {displayedCards.length > 0
+          ? displayedCards.map(renderCardRow)
+          : renderEmptyState()
+        }
+      </TableBody>
+    </Table>
+  </div>
+
+  {/* Pagination */}
+  {renderPagination()}
+</CardContent>
+</Card>
+
+{/* Add Card Modal */}
+{isAddingCard && (
+<EditCardModal
+  card={{
+    id: -1,
+    deck: deck ? deck.id : deckId,
+    front_text: "",
+    back_text: "",
+    learned: false,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    review_count: 0,
+    last_reviewed: "",
+    next_review: null
+  }}
+  isOpen={isAddingCard}
+  onClose={() => setIsAddingCard(false)}
+  onSave={handleCreateCard}
+/>
+)}
+
+{/* Edit Card Modal */}
+{editingCard && (
+<EditCardModal
+  card={editingCard}
+  isOpen={!!editingCard}
+  onClose={() => setEditingCard(null)}
+  onSave={handleUpdateCard}
+/>
+)}
+
+{/* Import Modal */}
+{isImporting && (
+<ImportExcelModal
+  deckId={deckId}
+  isOpen={isImporting}
+  onClose={() => setIsImporting(false)}
+  onImportSuccess={onCardUpdate}
+/>
+)}
+
+{/* Delete Progress Dialog */}
+<DeleteProgressDialog
+isOpen={isDeleteDialogOpen}
+onClose={closeDeleteDialog}
+progress={deleteProgress}
+totalCards={selectedCards.length}
+onConfirm={handleDeleteCards}
+/>
+</>
+);
 };
 
 export default FlashcardList;

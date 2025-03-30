@@ -22,11 +22,12 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import progressAPI, { ProgressSummary } from "@/services/progressAPI";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTranslation } from "@/hooks/useTranslations";
 
 /**
- * Obtient le nom complet d'une langue à partir de son code
- * @param languageCode - Code de langue (EN, FR, ES, NL, etc.)
- * @returns Nom complet de la langue
+ * Gets the full name of a language from its code
+ * @param languageCode - Language code (EN, FR, ES, NL, etc.)
+ * @returns Full name of the language
  */
 function getLanguageFullName(languageCode: string): string {
   const languageMap: Record<string, string> = {
@@ -36,27 +37,27 @@ function getLanguageFullName(languageCode: string): string {
     'NL': 'Dutch',
   };
 
-  // Normaliser le code de langue en majuscules
+  // Normalize language code to uppercase
   const normalizedCode = languageCode.toUpperCase();
 
-  // Retourner le nom complet ou le code si non trouvé
+  // Return full name or code if not found
   return languageMap[normalizedCode] || languageCode;
 }
 
 /**
- * Formate le temps d'apprentissage en minutes vers un format lisible
- * @param minutes - Nombre total de minutes
- * @returns Chaîne de caractères formatée (heures, jours, etc.)
+ * Format learning time in minutes to a readable format
+ * @param minutes - Total number of minutes
+ * @returns Formatted string (hours, days, etc.)
  */
 function formatLearningTime(minutes: number): string {
   if (minutes < 1) return "0 minutes";
 
-  // Cas simple - moins d'une heure
+  // Simple case - less than an hour
   if (minutes < 60) {
     return `${minutes} minute${minutes > 1 ? 's' : ''}`;
   }
 
-  // Cas intermédiaire - quelques heures
+  // Intermediate case - a few hours
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
 
@@ -67,7 +68,7 @@ function formatLearningTime(minutes: number): string {
     return `${hours} hour${hours > 1 ? 's' : ''} ${remainingMinutes} minute${remainingMinutes > 1 ? 's' : ''}`;
   }
 
-  // Cas avancé - jours
+  // Advanced case - days
   const days = Math.floor(hours / 24);
   const remainingHours = hours % 24;
 
@@ -78,7 +79,7 @@ function formatLearningTime(minutes: number): string {
   return `${days} day${days > 1 ? 's' : ''} ${remainingHours} hour${remainingHours > 1 ? 's' : ''}`;
 }
 
-// Définition des types de contenu avec leurs icônes
+// Definition of content types with their icons
 const CONTENT_TYPES = [
   { value: 'all', label: 'All Content Types', icon: <Filter className="h-4 w-4" /> },
   { value: 'vocabulary', label: 'Vocabulary', icon: <FileText className="h-4 w-4" /> },
@@ -91,7 +92,7 @@ const CONTENT_TYPES = [
   { value: 'reordering', label: 'Reordering', icon: <ArrowRightLeft className="h-4 w-4" /> }
 ];
 
-// Fonction utilitaire pour convertir un profil utilisateur en objet User partiel
+// Utility function to convert a user profile to a partial User object
 const mapUserProfileToUser = (profile: UserProfile): Partial<User> => {
   return {
     username: profile.username,
@@ -108,7 +109,7 @@ const mapUserProfileToUser = (profile: UserProfile): Partial<User> => {
   };
 };
 
-// Interface étendue pour ajouter la gestion des types de contenu
+// Extended interface to add content type management
 interface EnhancedLearningJourneyProps extends LearningJourneyProps {
   onContentTypeChange?: (type: string) => void;
 }
@@ -124,21 +125,22 @@ export default function EnhancedLearningJourney({
   const { user, isAuthenticated, isLoading } = useAuthContext();
   const router = useRouter();
 
-  // États du composant
+  // Component states
   const [userData, setUserData] = useState<Partial<User> | null>(null);
   const [selectedTypes, setSelectedTypes] = useState<string[]>(["all"]);
   const [progressData, setProgressData] = useState<ProgressSummary | null>(null);
   const [isProgressLoading, setIsProgressLoading] = useState<boolean>(true);
   const [streak, setStreak] = useState<number>(0);
   const [dailyXp, setDailyXp] = useState<number>(0);
-  const [xpGoal] = useState<number>(100); // Objectif quotidien d'XP (pourrait être chargé depuis l'API)
+  const [xpGoal] = useState<number>(100);
+  const { t } = useTranslation();
 
-  // Fonction pour charger les données de progression
+  // Function to load progress data
   const loadProgressData = async () => {
     try {
       setIsProgressLoading(true);
 
-      // Récupérer le résumé de progression depuis l'API avec paramètre de langue
+      // Get progress summary from API with language parameter
       const summary = await progressAPI.getSummary({
         cacheResults: true,
         showErrorToast: false,
@@ -150,31 +152,31 @@ export default function EnhancedLearningJourney({
 
       setProgressData(summary);
 
-      // Calculer les données affichées
+      // Calculate displayed data
       calculateDerivedStats(summary);
     } catch (error) {
-      console.error("Erreur lors du chargement des données de progression:", error);
+      console.error("Error loading progress data:", error);
     } finally {
       setIsProgressLoading(false);
     }
   };
 
-  // Traiter les données brutes pour calculer les statistiques dérivées
+  // Process raw data to calculate derived statistics
   const calculateDerivedStats = (summary: ProgressSummary) => {
-    // Calculer le streak (pourrait provenir de l'API dans une implémentation réelle)
-    // Ici on simule avec une valeur entre 1 et 10
+    // Calculate streak (could come from API in a real implementation)
+    // Here we simulate with a value between 1 and 10
     const streakValue = Math.floor(Math.random() * 10) + 1;
     setStreak(streakValue);
 
-    // Extraire l'XP du jour à partir des activités récentes
+    // Extract daily XP from recent activities
     if (summary.recent_activity && summary.recent_activity.length > 0) {
-      // Filtrer les activités d'aujourd'hui
+      // Filter today's activities
       const today = new Date().toISOString().split('T')[0];
       const todayActivities = summary.recent_activity.filter(activity =>
         activity.last_accessed.startsWith(today)
       );
 
-      // Calculer l'XP total obtenu aujourd'hui
+      // Calculate total XP earned today
       const todayXp = todayActivities.reduce((total, activity) =>
         total + (activity.xp_earned || 0), 0
       );
@@ -182,12 +184,12 @@ export default function EnhancedLearningJourney({
       setDailyXp(todayXp);
     }
 
-    // Note: Le temps total d'apprentissage est déjà correctement calculé par l'API backend
-    // comme la somme des temps passés sur chaque contenu de leçon (ContentLesson)
-    // La valeur summary.total_time_spent_minutes est donc utilisée directement
+    // Note: Total learning time is already correctly calculated by the backend API
+    // as the sum of time spent on each content lesson (ContentLesson)
+    // The value summary.total_time_spent_minutes is therefore used directly
   };
 
-  // Gérer le changement de type de contenu
+  // Handle content type change
   const handleContentTypeChange = (value: string) => {
     // If "all" is selected, clear other selections
     if (value === "all") {
@@ -230,42 +232,42 @@ export default function EnhancedLearningJourney({
     }
   };
 
-  // Effet pour charger les données utilisateur et de progression
+  // Effect to load user data and progress
   useEffect(() => {
-    // Rediriger si non authentifié
+    // Redirect if not authenticated
     if (!isLoading && !isAuthenticated) {
       router.push("/login");
       return;
     }
 
-    // Configurer les données utilisateur
+    // Set up user data
     if (user) {
       const partialUser = mapUserProfileToUser(user);
       setUserData(partialUser);
 
-      // Réinitialiser les données de progression à chaque changement d'utilisateur
-      // pour forcer un rechargement
+      // Reset progress data with each user change
+      // to force a reload
       setProgressData(null);
     }
   }, [isAuthenticated, isLoading, user, router]);
 
-  // Effet séparé pour charger les données de progression après avoir défini userData
+  // Separate effect to load progress data after setting userData
   useEffect(() => {
     if (userData) {
-      // Charger les données de progression
+      // Load progress data
       loadProgressData();
 
-      // Définir un intervalle pour rafraîchir les données périodiquement (toutes les 5 minutes)
+      // Set an interval to refresh data periodically (every 5 minutes)
       const refreshInterval = setInterval(() => {
         loadProgressData();
       }, 5 * 60 * 1000);
 
-      // Nettoyer l'intervalle à la destruction du composant
+      // Clean up the interval when component is destroyed
       return () => clearInterval(refreshInterval);
     }
-  }, [userData?.target_language]); // Recharger les données quand la langue cible change
+  }, [userData?.target_language]); // Reload data when target language changes
 
-  // État de chargement
+  // Loading state
   if (isLoading) {
     return (
       <div className="flex justify-center py-3">
@@ -274,27 +276,27 @@ export default function EnhancedLearningJourney({
     );
   }
 
-  // Calculer le pourcentage global de progression
+  // Calculate overall progress percentage
   const overallProgress = progressData?.summary?.completed_units
     ? Math.round((progressData.summary.completed_units / Math.max(progressData.summary.total_units, 1)) * 100)
     : 0;
 
   return (
     <div className="mb-6 space-y-4">
-      {/* Panneau principal avec gradient */}
+      {/* Main panel with gradient */}
       <div className="rounded-lg bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 p-4 text-white shadow-md">
         <div className="flex items-center justify-between mb-3">
-          <h1 className="text-xl font-semibold">Your Learning Journey</h1>
+          <h1 className="text-xl font-semibold">{t('dashboard.learningjourney.title')}</h1>
           <Badge className="bg-white text-purple-600 font-medium">
-            Level {userData?.language_level || "A1"}
+            {t('dashboard.currentLevel')} {userData?.language_level || "A1"}
           </Badge>
         </div>
 
-        {/* Statistiques principales */}
+        {/* Main statistics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          {/* Progression globale */}
+          {/* Overall progress */}
           <div className="bg-white/15 rounded-lg px-3 py-3 text-center">
-            <div className="text-sm font-medium mb-1">Overall Progress</div>
+            <div className="text-sm font-medium mb-1">{t('dashboard.learningjourney.overallProgress')}</div>
             <div className="flex items-center justify-center">
               <TooltipProvider>
                 <Tooltip>
@@ -307,75 +309,80 @@ export default function EnhancedLearningJourney({
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Completed {progressData?.summary?.completed_units || 0} of {progressData?.summary?.total_units || 0} units</p>
+                    <p>{t('dashboard.learningjourney.completedUnits', { 
+                       completed: String(progressData?.summary?.completed_units || 0), 
+                       total: String(progressData?.summary?.total_units || 0) 
+                    })}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
           </div>
 
-          {/* Streak de jours */}
+          {/* Daily streak */}
           <div className="bg-white/15 rounded-lg px-3 py-3 text-center">
-            <div className="text-sm font-medium mb-1">Daily Streak</div>
+            <div className="text-sm font-medium mb-1">{t('dashboard.learningjourney.dailyStreak')}</div>
             <div className="flex items-center justify-center gap-1">
               <Flame className="h-5 w-5 text-amber-300" />
               <div className="text-2xl font-bold">
                 {isProgressLoading ? <Loader2 className="animate-spin h-5 w-5" /> : streak}
-                <span className="text-sm font-normal ml-1">days</span>
+                <span className="text-sm font-normal ml-1">{t('dashboard.learningjourney.days')}</span>
               </div>
             </div>
           </div>
 
-          {/* XP du jour */}
+          {/* Daily XP */}
           <div className="bg-white/15 rounded-lg px-3 py-3 text-center">
-            <div className="text-sm font-medium mb-1">Today's XP</div>
+            <div className="text-sm font-medium mb-1">{t('dashboard.learningjourney.todaysXP')}</div>
             <div className="flex items-center justify-center gap-1">
               <Sparkles className="h-5 w-5 text-amber-300" />
               <div className="text-2xl font-bold">
                 {isProgressLoading ? <Loader2 className="animate-spin h-5 w-5" /> : dailyXp}
-                <span className="text-sm font-normal ml-1">pts</span>
+                <span className="text-sm font-normal ml-1">{t('dashboard.learningjourney.points')}</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Barre de filtres */}
+        {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-2 mt-4 bg-white/10 p-3 rounded-lg">
-          {/* Filtre de niveau */}
+          {/* Level filter */}
           {availableLevels.length > 0 && onLevelFilterChange && (
             <div className="flex items-center gap-2 flex-grow">
               <Filter className="h-4 w-4 text-white" />
-              <span className="text-sm font-medium">Level:</span>
+              <span className="text-sm font-medium">{t('dashboard.learningjourney.level')}:</span>
               <Select value={levelFilter} onValueChange={onLevelFilterChange}>
                 <SelectTrigger className="bg-white/20 border-white/20 text-white flex-1 max-w-[180px]">
-                  <SelectValue placeholder="All Levels" />
+                  <SelectValue placeholder={t('dashboard.learningjourney.allLevels')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Levels</SelectItem>
+                  <SelectItem value="all">{t('dashboard.learningjourney.allLevels')}</SelectItem>
                   {availableLevels.map(level => (
-                    <SelectItem key={level} value={level}>Level {level}</SelectItem>
+                    <SelectItem key={level} value={level}>
+                      {t('dashboard.learningjourney.levelX', { level })}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
           )}
 
-          {/* Filter of the content lesson */}
+          {/* Content type filter */}
           {onContentTypeChange && (
             <div className="flex items-center gap-2 flex-grow">
-              <span className="text-sm font-medium">Content:</span>
+              <span className="text-sm font-medium">{t('dashboard.learningjourney.content')}:</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="secondary" className="bg-white/20 border-white/20 text-white text-sm px-3 h-9">
                     {selectedTypes.includes("all") ? (
                       <span className="flex items-center gap-1">
                         <Filter className="h-4 w-4" />
-                        All Content Types
+                        {t('dashboard.learningjourney.allContentTypes')}
                       </span>
                     ) : (
                       <span className="flex items-center gap-1">
                         <Filter className="h-4 w-4" />
-                        <span className="mr-1">Filtered</span>
+                        <span className="mr-1">{t('dashboard.learningjourney.filtered')}</span>
                         <Badge className="bg-white/30 text-white text-xs">
                           {selectedTypes.length}
                         </Badge>
@@ -384,7 +391,7 @@ export default function EnhancedLearningJourney({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
-                  <DropdownMenuLabel>Content Types</DropdownMenuLabel>
+                  <DropdownMenuLabel>{t('dashboard.learningjourney.contentTypes')}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     {CONTENT_TYPES.map((type) => (
@@ -395,7 +402,7 @@ export default function EnhancedLearningJourney({
                         className="flex items-center gap-2"
                       >
                         {type.icon}
-                        {type.label}
+                        {t(`dashboard.learningjourney.contentType.${type.value}`)}
                       </DropdownMenuCheckboxItem>
                     ))}
                   </DropdownMenuGroup>
@@ -404,7 +411,7 @@ export default function EnhancedLearningJourney({
             </div>
           )}
 
-          {/* Bascule de disposition */}
+          {/* Layout toggle */}
           {onLayoutChange && (
             <div className="flex gap-1 ml-auto">
               <Button
@@ -428,12 +435,12 @@ export default function EnhancedLearningJourney({
         </div>
       </div>
 
-      {/* Carte d'informations supplémentaires */}
+      {/* Additional info card */}
       <div className="bg-white rounded-lg shadow-sm border border-purple-100 p-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          {/* Cible d'apprentissage */}
+          {/* Learning target */}
           <div>
-            <h3 className="text-sm font-medium text-gray-500">Learning Target</h3>
+            <h3 className="text-sm font-medium text-gray-500">{t('dashboard.learningjourney.learningTarget')}</h3>
             <div className="flex items-center mt-1">
               <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
                 {getLanguageFullName(userData?.target_language || "EN")}
@@ -444,9 +451,9 @@ export default function EnhancedLearningJourney({
             </div>
           </div>
 
-          {/* Objectif quotidien */}
+          {/* Daily goal */}
           <div>
-            <h3 className="text-sm font-medium text-gray-500">Daily Goal</h3>
+            <h3 className="text-sm font-medium text-gray-500">{t('dashboard.learningjourney.dailyGoal')}</h3>
             <div className="flex items-center mt-1">
               <Progress
                 className="w-32 h-2 mr-2"
@@ -459,9 +466,9 @@ export default function EnhancedLearningJourney({
             </div>
           </div>
 
-          {/* Temps total d'apprentissage */}
+          {/* Total learning time */}
           <div>
-            <h3 className="text-sm font-medium text-gray-500">Total Learning Time</h3>
+            <h3 className="text-sm font-medium text-gray-500">{t('dashboard.learningjourney.totalLearningTime')}</h3>
             <div className="mt-1 text-lg font-semibold text-gray-700">
               {isProgressLoading
                 ? <Loader2 className="animate-spin h-4 w-4" />
@@ -472,14 +479,14 @@ export default function EnhancedLearningJourney({
         </div>
       </div>
 
-      {/* Affichage des niveaux et progressions */}
+      {/* Levels and progression display */}
       {progressData && progressData.level_progression && Object.keys(progressData.level_progression).length > 0 && (
         <div className="bg-white rounded-lg shadow-sm border border-purple-100 p-4">
-          <h3 className="text-sm font-medium text-gray-500 mb-3">Level Progress</h3>
+          <h3 className="text-sm font-medium text-gray-500 mb-3">{t('dashboard.learningjourney.levelProgress')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {Object.entries(progressData.level_progression)
               .sort(([levelA], [levelB]) => {
-                // Trier par niveau (A1, A2, B1, B2, etc.)
+                // Sort by level (A1, A2, B1, B2, etc.)
                 return levelA.localeCompare(levelB);
               })
               .map(([level, stats]) => (
@@ -491,7 +498,10 @@ export default function EnhancedLearningJourney({
                     <div className="flex justify-between text-sm mb-1">
                       <span className="font-medium">{level}</span>
                       <span className="text-gray-500">
-                        {stats.completed_units}/{stats.total_units} units
+                        {t('dashboard.learningjourney.unitsCount', { 
+                          completed: String(stats.completed_units), 
+                          total: String(stats.total_units) 
+                        })}
                       </span>
                     </div>
                     <Progress value={stats.avg_completion} className="h-1.5" />

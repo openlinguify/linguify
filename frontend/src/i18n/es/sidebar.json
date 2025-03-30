@@ -13,7 +13,9 @@
     "auth": {
         "logout": "Cerrar sesión",
         "login": "Iniciar sesión",
-        "register": "Registrarse"
-    }
-}
+        "register": "Registrar",
+        "logoutSuccess": "Cierre de sesión exitoso",
+        "comeBackSoon": "¡Vuelve pronto!"
+      }
+      }
   

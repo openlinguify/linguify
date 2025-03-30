@@ -16,6 +16,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Save, X, RotateCw, ArrowLeftRight } from "lucide-react";
 import type { Flashcard } from "@/types/revision";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslation } from "@/hooks/useTranslations";
 
 interface EditCardModalProps {
     card: Flashcard;
@@ -37,6 +38,7 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
     const [activeTab, setActiveTab] = useState<string>("edit");
     const [previewFlipped, setPreviewFlipped] = useState(false);
     const { toast } = useToast();
+    const { t } = useTranslation();
 
     // Reset form when card changes
     useEffect(() => {
@@ -64,14 +66,14 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
         try {
             await onSave(formData);
             toast({
-                title: "Success",
-                description: "Card updated successfully"
+                title: t('dashboard.flashcards.successTitle'),
+                description: t('dashboard.flashcards.updateSuccess')
             });
             onClose();
         } catch (err) {
             toast({
-                title: "Error",
-                description: "Failed to update card",
+                title: t('dashboard.flashcards.errorTitle'),
+                description: t('dashboard.flashcards.updateError'),
                 variant: "destructive"
             });
         } finally {
@@ -82,8 +84,8 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
     const handleReset = () => {
         setFormData(originalData);
         toast({
-            title: "Reset",
-            description: "Changes reverted to original"
+            title: t('dashboard.flashcards.resetTitle'),
+            description: t('dashboard.flashcards.resetDescription')
         });
     };
 
@@ -93,8 +95,8 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
             back_text: formData.front_text
         });
         toast({
-            title: "Flipped",
-            description: "Front and back texts have been swapped"
+            title: t('dashboard.flashcards.flippedTitle'),
+            description: t('dashboard.flashcards.flippedDescription')
         });
     };
 
@@ -110,9 +112,9 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
             <Card className="w-[90%] max-w-2xl">
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>Edit Card</CardTitle>
+                        <CardTitle>{t('dashboard.flashcards.editCard')}</CardTitle>
                         <CardDescription>
-                            Update front and back text, or switch between preview and edit mode
+                            {t('dashboard.flashcards.editCardDescription')}
                         </CardDescription>
                     </div>
                     <Button 
@@ -122,15 +124,15 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
                         disabled={isLoading}
                     >
                         <X className="h-4 w-4" />
-                        <span className="sr-only">Close</span>
+                        <span className="sr-only">{t('dashboard.flashcards.close')}</span>
                     </Button>
                 </CardHeader>
 
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                     <div className="px-6">
                         <TabsList className="w-full">
-                            <TabsTrigger value="edit" className="flex-1">Edit</TabsTrigger>
-                            <TabsTrigger value="preview" className="flex-1">Preview</TabsTrigger>
+                            <TabsTrigger value="edit" className="flex-1">{t('dashboard.flashcards.edit')}</TabsTrigger>
+                            <TabsTrigger value="preview" className="flex-1">{t('dashboard.flashcards.preview')}</TabsTrigger>
                         </TabsList>
                     </div>
 
@@ -146,7 +148,7 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
                                         disabled={!isModified || isLoading}
                                     >
                                         <RotateCw className="mr-2 h-4 w-4" />
-                                        Reset
+                                        {t('dashboard.flashcards.reset')}
                                     </Button>
                                     <Button 
                                         type="button" 
@@ -156,27 +158,27 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
                                         disabled={isLoading}
                                     >
                                         <ArrowLeftRight className="mr-2 h-4 w-4" />
-                                        Flip
+                                        {t('dashboard.flashcards.flip')}
                                     </Button>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="front_text">Front</Label>
+                                    <Label htmlFor="front_text">{t('dashboard.flashcards.front')}</Label>
                                     <Textarea
                                         id="front_text"
                                         value={formData.front_text}
                                         onChange={(e) => handleChange('front_text', e.target.value)}
-                                        placeholder="Front text"
+                                        placeholder={t('dashboard.flashcards.frontText')}
                                         className="min-h-[100px]"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="back_text">Back</Label>
+                                    <Label htmlFor="back_text">{t('dashboard.flashcards.back')}</Label>
                                     <Textarea
                                         id="back_text"
                                         value={formData.back_text}
                                         onChange={(e) => handleChange('back_text', e.target.value)}
-                                        placeholder="Back text"
+                                        placeholder={t('dashboard.flashcards.backText')}
                                         className="min-h-[100px]"
                                     />
                                 </div>
@@ -188,7 +190,7 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
                                     onClick={onClose}
                                     disabled={isLoading}
                                 >
-                                    Cancel
+                                    {t('dashboard.flashcards.cancel')}
                                 </Button>
                                 <Button 
                                     type="submit"
@@ -201,12 +203,12 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
                                     {isLoading ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Saving...
+                                            {t('dashboard.flashcards.saving')}
                                         </>
                                     ) : (
                                         <>
                                             <Save className="mr-2 h-4 w-4" />
-                                            Save Changes
+                                            {t('dashboard.flashcards.saveChanges')}
                                         </>
                                     )}
                                 </Button>
@@ -223,7 +225,7 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
                                     onClick={() => setPreviewFlipped(prev => !prev)}
                                 >
                                     <RotateCw className="mr-2 h-4 w-4" />
-                                    Flip Card
+                                    {t('dashboard.flashcards.flipCard')}
                                 </Button>
                             </div>
                             <div 
@@ -232,12 +234,12 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
                             >
                                 <div className="text-center">
                                     <h3 className="text-sm text-gray-500 uppercase mb-2">
-                                        {previewFlipped ? "BACK" : "FRONT"}
+                                        {previewFlipped ? t('dashboard.flashcards.backSide') : t('dashboard.flashcards.frontSide')}
                                     </h3>
                                     <p className="text-2xl font-medium">
                                         {previewFlipped ? formData.back_text : formData.front_text}
                                     </p>
-                                    <p className="text-xs text-gray-400 mt-4">Click to flip</p>
+                                    <p className="text-xs text-gray-400 mt-4">{t('dashboard.flashcards.clickToFlip')}</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -246,12 +248,12 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
                                 variant="outline" 
                                 onClick={() => setActiveTab("edit")}
                             >
-                                Back to Edit
+                                {t('dashboard.flashcards.backToEdit')}
                             </Button>
                             <Button 
                                 onClick={onClose}
                             >
-                                Close
+                                {t('dashboard.flashcards.close')}
                             </Button>
                         </CardFooter>
                     </TabsContent>

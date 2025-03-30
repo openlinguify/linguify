@@ -11,8 +11,10 @@
         "settings": "Instellingen"
     },
     "auth": {
-        "logout": "Uitloggen",
+        "logout": "Afmelden",
         "login": "Inloggen",
-        "register": "Registreren"
+        "register": "Registreren",
+        "logoutSuccess": "Afmelden gelukt",
+        "comeBackSoon": "Kom snel terug!"
     }
 }

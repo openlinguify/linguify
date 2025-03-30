@@ -13,7 +13,9 @@
   "auth": {
     "logout": "Logout",
     "login": "Login",
-    "register": "Register"
+    "register": "Register",
+    "logoutSuccess": "Logged out successfully",
+    "comeBackSoon": "Come back soon!"
   }
   }
   

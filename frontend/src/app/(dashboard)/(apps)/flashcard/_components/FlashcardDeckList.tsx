@@ -27,11 +27,12 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { revisionApi } from "@/services/revisionAPI";
 import type { FlashcardDeck, EditingDeck } from "@/types/revision";
+import { useTranslation } from "@/hooks/useTranslations";
 
 interface FlashcardDeckListProps {
   decks: FlashcardDeck[];
   onDeckSelect: (deckId: number) => void;
-  onViewAllCards?: (deckId: number) => void;  // Nouvelle prop pour la navigation avancée
+  onViewAllCards?: (deckId: number) => void;  // New prop for advanced navigation
 }
 
 interface DeckWithCardCount extends FlashcardDeck {
@@ -44,6 +45,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
   onViewAllCards
 }) => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [decksWithCount, setDecksWithCount] = useState<DeckWithCardCount[]>([]);
   const [isAddingDeck, setIsAddingDeck] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -96,8 +98,8 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
   const handleAddDeck = async () => {
     if (!newDeck.name.trim()) {
       toast({
-        title: "Error",
-        description: "Deck name is required",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.deckNameRequired'),
         variant: "destructive",
       });
       return;
@@ -109,12 +111,12 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
         name: newDeck.name.trim(),
         description:
           newDeck.description.trim() ||
-          `Deck created on ${new Date().toLocaleDateString()}`,
+          t('dashboard.flashcards.defaultDeckDescription', { date: new Date().toLocaleDateString() }),
       });
 
       toast({
-        title: "Success",
-        description: "Deck created successfully",
+        title: t('dashboard.flashcards.successTitle'),
+        description: t('dashboard.flashcards.deckCreated'),
       });
 
       setIsAddingDeck(false);
@@ -125,8 +127,8 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
       // The parent component will trigger fetchCardCounts through the decks prop update
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to create deck",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.createDeckError'),
         variant: "destructive",
       });
     } finally {
@@ -149,7 +151,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
 
     if (
       !window.confirm(
-        `Are you sure you want to delete ${selectedDecks.length} deck(s)?`
+        t('dashboard.flashcards.confirmDeleteDecks', { count: selectedDecks.length.toString() })
       )
     ) {
       return;
@@ -181,16 +183,18 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
 
       // Provide detailed feedback
       toast({
-        title: failCount > 0 ? "Partial Success" : "Success",
+        title: failCount > 0 
+          ? t('dashboard.flashcards.partialSuccess') 
+          : t('dashboard.flashcards.successTitle'),
         description: failCount > 0
-          ? `${successCount} decks deleted, ${failCount} failed`
-          : `${successCount} decks were deleted successfully`,
+          ? t('dashboard.flashcards.partialDeleteSuccess', { success: successCount.toString(), fail: failCount.toString() })
+          : t('dashboard.flashcards.deleteDecksSuccess', { count: successCount.toString() }),
         variant: failCount > 0 ? "destructive" : "default",
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Operation failed. Please try again.",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.operationFailed'),
         variant: "destructive",
       });
     } finally {
@@ -222,15 +226,15 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
       );
 
       toast({
-        title: "Success",
-        description: "Deck updated successfully",
+        title: t('dashboard.flashcards.successTitle'),
+        description: t('dashboard.flashcards.deckUpdated'),
       });
 
       setEditingDeck(null);
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to update deck",
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.updateDeckError'),
         variant: "destructive",
       });
     } finally {
@@ -244,13 +248,13 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
       <Card className="border-dashed border-2">
         <CardContent className="flex flex-col items-center justify-center min-h-[200px] space-y-4 p-6">
           <BookOpen className="h-8 w-8 text-gray-400" />
-          <p className="text-gray-500 text-center">No decks available yet.</p>
+          <p className="text-gray-500 text-center">{t('dashboard.flashcards.noDecksAvailable')}</p>
           <Button
             className="bg-gradient-to-r from-brand-purple to-brand-gold"
             onClick={() => setIsAddingDeck(true)}
           >
             <Plus className="h-4 w-4 mr-2" />
-            Create Your First Deck
+            {t('dashboard.flashcards.createFirstDeck')}
           </Button>
         </CardContent>
       </Card>
@@ -262,7 +266,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
-          Select a Deck
+          {t('dashboard.flashcards.selectDeck')}
           {isLoadingCounts && (
             <Loader2 className="inline-block h-4 w-4 ml-2 animate-spin text-brand-purple" />
           )}
@@ -274,7 +278,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
             disabled={isLoading}
           >
             <Plus className="h-4 w-4 mr-2" />
-            New List
+            {t('dashboard.flashcards.newList')}
           </Button>
           {isSelectionMode ? (
             <>
@@ -284,7 +288,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                 disabled={isLoading || selectedDecks.length === 0}
               >
                 <Trash2 className="h-4 w-4 mr-2" />
-                Delete ({selectedDecks.length})
+                {t('dashboard.flashcards.deleteWithCount', { count: selectedDecks.length.toString() })}
               </Button>
               <Button
                 variant="outline"
@@ -294,7 +298,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                 }}
               >
                 <X className="h-4 w-4 mr-2" />
-                Cancel
+                {t('dashboard.flashcards.cancel')}
               </Button>
             </>
           ) : (
@@ -304,13 +308,13 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
               onClick={() => setIsSelectionMode(true)}
             >
               <CheckSquare className="h-4 w-4 mr-2" />
-              Select
+              {t('dashboard.flashcards.select')}
             </Button>
           )}
         </div>
       </div>
 
-      {/* Grid des decks */}
+      {/* Decks grid */}
       <div className="grid gap-4 sm:grid-cols-2">
         {decksWithCount.map((deck) => (
           <Card
@@ -362,9 +366,9 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                         }}
                       >
                         <Pencil className="mr-2 h-4 w-4" />
-                        Edit
+                        {t('dashboard.flashcards.edit')}
                       </DropdownMenuItem>
-                      {/* Option pour voir toutes les cartes du deck */}
+                      {/* Option to view all cards in the deck */}
                       {onViewAllCards && (
                         <DropdownMenuItem
                           onClick={(e) => {
@@ -373,7 +377,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                           }}
                         >
                           <List className="mr-2 h-4 w-4" />
-                          View All Cards
+                          {t('dashboard.flashcards.viewAllCards')}
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuItem
@@ -385,7 +389,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                         }}
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
+                        {t('dashboard.flashcards.delete')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -395,13 +399,13 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                 {deck.description}
               </p>
               <div className="flex justify-between text-xs text-gray-400">
-                <span>{deck.cardCount ?? 0} cards</span>
+                <span>{t('dashboard.flashcards.cardsCount', { count: (deck.cardCount ?? 0).toString() })}</span>
                 <span>
-                  Created {new Date(deck.created_at).toLocaleDateString()}
+                  {t('dashboard.flashcards.createdOn', { date: new Date(deck.created_at).toLocaleDateString() })}
                 </span>
               </div>
               
-              {/* Bouton de raccourci vers la vue liste des cartes */}
+              {/* Shortcut button to card list view */}
               {onViewAllCards && (
                 <div className="pt-2 flex justify-end">
                   <Button
@@ -414,7 +418,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                     }}
                   >
                     <List className="mr-1 h-4 w-4" />
-                    View All Cards
+                    {t('dashboard.flashcards.viewAllCards')}
                     <ExternalLink className="ml-1 h-3 w-3" />
                   </Button>
                 </div>
@@ -424,12 +428,12 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
         ))}
       </div>
 
-      {/* Modal d'édition */}
+      {/* Edit modal */}
       {editingDeck && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Card className="w-full max-w-md">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Edit Deck</CardTitle>
+              <CardTitle>{t('dashboard.flashcards.editDeck')}</CardTitle>
               <Button
                 variant="ghost"
                 size="icon"
@@ -440,10 +444,10 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-name">Name</Label>
+                <Label htmlFor="edit-name">{t('dashboard.flashcards.name')}</Label>
                 <Input
                   id="edit-name"
-                  placeholder="Enter deck name"
+                  placeholder={t('dashboard.flashcards.enterDeckName')}
                   value={editingDeck.name}
                   onChange={(e) =>
                     setEditingDeck((prev) =>
@@ -453,10 +457,10 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-description">Description</Label>
+                <Label htmlFor="edit-description">{t('dashboard.flashcards.description')}</Label>
                 <Textarea
                   id="edit-description"
-                  placeholder="Enter deck description"
+                  placeholder={t('dashboard.flashcards.enterDeckDescription')}
                   value={editingDeck.description}
                   onChange={(e) =>
                     setEditingDeck((prev) =>
@@ -471,7 +475,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                   onClick={() => setEditingDeck(null)}
                   disabled={isLoading}
                 >
-                  Cancel
+                  {t('dashboard.flashcards.cancel')}
                 </Button>
                 <Button
                   onClick={handleEditDeck}
@@ -481,9 +485,9 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                   {isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Saving...
+                      {t('dashboard.flashcards.saving')}
                     </>
-                  ) : "Save Changes"}
+                  ) : t('dashboard.flashcards.saveChanges')}
                 </Button>
               </div>
             </CardContent>
@@ -491,12 +495,12 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
         </div>
       )}
 
-      {/* Modal d'ajout */}
+      {/* Add modal */}
       {isAddingDeck && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Card className="w-full max-w-md">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Create New Deck</CardTitle>
+              <CardTitle>{t('dashboard.flashcards.createNewDeck')}</CardTitle>
               <Button
                 variant="ghost"
                 size="icon"
@@ -507,10 +511,10 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">{t('dashboard.flashcards.name')}</Label>
                 <Input
                   id="name"
-                  placeholder="Enter deck name"
+                  placeholder={t('dashboard.flashcards.enterDeckName')}
                   value={newDeck.name}
                   onChange={(e) =>
                     setNewDeck((prev) => ({
@@ -521,10 +525,10 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Description (optional)</Label>
+                <Label htmlFor="description">{t('dashboard.flashcards.descriptionOptional')}</Label>
                 <Textarea
                   id="description"
-                  placeholder="Enter deck description"
+                  placeholder={t('dashboard.flashcards.enterDeckDescription')}
                   value={newDeck.description}
                   onChange={(e) =>
                     setNewDeck((prev) => ({
@@ -540,7 +544,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                   onClick={() => setIsAddingDeck(false)}
                   disabled={isLoading}
                 >
-                  Cancel
+                  {t('dashboard.flashcards.cancel')}
                 </Button>
                 <Button
                   onClick={handleAddDeck}
@@ -550,9 +554,9 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                   {isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Creating...
+                      {t('dashboard.flashcards.creating')}
                     </>
-                  ) : "Create Deck"}
+                  ) : t('dashboard.flashcards.createDeck')}
                 </Button>
               </div>
             </CardContent>

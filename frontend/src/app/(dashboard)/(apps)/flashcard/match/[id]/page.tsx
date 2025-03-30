@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft } from "lucide-react";
 import { revisionApi } from "@/services/revisionAPI";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslation } from "@/hooks/useTranslations";
 
 interface MatchCard {
   id: number;
@@ -19,6 +20,7 @@ interface MatchCard {
 }
 
 export default function MatchPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [cards, setCards] = useState<MatchCard[]>([]);
   const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>(null);
@@ -44,8 +46,8 @@ export default function MatchPage() {
         
         if (flashcards.length === 0) {
           toast({
-            title: "No cards found",
-            description: "This deck has no cards to play with.",
+            title: t('dashboard.flashcards.modes.match.noCardsFound'),
+            description: t('dashboard.flashcards.modes.match.noCardsFoundDescription'),
             variant: "destructive"
           });
           return;
@@ -84,8 +86,8 @@ export default function MatchPage() {
       } catch (error) {
         console.error("Failed to load flashcards:", error);
         toast({
-          title: "Error",
-          description: "Failed to load flashcards for the game",
+          title: t('dashboard.flashcards.modes.match.errorLoadingCards'),
+          description: t('dashboard.flashcards.modes.match.errorLoadingCardsDescription'),
           variant: "destructive"
         });
       } finally {
@@ -96,7 +98,7 @@ export default function MatchPage() {
     if (id) {
       loadCards();
     }
-  }, [id, toast]);
+  }, [id, toast, t]);
 
   // Mélanger un tableau
   const shuffleArray = <T,>(array: T[]): T[] => {
@@ -169,8 +171,6 @@ export default function MatchPage() {
   };
 
   // Retour au deck
-
-
   const backToDeck = () => {
     if (id) {
       router.push(`/flashcard/deck/${id}`);
@@ -201,13 +201,13 @@ export default function MatchPage() {
       <div className="container mx-auto py-8 text-center">
         <div className="mb-6">
           <Button variant="outline" onClick={backToDeck}>
-            <ChevronLeft className="mr-2 h-4 w-4" /> Back to Decks
+            <ChevronLeft className="mr-2 h-4 w-4" /> {t('dashboard.flashcards.modes.match.backToDecks')}
           </Button>
         </div>
-        <h2 className="text-2xl font-bold mb-4">Match Game</h2>
-        <p className="mb-8">Match each term with its definition. Find all pairs as quickly as possible!</p>
+        <h2 className="text-2xl font-bold mb-4">{t('dashboard.flashcards.modes.match.pageTitle')}</h2>
+        <p className="mb-8">{t('dashboard.flashcards.modes.match.gameDescription')}</p>
         <Button onClick={startGame} className="px-8 py-4 text-lg">
-          Start Game
+          {t('dashboard.flashcards.modes.match.startGame')}
         </Button>
       </div>
     );
@@ -217,15 +217,17 @@ export default function MatchPage() {
   if (gameCompleted) {
     return (
       <div className="container mx-auto py-8 text-center">
-        <h2 className="text-2xl font-bold mb-4">Congratulations!</h2>
-        <p className="text-xl mb-8">You completed the game in <span className="font-bold">{elapsedTime.toFixed(1)}</span> seconds</p>
+        <h2 className="text-2xl font-bold mb-4">{t('dashboard.flashcards.modes.match.congratulations')}</h2>
+        <p className="text-xl mb-8" dangerouslySetInnerHTML={{
+          __html: t('dashboard.flashcards.modes.match.completedIn', { time: elapsedTime.toFixed(1) })
+        }} />
         
         <div className="flex justify-center gap-4 mb-8">
           <Button onClick={playAgain}>
-            Play Again
+            {t('dashboard.flashcards.modes.match.playAgain')}
           </Button>
           <Button variant="outline" onClick={backToDeck}>
-            <ChevronLeft className="mr-2 h-4 w-4" /> Back to Decks
+            <ChevronLeft className="mr-2 h-4 w-4" /> {t('dashboard.flashcards.modes.match.backToDecks')}
           </Button>
         </div>
       </div>
@@ -236,9 +238,9 @@ export default function MatchPage() {
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
         <Button variant="outline" onClick={backToDeck}>
-          <ChevronLeft className="mr-2 h-4 w-4" /> Back to Decks
+          <ChevronLeft className="mr-2 h-4 w-4" /> {t('dashboard.flashcards.modes.match.backToDecks')}
         </Button>
-        <div className="text-xl font-mono">{elapsedTime.toFixed(1)}s</div>
+        <div className="text-xl font-mono">{elapsedTime.toFixed(1)}{t('dashboard.flashcards.modes.match.seconds')}</div>
       </div>
       
       <div className="grid grid-cols-3 gap-4">

@@ -1,8 +1,10 @@
+// src/app/(dashboard)/(apps)/flashcard/_components/FlashcardStats.tsx
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Dumbbell, BookOpen, GraduationCap, Flame } from "lucide-react";
 import { revisionApi } from "@/services/revisionAPI";
+import { useTranslation } from "@/hooks/useTranslations";
 
 interface FlashcardStatsProps {
   deckId: number;
@@ -19,6 +21,7 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
   const [progress, setProgress] = useState<StudyProgress | null>(null);
   const [streak, setStreak] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -66,12 +69,12 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
   return (
     <Card className="mb-4">
       <CardContent className="p-4">
-        <h3 className="text-sm font-medium mb-2">Study Progress</h3>
+        <h3 className="text-sm font-medium mb-2">{t('dashboard.flashcards.studyProgress')}</h3>
         
         {/* Progression globale */}
         <div className="mb-3">
           <div className="flex justify-between mb-1 text-xs">
-            <span className="text-gray-600">Overall completion</span>
+            <span className="text-gray-600">{t('dashboard.flashcards.overallCompletion')}</span>
             <span className="font-medium">{progress.completionPercentage}%</span>
           </div>
           <Progress value={progress.completionPercentage} className="h-1.5" />
@@ -85,7 +88,7 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
             </div>
             <div>
               <span className="font-medium text-sm block leading-none">{progress.totalCards}</span>
-              <span className="text-xs text-gray-500 leading-none">Total</span>
+              <span className="text-xs text-gray-500 leading-none">{t('dashboard.flashcards.total')}</span>
             </div>
           </div>
           
@@ -95,7 +98,7 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
             </div>
             <div>
               <span className="font-medium text-sm block leading-none">{progress.learnedCards}</span>
-              <span className="text-xs text-gray-500 leading-none">Learned</span>
+              <span className="text-xs text-gray-500 leading-none">{t('dashboard.flashcards.learned')}</span>
             </div>
           </div>
           
@@ -105,7 +108,7 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
             </div>
             <div>
               <span className="font-medium text-sm block leading-none">{progress.toReviewCards}</span>
-              <span className="text-xs text-gray-500 leading-none">Review</span>
+              <span className="text-xs text-gray-500 leading-none">{t('dashboard.flashcards.review')}</span>
             </div>
           </div>
           
@@ -115,7 +118,7 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
             </div>
             <div>
               <span className="font-medium text-sm block leading-none">{streak}</span>
-              <span className="text-xs text-gray-500 leading-none">Streak</span>
+              <span className="text-xs text-gray-500 leading-none">{t('dashboard.flashcards.streak')}</span>
             </div>
           </div>
         </div>
