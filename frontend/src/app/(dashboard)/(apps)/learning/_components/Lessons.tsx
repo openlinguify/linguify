@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { getUserTargetLanguage } from "@/utils/languageUtils";
 import { Lesson, LessonsProps } from "@/types/learning";
 import courseAPI from "@/services/courseAPI";
+import progressAPI from "@/services/progressAPI";
 import {
   ArrowLeft,
   Clock,
@@ -20,6 +21,7 @@ import {
   Video,
   FileText,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const getLessonTypeIcon = (type: string) => {
   switch (type.toLowerCase()) {
@@ -29,17 +31,25 @@ const getLessonTypeIcon = (type: string) => {
       return <GraduationCap className="w-5 h-5" />;
     case "reading":
       return <FileText className="w-5 h-5" />;
+    case "vocabulary":
+      return <BookOpen className="w-5 h-5" />;
+    case "grammar":
+      return <GraduationCap className="w-5 h-5" />;
+    case "theory":
+      return <FileText className="w-5 h-5" />;
     default:
       return <BookOpen className="w-5 h-5" />;
   }
 };
 
-export default function EnhancedLessons({ unitId }: LessonsProps) {
+export default function Lessons({ unitId }: LessonsProps) {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [progress] = useState(30);
+  const [unitProgress, setUnitProgress] = useState(0);
   const [targetLanguage, setTargetLanguage] = useState('en');
+  const [unitTitle, setUnitTitle] = useState('');
+  const [lessonsWithProgress, setLessonsWithProgress] = useState<(Lesson & { progress?: number, status?: string })[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -48,6 +58,47 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
     setTargetLanguage(userLang);
     console.log('Component: User target language set to:', userLang);
   }, []);
+
+  // Charger les données de progression
+  useEffect(() => {
+    const loadProgressData = async () => {
+      if (!unitId) return;
+      
+      try {
+        // Charger la progression de l'unité
+        const unitProgressData = await progressAPI.getUnitProgress();
+        if (unitProgressData && Array.isArray(unitProgressData)) {
+          const thisUnitProgress = unitProgressData.find(item => item.unit === parseInt(unitId));
+          if (thisUnitProgress) {
+            setUnitProgress(thisUnitProgress.completion_percentage);
+          }
+        }
+        
+        // Charger la progression des leçons
+        const lessonsProgressData = await progressAPI.getLessonProgressByUnit(parseInt(unitId));
+        
+        // Associer les progressions aux leçons
+        if (lessonsProgressData && Array.isArray(lessonsProgressData) && lessons.length > 0) {
+          const updatedLessons = lessons.map(lesson => {
+            const lessonProgress = lessonsProgressData.find(p => p.lesson_details.id === lesson.id);
+            return {
+              ...lesson,
+              progress: lessonProgress?.completion_percentage || 0,
+              status: lessonProgress?.status || 'not_started'
+            };
+          });
+          
+          setLessonsWithProgress(updatedLessons);
+        }
+      } catch (err) {
+        console.error("Failed to load progress data:", err);
+      }
+    };
+    
+    if (lessons.length > 0) {
+      loadProgressData();
+    }
+  }, [unitId, lessons]);
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -59,6 +110,15 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
         
         // Passer explicitement la langue
         const data = await courseAPI.getLessons(parseInt(unitId), targetLanguage);
+        
+        // Charger les données de l'unité pour récupérer le titre
+        const unitsData = await courseAPI.getUnits(undefined, targetLanguage);
+        if (Array.isArray(unitsData)) {
+          const unit = unitsData.find(u => u.id === parseInt(unitId));
+          if (unit) {
+            setUnitTitle(unit.title);
+          }
+        }
         
         // Vérifier les données reçues
         if (!data || !Array.isArray(data)) {
@@ -82,6 +142,11 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
         }
         
         setLessons(sortedLessons);
+        setLessonsWithProgress(sortedLessons.map(lesson => ({
+          ...lesson,
+          progress: 0,
+          status: 'not_started'
+        })));
         setError(null);
       } catch (err) {
         console.error("Component: Error fetching lessons:", err);
@@ -128,79 +193,108 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
 
   return (
     <div className="min-h-screen w-full bg-purple-50">
-      <div className="px-8 py-6 max-w-7xl mx-auto margin-bottom-8">
+      <div className="px-8 py-6 max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="mb-8">
           <BackButton
             onClick={handleBack}
             iconLeft={<ArrowLeft className="h-4 w-4" />}
           >
-            Back to Lessons
+            Back to Units
           </BackButton>
         </div>
 
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-amber-500 text-transparent bg-clip-text">
-            Lesson Progress
+            {unitTitle || `Unit ${unitId}`}
           </h1>
-          <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-purple-600" />
-            <span className="text-gray-600">
-              {lessons.reduce(
-                (acc, lesson) => acc + lesson.estimated_duration,
-                0
-              )}{" "}
-              min total
-            </span>
+          <div className="flex items-center gap-3">
+            <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white px-3 py-1.5">
+              {targetLanguage.toUpperCase()}
+            </Badge>
+            <div className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-purple-600" />
+              <span className="text-gray-600">
+                {lessons.reduce(
+                  (acc, lesson) => acc + lesson.estimated_duration,
+                  0
+                )}{" "}
+                min total
+              </span>
+            </div>
           </div>
         </div>
 
         <div className="bg-white rounded-lg p-4 mb-8 shadow-sm">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-medium text-gray-600">
-              Overall Progress
+              Unit Progress
             </span>
             <span className="text-sm font-medium text-purple-600">
-              {progress}%
+              {unitProgress}%
             </span>
           </div>
-          <Progress value={progress} className="h-2 bg-purple-100" />
-        </div>
-
-        {/* Debug Language Info */}
-        <div className="mb-4 p-2 bg-blue-50 rounded text-sm text-blue-800">
-          Current target language: <strong>{targetLanguage}</strong>
+          <Progress 
+            value={unitProgress} 
+            className="h-2 bg-purple-100"
+            style={{
+              "--progress-background": "linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234), rgb(244, 114, 182))"
+            } as React.CSSProperties}
+          />
         </div>
 
         {/* Lessons Grid */}
         <div className="space-y-4">
-          {lessons.length === 0 ? (
+          {lessonsWithProgress.length === 0 ? (
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>No lessons available yet.</AlertDescription>
             </Alert>
           ) : (
-            lessons.map((lesson, index) => (
+            lessonsWithProgress.map((lesson, index) => (
               <Card
                 key={lesson.id}
-                className="transform transition-all duration-300 hover:scale-[1.01] cursor-pointer hover:shadow-md bg-white"
+                className={`transform transition-all duration-300 hover:scale-[1.01] cursor-pointer hover:shadow-md bg-white ${lesson.status === 'completed'
+                    ? 'border-l-4 border-green-500'
+                    : lesson.status === 'in_progress'
+                      ? 'border-l-4 border-amber-500'
+                      : ''
+                  }`}
                 onClick={() => handleLessonClick(lesson.id)}
               >
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 text-purple-600 shrink-0">
-                      {getLessonTypeIcon(lesson.lesson_type)}
+                    <div className={`flex items-center justify-center w-12 h-12 rounded-full shrink-0 ${lesson.status === 'completed'
+                        ? 'bg-green-100 text-green-600'
+                        : 'bg-purple-100 text-purple-600'
+                      }`}>
+                      {lesson.status === 'completed'
+                        ? <CheckCircle className="h-5 w-5" />
+                        : getLessonTypeIcon(lesson.lesson_type)}
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-amber-500 text-transparent bg-clip-text">
+                          <h3 className="text-xl font-bold text-gray-900">
                             {lesson.title}
                           </h3>
                           <p className="text-gray-600 mt-1">
                             {lesson.description}
                           </p>
+                          
+                          {/* Progress indicator if available */}
+                          {lesson.progress !== undefined && lesson.progress > 0 && (
+                            <div className="mt-2">
+                              <Progress 
+                                className="h-1.5" 
+                                value={lesson.progress}
+                                style={{
+                                  "--progress-background": "linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234))"
+                                } as React.CSSProperties}
+                              />
+                            </div>
+                          )}
                         </div>
                         <ChevronRight className="h-5 w-5 text-gray-400 shrink-0" />
                       </div>
@@ -214,9 +308,23 @@ export default function EnhancedLessons({ unitId }: LessonsProps) {
                           {getLessonTypeIcon(lesson.lesson_type)}
                           {lesson.lesson_type}
                         </span>
-                        {index === 0 && (
+                        
+                        {lesson.status === 'in_progress' && (
+                          <span className="flex items-center gap-1 text-sm font-medium px-3 py-1 rounded-full bg-amber-50 text-amber-700">
+                            In Progress
+                          </span>
+                        )}
+                        
+                        {lesson.status === 'completed' && (
                           <span className="flex items-center gap-1 text-sm font-medium px-3 py-1 rounded-full bg-green-50 text-green-700">
-                            <CheckCircle className="h-4 w-4" />
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Completed
+                          </span>
+                        )}
+                        
+                        {index === 0 && lesson.status === 'not_started' && (
+                          <span className="flex items-center gap-1 text-sm font-medium px-3 py-1 rounded-full bg-blue-50 text-blue-700">
+                            <CheckCircle className="h-4 w-4 mr-1" />
                             Start Here
                           </span>
                         )}

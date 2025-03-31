@@ -187,19 +187,23 @@ class User(AbstractBaseUser, PermissionsMixin):
                                       help_text="Your language level")
     objectives = models.CharField(max_length=20, choices=OBJECTIVES_CHOICES, default=OBJECTIVES_CHOICES[0][0],
                                   help_text="Your learning objectives")
-    is_coach = models.BooleanField(default=False)  # Flag to indicate if a user is a coach
+    is_coach = models.BooleanField(default=False)
+    interface_language = models.CharField(max_length=10, default='en')
+    theme = models.CharField(max_length=10, default='light')
     # settings fields
     email_notifications = models.BooleanField(default=True)
     push_notifications = models.BooleanField(default=True)
-    interface_language = models.CharField(max_length=10, default='en')
-    daily_goal = models.IntegerField(default=15)
     weekday_reminders = models.BooleanField(default=True)
     weekend_reminders = models.BooleanField(default=False)
     reminder_time = models.CharField(max_length=5, default='18:00')
+    # learning settings fields
     speaking_exercises = models.BooleanField(default=True)
     listening_exercises = models.BooleanField(default=True)
     reading_exercises = models.BooleanField(default=True)
     writing_exercises = models.BooleanField(default=True)
+    daily_goal = models.IntegerField(default=15)
+
+    # Private settings fields
     public_profile = models.BooleanField(default=True)
     share_progress = models.BooleanField(default=True)
     share_activity = models.BooleanField(default=False)
@@ -231,14 +235,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def name(self):
         return f"{self.first_name} {self.last_name}"
-
-    @property
-    def age(self):
-        import datetime
-        if self.birthday:
-            return int((datetime.date.today() - self.birthday).days / 365.25  )
-        else:
-            return None
 
 # Extended Coach Profile Model: the additional fields for a coach profile are added here as a separate model.
 # This model has a Many-to-many relationship with the User model.

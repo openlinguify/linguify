@@ -65,6 +65,7 @@
     "levelProgress": "Level Progress",
     "unitsCount": "{completed}/{total} units"
   },
+
   "flashcards": {
     "userDecks": "{name}'s Flashcard Decks",
     "refresh": "Refresh",
@@ -500,5 +501,28 @@
         "daysCount": "{count} days"
       }
     }
+  },
+  "learning": {
+      "backTo": "Back",
+      "loadingContent": "Loading lesson content...",
+      "noContentFound": "No content found for this lesson.",
+      "lessonProgress": "Lesson Progress",
+      "modules": "modules",
+      "markAsComplete": "Mark as Complete",
+      "contentTypes": {
+        "theory": "Theory",
+        "vocabulary": "Vocabulary",
+        "multiple choice": "Multiple Choice",
+        "numbers": "Numbers",
+        "numbersGame": "Numbers Game",
+        "reordering": "Reordering",
+        "fillBlank": "Fill in the Blank",
+        "matching": "Matching"
+      },
+      "badges": {
+        "completed": "Completed",
+        "fallback": "Fallback",
+        "startHere": "Start Here"
+      }
+    }
   }
-}

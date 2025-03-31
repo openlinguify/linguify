@@ -302,21 +302,35 @@ def user_profile(request):
     user = request.user
     
     if request.method == 'GET':
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+        try:
+            serializer = UserSerializer(user)
+            return Response(serializer.data)
+        except Exception as e:
+            logger.exception(f"Error serializing user profile: {str(e)}")
+            return Response(
+                {'error': 'Failed to retrieve user profile', 'detail': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
     
     elif request.method == 'PATCH':
-        logger.info(f"Updating profile for user {user.email}")
-        logger.debug(f"Update data: {request.data}")
-        
-        serializer = ProfileUpdateSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            logger.info(f"Profile updated successfully for {user.email}")
-            return Response(serializer.data)
-        
-        logger.error(f"Profile update validation errors: {serializer.errors}")
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            logger.info(f"Updating profile for user {user.email}")
+            logger.debug(f"Update data: {request.data}")
+            
+            serializer = ProfileUpdateSerializer(user, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                logger.info(f"Profile updated successfully for {user.email}")
+                return Response(serializer.data)
+            
+            logger.error(f"Profile update validation errors: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.exception(f"Error updating user profile: {str(e)}")
+            return Response(
+                {'error': 'Failed to update profile', 'detail': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -357,7 +371,64 @@ def update_profile_picture(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
-
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def debug_profile_endpoint(request):
+    """
+    Debug endpoint to trace profile API issues
+    """
+    import sys
+    import traceback
+    
+    try:
+        # Get basic request info
+        request_info = {
+            'method': request.method,
+            'path': request.path,
+            'auth': request.auth is not None,
+            'user': str(request.user),
+            'is_authenticated': request.user.is_authenticated,
+            'headers': dict(request.headers),
+        }
+        
+        # Try to access user data safely
+        user_data = None
+        if request.user.is_authenticated:
+            try:
+                user = request.user
+                user_data = {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'is_active': user.is_active,
+                }
+            except Exception as e:
+                user_data = {'error': str(e)}
+        
+        # Try actual profile serialization
+        serializer_data = None
+        if request.user.is_authenticated:
+            try:
+                from .serializers import UserSerializer
+                serializer = UserSerializer(request.user)
+                serializer_data = serializer.data
+            except Exception as e:
+                serializer_data = {'error': str(e), 'traceback': traceback.format_exc()}
+        
+        return Response({
+            'request_info': request_info,
+            'user_data': user_data,
+            'serializer_data': serializer_data,
+            'python_version': sys.version,
+            'success': True
+        })
+    except Exception as e:
+        # Capture full error info
+        return Response({
+            'error': str(e),
+            'traceback': traceback.format_exc(),
+            'success': False
+        }, status=500)
 
 
 

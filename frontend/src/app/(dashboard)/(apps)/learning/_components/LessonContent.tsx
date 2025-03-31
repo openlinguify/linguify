@@ -36,6 +36,7 @@ import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { ContentLesson, LessonContentProps } from "@/types/learning";
 import MatchingExercise from "./MatchingExercise";
+import { useTranslation } from "@/hooks/useTranslations";
 
 // Content type mapping for consistent handling
 const CONTENT_TYPES = {
@@ -75,6 +76,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
   const [lessonProgress, setLessonProgress] = useState(0);
   const [lessonTitle, setLessonTitle] = useState("");
   const [validUnitId, setValidUnitId] = useState<number | null>(null);
+  const { t } = useTranslation();
 
   // Validate and parse unitId
   useEffect(() => {
@@ -186,14 +188,16 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
 
   const handleBack = () => {
     if (selectedContent) {
+      // Si un contenu est sélectionné, revenir à la liste des contenus de la leçon
       setSelectedContent(null);
-
+  
       // Lors du retour au sommaire, rafraîchir les données de progression
       if (contents.length > 0) {
         fetchProgressData(contents);
       }
     } else {
-      // Si on revient à la liste des leçons, mettre à jour la progression de la leçon
+      // Si on est déjà dans la liste des contenus, revenir directement à la page principale
+      // au lieu de passer par la page des leçons
       if (lessonProgress > 0 && validUnitId !== null) {
         lessonCompletionService.updateLessonProgress(
           parseInt(lessonId),
@@ -202,10 +206,12 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
           undefined,
           lessonProgress === 100
         ).then(() => {
-          router.push(validUnitId ? `/learning/${validUnitId}` : '/learning');
+          // Rediriger directement vers la page principale des unités
+          router.push(`/learning`);
         });
       } else {
-        router.push(validUnitId ? `/learning/${validUnitId}` : '/learning');
+        // Rediriger directement vers la page principale des unités
+        router.push(`/learning`);
       }
     }
   };
@@ -254,7 +260,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
       <div className="min-h-screen w-full bg-purple-50 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-          <p className="text-purple-600 font-medium">Loading lesson content...</p>
+          <p className="text-purple-600 font-medium">{t('dashboard.learning.loadingContent')}</p>
         </div>
       </div>
     );
@@ -288,7 +294,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
             onClick={handleBack}
             iconLeft={<ArrowLeft className="h-4 w-4" />}
           >
-            Back to Lesson
+            {t('dashboard.learning.backTo')}
           </BackButton>
 
           <div className="mt-4 mb-8 flex flex-wrap items-center gap-2">
@@ -297,8 +303,8 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
             </Badge>
 
             <Badge className="bg-white text-purple-600 border border-purple-200">
-              {selectedContent.type}
-            </Badge>
+            {t(`dashboard.learning.contentTypes.${selectedContent.type}`)}
+          </Badge>
           </div>
 
           {selectedContent.type === CONTENT_TYPES.THEORY && (
@@ -342,18 +348,18 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
 
           {/* Bouton de complétion fixe */}
           <div className="fixed bottom-6 right-6">
-            <Button
-              onClick={() => handleContentComplete(selectedContent.id)}
-              className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white shadow-lg hover:shadow-xl transition-all hover:opacity-90"
-            >
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Mark as Complete
-            </Button>
-          </div>
+          <Button
+            onClick={() => handleContentComplete(selectedContent.id)}
+            className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white shadow-lg hover:shadow-xl transition-all hover:opacity-90"
+          >
+            <CheckCircle className="h-4 w-4 mr-2" />
+            {t('dashboard.learning.markAsComplete')}
+          </Button>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   // Main content list
   return (
@@ -364,7 +370,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
             onClick={handleBack}
             iconLeft={<ArrowLeft className="h-4 w-4" />}
           >
-            Back to Lessons
+          {t('dashboard.learning.backTo')}
           </BackButton>
         </div>
 
@@ -380,36 +386,40 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
             </Badge>
 
             <div className="flex items-center text-gray-600 text-sm">
-              <Clock className="h-4 w-4 mr-1" />
-              {contents.length} modules
-            </div>
+            <Clock className="h-4 w-4 mr-1" />
+            {contents.length} {t('dashboard.learning.modules')}
+          </div>
           </div>
         </div>
 
-        {/* Progress bar */}
-        <div className="bg-white rounded-lg p-4 mb-8 shadow-sm">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-600">Lesson Progress</span>
-            <span className="text-sm font-medium text-purple-600">{lessonProgress}%</span>
-          </div>
-          <Progress
-            value={lessonProgress}
-            className="h-2 bg-purple-100"
-            style={{
-              "--progress-background": "linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234), rgb(244, 114, 182))"
-            } as React.CSSProperties}
-          />
+      {/* Progress bar */}
+      <div className="bg-white rounded-lg p-4 mb-8 shadow-sm">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm font-medium text-gray-600">
+            {t('dashboard.learning.lessonProgress')}
+          </span>
+          <span className="text-sm font-medium text-purple-600">{lessonProgress}%</span>
         </div>
+        <Progress
+          value={lessonProgress}
+          className="h-2 bg-purple-100"
+          style={{
+            "--progress-background": "linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234), rgb(244, 114, 182))"
+          } as React.CSSProperties}
+        />
+      </div>
 
-        {/* Contents List */}
-        <div className="space-y-4">
-          {contents.length === 0 ? (
-            <div className="bg-white rounded-lg p-6 shadow-sm text-center">
-              <AlertCircle className="h-8 w-8 text-purple-500 mx-auto mb-2" />
-              <p className="text-lg font-medium text-gray-700">No content found for this lesson.</p>
-            </div>
-          ) : (
-            contents.map((content, index) => {
+      {/* Contents List */}
+      <div className="space-y-4">
+        {contents.length === 0 ? (
+          <div className="bg-white rounded-lg p-6 shadow-sm text-center">
+            <AlertCircle className="h-8 w-8 text-purple-500 mx-auto mb-2" />
+            <p className="text-lg font-medium text-gray-700">
+              {t('dashboard.learning.noContentFound')}
+            </p>
+          </div>
+        ) : (
+          contents.map((content, index) => {
               const isClickable = Object.values(CONTENT_TYPES).includes(content.content_type as any);
               const fallbackTitle = content.title.en || "Content Title";
               const fallbackInstruction = content.instruction.en || "Content Instructions";
@@ -450,13 +460,13 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
 
                               {isCompleted && (
                                 <Badge className="bg-green-100 text-green-700 border-none">
-                                  Completed
+                                  {t('dashboard.learning.badges.completed')}
                                 </Badge>
                               )}
 
                               {usingFallback && (
                                 <Badge variant="outline" className="text-orange-600 bg-orange-50 border-orange-200">
-                                  Fallback
+                                  {t('dashboard.learning.badges.fallback')}
                                 </Badge>
                               )}
                             </div>
@@ -500,16 +510,16 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
 
                         {/* Bottom badges/info */}
                         <div className="flex flex-wrap items-center gap-2 mt-3">
-                          <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-700">
-                            {getContentTypeIcon(content.content_type)}
-                            {content.content_type}
-                          </span>
+                        <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-700">
+                    {getContentTypeIcon(content.content_type)}
+                    {t(`dashboard.learning.contentTypes.${content.content_type.toLowerCase()}`)}
+                  </span>
 
                           {index === 0 && !isCompleted && (
-                            <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
-                              <CheckCircle className="h-3 w-3" />
-                              Start Here
-                            </span>
+                   <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                   <CheckCircle className="h-3 w-3" />
+                   {t('dashboard.learning.badges.startHere')}
+                 </span>
                           )}
                         </div>
                       </div>

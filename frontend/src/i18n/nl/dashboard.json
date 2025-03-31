@@ -499,5 +499,28 @@
         "daysCount": "{count} dagen"
       }
     }
+  },
+  "learning": {
+    "backTo": "Achterkant",
+    "loadingContent": "Lesinhoud laden...",
+    "noContentFound": "Geen lesinhoud gevonden.",
+    "lessonProgress": "Lesvoortgang",
+    "modules": "modules",
+    "markAsComplete": "Markeren als voltooid",
+    "contentTypes": {
+      "theory": "Theorie",
+      "vocabulary": "Woordenschat",
+      "multiple choice": "Meerkeuze",
+      "numbers": "Getallen",
+      "numbersGame": "Getallenspel",
+      "reordering": "Herschikking",
+      "fillBlank": "Vul de lege plekken in",
+      "matching": "Matchen"
+    },
+    "badges": {
+      "completed": "Voltooid",
+      "fallback": "Standaard",
+      "startHere": "Begin hier"
+    }
   }
 }

@@ -8,7 +8,8 @@ from .views import (
     user_settings,
     token_refresh, 
     user_profile, 
-    update_profile_picture
+    update_profile_picture,
+    debug_profile_endpoint
 )
 from django.conf import settings
 from .debug_views import cors_debug
@@ -22,6 +23,7 @@ urlpatterns = [
     path('token/refresh/', token_refresh, name='token_refresh'),
     path('profile/', user_profile, name='user_profile'),
     path('profile-picture/', update_profile_picture, name='user_profile_picture'),
+    path('debug-profile/', debug_profile_endpoint, name='debug_profile'),
 ]
 
 if settings.DEBUG:

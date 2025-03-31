@@ -500,5 +500,28 @@
         "daysCount": "{count} jours"
       }
     }
+  },
+  "learning": {
+    "backTo": "Retour",
+    "loadingContent": "Chargement du contenu de la leçon...",
+    "noContentFound": "Aucun contenu trouvé pour cette leçon.",
+    "lessonProgress": "Progression de la leçon",
+    "modules": "modules",
+    "markAsComplete": "Marquer comme terminé",
+    "contentTypes": {
+      "theory": "Théorie",
+      "vocabulary": "Vocabulaire",
+      "multiple choice": "Choix multiple",
+      "numbers": "Nombres",
+      "numbersGame": "Jeu de nombres",
+      "reordering": "Réorganisation",
+      "fillBlank": "Texte à trous",
+      "matching": "Matching"
+    },
+    "badges": {
+      "completed": "Terminé",
+      "fallback": "Par défaut",
+      "startHere": "Commencer ici"
+    }
   }
 }

@@ -27,7 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         # Expose only necessary fields for viewing
         fields = [
-            'public_id', 'username', 'first_name', 'last_name', 'email', 'age', 'gender',
+            'public_id', 'username', 'first_name', 'last_name', 'email', 'birthday', 'gender',
             'profile_picture', 'bio', 'native_language', 'target_language',
             'language_level', 'objectives', 'is_active', 'is_coach', 'is_subscribed',
             'is_superuser', 'is_staff', 'created_at', 'updated_at'
@@ -53,7 +53,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'username', 'first_name', 'last_name', 'email', 'age', 'gender',
+            'username', 'first_name', 'last_name', 'email', 'birthday', 'gender',
             'profile_picture', 'bio', 'native_language', 'target_language',
             'language_level', 'objectives', 'password', 'password2'
         ]
@@ -82,7 +82,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', ''),
-            age=validated_data.get('age'),
+            birthday=validated_data.get('birthday'),
             gender=validated_data.get('gender'),
             profile_picture=validated_data.get('profile_picture'),
             bio=validated_data.get('bio'),
@@ -99,7 +99,7 @@ class MeSerializer(serializers.ModelSerializer):
     Serializer for retrieving basic user profile information
     """
     # Custom fields or transformations can be added here
-    age = serializers.SerializerMethodField()
+    birthday = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
 
     class Meta:
@@ -111,7 +111,7 @@ class MeSerializer(serializers.ModelSerializer):
             'first_name', 
             'last_name',
             'name',  # Full name
-            'age',
+            'birthday',
             'gender',
             'native_language', 
             'target_language',
@@ -140,8 +140,8 @@ class MeSerializer(serializers.ModelSerializer):
         return f"{obj.first_name} {obj.last_name}".strip()
 
     def get_age(self, obj):
-        """Retrieve user's age"""
-        return obj.age
+        """Retrieve user's birthday"""
+        return obj.birthday
 
 # authentication/serializers.py
 class ProfileUpdateSerializer(serializers.ModelSerializer):
@@ -156,6 +156,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             'username',
             'profile_picture', 
             'bio', 
+            'birthday',
             'native_language', 
             'target_language', 
             'language_level', 

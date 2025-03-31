@@ -13,51 +13,73 @@ import {
   FileText, 
   AlertTriangle,
   Volume2,
-  Lightbulb,
   CheckCircle,
-  Timer,
-  BrainCircuit
+  Clock,
+  ArrowLeft,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { TheoryData, TheoryContentProps } from "@/types/learning";
+import courseAPI from "@/services/courseAPI";
+import lessonCompletionService from "@/services/lessonCompletionService";
+import { useRouter } from "next/navigation";
 
-export default function TheoryContent({ lessonId, language = 'en' }: TheoryContentProps) {
-  // 1. Tous les hooks d'état
+// Animation variants
+const contentVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  exit: { opacity: 0, y: -20, transition: { duration: 0.3 } }
+};
+
+const tabVariants = {
+  hidden: { opacity: 0, x: 20 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.4 } },
+  exit: { opacity: 0, x: -20, transition: { duration: 0.3 } }
+};
+
+export default function TheoryContent({ lessonId, language = 'en', onComplete }: TheoryContentProps) {
+  const router = useRouter();
   const [theory, setTheory] = useState<TheoryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentTab, setCurrentTab] = useState('content');
   const [progress, setProgress] = useState(0);
-  const [showHint, setShowHint] = useState(false);
   const [readSections, setReadSections] = useState<string[]>([]);
   const [studyTime, setStudyTime] = useState(0);
+  const [startTime] = useState(Date.now());
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+  const [xpEarned, setXpEarned] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+  
+  // Sound effects
+  const audioComplete = typeof Audio !== 'undefined' ? new Audio('/sounds/complete.mp3') : null;
+  const audioTab = typeof Audio !== 'undefined' ? new Audio('/sounds/tab.mp3') : null;
 
-  // 2. Tous les useEffect
+  // Effect to fetch theory content
   useEffect(() => {
     const fetchTheory = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:8000/api/v1/course/theory-content/?content_lesson=${lessonId}`,
-          {
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch theory content');
-        }
-
-        const data = await response.json();
+        setLoading(true);
+        const data = await courseAPI.getTheoryContent(parseInt(lessonId), language);
 
         if (!Array.isArray(data) || data.length === 0) {
           throw new Error('No theory content found');
         }
 
         setTheory(data[0]);
+        
+        // Initialize progress tracking
+        await lessonCompletionService.updateContentProgress(
+          parseInt(lessonId),
+          1, // Initial 1% progress
+          0,
+          0,
+          false
+        );
+        
+        setShouldAnimate(true);
         setError(null);
       } catch (err) {
         console.error('Error fetching theory:', err);
@@ -70,18 +92,83 @@ export default function TheoryContent({ lessonId, language = 'en' }: TheoryConte
     if (lessonId) {
       fetchTheory();
     }
-  }, [lessonId]);
+  }, [lessonId, language]);
 
-  // Gestion du temps d'étude
+  // Track study time
   useEffect(() => {
     const timer = setInterval(() => {
-      setStudyTime(prev => prev + 1);
+      setStudyTime(Math.floor((Date.now() - startTime) / 1000));
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [startTime]);
 
-  // 3. Tous les callbacks
-  const speak = useCallback((text: string) => {
+  // Update progress when sections are read
+  useEffect(() => {
+    if (readSections.length > 0 && theory) {
+      const newProgress = Math.round((readSections.length / getAvailableSections().length) * 100);
+      setProgress(newProgress);
+      
+      // Calculate XP earned - base + streak bonus
+      const baseXp = 2;
+      const streakBonus = Math.min(readSections.length - 1, 3); // Max 3 XP bonus
+      const earnedXp = baseXp + streakBonus;
+      setXpEarned(earnedXp);
+      
+      // Update progress in backend if changed significantly
+      if (newProgress % 25 === 0 || newProgress === 100) {
+        updateProgressInBackend(newProgress, earnedXp);
+      }
+      
+      // Set completed if all sections are read
+      if (newProgress === 100 && !isCompleted) {
+        setIsCompleted(true);
+        setShowConfetti(true);
+        if (audioComplete) audioComplete.play().catch(e => console.log('Audio error:', e));
+        setTimeout(() => {
+          setShowConfetti(false);
+        }, 3000);
+        handleComplete(earnedXp);
+      }
+    }
+  }, [readSections, theory]);
+
+  // Determine available sections
+  const getAvailableSections = useCallback(() => {
+    if (!theory) return ['content'];
+    
+    const sections = ['content'];
+    
+    // Add formula section if available
+    if (theory[`formula_${language}`]) sections.push('formula');
+    
+    // Add examples section if available
+    if (theory[`example_${language}`]) sections.push('examples');
+    
+    // Add exceptions section if available
+    if (theory[`exception_${language}`]) sections.push('exceptions');
+    
+    return sections;
+  }, [theory, language]);
+
+  // Update progress in backend
+  const updateProgressInBackend = async (newProgress: number, earnedXp: number) => {
+    try {
+      await lessonCompletionService.updateContentProgress(
+        parseInt(lessonId),
+        newProgress,
+        studyTime,
+        earnedXp,
+        newProgress === 100
+      );
+    } catch (err) {
+      console.error('Error updating progress:', err);
+    }
+  };
+
+  // Text-to-speech functionality
+  const speak = useCallback((text: string | null) => {
+    if (!text) return;
+    
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = language === 'fr' ? 'fr-FR' : 
                      language === 'es' ? 'es-ES' :
@@ -89,190 +176,474 @@ export default function TheoryContent({ lessonId, language = 'en' }: TheoryConte
     window.speechSynthesis.speak(utterance);
   }, [language]);
 
+  // Mark a section as read
   const markAsRead = useCallback((section: string) => {
+    if (audioTab) audioTab.play().catch(e => console.log('Audio error:', e));
+    
     setReadSections(prev => {
       if (!prev.includes(section)) {
-        const newReadSections = [...prev, section];
-        setProgress((newReadSections.length / 4) * 100);
-        return newReadSections;
+        return [...prev, section];
       }
       return prev;
     });
   }, []);
 
-  // États de chargement et d'erreur
+  // Handle completion
+  const handleComplete = async (earnedXp: number) => {
+    try {
+      await lessonCompletionService.updateContentProgress(
+        parseInt(lessonId),
+        100,
+        studyTime,
+        earnedXp + 5, // Bonus XP for completion
+        true
+      );
+      
+      if (onComplete) {
+        onComplete();
+      }
+    } catch (err) {
+      console.error('Error marking content as complete:', err);
+    }
+  };
+
+  const handleBack = () => {
+    router.push("/learning");
+  };
+
+  // Format time
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  // Loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"/>
-          <p className="text-muted-foreground">Loading content...</p>
+          <div className="animate-spin h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full"/>
+          <p className="text-gray-500">Loading content...</p>
         </div>
       </div>
     );
   }
 
+  // Error state
   if (error || !theory) {
     return (
-      <Alert variant="destructive">
+      <Alert variant="destructive" className="max-w-3xl mx-auto my-8">
         <AlertCircle className="h-4 w-4" />
-        <AlertDescription>{error}</AlertDescription>
+        <AlertDescription>{error || "Failed to load theory content"}</AlertDescription>
       </Alert>
     );
   }
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="max-w-4xl mx-auto p-6"
-    >
-      <Card className="relative overflow-hidden">
-        {/* Fond animé subtil */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-blue-500/5 animate-gradient" />
 
-        <div className="relative p-6 space-y-6">
-          {/* Header avec plus d'informations */}
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="space-y-2">
-                <motion.h1 
-                  className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold text-transparent bg-clip-text"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                  {theory?.content_lesson.title[language]}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => speak(theory?.content_lesson.title[language] || '')}
-                    className="ml-2"
-                  >
-                    <Volume2 className="h-4 w-4" />
-                  </Button>
-                </motion.h1>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-brand-purple">
-                    <Timer className="h-4 w-4 mr-1" />
-                    {Math.floor(studyTime / 60)}:{(studyTime % 60).toString().padStart(2, '0')}
-                  </Badge>
-                  <Badge variant="outline" className="text-green-500">
-                    <BrainCircuit className="h-4 w-4 mr-1" />
-                    {readSections.length}/4 sections
-                  </Badge>
+  // Available sections for tabs
+  const availableSections = getAvailableSections();
+
+  return (
+    <div className="w-full max-w-5xl mx-auto px-4">
+      {/* Back button */}
+      <div className="mb-4">
+        <Button 
+          variant="ghost" 
+          onClick={handleBack}
+          className="text-gray-500 hover:text-gray-700 px-2 py-1"
+          size="sm"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Lesson
+        </Button>
+      </div>
+      
+      {/* Language badge */}
+      <div className="mb-5">
+        <Badge className="bg-indigo-100 text-indigo-800 font-medium uppercase">
+          {language}
+        </Badge>
+        <Badge className="ml-2 bg-gray-100 text-gray-600 font-medium">
+          theory
+        </Badge>
+      </div>
+      
+      <motion.div
+        initial="hidden"
+        animate={shouldAnimate ? "visible" : "hidden"}
+        variants={contentVariants}
+        className="mb-10"
+      >
+        <Card className="overflow-hidden border border-gray-100 shadow-sm">
+          <div className="p-6 space-y-6">
+            {/* Header with title and progress */}
+            <div className="space-y-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="flex items-center">
+                    <h1 className="text-3xl font-bold text-gray-800">
+                      {theory?.content_lesson.title[language] || "Theory Content"}
+                    </h1>
+                    <button 
+                      onClick={() => speak(theory?.content_lesson.title[language] || '')}
+                      className="ml-2 text-indigo-600 hover:text-indigo-800 focus:outline-none"
+                      aria-label="Listen to pronunciation"
+                    >
+                      <Volume2 className="h-5 w-5" />
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-3 mt-2">
+                    <div className="flex items-center text-gray-500 text-sm">
+                      <Clock className="h-4 w-4 mr-1" />
+                      {formatTime(studyTime)}
+                    </div>
+                    <div className="flex items-center text-gray-500 text-sm">
+                      <CheckCircle className="h-4 w-4 mr-1" />
+                      {readSections.length}/{availableSections.length} sections
+                    </div>
+                    {xpEarned > 0 && (
+                      <Badge className="bg-blue-100 text-blue-800 font-medium text-xs">
+                        +{xpEarned} XP
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                <div className="w-48">
+                  <Progress 
+                    value={progress} 
+                    className="h-2" 
+                    style={{
+                      background: "linear-gradient(to right, rgba(79, 70, 229, 1) 0%, rgba(147, 51, 234, 1) 50%, rgba(236, 72, 153, 1) 100%)"
+                    }}
+                  />
                 </div>
               </div>
-              <Progress value={progress} className="w-32 h-2" />
+              <p className="text-gray-600">
+                {theory?.content_lesson.instruction[language] || "Learn the theory by reading through all sections."}
+              </p>
             </div>
-            <p className="text-muted-foreground">
-              {theory?.content_lesson.instruction[language]}
-            </p>
-          </div>
 
-          {/* Tabs améliorés */}
-          <Tabs defaultValue="content" value={currentTab} onValueChange={setCurrentTab}>
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="content" onClick={() => markAsRead('content')}>
-                <FileText className="h-4 w-4 mr-2" />
-                Content
-                {readSections.includes('content') && (
-                  <CheckCircle className="h-3 w-3 ml-2 text-green-500" />
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="formula" onClick={() => markAsRead('formula')}>
-                <Code className="h-4 w-4 mr-2" />
-                Formula
-                {readSections.includes('formula') && (
-                  <CheckCircle className="h-3 w-3 ml-2 text-green-500" />
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="examples" onClick={() => markAsRead('examples')}>
-                <BookOpen className="h-4 w-4 mr-2" />
-                Examples
-                {readSections.includes('examples') && (
-                  <CheckCircle className="h-3 w-3 ml-2 text-green-500" />
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="exceptions" onClick={() => markAsRead('exceptions')}>
-                <AlertTriangle className="h-4 w-4 mr-2" />
-                Exceptions
-                {readSections.includes('exceptions') && (
-                  <CheckCircle className="h-3 w-3 ml-2 text-green-500" />
-                )}
-              </TabsTrigger>
-            </TabsList>
+            {/* Section tabs */}
+            <Tabs defaultValue="content" value={currentTab} onValueChange={(value) => {
+              setCurrentTab(value);
+              markAsRead(value);
+            }}>
+              <TabsList className="w-full grid grid-cols-4 bg-gray-50 rounded-lg p-1">
+                <TabsTrigger value="content" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
+                  <div className="flex items-center">
+                    <FileText className="h-4 w-4 mr-2" />
+                    <span>Content</span>
+                    {readSections.includes('content') && (
+                      <CheckCircle className="h-3 w-3 ml-2 text-green-500" />
+                    )}
+                  </div>
+                </TabsTrigger>
+                
+                <TabsTrigger value="formula" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
+                  <div className="flex items-center">
+                    <Code className="h-4 w-4 mr-2" />
+                    <span>Formula</span>
+                    {readSections.includes('formula') && (
+                      <CheckCircle className="h-3 w-3 ml-2 text-green-500" />
+                    )}
+                  </div>
+                </TabsTrigger>
+                
+                <TabsTrigger value="examples" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
+                  <div className="flex items-center">
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    <span>Examples</span>
+                    {readSections.includes('examples') && (
+                      <CheckCircle className="h-3 w-3 ml-2 text-green-500" />
+                    )}
+                  </div>
+                </TabsTrigger>
+                
+                <TabsTrigger value="exceptions" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
+                  <div className="flex items-center">
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    <span>Exceptions</span>
+                    {readSections.includes('exceptions') && (
+                      <CheckCircle className="h-3 w-3 ml-2 text-green-500" />
+                    )}
+                  </div>
+                </TabsTrigger>
+              </TabsList>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentTab}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="mt-6"
-              >
-                <TabsContent value="content">
-                  <Card className="p-6">
-                    <div className="prose prose-slate dark:prose-invert">
-                      <div className="mb-6 relative">
-                        <Button
-                          variant="ghost"
-                          size="sm"
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentTab}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={tabVariants}
+                  className="mt-4"
+                >
+                  <TabsContent value="content" className="focus:outline-none mt-0">
+                    <div className="bg-white rounded-lg overflow-hidden">
+                      {/* Title */}
+                      <div className="border-b border-gray-100 p-4 flex justify-between items-center">
+                        <h2 className="text-lg font-semibold text-gray-800">
+                          Règle grammaticale : {theory?.content_lesson.title[language]}
+                        </h2>
+                        <button 
                           onClick={() => speak(theory?.[`content_${language}`] || '')}
-                          className="absolute -right-2 -top-2"
+                          className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
+                          aria-label="Listen to content"
                         >
                           <Volume2 className="h-4 w-4" />
-                        </Button>
-                        {theory?.[`content_${language}`]}
+                        </button>
                       </div>
-                      <div className="mt-4 p-4 bg-muted rounded-lg">
-                        <div className="flex justify-between items-center mb-2">
-                          <h3 className="text-lg font-semibold">Explanation</h3>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setShowHint(!showHint)}
-                          >
-                            <Lightbulb className={`h-4 w-4 ${showHint ? 'text-yellow-500' : ''}`} />
-                          </Button>
-                        </div>
-                        {theory?.[`explication_${language}`]}
-                        {showHint && (
-                          <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="mt-4 p-4 bg-brand-purple/10 rounded-lg"
-                          >
-                            <p className="text-sm text-brand-purple">
-                              💡 Pro Tip: Pay special attention to this explanation as it contains key concepts.
-                            </p>
-                          </motion.div>
+                      
+                      {/* Content */}
+                      <div className="p-6">
+                        {theory?.[`content_${language}`] ? (
+                          <div className="space-y-4">
+                            {theory[`content_${language}`]
+                              .split('\\n')
+                              .map((line, index) => (
+                                <p key={index} className="text-gray-700">{line}</p>
+                              ))}
+                          </div>
+                        ) : (
+                          <p className="text-gray-500 italic">No content available</p>
+                        )}
+                      </div>
+                      
+                      {/* Explanation */}
+                      <div className="bg-gray-50 p-6 mt-4 rounded-lg">
+                        <h3 className="text-lg font-semibold mb-3">Explanation</h3>
+                        {theory?.[`explication_${language}`] ? (
+                          <div className="space-y-3">
+                            {theory[`explication_${language}`]
+                              .split('\\n')
+                              .map((line, index) => (
+                                <p key={index} className="text-gray-700">{line}</p>
+                              ))}
+                          </div>
+                        ) : (
+                          <p className="text-gray-500 italic">No explanation available</p>
                         )}
                       </div>
                     </div>
-                  </Card>
-                </TabsContent>
+                  </TabsContent>
 
-                {/* ... autres TabsContent avec les mêmes améliorations ... */}
-              </motion.div>
-            </AnimatePresence>
-          </Tabs>
+                  <TabsContent value="formula" className="focus:outline-none mt-0">
+                    <div className="bg-white rounded-lg overflow-hidden">
+                      {/* Title */}
+                      <div className="border-b border-gray-100 p-4 flex justify-between items-center">
+                        <h2 className="text-lg font-semibold text-gray-800">Formula</h2>
+                        <button 
+                          onClick={() => speak(theory?.[`formula_${language}`] || '')}
+                          className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
+                          aria-label="Listen to formula"
+                        >
+                          <Volume2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="p-6">
+                        {theory?.[`formula_${language}`] ? (
+                          <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100">
+                            {theory[`formula_${language}`]
+                              .split('\\n')
+                              .map((line, index) => (
+                                <p key={index} className="text-gray-800 mb-2">{line}</p>
+                              ))}
+                          </div>
+                        ) : (
+                          <Alert>
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>No formula available for this topic.</AlertDescription>
+                          </Alert>
+                        )}
+                      </div>
+                    </div>
+                  </TabsContent>
 
-          {/* Navigation améliorée */}
-          <div className="flex justify-between items-center mt-6 border-t pt-4">
-            <Button variant="outline" className="w-32">
-              Previous
-            </Button>
-            <div className="flex gap-2">
-              <Badge variant="outline" className="bg-green-50">
-                <CheckCircle className="h-4 w-4 mr-1 text-green-500" />
-                Progress Saved
-              </Badge>
+                  <TabsContent value="examples" className="focus:outline-none mt-0">
+                    <div className="bg-white rounded-lg overflow-hidden">
+                      {/* Title */}
+                      <div className="border-b border-gray-100 p-4 flex justify-between items-center">
+                        <h2 className="text-lg font-semibold text-gray-800">Examples</h2>
+                        <button 
+                          onClick={() => speak(theory?.[`example_${language}`] || '')}
+                          className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
+                          aria-label="Listen to examples"
+                        >
+                          <Volume2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="p-6">
+                        {theory?.[`example_${language}`] ? (
+                          <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                            {theory[`example_${language}`]
+                              .split('\\n')
+                              .map((line, index) => (
+                                <p key={index} className="text-gray-800 mb-2">{line}</p>
+                              ))}
+                          </div>
+                        ) : (
+                          <Alert>
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>No examples available for this topic.</AlertDescription>
+                          </Alert>
+                        )}
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="exceptions" className="focus:outline-none mt-0">
+                    <div className="bg-white rounded-lg overflow-hidden">
+                      {/* Title */}
+                      <div className="border-b border-gray-100 p-4 flex justify-between items-center">
+                        <h2 className="text-lg font-semibold text-gray-800">Exceptions</h2>
+                        <button 
+                          onClick={() => speak(theory?.[`exception_${language}`] || '')}
+                          className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
+                          aria-label="Listen to exceptions"
+                        >
+                          <Volume2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="p-6">
+                        {theory?.[`exception_${language}`] ? (
+                          <div className="p-4 bg-amber-50 rounded-lg border border-amber-100">
+                            {theory[`exception_${language}`]
+                              .split('\\n')
+                              .map((line, index) => (
+                                <p key={index} className="text-gray-800 mb-2">{line}</p>
+                              ))}
+                          </div>
+                        ) : (
+                          <Alert>
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>No exceptions noted for this topic.</AlertDescription>
+                          </Alert>
+                        )}
+                      </div>
+                    </div>
+                  </TabsContent>
+                </motion.div>
+              </AnimatePresence>
+            </Tabs>
+
+            {/* Navigation and status */}
+            <div className="flex justify-between items-center mt-8 border-t pt-4">
+              <Button 
+                variant="outline" 
+                className="text-gray-500"
+                onClick={handleBack}
+              >
+                Previous
+              </Button>
+              
+              <div className="flex items-center">
+                {progress === 100 ? (
+                  <div className="flex items-center text-green-600">
+                    <CheckCircle className="h-5 w-5 mr-2" />
+                    <span className="font-medium">Completed</span>
+                  </div>
+                ) : (
+                  <div className="text-gray-500">
+                    {readSections.length}/{availableSections.length} sections
+                  </div>
+                )}
+              </div>
+              
+              <Button 
+                className={`font-medium ${isCompleted 
+                  ? 'bg-green-500 hover:bg-green-600' 
+                  : 'bg-indigo-600 hover:bg-indigo-700'}`}
+                disabled={progress === 100}
+                onClick={() => handleComplete(xpEarned + 5)}
+              >
+                {isCompleted ? (
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 mr-2" />
+                )}
+                {isCompleted ? "Completed" : "Complete"}
+              </Button>
             </div>
-            <Button className="w-32 bg-brand-purple hover:bg-brand-purple/90">
-              Next
-            </Button>
+          </div>
+        </Card>
+      </motion.div>
+      
+      {/* Confetti effect */}
+      {showConfetti && (
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="relative w-full h-full">
+              {Array.from({ length: 50 }).map((_, i) => (
+                <div 
+                  key={i}
+                  className="absolute animate-confetti"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `-5%`,
+                    backgroundColor: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                    width: `${Math.random() * 10 + 5}px`,
+                    height: `${Math.random() * 10 + 5}px`,
+                    transform: `rotate(${Math.random() * 360}deg)`,
+                    animationDelay: `${Math.random() * 0.5}s`,
+                    animationDuration: `${Math.random() * 3 + 2}s`
+                  }}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </Card>
-    </motion.div>
+      )}
+      
+      {/* Quick practice question - can be added as a follow-up */}
+      {isCompleted && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-white rounded-lg shadow-sm p-6 mb-10 border border-gray-100"
+        >
+          <h3 className="text-lg font-medium text-gray-800 mb-4">Quick Check</h3>
+          <p className="text-gray-700 mb-4">
+            Test your understanding of this grammar rule with a quick practice question.
+          </p>
+          
+          {/* Example practice question here */}
+          <div className="space-y-2 mb-4">
+            <div className="p-3 bg-gray-50 rounded-lg text-gray-800">
+              Placeholder for practice question
+            </div>
+          </div>
+          
+          <Button className="mt-2 bg-indigo-600 hover:bg-indigo-700">
+            Start Practice
+          </Button>
+        </motion.div>
+      )}
+    </div>
   );
 }
+
+// Add this to your global CSS for confetti animation
+/*
+@keyframes confetti {
+  0% {
+    transform: translateY(0) rotate(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.animate-confetti {
+  animation: confetti 3s ease-in-out forwards;
+}
+*/

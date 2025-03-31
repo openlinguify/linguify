@@ -279,6 +279,8 @@ export interface TheoryData {
 export interface TheoryContentProps {
   lessonId: string;
   language?: 'en' | 'fr' | 'es' | 'nl';
+  unitId?: string; 
+  onComplete?: () => void;
 }
 
 export interface LearningJourneyProps {
