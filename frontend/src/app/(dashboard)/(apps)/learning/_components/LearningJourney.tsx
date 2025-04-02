@@ -20,7 +20,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import progressAPI, { ProgressSummary } from "@/services/progressAPI";
+import progressAPI from "@/services/progressAPI";
+import { ProgressSummary, RecentActivity, LevelProgress } from "@/types/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "@/hooks/useTranslations";
 
@@ -135,14 +136,14 @@ export default function EnhancedLearningJourney({
   const [xpGoal] = useState<number>(100);
   const { t } = useTranslation();
 
-  // Function to load progress data
+  // Fonction pour charger les données de progression
   const loadProgressData = async () => {
     try {
       setIsProgressLoading(true);
 
       // Get progress summary from API with language parameter
       const summary = await progressAPI.getSummary({
-        cacheResults: true,
+        cacheResults: false, // Désactivé pour éviter les problèmes de cache
         showErrorToast: false,
         retryOnNetworkError: true,
         params: {
@@ -150,10 +151,25 @@ export default function EnhancedLearningJourney({
         }
       });
 
-      setProgressData(summary);
+      // FIX: S'assurer que les données de progression ne sont pas corrompues
+      const fixedSummary = {
+        ...summary,
+        summary: {
+          ...summary.summary,
+          // Assurons-nous que le nombre total d'unités est correct et fixe
+          total_units: summary.summary.total_units, 
+          // Ne pas laisser le nombre d'unités complétées dépasser le total
+          completed_units: Math.min(
+            summary.summary.completed_units || 0, 
+            summary.summary.total_units || 20
+          )
+        }
+      };
+
+      setProgressData(fixedSummary);
 
       // Calculate displayed data
-      calculateDerivedStats(summary);
+      calculateDerivedStats(fixedSummary);
     } catch (error) {
       console.error("Error loading progress data:", error);
     } finally {
@@ -172,12 +188,12 @@ export default function EnhancedLearningJourney({
     if (summary.recent_activity && summary.recent_activity.length > 0) {
       // Filter today's activities
       const today = new Date().toISOString().split('T')[0];
-      const todayActivities = summary.recent_activity.filter(activity =>
+      const todayActivities = summary.recent_activity.filter((activity: RecentActivity) =>
         activity.last_accessed.startsWith(today)
       );
 
       // Calculate total XP earned today
-      const todayXp = todayActivities.reduce((total, activity) =>
+      const todayXp = todayActivities.reduce((total: number, activity: RecentActivity) =>
         total + (activity.xp_earned || 0), 0
       );
 
@@ -216,7 +232,7 @@ export default function EnhancedLearningJourney({
 
     setSelectedTypes(newSelection);
 
-    // For the parent component, we currently only support single filter value
+    // Pour le parent component, we currently only support single filter value
     // So we'll send the first selected type or "all" if multiple are selected
     if (onContentTypeChange) {
       if (newSelection.length === 1) {
@@ -489,25 +505,35 @@ export default function EnhancedLearningJourney({
                 // Sort by level (A1, A2, B1, B2, etc.)
                 return levelA.localeCompare(levelB);
               })
-              .map(([level, stats]) => (
-                <div key={level} className="flex items-center p-2 border rounded-lg bg-gray-50">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 text-purple-800 font-bold text-sm mr-3">
-                    {level}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="font-medium">{level}</span>
-                      <span className="text-gray-500">
-                        {t('dashboard.learningjourney.unitsCount', { 
-                          completed: String(stats.completed_units), 
-                          total: String(stats.total_units) 
-                        })}
-                      </span>
+              .map(([level, stats]) => {
+                // FIX: S'assurer que le décompte des unités est correct pour chaque niveau
+                const levelStats = stats as LevelProgress;
+                const fixedStats = {
+                  ...levelStats,
+                  // Limiter le nombre d'unités complétées au nombre total pour ce niveau
+                  completed_units: Math.min(levelStats.completed_units || 0, levelStats.total_units || 0),
+                };
+                
+                return (
+                  <div key={level} className="flex items-center p-2 border rounded-lg bg-gray-50">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 text-purple-800 font-bold text-sm mr-3">
+                      {level}
                     </div>
-                    <Progress value={stats.avg_completion} className="h-1.5" />
+                    <div className="flex-1">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="font-medium">{level}</span>
+                        <span className="text-gray-500">
+                          {t('dashboard.learningjourney.unitsCount', { 
+                            completed: String(fixedStats.completed_units), 
+                            total: String(fixedStats.total_units) 
+                          })}
+                        </span>
+                      </div>
+                      <Progress value={fixedStats.avg_completion} className="h-1.5" />
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             }
           </div>
         </div>

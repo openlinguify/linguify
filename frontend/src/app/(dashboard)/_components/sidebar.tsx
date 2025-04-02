@@ -40,12 +40,6 @@ const routes = [
         description: "Start your learning journey",
       },
       {
-        label: "revision",
-        icon: BookMarked,
-        href: "/revision",
-        description: "Review your learned materials",
-      },
-      {
         label: "flashcard",
         icon: Brain,
         href: "/flashcard",

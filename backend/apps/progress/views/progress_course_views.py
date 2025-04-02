@@ -50,12 +50,25 @@ class UserProgressViewSet(viewsets.ModelViewSet):
 
 
 class UserLessonProgressViewSet(UserProgressViewSet):
-    """Gestion de la progression des leçons pour l'utilisateur connecté"""
+    """Gestion de la progression des leçons pour l'utilisateur connecté avec support multilingue"""
     
     def get_queryset(self):
         user = self.request.user
-        logger.debug(f"User {user.username} accessing lesson progress data")
-        return UserLessonProgress.objects.filter(user=user)
+        
+        # Filtrer par langue si spécifiée
+        language_code = self.request.query_params.get('language_code') or self.request.query_params.get('target_language')
+        
+        queryset = UserLessonProgress.objects.filter(user=user)
+        
+        if language_code:
+            queryset = queryset.filter(language_code=language_code)
+        elif user.is_authenticated:
+            # Utiliser la langue cible de l'utilisateur par défaut
+            language_code = getattr(user, 'target_language', 'en').lower()
+            queryset = queryset.filter(language_code=language_code)
+            
+        logger.debug(f"User {user.username} accessing lesson progress data for language {language_code}")
+        return queryset
     
     def get_serializer_class(self):
         if self.action == 'update_progress':
@@ -71,10 +84,23 @@ class UserLessonProgressViewSet(UserProgressViewSet):
         lesson_id = serializer.validated_data['lesson_id']
         lesson = get_object_or_404(Lesson, pk=lesson_id)
         
-        # Récupérer ou créer l'objet de progression
+        # Obtenir la langue cible depuis les paramètres de requête ou le profil utilisateur
+        language_code = request.data.get('language_code') or request.query_params.get('language_code') or request.query_params.get('target_language')
+        if not language_code and request.user.is_authenticated:
+            language_code = getattr(request.user, 'target_language', 'en')
+        language_code = language_code.lower() if language_code else 'en'
+        
+        logger.info(f"Updating lesson progress for user {request.user.username}, lesson {lesson_id}, language {language_code}")
+        
+        # Récupérer ou créer l'objet de progression avec le critère de langue
         progress, created = UserLessonProgress.objects.get_or_create(
             user=request.user,
-            lesson=lesson
+            lesson=lesson,
+            language_code=language_code,
+            defaults={
+                'status': 'not_started',
+                'completion_percentage': 0
+            }
         )
         
         # Si nécessaire, marquer comme commencé
@@ -94,10 +120,15 @@ class UserLessonProgressViewSet(UserProgressViewSet):
                 score=serializer.validated_data.get('score', progress.score)
             )
         
-        # Mise à jour de la progression de l'unité associée
+        # Mise à jour de la progression de l'unité associée (avec le même code langue)
         unit_progress, _ = UserUnitProgress.objects.get_or_create(
             user=request.user,
-            unit=lesson.unit
+            unit=lesson.unit,
+            language_code=language_code,
+            defaults={
+                'status': 'not_started',
+                'completion_percentage': 0
+            }
         )
         unit_progress.update_progress()
         
@@ -115,20 +146,59 @@ class UserLessonProgressViewSet(UserProgressViewSet):
                 {"error": "Le paramètre unit_id est requis"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+        # Obtenir la langue cible
+        language_code = request.query_params.get('language_code') or request.query_params.get('target_language')
+        if not language_code and request.user.is_authenticated:
+            language_code = getattr(request.user, 'target_language', 'en')
+        language_code = language_code.lower() if language_code else 'en'
             
         unit = get_object_or_404(Unit, pk=unit_id)
-        queryset = self.get_queryset().filter(lesson__unit=unit)
+        queryset = self.get_queryset().filter(
+            lesson__unit=unit,
+            language_code=language_code  # Filtrer par langue
+        )
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+        
+    @action(detail=False, methods=['get'])
+    def by_language(self, request):
+        """Récupérer la progression des leçons par langue"""
+        language_code = request.query_params.get('language_code')
+        if not language_code:
+            return Response(
+                {"error": "Le paramètre language_code est requis"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        queryset = UserLessonProgress.objects.filter(
+            user=request.user,
+            language_code=language_code
+        )
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
 
 class UserUnitProgressViewSet(UserProgressViewSet):
-    """Gestion de la progression des unités pour l'utilisateur connecté"""
+    """Gestion de la progression des unités pour l'utilisateur connecté avec support multilingue"""
     
     def get_queryset(self):
         user = self.request.user
-        logger.debug(f"User {user.username} accessing unit progress data")
-        return UserUnitProgress.objects.filter(user=user)
+        
+        # Filtrer par langue si spécifiée
+        language_code = self.request.query_params.get('language_code') or self.request.query_params.get('target_language')
+        
+        queryset = UserUnitProgress.objects.filter(user=user)
+        
+        if language_code:
+            queryset = queryset.filter(language_code=language_code)
+        elif user.is_authenticated:
+            # Utiliser la langue cible de l'utilisateur par défaut
+            language_code = getattr(user, 'target_language', 'en').lower()
+            queryset = queryset.filter(language_code=language_code)
+            
+        logger.debug(f"User {user.username} accessing unit progress data for language {language_code}")
+        return queryset
     
     def get_serializer_class(self):
         if self.action == 'update_progress':
@@ -144,14 +214,27 @@ class UserUnitProgressViewSet(UserProgressViewSet):
         unit_id = serializer.validated_data['unit_id']
         unit = get_object_or_404(Unit, pk=unit_id)
         
+        # Obtenir la langue cible depuis les paramètres de requête ou le profil utilisateur
+        language_code = request.data.get('language_code') or request.query_params.get('language_code') or request.query_params.get('target_language')
+        if not language_code and request.user.is_authenticated:
+            language_code = getattr(request.user, 'target_language', 'en')
+        language_code = language_code.lower() if language_code else 'en'
+        
+        logger.info(f"Updating unit progress for user {request.user.username}, unit {unit_id}, language {language_code}")
+        
         # Récupérer ou créer l'objet de progression
         progress, created = UserUnitProgress.objects.get_or_create(
             user=request.user,
-            unit=unit
+            unit=unit,
+            language_code=language_code,
+            defaults={
+                'status': 'not_started',
+                'completion_percentage': 0
+            }
         )
         
-        # Recalculer la progression basée sur les leçons
-        progress.update_progress()
+        # Recalculer la progression basée sur les leçons dans la même langue
+        progress.update_progress(language_code=language_code)
         
         # Marquer comme terminé si demandé
         if serializer.validated_data.get('mark_completed'):
@@ -171,24 +254,62 @@ class UserUnitProgressViewSet(UserProgressViewSet):
                 {"error": "Le paramètre level est requis"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+        # Obtenir la langue cible
+        language_code = request.query_params.get('language_code') or request.query_params.get('target_language')
+        if not language_code and request.user.is_authenticated:
+            language_code = getattr(request.user, 'target_language', 'en')
+        language_code = language_code.lower() if language_code else 'en'
             
-        queryset = self.get_queryset().filter(unit__level=level)
+        queryset = self.get_queryset().filter(
+            unit__level=level,
+            language_code=language_code  # Filtrer par langue
+        )
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+        
+    @action(detail=False, methods=['get'])
+    def by_language(self, request):
+        """Récupérer la progression des unités par langue"""
+        language_code = request.query_params.get('language_code')
+        if not language_code:
+            return Response(
+                {"error": "Le paramètre language_code est requis"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        queryset = UserUnitProgress.objects.filter(
+            user=request.user,
+            language_code=language_code
+        )
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-
 class ContentLessonProgressViewSet(UserProgressViewSet):
-    """Gestion de la progression des contenus de leçon pour l'utilisateur connecté"""
+    """Gestion de la progression des contenus de leçon pour l'utilisateur connecté avec support multilingue"""
     
     def get_queryset(self):
         # Utilise UserCourseProgress avec un filtre sur le content_type
         user = self.request.user
-        logger.debug(f"User {user.username} accessing content lesson progress data")
         content_type = ContentType.objects.get_for_model(ContentLesson)
-        return UserCourseProgress.objects.filter(
+        
+        # Filtrer par langue si spécifiée
+        language_code = self.request.query_params.get('language_code') or self.request.query_params.get('target_language')
+        
+        queryset = UserCourseProgress.objects.filter(
             user=user,
             content_type=content_type
         )
+        
+        if language_code:
+            queryset = queryset.filter(language_code=language_code)
+        elif user.is_authenticated:
+            # Utiliser la langue cible de l'utilisateur par défaut
+            language_code = getattr(user, 'target_language', 'en').lower()
+            queryset = queryset.filter(language_code=language_code)
+            
+        logger.debug(f"User {user.username} accessing content lesson progress data for language {language_code}")
+        return queryset
     
     def get_serializer_class(self):
         if self.action == 'update_progress':
@@ -205,11 +326,25 @@ class ContentLessonProgressViewSet(UserProgressViewSet):
         content_lesson = get_object_or_404(ContentLesson, pk=content_lesson_id)
         content_type = ContentType.objects.get_for_model(ContentLesson)
         
-        # Récupérer ou créer l'objet de progression
+        # Obtenir la langue cible depuis les paramètres de requête ou le profil utilisateur
+        language_code = request.data.get('language_code') or request.query_params.get('language_code') or request.query_params.get('target_language')
+        if not language_code and request.user.is_authenticated:
+            language_code = getattr(request.user, 'target_language', 'en')
+        language_code = language_code.lower() if language_code else 'en'
+        
+        logger.info(f"Updating content lesson progress for user {request.user.username}, content lesson {content_lesson_id}, language {language_code}")
+        
+        # Récupérer ou créer l'objet de progression avec le critère de langue
         progress, created = UserCourseProgress.objects.get_or_create(
             user=request.user,
             content_type=content_type,
-            object_id=content_lesson_id
+            object_id=content_lesson_id,
+            language_code=language_code,
+            defaults={
+                'status': 'not_started',
+                'completion_percentage': 0,
+                'xp_earned': 0
+            }
         )
         
         # Si nécessaire, marquer comme commencé
@@ -241,10 +376,15 @@ class ContentLessonProgressViewSet(UserProgressViewSet):
                 progress.xp_earned = serializer.validated_data['xp_earned']
                 progress.save()
         
-        # Mise à jour de la progression de la leçon associée
+        # Mise à jour de la progression de la leçon associée (avec le même code langue)
         lesson_progress, _ = UserLessonProgress.objects.get_or_create(
             user=request.user,
-            lesson=content_lesson.lesson
+            lesson=content_lesson.lesson,
+            language_code=language_code,
+            defaults={
+                'status': 'not_started',
+                'completion_percentage': 0
+            }
         )
         
         # Calculer la progression de la leçon basée sur la progression des contenus
@@ -254,7 +394,8 @@ class ContentLessonProgressViewSet(UserProgressViewSet):
         content_progresses = UserCourseProgress.objects.filter(
             user=request.user,
             content_type=content_type,
-            object_id__in=lesson_content_items.values_list('id', flat=True)
+            object_id__in=lesson_content_items.values_list('id', flat=True),
+            language_code=language_code  # Filtrer par langue
         )
         
         if content_progresses.exists():
@@ -273,12 +414,17 @@ class ContentLessonProgressViewSet(UserProgressViewSet):
                     time_spent=sum(cp.time_spent for cp in content_progresses)
                 )
         
-        # Mise à jour de la progression de l'unité
+        # Mise à jour de la progression de l'unité (avec le même code langue)
         unit_progress, _ = UserUnitProgress.objects.get_or_create(
             user=request.user,
-            unit=content_lesson.lesson.unit
+            unit=content_lesson.lesson.unit,
+            language_code=language_code,
+            defaults={
+                'status': 'not_started',
+                'completion_percentage': 0
+            }
         )
-        unit_progress.update_progress()
+        unit_progress.update_progress(language_code=language_code)
         
         return Response(
             ContentLessonProgressSerializer(progress).data,
@@ -294,17 +440,42 @@ class ContentLessonProgressViewSet(UserProgressViewSet):
                 {"error": "Le paramètre lesson_id est requis"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+        # Obtenir la langue cible
+        language_code = request.query_params.get('language_code') or request.query_params.get('target_language')
+        if not language_code and request.user.is_authenticated:
+            language_code = getattr(request.user, 'target_language', 'en')
+        language_code = language_code.lower() if language_code else 'en'
             
         content_lessons = ContentLesson.objects.filter(lesson_id=lesson_id)
         content_type = ContentType.objects.get_for_model(ContentLesson)
         
         queryset = self.get_queryset().filter(
-            object_id__in=content_lessons.values_list('id', flat=True)
+            object_id__in=content_lessons.values_list('id', flat=True),
+            language_code=language_code  # Filtrer par langue
         )
         
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
+        
+    @action(detail=False, methods=['get'])
+    def by_language(self, request):
+        """Récupérer la progression des contenus par langue"""
+        language_code = request.query_params.get('language_code')
+        if not language_code:
+            return Response(
+                {"error": "Le paramètre language_code est requis"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        content_type = ContentType.objects.get_for_model(ContentLesson)
+        queryset = UserCourseProgress.objects.filter(
+            user=request.user,
+            content_type=content_type,
+            language_code=language_code
+        )
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class UserProgressSummaryView(generics.RetrieveAPIView):
     """Vue pour obtenir un résumé global de la progression de l'utilisateur"""
@@ -312,6 +483,7 @@ class UserProgressSummaryView(generics.RetrieveAPIView):
     
     def retrieve(self, request, *args, **kwargs):
         user = request.user
+        
         logger.debug(f"User {user.username} retrieving progress summary")
         
         # Create initial unit progress entries if none exist
@@ -338,7 +510,7 @@ class UserProgressSummaryView(generics.RetrieveAPIView):
         units_progress = UserUnitProgress.objects.filter(user=user)
         lessons_progress = UserLessonProgress.objects.filter(user=user)
         
-        # Progression par niveau
+        # Progress by level
         level_stats = {}
         for level in Unit.LEVEL_CHOICES:
             level_code = level[0]

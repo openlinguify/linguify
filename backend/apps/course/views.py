@@ -16,6 +16,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 
 
 
@@ -393,6 +394,7 @@ class MatchingExerciseViewSet(viewsets.ModelViewSet):
         
         return queryset
     
+   
     @action(detail=True, methods=['POST'], url_path='check-answers')
     def check_answers(self, request, pk=None):
         """
@@ -409,75 +411,133 @@ class MatchingExerciseViewSet(viewsets.ModelViewSet):
         
         Retourne un résultat détaillé avec score et feedback.
         """
-        exercise = self.get_object()
-        
-        # Récupérer les langues depuis les paramètres
-        native_language = request.query_params.get('native_language', 'en')
-        target_language = request.query_params.get('target_language', 'fr')
-        
-        # Valider les langues
-        supported_languages = ['en', 'fr', 'es', 'nl']
-        if native_language not in supported_languages:
-            native_language = 'en'
-        if target_language not in supported_languages:
-            target_language = 'fr'
-        
-        # Récupérer les réponses utilisateur
-        user_answers = request.data.get('answers', {})
-        if not isinstance(user_answers, dict) or not user_answers:
-            return Response(
-                {"error": "Invalid or empty answers provided"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        # Récupérer les paires correctes
-        _, _, correct_pairs = exercise.get_matching_pairs(native_language, target_language)
-        
-        # Calculer les résultats
-        correct_count = 0
-        wrong_count = 0
-        feedback = {}
-        
-        for target_word, user_translation in user_answers.items():
-            expected_translation = correct_pairs.get(target_word)
-            is_correct = user_translation == expected_translation
+        try:
+            exercise = self.get_object()
             
-            if is_correct:
-                correct_count += 1
+            # Récupérer les langues depuis les paramètres
+            native_language = request.query_params.get('native_language', 'en')
+            target_language = request.query_params.get('target_language', 'fr')
+            
+            # Valider les langues
+            supported_languages = ['en', 'fr', 'es', 'nl']
+            if native_language not in supported_languages:
+                native_language = 'en'
+            if target_language not in supported_languages:
+                target_language = 'fr'
+            
+            # Récupérer les réponses utilisateur
+            user_answers = request.data.get('answers', {})
+            if not isinstance(user_answers, dict) or not user_answers:
+                return Response(
+                    {"error": "Invalid or empty answers provided"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Récupérer les paires correctes
+            try:
+                # Entourer cette partie de try/except car c'est probablement ici que se produit l'erreur
+                target_words, _, correct_pairs = exercise.get_matching_pairs(native_language, target_language)
+                
+                # Vérifier que des paires ont été trouvées
+                if not correct_pairs:
+                    return Response(
+                        {"error": f"No matching pairs found for languages: {native_language} (native) and {target_language} (target)"},
+                        status=status.HTTP_404_NOT_FOUND
+                    )
+            except Exception as e:
+                # Log l'erreur pour le débogage
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"Error getting matching pairs: {str(e)}")
+                
+                return Response(
+                    {"error": f"Failed to generate matching pairs: {str(e)}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            
+            # Calculer les résultats
+            correct_count = 0
+            wrong_count = 0
+            feedback = {}
+            
+            for target_word, user_translation in user_answers.items():
+                expected_translation = correct_pairs.get(target_word)
+                # Vérifier si le mot cible existe dans les paires correctes
+                if expected_translation is None:
+                    # Mot non trouvé dans les paires correctes
+                    feedback[target_word] = {
+                        'is_correct': False,
+                        'user_answer': user_translation,
+                        'correct_answer': "Unknown word",
+                        'error': "Word not found in exercise"
+                    }
+                    wrong_count += 1
+                    continue
+                    
+                is_correct = user_translation == expected_translation
+                
+                if is_correct:
+                    correct_count += 1
+                else:
+                    wrong_count += 1
+                
+                feedback[target_word] = {
+                    'is_correct': is_correct,
+                    'user_answer': user_translation,
+                    'correct_answer': expected_translation
+                }
+            
+            # Calculer le score final
+            total_count = len(correct_pairs)
+            score_percentage = (correct_count / total_count * 100) if total_count > 0 else 0
+            
+            # Définir le seuil de réussite
+            SUCCESS_THRESHOLD = 60  # 60% pour passer l'exercice
+            
+            # Déterminer si l'exercice est considéré comme réussi
+            is_successful = score_percentage >= SUCCESS_THRESHOLD
+            
+            # Créer le message de résultat en fonction du score
+            if score_percentage >= 90:
+                message = "Excellent! Perfect match!"
+            elif score_percentage >= 75:
+                message = "Good job! Keep practicing to improve!"
+            elif score_percentage >= SUCCESS_THRESHOLD:
+                message = "Well done! You've passed this exercise."
+            elif score_percentage >= 40:
+                message = "You're getting there, but you need more practice to pass. Try again!"
             else:
-                wrong_count += 1
+                message = "Keep trying! You'll get better with practice."
             
-            feedback[target_word] = {
-                'is_correct': is_correct,
-                'user_answer': user_translation,
-                'correct_answer': expected_translation
+            # Construire la réponse
+            result = {
+                'score': score_percentage,
+                'message': message,
+                'correct_count': correct_count,
+                'wrong_count': wrong_count,
+                'total_count': total_count,
+                'feedback': feedback,
+                'is_successful': is_successful,
+                'success_threshold': SUCCESS_THRESHOLD
             }
-        
-        # Calculer le score final
-        total_count = len(correct_pairs)
-        score_percentage = (correct_count / total_count * 100) if total_count > 0 else 0
-        
-        # Créer le message de résultat
-        if score_percentage >= 90:
-            message = "Excellent! Perfect match!"
-        elif score_percentage >= 75:
-            message = "Good job! Keep practicing to improve!"
-        elif score_percentage >= 50:
-            message = "Not bad, but you need more practice."
-        else:
-            message = "Keep trying! You'll get better with practice."
-        
-        # Construire la réponse
-        result = {
-            'score': score_percentage,
-            'message': message,
-            'correct_count': correct_count,
-            'wrong_count': wrong_count,
-            'total_count': total_count,
-            'feedback': feedback
-        }
-        
-        return Response(result)
+            
+            return Response(result)
+            
+        except Exception as e:
+            # Capturer toutes les autres exceptions non prévues
+            import traceback
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Unexpected error in check_answers: {str(e)}")
+            logger.error(traceback.format_exc())
+            
+            return Response(
+                {
+                    "error": "An unexpected error occurred while checking answers",
+                    "detail": str(e) if settings.DEBUG else "Please contact support if this issue persists."
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
     
     @action(detail=False, methods=['POST'], url_path='auto_create')
     def auto_create(self, request):

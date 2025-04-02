@@ -16,6 +16,7 @@ class BaseProgress(models.Model):
     This serves as the foundation for all progress-related models.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='%(class)s')
+    language_code = models.CharField(max_length=10, default='en')  # Nouveau champ pour la langue
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_started')
     completion_percentage = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(100)],
@@ -31,6 +32,7 @@ class BaseProgress(models.Model):
         abstract = True
         indexes = [
             models.Index(fields=['user', 'status']),
+            models.Index(fields=['user', 'language_code']),  # Nouvel index
         ]
 
     def mark_started(self):

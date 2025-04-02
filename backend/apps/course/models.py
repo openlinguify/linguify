@@ -189,7 +189,7 @@ class Lesson(models.Model):
     description_fr = models.TextField(blank=False, null=False)
     description_es = models.TextField(blank=False, null=False)
     description_nl = models.TextField(blank=False, null=False)
-    estimated_duration = models.IntegerField(help_text="In minutes", blank=False, null=False)
+    estimated_duration = models.IntegerField(default=0, help_text="In minutes")
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
 
     class Meta:
@@ -216,7 +216,31 @@ class Lesson(models.Model):
         }
         return switch.get(target_language, self.description_en)
 
-
+    def calculate_duration_lesson(self):
+        """
+        Calculate the total estimated duration of all content lessons associated with this lesson.
+        
+        Returns:
+            int: Total estimated duration in minutes
+        """
+        total_duration = self.content_lessons.aggregate(
+            total_duration=models.Sum('estimated_duration')
+        )['total_duration'] or 0
+        
+        return total_duration
+    
+    def save(self, *args, **kwargs):
+        # Calculer la durée totale des content lessons
+        total_duration = self.calculate_duration_lesson()
+        
+        # Utiliser max() pour garantir une valeur non négative
+        # et int() pour convertir en entier
+        self.estimated_duration = max(int(total_duration or 0), 0)
+        
+        # Supprimer toute logique supplémentaire qui pourrait comparer avec 1
+        
+        super().save(*args, **kwargs)
+    
 class ContentLesson(models.Model):
     '''
     Content lesson model
@@ -582,6 +606,7 @@ class MatchingExercise(models.Model):
     def get_matching_pairs(self, native_language='en', target_language='fr'):
         """
         Génère les paires de mots à associer entre la langue cible et la langue native.
+        Version améliorée avec meilleure gestion des erreurs et valeurs par défaut.
         
         Args:
             native_language (str): Code de la langue maternelle de l'utilisateur
@@ -593,34 +618,90 @@ class MatchingExercise(models.Model):
                 - native_words: Liste des mots dans la langue native (mélangés)
                 - correct_pairs: Dictionnaire de correspondance {target_word: native_word}
         """
+        import random
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        # Vérifier que les langues sont valides
+        supported_languages = ['en', 'fr', 'es', 'nl']
+        if native_language not in supported_languages:
+            logger.warning(f"Unsupported native language: {native_language}, falling back to 'en'")
+            native_language = 'en'
+        if target_language not in supported_languages:
+            logger.warning(f"Unsupported target language: {target_language}, falling back to 'fr'")
+            target_language = 'fr'
+        
+        # Éviter que les deux langues soient identiques
+        if native_language == target_language:
+            logger.warning(f"Native and target languages are the same ({native_language}), using 'fr' as target language")
+            if native_language == 'fr':
+                target_language = 'en'
+            else:
+                target_language = 'fr'
+        
         # Obtenir les mots de vocabulaire pour l'exercice
         vocabulary_items = self.vocabulary_words.all()
         
+        # Vérifier qu'il y a des mots de vocabulaire associés
+        if not vocabulary_items.exists():
+            logger.error(f"No vocabulary words associated with matching exercise ID: {self.id}")
+            # Renvoyer des listes vides plutôt que de planter
+            return [], [], {}
+        
         # Si le nombre d'éléments dépasse pairs_count, sélectionner aléatoirement
-        if vocabulary_items.count() > self.pairs_count:
-            import random
-            vocabulary_items = random.sample(list(vocabulary_items), self.pairs_count)
+        vocab_count = vocabulary_items.count()
+        if vocab_count > self.pairs_count:
+            try:
+                # Convertir en liste pour pouvoir utiliser random.sample
+                vocabulary_items = list(vocabulary_items)
+                vocabulary_items = random.sample(vocabulary_items, self.pairs_count)
+            except Exception as e:
+                logger.error(f"Error sampling vocabulary items: {str(e)}")
+                # Prendre les premiers elements comme fallback
+                vocabulary_items = list(vocabulary_items)[:self.pairs_count]
         
         # Générer les paires de mots
         target_words = []
         native_words = []
         correct_pairs = {}
         
+        # Log pour debugging
+        logger.debug(f"Processing {len(vocabulary_items)} vocabulary items for matching exercise")
+        
+        # Collecter toutes les paires valides
         for vocab in vocabulary_items:
-            # Récupérer le mot dans la langue cible
-            target_word = getattr(vocab, f'word_{target_language}', None)
-            
-            # Récupérer le mot dans la langue native
-            native_word = getattr(vocab, f'word_{native_language}', None)
-            
-            # Vérifier que les deux valeurs sont disponibles
-            if target_word and native_word:
-                target_words.append(target_word)
-                native_words.append(native_word)
-                correct_pairs[target_word] = native_word
+            try:
+                # Récupérer le mot dans la langue cible
+                target_field = f'word_{target_language}'
+                target_word = getattr(vocab, target_field, None)
+                
+                # Récupérer le mot dans la langue native
+                native_field = f'word_{native_language}'
+                native_word = getattr(vocab, native_field, None)
+                
+                # Log pour debugging
+                logger.debug(f"Processing vocab ID {vocab.id}: target ({target_field})='{target_word}', native ({native_field})='{native_word}'")
+                
+                # Vérifier que les deux valeurs sont disponibles
+                if target_word and native_word:
+                    # Éviter les doublons (en cas de mots identiques dans différentes langues)
+                    if target_word not in target_words and native_word not in native_words:
+                        target_words.append(target_word)
+                        native_words.append(native_word)
+                        correct_pairs[target_word] = native_word
+                else:
+                    logger.warning(f"Missing translation for vocab ID {vocab.id}: target='{target_word}', native='{native_word}'")
+            except Exception as e:
+                logger.error(f"Error processing vocabulary item {vocab.id}: {str(e)}")
+                # Continuer avec le prochain item plutôt que de planter
+                continue
+        
+        # Vérifier qu'on a au moins une paire
+        if not target_words:
+            logger.error(f"No valid word pairs found for languages: {native_language} (native) and {target_language} (target)")
+            return [], [], {}
         
         # Mélanger la liste des mots natifs pour l'exercice
-        import random
         shuffled_native_words = native_words.copy()
         random.shuffle(shuffled_native_words)
         

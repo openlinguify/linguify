@@ -188,16 +188,20 @@ export interface MatchingExercise {
   
   export interface MatchingResult {
     score: number;
+    message: string;
     correct_count: number;
+    wrong_count: number;
     total_count: number;
+    is_successful: boolean; // Nouveau champ indiquant si l'exercice est réussi
+    success_threshold: number; // Seuil de réussite requis
     feedback: {
       [targetWord: string]: {
         is_correct: boolean;
+        user_answer: string;
         correct_answer: string;
       }
     }
   }
-
 // Interfaces for the fill-in-the-blank exercises
   export interface FillBlankExercise {
     id: number;

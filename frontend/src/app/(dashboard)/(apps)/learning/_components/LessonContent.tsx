@@ -4,7 +4,6 @@
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   AlertCircle,
@@ -288,8 +287,8 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
     };
 
     return (
-      <div className="min-h-screen bg-purple-50">
-        <div className="px-8 py-6 max-w-7xl mx-auto">
+      <div className="w-full space-y-6 bg-white">
+        <div className="w-full p-6">
           <BackButton
             onClick={handleBack}
             iconLeft={<ArrowLeft className="h-4 w-4" />}
@@ -346,16 +345,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
 
 
 
-          {/* Bouton de complétion fixe */}
-          <div className="fixed bottom-6 right-6">
-          <Button
-            onClick={() => handleContentComplete(selectedContent.id)}
-            className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white shadow-lg hover:shadow-xl transition-all hover:opacity-90"
-          >
-            <CheckCircle className="h-4 w-4 mr-2" />
-            {t('dashboard.learning.markAsComplete')}
-          </Button>
-        </div>
+
       </div>
     </div>
   );
