@@ -1,149 +1,16 @@
 // src/services/progressAPI.ts
 import apiClient from './axiosAuthInterceptor';
 import { handleApiError, waitForNetwork } from './errorHandlingService';
-
-// Interfaces existantes
-export interface ProgressSummary {
-  summary: {
-    total_units: number;
-    completed_units: number;
-    total_lessons: number;
-    completed_lessons: number;
-    total_time_spent_minutes: number;
-    xp_earned: number;
-  };
-  level_progression: {
-    [level: string]: {
-      total_units: number;
-      completed_units: number;
-      in_progress_units: number;
-      avg_completion: number;
-    };
-  };
-  recent_activity: RecentActivity[];
-}
-
-interface ApiOptions {
-  showErrorToast?: boolean;
-  retryOnNetworkError?: boolean;
-  maxRetries?: number;
-  fallbackData?: any;
-  cacheResults?: boolean;
-  params?: Record<string, string>; // Ajout du champ params pour les paramètres HTTP
-}
-
-export interface RecentActivity {
-  id: number;
-  content_details: {
-    id: number;
-    content_type: string;
-    title_en: string;
-  };
-  status: string;
-  completion_percentage: number;
-  last_accessed: string;
-  xp_earned?: number;
-  time_spent?: number;
-}
-
-export interface UnitProgress {
-  id: number;
-  user: number;
-  unit: number;
-  unit_details: {
-    id: number;
-    title: string;
-    description: string;
-    level: string;
-    order: number;
-  };
-  status: string;
-  completion_percentage: number;
-  score: number;
-  time_spent: number;
-  last_accessed: string;
-  started_at: string | null;
-  completed_at: string | null;
-  lesson_progress_count: {
-    total: number;
-    not_started: number;
-    in_progress: number;
-    completed: number;
-  };
-}
-
-export interface LessonProgress {
-  id: number;
-  user: number;
-  lesson: number;
-  lesson_details: {
-    id: number;
-    title: string;
-    description: string;
-    lesson_type: string;
-    estimated_duration: number;
-    order: number;
-    unit_id: number;
-    unit_title: string;
-  };
-  status: string;
-  completion_percentage: number;
-  score: number;
-  time_spent: number;
-  last_accessed: string;
-  started_at: string | null;
-  completed_at: string | null;
-}
-
-export interface ContentLessonProgress {
-  id: number;
-  user: number;
-  content_lesson_details: {
-    id: number;
-    title: string;
-    content_type: string;
-    lesson_id: number;
-    lesson_title: string;
-    order: number;
-  };
-  status: string;
-  completion_percentage: number;
-  score: number;
-  time_spent: number;
-  last_accessed: string;
-  started_at: string | null;
-  completed_at: string | null;
-  xp_earned: number;
-}
-
-// Interface pour les requêtes de mise à jour des leçons
-export interface UpdateLessonProgressRequest {
-  lesson_id: number;
-  completion_percentage?: number;
-  score?: number;
-  time_spent?: number;
-  mark_completed?: boolean;
-}
-
-// Interface pour les requêtes de mise à jour des contenus
-export interface UpdateContentProgressRequest {
-  content_lesson_id: number;
-  completion_percentage?: number;
-  score?: number;
-  time_spent?: number;
-  mark_completed?: boolean;
-  xp_earned?: number;
-}
-
-// Options génériques pour les méthodes de l'API
-interface ApiOptions {
-  showErrorToast?: boolean;
-  retryOnNetworkError?: boolean;
-  maxRetries?: number;
-  fallbackData?: any;
-  cacheResults?: boolean;
-}
-
+import { 
+  ProgressSummary, 
+  UnitProgress, 
+  LessonProgress, 
+  ContentLessonProgress, 
+  UpdateLessonProgressRequest,
+  UpdateContentProgressRequest,
+  ApiOptions 
+} from '../types/progress';
+ 
 // Configurer un cache pour stocker les résultats
 const apiCache = new Map<string, {data: any, timestamp: number}>();
 const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutes
@@ -186,15 +53,14 @@ function enableOfflineMode(durationMs: number = 10000) {
   // Sauvegarde de la méthode originale
   const originalSend = XMLHttpRequest.prototype.send;
   
-  // Remplacer par une version qui simule une erreur réseau
+  // Redefine the send method to simulate offline behavior
   XMLHttpRequest.prototype.send = function() {
     setTimeout(() => {
-      const error = new Error('La requête a été annulée à cause du mode hors ligne (test uniquement)');
       this.dispatchEvent(new Event('error'));
     }, 500);
   };
   
-  // Restaurer après le délai
+  // Restore the original send method after the specified duration
   setTimeout(() => {
     XMLHttpRequest.prototype.send = originalSend;
     console.warn('Mode hors ligne désactivé');

@@ -13,7 +13,8 @@ import {
   XCircle, 
   RotateCcw, 
   ChevronRight,
-  ArrowRight 
+  ArrowRight,
+  AlertTriangle 
 } from "lucide-react";
 import courseAPI from "@/services/courseAPI";
 import lessonCompletionService from "@/services/lessonCompletionService";
@@ -41,6 +42,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
   const [timeSpent, setTimeSpent] = useState<number>(0);
   const [startTime] = useState<number>(Date.now());
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
+  const [exerciseCompleted, setExerciseCompleted] = useState<boolean>(false);
 
   // Track time spent
   useEffect(() => {
@@ -146,32 +148,35 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
       const result = await courseAPI.checkMatchingAnswers(exercise.id, matches);
       setResult(result);
       
-      // If score is sufficient, mark as completed
-      if (result.score >= 70) {
-        await lessonCompletionService.updateContentProgress(
+      // Vérifier si le score est suffisant pour considérer l'exercice comme réussi
+      const isSuccessful = result.is_successful === true;
+      setExerciseCompleted(isSuccessful);
+      
+      // Mettre à jour la progression dans la base de données
+      await lessonCompletionService.updateContentProgress(
+        parseInt(lessonId),
+        isSuccessful ? 100 : Math.round(result.score), // 100% si réussi, sinon le score actuel
+        timeSpent,
+        Math.round(result.score / 10), // XP basé sur le score
+        isSuccessful // Marqué comme complété uniquement si le score est suffisant
+      );
+      
+      // Mettre à jour la leçon parente si unitId est fourni
+      if (unitId) {
+        await lessonCompletionService.updateLessonProgress(
           parseInt(lessonId),
-          100, // 100% for completion
+          parseInt(unitId),
+          result.score,
           timeSpent,
-          Math.round(result.score / 10), // XP based on score
-          true // Marked as completed
+          isSuccessful // Marquer comme complété uniquement si le score est suffisant
         );
-        
-        // Update parent lesson if unitId is provided
-        if (unitId) {
-          await lessonCompletionService.updateLessonProgress(
-            parseInt(lessonId),
-            parseInt(unitId),
-            result.score,
-            timeSpent,
-            result.score >= 70
-          );
-        }
-        
-        // Notify that the exercise is completed
-        if (onComplete) {
-          onComplete();
-        }
       }
+      
+      // Notifier que l'exercice est terminé uniquement si réussi
+      if (isSuccessful && onComplete) {
+        onComplete();
+      }
+      
     } catch (err) {
       console.error("Error checking answers:", err);
       setError("An error occurred while checking answers");
@@ -183,6 +188,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
     setMatches({});
     setSelectedWord(null);
     setResult(null);
+    setExerciseCompleted(false);
   };
 
   // Loading state
@@ -339,7 +345,11 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
           
           {/* Exercise results */}
           {result && (
-            <div className="mt-8 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg shadow-sm">
+            <div className={`mt-8 p-6 rounded-lg shadow-sm ${
+              result.is_successful
+                ? 'bg-gradient-to-r from-green-50 to-teal-50' 
+                : 'bg-gradient-to-r from-amber-50 to-orange-50'
+            }`}>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
                 Result: {result.score.toFixed(1)}%
               </h3>
@@ -349,26 +359,25 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
                   {result.correct_count}/{result.total_count} correct
                 </span>
                 
-                {result.score >= 70 ? (
+                {result.is_successful ? (
                   <CheckCircle className="h-5 w-5 text-green-600 ml-2" />
                 ) : (
-                  <XCircle className="h-5 w-5 text-red-600 ml-2" />
+                  <AlertTriangle className="h-5 w-5 text-orange-600 ml-2" />
                 )}
               </div>
               
               <div className="mt-4">
-                {result.score >= 70 ? (
-                  <p className="text-green-700">
-                    Great job! You've successfully completed this matching exercise.
-                  </p>
-                ) : (
-                  <p className="text-orange-700">
-                    Keep practicing! Review the incorrect matches.
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
+      <p className={result.is_successful ? "text-green-700" : "text-orange-700"}>
+        {result.message}
+      </p>
+      {!result.is_successful && (
+        <p className="text-gray-600 mt-2">
+          You need a score of at least {result.success_threshold}% to complete this exercise.
+        </p>
+      )}
+    </div>
+  </div>
+)}
           
           {/* Action buttons */}
           <div className="flex justify-between mt-10">
@@ -396,16 +405,24 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
 
       {/* Complete exercise button */}
       <div className="mt-8 flex justify-end">
-        {result && result.score >= 70 && (
-          <Button
-            onClick={onComplete}
-            className="bg-green-600 hover:bg-green-700 text-white"
-          >
-            <CheckCircle className="h-4 w-4 mr-2" />
-            Complete Exercise
-          </Button>
-        )}
-      </div>
+  {result && result.is_successful ? (
+    <Button
+      onClick={onComplete}
+      className="bg-green-600 hover:bg-green-700 text-white"
+    >
+      <CheckCircle className="h-4 w-4 mr-2" />
+      Complete Exercise
+    </Button>
+  ) : result && (
+    <Button
+      onClick={resetExercise}
+      className="bg-orange-600 hover:bg-orange-700 text-white"
+    >
+      <RotateCcw className="h-4 w-4 mr-2" />
+      Try Again
+    </Button>
+  )}
+</div>
     </div>
   );
 };

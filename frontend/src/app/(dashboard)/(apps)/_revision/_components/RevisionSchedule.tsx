@@ -11,7 +11,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { Clock, Brain, CheckCircle2, AlertCircle, Loader2, Plus } from "lucide-react";
 import { RevisionSession } from "@/types/revision";
 import { revisionApi } from '@/services/revisionAPI';
-import useAuth from '@/hooks/useAuth';
 
 function formatDueDate(dateString: string): string {
   const date = new Date(dateString);
