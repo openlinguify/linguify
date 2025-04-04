@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   AlertCircle,
@@ -19,11 +19,19 @@ import { commonStyles } from "@/styles/gradient_style";
 import { motion, AnimatePresence } from "framer-motion";
 import lessonCompletionService from "@/services/lessonCompletionService";
 import { VocabularyItem, VocabularyLessonProps } from "@/types/learning";
+import useSpeechSynthesis from '@/core/speech/useSpeechSynthesis';
 
 // API base URL from environment variable or default to localhost for development
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
+// Type for tracking which element is being read
+type SpeakingElement = 'word' | 'example' | null;
+
+// Progress milestone percentages for API updates
+const PROGRESS_MILESTONES = [1, 25, 50, 75, 100];
+
 const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProps) => {
+  // Main state
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -36,14 +44,30 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
   });
   const [timeSpent, setTimeSpent] = useState(0);
   const [lessonCompleted, setLessonCompleted] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
   const [selectedTab, setSelectedTab] = useState("definition");
+  const [speakingElement, setSpeakingElement] = useState<SpeakingElement>(null);
   
-  // Use refs to track if data has been loaded and progress initialized
+  // Use the speech synthesis hook
+  const { speak, stop, isSpeaking } = useSpeechSynthesis(userSettings.target_language);
+  
+  // Refs for tracking component lifecycle
   const dataLoadedRef = useRef(false);
   const progressInitializedRef = useRef(false);
   const startTimeRef = useRef(Date.now());
   const timeIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const mountedRef = useRef(true);
+  const celebrationTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Calculate current progress percentage
+  const progressPercentage = useMemo(() => {
+    if (!vocabulary.length) return 0;
+    return Math.round(((currentIndex + 1) / vocabulary.length) * 100);
+  }, [currentIndex, vocabulary.length]);
+  
+  // Memoize current word to prevent unnecessary re-renders
+  const currentWord = useMemo(() => 
+    vocabulary[currentIndex] || null
+  , [vocabulary, currentIndex]);
   
   // Helper function to get user settings from localStorage - centralized
   const getUserSettings = useCallback(() => {
@@ -62,154 +86,9 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
     }
   }, []);
   
-  // Speech synthesis function with premium voice quality selection
-  const speak = useCallback((text: string) => {
-    if (!text) return;
-    if (!window.speechSynthesis) {
-      console.error("Speech synthesis not supported");
-      return;
-    }
-    
-    try {
-      // Cancel any ongoing speech first and wait for cancellation to complete
-      if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
-        window.speechSynthesis.cancel();
-        // Set a brief delay to ensure cancellation completes
-        setTimeout(() => {
-          performSpeech(text);
-        }, 150);
-      } else {
-        // No speech in progress, start immediately
-        performSpeech(text);
-      }
-    } catch (error) {
-      console.error("Speech synthesis error:", error);
-      setIsSpeaking(false);
-    }
-  }, [userSettings.target_language]);
-  
-  // Separate function to perform the actual speech
-  const performSpeech = useCallback((text: string) => {
-    setIsSpeaking(true);
-    
-    // Safety timeout to reset speaking state if speech events fail
-    const safetyTimer = setTimeout(() => {
-      setIsSpeaking(false);
-    }, 10000); // 10 seconds maximum speaking time
-    
-    const utterance = new SpeechSynthesisUtterance(text);
-    
-    // Language map with more regional variations for better voice selection
-    const langMap: { [key: string]: string[] } = {
-      'EN': ['en-US', 'en-GB', 'en-AU'],
-      'FR': ['fr-FR', 'fr-CA', 'fr-BE'],
-      'NL': ['nl-NL', 'nl-BE'],
-      'ES': ['es-ES', 'es-MX', 'es-US'],
-      'DE': ['de-DE', 'de-AT', 'de-CH'],
-      'IT': ['it-IT'],
-      'PT': ['pt-PT', 'pt-BR'],
-      'RU': ['ru-RU'],
-      'JA': ['ja-JP'],
-      'KO': ['ko-KR'],
-      'ZH': ['zh-CN', 'zh-TW', 'zh-HK']
-    };
-    
-    // Get preferred language codes
-    const preferredLangs = langMap[userSettings.target_language] || ['en-US'];
-    utterance.lang = preferredLangs[0]; // Set default lang
-    
-    // Fine-tuning voice parameters for better quality
-    utterance.rate = 0.85; // Slightly slower for clarity
-    utterance.pitch = 1.05; // Slightly higher pitch for better quality
-    utterance.volume = 1.0; // Full volume
-    
-    // Handle speech events
-    utterance.onend = () => {
-      clearTimeout(safetyTimer);
-      setIsSpeaking(false);
-    };
-    
-    utterance.onerror = (event) => {
-      clearTimeout(safetyTimer);
-      // Ignore cancellation and interruption errors as they're often normal
-      if (event.error !== 'canceled' && event.error !== 'interrupted') {
-        console.error("Speech synthesis error:", event);
-      }
-      setIsSpeaking(false);
-    };
-
-    // Get available voices
-    const allVoices = window.speechSynthesis.getVoices();
-    
-    // Premium voice selection logic
-    const selectBestVoice = (voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null => {
-      // Filter voices by our preferred languages
-      let candidateVoices = voices.filter(voice => 
-        preferredLangs.some(lang => voice.lang.startsWith(lang))
-      );
-      
-      if (candidateVoices.length === 0) return null;
-      
-      // First priority: Google premium voices (usually best quality)
-      const googlePremiumVoice = candidateVoices.find(voice => 
-        voice.name.includes('Google') && voice.name.toLowerCase().includes('premium')
-      );
-      if (googlePremiumVoice) return googlePremiumVoice;
-      
-      // Second priority: Any Google voice
-      const googleVoice = candidateVoices.find(voice => 
-        voice.name.includes('Google')
-      );
-      if (googleVoice) return googleVoice;
-      
-      // Third priority: Premium/Enhanced voices
-      const premiumVoice = candidateVoices.find(voice => 
-        voice.name.toLowerCase().includes('premium') || 
-        voice.name.toLowerCase().includes('enhanced') ||
-        voice.name.toLowerCase().includes('neural')
-      );
-      if (premiumVoice) return premiumVoice;
-      
-      // Fourth priority: Female voices (typically clearer for language learning)
-      const femaleVoice = candidateVoices.find(voice => 
-        voice.name.toLowerCase().includes('female') || 
-        voice.name.includes('f') ||
-        voice.name.includes('Samantha') ||
-        voice.name.includes('Victoria') ||
-        voice.name.includes('Audrey') ||
-        voice.name.includes('Amélie') ||
-        voice.name.includes('Joana')
-      );
-      if (femaleVoice) return femaleVoice;
-      
-      // Final fallback: Just take the first matching voice
-      return candidateVoices[0];
-    };
-    
-    // Select the best voice
-    const bestVoice = selectBestVoice(allVoices);
-    
-    if (bestVoice) {
-      console.log("Using voice:", bestVoice.name, "for language:", bestVoice.lang);
-      utterance.voice = bestVoice;
-    } else if (allVoices.length > 0) {
-      // Fallback to any voice in our preferred language
-      const fallbackVoice = allVoices.find(voice => 
-        preferredLangs.some(lang => voice.lang.startsWith(lang))
-      );
-      if (fallbackVoice) {
-        console.log("Using fallback voice:", fallbackVoice.name);
-        utterance.voice = fallbackVoice;
-      }
-    }
-    
-    // Finally speak the text
-    window.speechSynthesis.speak(utterance);
-  }, [userSettings.target_language]);
-  
   // Function to update progress in API - wrapped in useCallback to prevent recreation
   const updateProgressInAPI = useCallback(async (completionPercentage: number) => {
-    if (!lessonId) return;
+    if (!lessonId || !mountedRef.current) return;
     
     try {
       const contentLessonId = parseInt(lessonId);
@@ -222,7 +101,7 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
       );
       
       // If we also have the unit ID, update the parent lesson progress
-      if (unitId && completionPercentage >= 100) {
+      if (unitId && completionPercentage >= 100 && !lessonCompleted) {
         // Update parent lesson progress too
         await lessonCompletionService.updateLessonProgress(
           contentLessonId, 
@@ -232,18 +111,27 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
           true // Mark as completed
         );
         
-        console.log("Updated parent lesson progress");
-        setLessonCompleted(true);
+        if (mountedRef.current) {
+          setLessonCompleted(true);
+        }
       }
       
       // If completed and we have a completion callback
-      if (completionPercentage >= 100 && onComplete && !lessonCompleted) {
+      if (completionPercentage >= 100 && onComplete && !lessonCompleted && mountedRef.current) {
         setLessonCompleted(true);
       }
     } catch (error) {
       console.error("Error updating vocabulary progress:", error);
     }
   }, [lessonId, unitId, timeSpent, onComplete, lessonCompleted]);
+
+  // Track lesson mount/unmount status
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   // Track time spent on this lesson - fixed with refs
   useEffect(() => {
@@ -256,13 +144,18 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
     
     // Update time spent every 30 seconds to reduce API calls
     timeIntervalRef.current = setInterval(() => {
-      setTimeSpent(Math.floor((Date.now() - startTimeRef.current) / 1000));
+      if (mountedRef.current) {
+        setTimeSpent(Math.floor((Date.now() - startTimeRef.current) / 1000));
+      }
     }, 30000);
     
     // Clean up interval on unmount
     return () => {
       if (timeIntervalRef.current) {
         clearInterval(timeIntervalRef.current);
+      }
+      if (celebrationTimerRef.current) {
+        clearTimeout(celebrationTimerRef.current);
       }
     };
   }, []);
@@ -273,27 +166,22 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
     setUserSettings(settings);
   }, [getUserSettings]);
 
-  // Reset speaking state when changing words
+  // Reset speaking when changing words
   useEffect(() => {
-    // Cancel any ongoing speech when changing words
-    if (window.speechSynthesis) {
-      try {
-        // Add a small delay to prevent conflicts with performSpeech
-        setTimeout(() => {
-          if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
-            window.speechSynthesis.cancel();
-          }
-        }, 50);
-      } catch (error) {
-        console.error("Error cancelling speech:", error);
-      }
+    // Stop any ongoing speech when changing words
+    stop();
+    setSpeakingElement(null);
+  }, [currentIndex, stop]);
+
+  // Update speaking element state when isSpeaking changes
+  useEffect(() => {
+    if (!isSpeaking && mountedRef.current) {
+      setSpeakingElement(null);
     }
-    // Reset speaking state
-    setIsSpeaking(false);
-  }, [currentIndex]);
+  }, [isSpeaking]);
 
   // Function to dynamically get content in the specified language
-  const getWordInLanguage = useCallback((word: VocabularyItem | null, language: string, field: string) => {
+  const getWordInLanguage = useCallback((word: VocabularyItem | null, field: string, language: string) => {
     if (!word) return '';
     
     // Convert to lowercase to match "_en", "_fr", etc. format
@@ -306,26 +194,24 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
 
   // Function to get content in native language
   const getWordInNativeLanguage = useCallback((word: VocabularyItem | null, field: string) => {
-    return getWordInLanguage(word, userSettings.native_language, field);
+    return getWordInLanguage(word, field, userSettings.native_language);
   }, [getWordInLanguage, userSettings.native_language]);
 
   // Function to get content in target language
   const getWordInTargetLanguage = useCallback((word: VocabularyItem | null, field: string) => {
-    return getWordInLanguage(word, userSettings.target_language, field);
+    return getWordInLanguage(word, field, userSettings.target_language);
   }, [getWordInLanguage, userSettings.target_language]);
 
   // Effect to update progress based on current position
   useEffect(() => {
     if (vocabulary.length > 0 && currentIndex >= 0) {
-      const newProgress = Math.round(((currentIndex + 1) / vocabulary.length) * 100);
-      
       // Only update progress in API at significant milestones to reduce API calls
-      if ([25, 50, 75, 100].includes(newProgress)) {
-        updateProgressInAPI(newProgress);
+      if (PROGRESS_MILESTONES.includes(progressPercentage)) {
+        updateProgressInAPI(progressPercentage);
       }
       
       // Check if we've reached the last word and show celebration
-      if (currentIndex === vocabulary.length - 1 && !lessonCompleted) {
+      if (currentIndex === vocabulary.length - 1 && !lessonCompleted && mountedRef.current) {
         // Use a promise-based approach for more reliable audio
         const playSuccessSound = async () => {
           try {
@@ -333,41 +219,49 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
             const audio = new Audio("/success1.mp3");
             audio.volume = 0.3;
             
-            // Wait for audio to load
-            await new Promise(resolve => {
-              audio.oncanplaythrough = resolve;
+            // Wait for audio to load with timeout
+            const loadPromise = new Promise<void>((resolve) => {
+              audio.oncanplaythrough = () => resolve();
               audio.onerror = () => {
                 console.error("Error loading audio");
-                resolve(null);
+                resolve();
               };
-              
-              // Set a timeout in case loading hangs
-              setTimeout(resolve, 2000);
             });
             
-            // Play the audio
-            await audio.play().catch(err => console.error("Error playing sound:", err));
+            // Set a timeout in case loading hangs
+            const timeoutPromise = new Promise<void>((resolve) => {
+              setTimeout(() => resolve(), 2000);
+            });
+            
+            // Race the promises to handle either case
+            await Promise.race([loadPromise, timeoutPromise]);
+            
+            // Play the audio - wrapped in try/catch
+            if (mountedRef.current) {
+              await audio.play().catch(err => console.error("Error playing sound:", err));
+            }
           } catch (error) {
             console.error("Error with audio:", error);
           }
         };
         
-        playSuccessSound();
-        setShowCelebration(true);
-        
-        const celebrationTimer = setTimeout(() => {
-          setShowCompletionMessage(true);
-          setShowCelebration(false);
-        }, 1500);
-        
-        updateProgressInAPI(100);
-        
-        return () => {
-          clearTimeout(celebrationTimer);
-        };
+        // Only play sound and show celebration if component is still mounted
+        if (mountedRef.current) {
+          playSuccessSound();
+          setShowCelebration(true);
+          
+          celebrationTimerRef.current = setTimeout(() => {
+            if (mountedRef.current) {
+              setShowCompletionMessage(true);
+              setShowCelebration(false);
+            }
+          }, 1500);
+          
+          updateProgressInAPI(100);
+        }
       }
     }
-  }, [currentIndex, vocabulary.length, updateProgressInAPI, lessonCompleted]);
+  }, [currentIndex, vocabulary.length, progressPercentage, updateProgressInAPI, lessonCompleted]);
 
   // Fetch vocabulary data - only once
   useEffect(() => {
@@ -375,6 +269,8 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
     if (dataLoadedRef.current || !lessonId) return;
     
     const fetchVocabulary = async () => {
+      if (!mountedRef.current) return;
+      
       console.log("Fetching vocabulary for lesson:", lessonId);
       setLoading(true);
       setError(null);
@@ -404,29 +300,37 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
         }
 
         const data = await response.json();
-        if (data.results && data.results.length > 0) {
-          setVocabulary(data.results);
-          dataLoadedRef.current = true;
-          
-          // Initialize progress to 1% just once
-          if (!progressInitializedRef.current) {
-            updateProgressInAPI(1);
-            progressInitializedRef.current = true;
+        
+        if (mountedRef.current) {
+          if (data.results && data.results.length > 0) {
+            setVocabulary(data.results);
+            dataLoadedRef.current = true;
+            
+            // Initialize progress to 1% just once
+            if (!progressInitializedRef.current) {
+              updateProgressInAPI(1);
+              progressInitializedRef.current = true;
+            }
+          } else {
+            setError("No vocabulary items found for this lesson");
           }
-        } else {
-          setError("No vocabulary items found for this lesson");
         }
       } catch (err) {
-        console.error("Fetch error:", err);
-        setError(`Failed to load vocabulary content: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        if (mountedRef.current) {
+          console.error("Fetch error:", err);
+          setError(`Failed to load vocabulary content: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        }
       } finally {
-        setLoading(false);
+        if (mountedRef.current) {
+          setLoading(false);
+        }
       }
     };
 
     fetchVocabulary();
   }, [lessonId, getUserSettings, updateProgressInAPI]);
 
+  // Navigation handlers
   const handleNext = useCallback(() => {
     if (currentIndex < vocabulary.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
@@ -458,19 +362,22 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
     }
   }, [updateProgressInAPI, onComplete]);
   
-  // Handle speech button clicks
-  const handleSpeakClick = useCallback((text: string) => {
-    // If already speaking, cancel current speech
-    if (isSpeaking && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
+  // Handle speech button clicks with element tracking
+  const handleSpeakClick = useCallback((text: string, elementType: SpeakingElement) => {
+    // If already speaking
+    if (isSpeaking) {
+      // Stop speech
+      stop();
+      setSpeakingElement(null);
       return;
     }
     
-    // Otherwise start new speech
+    // Otherwise start speaking and record the element being read
     speak(text);
-  }, [isSpeaking, speak]);
+    setSpeakingElement(elementType);
+  }, [isSpeaking, speak, stop]);
 
+  // Loading state
   if (loading) {
     return (
       <div className={commonStyles.container}>
@@ -481,6 +388,7 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
     );
   }
 
+  // Error state
   if (error || !vocabulary.length) {
     return (
       <div className={commonStyles.container}>
@@ -493,8 +401,6 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
       </div>
     );
   }
-
-  const currentWord = vocabulary[currentIndex] || null;
 
   return (
     <div className="w-full space-y-6">
@@ -575,7 +481,7 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
           {/* Progress Section */}
           <div>
             <Progress
-              value={((currentIndex + 1) / vocabulary.length) * 100}
+              value={progressPercentage}
               className="h-2"
             />
             <p className="text-sm text-muted-foreground mt-2 text-center">
@@ -601,11 +507,11 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleSpeakClick(String(getWordInTargetLanguage(currentWord, 'word')))}
-                  className={`mt-4 relative z-10 px-4 py-2 ${isSpeaking ? 'bg-brand-purple/10' : 'hover:bg-brand-purple/10'}`}
+                  onClick={() => handleSpeakClick(String(getWordInTargetLanguage(currentWord, 'word')), 'word')}
+                  className={`mt-4 relative z-10 px-4 py-2 ${speakingElement === 'word' ? 'bg-brand-purple/10' : 'hover:bg-brand-purple/10'}`}
                   type="button"
                 >
-                  {isSpeaking ? (
+                  {speakingElement === 'word' ? (
                     <>
                       <span className="animate-pulse">
                         <Volume2 className="h-4 w-4 mr-2" />
@@ -624,12 +530,34 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
 
             {/* Example Section */}
             {currentWord && getWordInTargetLanguage(currentWord, 'example_sentence') && (
-              <div
-                className={`${commonStyles.exampleBox} flex flex-col items-center text-center`}
-              >
-                <h3 className="font-semibold text-brand-purple text-lg mb-2">
-                  Example:
-                </h3>
+              <div className={`${commonStyles.exampleBox} flex flex-col items-center text-center p-4 relative`}>
+                <div className="w-full flex items-center justify-center gap-2 mb-2">
+                  <h3 className="font-semibold text-brand-purple text-lg">Example:</h3>
+                  
+                  {/* Button with explicit z-index and styling */}
+                  <button
+                    onClick={() => handleSpeakClick(String(getWordInTargetLanguage(currentWord, 'example_sentence')), 'example')}
+                    className={`z-20 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background 
+                      transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring 
+                      focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 
+                      ${speakingElement === 'example' ? 'bg-brand-purple/20' : 'hover:bg-brand-purple/10'} 
+                      p-3 cursor-pointer`}
+                    style={{ pointerEvents: 'auto' }}
+                    type="button"
+                  >
+                    {speakingElement === 'example' ? (
+                      <div className="flex items-center">
+                        <span className="animate-pulse mr-1">
+                          <Volume2 className="h-4 w-4" />
+                        </span>
+                        <span className="text-xs">Speaking...</span>
+                      </div>
+                    ) : (
+                      <Volume2 className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+                
                 <p className="text-lg mb-1">
                   {getWordInTargetLanguage(currentWord, 'example_sentence')}
                 </p>
@@ -639,7 +567,7 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
               </div>
             )}
 
-            {/* Tabs Section - Fixed with controlled state */}
+            {/* Tabs Section */}
             <Tabs value={selectedTab} onValueChange={handleTabChange} className="relative z-10">
               <TabsList className={commonStyles.tabsList}>
                 <TabsTrigger value="definition" className={commonStyles.tabsTrigger}>
@@ -684,10 +612,10 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
             </Tabs>
           </div>
 
-          {/* Navigation - All buttons with explicit handler calls */}
+          {/* Navigation */}
           <div className="flex justify-between relative z-10">
             <Button
-              onClick={() => handlePrevious()}
+              onClick={handlePrevious}
               disabled={currentIndex === 0}
               variant="outline"
               className="flex items-center gap-2 border-brand-purple/20 hover:bg-brand-purple/10"
@@ -699,7 +627,7 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
 
             <Button
               variant="outline"
-              onClick={() => handleReset()}
+              onClick={handleReset}
               className="px-2"
               title="Reset to first word"
               type="button"
@@ -708,7 +636,7 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
             </Button>
 
             <Button
-              onClick={() => handleNext()}
+              onClick={handleNext}
               disabled={currentIndex === vocabulary.length - 1}
               className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white hover:opacity-90"
               type="button"
@@ -724,7 +652,7 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
           <div className="absolute bottom-5 right-5 z-20">
             <Button 
               className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 hover:from-purple-700 hover:to-blue-700"
-              onClick={() => handleComplete()}
+              onClick={handleComplete}
               type="button"
             >
               <CheckCircle className="h-4 w-4 mr-2" />
