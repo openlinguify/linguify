@@ -1,5 +1,3 @@
-// src/app/(dashboard)/(apps)/learning/_components/LearningView.tsx
-'use client';
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -117,10 +115,20 @@ export default function LearningView() {
               const contentProgress = contentProgressMap[content.id];
               if (!contentProgress) return content;
 
+              // Ensure status is correctly typed
+              let status: 'not_started' | 'in_progress' | 'completed' | undefined;
+              if (contentProgress.status === 'not_started' || 
+                  contentProgress.status === 'in_progress' || 
+                  contentProgress.status === 'completed') {
+                status = contentProgress.status;
+              } else {
+                status = 'not_started'; // Default value if invalid status
+              }
+
               return {
                 ...content,
                 progress: contentProgress.completion_percentage,
-                status: contentProgress.status
+                status: status
               };
             });
 
@@ -178,7 +186,7 @@ export default function LearningView() {
         };
       });
 
-      // Update the lesson with its contents
+      // Update the unit with its contents
       setUnits(prevUnits =>
         prevUnits.map(unit => ({
           ...unit,
@@ -217,6 +225,16 @@ export default function LearningView() {
       const formattedLessons: FilteredLesson[] = (lessonsData as Lesson[]).map(lesson => {
         const lessonProgress = lessonProgressData[lesson.id];
 
+        // Ensure status is correctly typed
+        let status: 'not_started' | 'in_progress' | 'completed' | undefined;
+        if (lessonProgress?.status === 'not_started' || 
+            lessonProgress?.status === 'in_progress' || 
+            lessonProgress?.status === 'completed') {
+          status = lessonProgress.status;
+        } else {
+          status = undefined;
+        }
+
         return {
           id: lesson.id,
           title: lesson.title,
@@ -226,7 +244,7 @@ export default function LearningView() {
           contentLessons: [],
           // Add progression data if it exists
           progress: lessonProgress?.completion_percentage,
-          status: lessonProgress?.status as 'not_started' | 'in_progress' | 'completed' | undefined
+          status: status
         };
       });
 
@@ -408,6 +426,16 @@ export default function LearningView() {
           // Récupérer les données de progression de la leçon si disponible
           const lessonProgress = lessonProgressData[lesson.id];
 
+          // Ensure status is correctly typed
+          let status: 'not_started' | 'in_progress' | 'completed' | undefined;
+          if (lessonProgress?.status === 'not_started' || 
+              lessonProgress?.status === 'in_progress' || 
+              lessonProgress?.status === 'completed') {
+            status = lessonProgress.status;
+          } else {
+            status = undefined;
+          }
+
           return {
             id: lesson.id,
             title: lesson.title,
@@ -418,7 +446,7 @@ export default function LearningView() {
             estimated_duration: lesson.estimated_duration,
             contentLessons: [],
             progress: lessonProgress?.completion_percentage,
-            status: lessonProgress?.status as 'not_started' | 'in_progress' | 'completed' | undefined,
+            status: status,
             filteredContents: Array(lesson.content_count || 0).fill(null).map(() => ({
               id: 0,
               title: '',
@@ -426,8 +454,8 @@ export default function LearningView() {
               lesson_id: lesson.id,
               order: 0,
               progress: 0,
-              status: 'not_started'
-            } as FilteredContentLesson))
+              status: 'not_started' as 'not_started'
+            }))
           };
         });
 
