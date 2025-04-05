@@ -9,7 +9,6 @@ import {
   Settings, // Settings App
   Brain, // Flashcard App
   BarChart, // Progress App
-  BookMarked, // Revision App
   NotebookPen, // Notebook App
 } from "lucide-react";
 import { cn } from "@/core/utils/utils";
@@ -80,7 +79,7 @@ const routes = [
 export function Sidebar() {
   const pathname = usePathname();
   const { user, isAuthenticated } = useAuthContext();
-  const { t, locale, changeLanguage } = useTranslation();
+  const { t } = useTranslation();
 
   // État pour forcer le re-rendu
   const [, forceUpdate] = useState({});
