@@ -4,7 +4,7 @@
 import { Progress } from "@/components/ui/progress";
 import { cva } from "class-variance-authority";
 import { CheckCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/utils/utils";
 import { useEffect, useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 

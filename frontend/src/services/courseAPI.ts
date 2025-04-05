@@ -1,8 +1,8 @@
 // src/services/courseAPI.ts
 
-import apiClient from './axiosAuthInterceptor';
-import { getUserTargetLanguage, getUserNativeLanguage } from '@/utils/languageUtils';
-import { Cache } from "@/utils/cacheUtils";
+import apiClient from '@/core/api/apiClient';
+import { getUserTargetLanguage, getUserNativeLanguage } from '@/core/utils/languageUtils';
+import { Cache } from "@/core/utils/cacheUtils";
 
 
 interface Lesson {

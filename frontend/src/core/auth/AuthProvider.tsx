@@ -1,4 +1,4 @@
-// src/services/AuthProvider.tsx
+// src/core/auth/AuthProvider.tsx
 "use client";
 
 import { 

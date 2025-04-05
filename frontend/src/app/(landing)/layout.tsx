@@ -3,8 +3,8 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuthContext } from "@/services/AuthProvider";
-import { LanguageProvider } from "@/components/LanguageContext";
+import { useAuthContext } from "@/core/auth/AuthProvider";
+import { LanguageProvider } from "@/core/i18n/i18nProvider";
 import { Navbar } from "./_components/Navbar";
 import { Footer } from "./_components/Footer";
 

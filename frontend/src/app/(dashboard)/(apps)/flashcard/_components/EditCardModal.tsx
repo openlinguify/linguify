@@ -16,7 +16,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Save, X, RotateCw, ArrowLeftRight } from "lucide-react";
 import type { Flashcard } from "@/types/revision";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 interface EditCardModalProps {
     card: Flashcard;

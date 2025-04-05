@@ -11,8 +11,8 @@ import { Input } from "@/components/ui/input";
 import FlashcardDeckList from './FlashcardDeckList';
 import { revisionApi } from "@/services/revisionAPI";
 import type { FlashcardDeck } from "@/types/revision";
-import { useAuthContext } from '@/services/AuthProvider';
-import { useTranslation } from "@/hooks/useTranslations";
+import { useAuthContext } from "@/core/auth/AuthProvider";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 const FlashcardMain = () => {
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);

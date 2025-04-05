@@ -6,8 +6,8 @@ import { UserProgress } from "./_components/user-progress";
 import { Card } from "@/components/ui/card";
 import { BookOpen, BarChart, Brain, NotebookPen } from "lucide-react";
 import Link from "next/link";
-import { useAuthContext } from "@/services/AuthProvider";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useAuthContext } from "@/core/auth/AuthProvider";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 export default function DashboardHome() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuthContext();

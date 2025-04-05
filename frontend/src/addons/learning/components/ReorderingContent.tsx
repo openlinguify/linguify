@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ReorderingExerciseProps } from "@/types/learning";
+import { ReorderingExerciseProps } from "@/addons/learning/types";
 
 interface Exercise {
   id: number;

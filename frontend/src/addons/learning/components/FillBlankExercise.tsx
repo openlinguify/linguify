@@ -6,10 +6,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Volume2, CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { getUserTargetLanguage } from "@/utils/languageUtils";
+import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import lessonCompletionService from "@/services/lessonCompletionService";
-import apiClient from "@/services/axiosAuthInterceptor";
-import { Exercise, FillBlankExerciseProps } from '@/types/learning';
+import apiClient from "@/core/api/apiClient";
+import { Exercise, FillBlankExerciseProps } from '@/addons/learning/types';
 
 const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({ 
   lessonId,

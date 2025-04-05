@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Progress } from "@/components/ui/progress";
 import { Trash2, AlertTriangle, LoaderCircle, Check, Timer } from "lucide-react";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 interface DeleteProgressDialogProps {
   isOpen: boolean;

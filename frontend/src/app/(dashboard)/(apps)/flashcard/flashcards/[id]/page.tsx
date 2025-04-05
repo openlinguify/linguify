@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 interface LearnQuestion {
   id: number;

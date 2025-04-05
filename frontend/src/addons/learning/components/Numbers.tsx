@@ -15,7 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { GradientCard } from "@/components/ui/gradient-card";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import { Number, NumbersLessonProps } from "@/types/learning";
+import { Number, NumbersLessonProps } from "@/addons/learning/types";
 
 
 const NumberComponent = ({ lessonId, language = 'en' }: NumbersLessonProps) => {

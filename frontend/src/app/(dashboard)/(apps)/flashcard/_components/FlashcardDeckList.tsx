@@ -27,7 +27,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { revisionApi } from "@/services/revisionAPI";
 import type { FlashcardDeck, EditingDeck } from "@/types/revision";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 interface FlashcardDeckListProps {
   decks: FlashcardDeck[];

@@ -1,5 +1,5 @@
 // src/types/progress.ts
-import { Lesson } from './learning';
+import { Lesson } from '../addons/learning/types';
 
 
 export type ProgressStatus = 'not_started' | 'in_progress' | 'completed';

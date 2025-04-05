@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import courseAPI from "@/services/courseAPI";
 import lessonCompletionService from "@/services/lessonCompletionService";
-import { MatchingAnswers } from "@/types/learning";
+import { MatchingAnswers } from "@/addons/learning/types";
 
 interface MatchingExerciseProps {
   lessonId: string;

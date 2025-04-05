@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Volume2, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Number, FlashcardProps } from "@/types/learning";
+import { Number, FlashcardProps } from "@/addons/learning/types";
 
 const NumbersGame = ({ lessonId, language = 'en' }: FlashcardProps) => {
     const [numbers, setNumbers] = useState<Number[]>([]);

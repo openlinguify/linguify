@@ -16,11 +16,11 @@ import {
   AlertCircle,
   CheckCircle
 } from "lucide-react";
-import { getUserTargetLanguage } from "@/utils/languageUtils";
+import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import courseAPI from "@/services/courseAPI";
 import progressAPI from "@/services/progressAPI";
-import { Cache } from "@/utils/cacheUtils";
-import { Lesson, ExpandableUnitCardProps } from "@/types/learning";
+import { Cache } from "@/core/utils/cacheUtils";
+import { Lesson, ExpandableUnitCardProps } from "@/addons/learning/types";
 import { LessonProgress, ProgressStatus } from "@/types/progress";
 
 

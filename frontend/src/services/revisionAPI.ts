@@ -1,7 +1,7 @@
 // src/services/revisionAPI.ts
-import apiClient from './axiosAuthInterceptor';
+import apiClient from '@/core/api/apiClient';
 import { Flashcard, FlashcardDeck } from '@/types/revision';
-import authService from './authService';
+import authService from '../core/auth/authService';
 
 // Configuration de base
 const API_BASE = '/api/v1/revision';

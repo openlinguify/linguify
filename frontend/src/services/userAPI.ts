@@ -1,5 +1,5 @@
 // src/services/userAPI.ts
-import api from './axiosAuthInterceptor';
+import api from '@/core/api/apiClient';
 import { User } from '@/types/user';
 
 // Type pour les mises à jour partielles du profil utilisateur

@@ -7,7 +7,6 @@ import {
   CheckCircle, 
   Globe, 
   BookOpen, 
-  Target,
   User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,8 +27,8 @@ import {
   LEVEL_OPTIONS,
   OBJECTIVES_OPTIONS
 } from "@/constants/usersettings";
-import apiClient from "@/services/axiosAuthInterceptor";
-import { useAuthContext } from "@/services/AuthProvider";
+import apiClient from "@/core/api/apiClient";
+import { useAuthContext } from "@/core/auth/AuthProvider";
 
 interface OnboardingFlowProps {
   onComplete: () => void;

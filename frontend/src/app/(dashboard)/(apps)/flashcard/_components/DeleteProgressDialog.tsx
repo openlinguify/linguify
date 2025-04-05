@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Trash2, AlertTriangle, Loader2, Check, Timer } from "lucide-react";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 interface DeleteProgressDialogProps {
   isOpen: boolean;

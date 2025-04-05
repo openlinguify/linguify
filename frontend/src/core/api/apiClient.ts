@@ -1,6 +1,6 @@
 // src/services/axiosAuthInterceptor.ts
 import axios, { AxiosRequestConfig, AxiosError, AxiosInstance } from 'axios';
-import authService from './authService';
+import authService from '../auth/authService';
 
 /**
  * Crée une instance Axios configurée avec des intercepteurs d'authentification

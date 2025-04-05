@@ -5,10 +5,10 @@ import { Check, X } from "lucide-react";
 import LanguageSwitcher from '../_components/LanguageSwitcher';
 
 // Import translations
-import frTranslations from '@/i18n/fr/common.json';
-import enTranslations from '@/i18n/en/common.json';
-import esTranslations from '@/i18n/es/common.json';
-import nlTranslations from '@/i18n/nl/common.json';
+import frTranslations from '@/core/i18n/translations/fr/common.json';
+import enTranslations from '@/core/i18n/translations/en/common.json';
+import esTranslations from '@/core/i18n/translations/es/common.json';
+import nlTranslations from '@/core/i18n/translations/nl/common.json';
 
 // Type definitions
 type AvailableLocales = 'fr' | 'en' | 'es' | 'nl';

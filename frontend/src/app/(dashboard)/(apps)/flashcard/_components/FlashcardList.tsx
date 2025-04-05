@@ -59,7 +59,7 @@ import type { Flashcard, FlashcardDeck } from "@/types/revision";
 import EditCardModal from "./EditCardModal";
 import ImportExcelModal from "./ImportExcelModal";
 import DeleteProgressDialog from './DeleteProgressDialog';
-import { useTranslation } from "@/hooks/useTranslations";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 // Type definitions
 interface FlashcardListProps {

@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft } from "lucide-react";
 import { revisionApi } from "@/services/revisionAPI";
 import { useToast } from "@/components/ui/use-toast";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 interface MatchCard {
   id: number;

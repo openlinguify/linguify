@@ -32,8 +32,8 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
-import { useAuthContext } from "@/services/AuthProvider";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useAuthContext } from "@/core/auth/AuthProvider";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 const Header = () => {
   const router = useRouter();

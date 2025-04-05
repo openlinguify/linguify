@@ -2,7 +2,7 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from "react";
 import OnboardingFlow from "./OnboardingFlow";
-import { useAuthContext } from "@/services/AuthProvider";
+import { useAuthContext } from "@/core/auth/AuthProvider";
 
 // Create context
 interface OnboardingContextType {
