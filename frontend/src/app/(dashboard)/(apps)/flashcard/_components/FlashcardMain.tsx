@@ -4,8 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, Loader2, RefreshCcw, Search } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { Loader2, RefreshCcw, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import FlashcardDeckList from './FlashcardDeckList';
@@ -21,7 +20,6 @@ const FlashcardMain = () => {
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const { t } = useTranslation();
-  const { toast } = useToast();
   const { user } = useAuthContext();
   const router = useRouter();
 
