@@ -39,8 +39,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { revisionApi } from "@/services/revisionAPI";
-import { cn } from "@/lib/utils";
-import { useTranslation } from "@/hooks/useTranslations";
+import { cn } from "@/core/utils/utils";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 interface ImportExcelModalProps {
   deckId: number;

@@ -2,13 +2,13 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthContext } from "@/services/AuthProvider";
+import { useAuthContext } from "@/core/auth/AuthProvider";
 import { Filter, Loader2, LayoutGrid, LayoutList, BookOpen, FileText, Calculator, ArrowRightLeft, PencilLine, Infinity, Flame, Trophy, Sparkles } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { User, Language } from "@/types/user";
-import { LearningJourneyProps } from "@/types/learning";
-import { UserProfile } from "@/services/authService";
+import { LearningJourneyProps } from "@/addons/learning/types";
+import { UserProfile } from "@/core/auth/authService";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +23,7 @@ import { Progress } from "@/components/ui/progress";
 import progressAPI from "@/services/progressAPI";
 import { ProgressSummary, RecentActivity, LevelProgress } from "@/types/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 /**
  * Gets the full name of a language from its code

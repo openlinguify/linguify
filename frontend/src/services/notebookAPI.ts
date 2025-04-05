@@ -1,5 +1,5 @@
 // src/services/notebookAPI.ts
-import apiClient from './axiosAuthInterceptor';
+import apiClient from '@/core/api/apiClient';
 import { Note, Category, Tag } from '@/types/notebook';
 
 

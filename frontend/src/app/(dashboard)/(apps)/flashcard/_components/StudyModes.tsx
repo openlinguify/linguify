@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Clock, BookOpen, Dumbbell, Layers } from "lucide-react";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 interface StudyModeProps {
   deckId: number;

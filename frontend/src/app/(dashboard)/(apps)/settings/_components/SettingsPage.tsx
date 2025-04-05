@@ -32,9 +32,9 @@ import {
   BookOpen,
   Palette
 } from "lucide-react";
-import { useAuthContext } from "@/services/AuthProvider";
+import { useAuthContext } from "@/core/auth/AuthProvider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import apiClient from '@/services/axiosAuthInterceptor';
+import apiClient from '@/core/api/apiClient';
 
 import { 
   LANGUAGE_OPTIONS, 

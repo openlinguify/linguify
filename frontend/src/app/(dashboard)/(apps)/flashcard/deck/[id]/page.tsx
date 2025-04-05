@@ -8,7 +8,7 @@ import { ChevronLeft, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { revisionApi } from "@/services/revisionAPI";
 import type { Flashcard, FlashcardDeck } from "@/types/revision";
-import { useAuthContext } from '@/services/AuthProvider';
+import { useAuthContext } from '@/core/auth/AuthProvider';
 import FlashcardStats from "../../_components/FlashcardStats";
 import StudyModes from "../../_components/StudyModes";
 import FlashcardList from "../../_components/FlashcardList";

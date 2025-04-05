@@ -20,11 +20,11 @@ import {
 import { revisionApi } from "@/services/revisionAPI";
 import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/utils/utils";
 import { Flashcard } from "@/types/revision";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 export default function ReviewPage() {
   const { t } = useTranslation();

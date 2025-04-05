@@ -5,10 +5,10 @@ import { useState, useEffect, useCallback } from 'react';
 const translationModules = {
   en: async () => {
     try {
-      const common = await import('@/i18n/en/common.json');
-      const footer = await import('@/i18n/en/footer.json');
-      const sidebar = await import('@/i18n/en/sidebar.json');
-      const dashboard = await import('@/i18n/en/dashboard.json');
+      const common = await import('./translations/en/common.json');
+      const footer = await import('./translations/en/footer.json');
+      const sidebar = await import('./translations/en/sidebar.json');
+      const dashboard = await import('./translations/en/dashboard.json');
       
       // Note the change here: dashboard is now a nested object instead of being spread
       return { 
@@ -25,10 +25,10 @@ const translationModules = {
   },
   fr: async () => {
     try {
-      const common = await import('@/i18n/fr/common.json');
-      const footer = await import('@/i18n/fr/footer.json');
-      const sidebar = await import('@/i18n/fr/sidebar.json');
-      const dashboard = await import('@/i18n/fr/dashboard.json');
+      const common = await import('./translations/fr/common.json');
+      const footer = await import('./translations/fr/footer.json');
+      const sidebar = await import('./translations/fr/sidebar.json');
+      const dashboard = await import('./translations/fr/dashboard.json');
       
       return { 
         ...common.default, 
@@ -39,16 +39,16 @@ const translationModules = {
     } catch (error) {
       console.error('Error loading French translations:', error);
       // Use English dashboard as fallback
-      const enDashboard = await import('@/i18n/en/dashboard.json').catch(() => ({ default: {} }));
+      const enDashboard = await import('./translations/en/dashboard.json').catch(() => ({ default: {} }));
       return { dashboard: enDashboard.default || {} };
     }
   },
   es: async () => {
     try {
-      const common = await import('@/i18n/es/common.json');
-      const footer = await import('@/i18n/es/footer.json');
-      const sidebar = await import('@/i18n/es/sidebar.json');
-      const dashboard = await import('@/i18n/es/dashboard.json');
+      const common = await import('./translations/es/common.json');
+      const footer = await import('./translations/es/footer.json');
+      const sidebar = await import('./translations/es/sidebar.json');
+      const dashboard = await import('./translations/es/dashboard.json');
       
       return { 
         ...common.default, 
@@ -59,16 +59,16 @@ const translationModules = {
     } catch (error) {
       console.error('Error loading Spanish translations:', error);
       // Use English dashboard as fallback
-      const enDashboard = await import('@/i18n/en/dashboard.json').catch(() => ({ default: {} }));
+      const enDashboard = await import('./translations/en/dashboard.json').catch(() => ({ default: {} }));
       return { dashboard: enDashboard.default || {} };
     }
   },
   nl: async () => {
     try {
-      const common = await import('@/i18n/nl/common.json');
-      const footer = await import('@/i18n/nl/footer.json');
-      const sidebar = await import('@/i18n/nl/sidebar.json');
-      const dashboard = await import('@/i18n/nl/dashboard.json');
+      const common = await import('./translations/nl/common.json');
+      const footer = await import('./translations/nl/footer.json');
+      const sidebar = await import('./translations/nl/sidebar.json');
+      const dashboard = await import('./translations/nl/dashboard.json');
       
       return { 
         ...common.default, 
@@ -79,7 +79,7 @@ const translationModules = {
     } catch (error) {
       console.error('Error loading Dutch translations:', error);
       // Use English dashboard as fallback
-      const enDashboard = await import('@/i18n/en/dashboard.json').catch(() => ({ default: {} }));
+      const enDashboard = await import('./translations/en/dashboard.json').catch(() => ({ default: {} }));
       return { dashboard: enDashboard.default || {} };
     }
   }

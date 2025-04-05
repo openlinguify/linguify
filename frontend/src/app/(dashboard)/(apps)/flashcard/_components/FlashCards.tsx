@@ -20,7 +20,7 @@ import { revisionApi } from "@/services/revisionAPI";
 import type { Flashcard, FlashcardDeck } from "@/types/revision";
 import EditCardModal from "./EditCardModal";
 import ImportExcelModal from "./ImportExcelModal";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 // Types
 interface FlashcardAppProps {

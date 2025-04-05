@@ -1,6 +1,6 @@
 // src/services/progressAPI.ts
-import apiClient from './axiosAuthInterceptor';
-import { handleApiError, waitForNetwork } from './errorHandlingService';
+import apiClient from '@/core/api/apiClient';
+import { handleApiError, waitForNetwork } from '@/core/api/errorHandling';
 import { 
   ProgressSummary, 
   UnitProgress, 

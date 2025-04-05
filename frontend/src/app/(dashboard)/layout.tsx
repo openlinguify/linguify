@@ -6,7 +6,7 @@ import { Sidebar } from "./_components/sidebar";
 import Header from "./_components/header";
 import { useRouter, usePathname } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { useAuthContext } from "@/services/AuthProvider";
+import { useAuthContext } from "@/core/auth/AuthProvider";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, login } = useAuthContext();

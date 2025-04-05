@@ -12,10 +12,10 @@ import {
   BookMarked, // Revision App
   NotebookPen, // Notebook App
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/utils/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAuthContext } from "@/services/AuthProvider";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useAuthContext } from "@/core/auth/AuthProvider";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 // Grouper les routes pour une meilleure organisation
 const routes = [

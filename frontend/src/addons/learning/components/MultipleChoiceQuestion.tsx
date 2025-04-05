@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { GradientCard } from "@/components/ui/gradient-card";
 import { GradientText } from "@/components/ui/gradient-text";
 import { commonStyles } from "@/styles/gradient_style";
-import { Question, MultipleChoiceProps } from "@/types/learning";
+import { Question, MultipleChoiceProps } from "@/addons/learning/types";
 
 
 const MultipleChoice = ({ lessonId, language = 'en' }: MultipleChoiceProps) => {

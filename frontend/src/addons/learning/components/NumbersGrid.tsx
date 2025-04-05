@@ -11,7 +11,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { Number, NumberProps } from "@/types/learning";
+import { Number, NumberProps } from "@/addons/learning/types";
 
 
 

@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { TheoryData, TheoryContentProps } from "@/types/learning";
+import { TheoryData, TheoryContentProps } from "@/addons/learning/types";
 import courseAPI from "@/services/courseAPI";
 import lessonCompletionService from "@/services/lessonCompletionService";
 import { useRouter } from "next/navigation";

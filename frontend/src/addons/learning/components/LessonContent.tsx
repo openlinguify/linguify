@@ -27,15 +27,15 @@ import NumberComponent from "./Numbers";
 import NumbersGame from "./NumbersGame";
 import ReorderingContent from "./ReorderingContent";
 import FillBlankExercise from "./FillBlankExercise";
-import { getUserTargetLanguage } from "@/utils/languageUtils";
+import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import courseAPI from "@/services/courseAPI";
 import progressAPI from "@/services/progressAPI";
 import lessonCompletionService from "@/services/lessonCompletionService";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
-import { ContentLesson, LessonContentProps } from "@/types/learning";
+import { ContentLesson, LessonContentProps } from "@/addons/learning/types";
 import MatchingExercise from "./MatchingExercise";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 // Content type mapping for consistent handling
 const CONTENT_TYPES = {

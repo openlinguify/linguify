@@ -1,4 +1,4 @@
-// src/components/LanguageContext.tsx
+// src/core/i18n/i18nProvider.tsx
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -21,8 +21,8 @@ type LanguageContextType = {
 const translationModules = {
   en: async () => {
     try {
-      const common = await import('@/i18n/en/common.json');
-      const footer = await import('@/i18n/en/footer.json');
+      const common = await import('./translations/en/common.json');
+      const footer = await import('./translations/en/footer.json');
       return { ...common.default, ...footer.default };
     } catch (error) {
       console.error('Failed to load English translations:', error);
@@ -31,8 +31,8 @@ const translationModules = {
   },
   fr: async () => {
     try {
-      const common = await import('@/i18n/fr/common.json');
-      const footer = await import('@/i18n/fr/footer.json');
+      const common = await import('./translations/fr/common.json');
+      const footer = await import('./translations/fr/footer.json');
       return { ...common.default, ...footer.default };
     } catch (error) {
       console.error('Failed to load French translations:', error);
@@ -41,8 +41,8 @@ const translationModules = {
   },
   es: async () => {
     try {
-      const common = await import('@/i18n/es/common.json');
-      const footer = await import('@/i18n/es/footer.json');
+      const common = await import('./translations/es/common.json');
+      const footer = await import('./translations/es/footer.json');
       return { ...common.default, ...footer.default };
     } catch (error) {
       console.error('Failed to load Spanish translations:', error);
@@ -51,8 +51,8 @@ const translationModules = {
   },
   nl: async () => {
     try {
-      const common = await import('@/i18n/nl/common.json');
-      const footer = await import('@/i18n/nl/footer.json');
+      const common = await import('./translations/nl/common.json');
+      const footer = await import('./translations/nl/footer.json');
       return { ...common.default, ...footer.default };
     } catch (error) {
       console.error('Failed to load Dutch translations:', error);

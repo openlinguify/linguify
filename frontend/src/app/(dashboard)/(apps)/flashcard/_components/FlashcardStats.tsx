@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Dumbbell, BookOpen, GraduationCap, Flame } from "lucide-react";
 import { revisionApi } from "@/services/revisionAPI";
-import { useTranslation } from "@/hooks/useTranslations";
+import { useTranslation } from "@/core/i18n/useTranslations";
 
 interface FlashcardStatsProps {
   deckId: number;

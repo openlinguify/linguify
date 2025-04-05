@@ -6,8 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import BackButton from "@/components/ui/BackButton";
 import { Progress } from "@/components/ui/progress";
-import { getUserTargetLanguage } from "@/utils/languageUtils";
-import { Lesson, LessonsProps } from "@/types/learning";
+import { getUserTargetLanguage } from "@/core/utils/languageUtils";
+import { Lesson, LessonsProps } from "@/addons/learning/types";
 import courseAPI from "@/services/courseAPI";
 import progressAPI from "@/services/progressAPI";
 import {
