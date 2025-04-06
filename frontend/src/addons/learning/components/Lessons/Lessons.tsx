@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import { Lesson, LessonsProps } from "@/addons/learning/types";
 import courseAPI from "@/addons/learning/api/courseAPI";
-import progressAPI from "@/addons/progress/services/progressAPI";
+import progressAPI from "@/addons/progress/api/progressAPI";
 import {
   ArrowLeft,
   Clock,

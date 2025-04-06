@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import ProgressDashboard from "../../../app/(dashboard)/(apps)/progress/_components/ProgressDashboard";
+import ProgressDashboard from "./ProgressDashboard";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { progressService } from "@/services/progressAPI";
+import { progressService } from "@/addons/progress/api/progressAPI";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";

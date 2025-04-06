@@ -29,7 +29,7 @@ import ReorderingContent from "../Exercises/ReorderingContent";
 import FillBlankExercise from "../Exercises/FillBlankExercise";
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import courseAPI from "@/addons/learning/api/courseAPI";
-import progressAPI from "@/addons/progress/services/progressAPI";
+import progressAPI from "@/addons/progress/api/progressAPI";
 import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";

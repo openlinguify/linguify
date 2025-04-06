@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { UserProgress } from "../../../app/(dashboard)/_components/user-progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { RecentActivity } from '@/types/progress';
+import { RecentActivity } from '@/addons/progress/types/';
 
 interface ActivityItem {
   id: number;

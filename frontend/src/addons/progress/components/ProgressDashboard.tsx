@@ -13,13 +13,13 @@ import { UserProgress } from "../../../app/(dashboard)/_components/user-progress
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { progressService } from "@/services/progressAPI";
+import { progressService } from "@/addons/progress/api/progressAPI";
 import { 
   ProgressSummary, 
   UnitProgress, 
   RecentActivity, 
   LevelStats 
-} from '@/types/progress';
+} from '@/addons/progress/types/';
 
 // Interface pour les données d'activité du graphique
 interface ActivityChartData {
