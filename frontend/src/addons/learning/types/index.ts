@@ -169,6 +169,12 @@ export interface MatchingExercise {
     exercise_data: MatchingExerciseData;
   }
 
+  export interface MatchingExerciseProps {
+    lessonId: string;
+    language?: 'en' | 'fr' | 'es' | 'nl';
+    unitId?: string;
+    onComplete?: () => void;
+  }
 
   export interface MatchingExerciseData {
     id: number;
@@ -293,4 +299,16 @@ export interface LearningJourneyProps {
   availableLevels?: string[];
   layout?: "list" | "grid";
   onLayoutChange?: (layout: "list" | "grid") => void;
+}
+
+export interface EnhancedLearningJourneyProps extends LearningJourneyProps {
+  onContentTypeChange?: (type: string) => void;
+}
+
+export interface LearningViewProps {
+  // Add any props that the LearningView component accepts
+  initialLevelFilter?: string;
+  showLoadingState?: boolean;
+  userId?: string;
+  // Add other properties as needed
 }

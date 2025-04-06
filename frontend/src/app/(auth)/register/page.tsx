@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { useAuthContext } from "@/services/AuthProvider";
+import { useAuthContext } from "@/core/auth/AuthProvider";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
