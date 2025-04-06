@@ -19,7 +19,6 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 
 
-
 from .models import (
     Unit, 
     Lesson, 
@@ -30,7 +29,8 @@ from .models import (
     Numbers,
     MatchingExercise,
     ExerciseGrammarReordering,
-    FillBlankExercise
+    FillBlankExercise,
+    SpeakingExercise
 )
 from .serializers import (
     TargetLanguageMixin,
@@ -44,7 +44,8 @@ from .serializers import (
     MatchingExerciseSerializer,
     TheoryContentSerializer,
     ExerciseGrammarReorderingSerializer,
-    FillBlankExerciseSerializer
+    FillBlankExerciseSerializer,
+    SpeakingExerciseSerializer
 )
 from .filters import LessonFilter, VocabularyListFilter
 from authentication.models import User
@@ -57,9 +58,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# par exemple, pour limiter le nombre de unités d'apprentissage retournées par page à 15
-# et pour permettre à l'utilisateur de spécifier le nombre d'unités d'apprentissage à afficher par page
-# en utilisant le paramètre de requête `page_size`
 class CustomPagination(PageNumberPagination):
     page_size = 100
     page_size_query_param = 'page_size'
@@ -111,8 +109,6 @@ class LessonAPIView(TargetLanguageMixin, generics.ListAPIView):
         context['target_language'] = target_language
         logger.info(f"LessonAPIView - Adding target_language to context: {target_language}")
         return context
-    
-
 
 class ContentLessonViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -319,7 +315,7 @@ class VocabularyListAPIView(APIView):
         )
         
         return paginator.get_paginated_response(serializer.data)
-    
+
 class NumbersViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -596,10 +592,6 @@ class MatchingExerciseViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(exercise)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
-
-
-
 class MultipleChoiceQuestionAPIView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -841,6 +833,7 @@ class FillBlankExerciseViewSet(viewsets.ModelViewSet):
         return 'en'
     
 class LessonsByContentView(TargetLanguageMixin, generics.ListAPIView):
+
     """
     Vue API pour récupérer des leçons filtrées par type de contenu.
     
@@ -937,3 +930,18 @@ class LessonsByContentView(TargetLanguageMixin, generics.ListAPIView):
         }
         
         return response
+    
+
+class SpeakingExerciseViewSet(viewsets.ModelViewSet):
+    queryset = SpeakingExercise.objects.all()
+    serializer_class = SpeakingExerciseSerializer
+    permission_classes = [AllowAny]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['content_lesson']
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        content_lesson_id = self.request.query_params.get('content_lesson')
+        if content_lesson_id:
+            queryset = queryset.filter(content_lesson_id=content_lesson_id)
+        return queryset

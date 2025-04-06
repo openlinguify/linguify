@@ -11,7 +11,8 @@ from .models import (
     Numbers, 
     TheoryContent, 
     ExerciseGrammarReordering,
-    FillBlankExercise
+    FillBlankExercise,
+    SpeakingExercise
 )
 import logging
 logger = logging.getLogger(__name__)
@@ -256,6 +257,14 @@ class VocabularyListSerializer(serializers.ModelSerializer):
     def get_antonymous(self, obj):
         target_language = self.context.get('target_language', 'en')
         return obj.get_antonymous(target_language)
+
+class SpeakingExerciseSerializer(serializers.ModelSerializer):
+    vocabulary_items = VocabularyListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = SpeakingExercise
+        fields = ['id', 'vocabulary_items']
+
 
 class TheoryContentSerializer(serializers.ModelSerializer):
     content_lesson = ContentLessonSerializer(read_only=True)

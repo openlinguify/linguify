@@ -3,6 +3,8 @@
 // Exporter le hook useSpeechSynthesis
 export { default as useSpeechSynthesis } from './useSpeechSynthesis';
 
-// Vous pourriez également ajouter d'autres exports liés à la parole dans le futur :
-// export { default as useSpeechRecognition } from './useSpeechRecognition';
-// export { speechService } from './speechService';
+// Exporter le hook useSpeechRecognition
+export { useSpeechRecognition } from './useSpeechRecognition';
+
+// Exporter le service speechAPI
+export { default as speechAPI } from './speechAPI';

@@ -23,6 +23,7 @@ from .models import (
     MatchingExercise,
     ExerciseGrammarReordering,
     FillBlankExercise,
+    SpeakingExercise
 )
 
 class LessonInline(admin.TabularInline):
@@ -104,6 +105,61 @@ class ContentLessonAdmin(admin.ModelAdmin):
     def get_title(self, obj):
         return f"{obj.title_en} | {obj.title_fr}"
     get_title.short_description = 'Title'
+
+class VocabularyInline(admin.TabularInline):
+    model = SpeakingExercise.vocabulary_items.through
+    verbose_name = "Vocabulary Item"
+    verbose_name_plural = "Vocabulary Items"
+    extra = 1
+    autocomplete_fields = ['vocabularylist']
+
+@admin.register(SpeakingExercise)
+class SpeakingExerciseAdmin(admin.ModelAdmin):
+    list_display = ['id', 'content_lesson_info', 'vocabulary_count']
+    list_filter = ['content_lesson__lesson__unit__level']
+    search_fields = ['content_lesson__title_en']
+
+    fieldsets = [
+        (None, {
+            'fields': ['content_lesson']
+        }),
+    ]
+    inlines = [VocabularyInline]
+    exclude = ['vocabulary_items']  # Exclu car géré par l'inline
+    
+    def exercise_title(self, obj):
+        return obj.title_en
+    exercise_title.short_description = "Title"
+    
+    def content_lesson_info(self, obj):
+        unit_info = obj.content_lesson.lesson.unit.title_en
+        lesson_info = obj.content_lesson.lesson.title_en
+        return format_html(
+            "<strong>Unit:</strong> {} <br/><strong>Lesson:</strong> {}",
+            unit_info, lesson_info
+        )
+    content_lesson_info.short_description = "Lesson Info"
+    
+    def vocabulary_count(self, obj):
+        count = obj.vocabulary_items.count()
+        return format_html(
+            '<span style="color:{}">{} items</span>',
+            'green' if count > 0 else 'red',
+            count
+        )
+    vocabulary_count.short_description = "Vocabulary"
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'content_lesson__lesson__unit'
+        ).prefetch_related('vocabulary_items')
+
+
+
+
+
+
+
 
 @admin.register(TheoryContent)
 class TheoryContentAdmin(admin.ModelAdmin):
