@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import courseAPI from "@/addons/learning/api/courseAPI";
-import progressAPI from "@/addons/progress/services/progressAPI";
+import progressAPI from "@/addons/progress/api/progressAPI";
 import LearningJourney from "./LearningInfo/LearningJourney";
 import { Unit, Lesson } from "@/addons/learning/types";
 import { UnitProgress, LessonProgress, ContentLessonProgress } from "@/addons/progress/types";

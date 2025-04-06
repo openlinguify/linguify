@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import courseAPI from "@/addons/learning/api/courseAPI";
-import progressAPI from "@/addons/progress/services/progressAPI";
+import progressAPI from "@/addons/progress/api/progressAPI";
 import { Cache } from "@/core/utils/cacheUtils";
 import { Lesson, ExpandableUnitCardProps } from "@/addons/learning/types";
 import { LessonProgress, ProgressStatus } from "@/addons/progress/types/";

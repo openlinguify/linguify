@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import progressAPI from "@/addons/progress/services/progressAPI";
+import progressAPI from "@/addons/progress/api/progressAPI";
 import { ProgressSummary, RecentActivity, LevelProgress } from "@/addons/progress/types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "@/core/i18n/useTranslations";
