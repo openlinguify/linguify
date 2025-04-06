@@ -1,5 +1,5 @@
 // src/types/auth.ts
-import { User } from '@/types/user';
+import { User } from '@/core/types/user';
 
 export interface LoginOptions {
   connection?: string;

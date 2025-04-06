@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft } from "lucide-react";
-import { revisionApi } from "@/services/revisionAPI";
+import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslation } from "@/core/i18n/useTranslations";
 

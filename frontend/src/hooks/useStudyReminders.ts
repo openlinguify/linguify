@@ -1,6 +1,6 @@
 // src/hooks/useStudyReminders.ts
 import { useState, useEffect } from 'react';
-import { notificationService } from '@/services/notificationService';
+import { notificationService } from '@/core/api/notificationService';
 
 export function useStudyReminders(userId: string | null) {
   const [dueCards, setDueCards] = useState(0);

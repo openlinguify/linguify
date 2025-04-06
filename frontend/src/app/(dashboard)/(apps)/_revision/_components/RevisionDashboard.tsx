@@ -8,12 +8,12 @@ import {
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toaster } from "@/components/ui/toaster";
-import FlashcardApp from "../../flashcard/_components/FlashCards";
+import FlashcardApp from "../../../../../addons/flashcard/components/FlashCards";
 import RevisionSchedule from "./RevisionSchedule";
 import VocabularyManager from "./VocabularyManager";
 import VocabularyRevision from "./VocabularyRevision";
 import VocabularyStats from "./VocabularyStats";
-import FlashcardList from "../../flashcard/_components/FlashcardDeckList";
+import FlashcardList from "../../../../../addons/flashcard/components/FlashcardDeckList";
 
 const tabItems = [
   {

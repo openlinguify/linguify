@@ -54,11 +54,11 @@ import {
   LoaderCircle
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { revisionApi } from "@/services/revisionAPI";
-import type { Flashcard, FlashcardDeck } from "@/types/revision";
-import EditCardModal from "./EditCardModal";
-import ImportExcelModal from "./ImportExcelModal";
-import DeleteProgressDialog from './DeleteProgressDialog';
+import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
+import type { Flashcard, FlashcardDeck } from "@/addons/revision/types/revision";
+import EditCardModal from "../../../../../addons/flashcard/components/EditCardModal";
+import ImportExcelModal from "../../../../../addons/flashcard/components/ImportExcelModal";
+import DeleteProgressDialog from '../../../../../addons/flashcard/components/DeleteProgressDialog';
 import { useTranslation } from "@/core/i18n/useTranslations";
 
 // Type definitions

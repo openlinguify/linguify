@@ -6,16 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import courseAPI from "@/services/courseAPI";
-import progressAPI from "@/services/progressAPI";
+import courseAPI from "@/addons/learning/api/courseAPI";
+import progressAPI from "@/addons/progress/services/progressAPI";
 import LearningJourney from "./LearningInfo/LearningJourney";
 import { Unit, Lesson } from "@/addons/learning/types";
-import { UnitProgress, LessonProgress, ContentLessonProgress } from "@/types/progress";
+import { UnitProgress, LessonProgress, ContentLessonProgress } from "@/addons/progress/types";
 import {
   createUnitProgressMap,
   createLessonProgressMap,
   createContentProgressMap
-} from "@/utils/progressAdapter";
+} from "@/core/utils/progressAdapter";
 
 // Types spécifiques pour ce composant
 interface FilteredUnit {

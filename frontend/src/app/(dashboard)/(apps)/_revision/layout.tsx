@@ -4,7 +4,7 @@
 import { Inter } from 'next/font/google';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import QueryProvider from '@/providers/QueryProvider';
+import QueryProvider from '@/core/providers/QueryProvider';
 import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'] });

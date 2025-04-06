@@ -17,11 +17,11 @@ import {
   Calendar,
   Undo2
 } from "lucide-react";
-import { revisionApi } from "@/services/revisionAPI";
+import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
 import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/core/utils/utils";
-import { Flashcard } from "@/types/revision";
+import { Flashcard } from "@/addons/revision/types/revision";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "@/core/i18n/useTranslations";

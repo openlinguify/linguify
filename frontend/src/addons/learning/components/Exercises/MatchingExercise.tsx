@@ -16,8 +16,8 @@ import {
   ArrowRight,
   AlertTriangle 
 } from "lucide-react";
-import courseAPI from "@/services/courseAPI";
-import lessonCompletionService from "@/services/lessonCompletionService";
+import courseAPI from "@/addons/learning/api/courseAPI";
+import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 import { MatchingAnswers } from "@/addons/learning/types";
 
 interface MatchingExerciseProps {

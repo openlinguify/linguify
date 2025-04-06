@@ -1,84 +1,47 @@
-db.sqlite3
-
-# Virtual Environment files
-
-# backend
-env/
-venv/
-.venv/
-backend/.env
-backend/venv/
-backend/myenv/
-
-# frontend
-frontend/node_modules/
-frontend/.env.local
-frontend/public/
-
-.notes_commandes
-
-# Fichiers de cache
-*.cache
-.cache/
-__pycache__/
-
-# Fichiers de l'IDE
-.idea/
-.vscode/
-*.iml
-
-# Fichiers de sauvegarde
+# === GLOBAL ===
+*.log
+*.pid
+*.seed
+*.pid.lock
+*.orig
 *.bak
 *.swp
 *~.nib
-*.pyc
+*.iml
+*.py[cod]
 *.pyo
 *.pyd
-
-# Fichiers de configuration
-*.orig
+*.so
+*.dll
+*.o
+*.class
+*.env
 *.conf
 *.ini
-*.env
-*.log
-*.sql
 *.sqlite3
 *.db
-*.data
 *.db-shm
 *.db-wal
 *.sql
-*.pyc
+*.data
+__pycache__/
+.cache/
+*.cache
+.DS_Store
+Thumbs.db
+.notes_commandes
 
-# Fichiers de compilation
-*.pyc
-*.pyo
-*.pyd
-*.class
-*.o
-*.so
-*.dll
+# === PYTHON / BACKEND ===
+env/
+venv/
+.venv/
+backend/venv/
+backend/myenv/
+backend/.env
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# === FRONTEND ===
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+frontend/public/
+frontend/prisma/
