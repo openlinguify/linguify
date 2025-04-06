@@ -20,13 +20,13 @@ import {
   Infinity
 } from "lucide-react";
 import BackButton from "@/components/ui/BackButton";
-import TheoryContent from "./TheoryContent";
-import VocabularyLesson from "./VocabularyLesson";
-import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
-import NumberComponent from "./Numbers";
-import NumbersGame from "./NumbersGame";
-import ReorderingContent from "./ReorderingContent";
-import FillBlankExercise from "./FillBlankExercise";
+import TheoryContent from "../Theory/TheoryContent";
+import VocabularyLesson from "../Exercises/VocabularyLesson";
+import MultipleChoiceQuestion from "../Exercises/MultipleChoiceQuestion";
+import NumberComponent from "../Exercises/Numbers";
+import NumbersGame from "../Exercises/NumbersGame";
+import ReorderingContent from "../Exercises/ReorderingContent";
+import FillBlankExercise from "../Exercises/FillBlankExercise";
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import courseAPI from "@/services/courseAPI";
 import progressAPI from "@/services/progressAPI";
@@ -34,7 +34,7 @@ import lessonCompletionService from "@/services/lessonCompletionService";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { ContentLesson, LessonContentProps } from "@/addons/learning/types";
-import MatchingExercise from "./MatchingExercise";
+import MatchingExercise from "../Exercises/MatchingExercise";
 import { useTranslation } from "@/core/i18n/useTranslations";
 
 // Content type mapping for consistent handling

@@ -1,6 +1,6 @@
 // src/app/(dashboard)/(apps)/learning/[unitId]/[lessonId]/page.tsx
 import { Suspense } from 'react';
-import LessonContent from '../../../../../addons/learning/components/LessonContent';
+import LessonContent from '../../../../../addons/learning/components/LessonContent/LessonContent';
 import { notFound } from 'next/navigation';
 
 interface PageProps {

@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import courseAPI from "@/services/courseAPI";
 import progressAPI from "@/services/progressAPI";
-import LearningJourney from "./LearningJourney";
+import LearningJourney from "./LearningInfo/LearningJourney";
 import { Unit, Lesson } from "@/addons/learning/types";
 import { UnitProgress, LessonProgress, ContentLessonProgress } from "@/types/progress";
 import {
