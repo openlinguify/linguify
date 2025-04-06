@@ -6,11 +6,11 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { revisionApi } from "@/services/revisionAPI";
-import type { Flashcard, FlashcardDeck } from "@/types/revision";
-import FlashcardStats from "../../_components/FlashcardStats";
-import StudyModes from "../../_components/StudyModes";
-import FlashcardList from "../../_components/FlashcardList";
+import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
+import type { Flashcard, FlashcardDeck } from "@/addons/revision/types/revision";
+import FlashcardStats from "../../../../../../addons/flashcard/components/FlashcardStats";
+import StudyModes from "../../../../../../addons/flashcard/components/StudyModes";
+import FlashcardList from "../../../../../../addons/flashcard/components/FlashcardList";
 
 export default function DeckPage() {
   const { id } = useParams<{ id: string }>();

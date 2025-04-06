@@ -7,9 +7,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, RefreshCcw, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import FlashcardDeckList from './FlashcardDeckList';
-import { revisionApi } from "@/services/revisionAPI";
-import type { FlashcardDeck } from "@/types/revision";
+import FlashcardDeckList from '../../../../../addons/flashcard/components/FlashcardDeckList';
+import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
+import type { FlashcardDeck } from "@/addons/revision/types/revision";
 import { useAuthContext } from "@/core/auth/AuthProvider";
 import { useTranslation } from "@/core/i18n/useTranslations";
 

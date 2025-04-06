@@ -7,7 +7,7 @@ import { AlertCircle, Volume2, CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
-import lessonCompletionService from "@/services/lessonCompletionService";
+import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 import apiClient from "@/core/api/apiClient";
 import { Exercise, FillBlankExerciseProps } from '@/addons/learning/types';
 

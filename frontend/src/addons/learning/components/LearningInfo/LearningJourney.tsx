@@ -6,7 +6,7 @@ import { useAuthContext } from "@/core/auth/AuthProvider";
 import { Filter, Loader2, LayoutGrid, LayoutList, BookOpen, FileText, Calculator, ArrowRightLeft, PencilLine, Infinity, Flame, Trophy, Sparkles } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { User, Language } from "@/types/user";
+import { User, Language } from "@/core/types/user";
 import { LearningJourneyProps } from "@/addons/learning/types";
 import { UserProfile } from "@/core/auth/authService";
 import {
@@ -20,8 +20,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import progressAPI from "@/services/progressAPI";
-import { ProgressSummary, RecentActivity, LevelProgress } from "@/types/progress";
+import progressAPI from "@/addons/progress/services/progressAPI";
+import { ProgressSummary, RecentActivity, LevelProgress } from "@/addons/progress/types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "@/core/i18n/useTranslations";
 

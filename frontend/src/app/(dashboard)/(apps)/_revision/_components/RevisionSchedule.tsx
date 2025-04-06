@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Clock, Brain, CheckCircle2, AlertCircle, Loader2, Plus } from "lucide-react";
-import { RevisionSession } from "@/types/revision";
+import { RevisionSession } from "@/addons/revision/types/revision";
 import { revisionApi } from '@/services/revisionAPI';
 
 function formatDueDate(dateString: string): string {

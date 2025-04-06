@@ -26,7 +26,7 @@ import {
   LANGUAGE_OPTIONS,
   LEVEL_OPTIONS,
   OBJECTIVES_OPTIONS
-} from "@/constants/usersettings";
+} from "@/addons/settings/constants/usersettings";
 import apiClient from "@/core/api/apiClient";
 import { useAuthContext } from "@/core/auth/AuthProvider";
 

@@ -17,12 +17,11 @@ import {
   CheckCircle
 } from "lucide-react";
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
-import courseAPI from "@/services/courseAPI";
-import progressAPI from "@/services/progressAPI";
+import courseAPI from "@/addons/learning/api/courseAPI";
+import progressAPI from "@/addons/progress/services/progressAPI";
 import { Cache } from "@/core/utils/cacheUtils";
 import { Lesson, ExpandableUnitCardProps } from "@/addons/learning/types";
-import { LessonProgress, ProgressStatus } from "@/types/progress";
-
+import { LessonProgress, ProgressStatus } from "@/addons/progress/types/";
 
 
 const getLessonTypeIcon = (type: string) => {

@@ -15,7 +15,7 @@ import {
   Settings,
   Dices
 } from "lucide-react";
-import { revisionApi } from "@/services/revisionAPI";
+import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
 import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";

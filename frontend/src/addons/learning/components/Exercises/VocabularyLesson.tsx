@@ -17,7 +17,7 @@ import { GradientText } from "@/components/ui/gradient-text";
 import { GradientCard } from "@/components/ui/gradient-card";
 import { commonStyles } from "@/styles/gradient_style";
 import { motion, AnimatePresence } from "framer-motion";
-import lessonCompletionService from "@/services/lessonCompletionService";
+import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 import { VocabularyItem, VocabularyLessonProps } from "@/addons/learning/types";
 import useSpeechSynthesis from '@/core/speech/useSpeechSynthesis';
 

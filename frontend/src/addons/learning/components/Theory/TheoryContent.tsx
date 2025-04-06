@@ -21,8 +21,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { TheoryData, TheoryContentProps } from "@/addons/learning/types";
-import courseAPI from "@/services/courseAPI";
-import lessonCompletionService from "@/services/lessonCompletionService";
+import courseAPI from "@/addons/learning/api/courseAPI";
+import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 import { useRouter } from "next/navigation";
 
 // Animation variants
