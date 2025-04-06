@@ -13,7 +13,8 @@ from .views import (
     FillBlankExerciseViewSet,
     ExerciceVocabularyAPIView,
     SearchVocabularyAPIView,
-    LessonsByContentView
+    LessonsByContentView,
+    SpeakingExerciseViewSet,
 )
 
 app_name = 'course'
@@ -44,4 +45,5 @@ urlpatterns = [
     path('search-vocabulary/', SearchVocabularyAPIView.as_view(), name='api-search-vocabulary'),
     path('fill-blank/', FillBlankExerciseViewSet.as_view({'get': 'list'}), name='fill-blank'),
     path('lessons-by-content/', LessonsByContentView.as_view(), name='lessons-by-content'),
+    path('speaking-exercise/', SpeakingExerciseViewSet.as_view({'get': 'list'}), name='speaking-exercise-list')
 ]

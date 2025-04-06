@@ -3,45 +3,8 @@
 import apiClient from '@/core/api/apiClient';
 import { getUserTargetLanguage, getUserNativeLanguage } from '@/core/utils/languageUtils';
 import { Cache } from "@/core/utils/cacheUtils";
+import { MatchingResult, LessonsByContentResponse } from "@/addons/learning/types/";
 
-
-interface Lesson {
-  id: number;
-  title: string;
-  description?: string;
-  lesson_type: string;
-  estimated_duration: number;
-  order: number;
-  unit_id?: number;
-  unit_title?: string;
-  unit_level?: string;
-  content_count?: number;
-}
-
-interface LessonsByContentResponse {
-  results: Lesson[];
-  metadata: {
-    content_type: string;
-    target_language: string;
-    available_levels: string[];
-    total_count: number;
-    error?: string; // Champ error optionnel pour les messages d'erreur
-  };
-}
-
-
-interface MatchingResult {
-  score: number;
-  message: string;
-  correct_count: number;
-  wrong_count: number;
-  total_count: number;
-  is_successful: boolean;
-  success_threshold: number;
-  feedback: Record<string, any>;
-}
-
-// Course API service
 const courseAPI = {
   getUnits: async (level?: string, targetLanguage?: string) => {
     try {
@@ -117,7 +80,6 @@ const courseAPI = {
     }
   },
 
-  // Méthode optimisée pour récupérer les leçons par type de contenu
   getLessonsByContentType: async (contentType: string, level?: string): Promise<LessonsByContentResponse> => {
     try {
       if (!contentType) {
@@ -284,7 +246,7 @@ const courseAPI = {
       return response.data;
     } catch (err: any) {
       console.error('Failed to fetch theory content:', err);
-      return []; 
+      return [];
     }
   },
 
@@ -473,23 +435,23 @@ const courseAPI = {
     try {
       // Valider l'ID de l'exercice
       const parsedExerciseId = Number(exerciseId);
-  
+
       if (isNaN(parsedExerciseId)) {
         console.error(`Invalid matching exercise ID provided: ${exerciseId}`);
         throw new Error('Invalid exercise ID');
       }
-  
+
       const params: Record<string, string> = {};
-  
+
       // Utiliser la langue spécifiée ou récupérer depuis localStorage
       const nativeLanguage = getUserNativeLanguage();
       const targetLang = targetLanguage || getUserTargetLanguage();
-  
+
       params.native_language = nativeLanguage;
       params.target_language = targetLang;
-  
+
       console.log(`Checking matching answers for exercise ${parsedExerciseId} with native language: ${nativeLanguage}, target language: ${targetLang}`);
-  
+
       try {
         const response = await apiClient.post(
           `/api/v1/course/matching/${parsedExerciseId}/check-answers/`,
@@ -501,13 +463,13 @@ const courseAPI = {
             }
           }
         );
-  
+
         // Vérifier que la réponse a la forme attendue
         const data = response.data;
         if (!data || typeof data !== 'object') {
           throw new Error('Invalid response format');
         }
-  
+
         // Garantir que tous les champs nécessaires sont présents
         return {
           score: data.score || 0,
@@ -526,18 +488,18 @@ const courseAPI = {
           statusText: apiError.response?.statusText,
           data: apiError.response?.data
         });
-  
+
         // Si l'API renvoie un message d'erreur structuré, l'utiliser
         if (apiError.response?.data?.error) {
           throw new Error(`Server error: ${apiError.response.data.error}`);
         }
-        
+
         // Sinon, remonter l'erreur originale
         throw apiError;
       }
     } catch (err: any) {
       console.error('Failed to check matching answers:', err);
-      
+
       // En cas d'erreur, renvoyer un objet résultat par défaut avec echec
       return {
         score: 0,

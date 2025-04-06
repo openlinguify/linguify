@@ -1,5 +1,7 @@
-// src/app/(dashboard)/(apps)/learning/_components/LessonContent.tsx
-'use client';
+"use client";
+
+// src/addons/learning/components/LessonContent/LessonContent.tsx - Updated version
+// Mise à jour pour utiliser ContentTypeRouter
 
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
@@ -8,25 +10,10 @@ import { Progress } from "@/components/ui/progress";
 import {
   AlertCircle,
   ArrowLeft,
-  BookOpen,
-  FileText,
-  GraduationCap,
-  Calculator,
-  Gamepad2,
-  ArrowRightLeft,
-  CheckCircle,
   Clock,
-  PencilLine,
-  Infinity
+  CheckCircle
 } from "lucide-react";
 import BackButton from "@/components/ui/BackButton";
-import TheoryContent from "../Theory/TheoryContent";
-import VocabularyLesson from "../Exercises/VocabularyLesson";
-import MultipleChoiceQuestion from "../Exercises/MultipleChoiceQuestion";
-import NumberComponent from "../Exercises/Numbers";
-import NumbersGame from "../Exercises/NumbersGame";
-import ReorderingContent from "../Exercises/ReorderingContent";
-import FillBlankExercise from "../Exercises/FillBlankExercise";
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import courseAPI from "@/addons/learning/api/courseAPI";
 import progressAPI from "@/addons/progress/api/progressAPI";
@@ -34,32 +21,36 @@ import lessonCompletionService from "@/addons/progress/api/lessonCompletionServi
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { ContentLesson, LessonContentProps } from "@/addons/learning/types";
-import MatchingExercise from "../Exercises/MatchingExercise";
 import { useTranslation } from "@/core/i18n/useTranslations";
+import ContentTypeRouter from "./ContentTypeRouter";
 
-// Content type mapping for consistent handling
-const CONTENT_TYPES = {
-  THEORY: 'theory',
-  VOCABULARY: 'vocabulary',
-  MULTIPLE_CHOICE: 'multiple choice',
-  NUMBERS: 'numbers',
-  NUMBERS_GAME: 'numbers',
-  REORDERING: 'reordering',
-  FILL_BLANK: 'fill_blank',
-  MATCHING: 'matching',
-} as const;
-
-// Map content types to icons
-const CONTENT_TYPE_ICONS: Record<string, React.ReactNode> = {
-  'theory': <BookOpen className="h-4 w-4" />,
-  'vocabulary': <FileText className="h-4 w-4" />,
-  'multiple choice': <GraduationCap className="h-4 w-4" />,
-  'numbers': <Calculator className="h-4 w-4" />,
-  'numbers_game': <Gamepad2 className="h-4 w-4" />,
-  'reordering': <ArrowRightLeft className="h-4 w-4" />,
-  'fill_blank': <PencilLine className="h-4 w-4" />,
-  'matching': <Infinity className="h-4 w-4" />,
+// Map content types to icons (moved to ContentTypeRouter.tsx)
+const getContentTypeIcon = (contentType: string): React.ReactNode => {
+  const CONTENT_TYPE_ICONS: Record<string, React.ReactNode> = {
+    'theory': <BookOpen className="h-4 w-4" />,
+    'vocabulary': <FileText className="h-4 w-4" />,
+    'multiple choice': <GraduationCap className="h-4 w-4" />,
+    'numbers': <Calculator className="h-4 w-4" />,
+    'numbers_game': <Gamepad2 className="h-4 w-4" />,
+    'reordering': <ArrowRightLeft className="h-4 w-4" />,
+    'fill_blank': <PencilLine className="h-4 w-4" />,
+    'matching': <Infinity className="h-4 w-4" />,
+    'speaking': <Mic className="h-4 w-4" />
+  };
+  
+  return CONTENT_TYPE_ICONS[contentType] || <FileText className="h-4 w-4" />;
 };
+import {
+  FileText,
+  GraduationCap,
+  Calculator,
+  Gamepad2,
+  ArrowRightLeft,
+  PencilLine,
+  Infinity,
+  BookOpen,
+  Mic
+} from "lucide-react";
 
 export default function LessonContent({ lessonId, unitId, language }: LessonContentProps) {
   const router = useRouter();
@@ -249,10 +240,6 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
     }
   };
 
-  const getContentTypeIcon = (contentType: string) => {
-    return CONTENT_TYPE_ICONS[contentType] || <FileText className="h-4 w-4" />;
-  };
-
   // Loading state
   if (loading) {
     return (
@@ -277,15 +264,8 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
     );
   }
 
-  // Render selected content
+  // Render selected content using ContentTypeRouter
   if (selectedContent) {
-    const commonProps = {
-      lessonId: selectedContent.id.toString(),
-      language: targetLanguage,
-      onComplete: () => handleContentComplete(selectedContent.id),
-      unitId: validUnitId?.toString()
-    };
-
     return (
       <div className="w-full space-y-6 bg-white">
         <div className="w-full p-6">
@@ -302,54 +282,23 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
             </Badge>
 
             <Badge className="bg-white text-purple-600 border border-purple-200">
-            {t(`dashboard.learning.contentTypes.${selectedContent.type}`)}
-          </Badge>
+              {t(`dashboard.learning.contentTypes.${selectedContent.type}`)}
+            </Badge>
           </div>
 
-          {selectedContent.type === CONTENT_TYPES.THEORY && (
-            <TheoryContent {...commonProps} />
-          )}
-
-          {selectedContent.type === CONTENT_TYPES.VOCABULARY && (
-            <VocabularyLesson {...commonProps} />
-          )}
-
-          {selectedContent.type === CONTENT_TYPES.MULTIPLE_CHOICE && (
-            <MultipleChoiceQuestion {...commonProps} />
-          )}
-
-          {selectedContent.type === CONTENT_TYPES.NUMBERS && (
-            <NumberComponent {...commonProps} />
-          )}
-
-          {selectedContent.type === CONTENT_TYPES.NUMBERS_GAME && (
-            <NumbersGame {...commonProps} />
-          )}
-
-          {selectedContent.type === CONTENT_TYPES.REORDERING && (
-            <ReorderingContent {...commonProps} />
-          )}
-
-          {selectedContent.type === CONTENT_TYPES.FILL_BLANK && (
-            <FillBlankExercise {...commonProps} />
-          )}
-
-          {selectedContent.type === CONTENT_TYPES.MATCHING && (
-            <MatchingExercise
-              lessonId={selectedContent.id.toString()}
-              language={targetLanguage}
-              unitId={validUnitId?.toString()}
-              onComplete={() => handleContentComplete(selectedContent.id)}
-            />
-          )}
-
-
-
-
+          {/* Use ContentTypeRouter to select the appropriate component */}
+          <ContentTypeRouter
+            contentType={selectedContent.type}
+            contentId={selectedContent.id.toString()}
+            parentLessonId={lessonId}
+            language={targetLanguage}
+            unitId={validUnitId?.toString()}
+            onComplete={() => handleContentComplete(selectedContent.id)}
+          />
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   // Main content list
   return (
@@ -360,7 +309,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
             onClick={handleBack}
             iconLeft={<ArrowLeft className="h-4 w-4" />}
           >
-          {t('dashboard.learning.backTo')}
+            {t('dashboard.learning.backTo')}
           </BackButton>
         </div>
 
@@ -376,41 +325,41 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
             </Badge>
 
             <div className="flex items-center text-gray-600 text-sm">
-            <Clock className="h-4 w-4 mr-1" />
-            {contents.length} {t('dashboard.learning.modules')}
-          </div>
+              <Clock className="h-4 w-4 mr-1" />
+              {contents.length} {t('dashboard.learning.modules')}
+            </div>
           </div>
         </div>
 
-      {/* Progress bar */}
-      <div className="bg-white rounded-lg p-4 mb-8 shadow-sm">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-600">
-            {t('dashboard.learning.lessonProgress')}
-          </span>
-          <span className="text-sm font-medium text-purple-600">{lessonProgress}%</span>
-        </div>
-        <Progress
-          value={lessonProgress}
-          className="h-2 bg-purple-100"
-          style={{
-            "--progress-background": "linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234), rgb(244, 114, 182))"
-          } as React.CSSProperties}
-        />
-      </div>
-
-      {/* Contents List */}
-      <div className="space-y-4">
-        {contents.length === 0 ? (
-          <div className="bg-white rounded-lg p-6 shadow-sm text-center">
-            <AlertCircle className="h-8 w-8 text-purple-500 mx-auto mb-2" />
-            <p className="text-lg font-medium text-gray-700">
-              {t('dashboard.learning.noContentFound')}
-            </p>
+        {/* Progress bar */}
+        <div className="bg-white rounded-lg p-4 mb-8 shadow-sm">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium text-gray-600">
+              {t('dashboard.learning.lessonProgress')}
+            </span>
+            <span className="text-sm font-medium text-purple-600">{lessonProgress}%</span>
           </div>
-        ) : (
-          contents.map((content, index) => {
-              const isClickable = Object.values(CONTENT_TYPES).includes(content.content_type as any);
+          <Progress
+            value={lessonProgress}
+            className="h-2 bg-purple-100"
+            style={{
+              "--progress-background": "linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234), rgb(244, 114, 182))"
+            } as React.CSSProperties}
+          />
+        </div>
+
+        {/* Contents List */}
+        <div className="space-y-4">
+          {contents.length === 0 ? (
+            <div className="bg-white rounded-lg p-6 shadow-sm text-center">
+              <AlertCircle className="h-8 w-8 text-purple-500 mx-auto mb-2" />
+              <p className="text-lg font-medium text-gray-700">
+                {t('dashboard.learning.noContentFound')}
+              </p>
+            </div>
+          ) : (
+            contents.map((content, index) => {
+              const isClickable = true; // All content types are now handled by ContentTypeRouter
               const fallbackTitle = content.title.en || "Content Title";
               const fallbackInstruction = content.instruction.en || "Content Instructions";
               const title = content.title[targetLanguage] || fallbackTitle;
@@ -500,16 +449,16 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
 
                         {/* Bottom badges/info */}
                         <div className="flex flex-wrap items-center gap-2 mt-3">
-                        <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-700">
-                    {getContentTypeIcon(content.content_type)}
-                    {t(`dashboard.learning.contentTypes.${content.content_type.toLowerCase()}`)}
-                  </span>
+                          <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-400/10 text-purple-700">
+                            {getContentTypeIcon(content.content_type)}
+                            {t(`dashboard.learning.contentTypes.${content.content_type.toLowerCase()}`)}
+                          </span>
 
                           {index === 0 && !isCompleted && (
-                   <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
-                   <CheckCircle className="h-3 w-3" />
-                   {t('dashboard.learning.badges.startHere')}
-                 </span>
+                            <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                              <CheckCircle className="h-3 w-3" />
+                              {t('dashboard.learning.badges.startHere')}
+                            </span>
                           )}
                         </div>
                       </div>

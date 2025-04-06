@@ -5,7 +5,6 @@
  * These interfaces define the structure of various entities such as units, lessons, vocabulary items, and exercises.
  */
 
-// Typescript interfaces for the units
 export interface Unit {
   id: number;
   title: string;
@@ -19,7 +18,6 @@ export interface ExpandableUnitCardProps {
   onLessonClick: (unitId: number, lessonId: number) => void;
   showLevelBadge?: boolean;
   refreshTrigger?: number;
-  // Nouvelle prop pour contrôler la durée de vie du cache
   cacheTTL?: number;
 }
 
@@ -27,21 +25,25 @@ export interface LevelGroup {
   level: string;
   units: Unit[];
 }
-
-// Typescript interfaces for the lessons
+ 
+ 
 export interface Lesson {
   id: number;
   title: string;
   description: string;
   lesson_type: string;
   estimated_duration: number;
+  unit_id?: number;
+  unit_title?: string;
+  unit_level?: string;
+  content_count?: number;
   order: number;
 }
 
 export interface LessonsProps {
   unitId: string;
 }
-// Interface for the lesson content
+ 
 export interface ContentLesson {
   id: number;
   title: {
@@ -64,13 +66,22 @@ export interface ContentLesson {
   }>;
   order: number;
 }
-
+export interface LessonsByContentResponse {
+  results: Lesson[];
+  metadata: {
+    content_type: string;
+    target_language: string;
+    available_levels: string[];
+    total_count: number;
+    error?: string;  
+  };
+}
 export interface LessonContentProps {
   lessonId: string;
-  unitId?: string;  // Make unitId optional to handle cases when it's not provided
+  unitId?: string; 
   language?: 'en' | 'fr' | 'es' | 'nl';
 }
-// Interface for the vocabulary items
+
 export interface VocabularyItem {
   id: number;
   content_lesson: number;
@@ -113,7 +124,6 @@ export interface VocabularyLessonProps {
   onComplete?: () => void;
 }
 
-// interface for the multiple-choice questions
 export interface Question {
   id: number;
   question: string;
@@ -126,8 +136,6 @@ export interface MultipleChoiceProps {
   lessonId: string;
   language?: 'en' | 'fr' | 'es' | 'nl';
 }
-
-// Interface for the Number Exercise
 
 export interface Number {
     id: number;
@@ -159,7 +167,6 @@ export interface ReorderingExerciseProps {
   language?: 'en' | 'fr' | 'es' | 'nl';
 }
 
-// Interface for the matching exercise
 export interface MatchingExercise {
     id: number;
     content_lesson: number;
@@ -198,8 +205,9 @@ export interface MatchingExercise {
     correct_count: number;
     wrong_count: number;
     total_count: number;
-    is_successful: boolean; // Nouveau champ indiquant si l'exercice est réussi
-    success_threshold: number; // Seuil de réussite requis
+    is_successful: boolean; 
+    success_threshold: number; 
+    
     feedback: {
       [targetWord: string]: {
         is_correct: boolean;
@@ -208,7 +216,7 @@ export interface MatchingExercise {
       }
     }
   }
-// Interfaces for the fill-in-the-blank exercises
+ 
   export interface FillBlankExercise {
     id: number;
     content_lesson: number;
@@ -224,18 +232,15 @@ export interface MatchingExercise {
     updated_at: string;
   }
 
-  // Updated interface to match the API response
 export interface Exercise {
     id: number;
     content_lesson: number;
     order: number;
     difficulty: string;
     language?: string;
-    // For the list endpoint, these fields come directly
     instruction?: string;
     sentence?: string;
     options?: string[];
-    // The correct answer (from list view)
     correct_answer?: string;
   }
   
@@ -246,7 +251,6 @@ export interface FillBlankExerciseProps {
     onComplete?: () => void;
   }
 
-// Interface for the Theory content
 export interface TheoryData {
   content_lesson: {
     id: number;
@@ -306,9 +310,23 @@ export interface EnhancedLearningJourneyProps extends LearningJourneyProps {
 }
 
 export interface LearningViewProps {
-  // Add any props that the LearningView component accepts
   initialLevelFilter?: string;
   showLoadingState?: boolean;
   userId?: string;
-  // Add other properties as needed
+
+}
+
+export interface SpeakingPracticeProps {
+  lessonId: string;
+  language?: "en" | "fr" | "es" | "nl";
+  targetLanguage?: "en" | "fr" | "es" | "nl";
+  unitId?: string;
+  onComplete?: () => void;
+}
+
+export interface PronunciationFeedback {
+  score: number;
+  mistakes: string[];
+  correctPronunciation: string;
+  suggestions: string;
 }

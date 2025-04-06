@@ -9,8 +9,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-"""
-Learning Path Overview:
+""" Learning Path Overview:
 -----------------------
 1. Languages:
     - English, French, Spanish, Dutch.
@@ -25,11 +24,11 @@ Learning Path Overview:
 Refer to the diagram for more details: path/to/image.png
 """
 
-# class MultilingualMixin:
-#     def get_localized_field(self, field_base_name, target_language='en'):
-#         field_name = f"{field_base_name}_{target_language}"
-#         return getattr(self, field_name, getattr(self, f"{field_base_name}_en", None))
-
+""" class MultilingualMixin:
+    def get_localized_field(self, field_base_name, target_language='en'):
+        field_name = f"{field_base_name}_{target_language}"
+        return getattr(self, field_name, getattr(self, f"{field_base_name}_en", None))
+"""
 # Type activity choices
 TYPE_ACTIVITY = [
     ('Theory', 'Theory'),
@@ -257,6 +256,7 @@ class ContentLesson(models.Model):
         ('Numbers', 'Numbers'),
         ('Reordering', 'Reordering'),
         ('Matching', 'Matching'),
+        ('Speaking', 'Speaking'),
         ('Question and answer', 'Question and answer'),
         ('fill_blank', 'Fill in the blanks'),
         ('True or False', 'True or False'),
@@ -313,6 +313,8 @@ class ContentLesson(models.Model):
         """
         return getattr(self, f'instruction_{target_language}', self.instruction_en)
 
+ 
+        
     def save(self, *args, **kwargs):
         """Override save to ensure content type is lowercase and validate duration"""
         self.content_type = self.content_type.lower()
@@ -797,8 +799,22 @@ class MatchingExercise(models.Model):
         
         return exercise
 
-'''
-GRAMMAR LESSON :
+class SpeakingExercise(models.Model):
+    content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='speaking_exercises')
+    vocabulary_items = models.ManyToManyField(VocabularyList, related_name='speaking_exercises', verbose_name="Vocabulary Items", help_text="Vocabulary items to practice speaking")
+
+    class Meta:
+        ordering = ['content_lesson', 'id']
+        verbose_name = "Speaking Exercise"
+        verbose_name_plural = "Speaking Exercises"
+    
+    def __str__(self):
+        return f"{self.content_lesson} - Speaking Exercise"
+    
+    
+    
+
+''' GRAMMAR LESSON :
 This section is for the content of the lessson related to the grammar of Linguify.
 A lesson of grammar can contain a theory, exercises, and a test.
 '''
@@ -1045,8 +1061,7 @@ class FillBlankExercise(models.Model):
         answer = self.correct_answers.get(language_code, self.correct_answers.get('en', ""))
         return sentence.replace('___', answer)
 
-'''
-Others models for the content of the lesson of Linguify
+''' Others models for the content of the lesson of Linguify
 '''
 
 class Grammar(models.Model):
