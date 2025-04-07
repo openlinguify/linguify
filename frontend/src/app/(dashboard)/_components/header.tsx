@@ -103,11 +103,11 @@ const Header = () => {
 
   // Don't render anything until client-side
   if (!isClient) {
-    return <header className="sticky top-0 z-50 w-full h-14 border-b bg-background/95"></header>;
+    return <header className="sticky top-0 z-50 w-full h-14 border-b bg-background"></header>;
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:bg-gray-900/95">
+    <header className="sticky top-0 z-50 w-full h-14 border-b bg-background dark:bg-gray-900">
       <div className="flex h-14 items-center justify-between px-6">
         {/* Logo Section */}
         <div className="flex items-center gap-2">
