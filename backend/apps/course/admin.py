@@ -115,7 +115,7 @@ class VocabularyInline(admin.TabularInline):
 
 @admin.register(SpeakingExercise)
 class SpeakingExerciseAdmin(admin.ModelAdmin):
-    list_display = ['id', 'content_lesson_info', 'vocabulary_count']
+    list_display = ['id', 'content_lesson_info', 'vocabulary_count', 'content_lesson_id']
     list_filter = ['content_lesson__lesson__unit__level']
     search_fields = ['content_lesson__title_en']
 
