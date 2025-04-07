@@ -87,10 +87,10 @@ export default function SpeakingPractice({
     targetLanguage === "fr"
       ? "fr-FR"
       : targetLanguage === "es"
-      ? "es-ES"
-      : targetLanguage === "nl"
-      ? "nl-NL"
-      : "en-US";
+        ? "es-ES"
+        : targetLanguage === "nl"
+          ? "nl-NL"
+          : "en-US";
 
   const {
     transcript,
@@ -118,18 +118,18 @@ export default function SpeakingPractice({
     const langField = `example_sentence_${targetLanguage}` as keyof VocabularyItem;
     const sentenceInTargetLang = (item[langField] || "").trim();
     const sentenceInEn = (item.example_sentence_en || "").trim();
-    
+
     // Return existing sentence if available
     if (sentenceInTargetLang || sentenceInEn) {
       return sentenceInTargetLang || sentenceInEn;
     }
-    
+
     // If no sentence is available, create a simple one using the word
     const wordField = `word_${targetLanguage}` as keyof VocabularyItem;
     const word = (item[wordField] as string) || item.word_en;
-    
+
     // Generate simple example sentence based on the word
-    switch(targetLanguage) {
+    switch (targetLanguage) {
       case 'en':
         return `This is ${word}.`;
       case 'fr':
@@ -173,100 +173,117 @@ export default function SpeakingPractice({
         setLoading(true);
         setError(null);
 
-        // First, try to get vocabulary from the current speaking lesson
-        let vocabData = await courseAPI.getVocabularyContent(
+        // Première tentative: utiliser le nouvel endpoint spécifique pour les exercices de prononciation
+        console.log(`Trying to fetch vocabulary from speaking exercise endpoint for lesson ${lessonId}`);
+        const speakingVocabData = await courseAPI.getSpeakingExerciseVocabulary(
           lessonId,
           targetLanguage
         );
-        
+
+        // Variable pour stocker les données de vocabulaire, initialisée avec les résultats de l'API Speaking Exercise
+        let vocabData = speakingVocabData;
         let itemsWithExamples: VocabularyItem[] = [];
         let searchedAllPossibleSources = false;
-        
-        // If no vocabulary items found or no examples available in the current lesson
-        if (!vocabData.results || vocabData.results.length === 0 || 
-            !vocabData.results.some(item => {
+
+        // Si l'API spécifique ne retourne pas de résultats, passer au fallback
+        if (!speakingVocabData.results || speakingVocabData.results.length === 0) {
+          console.log("No vocabulary items found from speaking exercise. Trying regular vocabulary endpoint.");
+
+          // Fallback 1: Essayer le point d'accès standard de vocabulaire pour cette leçon
+          const regularVocabData = await courseAPI.getVocabularyContent(
+            lessonId,
+            targetLanguage
+          );
+
+          // Mettre à jour vocabData avec les résultats de la requête standard
+          vocabData = regularVocabData;
+
+          // Si toujours pas de résultats, chercher dans d'autres leçons de l'unité
+          if (!regularVocabData.results || regularVocabData.results.length === 0 ||
+            !regularVocabData.results.some(item => {
               const targetField = `example_sentence_${targetLanguage}` as keyof VocabularyItem;
               const enField = 'example_sentence_en';
               return (item[targetField] || item[enField]);
             })) {
-          
-          console.log("No vocabulary items found in the current lesson. Trying to find related lessons.");
-          
-          // STEP 1: Search in the same unit
-          if (unitId) {
-            try {
-              // Get all lessons from the same unit
-              const lessonsResponse = await courseAPI.getLessons(unitId, targetLanguage);
-              
-              if (Array.isArray(lessonsResponse) && lessonsResponse.length > 0) {
-                // Find vocabulary lessons in the same unit
-                const vocabLessons = lessonsResponse.filter(lesson => 
-                  lesson.lesson_type?.toLowerCase() === 'vocabulary'
-                );
-                
-                console.log(`Found ${vocabLessons.length} vocabulary lessons in the same unit`);
-                
-                // Try to get vocabulary from each vocabulary lesson in the unit
-                for (const vocabLesson of vocabLessons) {
-                  try {
-                    const vocabResponse = await courseAPI.getVocabularyContent(
-                      vocabLesson.id.toString(),
-                      targetLanguage
-                    );
-                    
-                    if (vocabResponse.results && vocabResponse.results.length > 0) {
-                      console.log(`Found ${vocabResponse.results.length} vocabulary items in lesson ${vocabLesson.id}`);
-                      
-                      // Combine results
-                      vocabData = {
-                        ...vocabData,
-                        results: [...(vocabData.results || []), ...vocabResponse.results]
-                      };
+
+            console.log("No vocabulary items found in the current lesson. Trying to find related lessons.");
+
+            // STEP 1: Search in the same unit
+            if (unitId) {
+              try {
+                // Get all lessons from the same unit
+                const lessonsResponse = await courseAPI.getLessons(unitId, targetLanguage);
+
+                if (Array.isArray(lessonsResponse) && lessonsResponse.length > 0) {
+                  // Find vocabulary lessons in the same unit
+                  const vocabLessons = lessonsResponse.filter(lesson =>
+                    lesson.lesson_type?.toLowerCase() === 'vocabulary'
+                  );
+
+                  console.log(`Found ${vocabLessons.length} vocabulary lessons in the same unit`);
+
+                  // Try to get vocabulary from each vocabulary lesson in the unit
+                  for (const vocabLesson of vocabLessons) {
+                    try {
+                      const vocabResponse = await courseAPI.getVocabularyContent(
+                        vocabLesson.id.toString(),
+                        targetLanguage
+                      );
+
+                      if (vocabResponse.results && vocabResponse.results.length > 0) {
+                        console.log(`Found ${vocabResponse.results.length} vocabulary items in lesson ${vocabLesson.id}`);
+
+                        // Combine results
+                        vocabData = {
+                          ...vocabData,
+                          results: [...(vocabData.results || []), ...vocabResponse.results]
+                        };
+                      }
+                    } catch (err) {
+                      console.warn(`Error fetching vocabulary from lesson ${vocabLesson.id}:`, err);
                     }
-                  } catch (err) {
-                    console.warn(`Error fetching vocabulary from lesson ${vocabLesson.id}:`, err);
                   }
-                }
-                
-                // STEP 2: If still no example sentences, look for ANY content lesson in the unit
-                const allContentLessons = await courseAPI.getContentLessons(
-                  lessonsResponse[0].id.toString(),
-                  targetLanguage
-                );
-                
-                if (Array.isArray(allContentLessons) && allContentLessons.length > 0) {
-                  for (const contentLesson of allContentLessons) {
-                    if (contentLesson.content_type?.toLowerCase() === 'vocabulary') {
-                      try {
-                        const moreVocabResponse = await courseAPI.getVocabularyContent(
-                          contentLesson.id.toString(),
-                          targetLanguage
-                        );
-                        
-                        if (moreVocabResponse.results && moreVocabResponse.results.length > 0) {
-                          console.log(`Found ${moreVocabResponse.results.length} more vocabulary items in content lesson ${contentLesson.id}`);
-                          
-                          vocabData = {
-                            ...vocabData,
-                            results: [...(vocabData.results || []), ...moreVocabResponse.results]
-                          };
+
+                  // STEP 2: If still no example sentences, look for ANY content lesson in the unit
+                  const allContentLessons = await courseAPI.getContentLessons(
+                    lessonsResponse[0].id.toString(),
+                    targetLanguage
+                  );
+
+                  if (Array.isArray(allContentLessons) && allContentLessons.length > 0) {
+                    for (const contentLesson of allContentLessons) {
+                      if (contentLesson.content_type?.toLowerCase() === 'vocabulary') {
+                        try {
+                          const moreVocabResponse = await courseAPI.getVocabularyContent(
+                            contentLesson.id.toString(),
+                            targetLanguage
+                          );
+
+                          if (moreVocabResponse.results && moreVocabResponse.results.length > 0) {
+                            console.log(`Found ${moreVocabResponse.results.length} more vocabulary items in content lesson ${contentLesson.id}`);
+
+                            vocabData = {
+                              ...vocabData,
+                              results: [...(vocabData.results || []), ...moreVocabResponse.results]
+                            };
+                          }
+                        } catch (err) {
+                          console.warn(`Error fetching vocabulary from content lesson ${contentLesson.id}:`, err);
                         }
-                      } catch (err) {
-                        console.warn(`Error fetching vocabulary from content lesson ${contentLesson.id}:`, err);
                       }
                     }
                   }
                 }
+
+                // Mark that we've searched everywhere
+                searchedAllPossibleSources = true;
+              } catch (err) {
+                console.warn("Error fetching lessons from unit:", err);
               }
-              
-              // Mark that we've searched everywhere
-              searchedAllPossibleSources = true;
-            } catch (err) {
-              console.warn("Error fetching lessons from unit:", err);
             }
           }
         }
-        
+
         // Filter items that have example sentences in the target language or English
         itemsWithExamples = (vocabData.results || []).filter(
           (item: VocabularyItem) => {
@@ -280,16 +297,16 @@ export default function SpeakingPractice({
         // Create fallback if no examples found but we have vocabulary words
         if (itemsWithExamples.length === 0 && vocabData.results && vocabData.results.length > 0) {
           console.log("No example sentences found, creating fallback sentences");
-          
+
           // Use the words themselves as examples (better than nothing)
           itemsWithExamples = vocabData.results.map((item: VocabularyItem) => {
             // Create a simple sentence with the word if no example exists
             const wordField = `word_${targetLanguage}` as keyof VocabularyItem;
             const word = (item[wordField] as string) || item.word_en;
-            
+
             // Generate simple example sentences based on the word
             let exampleSentence = "";
-            switch(targetLanguage) {
+            switch (targetLanguage) {
               case 'en':
                 exampleSentence = `This is ${word}.`;
                 break;
@@ -305,14 +322,14 @@ export default function SpeakingPractice({
               default:
                 exampleSentence = `This is ${word}.`;
             }
-            
+
             // Create a copy with the new example sentence
             const itemWithFallback = { ...item };
             itemWithFallback[`example_sentence_${targetLanguage}` as keyof VocabularyItem] = exampleSentence;
-            
+
             return itemWithFallback;
           });
-          
+
           console.log(`Created ${itemsWithExamples.length} fallback sentences`);
         }
 
@@ -365,7 +382,7 @@ export default function SpeakingPractice({
   // Play example audio
   const playExampleAudio = async () => {
     if (!currentItem) return;
-    
+
     try {
       setLoadingVoice(true);
       stop();
@@ -449,7 +466,7 @@ export default function SpeakingPractice({
     } else {
       // Exercise completed
       if (onComplete) onComplete();
-      
+
       // Update lesson progress if unitId is provided
       if (unitId) {
         lessonCompletionService.updateLessonProgress(
@@ -615,7 +632,7 @@ export default function SpeakingPractice({
                           "No definition available."}
                       </p>
                     </div>
-                    
+
                     {currentItem.word_type_en && (
                       <div>
                         <h4 className="font-medium text-gray-700 mb-1">
@@ -626,7 +643,7 @@ export default function SpeakingPractice({
                         </p>
                       </div>
                     )}
-                    
+
                     {currentItem.synonymous_en && (
                       <div>
                         <h4 className="font-medium text-gray-700 mb-1">
@@ -657,25 +674,24 @@ export default function SpeakingPractice({
                 disabled={isSpeaking || loadingVoice}
               >
                 <Volume2
-                  className={`h-4 w-4 mr-2 ${
-                    isSpeaking || loadingVoice ? "animate-pulse" : ""
-                  }`}
+                  className={`h-4 w-4 mr-2 ${isSpeaking || loadingVoice ? "animate-pulse" : ""
+                    }`}
                 />
                 {isSpeaking
                   ? "Playing..."
                   : loadingVoice
-                  ? "Loading..."
-                  : "Listen"}
+                    ? "Loading..."
+                    : "Listen"}
               </Button>
             </div>
-            
+
             {/* Target language sentence */}
             {exampleSentence ? (
               <div className="space-y-3">
                 <p className="text-xl text-center font-medium p-4 text-gray-800 bg-white rounded-lg border border-gray-100 shadow-sm">
                   {exampleSentence}
                 </p>
-                
+
                 {/* Native language translation */}
                 {nativeExampleSentence && (
                   <div className="text-sm text-center text-gray-600 p-2 border-t border-gray-100">
@@ -697,11 +713,10 @@ export default function SpeakingPractice({
               size="lg"
               onClick={toggleRecording}
               disabled={isSpeaking || loadingVoice}
-              className={`rounded-full w-16 h-16 ${
-                isRecording
+              className={`rounded-full w-16 h-16 ${isRecording
                   ? "bg-red-500 hover:bg-red-600"
                   : "bg-blue-500 hover:bg-blue-600"
-              }`}
+                }`}
             >
               {isRecording ? (
                 <MicOff className="h-6 w-6" />
@@ -735,11 +750,10 @@ export default function SpeakingPractice({
           {/* Pronunciation feedback */}
           {feedback && (
             <div
-              className={`p-4 rounded-lg ${
-                feedback.score >= 0.7
+              className={`p-4 rounded-lg ${feedback.score >= 0.7
                   ? "bg-green-50 border border-green-200"
                   : "bg-amber-50 border border-amber-200"
-              }`}
+                }`}
             >
               <div className="flex items-center gap-2 mb-2">
                 <h3 className="font-medium">Pronunciation feedback:</h3>
@@ -768,7 +782,7 @@ export default function SpeakingPractice({
                     {Math.round(feedback.score * 100)}%
                   </span>
                 </div>
-                
+
                 {/* Mistakes list */}
                 {feedback.mistakes.length > 0 && (
                   <div>
@@ -782,7 +796,7 @@ export default function SpeakingPractice({
                     </ul>
                   </div>
                 )}
-                
+
                 {/* Suggestions */}
                 {feedback.suggestions && (
                   <div className="text-sm">

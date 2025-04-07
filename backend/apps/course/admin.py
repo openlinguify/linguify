@@ -154,7 +154,53 @@ class SpeakingExerciseAdmin(admin.ModelAdmin):
             'content_lesson__lesson__unit'
         ).prefetch_related('vocabulary_items')
 
-
+    actions = ['associate_vocabulary_from_lesson']
+    
+    def associate_vocabulary_from_lesson(self, request, queryset):
+        """Action qui associe automatiquement tous les mots de vocabulaire pertinents aux exercices sélectionnés"""
+        total_exercises = queryset.count()
+        exercises_updated = 0
+        words_added = 0
+        
+        for exercise in queryset:
+            content_lesson = exercise.content_lesson
+            parent_lesson = content_lesson.lesson
+            
+            # Mémoriser le nombre de mots avant l'opération
+            words_before = exercise.vocabulary_items.count()
+            
+            # 1. Essayer de trouver des mots dans la même content_lesson
+            vocab_items = VocabularyList.objects.filter(content_lesson=content_lesson)
+            
+            # 2. Si aucun mot, chercher dans les content_lessons de type vocabulaire dans la même lesson
+            if not vocab_items.exists():
+                vocab_lessons = ContentLesson.objects.filter(
+                    lesson=parent_lesson,
+                    content_type__iexact='vocabulary'
+                )
+                
+                for vocab_lesson in vocab_lessons:
+                    lesson_vocab = VocabularyList.objects.filter(content_lesson=vocab_lesson)
+                    vocab_items = vocab_items | lesson_vocab
+            
+            # Associer tous les mots trouvés
+            if vocab_items.exists():
+                exercise.vocabulary_items.add(*vocab_items)
+                exercises_updated += 1
+                
+                # Calculer combien de mots ont été ajoutés
+                words_after = exercise.vocabulary_items.count()
+                words_added += (words_after - words_before)
+        
+        # Message de confirmation
+        if exercises_updated:
+            message = f"✓ {words_added} vocabulary items added to {exercises_updated} speaking exercises."
+        else:
+            message = "No vocabulary items found for the selected exercises."
+            
+        self.message_user(request, message)
+        
+    associate_vocabulary_from_lesson.short_description = "Associate vocabulary items from lessons"
 
 
 
