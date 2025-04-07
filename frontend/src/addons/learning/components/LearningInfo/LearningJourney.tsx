@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { User, Language } from "@/core/types/user";
 import { LearningJourneyProps } from "@/addons/learning/types";
 import { UserProfile } from "@/core/auth/authService";
+import { Switch } from "@/components/ui/switch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +25,12 @@ import progressAPI from "@/addons/progress/api/progressAPI";
 import { ProgressSummary, RecentActivity, LevelProgress } from "@/addons/progress/types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "@/core/i18n/useTranslations";
+
+interface EnhancedLearningJourneyProps extends LearningJourneyProps {
+  onContentTypeChange?: (type: string) => void;
+  isCompactView?: boolean;
+  onCompactViewChange?: (isCompact: boolean) => void;
+}
 
 /**
  * Gets the full name of a language from its code
@@ -121,7 +128,9 @@ export default function EnhancedLearningJourney({
   availableLevels = [],
   layout = "list",
   onLayoutChange,
-  onContentTypeChange
+  onContentTypeChange,
+  isCompactView = false,
+  onCompactViewChange
 }: EnhancedLearningJourneyProps) {
   const { user, isAuthenticated, isLoading } = useAuthContext();
   const router = useRouter();
@@ -426,6 +435,18 @@ export default function EnhancedLearningJourney({
               </DropdownMenu>
             </div>
           )}
+
+{/* Compact view toggle */}
+{onCompactViewChange && (
+  <div className="flex items-center gap-2">
+    <span className="text-sm font-medium text-white">{t('dashboard.learningjourney.compactView')}</span>
+    <Switch
+      checked={isCompactView}
+      onCheckedChange={onCompactViewChange}
+      className="data-[state=checked]:bg-white/50 data-[state=unchecked]:bg-white/20"
+    />
+  </div>
+)}
 
           {/* Layout toggle */}
           {onLayoutChange && (

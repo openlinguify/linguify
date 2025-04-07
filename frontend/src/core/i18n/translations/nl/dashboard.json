@@ -48,8 +48,9 @@
     "filtered": "Gefilterd",
     "allContentTypes": "Alle inhoudstypen",
     "contentTypes": "Inhoudstypen",
+    "compactView": "Compact",
     "contentType": {
-      "all": "Alle inhoudstypen",
+      "all": "Alle",
       "vocabulary": "Woordenschat",
       "theory": "Theorie",
       "grammar": "Grammatica",

@@ -48,8 +48,9 @@
     "filtered": "Filtrado",
     "allContentTypes": "Todos los tipos de contenido",
     "contentTypes": "Tipos de contenido",
+    "compactView": "Compacto",
     "contentType": {
-      "all": "Todos los tipos de contenido",
+      "all": "Todos",
       "vocabulary": "Vocabulario",
       "theory": "Teoría",
       "grammar": "Gramática",

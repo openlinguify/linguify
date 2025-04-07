@@ -1,3 +1,4 @@
+// src/addons/learning/components/LearningView.tsx
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -79,6 +80,7 @@ export default function LearningView() {
   const [availableLevels, setAvailableLevels] = useState<string[]>([]);
   const [layout, setLayout] = useState<"list" | "grid">("list");
   const [viewMode, setViewMode] = useState<"units" | "lessons">("units");
+  const [isCompactView, setIsCompactView] = useState<boolean>(false);
   const [unitProgressData, setUnitProgressData] = useState<Record<number, UnitProgress>>({});
   const [lessonProgressData, setLessonProgressData] = useState<Record<number, LessonProgress>>({});
   const [_contentProgressData, setContentProgressData] = useState<Record<number, ContentLessonProgress>>({});
@@ -117,9 +119,9 @@ export default function LearningView() {
 
               // Ensure status is correctly typed
               let status: 'not_started' | 'in_progress' | 'completed' | undefined;
-              if (contentProgress.status === 'not_started' || 
-                  contentProgress.status === 'in_progress' || 
-                  contentProgress.status === 'completed') {
+              if (contentProgress.status === 'not_started' ||
+                contentProgress.status === 'in_progress' ||
+                contentProgress.status === 'completed') {
                 status = contentProgress.status;
               } else {
                 status = 'not_started'; // Default value if invalid status
@@ -227,9 +229,9 @@ export default function LearningView() {
 
         // Ensure status is correctly typed
         let status: 'not_started' | 'in_progress' | 'completed' | undefined;
-        if (lessonProgress?.status === 'not_started' || 
-            lessonProgress?.status === 'in_progress' || 
-            lessonProgress?.status === 'completed') {
+        if (lessonProgress?.status === 'not_started' ||
+          lessonProgress?.status === 'in_progress' ||
+          lessonProgress?.status === 'completed') {
           status = lessonProgress.status;
         } else {
           status = undefined;
@@ -408,7 +410,7 @@ export default function LearningView() {
 
       // Utiliser la nouvelle API qui fournit toutes les données nécessaires en une seule requête
       const response = await courseAPI.getLessonsByContentType(contentType, levelFilter);
-      
+
       // Vérifier si la réponse contient une erreur dans les métadonnées
       if (response.metadata && 'error' in response.metadata && response.metadata.error) {
         throw new Error(response.metadata.error);
@@ -428,9 +430,9 @@ export default function LearningView() {
 
           // Ensure status is correctly typed
           let status: 'not_started' | 'in_progress' | 'completed' | undefined;
-          if (lessonProgress?.status === 'not_started' || 
-              lessonProgress?.status === 'in_progress' || 
-              lessonProgress?.status === 'completed') {
+          if (lessonProgress?.status === 'not_started' ||
+            lessonProgress?.status === 'in_progress' ||
+            lessonProgress?.status === 'completed') {
             status = lessonProgress.status;
           } else {
             status = undefined;
@@ -466,10 +468,10 @@ export default function LearningView() {
           setAvailableLevels(response.metadata.available_levels);
         }
       } catch (mappingError) {
-        const errorMessage = mappingError instanceof Error 
-          ? mappingError.message 
+        const errorMessage = mappingError instanceof Error
+          ? mappingError.message
           : 'Erreur inconnue';
-          
+
         console.error("Error during lesson data mapping:", mappingError);
         setError(`Erreur lors du traitement des données: ${errorMessage}`);
         setFilteredLessonsByType([]);
@@ -531,7 +533,16 @@ export default function LearningView() {
   const handleLessonClick = (unitId: number, lessonId: number) => {
     router.push(`/learning/${unitId}/${lessonId}`);
   };
-
+  const handleCompactViewChange = (value: boolean) => {
+    setIsCompactView(value);
+    localStorage.setItem("units_compact_view", value ? "true" : "false");
+  };
+  useEffect(() => {
+    const savedCompactView = localStorage.getItem("units_compact_view");
+    if (savedCompactView === "true") {
+      setIsCompactView(true);
+    }
+  }, []);
   // Change layout
   const handleLayoutChange = (newLayout: "list" | "grid") => {
     setLayout(newLayout);
@@ -576,6 +587,8 @@ export default function LearningView() {
           layout={layout}
           onLayoutChange={handleLayoutChange}
           onContentTypeChange={handleContentTypeChange}
+          isCompactView={isCompactView}
+          onCompactViewChange={handleCompactViewChange}
         />
 
         {/* Units display (default mode) */}
@@ -634,7 +647,7 @@ export default function LearningView() {
                                 <p className="text-sm text-muted-foreground">
                                   {loadedUnitsRef.current.has(unit.id) && unit.lessons.length > 0
                                     ? `${unit.lessons.length} leçons disponibles`
-                                    : "Cliquez pour charger les leçons"
+                                    : "Cliquez pour afficher les leçons"
                                   }
                                 </p>
                               </div>
@@ -652,12 +665,7 @@ export default function LearningView() {
                             </div>
                           </div>
 
-                          {unitProgressData[unit.id] && (
-                            <Progress
-                              className="mt-4 h-2"
-                              value={unitProgressData[unit.id].completion_percentage}
-                            />
-                          )}
+
                         </CardContent>
                       </Card>
 
@@ -675,49 +683,80 @@ export default function LearningView() {
                                 }`}
                               onClick={() => handleLessonClick(unit.id, lesson.id)}
                             >
-                              <CardContent className="p-4">
-                                <div className="flex items-start gap-3">
-                                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${lesson.status === 'completed'
-                                      ? 'bg-green-100'
-                                      : 'bg-purple-100'
-                                    }`}>
-                                    {lesson.status === 'completed'
-                                      ? <CheckCircle className="h-5 w-5 text-green-600" />
-                                      : <BookOpen className="h-5 w-5 text-purple-600" />
-                                    }
-                                  </div>
-                                  <div>
-                                    <h4 className="font-medium">{lesson.title}</h4>
-                                    <div className="flex flex-wrap items-center gap-2 mt-2">
-                                      <Badge variant="outline" className="text-xs">
-                                        {lesson.lesson_type}
-                                      </Badge>
-                                      <span className="text-xs text-muted-foreground flex items-center">
-                                        <Clock className="h-3 w-3 mr-1" />
-                                        {lesson.estimated_duration} min
-                                      </span>
-
-                                      {lesson.status === 'in_progress' && (
-                                        <Badge className="bg-amber-100 text-amber-800 border-amber-200">
-                                          En cours
-                                        </Badge>
-                                      )}
-
-                                      {lesson.status === 'completed' && (
-                                        <Badge className="bg-green-100 text-green-800 border-green-200">
-                                          Terminé
-                                        </Badge>
-                                      )}
+                              <CardContent className={isCompactView ? 'p-2' : 'p-4'}>
+                                {isCompactView ? (
+                                  // Vue compacte
+                                  <div className="flex items-center gap-2 justify-between">
+                                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                                      <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${lesson.status === 'completed'
+                                          ? 'bg-green-100'
+                                          : 'bg-purple-100'
+                                        }`}>
+                                        {lesson.status === 'completed'
+                                          ? <CheckCircle className="h-3 w-3 text-green-600" />
+                                          : <BookOpen className="h-3 w-3 text-purple-600" />
+                                        }
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <h4 className="font-medium text-sm truncate">{lesson.title}</h4>
+                                      </div>
                                     </div>
-
-                                    {lesson.progress !== undefined && lesson.progress > 0 && (
-                                      <Progress
-                                        className="mt-3 h-1.5"
-                                        value={lesson.progress}
-                                      />
+                                    {lesson.status && (
+                                      <Badge className={`text-xs ${lesson.status === 'completed'
+                                          ? 'bg-green-100 text-green-800 border-green-200'
+                                          : lesson.status === 'in_progress'
+                                            ? 'bg-amber-100 text-amber-800 border-amber-200'
+                                            : 'bg-gray-100 text-gray-800'
+                                        }`}>
+                                        {lesson.status === 'completed' ? 'Terminé' : lesson.status === 'in_progress' ? 'En cours' : ''}
+                                      </Badge>
                                     )}
                                   </div>
-                                </div>
+                                ) : (
+                                  // Vue normale (existante)
+                                  <div className="flex items-start gap-3">
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${lesson.status === 'completed'
+                                        ? 'bg-green-100'
+                                        : 'bg-purple-100'
+                                      }`}>
+                                      {lesson.status === 'completed'
+                                        ? <CheckCircle className="h-5 w-5 text-green-600" />
+                                        : <BookOpen className="h-5 w-5 text-purple-600" />
+                                      }
+                                    </div>
+                                    <div>
+                                      <h4 className="font-medium">{lesson.title}</h4>
+                                      <div className="flex flex-wrap items-center gap-2 mt-2">
+                                        <Badge variant="outline" className="text-xs">
+                                          {lesson.lesson_type}
+                                        </Badge>
+                                        <span className="text-xs text-muted-foreground flex items-center">
+                                          <Clock className="h-3 w-3 mr-1" />
+                                          {lesson.estimated_duration} min
+                                        </span>
+
+                                        {lesson.status === 'in_progress' && (
+                                          <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                                            En cours
+                                          </Badge>
+                                        )}
+
+                                        {lesson.status === 'completed' && (
+                                          <Badge className="bg-green-100 text-green-800 border-green-200">
+                                            Terminé
+                                          </Badge>
+                                        )}
+                                      </div>
+
+                                      {lesson.progress !== undefined && lesson.progress > 0 && (
+                                        <Progress
+                                          className="mt-3 h-1.5"
+                                          value={lesson.progress}
+                                        />
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
                               </CardContent>
                             </Card>
                           ))}
@@ -753,79 +792,118 @@ export default function LearningView() {
                 </p>
               </div>
             ) : (
-              <div className={layout === "list" ? "space-y-4" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"}>
+              <div className={layout === "list"
+                ? "space-y-4"
+                : `grid grid-cols-1 md:grid-cols-2 ${isCompactView ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-${isCompactView ? '2' : '4'}`}>
                 {filteredLessonsByType.map(lesson => (
                   <Card
                     key={lesson.id}
                     className={`cursor-pointer hover:shadow-md transition-shadow ${lesson.status === 'completed'
-                      ? 'border-l-4 border-green-500'
-                      : lesson.status === 'in_progress'
-                        ? 'border-l-4 border-amber-500'
-                        : ''
+                        ? 'border-l-4 border-green-500'
+                        : lesson.status === 'in_progress'
+                          ? 'border-l-4 border-amber-500'
+                          : ''
                       }`}
                     onClick={() => handleLessonClick(lesson.unit_id, lesson.id)}
                   >
-                    <CardContent className="p-4">
-                      <Badge className="mb-2" variant="outline">{lesson.unitLevel}</Badge>
-                      <div className="flex items-start gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${lesson.status === 'completed'
-                            ? 'bg-green-100'
-                            : 'bg-purple-100'
-                          }`}>
-                          {lesson.status === 'completed'
-                            ? <CheckCircle className="h-5 w-5 text-green-600" />
-                            : <BookOpen className="h-5 w-5 text-purple-600" />
-                          }
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium">{lesson.title}</h4>
-                          <p className="text-xs text-muted-foreground mb-2">
-                            {lesson.unitTitle}
-                          </p>
-                          <div className="flex flex-wrap items-center gap-2 mt-2">
-                            <Badge variant="outline" className="text-xs">
-                              {lesson.lesson_type}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground flex items-center">
-                              <Clock className="h-3 w-3 mr-1" />
-                              {lesson.estimated_duration} min
-                            </span>
-
-                            {lesson.status === 'in_progress' && (
-                              <Badge className="bg-amber-100 text-amber-800 border-amber-200">
-                                En cours
-                              </Badge>
-                            )}
-
-                            {lesson.status === 'completed' && (
-                              <Badge className="bg-green-100 text-green-800 border-green-200">
-                                Terminé
+                    <CardContent className={isCompactView ? 'p-2' : 'p-4'}>
+                      {isCompactView ? (
+                        // Vue compacte pour les leçons filtrées
+                        <div className="flex items-center gap-2 justify-between">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${lesson.status === 'completed'
+                                ? 'bg-green-100'
+                                : 'bg-purple-100'
+                              }`}>
+                              {lesson.status === 'completed'
+                                ? <CheckCircle className="h-3 w-3 text-green-600" />
+                                : <BookOpen className="h-3 w-3 text-purple-600" />
+                              }
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-medium text-sm truncate">{lesson.title}</h4>
+                              <p className="text-xs text-muted-foreground truncate">{lesson.unitTitle}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Badge variant="outline" className="text-xs">{lesson.unitLevel}</Badge>
+                            {lesson.status && (
+                              <Badge className={`text-xs ${lesson.status === 'completed'
+                                  ? 'bg-green-100 text-green-800 border-green-200'
+                                  : lesson.status === 'in_progress'
+                                    ? 'bg-amber-100 text-amber-800 border-amber-200'
+                                    : 'bg-gray-100 text-gray-800'
+                                }`}>
+                                {lesson.status === 'completed' ? 'Terminé' : lesson.status === 'in_progress' ? 'En cours' : ''}
                               </Badge>
                             )}
                           </div>
-
-                          {lesson.progress !== undefined && lesson.progress > 0 && (
-                            <Progress
-                              className="mt-3 h-1.5"
-                              value={lesson.progress}
-                            />
-                          )}
-
-                          {/* Display available content types */}
-                          {lesson.filteredContents && lesson.filteredContents.length > 0 && (
-                            <div className="mt-3 pt-2 border-t border-gray-100">
-                              <p className="text-xs text-muted-foreground mb-1">Contenus disponibles:</p>
-                              <div className="flex flex-wrap gap-1">
-                                {lesson.filteredContents.map((content, index) => (
-                                  <Badge key={`${content.id || index}`} variant="secondary" className="text-xs">
-                                    {content.content_type}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          )}
                         </div>
-                      </div>
+                      ) : (
+                        // Vue normale existante
+                        <>
+                          <Badge className="mb-2" variant="outline">{lesson.unitLevel}</Badge>
+                          <div className="flex items-start gap-3">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${lesson.status === 'completed'
+                                ? 'bg-green-100'
+                                : 'bg-purple-100'
+                              }`}>
+                              {lesson.status === 'completed'
+                                ? <CheckCircle className="h-5 w-5 text-green-600" />
+                                : <BookOpen className="h-5 w-5 text-purple-600" />
+                              }
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-medium">{lesson.title}</h4>
+                              <p className="text-xs text-muted-foreground mb-2">
+                                {lesson.unitTitle}
+                              </p>
+                              <div className="flex flex-wrap items-center gap-2 mt-2">
+                                <Badge variant="outline" className="text-xs">
+                                  {lesson.lesson_type}
+                                </Badge>
+                                <span className="text-xs text-muted-foreground flex items-center">
+                                  <Clock className="h-3 w-3 mr-1" />
+                                  {lesson.estimated_duration} min
+                                </span>
+
+                                {lesson.status === 'in_progress' && (
+                                  <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                                    En cours
+                                  </Badge>
+                                )}
+
+                                {lesson.status === 'completed' && (
+                                  <Badge className="bg-green-100 text-green-800 border-green-200">
+                                    Terminé
+                                  </Badge>
+                                )}
+                              </div>
+
+                              {lesson.progress !== undefined && lesson.progress > 0 && (
+                                <Progress
+                                  className="mt-3 h-1.5"
+                                  value={lesson.progress}
+                                />
+                              )}
+
+                              {/* Display available content types */}
+                              {lesson.filteredContents && lesson.filteredContents.length > 0 && (
+                                <div className="mt-3 pt-2 border-t border-gray-100">
+                                  <p className="text-xs text-muted-foreground mb-1">Contenus disponibles:</p>
+                                  <div className="flex flex-wrap gap-1">
+                                    {lesson.filteredContents.map((content, index) => (
+                                      <Badge key={`${content.id || index}`} variant="secondary" className="text-xs">
+                                        {content.content_type}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
