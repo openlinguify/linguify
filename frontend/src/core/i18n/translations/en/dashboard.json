@@ -48,8 +48,10 @@
     "filtered": "Filtered",
     "allContentTypes": "All Content Types",
     "contentTypes": "Content Types",
+    "compactView": "Compact",
+    
     "contentType": {
-      "all": "All Content Types",
+      "all": "All",
       "vocabulary": "Vocabulary",
       "theory": "Theory",
       "grammar": "Grammar",

@@ -46,10 +46,11 @@
     "levelX": "Niveau {level}",
     "content": "Contenu",
     "filtered": "Filtré",
-    "allContentTypes": "Tous les types de contenu",
+    "allContentTypes": "Types de contenu",
     "contentTypes": "Types de contenu",
+    "compactView": "Compact",
     "contentType": {
-      "all": "Tous les types de contenu",
+      "all": "Tous",
       "vocabulary": "Vocabulaire",
       "theory": "Théorie",
       "grammar": "Grammaire",

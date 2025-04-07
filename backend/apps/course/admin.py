@@ -338,6 +338,59 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
             "pour tous les exercices d'association, conformément aux exigences pédagogiques."
         )
         return super().add_view(request, form_url, extra_context)
+    
+    actions = ['associate_vocabulary_from_lesson']
+    
+    def associate_vocabulary_from_lesson(self, request, queryset):
+        """Action to automatically associate all relevant vocabulary with selected matching exercises"""
+        total_exercises = queryset.count()
+        exercises_updated = 0
+        words_added = 0
+        
+        for exercise in queryset:
+            content_lesson = exercise.content_lesson
+            parent_lesson = content_lesson.lesson
+            
+            # Memorize the number of words before the operation
+            words_before = exercise.vocabulary_words.count()
+            
+            # 1. Try to find vocabulary in the same content lesson
+            vocab_items = VocabularyList.objects.filter(content_lesson=content_lesson)
+            
+            # 2. If no words, look in vocabulary content lessons in the same lesson
+            if not vocab_items.exists():
+                vocab_lessons = ContentLesson.objects.filter(
+                    lesson=parent_lesson,
+                    content_type__iexact='vocabulary'
+                )
+                
+                for vocab_lesson in vocab_lessons:
+                    lesson_vocab = VocabularyList.objects.filter(content_lesson=vocab_lesson)
+                    if vocab_items.exists():
+                        vocab_items = vocab_items | lesson_vocab
+                    else:
+                        vocab_items = lesson_vocab
+            
+            # Associate all found words, limited by pairs_count
+            if vocab_items.exists():
+                # Limit to the pairs_count specified in the exercise
+                vocab_items = vocab_items[:exercise.pairs_count]
+                exercise.vocabulary_words.add(*vocab_items)
+                exercises_updated += 1
+                
+                # Calculate how many words were added
+                words_after = exercise.vocabulary_words.count()
+                words_added += (words_after - words_before)
+        
+        # Confirmation message
+        if exercises_updated:
+            message = f"✓ {words_added} vocabulary items added to {exercises_updated} matching exercises."
+        else:
+            message = "No vocabulary items found for the selected exercises."
+            
+        self.message_user(request, message)
+        
+    associate_vocabulary_from_lesson.short_description = "Associate vocabulary items from lessons"
 
 @admin.register(MultipleChoiceQuestion)
 class MultipleChoiceQuestionAdmin(admin.ModelAdmin):

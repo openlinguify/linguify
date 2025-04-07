@@ -307,6 +307,8 @@ export interface LearningJourneyProps {
 
 export interface EnhancedLearningJourneyProps extends LearningJourneyProps {
   onContentTypeChange?: (type: string) => void;
+  isCompactView?: boolean;
+  onCompactViewChange?: (isCompact: boolean) => void;
 }
 
 export interface LearningViewProps {
