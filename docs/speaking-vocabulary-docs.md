@@ -1,95 +1,95 @@
-# Documentation: Association automatique de vocabulaire aux exercices de prononciation
+# Documentation: Automatic Vocabulary Association for Speaking Exercises
 
-## Aperçu
+## Overview
 
-L'outil `speaking_auto_associate` permet d'associer automatiquement les éléments de vocabulaire pertinents aux exercices de prononciation (speaking) dans l'application Linguify. Cette commande évite d'avoir à associer manuellement chaque mot de vocabulaire à chaque exercice de prononciation, ce qui serait fastidieux et chronophage.
+The `speaking_auto_associate` tool automatically associates relevant vocabulary items with speaking exercises in the Linguify application. This command eliminates the need to manually associate each vocabulary word with each speaking exercise, which would be tedious and time-consuming.
 
 ## Installation
 
-L'outil est installé sous forme de commande Django dans le dossier:
+The tool is installed as a Django command in the folder:
 ```
 backend/apps/course/management/commands/speaking_auto_associate.py
 ```
 
-Les fichiers `__init__.py` doivent exister dans les dossiers `management/` et `management/commands/` pour que Django reconnaisse la commande.
+The `__init__.py` files must exist in the `management/` and `management/commands/` folders for Django to recognize the command.
 
-## Utilisation
+## Usage
 
-### Commande de base
+### Basic Command
 
-Pour exécuter la commande avec les paramètres par défaut (traiter tous les exercices de prononciation sans effacer les associations existantes):
+To run the command with default parameters (process all speaking exercises without erasing existing associations):
 
 ```bash
 python manage.py speaking_auto_associate
 ```
 
-### Options disponibles
+### Available Options
 
 | Option | Description |
 |--------|-------------|
-| `--lesson=ID` | Traiter uniquement l'exercice avec l'ID de leçon spécifié |
-| `--force` | Remplacer les associations existantes au lieu de les préserver |
+| `--lesson=ID` | Process only the exercise with the specified lesson ID |
+| `--force` | Replace existing associations instead of preserving them |
 
-### Exemples d'utilisation
+### Usage Examples
 
-1. **Associer tous les mots de vocabulaire à tous les exercices de prononciation**
+1. **Associate all vocabulary words with all speaking exercises**
    ```bash
    python manage.py speaking_auto_associate --force
    ```
 
-2. **Associer des mots de vocabulaire à un exercice spécifique**
+2. **Associate vocabulary words with a specific exercise**
    ```bash
    python manage.py speaking_auto_associate --lesson=24
    ```
 
-3. **Mettre à jour un exercice spécifique en remplaçant les associations existantes**
+3. **Update a specific exercise by replacing existing associations**
    ```bash
    python manage.py speaking_auto_associate --lesson=24 --force
    ```
 
-## Fonctionnement
+## How It Works
 
-Pour chaque exercice de prononciation, l'outil:
+For each speaking exercise, the tool:
 
-1. Vérifie si un objet `SpeakingExercise` existe pour cette leçon, et en crée un si nécessaire
-2. Cherche d'abord des mots de vocabulaire dans la même leçon de contenu
-3. Si aucun mot n'est trouvé, cherche dans toutes les leçons de vocabulaire appartenant à la même leçon parente
-4. Associe tous les mots trouvés à l'exercice de prononciation
+1. Checks if a `SpeakingExercise` object exists for that lesson, and creates one if necessary
+2. First looks for vocabulary words in the same content lesson
+3. If no words are found, searches in all vocabulary lessons belonging to the same parent lesson
+4. Associates all found words with the speaking exercise
 
-## Interface d'administration
+## Admin Interface
 
-En plus de la commande CLI, vous pouvez utiliser l'action d'administration dans l'interface Django:
+In addition to the CLI command, you can use the admin action in the Django interface:
 
-1. Accédez à l'interface d'administration à `/admin/course/speakingexercise/`
-2. Sélectionnez les exercices à mettre à jour
-3. Dans le menu déroulant "Actions", choisissez "Associate vocabulary items from lessons"
-4. Cliquez sur "Go"
+1. Access the admin interface at `/admin/course/speakingexercise/`
+2. Select the exercises to update
+3. In the "Actions" dropdown menu, choose "Associate vocabulary items from lessons"
+4. Click "Go"
 
-## Bonnes pratiques
+## Best Practices
 
-- **Créez d'abord vos leçons de vocabulaire**: L'outil ne peut associer que des mots existants
-- **Utilisez l'option `--force` avec précaution**: Elle efface les associations existantes
-- **Exécutez la commande après avoir ajouté de nouveaux mots**: Pour maintenir les associations à jour
+- **Create your vocabulary lessons first**: The tool can only associate existing words
+- **Use the `--force` option with caution**: It erases existing associations
+- **Run the command after adding new words**: To keep associations up to date
 
-## Dépannage
+## Troubleshooting
 
-| Problème | Solution |
+| Problem | Solution |
 |----------|----------|
-| "No vocabulary items found" | Vérifiez que des mots de vocabulaire existent dans la même unité et leçon |
-| Aucun mot ajouté | Utilisez l'option `--force` pour remplacer les associations existantes |
-| Erreur "Unknown command" | Vérifiez que les fichiers `__init__.py` existent dans les dossiers `management` |
+| "No vocabulary items found" | Verify that vocabulary words exist in the same unit and lesson |
+| No words added | Use the `--force` option to replace existing associations |
+| "Unknown command" error | Check that `__init__.py` files exist in the `management` folders |
 
 ## Maintenance
 
-Pour modifier le comportement de l'outil:
+To modify the tool's behavior:
 
-1. Éditez le fichier `backend/apps/course/management/commands/speaking_auto_associate.py`
-2. Vous pouvez ajuster la logique de recherche des mots de vocabulaire dans la méthode `handle()`
-3. Pour modifier l'action admin, modifiez la méthode `associate_vocabulary_from_lesson()` dans `admin.py`
+1. Edit the file `backend/apps/course/management/commands/speaking_auto_associate.py`
+2. You can adjust the vocabulary word search logic in the `handle()` method
+3. To modify the admin action, edit the `associate_vocabulary_from_lesson()` method in `admin.py`
 
 ---
 
-Utilisation recommandée pour le projet Linguify:
-1. Créez d'abord toutes vos leçons et leur contenu de vocabulaire
-2. Exécutez `python manage.py speaking_auto_associate --force` pour associer automatiquement tout le vocabulaire
-3. En cas d'ajout de nouveaux mots de vocabulaire, exécutez à nouveau la commande
+Recommended usage for the Linguify project:
+1. First create all your lessons and their vocabulary content
+2. Run `python manage.py speaking_auto_associate --force` to automatically associate all vocabulary
+3. When adding new vocabulary words, run the command again
