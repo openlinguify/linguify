@@ -546,7 +546,40 @@ const courseAPI = {
       });
       return null;
     }
+  },
+  
+  getSpeakingExerciseVocabulary: async (contentLessonId: number | string, targetLanguage?: string) => {
+    try {
+      // Validate content lesson ID
+      const parsedContentLessonId = Number(contentLessonId);
+
+      if (isNaN(parsedContentLessonId)) {
+        console.error(`Invalid content lesson ID provided: ${contentLessonId}`);
+        return { results: [] };
+      }
+
+      const params: Record<string, string> = {
+        content_lesson: parsedContentLessonId.toString()
+      };
+
+      // Utiliser la langue spécifiée ou récupérer depuis localStorage
+      const lang = targetLanguage || getUserTargetLanguage();
+      params.target_language = lang;
+
+      console.log(`Fetching speaking exercise vocabulary for content lesson ${parsedContentLessonId} with language: ${lang}`);
+      const response = await apiClient.get(`/api/v1/course/speaking-exercise/vocabulary/`, {
+        params,
+        headers: {
+          'Accept-Language': lang
+        }
+      });
+      return response.data;
+    } catch (err: any) {
+      console.error('Failed to fetch speaking exercise vocabulary:', err);
+      return { results: [] };
+    }
   }
+
 };
 
 export default courseAPI;

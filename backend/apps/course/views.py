@@ -945,3 +945,68 @@ class SpeakingExerciseViewSet(viewsets.ModelViewSet):
         if content_lesson_id:
             queryset = queryset.filter(content_lesson_id=content_lesson_id)
         return queryset
+    
+    @action(detail=False, methods=['GET'], url_path='vocabulary')
+    def get_vocabulary(self, request):
+        """
+        Récupère les items de vocabulaire associés à un exercice de prononciation spécifique
+        """
+        content_lesson_id = request.query_params.get('content_lesson')
+        if not content_lesson_id:
+            return Response(
+                {"error": "Le paramètre content_lesson est requis"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        try:
+            # Trouver l'exercice de prononciation pour ce content_lesson
+            speaking_exercise = SpeakingExercise.objects.filter(
+                content_lesson_id=content_lesson_id
+            ).first()
+            
+            if not speaking_exercise:
+                return Response(
+                    {"error": f"Aucun exercice de prononciation trouvé pour content_lesson {content_lesson_id}"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+                
+            # Récupérer les items de vocabulaire associés
+            vocabulary_items = speaking_exercise.vocabulary_items.all()
+            
+            # Sérialiser les données
+            target_language = self._get_target_language(request)
+            serializer = VocabularyListSerializer(
+                vocabulary_items, 
+                many=True,
+                context={'target_language': target_language, 'request': request}
+            )
+            
+            return Response({
+                "exercise_id": speaking_exercise.id,
+                "content_lesson_id": int(content_lesson_id),
+                "results": serializer.data
+            })
+            
+        except Exception as e:
+            return Response(
+                {"error": f"Erreur lors de la récupération du vocabulaire: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+            
+    def _get_target_language(self, request):
+        """Détermine la langue cible pour une requête"""
+        target_language = request.query_params.get('target_language')
+        if target_language:
+            return target_language.lower()
+            
+        if 'Accept-Language' in request.headers:
+            accept_lang = request.headers['Accept-Language'].split(',')[0].split(';')[0].strip()
+            if accept_lang and len(accept_lang) >= 2:
+                return accept_lang[:2].lower()
+                
+        if hasattr(request, 'user') and request.user.is_authenticated:
+            user_language = getattr(request.user, 'target_language', None)
+            if user_language:
+                return user_language.lower()
+                
+        return 'en'
