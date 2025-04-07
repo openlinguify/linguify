@@ -676,7 +676,7 @@ export default function LearningView() {
                             <Card
                               key={lesson.id}
                               className={`cursor-pointer hover:shadow-md transition-shadow ${lesson.status === 'completed'
-                                  ? 'border-l-4 border-green-500'
+                                  ? 'border-l-4 border-purple-500'
                                   : lesson.status === 'in_progress'
                                     ? 'border-l-4 border-amber-500'
                                     : ''
@@ -703,7 +703,7 @@ export default function LearningView() {
                                     </div>
                                     {lesson.status && (
                                       <Badge className={`text-xs ${lesson.status === 'completed'
-                                          ? 'bg-green-100 text-green-800 border-green-200'
+                                          ? 'bg-purple-100 text-purple-800 border-purple-200'
                                           : lesson.status === 'in_progress'
                                             ? 'bg-amber-100 text-amber-800 border-amber-200'
                                             : 'bg-gray-100 text-gray-800'
@@ -736,24 +736,19 @@ export default function LearningView() {
                                         </span>
 
                                         {lesson.status === 'in_progress' && (
-                                          <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                                          <Badge className="bg-amber-100 text-amber-800">
                                             En cours
                                           </Badge>
                                         )}
 
                                         {lesson.status === 'completed' && (
-                                          <Badge className="bg-green-100 text-green-800 border-green-200">
+                                          <Badge className="bg-purple-100 text-purple-800">
                                             Terminé
                                           </Badge>
                                         )}
                                       </div>
 
-                                      {lesson.progress !== undefined && lesson.progress > 0 && (
-                                        <Progress
-                                          className="mt-3 h-1.5"
-                                          value={lesson.progress}
-                                        />
-                                      )}
+
                                     </div>
                                   </div>
                                 )}
@@ -799,7 +794,7 @@ export default function LearningView() {
                   <Card
                     key={lesson.id}
                     className={`cursor-pointer hover:shadow-md transition-shadow ${lesson.status === 'completed'
-                        ? 'border-l-4 border-green-500'
+                        ? 'border-l-4 border-purple-500'
                         : lesson.status === 'in_progress'
                           ? 'border-l-4 border-amber-500'
                           : ''
@@ -829,7 +824,7 @@ export default function LearningView() {
                             <Badge variant="outline" className="text-xs">{lesson.unitLevel}</Badge>
                             {lesson.status && (
                               <Badge className={`text-xs ${lesson.status === 'completed'
-                                  ? 'bg-green-100 text-green-800 border-green-200'
+                                  ? 'bg-purple-100 text-purple-800 border-purple-200'
                                   : lesson.status === 'in_progress'
                                     ? 'bg-amber-100 text-amber-800 border-amber-200'
                                     : 'bg-gray-100 text-gray-800'
@@ -849,7 +844,7 @@ export default function LearningView() {
                                 : 'bg-purple-100'
                               }`}>
                               {lesson.status === 'completed'
-                                ? <CheckCircle className="h-5 w-5 text-green-600" />
+                                ? <CheckCircle className="h-5 w-5 text-purple-600" />
                                 : <BookOpen className="h-5 w-5 text-purple-600" />
                               }
                             </div>
@@ -874,7 +869,7 @@ export default function LearningView() {
                                 )}
 
                                 {lesson.status === 'completed' && (
-                                  <Badge className="bg-green-100 text-green-800 border-green-200">
+                                  <Badge className="bg-purple-100 text-purple-800 border-purple-200">
                                     Terminé
                                   </Badge>
                                 )}

@@ -810,9 +810,7 @@ class SpeakingExercise(models.Model):
     
     def __str__(self):
         return f"{self.content_lesson} - Speaking Exercise"
-    
-    
-    
+   
 
 ''' GRAMMAR LESSON :
 This section is for the content of the lessson related to the grammar of Linguify.
@@ -904,6 +902,7 @@ class TheoryContent(models.Model):
             'nl': self.exception_nl,
         }
         return switch.get(target_language, self.exception_en)
+
 
 class ExerciseGrammarReordering(models.Model):
     content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='reordering', default=1)
