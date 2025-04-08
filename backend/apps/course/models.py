@@ -820,66 +820,86 @@ A lesson of grammar can contain a theory, exercises, and a test.
 class TheoryContent(models.Model):
     '''
     Model for grammar theory content with explanations, formulas, exceptions, and examples.
+    Amélioré avec des champs JSON pour une gestion plus flexible des langues.
     '''
     content_lesson = models.OneToOneField(ContentLesson, on_delete=models.CASCADE, related_name='theory_content', default=1)
-    """
-    Basic Grammar Explanation
-    """
+    
     content_en = models.TextField(blank=False, null=False)
     content_fr = models.TextField(blank=False, null=False)
     content_es = models.TextField(blank=False, null=False)
     content_nl = models.TextField(blank=False, null=False)
-    """"
-    Explanation of the grammar rule
-    """
     explication_en = models.TextField(blank=False, null=False)
     explication_fr = models.TextField(blank=False, null=False)
     explication_es = models.TextField(blank=False, null=False)
     explication_nl = models.TextField(blank=False, null=False)
-    """
-    Formula of the grammar rule
-    """
     formula_en = models.TextField(blank=True, null=True)
     formula_fr = models.TextField(blank=True, null=True)
     formula_es = models.TextField(blank=True, null=True)
     formula_nl = models.TextField(blank=True, null=True)
-
-    """
-    Examples of the grammar rule
-    """
     example_en = models.TextField(blank=True, null=True)
     example_fr = models.TextField(blank=True, null=True)
     example_es = models.TextField(blank=True, null=True)
     example_nl = models.TextField(blank=True, null=True)
-    """
-    Exceptions to the grammar rule
-    """
     exception_en = models.TextField(blank=True, null=True)
     exception_fr = models.TextField(blank=True, null=True)
     exception_es = models.TextField(blank=True, null=True)
     exception_nl = models.TextField(blank=True, null=True)
 
+    available_languages = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="Liste des codes de langue pour lesquelles ce contenu est disponible"
+    )
+    
+    language_specific_content = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Contenu spécifique à une langue qui n'existe pas dans les autres langues"
+    )
+    
+    using_json_format = models.BooleanField(
+        default=False,
+        help_text="Indique si cette théorie utilise le nouveau format JSON"
+    )
     
     def __str__(self):
         return f"{self.content_lesson} - Grammar Content"
     
     def get_content(self, target_language):
+        """
+        Récupère le contenu pour la langue cible.
+        Prend en charge à la fois l'ancien et le nouveau format.
+        """
+        
+        if self.using_json_format and target_language in self.language_specific_content:
+            return self.language_specific_content.get(target_language, {}).get('content', '')
+            
         switch = {
             'fr': self.content_fr,
             'es': self.content_es,
             'nl': self.content_nl,
         }
         return switch.get(target_language, self.content_en)
-
+        
     def get_explanation(self, target_language):
+        """
+        Récupère l'explication pour la langue cible.
+        Prend en charge à la fois l'ancien et le nouveau format.
+        """
+        if self.using_json_format and target_language in self.language_specific_content:
+            return self.language_specific_content.get(target_language, {}).get('explanation', '')
+            
         switch = {
             'fr': self.explication_fr,
             'es': self.explication_es,
             'nl': self.explication_nl,
         }
         return switch.get(target_language, self.explication_en)
-    
+
     def get_formula(self, target_language):
+        if self.using_json_format and target_language in self.language_specific_content:
+            return self.language_specific_content.get(target_language, {}).get('formula', '')
+            
         switch = {
             'fr': self.formula_fr,
             'es': self.formula_es,
@@ -888,6 +908,9 @@ class TheoryContent(models.Model):
         return switch.get(target_language, self.formula_en)
     
     def get_example(self, target_language):
+        if self.using_json_format and target_language in self.language_specific_content:
+            return self.language_specific_content.get(target_language, {}).get('example', '')
+            
         switch = {
             'fr': self.example_fr,
             'es': self.example_es,
@@ -896,13 +919,66 @@ class TheoryContent(models.Model):
         return switch.get(target_language, self.example_en)
     
     def get_exception(self, target_language):
+        if self.using_json_format and target_language in self.language_specific_content:
+            return self.language_specific_content.get(target_language, {}).get('exception', '')
+            
         switch = {
             'fr': self.exception_fr,
             'es': self.exception_es,
             'nl': self.exception_nl,
         }
         return switch.get(target_language, self.exception_en)
-
+        
+    def migrate_to_json_format(self):
+        """
+        Convertit les données des champs traditionnels vers le format JSON
+        sans perdre les données existantes.
+        """
+        available_langs = []
+        for lang in ['en', 'fr', 'es', 'nl']:
+            content_field = f'content_{lang}'
+            if getattr(self, content_field):
+                available_langs.append(lang)
+        
+        language_content = {}
+        
+        for lang in available_langs:
+            language_content[lang] = {
+                'content': getattr(self, f'content_{lang}', ''),
+                'explanation': getattr(self, f'explication_{lang}', ''),
+                'formula': getattr(self, f'formula_{lang}', ''),
+                'example': getattr(self, f'example_{lang}', ''),
+                'exception': getattr(self, f'exception_{lang}', '')
+            }
+        
+        self.available_languages = available_langs
+        self.language_specific_content = language_content
+        self.using_json_format = True
+        
+        self.save()
+        
+        return True
+    
+    def add_language_content(self, language_code, content_data):
+        """
+        Ajoute ou met à jour le contenu pour une langue spécifique
+        en utilisant le nouveau format JSON.
+        
+        Args:
+            language_code (str): Code de langue (en, fr, es, nl, etc.)
+            content_data (dict): Dictionnaire contenant le contenu pour cette langue
+        """
+        if not self.using_json_format:
+            self.migrate_to_json_format()
+        
+        if language_code not in self.available_languages:
+            self.available_languages.append(language_code)
+        
+        self.language_specific_content[language_code] = content_data
+        
+        self.save()
+        
+        return True
 
 class ExerciseGrammarReordering(models.Model):
     content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='reordering', default=1)

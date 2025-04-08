@@ -6,11 +6,11 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { 
-  AlertCircle, 
-  BookOpen, 
-  Code, 
-  FileText, 
+import {
+  AlertCircle,
+  BookOpen,
+  Code,
+  FileText,
   AlertTriangle,
   Volume2,
   CheckCircle,
@@ -38,7 +38,7 @@ const tabVariants = {
   exit: { opacity: 0, x: -20, transition: { duration: 0.3 } }
 };
 
-export default function TheoryContent({ lessonId, language = 'en', onComplete }: TheoryContentProps) {
+export default function TheoryContent({ lessonId, language = 'en', unitId, onComplete }: TheoryContentProps) {
   const router = useRouter();
   const [theory, setTheory] = useState<TheoryData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,10 +52,26 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const [xpEarned, setXpEarned] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
-  
+
   // Sound effects
   const audioComplete = typeof Audio !== 'undefined' ? new Audio('/sounds/complete.mp3') : null;
   const audioTab = typeof Audio !== 'undefined' ? new Audio('/sounds/tab.mp3') : null;
+
+  // Helper to get content in current language
+  const getLanguageContent = useCallback((field: string, defaultValue: string = ''): string => {
+    if (!theory) return defaultValue;
+
+    // Try using new JSON format first
+    if (theory.using_json_format && 
+        theory.language_specific_content && 
+        theory.language_specific_content[language]) {
+      return theory.language_specific_content[language][field] || defaultValue;
+    }
+
+    // Fall back to old format if needed
+    const oldFormatField = `${field}_${language}` as keyof TheoryData;
+    return (theory[oldFormatField] as string) || defaultValue;
+  }, [theory, language]);
 
   // Effect to fetch theory content
   useEffect(() => {
@@ -102,6 +118,24 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
     return () => clearInterval(timer);
   }, [startTime]);
 
+  // Determine available sections
+  const getAvailableSections = useCallback(() => {
+    if (!theory) return ['content'];
+    
+    const sections = ['content'];
+    
+    // Add formula section if available
+    if (getLanguageContent('formula')) sections.push('formula');
+    
+    // Add examples section if available
+    if (getLanguageContent('example')) sections.push('examples');
+    
+    // Add exceptions section if available
+    if (getLanguageContent('exception')) sections.push('exceptions');
+    
+    return sections;
+  }, [theory, getLanguageContent]);
+
   // Update progress when sections are read
   useEffect(() => {
     if (readSections.length > 0 && theory) {
@@ -130,25 +164,7 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
         handleComplete(earnedXp);
       }
     }
-  }, [readSections, theory]);
-
-  // Determine available sections
-  const getAvailableSections = useCallback(() => {
-    if (!theory) return ['content'];
-    
-    const sections = ['content'];
-    
-    // Add formula section if available
-    if (theory[`formula_${language}`]) sections.push('formula');
-    
-    // Add examples section if available
-    if (theory[`example_${language}`]) sections.push('examples');
-    
-    // Add exceptions section if available
-    if (theory[`exception_${language}`]) sections.push('exceptions');
-    
-    return sections;
-  }, [theory, language]);
+  }, [readSections, theory, getAvailableSections]);
 
   // Update progress in backend
   const updateProgressInBackend = async (newProgress: number, earnedXp: number) => {
@@ -208,7 +224,11 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
   };
 
   const handleBack = () => {
-    router.push("/learning");
+    if (unitId) {
+      router.push(`/learning/${unitId}/${lessonId}`);
+    } else {
+      router.push("/learning");
+    }
   };
 
   // Format time
@@ -387,7 +407,7 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
                           Règle grammaticale : {theory?.content_lesson.title[language]}
                         </h2>
                         <button 
-                          onClick={() => speak(theory?.[`content_${language}`] || '')}
+                          onClick={() => speak(getLanguageContent('content'))}
                           className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
                           aria-label="Listen to content"
                         >
@@ -397,11 +417,11 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
                       
                       {/* Content */}
                       <div className="p-6">
-                        {theory?.[`content_${language}`] ? (
+                        {getLanguageContent('content') ? (
                           <div className="space-y-4">
-                            {theory[`content_${language}`]
+                            {getLanguageContent('content')
                               .split('\\n')
-                              .map((line, index) => (
+                              .map((line: string, index: number) => (
                                 <p key={index} className="text-gray-700">{line}</p>
                               ))}
                           </div>
@@ -413,11 +433,11 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
                       {/* Explanation */}
                       <div className="bg-gray-50 p-6 mt-4 rounded-lg">
                         <h3 className="text-lg font-semibold mb-3">Explanation</h3>
-                        {theory?.[`explication_${language}`] ? (
+                        {getLanguageContent('explanation') ? (
                           <div className="space-y-3">
-                            {theory[`explication_${language}`]
+                            {getLanguageContent('explanation')
                               .split('\\n')
-                              .map((line, index) => (
+                              .map((line: string, index: number) => (
                                 <p key={index} className="text-gray-700">{line}</p>
                               ))}
                           </div>
@@ -434,7 +454,7 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
                       <div className="border-b border-gray-100 p-4 flex justify-between items-center">
                         <h2 className="text-lg font-semibold text-gray-800">Formula</h2>
                         <button 
-                          onClick={() => speak(theory?.[`formula_${language}`] || '')}
+                          onClick={() => speak(getLanguageContent('formula'))}
                           className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
                           aria-label="Listen to formula"
                         >
@@ -444,11 +464,11 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
                       
                       {/* Content */}
                       <div className="p-6">
-                        {theory?.[`formula_${language}`] ? (
+                        {getLanguageContent('formula') ? (
                           <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100">
-                            {theory[`formula_${language}`]
+                            {getLanguageContent('formula')
                               .split('\\n')
-                              .map((line, index) => (
+                              .map((line: string, index: number) => (
                                 <p key={index} className="text-gray-800 mb-2">{line}</p>
                               ))}
                           </div>
@@ -468,7 +488,7 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
                       <div className="border-b border-gray-100 p-4 flex justify-between items-center">
                         <h2 className="text-lg font-semibold text-gray-800">Examples</h2>
                         <button 
-                          onClick={() => speak(theory?.[`example_${language}`] || '')}
+                          onClick={() => speak(getLanguageContent('example'))}
                           className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
                           aria-label="Listen to examples"
                         >
@@ -478,11 +498,11 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
                       
                       {/* Content */}
                       <div className="p-6">
-                        {theory?.[`example_${language}`] ? (
+                        {getLanguageContent('example') ? (
                           <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                            {theory[`example_${language}`]
+                            {getLanguageContent('example')
                               .split('\\n')
-                              .map((line, index) => (
+                              .map((line: string, index: number) => (
                                 <p key={index} className="text-gray-800 mb-2">{line}</p>
                               ))}
                           </div>
@@ -502,7 +522,7 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
                       <div className="border-b border-gray-100 p-4 flex justify-between items-center">
                         <h2 className="text-lg font-semibold text-gray-800">Exceptions</h2>
                         <button 
-                          onClick={() => speak(theory?.[`exception_${language}`] || '')}
+                          onClick={() => speak(getLanguageContent('exception'))}
                           className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
                           aria-label="Listen to exceptions"
                         >
@@ -512,11 +532,11 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
                       
                       {/* Content */}
                       <div className="p-6">
-                        {theory?.[`exception_${language}`] ? (
+                        {getLanguageContent('exception') ? (
                           <div className="p-4 bg-amber-50 rounded-lg border border-amber-100">
-                            {theory[`exception_${language}`]
+                            {getLanguageContent('exception')
                               .split('\\n')
-                              .map((line, index) => (
+                              .map((line: string, index: number) => (
                                 <p key={index} className="text-gray-800 mb-2">{line}</p>
                               ))}
                           </div>
@@ -600,50 +620,6 @@ export default function TheoryContent({ lessonId, language = 'en', onComplete }:
           </div>
         </div>
       )}
-      
-      {/* Quick practice question - can be added as a follow-up */}
-      {isCompleted && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-white rounded-lg shadow-sm p-6 mb-10 border border-gray-100"
-        >
-          <h3 className="text-lg font-medium text-gray-800 mb-4">Quick Check</h3>
-          <p className="text-gray-700 mb-4">
-            Test your understanding of this grammar rule with a quick practice question.
-          </p>
-          
-          {/* Example practice question here */}
-          <div className="space-y-2 mb-4">
-            <div className="p-3 bg-gray-50 rounded-lg text-gray-800">
-              Placeholder for practice question
-            </div>
-          </div>
-          
-          <Button className="mt-2 bg-indigo-600 hover:bg-indigo-700">
-            Start Practice
-          </Button>
-        </motion.div>
-      )}
     </div>
   );
 }
-
-// Add this to your global CSS for confetti animation
-/*
-@keyframes confetti {
-  0% {
-    transform: translateY(0) rotate(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(720deg);
-    opacity: 0;
-  }
-}
-
-.animate-confetti {
-  animation: confetti 3s ease-in-out forwards;
-}
-*/

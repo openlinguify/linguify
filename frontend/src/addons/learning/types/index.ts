@@ -25,8 +25,8 @@ export interface LevelGroup {
   level: string;
   units: Unit[];
 }
- 
- 
+
+
 export interface Lesson {
   id: number;
   title: string;
@@ -43,7 +43,7 @@ export interface Lesson {
 export interface LessonsProps {
   unitId: string;
 }
- 
+
 export interface ContentLesson {
   id: number;
   title: {
@@ -73,12 +73,12 @@ export interface LessonsByContentResponse {
     target_language: string;
     available_levels: string[];
     total_count: number;
-    error?: string;  
+    error?: string;
   };
 }
 export interface LessonContentProps {
   lessonId: string;
-  unitId?: string; 
+  unitId?: string;
   language?: 'en' | 'fr' | 'es' | 'nl';
 }
 
@@ -138,18 +138,18 @@ export interface MultipleChoiceProps {
 }
 
 export interface Number {
-    id: number;
-    number: string;
-    number_en: string;
-    number_fr: string;
-    number_es: string;
-    number_nl: string;
-    is_reviewed: boolean;
+  id: number;
+  number: string;
+  number_en: string;
+  number_fr: string;
+  number_es: string;
+  number_nl: string;
+  is_reviewed: boolean;
 }
 
 export interface NumbersLessonProps {
-    lessonId: string;
-    language?: 'en' | 'fr' | 'es' | 'nl';
+  lessonId: string;
+  language?: 'en' | 'fr' | 'es' | 'nl';
 }
 
 export interface NumberProps {
@@ -168,132 +168,145 @@ export interface ReorderingExerciseProps {
 }
 
 export interface MatchingExercise {
-    id: number;
-    content_lesson: number;
-    difficulty: 'easy' | 'medium' | 'hard';
-    pairs_count: number;
-    order: number;
-    exercise_data: MatchingExerciseData;
-  }
+  id: number;
+  content_lesson: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  pairs_count: number;
+  order: number;
+  exercise_data: MatchingExerciseData;
+}
 
-  export interface MatchingExerciseProps {
-    lessonId: string;
-    language?: 'en' | 'fr' | 'es' | 'nl';
-    unitId?: string;
-    onComplete?: () => void;
-  }
+export interface MatchingExerciseProps {
+  lessonId: string;
+  language?: 'en' | 'fr' | 'es' | 'nl';
+  unitId?: string;
+  onComplete?: () => void;
+}
 
-  export interface MatchingExerciseData {
-    id: number;
-    title: string;
-    instruction: string;
-    difficulty: string;
-    target_language: string;
-    native_language: string;
-    target_words: string[];
-    native_words: string[];
-    total_pairs: number;
-  }
+export interface MatchingExerciseData {
+  id: number;
+  title: string;
+  instruction: string;
+  difficulty: string;
+  target_language: string;
+  native_language: string;
+  target_words: string[];
+  native_words: string[];
+  total_pairs: number;
+}
 
-  export interface MatchingAnswers {
-    [targetWord: string]: string;
-  }
-  
-  export interface MatchingResult {
-    score: number;
-    message: string;
-    correct_count: number;
-    wrong_count: number;
-    total_count: number;
-    is_successful: boolean; 
-    success_threshold: number; 
-    
-    feedback: {
-      [targetWord: string]: {
-        is_correct: boolean;
-        user_answer: string;
-        correct_answer: string;
-      }
+export interface MatchingAnswers {
+  [targetWord: string]: string;
+}
+
+export interface MatchingResult {
+  score: number;
+  message: string;
+  correct_count: number;
+  wrong_count: number;
+  total_count: number;
+  is_successful: boolean;
+  success_threshold: number;
+
+  feedback: {
+    [targetWord: string]: {
+      is_correct: boolean;
+      user_answer: string;
+      correct_answer: string;
     }
   }
- 
-  export interface FillBlankExercise {
-    id: number;
-    content_lesson: number;
-    order: number;
-    difficulty: string;
-    instructions: Record<string, string>;
-    sentences: Record<string, string>;
-    answer_options: Record<string, string[]>;
-    correct_answers: Record<string, string>;
-    hints?: Record<string, string>;
-    explanations?: Record<string, string>;
-    created_at: string;
-    updated_at: string;
-  }
+}
+
+export interface FillBlankExercise {
+  id: number;
+  content_lesson: number;
+  order: number;
+  difficulty: string;
+  instructions: Record<string, string>;
+  sentences: Record<string, string>;
+  answer_options: Record<string, string[]>;
+  correct_answers: Record<string, string>;
+  hints?: Record<string, string>;
+  explanations?: Record<string, string>;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface Exercise {
-    id: number;
-    content_lesson: number;
-    order: number;
-    difficulty: string;
-    language?: string;
-    instruction?: string;
-    sentence?: string;
-    options?: string[];
-    correct_answer?: string;
-  }
-  
+  id: number;
+  content_lesson: number;
+  order: number;
+  difficulty: string;
+  language?: string;
+  instruction?: string;
+  sentence?: string;
+  options?: string[];
+  correct_answer?: string;
+}
+
 export interface FillBlankExerciseProps {
-    lessonId: string;
-    unitId?: string;
-    language?: 'en' | 'fr' | 'es' | 'nl';
-    onComplete?: () => void;
-  }
+  lessonId: string;
+  unitId?: string;
+  language?: 'en' | 'fr' | 'es' | 'nl';
+  onComplete?: () => void;
+}
 
 export interface TheoryData {
+  id: number;
   content_lesson: {
     id: number;
     title: {
-      en: string;
-      fr: string;
-      es: string;
-      nl: string;
+      [key: string]: string; // Support pour toutes les langues
     };
     instruction: {
-      en: string;
-      fr: string;
-      es: string;
-      nl: string;
+      [key: string]: string; // Support pour toutes les langues
     };
     content_type: string;
   };
-  content_en: string;
-  content_fr: string;
-  content_es: string;
-  content_nl: string;
-  explication_en: string;
-  explication_fr: string;
-  explication_es: string;
-  explication_nl: string;
-  formula_en: string | null;
-  formula_fr: string | null;
-  formula_es: string | null;
-  formula_nl: string | null;
-  example_en: string | null;
-  example_fr: string | null;
-  example_es: string | null;
-  example_nl: string | null;
-  exception_en: string | null;
-  exception_fr: string | null;
-  exception_es: string | null;
-  exception_nl: string | null;
+  
+  // Nouvelle structure JSON
+  using_json_format: boolean;
+  available_languages: string[];
+  language_specific_content: {
+    [lang: string]: {
+      content: string;
+      explanation: string;
+      formula?: string;
+      example?: string;
+      exception?: string;
+      [key: string]: any; // Support pour des champs supplémentaires spécifiques à une langue
+    }
+  };
+  
+  // Ancienne structure (pour compatibilité)
+  content_en?: string;
+  content_fr?: string;
+  content_es?: string;
+  content_nl?: string;
+  explication_en?: string;
+  explication_fr?: string;
+  explication_es?: string;
+  explication_nl?: string;
+  formula_en?: string;
+  formula_fr?: string;
+  formula_es?: string;
+  formula_nl?: string;
+  example_en?: string;
+  example_fr?: string;
+  example_es?: string;
+  example_nl?: string;
+  exception_en?: string;
+  exception_fr?: string;
+  exception_es?: string;
+  exception_nl?: string;
+  
+  [key: string]: any; // Index signature pour permettre l'accès dynamique
 }
 
 export interface TheoryContentProps {
   lessonId: string;
   language?: 'en' | 'fr' | 'es' | 'nl';
-  unitId?: string; 
+  unitId?: string;
   onComplete?: () => void;
 }
 
