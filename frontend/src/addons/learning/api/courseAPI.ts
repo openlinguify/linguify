@@ -3,7 +3,43 @@
 import apiClient from '@/core/api/apiClient';
 import { getUserTargetLanguage, getUserNativeLanguage } from '@/core/utils/languageUtils';
 import { Cache } from "@/core/utils/cacheUtils";
-import { MatchingResult, LessonsByContentResponse } from "@/addons/learning/types/";
+import {
+  MatchingResult,
+  LessonsByContentResponse,
+  TheoryData
+} from "@/addons/learning/types/";
+
+
+const adaptTheoryContent = (data: any): TheoryData => {
+  // Si les données sont déjà au nouveau format JSON, retournez-les directement
+  if (data.using_json_format && data.language_specific_content) {
+    return data as TheoryData;
+  }
+  
+  // Sinon, convertissez l'ancien format vers le nouveau format pour la compatibilité frontend
+  const availableLanguages = ['en', 'fr', 'es', 'nl'].filter(lang => {
+    return data[`content_${lang}`] && data[`content_${lang}`].trim() !== '';
+  });
+  
+  const languageSpecificContent: Record<string, Record<string, string>> = {};
+  for (const lang of availableLanguages) {
+    languageSpecificContent[lang] = {
+      content: data[`content_${lang}`] || '',
+      explanation: data[`explication_${lang}`] || '',
+      formula: data[`formula_${lang}`] || '',
+      example: data[`example_${lang}`] || '',
+      exception: data[`exception_${lang}`] || ''
+    };
+  }
+  
+  return {
+    ...data,
+    using_json_format: true,
+    available_languages: availableLanguages,
+    language_specific_content: languageSpecificContent
+  } as TheoryData;
+};
+
 
 const courseAPI = {
   getUnits: async (level?: string, targetLanguage?: string) => {
@@ -243,8 +279,12 @@ const courseAPI = {
           'Accept-Language': lang
         }
       });
-      return response.data;
-    } catch (err: any) {
+      if (Array.isArray(response.data)) {
+        return response.data.map(item => adaptTheoryContent(item));
+      }
+
+      return [adaptTheoryContent(response.data)];
+    } catch (err) {
       console.error('Failed to fetch theory content:', err);
       return [];
     }
@@ -547,7 +587,7 @@ const courseAPI = {
       return null;
     }
   },
-  
+
   getSpeakingExerciseVocabulary: async (contentLessonId: number | string, targetLanguage?: string) => {
     try {
       const parsedContentLessonId = Number(contentLessonId);
@@ -555,15 +595,15 @@ const courseAPI = {
         console.error(`Invalid content lesson ID provided: ${contentLessonId}`);
         return { results: [] };
       }
-  
+
       const params: Record<string, string> = {
         content_lesson: parsedContentLessonId.toString()
       };
-  
+
       // Make sure targetLanguage is set and properly passed
       const lang = targetLanguage || getUserTargetLanguage();
       params.target_language = lang;
-  
+
       console.log(`Fetching speaking exercise vocabulary for content lesson ${parsedContentLessonId} with language: ${lang}`);
       // Note: URL fixed to match backend route without trailing slash
       const response = await apiClient.get(`/api/v1/course/speaking-exercise/vocabulary`, {
@@ -572,10 +612,10 @@ const courseAPI = {
           'Accept-Language': lang
         }
       });
-      
+
       // Log received data structure to debug
       console.log('Received speaking vocabulary data:', response.data);
-      
+
       return response.data;
     } catch (err: any) {
       console.error('Failed to fetch speaking exercise vocabulary:', err);

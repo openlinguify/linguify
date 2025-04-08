@@ -1,11 +1,11 @@
 # course/admin.py
 from django.contrib import admin
-from django.utils.html import format_html
+from django.utils.html import format_html, mark_safe
 from django import forms
-from django.urls import path
+from django.urls import path, reverse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.core.serializers.json import DjangoJSONEncoder
 import csv, io, json
@@ -209,38 +209,224 @@ class SpeakingExerciseAdmin(admin.ModelAdmin):
 
 @admin.register(TheoryContent)
 class TheoryContentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_content_title', 'has_formula', 'has_examples')
-    list_filter = ('content_lesson__lesson__unit',)
-    search_fields = ('content_en', 'content_fr', 'content_lesson__title_en')
-    fieldsets = (
-        ('Lesson Reference', {
-            'fields': ('content_lesson',)
-        }),
-        ('English Content', {
-            'fields': ('content_en', 'explication_en', 'formula_en', 'example_en', 'exception_en'),
-        }),
-        ('French Content', {
-            'fields': ('content_fr', 'explication_fr', 'formula_fr', 'example_fr', 'exception_fr'),
-        }),
-        ('Spanish Content', {
-            'fields': ('content_es', 'explication_es', 'formula_es', 'example_es', 'exception_es'),
-        }),
-        ('Dutch Content', {
-            'fields': ('content_nl', 'explication_nl', 'formula_nl', 'example_nl', 'exception_nl'),
-        }),
-    )
+    list_display = ('id', 'get_content_title', 'has_formula', 'has_examples', 'format_indicator', 'language_count')
+    list_filter = ('content_lesson__lesson__unit', 'using_json_format')
+    search_fields = ('content_en', 'content_fr', 'content_lesson__title_en', 'language_specific_content')
+    actions = ['migrate_to_json_format', 'add_custom_language']
+    
+    def get_fieldsets(self, request, obj=None):
+        """Affiche différents fieldsets selon que l'objet utilise le format JSON ou non"""
+        base_fieldsets = [
+            ('Lesson Reference', {
+                'fields': ('content_lesson',)
+            }),
+        ]
+        
+        # Si l'objet existe et utilise le format JSON
+        if obj and obj.using_json_format:
+            json_fieldsets = [
+                ('Format Settings', {
+                    'fields': ('using_json_format', 'available_languages'),
+                    'classes': ('collapse',),
+                }),
+                ('Language Specific Content (JSON Format)', {
+                    'fields': ('language_specific_content',),
+                    'description': 'This content is in JSON format. Edit with caution.',
+                }),
+                ('Content Preview', {
+                    'fields': ('content_preview',),
+                    'classes': ('collapse',),
+                }),
+            ]
+            return base_fieldsets + json_fieldsets
+        
+        # Sinon, afficher les champs traditionnels
+        traditional_fieldsets = [
+            ('Format Options', {
+                'fields': ('using_json_format',),
+                'classes': ('collapse',),
+                'description': 'Enable JSON format for more flexible language support.'
+            }),
+            ('English Content', {
+                'fields': ('content_en', 'explication_en', 'formula_en', 'example_en', 'exception_en'),
+            }),
+            ('French Content', {
+                'fields': ('content_fr', 'explication_fr', 'formula_fr', 'example_fr', 'exception_fr'),
+            }),
+            ('Spanish Content', {
+                'fields': ('content_es', 'explication_es', 'formula_es', 'example_es', 'exception_es'),
+            }),
+            ('Dutch Content', {
+                'fields': ('content_nl', 'explication_nl', 'formula_nl', 'example_nl', 'exception_nl'),
+            }),
+        ]
+        return base_fieldsets + traditional_fieldsets
+    
+    def get_readonly_fields(self, request, obj=None):
+        """Définit les champs en lecture seule selon le format utilisé"""
+        if obj and obj.using_json_format:
+            # Quand on utilise le format JSON, tous les champs traditionnels sont en lecture seule
+            return ('content_en', 'content_fr', 'content_es', 'content_nl',
+                    'explication_en', 'explication_fr', 'explication_es', 'explication_nl',
+                    'formula_en', 'formula_fr', 'formula_es', 'formula_nl',
+                    'example_en', 'example_fr', 'example_es', 'example_nl',
+                    'exception_en', 'exception_fr', 'exception_es', 'exception_nl',
+                    'content_preview')
+        return ('content_preview',)
     
     def get_content_title(self, obj):
         return obj.content_lesson.title_en
     get_content_title.short_description = 'Content Title'
     
     def has_formula(self, obj):
-        return bool(obj.formula_en)
+        """Vérifie si la théorie a des formules (nouveau ou ancien format)"""
+        if obj.using_json_format:
+            # Vérifier dans le format JSON
+            for lang_data in obj.language_specific_content.values():
+                if lang_data.get('formula'):
+                    return True
+            return False
+        # Ancien format
+        return bool(obj.formula_en or obj.formula_fr or obj.formula_es or obj.formula_nl)
     has_formula.boolean = True
     
     def has_examples(self, obj):
-        return bool(obj.example_en)
+        """Vérifie si la théorie a des exemples (nouveau ou ancien format)"""
+        if obj.using_json_format:
+            # Vérifier dans le format JSON
+            for lang_data in obj.language_specific_content.values():
+                if lang_data.get('example'):
+                    return True
+            return False
+        # Ancien format
+        return bool(obj.example_en or obj.example_fr or obj.example_es or obj.example_nl)
     has_examples.boolean = True
+    
+    def format_indicator(self, obj):
+        """Indique quel format est utilisé"""
+        if obj.using_json_format:
+            return "JSON Format ✓"
+        return "Traditional Format"
+    format_indicator.short_description = "Format"
+    
+    def language_count(self, obj):
+        """Affiche le nombre de langues disponibles"""
+        if obj.using_json_format:
+            return len(obj.available_languages)
+        # Compter les langues disponibles dans l'ancien format
+        count = 0
+        for lang in ['en', 'fr', 'es', 'nl']:
+            if getattr(obj, f'content_{lang}'):
+                count += 1
+        return count
+    language_count.short_description = "Languages"
+    
+    def content_preview(self, obj):
+        """Champ virtuel pour afficher un aperçu du contenu dans différentes langues"""
+        if not obj.using_json_format:
+            return "Switch to JSON format to see content preview"
+        
+        html = ['<div style="max-height: 400px; overflow-y: auto;">']
+        
+        for lang in obj.available_languages:
+            lang_data = obj.language_specific_content.get(lang, {})
+            
+            html.append(f'<h3 style="margin-top: 15px; padding: 5px; background-color: #f5f5f5;">{lang.upper()}</h3>')
+            
+            # Content
+            if 'content' in lang_data:
+                html.append(f'<p><strong>Content:</strong> {lang_data["content"]}</p>')
+            
+            # Explanation
+            if 'explanation' in lang_data:
+                html.append(f'<p><strong>Explanation:</strong> {lang_data["explanation"]}</p>')
+            
+            # Formula
+            if 'formula' in lang_data:
+                html.append(f'<p><strong>Formula:</strong> {lang_data["formula"]}</p>')
+            
+            # Example
+            if 'example' in lang_data:
+                html.append(f'<p><strong>Example:</strong> {lang_data["example"]}</p>')
+            
+            # Exception
+            if 'exception' in lang_data:
+                html.append(f'<p><strong>Exception:</strong> {lang_data["exception"]}</p>')
+            
+            # Language-specific fields
+            for key, value in lang_data.items():
+                if key not in ['content', 'explanation', 'formula', 'example', 'exception']:
+                    html.append(f'<p><strong>{key}:</strong> {value}</p>')
+            
+            html.append('<hr>')
+        
+        html.append('</div>')
+        return mark_safe(''.join(html))
+    content_preview.short_description = "Content Preview"
+    
+    # Actions personnalisées
+    @admin.action(description="Migrer vers le format JSON")
+    def migrate_to_json_format(self, request, queryset):
+        """Action pour migrer les théories vers le format JSON"""
+        migrated = 0
+        for theory in queryset:
+            if not theory.using_json_format:
+                theory.migrate_to_json_format()
+                migrated += 1
+        
+        self.message_user(
+            request,
+            f"{migrated} théories ont été migrées avec succès vers le format JSON.",
+            messages.SUCCESS
+        )
+    
+    @admin.action(description="Ajouter une langue personnalisée")
+    def add_custom_language(self, request, queryset):
+        """Action pour ajouter une langue personnalisée"""
+        # Cette action nécessiterait un formulaire personnalisé
+        # qui demanderait le code de langue et les données à ajouter
+        # Exemple simplifié:
+        if queryset.count() != 1:
+            self.message_user(
+                request,
+                "Veuillez sélectionner une seule théorie pour ajouter une langue.",
+                messages.ERROR
+            )
+            return
+        
+        theory = queryset.first()
+        
+        # Rediriger vers une vue personnalisée qui affichera un formulaire
+        return HttpResponseRedirect(
+            reverse('admin:add_custom_language', args=[theory.pk])
+        )
+    
+    # Surcharger get_urls pour ajouter des vues personnalisées
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                '<path:object_id>/add-language/',
+                self.admin_site.admin_view(self.add_language_view),
+                name='add_custom_language',
+            ),
+        ]
+        return custom_urls + urls
+    
+    def add_language_view(self, request, object_id):
+        """Vue personnalisée pour ajouter une langue à une théorie"""
+        theory = get_object_or_404(TheoryContent, pk=object_id)
+        
+        # À implémenter: un formulaire pour ajouter une langue
+        context = {
+            'title': f'Add Language to Theory {object_id}',
+            'theory': theory,
+            # Autres éléments de contexte...
+        }
+        
+        # Exemple minimal - à développer selon vos besoins
+        return TemplateResponse(request, 'admin/add_language_form.html', context)
+
 
 @admin.register(VocabularyList)
 class VocabularyListAdmin(admin.ModelAdmin):
