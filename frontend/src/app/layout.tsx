@@ -1,10 +1,7 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
-import { Toaster } from "@/components/ui/toaster";
 import "@/styles/globals.css";
-import { ThemeProvider } from "next-themes";
-import { AuthProvider } from "@/core/auth/AuthProvider";
-import { OnboardingProvider } from "@/components/onboarding/OnboardingProvider";
+import Providers from "./Providers";
 
 export const metadata: Metadata = {
   title: "Linguify",
@@ -27,17 +24,11 @@ export default function RootLayout({
         <link rel="icon" href="/logo/logo2.svg" type="image/svg+xml" />
       </head>
       <body className="bg-white dark:bg-black text-black dark:text-white">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
-        <AuthProvider>
-          <OnboardingProvider>
-            <main className="flex min-h-screen flex-col">
-              {children}
-            </main>
-            <Toaster />
-            </OnboardingProvider>
-          </AuthProvider>
-
-        </ThemeProvider>
+        <Providers>
+          <main className="flex min-h-screen flex-col">
+            {children}
+          </main>
+        </Providers>
       </body>
     </html>
   );
