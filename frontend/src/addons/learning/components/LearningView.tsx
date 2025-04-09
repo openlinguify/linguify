@@ -578,7 +578,7 @@ export default function LearningView() {
   }
 
   return (
-    <div className="w-full space-y-6">
+    <div className="mb-6 space-y-4">
       <div className="w-full">
         <LearningJourney
           levelFilter={levelFilter}
@@ -593,7 +593,7 @@ export default function LearningView() {
 
         {/* Units display (default mode) */}
         {viewMode === "units" && filteredUnits.length > 0 && (
-          <div className="relative bg-white rounded-lg p-6 shadow-sm border border-purple-100">
+          <div className="relative bg-transparent rounded-lg p-6 shadow-sm border border-purple-100">
             {/* Use level grouping */}
             {groupUnitsByLevel(filteredUnits).map((levelGroup) => (
               <div key={levelGroup.level} className="mb-12 last:mb-0">
@@ -676,10 +676,10 @@ export default function LearningView() {
                             <Card
                               key={lesson.id}
                               className={`cursor-pointer hover:shadow-md transition-shadow ${lesson.status === 'completed'
-                                  ? 'border-l-4 border-purple-500'
-                                  : lesson.status === 'in_progress'
-                                    ? 'border-l-4 border-amber-500'
-                                    : ''
+                                ? 'border-l-4 border-purple-500'
+                                : lesson.status === 'in_progress'
+                                  ? 'border-l-4 border-amber-500'
+                                  : ''
                                 }`}
                               onClick={() => handleLessonClick(unit.id, lesson.id)}
                             >
@@ -689,8 +689,8 @@ export default function LearningView() {
                                   <div className="flex items-center gap-2 justify-between">
                                     <div className="flex items-center gap-2 flex-1 min-w-0">
                                       <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${lesson.status === 'completed'
-                                          ? 'bg-green-100'
-                                          : 'bg-purple-100'
+                                        ? 'bg-green-100'
+                                        : 'bg-purple-100'
                                         }`}>
                                         {lesson.status === 'completed'
                                           ? <CheckCircle className="h-3 w-3 text-green-600" />
@@ -703,10 +703,10 @@ export default function LearningView() {
                                     </div>
                                     {lesson.status && (
                                       <Badge className={`text-xs ${lesson.status === 'completed'
-                                          ? 'bg-purple-100 text-purple-800 border-purple-200'
-                                          : lesson.status === 'in_progress'
-                                            ? 'bg-amber-100 text-amber-800 border-amber-200'
-                                            : 'bg-gray-100 text-gray-800'
+                                        ? 'bg-purple-100 text-purple-800 border-purple-200'
+                                        : lesson.status === 'in_progress'
+                                          ? 'bg-amber-100 text-amber-800 border-amber-200'
+                                          : 'bg-gray-100 text-gray-800'
                                         }`}>
                                         {lesson.status === 'completed' ? 'Terminé' : lesson.status === 'in_progress' ? 'En cours' : ''}
                                       </Badge>
@@ -716,8 +716,8 @@ export default function LearningView() {
                                   // Vue normale (existante)
                                   <div className="flex items-start gap-3">
                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${lesson.status === 'completed'
-                                        ? 'bg-green-100'
-                                        : 'bg-purple-100'
+                                      ? 'bg-green-100'
+                                      : 'bg-purple-100'
                                       }`}>
                                       {lesson.status === 'completed'
                                         ? <CheckCircle className="h-5 w-5 text-green-600" />
@@ -794,10 +794,10 @@ export default function LearningView() {
                   <Card
                     key={lesson.id}
                     className={`cursor-pointer hover:shadow-md transition-shadow ${lesson.status === 'completed'
-                        ? 'border-l-4 border-purple-500'
-                        : lesson.status === 'in_progress'
-                          ? 'border-l-4 border-amber-500'
-                          : ''
+                      ? 'border-l-4 border-purple-500'
+                      : lesson.status === 'in_progress'
+                        ? 'border-l-4 border-amber-500'
+                        : ''
                       }`}
                     onClick={() => handleLessonClick(lesson.unit_id, lesson.id)}
                   >
@@ -807,8 +807,8 @@ export default function LearningView() {
                         <div className="flex items-center gap-2 justify-between">
                           <div className="flex items-center gap-2 flex-1 min-w-0">
                             <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${lesson.status === 'completed'
-                                ? 'bg-green-100'
-                                : 'bg-purple-100'
+                              ? 'bg-green-100'
+                              : 'bg-purple-100'
                               }`}>
                               {lesson.status === 'completed'
                                 ? <CheckCircle className="h-3 w-3 text-green-600" />
@@ -824,10 +824,10 @@ export default function LearningView() {
                             <Badge variant="outline" className="text-xs">{lesson.unitLevel}</Badge>
                             {lesson.status && (
                               <Badge className={`text-xs ${lesson.status === 'completed'
-                                  ? 'bg-purple-100 text-purple-800 border-purple-200'
-                                  : lesson.status === 'in_progress'
-                                    ? 'bg-amber-100 text-amber-800 border-amber-200'
-                                    : 'bg-gray-100 text-gray-800'
+                                ? 'bg-purple-100 text-purple-800 border-purple-200'
+                                : lesson.status === 'in_progress'
+                                  ? 'bg-amber-100 text-amber-800 border-amber-200'
+                                  : 'bg-gray-100 text-gray-800'
                                 }`}>
                                 {lesson.status === 'completed' ? 'Terminé' : lesson.status === 'in_progress' ? 'En cours' : ''}
                               </Badge>
@@ -840,8 +840,8 @@ export default function LearningView() {
                           <Badge className="mb-2" variant="outline">{lesson.unitLevel}</Badge>
                           <div className="flex items-start gap-3">
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${lesson.status === 'completed'
-                                ? 'bg-green-100'
-                                : 'bg-purple-100'
+                              ? 'bg-green-100'
+                              : 'bg-purple-100'
                               }`}>
                               {lesson.status === 'completed'
                                 ? <CheckCircle className="h-5 w-5 text-purple-600" />
