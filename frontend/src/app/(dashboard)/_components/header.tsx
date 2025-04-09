@@ -21,7 +21,7 @@ import {
   LogOut,
   Menu,
   ChevronDown,
-  Home,
+  ArrowLeft,
 } from "lucide-react";
 import {
   Select,
@@ -36,31 +36,54 @@ import { Sun, Moon } from "lucide-react";
 import { useAuthContext } from "@/core/auth/AuthProvider";
 import { useTranslation } from "@/core/i18n/useTranslations";
 
+// Define types for page configuration
+interface PageConfig {
+  title: string;
+  icon: React.ElementType | null;
+}
+
+interface PagesConfig {
+  [path: string]: PageConfig;
+}
+
+// Define page configuration outside component to ensure it's immediately available
+const PAGE_CONFIG: PagesConfig = {
+  '/': { title: 'Linguify', icon: null },
+  '/home': { title: 'Linguify', icon: null },
+  '/learning': { title: 'Learn', icon: BookOpen },
+  '/progress': { title: 'Progress', icon: Trophy },
+  '/settings': { title: 'Settings', icon: Settings },
+  '/flashcard': { title: 'Memory', icon: BookOpen },
+  '/notebook': { title: 'Notes', icon: BookOpen }
+};
+
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  // Initialize with false to ensure title is visible on first render
   const [isHoveringLogo, setIsHoveringLogo] = useState(false);
+  // Track if we're on client-side immediately
+  const [isClient, setIsClient] = useState(false);
   
-  // Check if we're on homepage
+  // Get current page config with fallback
+  const currentPage = PAGE_CONFIG[pathname] || { title: 'Linguify', icon: null };
   const isHomePage = pathname === '/' || pathname === '/home';
-
+  
   // Use Translation Hook
   const { t, locale, changeLanguage } = useTranslation();
 
   // Use Auth Context
   const { user, isAuthenticated, login } = useAuthContext();
 
-  // Only run client-side code after mounting
+  // Set client-side state as early as possible
   useEffect(() => {
     setIsClient(true);
   }, []);
 
   const handleLanguageChange = (value: string) => {
-    console.log("Language changed to:", value);
     changeLanguage(value as any);
     toast({
       title: t('dashboard.header.languageChanged'),
@@ -97,10 +120,8 @@ const Header = () => {
     });
   };
   
-  const handleHomeClick = () => {
-    if (!isHomePage) {
-      router.push('/');
-    }
+  const handleBackToHome = () => {
+    router.push('/');
   };
 
   // Manage mobile menu
@@ -112,34 +133,72 @@ const Header = () => {
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, [isMenuOpen]);
-
-  // Don't render anything until client-side
+  
+  // Set default title and icon based on the current route
+  const pageTitle = currentPage.title;
+  
+  // Render a skeleton header with the correct title even before hydration
   if (!isClient) {
-    return <header className="sticky top-0 z-50 w-full h-14 bg-background"></header>;
+    return (
+      <header className="sticky top-0 z-50 w-full h-14 bg-background">
+        <div className="flex h-14 items-center px-6">
+          <div className="flex items-center">
+            <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 bg-clip-text text-transparent font-montserrat">
+              {pageTitle}
+            </span>
+          </div>
+        </div>
+      </header>
+    );
   }
 
   return (
     <header className="sticky top-0 z-50 w-full h-14 dark:border-gray-800/20 bg-background/70 dark:bg-transparent backdrop-blur-xl">
       <div className="flex h-14 items-center justify-between px-6">
-        {/* Logo Section */}
-        <div className="flex items-center gap-2">
-          <div
-            className="flex items-center gap-2 hover:opacity-90 transition-all cursor-pointer relative"
-            onMouseEnter={() => setIsHoveringLogo(true)}
-            onMouseLeave={() => setIsHoveringLogo(false)}
-            onClick={handleHomeClick}
-          >
-            {!isHomePage && isHoveringLogo ? (
-              <div className="absolute -top-2 -left-2 p-1 bg-gray-200 dark:bg-gray-800 rounded-full transition-all duration-300">
-                <Home className="h-5 w-5" />
-                <span>Home</span>
-              </div>
-            ) : (
+        {/* Logo Section - Always visible */}
+        <div className="flex items-center gap-2 h-full">
+          {isHomePage ? (
+            // Home page logo - simple and static
+            <div className="flex items-center">
               <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 bg-clip-text text-transparent font-montserrat">
-                Linguify
+                {pageTitle}
               </span>
-            )}
-          </div>
+            </div>
+          ) : (
+            // Inner page layout with back button functionality
+            <div
+              className="flex items-center group cursor-pointer h-full"
+              onMouseEnter={() => setIsHoveringLogo(true)}
+              onMouseLeave={() => setIsHoveringLogo(false)}
+              onClick={handleBackToHome}
+            >
+              {/* The page title is always visible first */}
+              <div className="flex items-center relative h-full">
+                {/* Back button that appears on hover */}
+                <div 
+                  className={`absolute left-0 top-1/2 -translate-y-1/2 transition-opacity duration-300 ${
+                    isHoveringLogo ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  <ArrowLeft className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                </div>
+                
+                {/* Page title/icon that shifts right on hover */}
+                <div 
+                  className={`flex items-center transition-all duration-300 ${
+                    isHoveringLogo ? 'translate-x-7' : 'translate-x-0'
+                  }`}
+                >
+                  {currentPage.icon && (
+                    <currentPage.icon className="h-4 w-4 mr-2" />
+                  )}
+                  <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 bg-clip-text text-transparent font-montserrat">
+                    {pageTitle}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Side Actions */}

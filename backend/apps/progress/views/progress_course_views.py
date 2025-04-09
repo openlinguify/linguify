@@ -120,7 +120,7 @@ class UserLessonProgressViewSet(UserProgressViewSet):
                 score=serializer.validated_data.get('score', progress.score)
             )
         
-        # Mise à jour de la progression de l'unité associée (avec le même code langue)
+        # Unit Progression
         unit_progress, _ = UserUnitProgress.objects.get_or_create(
             user=request.user,
             unit=lesson.unit,
