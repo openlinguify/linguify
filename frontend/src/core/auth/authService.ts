@@ -413,7 +413,7 @@ export async function fetchUserProfile(token: string): Promise<UserProfile> {
     const profileData = await response.json();
     logInfo(`User profile fetched successfully`, {
       email: profileData.email,
-      roles: profileData.is_coach ? ['coach'] : []
+      roles: profileData.is_coach ? ['coach'] : [],
     });
     return profileData;
   } catch (error) {
