@@ -14,11 +14,11 @@
   "welcome": "Bienvenido, {name} !",
   "targetLanguage": "Idioma objetivo",
   "learningCard": {
-    "title": "Aprendizaje",
+    "title": "Aprender",
     "description": "Acceso a todas las lecciones"
   },
   "flashcardsCard": {
-    "title": "Tarjetas de memoria",
+    "title": "Memoria",
     "description": "Practica con tarjetas de memoria"
   },
   "notesCard": {
@@ -26,8 +26,22 @@
     "description": "Consulta tus notas"
   },
   "progressCard": {
-    "title": "Progreso",
+    "title": "Progresión",
     "description": "Verifica tus logros"
+  },
+  "settingsCard": {
+    "title": "Configuración",
+    "description": "Ajusta tu configuración"
+  },
+  "editProfile": {
+    "editProfileName": "Editar mi perfil"
+  },
+  "layoutpathname": {
+    "learning": "Aprender",
+    "flashcard": "Memoria",
+    "notebook": "Notas",
+    "progress": "Progresión",
+    "settings": "Configuración"
   },
   "learningLanguage": "Idioma de aprendizaje",
   "nativeLanguage": "Idioma nativo",

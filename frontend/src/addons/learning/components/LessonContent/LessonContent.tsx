@@ -267,7 +267,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
   // Render selected content using ContentTypeRouter
   if (selectedContent) {
     return (
-      <div className="w-full space-y-6 bg-white">
+      <div className="w-full space-y-6 bg-transparent">
         <div className="w-full p-6">
           <BackButton
             onClick={handleBack}
@@ -281,7 +281,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
               {targetLanguage.toUpperCase()}
             </Badge>
 
-            <Badge className="bg-white text-purple-600 border border-purple-200">
+            <Badge className="bg-transparent text-purple-600 border border-purple-200">
               {t(`dashboard.learning.contentTypes.${selectedContent.type}`)}
             </Badge>
           </div>
@@ -370,7 +370,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
               return (
                 <Card
                   key={content.id}
-                  className={`bg-white overflow-hidden border-2 transition-all duration-300 shadow-sm hover:shadow-md ${isClickable ? 'cursor-pointer' : ''
+                  className={`overflow-hidden border-2 transition-all duration-300 shadow-sm hover:shadow-md ${isClickable ? 'cursor-pointer' : ''
                     } ${isCompleted ? 'border-green-400' : 'border-transparent hover:border-brand-purple/20'}`}
                   onClick={() => {
                     if (isClickable) {

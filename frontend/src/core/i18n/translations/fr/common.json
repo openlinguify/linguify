@@ -83,7 +83,7 @@
     "description": "Modules d'apprentissage interactifs adaptés à votre rythme"
   },
   "flashcards": {
-    "title": "Cartes mémoire",
+    "title": "Mémoire",
     "description": "Outils de mémorisation efficaces pour une rétention rapide"
   },
   "notebook": {
@@ -91,7 +91,7 @@
     "description": "Prise de notes centralisée avec organisation intelligente"
   },
   "progress": {
-    "title": "Progrès",
+    "title": "Progression",
     "description": "Suivez votre évolution et fixez-vous des objectifs pour rester motivé"
   },
   "community": {
@@ -132,7 +132,7 @@
   "features": {
     "title": "Comment Linguify vous aide à progresser",
     "subtitle": "Notre méthode basée sur la science cognitive vous garantit des résultats rapides et durables.",
-    "modules_title": "Modules d'apprentissage essentiels",
+    "modules_title": "Les applications de Linguify",
     "modules_description": "Découvrez tous les outils que Linguify propose pour rendre votre apprentissage des langues efficace et agréable.",
     "platform_title": "Avantages de la plateforme",
     "platform_description": "Au-delà des méthodes d'apprentissage traditionnelles, Linguify offre des avantages uniques pour accélérer votre progression.",
@@ -218,7 +218,7 @@
   },
   "flashcardsPage": {
     "hero": {
-      "title": "Flashcards intelligentes",
+      "title": "Cartes mentales intelligentes",
       "description": "Mémorisez du vocabulaire en un temps record grâce à notre système adaptatif basé sur la répétition espacée. Apprenez plus rapidement, retenez plus longtemps.",
       "cta_button": "Essayer gratuitement",
       "learn_more": "En savoir plus"
@@ -246,7 +246,7 @@
       },
       "mobile_sync": {
         "title": "Synchronisation mobile",
-        "description": "Accédez à vos flashcards partout, même hors ligne. Synchronisation automatique entre tous vos appareils."
+        "description": "Accédez à vos cartes mentales partout, même hors ligne. Synchronisation automatique entre tous vos appareils."
       },
       "multimedia": {
         "title": "Contenus multimédias",
@@ -262,7 +262,7 @@
       "subtitle": "Notre approche scientifique de la mémorisation en 4 étapes simples",
       "step1": {
         "title": "Choisissez",
-        "description": "Sélectionnez un ensemble préfait ou créez vos propres flashcards personnalisées."
+        "description": "Sélectionnez un ensemble préfait ou créez vos propres cartes mémoires personnalisées."
       },
       "step2": {
         "title": "Pratiquez",
@@ -461,14 +461,14 @@
       },
       "step4": {
         "title": "Optimiser",
-        "description": "Recevez des recommandations personnalisées pour ajuster votre apprentissage et maximiser vos progrès."
+        "description": "Recevez des recommandations personnalisées pour ajuster votre apprentissage et maximiser votre progression."
       }
     },
     "benefits": {
       "title": "Les bénéfices du suivi de progression",
       "benefit1": {
         "title": "Motivation constante",
-        "description": "Visualiser vos progrès vous aide à rester motivé même lorsque l'apprentissage devient difficile. Nos graphiques et récompenses vous rappellent constamment le chemin déjà parcouru."
+        "description": "Visualiser vos progressions vous aide à rester motivé même lorsque l'apprentissage devient difficile. Nos graphiques et récompenses vous rappellent constamment le chemin déjà parcouru."
       },
       "benefit2": {
         "title": "Apprentissage ciblé",

@@ -59,15 +59,15 @@
     "language": "Language"
   },
   "learning": {
-    "title": "Learning",
+    "title": "Learn",
     "description": "Interactive learning modules tailored to your pace"
   },
   "flashcards": {
-    "title": "Flashcards",
+    "title": "Memory",
     "description": "Effective memory tools for quick retention"
   },
   "notebook": {
-    "title": "Notebook",
+    "title": "Notes",
     "description": "Centralized note-taking with smart organization"
   },
   "progress": {

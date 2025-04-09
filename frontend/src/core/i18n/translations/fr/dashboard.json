@@ -14,11 +14,11 @@
   "welcome": "Bienvenue, {name} !",
   "targetLanguage": "Langue cible",
   "learningCard": {
-    "title": "Apprentissage",
+    "title": "Apprendre",
     "description": "Accès à toutes les leçons"
   },
   "flashcardsCard": {
-    "title": "Cartes mémoire",
+    "title": "Mémoire",
     "description": "Entraînez-vous avec les cartes mémoire"
   },
   "notesCard": {
@@ -26,8 +26,22 @@
     "description": "Consultez vos notes"
   },
   "progressCard": {
-    "title": "Progrès",
+    "title": "Progression",
     "description": "Vérifiez vos accomplissements"
+  },
+  "settingsCard": {
+    "title": "Paramètres",
+    "description": "Gérez votre compte et vos préférences"
+  },
+  "editProfile": {
+    "editProfileName": "Modifier mon profil"
+  },
+  "layoutpathname": {
+    "learning": "Apprendre",
+    "flashcard": "Mémoire",
+    "notebook": "Notes",
+    "progress": "Progression",
+    "settings": "Paramètres"
   },
   "learningLanguage": "Langue d'apprentissage",
   "nativeLanguage": "Langue maternelle",
@@ -322,7 +336,7 @@
     },
     "modes": {
       "flashcards": {
-        "name": "Cartes mémoire",
+        "name": "Mémoire",
         "description": "Basculer entre termes et définitions",
         "loading": "Chargement du contenu d'apprentissage...",
         "noFlashcards": "Aucune carte disponible",

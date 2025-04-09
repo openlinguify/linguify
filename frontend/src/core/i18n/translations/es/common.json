@@ -82,15 +82,15 @@
     "language": "Idioma"
   },
   "learning": {
-    "title": "Aprendizaje",
+    "title": "Aprender",
     "description": "Módulos de aprendizaje interactivos adaptados a tu ritmo"
   },
   "flashcards": {
-    "title": "Tarjetas de memoria",
+    "title": "Memoria",
     "description": "Herramientas de memoria efectivas para una retención rápida"
   },
   "progress": {
-    "title": "Progreso",
+    "title": "Progresión",
     "description": "Seguimiento detallado de tu evolución y logros"
   },
   "notebook": {

@@ -14,11 +14,11 @@
   "welcome": "Welcome, {name}!",
   "targetLanguage": "Target language",
   "learningCard": {
-    "title": "Learning",
+    "title": "Learn",
     "description": "Access to all lessons"
   },
   "flashcardsCard": {
-    "title": "Flashcards",
+    "title": "Memory",
     "description": "Practice with flashcards"
   },
   "notesCard": {
@@ -28,6 +28,20 @@
   "progressCard": {
     "title": "Progress",
     "description": "Check your achievements"
+  },
+  "settingsCard": {
+    "title": "Settings",
+    "description": "Gérez votre compte et vos préférences"
+  },
+  "editProfile": {
+    "editProfileName": "Edit my profile"
+  },
+  "layoutpathname": {
+    "learning": "Learn",
+    "flashcard": "Memory",
+    "notebook": "Notes",
+    "progress": "Progress",
+    "settings": "Settings"
   },
   "learningLanguage": "Learning language",
   "nativeLanguage": "Native language",

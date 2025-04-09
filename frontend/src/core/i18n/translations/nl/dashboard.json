@@ -18,7 +18,7 @@
     "description": "Toegang tot alle lessen"
   },
   "flashcardsCard": {
-    "title": "Flashcards",
+    "title": "Geheugen",
     "description": "Oefen met flashcards"
   },
   "notesCard": {
@@ -28,6 +28,20 @@
   "progressCard": {
     "title": "Voortgang",
     "description": "Bekijk je prestaties"
+  },
+  "settingsCard": {
+    "title": "Instellingen",
+    "description": "Pas je voorkeuren aan"
+  },
+  "editProfile": {
+    "editProfileName": "Bewerk mijn profiel"
+  },
+  "layoutpathname": {
+    "learning": "Leren",
+    "flashcard": "Geheugen",
+    "notebook": "Notities",
+    "progress": "Voortgang",
+    "settings": "Instellingen"
   },
   "learningLanguage": "Leertaal",
   "nativeLanguage": "Moedertaal",

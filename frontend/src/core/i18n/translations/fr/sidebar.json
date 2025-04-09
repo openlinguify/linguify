@@ -1,13 +1,13 @@
 {
   "sidebar": {
     "main": "Principal",
-    "dashboard": "Tableau de bord",
+    "dashboard": "Accueil",
     "learning": "Apprendre",
     "revision": "Révision",
-    "flashcard": "Cartes mémoire",
+    "flashcard": "Mémoire",
     "tools": "Outils",
     "notes": "Notes",
-    "progress": "Progrès",
+    "progress": "Progression",
     "settings": "Paramètres"
   },
   "auth": {
