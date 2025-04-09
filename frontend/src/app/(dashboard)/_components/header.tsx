@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -21,6 +21,7 @@ import {
   LogOut,
   Menu,
   ChevronDown,
+  Home,
 } from "lucide-react";
 import {
   Select,
@@ -37,11 +38,16 @@ import { useTranslation } from "@/core/i18n/useTranslations";
 
 const Header = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [isHoveringLogo, setIsHoveringLogo] = useState(false);
   
+  // Check if we're on homepage
+  const isHomePage = pathname === '/' || pathname === '/home';
+
   // Use Translation Hook
   const { t, locale, changeLanguage } = useTranslation();
 
@@ -90,6 +96,12 @@ const Header = () => {
       description: t('dashboard.header.checkBackLater'),
     });
   };
+  
+  const handleHomeClick = () => {
+    if (!isHomePage) {
+      router.push('/');
+    }
+  };
 
   // Manage mobile menu
   useEffect(() => {
@@ -103,22 +115,31 @@ const Header = () => {
 
   // Don't render anything until client-side
   if (!isClient) {
-    return <header className="sticky top-0 z-50 w-full h-14 border-b bg-background"></header>;
+    return <header className="sticky top-0 z-50 w-full h-14 bg-background"></header>;
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full h-14 border-b bg-background dark:bg-gray-900">
+    <header className="sticky top-0 z-50 w-full h-14 dark:border-gray-800/20 bg-background/70 dark:bg-transparent backdrop-blur-xl">
       <div className="flex h-14 items-center justify-between px-6">
         {/* Logo Section */}
         <div className="flex items-center gap-2">
-          <Link
-            href="/"
-            className="flex items-center gap-2 hover:opacity-90 transition-all"
+          <div
+            className="flex items-center gap-2 hover:opacity-90 transition-all cursor-pointer relative"
+            onMouseEnter={() => setIsHoveringLogo(true)}
+            onMouseLeave={() => setIsHoveringLogo(false)}
+            onClick={handleHomeClick}
           >
-            <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 bg-clip-text text-transparent">
-              Linguify
-            </span>
-          </Link>      
+            {!isHomePage && isHoveringLogo ? (
+              <div className="absolute -top-2 -left-2 p-1 bg-gray-200 dark:bg-gray-800 rounded-full transition-all duration-300">
+                <Home className="h-5 w-5" />
+                <span>Home</span>
+              </div>
+            ) : (
+              <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 bg-clip-text text-transparent font-montserrat">
+                Linguify
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Right Side Actions */}
@@ -139,10 +160,13 @@ const Header = () => {
 
           {/* Language Selector */}
           <Select onValueChange={handleLanguageChange} defaultValue={locale}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger 
+            className="w-32 dark:bg-transparent dark:border-none dark:text-gray-200">
               <SelectValue placeholder={t('dashboard.header.language')} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent
+              className="w-32 bg-background dark:bg-gray-900/70 backdrop-blur-xl shadow-lg border dark:border-gray-700/20"
+            >
               <SelectItem value="en">{t('dashboard.header.english')}</SelectItem>
               <SelectItem value="fr">{t('dashboard.header.french')}</SelectItem>
               <SelectItem value="es">{t('dashboard.header.spanish')}</SelectItem>
@@ -248,7 +272,7 @@ const Header = () => {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden border-t dark:border-gray-700">
+        <div className="md:hidden border-t dark:border-gray-700/20 absolute w-full bg-background/80 dark:bg-gray-900/70 backdrop-blur-xl shadow-lg">
           <div className="p-4 space-y-3">
             <NavItemMobile href="/learning" icon={BookOpen} label={t('sidebar.learning')} onClick={() => setIsMenuOpen(false)} />
             <NavItemMobile href="/progress" icon={Trophy} label={t('sidebar.progress')} onClick={() => setIsMenuOpen(false)} />

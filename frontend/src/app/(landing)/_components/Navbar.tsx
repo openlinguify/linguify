@@ -53,7 +53,7 @@ export const Navbar = () => {
     };
 
     window.addEventListener('languageChanged', handleLanguageChange);
-    
+
     return () => {
       window.removeEventListener('languageChanged', handleLanguageChange);
     };
@@ -68,12 +68,12 @@ export const Navbar = () => {
         es: esTranslations,
         nl: nlTranslations
       };
-      
+
       const currentTranslation = translations[currentLocale] || translations.en;
-      
+
       // Split the path (e.g., "nav.home") into parts
       const keys = path.split('.');
-      
+
       let value: any = currentTranslation;
       // Navigate through the object using the path
       for (const key of keys) {
@@ -82,7 +82,7 @@ export const Navbar = () => {
         }
         value = value[key];
       }
-      
+
       return typeof value === 'string' ? value : fallback;
     } catch (error) {
       console.error('Translation error:', error);
@@ -158,11 +158,12 @@ export const Navbar = () => {
           <div className="flex items-center">
             <Link
               href="/home"
-              className="font-bold text-xl text-gray-900 dark:text-white hover:opacity-80 transition-opacity"
+              className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 bg-clip-text text-transparent font-montserrat hover:opacity-80 transition-opacity"
               aria-label="Linguify Home"
             >
               Linguify
             </Link>
+
 
             {/* Desktop Navigation */}
             <div className="hidden sm:ml-6 sm:flex sm:space-x-2">
@@ -287,10 +288,10 @@ export const Navbar = () => {
                   {t("mobile.language", "Language")}
                 </div>
                 <div className="mt-2">
-                  <LanguageSwitcher 
-                    variant="buttons" 
-                    size="sm" 
-                    showLabels={true} 
+                  <LanguageSwitcher
+                    variant="buttons"
+                    size="sm"
+                    showLabels={true}
                     className="w-full"
                   />
                 </div>

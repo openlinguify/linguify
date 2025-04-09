@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/core/auth/AuthProvider";
-import { Filter, Loader2, LayoutGrid, LayoutList, BookOpen, FileText, Calculator, ArrowRightLeft, PencilLine, Infinity, Flame, Trophy, Sparkles } from "lucide-react";
+import { Filter, Loader2, LayoutGrid, LayoutList, BookOpen, FileText, Calculator, ArrowRightLeft, PencilLine, Infinity, Trophy } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { User, Language } from "@/core/types/user";
@@ -22,8 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import progressAPI from "@/addons/progress/api/progressAPI";
-import { ProgressSummary, RecentActivity, LevelProgress } from "@/addons/progress/types";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ProgressSummary, RecentActivity } from "@/addons/progress/types";
 import { useTranslation } from "@/core/i18n/useTranslations";
 
 interface EnhancedLearningJourneyProps extends LearningJourneyProps {
@@ -52,40 +51,6 @@ function getLanguageFullName(languageCode: string): string {
   return languageMap[normalizedCode] || languageCode;
 }
 
-/**
- * Format learning time in minutes to a readable format
- * @param minutes - Total number of minutes
- * @returns Formatted string (hours, days, etc.)
- */
-function formatLearningTime(minutes: number): string {
-  if (minutes < 1) return "0 minutes";
-
-  // Simple case - less than an hour
-  if (minutes < 60) {
-    return `${minutes} minute${minutes > 1 ? 's' : ''}`;
-  }
-
-  // Intermediate case - a few hours
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-
-  if (hours < 24) {
-    if (remainingMinutes === 0) {
-      return `${hours} hour${hours > 1 ? 's' : ''}`;
-    }
-    return `${hours} hour${hours > 1 ? 's' : ''} ${remainingMinutes} minute${remainingMinutes > 1 ? 's' : ''}`;
-  }
-
-  // Advanced case - days
-  const days = Math.floor(hours / 24);
-  const remainingHours = hours % 24;
-
-  if (remainingHours === 0) {
-    return `${days} day${days > 1 ? 's' : ''}`;
-  }
-
-  return `${days} day${days > 1 ? 's' : ''} ${remainingHours} hour${remainingHours > 1 ? 's' : ''}`;
-}
 
 // Definition of content types with their icons
 const CONTENT_TYPES = [
@@ -138,9 +103,9 @@ export default function EnhancedLearningJourney({
   // Component states
   const [userData, setUserData] = useState<Partial<User> | null>(null);
   const [selectedTypes, setSelectedTypes] = useState<string[]>(["all"]);
-  const [progressData, setProgressData] = useState<ProgressSummary | null>(null);
-  const [isProgressLoading, setIsProgressLoading] = useState<boolean>(true);
-  const [streak, setStreak] = useState<number>(0);
+  const [_progressData, setProgressData] = useState<ProgressSummary | null>(null);
+  const [_isProgressLoading, setIsProgressLoading] = useState<boolean>(true);
+  const [_streak, setStreak] = useState<number>(0);
   const [dailyXp, setDailyXp] = useState<number>(0);
   const [xpGoal] = useState<number>(100);
   const { t } = useTranslation();
@@ -166,10 +131,10 @@ export default function EnhancedLearningJourney({
         summary: {
           ...summary.summary,
           // Assurons-nous que le nombre total d'unités est correct et fixe
-          total_units: summary.summary.total_units, 
+          total_units: summary.summary.total_units,
           // Ne pas laisser le nombre d'unités complétées dépasser le total
           completed_units: Math.min(
-            summary.summary.completed_units || 0, 
+            summary.summary.completed_units || 0,
             summary.summary.total_units || 20
           )
         }
@@ -301,83 +266,26 @@ export default function EnhancedLearningJourney({
     );
   }
 
-  // Calculate overall progress percentage
-  const overallProgress = progressData?.summary?.completed_units
-    ? Math.round((progressData.summary.completed_units / Math.max(progressData.summary.total_units, 1)) * 100)
-    : 0;
+ 
 
   return (
     <div className="mb-6 space-y-4">
       {/* Main panel with gradient */}
-      <div className="rounded-lg bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 p-4 text-white shadow-md">
+      <div className="bg-transparent rounded-lg p-4 text-black dark:text-white">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-semibold">{t('dashboard.learningjourney.title')}</h1>
-          <Badge className="bg-white text-purple-600 font-medium">
-            {t('dashboard.currentLevel')} {userData?.language_level || "A1"}
-          </Badge>
         </div>
 
-        {/* Main statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          {/* Overall progress */}
-          <div className="bg-white/15 rounded-lg px-3 py-3 text-center">
-            <div className="text-sm font-medium mb-1">{t('dashboard.learningjourney.overallProgress')}</div>
-            <div className="flex items-center justify-center">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="w-14 h-14 flex items-center justify-center bg-white/20 rounded-full text-white font-bold text-lg">
-                      {isProgressLoading ?
-                        <Loader2 className="animate-spin h-5 w-5" /> :
-                        `${overallProgress}%`
-                      }
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{t('dashboard.learningjourney.completedUnits', { 
-                       completed: String(progressData?.summary?.completed_units || 0), 
-                       total: String(progressData?.summary?.total_units || 0) 
-                    })}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          </div>
-
-          {/* Daily streak */}
-          <div className="bg-white/15 rounded-lg px-3 py-3 text-center">
-            <div className="text-sm font-medium mb-1">{t('dashboard.learningjourney.dailyStreak')}</div>
-            <div className="flex items-center justify-center gap-1">
-              <Flame className="h-5 w-5 text-amber-300" />
-              <div className="text-2xl font-bold">
-                {isProgressLoading ? <Loader2 className="animate-spin h-5 w-5" /> : streak}
-                <span className="text-sm font-normal ml-1">{t('dashboard.learningjourney.days')}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Daily XP */}
-          <div className="bg-white/15 rounded-lg px-3 py-3 text-center">
-            <div className="text-sm font-medium mb-1">{t('dashboard.learningjourney.todaysXP')}</div>
-            <div className="flex items-center justify-center gap-1">
-              <Sparkles className="h-5 w-5 text-amber-300" />
-              <div className="text-2xl font-bold">
-                {isProgressLoading ? <Loader2 className="animate-spin h-5 w-5" /> : dailyXp}
-                <span className="text-sm font-normal ml-1">{t('dashboard.learningjourney.points')}</span>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Filter bar */}
-        <div className="flex flex-wrap items-center gap-2 mt-4 bg-white/10 p-3 rounded-lg">
+        <div className="flex flex-wrap items-center gap-2 mt-4 bg-white/5 dark:bg-black/5 backdrop-blur-sm p-3 rounded-lg border border-gray-200 dark:border-gray-800">
           {/* Level filter */}
           {availableLevels.length > 0 && onLevelFilterChange && (
             <div className="flex items-center gap-2 flex-grow">
-              <Filter className="h-4 w-4 text-white" />
+              <Filter className="h-4 w-4" />
               <span className="text-sm font-medium">{t('dashboard.learningjourney.level')}:</span>
               <Select value={levelFilter} onValueChange={onLevelFilterChange}>
-                <SelectTrigger className="bg-white/20 border-white/20 text-white flex-1 max-w-[180px]">
+                <SelectTrigger className="bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 flex-1 max-w-[180px]">
                   <SelectValue placeholder={t('dashboard.learningjourney.allLevels')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -398,7 +306,7 @@ export default function EnhancedLearningJourney({
               <span className="text-sm font-medium">{t('dashboard.learningjourney.content')}:</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="secondary" className="bg-white/20 border-white/20 text-white text-sm px-3 h-9">
+                  <Button variant="secondary" className="bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 text-sm px-3 h-9">
                     {selectedTypes.includes("all") ? (
                       <span className="flex items-center gap-1">
                         <Filter className="h-4 w-4" />
@@ -408,7 +316,7 @@ export default function EnhancedLearningJourney({
                       <span className="flex items-center gap-1">
                         <Filter className="h-4 w-4" />
                         <span className="mr-1">{t('dashboard.learningjourney.filtered')}</span>
-                        <Badge className="bg-white/30 text-white text-xs">
+                        <Badge className="bg-black/10 dark:bg-white/10 text-xs">
                           {selectedTypes.length}
                         </Badge>
                       </span>
@@ -436,17 +344,17 @@ export default function EnhancedLearningJourney({
             </div>
           )}
 
-{/* Compact view toggle */}
-{onCompactViewChange && (
-  <div className="flex items-center gap-2">
-    <span className="text-sm font-medium text-white">{t('dashboard.learningjourney.compactView')}</span>
-    <Switch
-      checked={isCompactView}
-      onCheckedChange={onCompactViewChange}
-      className="data-[state=checked]:bg-white/50 data-[state=unchecked]:bg-white/20"
-    />
-  </div>
-)}
+          {/* Compact view toggle */}
+          {onCompactViewChange && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">{t('dashboard.learningjourney.compactView')}</span>
+              <Switch
+                checked={isCompactView}
+                onCheckedChange={onCompactViewChange}
+                className="data-[state=checked]:bg-primary/50 data-[state=unchecked]:bg-gray-200 dark:data-[state=unchecked]:bg-gray-700"
+              />
+            </div>
+          )}
 
           {/* Layout toggle */}
           {onLayoutChange && (
@@ -454,7 +362,7 @@ export default function EnhancedLearningJourney({
               <Button
                 variant={layout === "list" ? "default" : "outline"}
                 size="icon"
-                className="h-8 w-8 bg-white/20 border-white/20 hover:bg-white/30"
+                className="h-8 w-8 bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 hover:bg-white/40 dark:hover:bg-black/40"
                 onClick={() => onLayoutChange("list")}
               >
                 <LayoutList className="h-4 w-4" />
@@ -462,7 +370,7 @@ export default function EnhancedLearningJourney({
               <Button
                 variant={layout === "grid" ? "default" : "outline"}
                 size="icon"
-                className="h-8 w-8 bg-white/20 border-white/20 hover:bg-white/30"
+                className="h-8 w-8 bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 hover:bg-white/40 dark:hover:bg-black/40"
                 onClick={() => onLayoutChange("grid")}
               >
                 <LayoutGrid className="h-4 w-4" />
@@ -472,17 +380,17 @@ export default function EnhancedLearningJourney({
         </div>
       </div>
 
-      {/* Additional info card */}
-      <div className="bg-white rounded-lg shadow-sm border border-purple-100 p-4">
+      {/* Additional info card - now with a transparent style */}
+      <div className="bg-white/10 dark:bg-black/10 backdrop-blur-sm rounded-lg border border-gray-200 dark:border-gray-800 p-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           {/* Learning target */}
           <div>
-            <h3 className="text-sm font-medium text-gray-500">{t('dashboard.learningjourney.learningTarget')}</h3>
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.learningjourney.learningTarget')}</h3>
             <div className="flex items-center mt-1">
-              <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
+              <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
                 {getLanguageFullName(userData?.target_language || "EN")}
               </span>
-              <Badge className="ml-2 bg-purple-100 text-purple-800 hover:bg-purple-200">
+              <Badge className="ml-2 bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 hover:bg-indigo-200 dark:hover:bg-indigo-800">
                 {userData?.language_level || "A1"}
               </Badge>
             </div>
@@ -490,7 +398,7 @@ export default function EnhancedLearningJourney({
 
           {/* Daily goal */}
           <div>
-            <h3 className="text-sm font-medium text-gray-500">{t('dashboard.learningjourney.dailyGoal')}</h3>
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.learningjourney.dailyGoal')}</h3>
             <div className="flex items-center mt-1">
               <Progress
                 className="w-32 h-2 mr-2"
@@ -499,66 +407,11 @@ export default function EnhancedLearningJourney({
               <span className="text-sm font-medium">
                 {dailyXp}/{xpGoal} XP
               </span>
-              <Trophy className={`h-4 w-4 ml-2 ${dailyXp >= xpGoal ? 'text-amber-500' : 'text-gray-300'}`} />
-            </div>
-          </div>
-
-          {/* Total learning time */}
-          <div>
-            <h3 className="text-sm font-medium text-gray-500">{t('dashboard.learningjourney.totalLearningTime')}</h3>
-            <div className="mt-1 text-lg font-semibold text-gray-700">
-              {isProgressLoading
-                ? <Loader2 className="animate-spin h-4 w-4" />
-                : formatLearningTime(progressData?.summary?.total_time_spent_minutes || 0)
-              }
+              <Trophy className={`h-4 w-4 ml-2 ${dailyXp >= xpGoal ? 'text-amber-500' : 'text-gray-400 dark:text-gray-600'}`} />
             </div>
           </div>
         </div>
       </div>
-
-      {/* Levels and progression display */}
-      {progressData && progressData.level_progression && Object.keys(progressData.level_progression).length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-purple-100 p-4">
-          <h3 className="text-sm font-medium text-gray-500 mb-3">{t('dashboard.learningjourney.levelProgress')}</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Object.entries(progressData.level_progression)
-              .sort(([levelA], [levelB]) => {
-                // Sort by level (A1, A2, B1, B2, etc.)
-                return levelA.localeCompare(levelB);
-              })
-              .map(([level, stats]) => {
-                // FIX: S'assurer que le décompte des unités est correct pour chaque niveau
-                const levelStats = stats as LevelProgress;
-                const fixedStats = {
-                  ...levelStats,
-                  // Limiter le nombre d'unités complétées au nombre total pour ce niveau
-                  completed_units: Math.min(levelStats.completed_units || 0, levelStats.total_units || 0),
-                };
-                
-                return (
-                  <div key={level} className="flex items-center p-2 border rounded-lg bg-gray-50">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 text-purple-800 font-bold text-sm mr-3">
-                      {level}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="font-medium">{level}</span>
-                        <span className="text-gray-500">
-                          {t('dashboard.learningjourney.unitsCount', { 
-                            completed: String(fixedStats.completed_units), 
-                            total: String(fixedStats.total_units) 
-                          })}
-                        </span>
-                      </div>
-                      <Progress value={fixedStats.avg_completion} className="h-1.5" />
-                    </div>
-                  </div>
-                );
-              })
-            }
-          </div>
-        </div>
-      )}
     </div>
   );
 }
