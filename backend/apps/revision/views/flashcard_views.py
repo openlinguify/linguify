@@ -51,54 +51,54 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
 
+
     def get_queryset(self):
         """
         Retourne les decks appropriés selon le contexte:
-        - Utilisateur authentifié: ses decks + decks publics des autres
+        - Utilisateur authentifié: par défaut uniquement ses decks, peut voir les publics sur demande
         - Utilisateur anonyme: uniquement les decks publics
         """
         user = self.request.user
         
-        # Filtres communs
-        base_filter = Q(is_active=True)
-        
-        # Paramètres de requête
-        show_public = self.request.query_params.get('public', 'true').lower() == 'true'
+        # Paramètres de requête avec valeurs par défaut modifiées
+        show_public = self.request.query_params.get('public', 'false').lower() == 'true'  # Changé à false par défaut
         show_mine = self.request.query_params.get('mine', 'true').lower() == 'true' and user.is_authenticated
         show_archived = self.request.query_params.get('archived', 'false').lower() == 'true'
         username_filter = self.request.query_params.get('username')
         
-        # Construction du filtre
-        filter_query = base_filter
+        # Construction du filtre de base
+        filter_query = Q(is_active=True)
+        
+        # Commencer avec une requête vide
+        queryset = FlashcardDeck.objects.none()
         
         if user.is_authenticated and show_mine:
-            # Afficher les decks de l'utilisateur courant
+            # Ajouter les decks de l'utilisateur courant
             owner_filter = Q(user=user)
             
             # Filtrage par statut d'archivage pour les decks de l'utilisateur
             if not show_archived:
                 owner_filter &= Q(is_archived=False)
-                
-            filter_query |= owner_filter
+            
+            # Obtenir les decks de l'utilisateur
+            user_decks = FlashcardDeck.objects.filter(owner_filter)
+            queryset = user_decks
         
         if show_public:
-            # Ajouter les decks publics (mais pas archivés)
-            filter_query |= Q(is_public=True, is_archived=False)
+            # Ajouter les decks publics (non archivés) des autres utilisateurs
+            public_filter = Q(is_public=True, is_archived=False)
+            if user.is_authenticated:
+                # Exclure les decks de l'utilisateur courant des decks publics
+                public_filter &= ~Q(user=user)
+                
+            public_decks = FlashcardDeck.objects.filter(public_filter)
+            queryset = queryset.union(public_decks)
         
         if username_filter:
             # Filtrer par nom d'utilisateur spécifique (seulement les decks publics et non archivés)
-            filter_query &= Q(user__username=username_filter, is_public=True, is_archived=False)
+            queryset = queryset.filter(user__username=username_filter)
         
-        # Appliquer les filtres
-        queryset = FlashcardDeck.objects.filter(filter_query).distinct()
-        
-        # Tri par popularité si demandé
-        sort_by = self.request.query_params.get('sort_by')
-        if sort_by == 'popularity':
-            # Annoter avec le nombre de cartes pour trier par popularité
-            queryset = queryset.annotate(card_count=Count('flashcards')).order_by('-card_count')
-            
-        return queryset
+        return queryset.distinct()
 
     def perform_create(self, serializer):
         """Associe automatiquement l'utilisateur actuel lors de la création d'un deck."""
