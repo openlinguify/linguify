@@ -4,8 +4,9 @@ from .add_vocabulary_serializers import CreateRevisionListSerializer, AddFieldSe
 from .flashcard_serializers import (
     FlashcardSerializer, 
     FlashcardDeckSerializer,
+    FlashcardDeckCreateSerializer,
     FlashcardDeckDetailSerializer,
-    FlashcardDeckCreateSerializer
+    DeckArchiveSerializer,
 )
 from .revision_serializers import RevisionSessionSerializer, VocabularyWordSerializer, VocabularyListSerializer
 
@@ -13,10 +14,12 @@ __all__ = [
     'CreateRevisionListSerializer',
     'AddFieldSerializer',
     'RevisionSessionSerializer',
-    'FlashcardDeckSerializer',
-    'FlashcardDeckDetailSerializer',
-    'FlashcardDeckCreateSerializer',
-    'FlashcardSerializer',
     'VocabularyWordSerializer',
     'VocabularyListSerializer',
+    
+    'FlashcardSerializer',
+    'FlashcardDeckSerializer',
+    'FlashcardDeckCreateSerializer',
+    'FlashcardDeckDetailSerializer',
+    'DeckArchiveSerializer'
 ]

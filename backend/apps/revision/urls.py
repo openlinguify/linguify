@@ -5,6 +5,7 @@ from .views import (
     FlashcardDeckViewSet, 
     FlashcardViewSet, 
     FlashcardImportView,
+    PublicDecksViewSet,
     RevisionSessionViewSet, 
     VocabularyWordViewSet, 
     VocabularyListViewSet, 
@@ -16,6 +17,7 @@ router = DefaultRouter()
 # View for the Flashcard App
 router.register(r'decks', FlashcardDeckViewSet, basename='deck')
 router.register(r'flashcards', FlashcardViewSet, basename='flashcard')
+router.register(r'public', PublicDecksViewSet, basename='public-deck')
 
 
 router.register(r'revision-sessions', RevisionSessionViewSet, basename='revision-session')

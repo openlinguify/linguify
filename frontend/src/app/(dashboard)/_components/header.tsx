@@ -1,3 +1,4 @@
+// src/app/(dashboard)/_components/header.tsx
 'use client';
 
 import React, { useState, useEffect } from "react";
@@ -18,7 +19,12 @@ import {
   Trophy,
   Settings,
   Bell,
+  NotebookPen,
   LogOut,
+  Brain,
+  BarChart,
+  HandHelping,
+
   Menu,
   ChevronDown,
   ArrowLeft,
@@ -46,17 +52,6 @@ interface PagesConfig {
   [path: string]: PageConfig;
 }
 
-// Define page configuration outside component to ensure it's immediately available
-const PAGE_CONFIG: PagesConfig = {
-  '/': { title: 'Linguify', icon: null },
-  '/home': { title: 'Linguify', icon: null },
-  '/learning': { title: 'Learn', icon: BookOpen },
-  '/progress': { title: 'Progress', icon: Trophy },
-  '/settings': { title: 'Settings', icon: Settings },
-  '/flashcard': { title: 'Memory', icon: BookOpen },
-  '/notebook': { title: 'Notes', icon: BookOpen }
-};
-
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -67,16 +62,28 @@ const Header = () => {
   const [isHoveringLogo, setIsHoveringLogo] = useState(false);
   // Track if we're on client-side immediately
   const [isClient, setIsClient] = useState(false);
-  
+    // Use Translation Hook
+  const { t, locale, changeLanguage } = useTranslation();
+  const PAGE_CONFIG: PagesConfig = {
+    '/': { title: 'Linguify', icon: null },
+    '/home': { title: 'Linguify', icon: null },
+    '/learning': { title: t('dashboard.layoutpathname.learning'), icon: BookOpen },
+    '/flashcard': { title: t('dashboard.layoutpathname.flashcard'), icon: Brain },
+    '/progress': { title: t('dashboard.layoutpathname.progress'), icon: BarChart },
+    '/notebook': { title: t('dashboard.layoutpathname.notebook'), icon: NotebookPen },
+    '/help': { title: t('dashboard.helpCard.title'), icon: HandHelping },
+    '/settings': { title: t('dashboard.layoutpathname.settings'), icon: Settings },
+  };
   // Get current page config with fallback
   const currentPage = PAGE_CONFIG[pathname] || { title: 'Linguify', icon: null };
   const isHomePage = pathname === '/' || pathname === '/home';
   
-  // Use Translation Hook
-  const { t, locale, changeLanguage } = useTranslation();
+
 
   // Use Auth Context
   const { user, isAuthenticated, login } = useAuthContext();
+
+  // Define page configuration outside component to ensure it's immediately available
 
   // Set client-side state as early as possible
   useEffect(() => {

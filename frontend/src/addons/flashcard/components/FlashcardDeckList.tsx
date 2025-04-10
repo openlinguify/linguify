@@ -16,33 +16,49 @@ import {
   Pencil,
   Loader2,
   List,
-  ExternalLink
+  ExternalLink,
+  Globe,
+  Lock,
+  Archive,
+  AlertTriangle
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
 import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
-import type { FlashcardDeck, EditingDeck } from "@/addons/revision/types/revision";
+import type { EditingDeck as BaseEditingDeck } from "@/addons/revision/types/revision";
+import { FlashcardDeck } from "@/addons/flashcard/types/"
+
+// Extended EditingDeck type with is_public property
+interface EditingDeck extends BaseEditingDeck {
+  is_public: boolean;
+}
 import { useTranslation } from "@/core/i18n/useTranslations";
+import PublicityToggle from "./PublicityToggle";
+import { Badge } from "@/components/ui/badge";
 
 interface FlashcardDeckListProps {
   decks: FlashcardDeck[];
   onDeckSelect: (deckId: number) => void;
   onViewAllCards?: (deckId: number) => void;  // New prop for advanced navigation
+  onDeckUpdate?: () => void;  // Callback when decks are updated
 }
 
 interface DeckWithCardCount extends FlashcardDeck {
   cardCount?: number;
+  is_archived?: boolean;
 }
 
 const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
   decks,
   onDeckSelect,
-  onViewAllCards
+  onViewAllCards,
+  onDeckUpdate
 }) => {
   const { toast } = useToast();
   const { t } = useTranslation();
@@ -56,6 +72,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
   const [newDeck, setNewDeck] = useState({
     name: "",
     description: "",
+    is_public: false, // Nouveau champ pour la visibilité publique
   });
 
   // Optimized fetchCardCounts using memoization
@@ -112,6 +129,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
         description:
           newDeck.description.trim() ||
           t('dashboard.flashcards.defaultDeckDescription', { date: new Date().toLocaleDateString() }),
+        is_public: newDeck.is_public,
       });
 
       toast({
@@ -120,11 +138,12 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
       });
 
       setIsAddingDeck(false);
-      setNewDeck({ name: "", description: "" });
+      setNewDeck({ name: "", description: "", is_public: false });
       
       // Inform parent component to refresh decks
-      // This avoids duplicate API calls
-      // The parent component will trigger fetchCardCounts through the decks prop update
+      if (onDeckUpdate) {
+        onDeckUpdate();
+      }
     } catch (error) {
       toast({
         title: t('dashboard.flashcards.errorTitle'),
@@ -158,21 +177,8 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
     }
 
     setIsLoading(true);
-    let successCount = 0;
-    let failCount = 0;
-
     try {
-      await Promise.all(
-        selectedDecks.map(async (deckId) => {
-          try {
-            await revisionApi.decks.delete(deckId);
-            successCount++;
-          } catch (error) {
-            failCount++;
-            console.error(`Failed to delete deck ${deckId}:`, error);
-          }
-        })
-      );
+      await revisionApi.decks.batchDelete(selectedDecks);
 
       // Update local state to reflect deletions
       setDecksWithCount((prev) =>
@@ -183,14 +189,14 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
 
       // Provide detailed feedback
       toast({
-        title: failCount > 0 
-          ? t('dashboard.flashcards.partialSuccess') 
-          : t('dashboard.flashcards.successTitle'),
-        description: failCount > 0
-          ? t('dashboard.flashcards.partialDeleteSuccess', { success: successCount.toString(), fail: failCount.toString() })
-          : t('dashboard.flashcards.deleteDecksSuccess', { count: successCount.toString() }),
-        variant: failCount > 0 ? "destructive" : "default",
+        title: t('dashboard.flashcards.successTitle'),
+        description: t('dashboard.flashcards.deleteDecksSuccess', { count: selectedDecks.length.toString() }),
       });
+      
+      // Inform parent component to refresh decks
+      if (onDeckUpdate) {
+        onDeckUpdate();
+      }
     } catch (error) {
       toast({
         title: t('dashboard.flashcards.errorTitle'),
@@ -210,6 +216,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
       await revisionApi.decks.update(editingDeck.id, {
         name: editingDeck.name.trim(),
         description: editingDeck.description.trim(),
+        is_public: editingDeck.is_public
       });
 
       // Optimistically update the UI
@@ -220,6 +227,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                 ...deck,
                 name: editingDeck.name,
                 description: editingDeck.description,
+                is_public: editingDeck.is_public
               }
             : deck
         )
@@ -231,10 +239,69 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
       });
 
       setEditingDeck(null);
+      
+      // Inform parent component to refresh decks
+      if (onDeckUpdate) {
+        onDeckUpdate();
+      }
     } catch (error) {
       toast({
         title: t('dashboard.flashcards.errorTitle'),
         description: t('dashboard.flashcards.updateDeckError'),
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handlePublicityChange = (deckId: number, isPublic: boolean) => {
+    // Update local state
+    setDecksWithCount(prev => 
+      prev.map(deck => 
+        deck.id === deckId 
+          ? { ...deck, is_public: isPublic } 
+          : deck
+      )
+    );
+    
+    // Inform parent if needed
+    if (onDeckUpdate) {
+      onDeckUpdate();
+    }
+  };
+  
+  const handleArchiveDeck = async (deck: FlashcardDeck) => {
+    try {
+      setIsLoading(true);
+      
+      await revisionApi.decks.archiveManagement({
+        deck_id: deck.id,
+        action: 'archive'
+      });
+      
+      toast({
+        title: t('dashboard.flashcards.successTitle'),
+        description: t('dashboard.flashcards.deckArchived'),
+      });
+      
+      // Update local state
+      setDecksWithCount(prev => 
+        prev.map(d => 
+          d.id === deck.id 
+            ? { ...d, is_archived: true } 
+            : d
+        )
+      );
+      
+      // Inform parent if needed
+      if (onDeckUpdate) {
+        onDeckUpdate();
+      }
+    } catch (error) {
+      toast({
+        title: t('dashboard.flashcards.errorTitle'),
+        description: t('dashboard.flashcards.archiveError'),
         variant: "destructive",
       });
     } finally {
@@ -320,11 +387,8 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
           <Card
             key={deck.id}
             className={`group hover:shadow-md transition-all duration-200 cursor-pointer border
-              ${
-                selectedDecks.includes(deck.id)
-                  ? "ring-2 ring-brand-purple"
-                  : ""
-              }`}
+              ${selectedDecks.includes(deck.id) ? "ring-2 ring-brand-purple" : ""}
+              ${deck.is_archived ? "opacity-70 bg-gray-50" : ""}`}
             onClick={() => !isSelectionMode && onDeckSelect(deck.id)}
           >
             <CardContent className="p-4 space-y-2">
@@ -339,9 +403,20 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                       className="h-4 w-4 rounded border-gray-300"
                     />
                   )}
-                  <h3 className="font-medium group-hover:text-brand-purple transition-colors">
-                    {deck.name}
-                  </h3>
+                  <div>
+                    <h3 className="font-medium group-hover:text-brand-purple transition-colors flex items-center">
+                      {deck.name}
+                      {deck.is_public && (
+                        <Globe className="h-3.5 w-3.5 ml-1.5 text-green-600" />
+                      )}
+                      {deck.is_archived && (
+                        <Badge variant="outline" className="ml-2 text-xs py-0 h-5 bg-gray-100">
+                          <Archive className="h-3 w-3 mr-1" />
+                          {t('dashboard.flashcards.archived')}
+                        </Badge>
+                      )}
+                    </h3>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4 text-gray-400 group-hover:text-brand-purple transition-colors" />
@@ -362,12 +437,15 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                             id: deck.id,
                             name: deck.name,
                             description: deck.description,
+                            is_public: deck.is_public ?? false
                           });
                         }}
+                        disabled={deck.is_archived}
                       >
                         <Pencil className="mr-2 h-4 w-4" />
                         {t('dashboard.flashcards.edit')}
                       </DropdownMenuItem>
+                      
                       {/* Option to view all cards in the deck */}
                       {onViewAllCards && (
                         <DropdownMenuItem
@@ -380,6 +458,40 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                           {t('dashboard.flashcards.viewAllCards')}
                         </DropdownMenuItem>
                       )}
+                      
+                      <DropdownMenuSeparator />
+                      
+                      {/* Toggle public visibility option */}
+                      {/* Toggle public visibility option */}
+                      <div 
+                        className="px-2 py-1.5 text-sm"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <PublicityToggle 
+                          deckId={deck.id}
+                          isPublic={deck.is_public || false}
+                          isArchived={deck.is_archived || false}
+                          onStatusChange={(isPublic) => handlePublicityChange(deck.id, isPublic)}
+                        />
+                      </div>
+                      
+                      <DropdownMenuSeparator />
+                      
+                      {/* Archive option */}
+                      {!deck.is_archived && (
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (window.confirm(t('dashboard.flashcards.confirmArchive'))) {
+                              handleArchiveDeck(deck);
+                            }
+                          }}
+                        >
+                          <Archive className="mr-2 h-4 w-4 text-amber-600" />
+                          Archive
+                        </DropdownMenuItem>
+                      )}
+                      
                       <DropdownMenuItem
                         className="text-red-600"
                         onClick={(e) => {
@@ -469,6 +581,21 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                   }
                 />
               </div>
+              
+              {/* Public visibility toggle */}
+              <div className="space-y-2">
+                <Label>{t('dashboard.flashcards.visibility')}</Label>
+                <div className="flex items-center">
+                  <PublicityToggle 
+                    deckId={editingDeck.id}
+                    isPublic={editingDeck.is_public || false}
+                    onStatusChange={(isPublic) => 
+                      setEditingDeck(prev => prev ? { ...prev, is_public: isPublic } : null)
+                    }
+                  />
+                </div>
+              </div>
+              
               <div className="flex justify-end gap-2">
                 <Button
                   variant="outline"
@@ -538,6 +665,43 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
                   }
                 />
               </div>
+              
+              {/* Public deck option */}
+              <div className="flex items-center space-x-2">
+                <Label 
+                  htmlFor="is-public" 
+                  className="flex items-center cursor-pointer space-x-2 text-sm font-normal"
+                >
+                  <input
+                    type="checkbox"
+                    id="is-public"
+                    checked={newDeck.is_public}
+                    onChange={(e) => setNewDeck(prev => ({ ...prev, is_public: e.target.checked }))}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <span className="flex items-center">
+                    {newDeck.is_public ? (
+                      <>
+                        <Globe className="h-4 w-4 mr-1 text-green-600" />
+                        {t('dashboard.flashcards.makePublic')}
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="h-4 w-4 mr-1 text-gray-500" />
+                        {t('dashboard.flashcards.privateByDefault')}
+                      </>
+                    )}
+                  </span>
+                </Label>
+                
+                {newDeck.is_public && (
+                  <div className="ml-2 text-xs text-amber-600 flex items-start">
+                    <AlertTriangle className="h-3 w-3 mr-1 mt-0.5" />
+                    {t('dashboard.flashcards.publicWarning')}
+                  </div>
+                )}
+              </div>
+              
               <div className="flex justify-end gap-2">
                 <Button
                   variant="outline"

@@ -2,36 +2,7 @@
 
 export type LanguageCode = 'EN' | 'FR' | 'ES' | 'NL';
 
-export interface FlashcardDeck {
-  id: number;
-  name: string;
-  description: string;
-  created_at: string;
-  updated_at: string;
-  is_active: boolean;
-  user?: any;
-  card_count?: number;
-  learned_count?: number;
-  cards?: Flashcard[];
-}
 
-export interface FlashcardAppProps {
-  selectedDeck: FlashcardDeck;
-  onCardUpdate: () => void;
-}
-
-export interface Flashcard {
-  id: number;
-  deck: number;
-  front_text: string;
-  back_text: string;
-  learned: boolean;
-  created_at: string;
-  updated_at: string;
-  last_reviewed: string | null;
-  review_count: number;
-  next_review: string | null;
-}
 
 export interface RevisionSession {
   id: number;
