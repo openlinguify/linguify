@@ -17,6 +17,10 @@
     "title": "Aprender",
     "description": "Acceso a todas las lecciones"
   },
+  "helpCard": {
+    "title": "Ayuda",
+    "description": "Consulta la sección de ayuda"
+  },
   "flashcardsCard": {
     "title": "Memoria",
     "description": "Practica con tarjetas de memoria"
@@ -81,6 +85,9 @@
     "unitsCount": "{completed}/{total} unidades"
   },
   "flashcards": {
+    "explorePublicDecks": "Publica",
+
+    "archived": "Archivado",
     "userDecks": "Tarjetas de memoria de {name}",
     "refresh": "Actualizar",
     "searchPlaceholder": "Buscar tus tarjetas...",

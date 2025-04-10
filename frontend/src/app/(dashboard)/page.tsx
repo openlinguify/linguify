@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { Card, CardContent, } from "@/components/ui/card";
-import { BookOpen, BarChart, Brain, NotebookPen, Settings, User, } from "lucide-react";
+import { BookOpen, BarChart, Brain, NotebookPen, Settings, User, HandHelping } from "lucide-react";
 import Link from "next/link";
 import { useAuthContext } from "@/core/auth/AuthProvider";
 import { useTranslation } from "@/core/i18n/useTranslations";
@@ -57,6 +57,13 @@ export default function DashboardHome() {
       icon: BarChart,
       href: "/progress",
       color: "bg-green-50 text-green-500 dark:bg-green-900/20 dark:text-green-400"
+    },
+    {
+      titleKey: "dashboard.helpCard.title",
+      fallbackTitle: "Help",
+      icon: HandHelping,
+      href: "/help",
+      color: "bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400"
     },
     {
       titleKey: "dashboard.settingsCard.title",

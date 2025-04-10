@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Save, X, RotateCw, ArrowLeftRight } from "lucide-react";
-import type { Flashcard } from "@/addons/revision/types/revision";
+import type { Flashcard } from "@/addons/flashcard/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "@/core/i18n/useTranslations";
 

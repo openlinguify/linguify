@@ -17,6 +17,10 @@
     "title": "Learn",
     "description": "Access to all lessons"
   },
+  "helpCard": {
+    "title": "Help",
+    "description": "Get help and support"
+  },
   "flashcardsCard": {
     "title": "Memory",
     "description": "Practice with flashcards"
@@ -63,7 +67,6 @@
     "allContentTypes": "All Content Types",
     "contentTypes": "Content Types",
     "compactView": "Compact",
-    
     "contentType": {
       "all": "All",
       "vocabulary": "Vocabulary",
@@ -81,8 +84,9 @@
     "levelProgress": "Level Progress",
     "unitsCount": "{completed}/{total} units"
   },
-
   "flashcards": {
+    "explorePublicDecks": "Public",
+    "archived": "Archived",
     "userDecks": "{name}'s Flashcard Decks",
     "refresh": "Refresh",
     "searchPlaceholder": "Search your decks...",
@@ -519,26 +523,26 @@
     }
   },
   "learning": {
-      "backTo": "Back",
-      "loadingContent": "Loading lesson content...",
-      "noContentFound": "No content found for this lesson.",
-      "lessonProgress": "Lesson Progress",
-      "modules": "modules",
-      "markAsComplete": "Mark as Complete",
-      "contentTypes": {
-        "theory": "Theory",
-        "vocabulary": "Vocabulary",
-        "multiple choice": "Multiple Choice",
-        "numbers": "Numbers",
-        "numbersGame": "Numbers Game",
-        "reordering": "Reordering",
-        "fillBlank": "Fill in the Blank",
-        "matching": "Matching"
-      },
-      "badges": {
-        "completed": "Completed",
-        "fallback": "Fallback",
-        "startHere": "Start Here"
-      }
+    "backTo": "Back",
+    "loadingContent": "Loading lesson content...",
+    "noContentFound": "No content found for this lesson.",
+    "lessonProgress": "Lesson Progress",
+    "modules": "modules",
+    "markAsComplete": "Mark as Complete",
+    "contentTypes": {
+      "theory": "Theory",
+      "vocabulary": "Vocabulary",
+      "multiple choice": "Multiple Choice",
+      "numbers": "Numbers",
+      "numbersGame": "Numbers Game",
+      "reordering": "Reordering",
+      "fillBlank": "Fill in the Blank",
+      "matching": "Matching"
+    },
+    "badges": {
+      "completed": "Completed",
+      "fallback": "Fallback",
+      "startHere": "Start Here"
     }
   }
+}

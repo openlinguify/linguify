@@ -17,6 +17,10 @@
     "title": "Leren",
     "description": "Toegang tot alle lessen"
   },
+  "helpCard": {
+    "title": "Hulp",
+    "description": "Zoek hulp"
+  },
   "flashcardsCard": {
     "title": "Geheugen",
     "description": "Oefen met flashcards"
@@ -81,6 +85,8 @@
     "unitsCount": "{completed}/{total} eenheden"
   },
   "flashcards": {
+    "explorePublicDecks": "Publiek Listen",
+    "archived": "Gearchiveerd",
     "userDecks": "{name}'s Flashcard Decks",
     "refresh": "Vernieuwen",
     "searchPlaceholder": "Zoek je decks...",

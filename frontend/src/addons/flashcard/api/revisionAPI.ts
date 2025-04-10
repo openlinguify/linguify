@@ -1,7 +1,17 @@
-// src/services/revisionAPI.ts
+// src/addons/flashcard/api/revisionAPI.ts
 import apiClient from '@/core/api/apiClient';
-import { Flashcard, FlashcardDeck } from '@/addons/revision/types/revision';
 import authService from '@/core/auth/authService';
+
+// Types pour les paramètres de recherche et de filtre
+export interface SearchParams {
+  search?: string;
+  username?: string;
+  sort_by?: 'popularity' | 'recent' | 'alphabetical';
+  public?: boolean;
+  mine?: boolean;
+  archived?: boolean;
+  limit?: number;
+}
 
 // Configuration de base
 const API_BASE = '/api/v1/revision';
@@ -18,10 +28,6 @@ function logError(message: string, error?: any) {
   console.error(`❌ REVISION ERROR: ${message}`, error);
 }
 
-function logWarning(message: string, warning?: any) {
-  console.warn(`⚠️ REVISION WARNING: ${message}`, warning || '');
-}
-
 /**
  * Service pour interagir avec l'API de révision
  */
@@ -30,20 +36,30 @@ export const revisionApi = {
   decks: {
     /**
      * Récupère tous les decks de flashcards
+     * @param params Paramètres optionnels pour filtrer les decks
      */
-    async getAll(): Promise<FlashcardDeck[]> {
-      logDebug('Récupération de tous les decks');
-      const response = await apiClient.get(`${API_BASE}/decks/`);
+    async getAll(params?: SearchParams): Promise<any[]> {
+      logDebug('Récupération des decks', params);
+      const response = await apiClient.get(`${API_BASE}/decks/`, { params });
+      return response.data;
+    },
+
+    /**
+     * Récupère un deck par son ID
+     */
+    async getById(id: number): Promise<any> {
+      logDebug('Récupération du deck par ID', { id });
+      const response = await apiClient.get(`${API_BASE}/decks/${id}/`);
       return response.data;
     },
 
     /**
      * Crée un nouveau deck
      */
-    async create(data: Pick<FlashcardDeck, 'name' | 'description'>): Promise<FlashcardDeck> {
+    async create(data: any): Promise<any> {
       const payload = {
         ...data,
-        description: data.description.trim() || `Deck created on ${new Date().toLocaleDateString()}`,
+        description: data.description?.trim() || `Deck created on ${new Date().toLocaleDateString()}`,
         is_active: true
       };
 
@@ -53,28 +69,123 @@ export const revisionApi = {
     },
 
     /**
-     * Supprime un deck par son ID
-     */
-    async delete(id: number): Promise<void> {
-      logDebug('Suppression du deck', { id });
-      await apiClient.delete(`${API_BASE}/decks/${id}/`);
-    },
-
-    /**
      * Met à jour un deck existant
      */
-    async update(id: number, data: Partial<FlashcardDeck>): Promise<FlashcardDeck> {
+    async update(id: number, data: any): Promise<any> {
       logDebug('Mise à jour du deck', { id, data });
       const response = await apiClient.patch(`${API_BASE}/decks/${id}/`, data);
       return response.data;
     },
 
     /**
-     * Récupère un deck par son ID
+     * Supprime un deck par son ID
      */
-    async getById(id: number): Promise<FlashcardDeck> {
-      logDebug('Récupération du deck par ID', { id });
-      const response = await apiClient.get(`${API_BASE}/decks/${id}/`);
+    async delete(id: number): Promise<any> {
+      logDebug('Suppression du deck', { id });
+      const response = await apiClient.delete(`${API_BASE}/decks/${id}/`);
+      return response.data;
+    },
+
+    /**
+     * Bascule la visibilité publique d'un deck
+     * @param id ID du deck
+     * @param makePublic Si défini, force la visibilité à cette valeur
+     */
+    async togglePublic(id: number, makePublic?: boolean): Promise<any> {
+      const data = makePublic !== undefined ? { make_public: makePublic } : {};
+      logDebug('Basculement de la visibilité publique', { id, makePublic });
+      const response = await apiClient.post(`${API_BASE}/decks/${id}/toggle_public/`, data);
+      return response.data;
+    },
+
+    /**
+     * Clone un deck existant
+     * @param id ID du deck à cloner
+     * @param options Options de personnalisation
+     */
+    async clone(id: number, options?: { name?: string; description?: string }): Promise<any> {
+      logDebug('Clonage du deck', { id, options });
+      const response = await apiClient.post(`${API_BASE}/decks/${id}/clone/`, options || {});
+      return response.data;
+    },
+
+    /**
+     * Gère l'archivage et la prolongation des decks
+     */
+    async archiveManagement(data: { 
+      deck_id: number; 
+      action: 'archive' | 'unarchive' | 'extend';
+      extension_days?: number; 
+    }): Promise<any> {
+      logDebug('Gestion de l\'archivage', data);
+      const response = await apiClient.post(`${API_BASE}/decks/archive_management/`, data);
+      return response.data;
+    },
+
+    /**
+     * Récupère les decks archivés de l'utilisateur
+     */
+    async getArchived(): Promise<any[]> {
+      logDebug('Récupération des decks archivés');
+      const response = await apiClient.get(`${API_BASE}/decks/archived/`);
+      return response.data;
+    },
+
+    /**
+     * Récupère les decks qui vont bientôt expirer
+     */
+    async getExpiringSoon(): Promise<any> {
+      logDebug('Récupération des decks expirant bientôt');
+      const response = await apiClient.get(`${API_BASE}/decks/expiring_soon/`);
+      return response.data;
+    },
+
+    /**
+     * Récupère les decks publics
+     */
+    async getPublic(params?: SearchParams): Promise<any[]> {
+      logDebug('Récupération des decks publics', params);
+      const response = await apiClient.get(`${API_BASE}/public/`, { params });
+      return response.data;
+    },
+
+    /**
+     * Récupère les decks publics populaires
+     */
+    async getPopular(limit: number = 10): Promise<any[]> {
+      logDebug('Récupération des decks populaires', { limit });
+      const response = await apiClient.get(`${API_BASE}/public/popular/`, { 
+        params: { limit } 
+      });
+      return response.data;
+    },
+
+    /**
+     * Récupère les decks publics récents
+     */
+    async getRecent(limit: number = 10): Promise<any[]> {
+      logDebug('Récupération des decks récents', { limit });
+      const response = await apiClient.get(`${API_BASE}/public/recent/`, { 
+        params: { limit } 
+      });
+      return response.data;
+    },
+
+    /**
+     * Recherche des decks selon plusieurs critères
+     */
+    async search(params: SearchParams): Promise<any[]> {
+      logDebug('Recherche de decks', params);
+      const response = await apiClient.get(`${API_BASE}/decks/`, { params });
+      return response.data;
+    },
+
+    /**
+     * Supprime plusieurs decks en une seule opération
+     */
+    async batchDelete(deckIds: number[]): Promise<any> {
+      logDebug('Suppression par lots de decks', { count: deckIds.length });
+      const response = await apiClient.post(`${API_BASE}/decks/batch_delete/`, { deckIds });
       return response.data;
     }
   },
@@ -82,119 +193,106 @@ export const revisionApi = {
   // API des flashcards
   flashcards: {
     /**
-     * Récupère toutes les flashcards, optionnellement filtrées par deck
+     * Récupère toutes les cartes d'un deck
      */
-    async getAll(deckId?: number): Promise<Flashcard[]> {
-      const url = deckId
-        ? `${API_BASE}/flashcards/?deck=${deckId}`
-        : `${API_BASE}/flashcards/`;
-
-      logDebug('Récupération des flashcards', { deckId });
-      const response = await apiClient.get(url);
+    async getAll(deckId: number): Promise<any[]> {
+      logDebug('Récupération des cartes du deck', { deckId });
+      const response = await apiClient.get(`${API_BASE}/decks/${deckId}/cards/`);
       return response.data;
     },
 
     /**
-     * Crée une nouvelle flashcard
+     * Récupère les IDs de toutes les cartes d'un deck
      */
-    async create(data: { front_text: string; back_text: string; deck_id: number }): Promise<Flashcard> {
-      // Validation côté client
-      if (!data.front_text?.trim() || !data.back_text?.trim()) {
-        throw new Error('Les textes recto et verso sont obligatoires');
-      }
+    async getAllIds(deckId: number): Promise<number[]> {
+      logDebug('Récupération des IDs des cartes', { deckId });
+      const response = await apiClient.get(`${API_BASE}/flashcards/ids/`, {
+        params: { deck: deckId }
+      });
+      return response.data;
+    },
 
-      // Transforme deck_id en deck pour correspondre à l'API
+    /**
+     * Récupère une carte par son ID
+     */
+    async getById(id: number): Promise<any> {
+      logDebug('Récupération de la carte par ID', { id });
+      const response = await apiClient.get(`${API_BASE}/flashcards/${id}/`);
+      return response.data;
+    },
+
+    /**
+     * Crée une nouvelle carte
+     */
+    async create(data: any): Promise<any> {
+      logDebug('Création d\'une carte', data);
       const payload = {
-        front_text: data.front_text.trim(),
-        back_text: data.back_text.trim(),
-        deck: data.deck_id,
-        learned: false
+        ...data,
+        deck: data.deck_id || data.deck
       };
-
-      logDebug('Création d\'une flashcard', payload);
       const response = await apiClient.post(`${API_BASE}/flashcards/`, payload);
       return response.data;
     },
 
     /**
-     * Change le statut "appris" d'une flashcard
+     * Met à jour une carte existante
      */
-    async toggleLearned(id: number, success: boolean): Promise<Flashcard> {
-      logDebug('Mise à jour du statut d\'apprentissage', { id, success });
-      const response = await apiClient.patch(`${API_BASE}/flashcards/${id}/toggle_learned/`, { success });
+    async update(id: number, data: any): Promise<any> {
+      logDebug('Mise à jour de la carte', { id, data });
+      const response = await apiClient.patch(`${API_BASE}/flashcards/${id}/`, data);
       return response.data;
     },
 
     /**
-     * Récupère les flashcards à réviser
+     * Supprime une carte
      */
-    async getDue(limit: number = 10): Promise<Flashcard[]> {
-      logDebug('Récupération des flashcards à réviser', { limit });
-      const response = await apiClient.get(`${API_BASE}/flashcards/due_for_review/?limit=${limit}`);
+    async delete(id: number): Promise<any> {
+      logDebug('Suppression de la carte', { id });
+      const response = await apiClient.delete(`${API_BASE}/flashcards/${id}/`);
       return response.data;
     },
 
     /**
-     * Supprime une flashcard
+     * Bascule l'état d'apprentissage d'une carte
      */
-    async delete(id: number): Promise<void> {
-      logDebug('Suppression de la flashcard', { id });
-      await apiClient.delete(`${API_BASE}/flashcards/${id}/`);
-    },
-
-    /**
-     * Met à jour une flashcard existante
-     */
-    async update(id: number, data: Partial<Flashcard>): Promise<Flashcard> {
-      logDebug('Mise à jour de la flashcard', { id, data });
-      const response = await apiClient.patch(`${API_BASE}/flashcards/${id}/update_card/`, data);
+    async toggleLearned(id: number, success: boolean = true): Promise<any> {
+      logDebug('Basculement de l\'état d\'apprentissage', { id, success });
+      const response = await apiClient.patch(`${API_BASE}/flashcards/${id}/toggle_learned/`, {
+        success
+      });
       return response.data;
     },
 
-
-
-    // Méthode pour récupérer tous les IDs des cartes d'un deck
-    async getAllIds(deckId: number): Promise<number[]> {
-      logDebug('Récupération des IDs de toutes les cartes du deck', { deckId });
-
-      // Option 1: Si votre API backend a un endpoint dédié pour récupérer juste les IDs
-      // Ce serait l'approche la plus efficace
-      try {
-        const response = await apiClient.get(`${API_BASE}/flashcards/ids/?deck=${deckId}`);
-        return response.data;
-      } catch (error) {
-        // Si l'API n'est pas disponible, on peut implémenter un fallback en récupérant toutes les cartes
-        logWarning('API getAllIds non disponible, récupération complète des cartes', { error });
-
-        // Récupérer toutes les cartes sans pagination (attention aux performances)
-        const response = await apiClient.get(`${API_BASE}/flashcards/?deck=${deckId}&page_size=10000`);
-        return response.data.map((card: any) => card.id);
-      }
-    },
-
-    // Méthode pour une suppression en masse plus efficace
-    async deleteBatch(cardIds: number[]): Promise<{ deleted: number }> {
-      logDebug('Suppression en masse de cartes', { count: cardIds.length });
-
-      try {
-        // Utiliser une API de suppression par lots si disponible
-        const response = await apiClient.post(`${API_BASE}/flashcards/batch-delete/`, { cardIds });
-        return response.data;
-      } catch (error) {
-        // Si l'API n'est pas disponible ou échoue, lancer l'erreur
-        logError('Erreur lors de la suppression par lots', error);
-        throw error;
-      }
+    /**
+     * Récupère les cartes à réviser
+     */
+    async dueForReview(params?: { limit?: number; deck?: number }): Promise<any[]> {
+      logDebug('Récupération des cartes à réviser', params);
+      const response = await apiClient.get(`${API_BASE}/flashcards/due_for_review/`, {
+        params
+      });
+      return response.data;
     },
 
     /**
-     * Importe des flashcards depuis un fichier Excel ou CSV
+     * Supprime plusieurs cartes en une seule opération
+     */
+    async deleteBatch(cardIds: number[]): Promise<any> {
+      logDebug('Suppression par lots de cartes', { count: cardIds.length });
+      const response = await apiClient.post(`${API_BASE}/flashcards/batch_delete/`, {
+        cardIds
+      });
+      return response.data;
+    },
+
+    /**
+     * Importe des cartes depuis un fichier Excel ou CSV
      */
     async importFromExcel(
       deckId: number,
       file: File,
       options: { hasHeader?: boolean; previewOnly?: boolean } = {}
-    ): Promise<{ created: number, failed: number, preview?: any[] }> {
+    ): Promise<any> {
       logDebug('Importation depuis Excel', { deckId, fileName: file.name, options });
 
       // Vérifier le format du fichier
@@ -218,7 +316,7 @@ export const revisionApi = {
 
         // Construire l'URL complète
         const url = `${process.env.NEXT_PUBLIC_BACKEND_URL || ''}${API_BASE}/decks/${deckId}/import/`;
-        logDebug('Sending import request to:', { url });
+        logDebug('Envoi de la requête d\'importation à:', { url });
 
         // Configuration de la requête avec le token d'authentification
         const headers: Record<string, string> = {};
@@ -234,60 +332,12 @@ export const revisionApi = {
           },
         });
 
-        logDebug('Import successful:', response.data);
+        logDebug('Importation réussie:', response.data);
         return response.data;
       } catch (error) {
-        logError('Import exception:', error);
+        logError('Exception lors de l\'importation:', error);
         throw error;
       }
-    }
-  },
-
-  // API de vocabulaire
-  vocabulary: {
-    /**
-     * Récupère les statistiques de vocabulaire
-     */
-    async getStats(range: 'week' | 'month' | 'year'): Promise<any> {
-      logDebug('Récupération des statistiques de vocabulaire', { range });
-      const response = await apiClient.get(`/api/v1/vocabulary/stats/?range=${range}`);
-      return response.data;
-    },
-
-    /**
-     * Récupère les mots de vocabulaire
-     */
-    async getWords(params?: { source_language?: string; target_language?: string }): Promise<any> {
-      // Construire les paramètres de requête pour axios
-      const queryParams: Record<string, string> = {};
-      if (params?.source_language) {
-        queryParams.source_language = params.source_language;
-      }
-      if (params?.target_language) {
-        queryParams.target_language = params.target_language;
-      }
-
-      logDebug('Récupération des mots de vocabulaire', params);
-      const response = await apiClient.get('/api/v1/vocabulary/words/', { params: queryParams });
-      return response.data;
-    },
-
-    /**
-     * Récupère le vocabulaire à réviser
-     */
-    async getDue(limit: number = 10): Promise<any> {
-      logDebug('Récupération du vocabulaire à réviser', { limit });
-      const response = await apiClient.get(`/api/v1/vocabulary/due/?limit=${limit}`);
-      return response.data;
-    },
-
-    /**
-     * Marque un mot comme révisé
-     */
-    async markWordReviewed(id: number, success: boolean): Promise<any> {
-      logDebug('Marquage d\'un mot comme révisé', { id, success });
-      const response = await apiClient.post(`/api/v1/vocabulary/${id}/review/`, { success });
-      return response.data;
     }
   }
 };

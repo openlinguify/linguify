@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
-import type { Flashcard, FlashcardDeck } from "@/addons/revision/types/revision";
+import type { Flashcard, FlashcardDeck } from "@/addons/flashcard/types";
 import EditCardModal from "./EditCardModal";
 import ImportExcelModal from "./ImportExcelModal";
 import { useTranslation } from "@/core/i18n/useTranslations";
