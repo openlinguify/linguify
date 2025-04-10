@@ -13,8 +13,8 @@ import {
   Clock
 } from 'lucide-react';
 
-import PublicDeckExplorer from '@/addons/flashcard/components/PublicDeckExplorer';
-import PublicDeckDetail from '@/addons/flashcard/components/PublicDeckDetail';
+import PublicDeckExplorer from '@/addons/flashcard/components/public/PublicDeckExplorer';
+import PublicDeckDetail from '@/addons/flashcard/components/public/PublicDeckDetail';
 
 const ExplorePage = () => {
   const router = useRouter();
@@ -73,11 +73,8 @@ const ExplorePage = () => {
             </Button>
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
-            Decks Communautaires
+            Explorer
           </h1>
-          <p className="text-gray-600 mt-1">
-            Explorez et clonez des decks de la communauté
-          </p>
         </div>
       </div>
       

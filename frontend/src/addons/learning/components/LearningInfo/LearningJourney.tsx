@@ -266,7 +266,7 @@ export default function EnhancedLearningJourney({
     );
   }
 
- 
+
 
   return (
     <div className="mb-6 space-y-4">
@@ -277,7 +277,7 @@ export default function EnhancedLearningJourney({
         </div>
 
 
-        {/* Filter bar */}
+        {/* Filter Level*/}
         <div className="flex flex-wrap items-center gap-2 mt-4 bg-white/5 dark:bg-black/5 backdrop-blur-sm p-3 rounded-lg border border-gray-200 dark:border-gray-800">
           {/* Level filter */}
           {availableLevels.length > 0 && onLevelFilterChange && (
@@ -286,12 +286,18 @@ export default function EnhancedLearningJourney({
               <span className="text-sm font-medium">{t('dashboard.learningjourney.level')}:</span>
               <Select value={levelFilter} onValueChange={onLevelFilterChange}>
                 <SelectTrigger className="bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 flex-1 max-w-[180px]">
-                  <SelectValue placeholder={t('dashboard.learningjourney.allLevels')} />
+                  <SelectValue 
+                  placeholder={t('dashboard.learningjourney.allLevels')} />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('dashboard.learningjourney.allLevels')}</SelectItem>
+                <SelectContent
+                  className="w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-700">
+                  <SelectItem
+                    value="all"
+
+                  >{t('dashboard.learningjourney.allLevels')}</SelectItem>
                   {availableLevels.map(level => (
-                    <SelectItem key={level} value={level}>
+                    <SelectItem
+                      key={level} value={level}>
                       {t('dashboard.learningjourney.levelX', { level })}
                     </SelectItem>
                   ))}
@@ -306,7 +312,7 @@ export default function EnhancedLearningJourney({
               <span className="text-sm font-medium">{t('dashboard.learningjourney.content')}:</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="secondary" className="bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 text-sm px-3 h-9">
+                  <Button variant="secondary" className="bg-white dark:bg-black/30 border-gray-200 dark:border-gray-700 text-sm px-3 h-9">
                     {selectedTypes.includes("all") ? (
                       <span className="flex items-center gap-1">
                         <Filter className="h-4 w-4" />
@@ -323,7 +329,7 @@ export default function EnhancedLearningJourney({
                     )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
+                <DropdownMenuContent className="w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-700">
                   <DropdownMenuLabel>{t('dashboard.learningjourney.contentTypes')}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
@@ -381,7 +387,7 @@ export default function EnhancedLearningJourney({
       </div>
 
       {/* Additional info card - now with a transparent style */}
-      <div className="bg-white/10 dark:bg-black/10 backdrop-blur-sm rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+      <div className="bg-transparent rounded-lg p-4 text-black dark:text-white border border-gray-200 dark:border-gray-800 shadow-md">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           {/* Learning target */}
           <div>
