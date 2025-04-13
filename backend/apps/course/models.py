@@ -1,6 +1,6 @@
 # course/models.py
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext as _
 from authentication.models import User
@@ -168,18 +168,23 @@ class Unit(models.Model):
 
 class Lesson(models.Model):
     LESSON_TYPE = [
-        ('theory', 'Theory'),
         ('vocabulary', 'Vocabulary'),
         ('grammar', 'Grammar'),
-        ('pronunciation', 'Pronunciation'),
-        ('listening', 'Listening'),
-        ('speaking', 'Speaking'),
-        ('reading', 'Reading'),
-        ('writing', 'Writing'),
-        ('test', 'Test'),
+        ('culture', 'Culture'), # ex: culture, history, geography, etc.
+        ('professional', 'Professional'), # ex: business, medical, dentistry, advocacy, accounting, business law, real estate, etc. 
+    ]
+    PROFESSIONAL_CHOICES = [
+        ('business', 'Business'),
+        ('medical', 'Medical'),
+        ('dentistry', 'Dentistry'),
+        ('advocacy', 'Advocacy'),
+        ('accounting', 'Accounting'),
+        ('business_law', 'Business Law'),
+        ('real_estate', 'Real Estate'),
     ]
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name='lessons')
     lesson_type = models.CharField(max_length=100, choices=LESSON_TYPE, blank=False, null=False)
+    professional_field = models.CharField(max_length=100, choices=PROFESSIONAL_CHOICES, blank=True, null=True)
     title_en = models.CharField(max_length=255, blank=False, null=False)
     title_fr = models.CharField(max_length=255, blank=False, null=False)
     title_es = models.CharField(max_length=255, blank=False, null=False)
@@ -228,6 +233,12 @@ class Lesson(models.Model):
         
         return total_duration
     
+    def clean(self):
+        if self.lesson_type == 'professional' and not self.professional_field:
+            raise ValidationError({'professional_field': _('This field is required when lesson type is professional.')})
+        if self.lesson_type != 'professional' and self.professional_field:
+            self.professional_field = None
+        
     def save(self, *args, **kwargs):
         # Calculer la durée totale des content lessons
         total_duration = self.calculate_duration_lesson()
@@ -313,8 +324,7 @@ class ContentLesson(models.Model):
         """
         return getattr(self, f'instruction_{target_language}', self.instruction_en)
 
- 
-        
+  
     def save(self, *args, **kwargs):
         """Override save to ensure content type is lowercase and validate duration"""
         self.content_type = self.content_type.lower()
@@ -1169,9 +1179,10 @@ class Writing(models.Model):
     def __str__(self):
         return self.title
 
-class TestRecap(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+class TestRecap(models.Model):            
+    content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='test_recap')
     title = models.CharField(max_length=100, blank=False, null=False)
+
     question = models.TextField(blank=False, null=False)
     correct_answer = models.CharField(max_length=100, blank=False, null=False)
     incorrect_answers = models.TextField(blank=False, null=False, help_text="Separate the answers with a comma.")
@@ -1179,6 +1190,9 @@ class TestRecap(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+    
 
 class TestRecapExercise(models.Model):
     test_recap = models.ForeignKey(TestRecap, on_delete=models.CASCADE)
