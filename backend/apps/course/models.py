@@ -422,7 +422,7 @@ class ContentLesson(models.Model):
 
     CONTENT_TYPE = [
         ('Theory', 'Theory'),
-        ('Vocabulary', 'Vocabulary'),
+        ('VocabularyList', 'VocabularyList'),
         ('Grammar', 'Grammar'),
         ('Multiple choice', 'Multiple choice'),
         ('Numbers', 'Numbers'),
