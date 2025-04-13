@@ -61,8 +61,8 @@ class ContentLessonInline(admin.TabularInline):
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_title', 'unit', 'lesson_type', 'estimated_duration', 'order', 'content_count')
-    list_filter = ('lesson_type', 'unit')
+    list_display = ('id', 'get_title', 'unit', 'lesson_type', 'get_professional_field', 'estimated_duration', 'order', 'content_count')
+    list_filter = ('lesson_type', 'unit', 'professional_field')
     search_fields = ('title_en', 'title_fr', 'description_en')
     ordering = ('unit', 'order')
     inlines = [ContentLessonInline]
@@ -70,6 +70,65 @@ class LessonAdmin(admin.ModelAdmin):
     def get_title(self, obj):
         return f"{obj.title_en} | {obj.title_fr}"
     get_title.short_description = 'Title'
+    
+    def get_professional_field(self, obj):
+        if obj.lesson_type == 'professional' and obj.professional_field:
+            return obj.professional_field
+        return "-"
+    get_professional_field.short_description = 'Professional Field'
+    
+    def get_fieldsets(self, request, obj=None):
+        """Personnalisation dynamique des fieldsets selon le type de leçon"""
+        fieldsets = [
+            ('Basic Information', {
+                'fields': ('unit', 'lesson_type', 'order')
+            }),
+            ('Titles', {
+                'fields': ('title_en', 'title_fr', 'title_es', 'title_nl')
+            }),
+            ('Descriptions', {
+                'fields': ('description_en', 'description_fr', 'description_es', 'description_nl')
+            }),
+            ('Other', {
+                'fields': ('estimated_duration',)
+            })
+        ]
+        
+        # Ajouter une section pour les paramètres professionnels si applicable
+        if obj and obj.lesson_type == 'professional' or request.method == 'GET' and request.GET.get('lesson_type') == 'professional':
+            fieldsets.insert(1, ('Professional Settings', {
+                'fields': ('professional_field',),
+                'classes': ('professional-settings',)
+            }))
+        
+        return fieldsets
+    
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        
+        # Si le champ professional_field existe dans le formulaire
+        if 'professional_field' in form.base_fields:
+            if obj and obj.lesson_type != 'professional':
+                form.base_fields['professional_field'].widget = admin.widgets.AdminTextInputWidget(attrs={'disabled': 'disabled'})
+            
+            # Pour les nouveaux objets, vérifier le paramètre GET
+            if not obj and request.method == 'GET' and request.GET.get('lesson_type') != 'professional':
+                form.base_fields['professional_field'].widget = admin.widgets.AdminTextInputWidget(attrs={'disabled': 'disabled'})
+        
+        return form
+    
+    def get_changeform_initial_data(self, request):
+        """Préremplit le type de leçon à partir des paramètres GET"""
+        initial = super().get_changeform_initial_data(request)
+        if 'lesson_type' in request.GET:
+            initial['lesson_type'] = request.GET.get('lesson_type')
+        return initial
+    
+    class Media:
+        js = ('js/lesson_admin.js',)
+        css = {
+            'all': ('css/lesson_admin.css',)
+        }
     
     def content_count(self, obj):
         count = obj.content_lessons.count()
