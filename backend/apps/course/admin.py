@@ -59,6 +59,27 @@ class ContentLessonInline(admin.TabularInline):
     fields = ('title_en', 'content_type', 'order')
     ordering = ('order',)
 
+
+@admin.register(ContentLesson)
+class ContentLessonAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title_en', 'content_type', 'lesson', 'order', 'estimated_duration')
+    list_filter = ('content_type', 'lesson__unit', 'lesson__lesson_type')
+    search_fields = ('title_en', 'title_fr', 'instruction_en')
+    ordering = ('lesson', 'order')
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('lesson', 'content_type', 'order', 'estimated_duration')
+        }),
+        ('Titles', {
+            'fields': ('title_en', 'title_fr', 'title_es', 'title_nl')
+        }),
+        ('Instructions', {
+            'fields': ('instruction_en', 'instruction_fr', 'instruction_es', 'instruction_nl')
+        }),
+    )
+
+
 class LessonAdminForm(forms.ModelForm):
     class Meta:
         model = Lesson
