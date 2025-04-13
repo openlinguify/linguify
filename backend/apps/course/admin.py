@@ -59,8 +59,25 @@ class ContentLessonInline(admin.TabularInline):
     fields = ('title_en', 'content_type', 'order')
     ordering = ('order',)
 
+class LessonAdminForm(forms.ModelForm):
+    class Meta:
+        model = Lesson
+        fields = '__all__'
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        lesson_type = cleaned_data.get('lesson_type')
+        professional_field = cleaned_data.get('professional_field')
+        
+        if lesson_type == 'professional' and not professional_field:
+            self.add_error('professional_field', 'Ce champ est obligatoire pour les leçons professionnelles.')
+        
+        return cleaned_data
+
+
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
+    form = LessonAdminForm  # Utilise notre formulaire personnalisé
     list_display = ('id', 'get_title', 'unit', 'lesson_type', 'get_professional_field', 'estimated_duration', 'order', 'content_count')
     list_filter = ('lesson_type', 'unit', 'professional_field')
     search_fields = ('title_en', 'title_fr', 'description_en')
@@ -81,7 +98,12 @@ class LessonAdmin(admin.ModelAdmin):
         """Personnalisation dynamique des fieldsets selon le type de leçon"""
         fieldsets = [
             ('Basic Information', {
-                'fields': ('unit', 'lesson_type', 'order')
+                'fields': ('unit', 'lesson_type',)  # Notez que professional_field n'est PAS ici
+            }),
+            ('Professional Information', {
+                'fields': ('professional_field',),
+                'classes': ('professional-settings',),
+                'description': 'Ces champs ne sont pertinents que pour les leçons de type professionnel.'
             }),
             ('Titles', {
                 'fields': ('title_en', 'title_fr', 'title_es', 'title_nl')
@@ -90,32 +112,11 @@ class LessonAdmin(admin.ModelAdmin):
                 'fields': ('description_en', 'description_fr', 'description_es', 'description_nl')
             }),
             ('Other', {
-                'fields': ('estimated_duration',)
+                'fields': ('order', 'estimated_duration')
             })
         ]
         
-        # Ajouter une section pour les paramètres professionnels si applicable
-        if obj and obj.lesson_type == 'professional' or request.method == 'GET' and request.GET.get('lesson_type') == 'professional':
-            fieldsets.insert(1, ('Professional Settings', {
-                'fields': ('professional_field',),
-                'classes': ('professional-settings',)
-            }))
-        
         return fieldsets
-    
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        
-        # Si le champ professional_field existe dans le formulaire
-        if 'professional_field' in form.base_fields:
-            if obj and obj.lesson_type != 'professional':
-                form.base_fields['professional_field'].widget = admin.widgets.AdminTextInputWidget(attrs={'disabled': 'disabled'})
-            
-            # Pour les nouveaux objets, vérifier le paramètre GET
-            if not obj and request.method == 'GET' and request.GET.get('lesson_type') != 'professional':
-                form.base_fields['professional_field'].widget = admin.widgets.AdminTextInputWidget(attrs={'disabled': 'disabled'})
-        
-        return form
     
     def get_changeform_initial_data(self, request):
         """Préremplit le type de leçon à partir des paramètres GET"""
@@ -132,38 +133,11 @@ class LessonAdmin(admin.ModelAdmin):
     
     def content_count(self, obj):
         count = obj.content_lessons.count()
-        return format_html('<span style="color: {};">{}</span>', 
-                          'green' if count > 0 else 'red', 
-                          f"{count} contents")
+        return format_html('<span class="badge {}">{} contents</span>', 
+                        'badge-success' if count > 0 else 'badge-danger', 
+                        count)
     content_count.short_description = 'Contents'
 
-@admin.register(ContentLesson)
-class ContentLessonAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_title', 'content_type', 'lesson', 'order')
-    list_filter = ('content_type', 'lesson__unit')
-    search_fields = ('title_en', 'title_fr', 'instruction_en')
-    ordering = ('lesson', 'order')
-    fieldsets = (
-        ('Basic Information', {
-            'fields': ('lesson', 'content_type', 'order', 'estimated_duration')
-        }),
-        ('English Content', {
-            'fields': ('title_en', 'instruction_en'),
-        }),
-        ('French Content', {
-            'fields': ('title_fr', 'instruction_fr'),
-        }),
-        ('Spanish Content', {
-            'fields': ('title_es', 'instruction_es'),
-        }),
-        ('Dutch Content', {
-            'fields': ('title_nl', 'instruction_nl'),
-        }),
-    )
-    
-    def get_title(self, obj):
-        return f"{obj.title_en} | {obj.title_fr}"
-    get_title.short_description = 'Title'
 
 class VocabularyInline(admin.TabularInline):
     model = SpeakingExercise.vocabulary_items.through
@@ -171,6 +145,7 @@ class VocabularyInline(admin.TabularInline):
     verbose_name_plural = "Vocabulary Items"
     extra = 1
     autocomplete_fields = ['vocabularylist']
+
 
 @admin.register(SpeakingExercise)
 class SpeakingExerciseAdmin(admin.ModelAdmin):
@@ -260,10 +235,6 @@ class SpeakingExerciseAdmin(admin.ModelAdmin):
         self.message_user(request, message)
         
     associate_vocabulary_from_lesson.short_description = "Associate vocabulary items from lessons"
-
-
-
-
 
 
 @admin.register(TheoryContent)
@@ -510,12 +481,14 @@ class VocabularyListAdmin(admin.ModelAdmin):
         }),
     )
 
+
 @admin.register(Numbers)
 class NumbersAdmin(admin.ModelAdmin):
     list_display = ('id', 'number', 'number_en', 'number_fr', 'is_reviewed', 'content_lesson')
     list_filter = ('is_reviewed', 'content_lesson__lesson__unit')
     search_fields = ('number', 'number_en', 'number_fr')
     list_editable = ('is_reviewed',)
+
 
 @admin.register(MatchingExercise)
 class MatchingExerciseAdmin(admin.ModelAdmin):
@@ -637,6 +610,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
         
     associate_vocabulary_from_lesson.short_description = "Associate vocabulary items from lessons"
 
+
 @admin.register(MultipleChoiceQuestion)
 class MultipleChoiceQuestionAdmin(admin.ModelAdmin):
     list_display = ('id', 'question_en', 'correct_answer_en', 'content_lesson')
@@ -664,6 +638,7 @@ class MultipleChoiceQuestionAdmin(admin.ModelAdmin):
         }),
     )
 
+
 @admin.register(ExerciseGrammarReordering)
 class ExerciseGrammarReorderingAdmin(admin.ModelAdmin):
     list_display = ('id', 'sentence_en', 'content_lesson')
@@ -681,11 +656,13 @@ class ExerciseGrammarReorderingAdmin(admin.ModelAdmin):
         }),
     )
 
+
 @admin.register(ExerciseVocabularyMultipleChoice)
 class ExerciseVocabularyMultipleChoiceAdmin(admin.ModelAdmin):
     list_display = ('id', 'question', 'correct_answer', 'lesson')
     list_filter = ('lesson__unit',)
     search_fields = ('question', 'correct_answer')
+
 
 class FillBlankExerciseAdminForm(forms.ModelForm):
     """Enhanced custom form for Fill in the Blank exercises admin"""
@@ -766,6 +743,7 @@ class FillBlankExerciseAdminForm(forms.ModelForm):
             raise forms.ValidationError(errors)
             
         return cleaned_data
+
 
 @admin.register(FillBlankExercise)
 class FillBlankExerciseAdmin(admin.ModelAdmin):
@@ -1688,9 +1666,6 @@ class FillBlankExerciseAdmin(admin.ModelAdmin):
     
     class Media:
         css = {
-            'all': ('admin/css/json_prettify.css',)
+            'all': ('css/json_prettify.css',)
         }
-        js = ('admin/js/json_prettify.js',)
-
-
-
+        js = ('js/json_prettify.js',)
