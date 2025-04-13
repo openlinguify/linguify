@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext as _
 from authentication.models import User
 
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -174,14 +175,178 @@ class Lesson(models.Model):
         ('professional', 'Professional'), # ex: business, medical, dentistry, advocacy, accounting, business law, real estate, etc. 
     ]
     PROFESSIONAL_CHOICES = [
-        ('business', 'Business'),
-        ('medical', 'Medical'),
+        # Health and medicine
+        ('medical_doctor', 'Medical Doctor'),
+        ('nursing', 'Nursing'),
         ('dentistry', 'Dentistry'),
-        ('advocacy', 'Advocacy'),
+        ('pharmacy', 'Pharmacy'),
+        ('physiotherapy', 'Physiotherapy'),
+        ('psychology', 'Psychology'),
+        ('psychiatry', 'Psychiatry'),
+        ('veterinary', 'Veterinary Medicine'),
+        ('optometry', 'Optometry'),
+        ('radiology', 'Radiology'),
+        ('surgery', 'Surgery'),
+        ('public_health', 'Public Health'),
+        ('nutrition', 'Nutrition'),
+        
+        # Droit et justice
+        ('law', 'Law'),
+        ('criminal_law', 'Criminal Law'),
+        ('civil_law', 'Civil Law'),
+        ('corporate_law', 'Corporate Law'),
+        ('international_law', 'International Law'),
+        ('intellectual_property', 'Intellectual Property'),
+        ('legal_assistance', 'Legal Assistance'),
+        ('notary', 'Notary'),
+        
+        # Finance et comptabilité
         ('accounting', 'Accounting'),
-        ('business_law', 'Business Law'),
+        ('auditing', 'Auditing'),
+        ('financial_analysis', 'Financial Analysis'),
+        ('banking', 'Banking'),
+        ('investment', 'Investment'),
+        ('insurance', 'Insurance'),
+        ('tax_consulting', 'Tax Consulting'),
+        ('financial_planning', 'Financial Planning'),
+        
+        # Affaires et gestion
+        ('business_management', 'Business Management'),
+        ('marketing', 'Marketing'),
+        ('sales', 'Sales'),
+        ('human_resources', 'Human Resources'),
+        ('consulting', 'Consulting'),
+        ('entrepreneurship', 'Entrepreneurship'),
+        ('project_management', 'Project Management'),
+        ('operations_management', 'Operations Management'),
+        ('supply_chain', 'Supply Chain Management'),
+        
+        # Immobilier et construction
         ('real_estate', 'Real Estate'),
+        ('architecture', 'Architecture'),
+        ('civil_engineering', 'Civil Engineering'),
+        ('construction', 'Construction'),
+        ('interior_design', 'Interior Design'),
+        ('urban_planning', 'Urban Planning'),
+        ('property_management', 'Property Management'),
+        
+        # Technologies et informatique
+        ('software_development', 'Software Development'),
+        ('web_development', 'Web Development'),
+        ('data_science', 'Data Science'),
+        ('cybersecurity', 'Cybersecurity'),
+        ('network_administration', 'Network Administration'),
+        ('database_administration', 'Database Administration'),
+        ('it_support', 'IT Support'),
+        ('artificial_intelligence', 'Artificial Intelligence'),
+        ('cloud_computing', 'Cloud Computing'),
+        
+        # Ingénierie
+        ('mechanical_engineering', 'Mechanical Engineering'),
+        ('electrical_engineering', 'Electrical Engineering'),
+        ('chemical_engineering', 'Chemical Engineering'),
+        ('aerospace_engineering', 'Aerospace Engineering'),
+        ('industrial_engineering', 'Industrial Engineering'),
+        ('biomedical_engineering', 'Biomedical Engineering'),
+        ('environmental_engineering', 'Environmental Engineering'),
+        
+        # Éducation
+        ('teaching', 'Teaching'),
+        ('university_professor', 'University Professor'),
+        ('early_childhood_education', 'Early Childhood Education'),
+        ('special_education', 'Special Education'),
+        ('educational_administration', 'Educational Administration'),
+        ('adult_education', 'Adult Education'),
+        ('language_instruction', 'Language Instruction'),
+        
+        # Communications et média
+        ('journalism', 'Journalism'),
+        ('public_relations', 'Public Relations'),
+        ('publishing', 'Publishing'),
+        ('advertising', 'Advertising'),
+        ('broadcasting', 'Broadcasting'),
+        ('film_and_tv_production', 'Film and TV Production'),
+        ('social_media_management', 'Social Media Management'),
+        
+        # Arts et design
+        ('graphic_design', 'Graphic Design'),
+        ('music', 'Music'),
+        ('fine_arts', 'Fine Arts'),
+        ('fashion_design', 'Fashion Design'),
+        ('photography', 'Photography'),
+        ('game_design', 'Game Design'),
+        ('performing_arts', 'Performing Arts'),
+        
+        # Services
+        ('hospitality', 'Hospitality'),
+        ('culinary_arts', 'Culinary Arts'),
+        ('tourism', 'Tourism'),
+        ('event_planning', 'Event Planning'),
+        ('beauty_and_wellness', 'Beauty and Wellness'),
+        ('fitness_and_sports', 'Fitness and Sports'),
+        ('customer_service', 'Customer Service'),
+        
+        # Transport et logistique
+        ('aviation', 'Aviation'),
+        ('maritime', 'Maritime'),
+        ('logistics', 'Logistics'),
+        ('transportation', 'Transportation'),
+        ('shipping', 'Shipping'),
+        ('railway', 'Railway'),
+        
+        # Sciences
+        ('biology', 'Biology'),
+        ('chemistry', 'Chemistry'),
+        ('physics', 'Physics'),
+        ('astronomy', 'Astronomy'),
+        ('geology', 'Geology'),
+        ('meteorology', 'Meteorology'),
+        ('oceanography', 'Oceanography'),
+        ('environmental_science', 'Environmental Science'),
+        
+        # Secteur public
+        ('government', 'Government'),
+        ('public_administration', 'Public Administration'),
+        ('diplomacy', 'Diplomacy'),
+        ('military', 'Military'),
+        ('law_enforcement', 'Law Enforcement'),
+        ('firefighting', 'Firefighting'),
+        ('emergency_services', 'Emergency Services'),
+        
+        # Agriculture et environnement
+        ('agriculture', 'Agriculture'),
+        ('forestry', 'Forestry'),
+        ('fishing', 'Fishing'),
+        ('conservation', 'Conservation'),
+        ('renewable_energy', 'Renewable Energy'),
+        ('horticulture', 'Horticulture'),
+        
+        # Industrie
+        ('manufacturing', 'Manufacturing'),
+        ('automotive', 'Automotive'),
+        ('textiles', 'Textiles'),
+        ('food_production', 'Food Production'),
+        ('petroleum', 'Petroleum'),
+        ('mining', 'Mining'),
+        ('pharmaceuticals', 'Pharmaceuticals'),
+        
+        # Social et communautaire
+        ('social_work', 'Social Work'),
+        ('counseling', 'Counseling'),
+        ('community_development', 'Community Development'),
+        ('non_profit', 'Non-Profit'),
+        ('religious', 'Religious'),
+        ('volunteer_management', 'Volunteer Management'),
+        
+        # Autres
+        ('research', 'Research'),
+        ('translation', 'Translation'),
+        ('interpretation', 'Interpretation'),
+        ('museum_and_heritage', 'Museum and Heritage'),
+        ('library_science', 'Library Science'),
+        ('career_counseling', 'Career Counseling'),
     ]
+    
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name='lessons')
     lesson_type = models.CharField(max_length=100, choices=LESSON_TYPE, blank=False, null=False)
     professional_field = models.CharField(max_length=100, choices=PROFESSIONAL_CHOICES, blank=True, null=True)
@@ -189,10 +354,10 @@ class Lesson(models.Model):
     title_fr = models.CharField(max_length=255, blank=False, null=False)
     title_es = models.CharField(max_length=255, blank=False, null=False)
     title_nl = models.CharField(max_length=255, blank=False, null=False)
-    description_en = models.TextField(blank=False, null=False)
-    description_fr = models.TextField(blank=False, null=False)
-    description_es = models.TextField(blank=False, null=False)
-    description_nl = models.TextField(blank=False, null=False)
+    description_en = models.TextField(blank=True, null=True)
+    description_fr = models.TextField(blank=True, null=True)
+    description_es = models.TextField(blank=True, null=True)
+    description_nl = models.TextField(blank=True, null=True)
     estimated_duration = models.IntegerField(default=0, help_text="In minutes")
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
 
@@ -240,16 +405,12 @@ class Lesson(models.Model):
             self.professional_field = None
         
     def save(self, *args, **kwargs):
-        # Calculer la durée totale des content lessons
-        total_duration = self.calculate_duration_lesson()
-        
-        # Utiliser max() pour garantir une valeur non négative
-        # et int() pour convertir en entier
-        self.estimated_duration = max(int(total_duration or 0), 0)
-        
-        # Supprimer toute logique supplémentaire qui pourrait comparer avec 1
-        
+        if self.pk:
+            total_duration = self.calculate_duration_lesson()
+            self.estimated_duration = max(int(total_duration or 0), 0)
         super().save(*args, **kwargs)
+        if not self.pk:
+            self.estimated_duration = 0
     
 class ContentLesson(models.Model):
     '''
@@ -1180,7 +1341,7 @@ class Writing(models.Model):
         return self.title
 
 class TestRecap(models.Model):            
-    content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='test_recap')
+    content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='test_recap', null=True)
     title = models.CharField(max_length=100, blank=False, null=False)
 
     question = models.TextField(blank=False, null=False)
@@ -1190,9 +1351,6 @@ class TestRecap(models.Model):
 
     def __str__(self):
         return self.title
-    
-
-    
 
 class TestRecapExercise(models.Model):
     test_recap = models.ForeignKey(TestRecap, on_delete=models.CASCADE)
