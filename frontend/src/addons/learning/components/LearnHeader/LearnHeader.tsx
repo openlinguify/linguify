@@ -55,14 +55,15 @@ function getLanguageFullName(languageCode: string): string {
 // Definition of content types with their icons
 const CONTENT_TYPES = [
   { value: 'all', label: 'All Content Types', icon: <Filter className="h-4 w-4" /> },
-  { value: 'vocabulary', label: 'Vocabulary', icon: <FileText className="h-4 w-4" /> },
+  { value: 'vocabularylist', label: 'Vocabulary', icon: <FileText className="h-4 w-4" /> },
   { value: 'theory', label: 'Theory', icon: <BookOpen className="h-4 w-4" /> },
   { value: 'grammar', label: 'Grammar', icon: <BookOpen className="h-4 w-4" /> },
   { value: 'numbers', label: 'Numbers', icon: <Calculator className="h-4 w-4" /> },
   { value: 'multiple_choice', label: 'Multiple Choice', icon: <BookOpen className="h-4 w-4" /> },
   { value: 'fill_blank', label: 'Fill in Blanks', icon: <PencilLine className="h-4 w-4" /> },
   { value: 'matching', label: 'Matching', icon: <Infinity className="h-4 w-4" /> },
-  { value: 'reordering', label: 'Reordering', icon: <ArrowRightLeft className="h-4 w-4" /> }
+  { value: 'reordering', label: 'Reordering', icon: <ArrowRightLeft className="h-4 w-4" /> },
+  { value: 'test', label: 'Test', icon: <BookOpen className="h-4 w-4" /> },
 ];
 
 // Utility function to convert a user profile to a partial User object
@@ -271,13 +272,9 @@ export default function EnhancedLearningJourney({
   return (
     <div className="mb-6 space-y-4">
       {/* Main panel with gradient */}
-      <div className="bg-transparent rounded-lg p-4 text-black dark:text-white">
-        <div className="flex items-center justify-between mb-3">
-          <h1 className="text-xl font-semibold">{t('dashboard.learningjourney.title')}</h1>
-        </div>
+      <div className="bg-transparent rounded-lg text-black dark:text-white">
 
-
-        {/* Filter Level*/}
+        {/* Filters and layout options */}
         <div className="flex flex-wrap items-center gap-2 mt-4 bg-white/5 dark:bg-black/5 backdrop-blur-sm p-3 rounded-lg border border-gray-200 dark:border-gray-800">
           {/* Level filter */}
           {availableLevels.length > 0 && onLevelFilterChange && (
@@ -286,8 +283,8 @@ export default function EnhancedLearningJourney({
               <span className="text-sm font-medium">{t('dashboard.learningjourney.level')}:</span>
               <Select value={levelFilter} onValueChange={onLevelFilterChange}>
                 <SelectTrigger className="bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 flex-1 max-w-[180px]">
-                  <SelectValue 
-                  placeholder={t('dashboard.learningjourney.allLevels')} />
+                  <SelectValue
+                    placeholder={t('dashboard.learningjourney.allLevels')} />
                 </SelectTrigger>
                 <SelectContent
                   className="w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-700">
@@ -309,27 +306,33 @@ export default function EnhancedLearningJourney({
           {/* Content type filter */}
           {onContentTypeChange && (
             <div className="flex items-center gap-2 flex-grow">
+              <Filter className="h-4 w-4" />
               <span className="text-sm font-medium">{t('dashboard.learningjourney.content')}:</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="secondary" className="bg-white dark:bg-black/30 border-gray-200 dark:border-gray-700 text-sm px-3 h-9">
-                    {selectedTypes.includes("all") ? (
-                      <span className="flex items-center gap-1">
-                        <Filter className="h-4 w-4" />
-                        {t('dashboard.learningjourney.allContentTypes')}
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-1">
-                        <Filter className="h-4 w-4" />
-                        <span className="mr-1">{t('dashboard.learningjourney.filtered')}</span>
-                        <Badge className="bg-black/10 dark:bg-white/10 text-xs">
-                          {selectedTypes.length}
-                        </Badge>
-                      </span>
-                    )}
-                  </Button>
+                  <div className="relative flex-1 max-w-[180px]">
+                    <Button
+                      variant="outline"
+                      className="w-full justify-between bg-white/30 dark:bg-black/30 border border-gray-200 dark:border-gray-700 h-9 px-3 text-left text-sm font-normal pr-10"
+                    >
+                      {selectedTypes.includes("all")
+                        ? t('dashboard.learningjourney.allContentTypes')
+                        : `${selectedTypes.length} ${t('dashboard.learningjourney.filtered')}`}
+                      {/* Flèche vers le bas */}
+                      <svg
+                        className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </Button>
+                  </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-700">
+                <DropdownMenuContent className="w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 z-50">
                   <DropdownMenuLabel>{t('dashboard.learningjourney.contentTypes')}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
@@ -349,6 +352,7 @@ export default function EnhancedLearningJourney({
               </DropdownMenu>
             </div>
           )}
+
 
           {/* Compact view toggle */}
           {onCompactViewChange && (

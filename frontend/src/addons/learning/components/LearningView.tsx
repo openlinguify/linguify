@@ -9,66 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import courseAPI from "@/addons/learning/api/courseAPI";
 import progressAPI from "@/addons/progress/api/progressAPI";
-import LearningJourney from "./LearningInfo/LearningJourney";
-import { Unit, Lesson } from "@/addons/learning/types";
+import LearningJourney from "./LearnHeader/LearnHeader";
+import { Unit, Lesson, FilteredUnit, FilteredLesson, FilteredContentLesson, LevelGroupType, LessonResult } from "@/addons/learning/types";
 import { UnitProgress, LessonProgress, ContentLessonProgress } from "@/addons/progress/types";
 import {
   createUnitProgressMap,
   createLessonProgressMap,
   createContentProgressMap
 } from "@/core/utils/progressAdapter";
-
-// Types spécifiques pour ce composant
-interface FilteredUnit {
-  id: number;
-  title: string;
-  level: string;
-  lessons: FilteredLesson[];
-  progress?: number;
-  order: number;
-}
-
-interface FilteredLesson {
-  id: number;
-  title: string;
-  lesson_type: string;
-  unit_id: number;
-  estimated_duration: number;
-  contentLessons: FilteredContentLesson[];
-  progress?: number;
-  status?: 'not_started' | 'in_progress' | 'completed';
-  unitTitle?: string;
-  unitLevel?: string;
-  filteredContents?: FilteredContentLesson[];
-}
-
-interface FilteredContentLesson {
-  id: number;
-  title: string;
-  content_type: string;
-  lesson_id: number;
-  order: number;
-  progress?: number;
-  status?: 'not_started' | 'in_progress' | 'completed';
-}
-
-// Interface pour regrouper les unités par niveau
-interface LevelGroupType {
-  level: string;
-  units: FilteredUnit[];
-}
-
-// Interface pour les résultats de l'API getLessonsByContentType
-interface LessonResult {
-  id: number;
-  title: string;
-  lesson_type: string;
-  estimated_duration: number;
-  unit_id?: number;
-  unit_title?: string;
-  unit_level?: string;
-  content_count?: number;
-}
 
 export default function LearningView() {
   const router = useRouter();
@@ -578,7 +526,7 @@ export default function LearningView() {
   }
 
   return (
-    <div className="mb-6 space-y-4">
+    <div className="w-full">
       <div className="w-full">
         <LearningJourney
           levelFilter={levelFilter}

@@ -69,14 +69,15 @@
     "compactView": "Compact",
     "contentType": {
       "all": "All",
-      "vocabulary": "Vocabulary",
+      "vocabularylist": "Vocabulary",
       "theory": "Theory",
       "grammar": "Grammar",
       "numbers": "Numbers",
       "multiple_choice": "Multiple Choice",
       "fill_blank": "Fill in Blanks",
       "matching": "Matching",
-      "reordering": "Reordering"
+      "reordering": "Reordering",
+      "test": "Test"
     },
     "learningTarget": "Learning Language",
     "dailyGoal": "Daily Goal",

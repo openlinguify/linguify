@@ -69,14 +69,15 @@
     "compactView": "Compact",
     "contentType": {
       "all": "Tous",
-      "vocabulary": "Vocabulaire",
+      "vocabularylist": "Vocabulaire",
       "theory": "Théorie",
       "grammar": "Grammaire",
       "numbers": "Nombres",
       "multiple_choice": "Choix multiple",
       "fill_blank": "Remplir les blancs",
       "matching": "Appariement",
-      "reordering": "Réorganisation"
+      "reordering": "Réorganisation",
+      "test": "Test"
     },
     "learningTarget": "Langue d'apprentissage",
     "dailyGoal": "Objectif quotidien",
@@ -532,14 +533,14 @@
     "contentTypes": {
       "theory": "Théorie",
       "vocabularylist": "Vocabulaire",
-      "vocabulary": "Vocabulaire",
       "multiple choice": "Choix multiple",
       "numbers": "Nombres",
       "numbersGame": "Jeu de nombres",
       "reordering": "Réorganisation",
       "fillBlank": "Texte à trous",
       "matching": "Matching",
-      "speaking": "Parler"
+      "speaking": "Parler",
+      "test": "Test"
     },
     "badges": {
       "completed": "Terminé",

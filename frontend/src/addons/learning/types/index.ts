@@ -347,3 +347,54 @@ export interface PronunciationFeedback {
   correctPronunciation: string;
   suggestions: string;
 }
+
+
+// Interface from LearnHeader
+export interface FilteredUnit {
+  id: number;
+  title: string;
+  level: string;
+  lessons: FilteredLesson[];
+  progress?: number;
+  order: number;
+}
+
+export interface FilteredLesson {
+  id: number;
+  title: string;
+  lesson_type: string;
+  unit_id: number;
+  estimated_duration: number;
+  contentLessons: FilteredContentLesson[];
+  progress?: number;
+  status?: 'not_started' | 'in_progress' | 'completed';
+  unitTitle?: string;
+  unitLevel?: string;
+  filteredContents?: FilteredContentLesson[];
+}
+
+export interface FilteredContentLesson {
+  id: number;
+  title: string;
+  content_type: string;
+  lesson_id: number;
+  order: number;
+  progress?: number;
+  status?: 'not_started' | 'in_progress' | 'completed';
+}
+
+export interface LevelGroupType {
+  level: string;
+  units: FilteredUnit[];
+}
+
+export interface LessonResult {
+  id: number;
+  title: string;
+  lesson_type: string;
+  estimated_duration: number;
+  unit_id?: number;
+  unit_title?: string;
+  unit_level?: string;
+  content_count?: number;
+}
