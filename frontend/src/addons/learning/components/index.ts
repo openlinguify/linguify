@@ -9,7 +9,7 @@ export * from './Theory';
 export * from './Units';
 
 // Export main view component
-export { default as LearningView } from './LearningView';
+export { default as LearningView } from './LearnView';
 
 // Export types
 export type { 

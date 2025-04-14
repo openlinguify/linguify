@@ -527,7 +527,7 @@ export default function LearningView() {
 
   return (
     <div className="w-full">
-      <div className="w-full">
+   
         <LearningJourney
           levelFilter={levelFilter}
           onLevelFilterChange={setLevelFilter}
@@ -868,7 +868,7 @@ export default function LearningView() {
             </div>
           </div>
         )}
-      </div>
+     
     </div>
   );
 }
