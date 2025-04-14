@@ -739,8 +739,8 @@ class MatchingExercise(models.Model):
     
     class Meta:
         ordering = ['content_lesson', 'order']
-        verbose_name = "Exercice d'association"
-        verbose_name_plural = "Exercices d'association"
+        verbose_name = "Matching Exercise"
+        verbose_name_plural = "Matching Exercises"
         indexes = [
             models.Index(fields=['content_lesson', 'order']),
             models.Index(fields=['difficulty']),
