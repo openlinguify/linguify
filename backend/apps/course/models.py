@@ -397,7 +397,7 @@ class Lesson(models.Model):
         )['total_duration'] or 0
         
         return total_duration
-    
+
     def clean(self):
         if self.lesson_type == 'professional' and not self.professional_field:
             raise ValidationError({'professional_field': _('This field is required when lesson type is professional.')})

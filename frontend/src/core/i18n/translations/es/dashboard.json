@@ -532,13 +532,15 @@
     "markAsComplete": "Marcar como completado",
     "contentTypes": {
       "theory": "Teoría",
+      "vocabularylist": "Vocabulario",
       "vocabulary": "Vocabulario",
       "multiple choice": "Opción múltiple",
       "numbers": "Números",
       "numbersGame": "Juego de números",
       "reordering": "Reordenamiento",
       "fillBlank": "Completar espacios en blanco",
-      "matching": "Emparejamiento"
+      "matching": "Emparejamiento",
+      "speaking": "Hablar"
     },
     "badges": {
       "completed": "Completado",
