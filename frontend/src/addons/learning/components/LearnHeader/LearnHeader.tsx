@@ -395,7 +395,7 @@ export default function EnhancedLearningJourney({
         </div>
 
         {/* Additional info card - now with a transparent style */}
-        <div className="bg-transparent rounded-lg p-4 text-black dark:text-white border border-gray-200 dark:border-gray-800 shadow-md">
+        <div className="bg-transparent rounded-lg p-4 text-black dark:text-white border border-gray-200 dark:border-gray-800">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             {/* Learning target */}
             <div>
