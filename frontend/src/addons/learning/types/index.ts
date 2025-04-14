@@ -135,6 +135,8 @@ export interface Question {
 export interface MultipleChoiceProps {
   lessonId: string;
   language?: 'en' | 'fr' | 'es' | 'nl';
+  unitId?: string;          
+  onComplete?: () => void;  
 }
 
 export interface Number {

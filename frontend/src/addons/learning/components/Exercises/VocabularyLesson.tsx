@@ -7,7 +7,6 @@ import {
   ChevronRight,
   RotateCcw,
   Volume2,
-  Sparkles,
   CheckCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,10 +15,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GradientText } from "@/components/ui/gradient-text";
 import { GradientCard } from "@/components/ui/gradient-card";
 import { commonStyles } from "@/styles/gradient_style";
-import { motion, AnimatePresence } from "framer-motion";
 import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 import { VocabularyItem, VocabularyLessonProps } from "@/addons/learning/types";
 import useSpeechSynthesis from '@/core/speech/useSpeechSynthesis';
+import LessonCompletionModal from "../shared/LessonCompletionModal";
 
 // API base URL from environment variable or default to localhost for development
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
@@ -36,8 +35,7 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [showCompletionMessage, setShowCompletionMessage] = useState(false);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [userSettings, setUserSettings] = useState({
     native_language: 'EN',
     target_language: 'EN',
@@ -56,7 +54,6 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
   const startTimeRef = useRef(Date.now());
   const timeIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const mountedRef = useRef(true);
-  const celebrationTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   // Calculate current progress percentage
   const progressPercentage = useMemo(() => {
@@ -154,9 +151,6 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
       if (timeIntervalRef.current) {
         clearInterval(timeIntervalRef.current);
       }
-      if (celebrationTimerRef.current) {
-        clearTimeout(celebrationTimerRef.current);
-      }
     };
   }, []);
 
@@ -210,58 +204,22 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
         updateProgressInAPI(progressPercentage);
       }
       
-      // Check if we've reached the last word and show celebration
-      if (currentIndex === vocabulary.length - 1 && !lessonCompleted && mountedRef.current) {
-        // Use a promise-based approach for more reliable audio
-        const playSuccessSound = async () => {
-          try {
-            // Pre-load the audio
-            const audio = new Audio("/success1.mp3");
-            audio.volume = 0.3;
-            
-            // Wait for audio to load with timeout
-            const loadPromise = new Promise<void>((resolve) => {
-              audio.oncanplaythrough = () => resolve();
-              audio.onerror = () => {
-                console.error("Error loading audio");
-                resolve();
-              };
-            });
-            
-            // Set a timeout in case loading hangs
-            const timeoutPromise = new Promise<void>((resolve) => {
-              setTimeout(() => resolve(), 2000);
-            });
-            
-            // Race the promises to handle either case
-            await Promise.race([loadPromise, timeoutPromise]);
-            
-            // Play the audio - wrapped in try/catch
-            if (mountedRef.current) {
-              await audio.play().catch(err => console.error("Error playing sound:", err));
-            }
-          } catch (error) {
-            console.error("Error with audio:", error);
-          }
-        };
+      // Check if we've reached the last word and we're not showing the modal yet
+      if (currentIndex === vocabulary.length - 1 && !lessonCompleted && !showCompletionModal && mountedRef.current) {
+        // Check if we're automatically showing completion at the end
+        console.log("Last word reached, showing completion modal...");
         
-        // Only play sound and show celebration if component is still mounted
-        if (mountedRef.current) {
-          playSuccessSound();
-          setShowCelebration(true);
-          
-          celebrationTimerRef.current = setTimeout(() => {
-            if (mountedRef.current) {
-              setShowCompletionMessage(true);
-              setShowCelebration(false);
-            }
-          }, 1500);
-          
-          updateProgressInAPI(100);
-        }
+        // Show the completion modal automatically when reaching the last word
+        // Note: Removed the complex audio handling - it will be played by handleFinishLesson when called
+        setTimeout(() => {
+          if (mountedRef.current) {
+            setShowCompletionModal(true);
+            updateProgressInAPI(100);
+          }
+        }, 500); // Small delay for better UX
       }
     }
-  }, [currentIndex, vocabulary.length, progressPercentage, updateProgressInAPI, lessonCompleted]);
+  }, [currentIndex, vocabulary.length, progressPercentage, updateProgressInAPI, lessonCompleted, showCompletionModal]);
 
   // Fetch vocabulary data - only once
   useEffect(() => {
@@ -352,14 +310,50 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
     setSelectedTab(value);
   }, []);
   
+  // Function to show the completion modal
+  const handleFinishLesson = useCallback(() => {
+    console.log("handleFinishLesson called - showing completion modal");
+    
+    // Play success sound (optional)
+    try {
+      const audio = new Audio("/success1.mp3");
+      audio.volume = 0.3;
+      audio.play().catch(err => console.error("Error playing sound:", err));
+    } catch (error) {
+      console.error("Error with audio:", error);
+    }
+    
+    // Show the completion modal
+    setShowCompletionModal(true);
+  }, []);
+  
+  // Handle keep reviewing (close modal without completing)
+  const handleKeepReviewing = useCallback(() => {
+    console.log("handleKeepReviewing called - hiding completion modal");
+    setShowCompletionModal(false);
+  }, []);
+  
   // Handle lesson completion
   const handleComplete = useCallback(() => {
-    updateProgressInAPI(100);
-    setShowCompletionMessage(false);
+    console.log("handleComplete called - completing lesson");
     
-    if (onComplete) {
-      onComplete();
-    }
+    // Mettre à jour la progression à 100%
+    updateProgressInAPI(100).then(() => {
+      // Fermer le modal
+      setShowCompletionModal(false);
+      
+      // Si une fonction onComplete a été fournie, l'appeler
+      // Cette fonction devrait gérer la navigation vers LessonContent
+      if (onComplete) {
+        console.log("Calling onComplete callback to return to LessonContent");
+        onComplete();
+      }
+    }).catch(error => {
+      console.error("Error updating progress:", error);
+      // Même en cas d'erreur, on ferme le modal et on tente de naviguer
+      setShowCompletionModal(false);
+      if (onComplete) onComplete();
+    });
   }, [updateProgressInAPI, onComplete]);
   
   // Handle speech button clicks with element tracking
@@ -402,81 +396,22 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
     );
   }
 
+  // Log modal state for debugging
+  console.log("Modal visibility state:", { showCompletionModal, lessonCompleted, atLastWord: currentIndex === vocabulary.length - 1 });
+  
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-6 relative">
+      {/* Completion Modal - Using the reusable component with explicit z-index */}
+      <LessonCompletionModal 
+        show={showCompletionModal}
+        onKeepReviewing={handleKeepReviewing}
+        onComplete={handleComplete}
+        title="Vocabulary Mastered! 🎉"
+        subtitle="Great work! You've completed all the vocabulary in this lesson."
+        type="lesson"
+      />
+
       <GradientCard className="h-full relative overflow-hidden">
-        {/* Celebration Overlay */}
-        <AnimatePresence>
-          {showCelebration && (
-            <motion.div
-              key="celebration"
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              className="absolute inset-0 flex items-center justify-center z-50"
-              style={{ pointerEvents: 'none' }}
-            >
-              <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
-              <motion.div
-                initial={{ y: -20, opacity: 0 }}
-                animate={{
-                  y: 0,
-                  opacity: 1,
-                  scale: [1, 1.2, 1],
-                  rotate: [0, -5, 5, -5, 0],
-                }}
-                transition={{ duration: 0.8 }}
-                className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 p-6 rounded-lg shadow-xl text-white text-2xl font-bold z-50 flex items-center gap-3"
-              >
-                <Sparkles className="h-6 w-6" />
-                Lesson Complete!
-                <Sparkles className="h-6 w-6" />
-              </motion.div>
-            </motion.div>
-          )}
-
-          {showCompletionMessage && (
-            <motion.div
-              key="completion"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 flex items-center justify-center z-40"
-            >
-              <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -20, opacity: 0 }}
-                className="bg-white p-8 rounded-lg shadow-xl z-50 text-center space-y-4 max-w-md"
-              >
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
-                  🎉 Vocabulary Mastered! 🎉
-                </h3>
-                <p className="text-gray-600">
-                  Great work! You've completed all the vocabulary in this
-                  lesson.
-                </p>
-                <div className="pt-2 flex justify-center space-x-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowCompletionMessage(false)}
-                    className="border-brand-purple text-brand-purple hover:bg-brand-purple/10"
-                  >
-                    Keep Reviewing
-                  </Button>
-                  <Button
-                    onClick={handleComplete}
-                    className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white border-none"
-                  >
-                    Complete Lesson
-                  </Button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         <div className="p-6 flex flex-col gap-4 h-full relative z-10">
           {/* Progress Section */}
           <div>
@@ -652,7 +587,7 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
           <div className="absolute bottom-5 right-5 z-20">
             <Button 
               className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 hover:from-purple-700 hover:to-blue-700"
-              onClick={handleComplete}
+              onClick={handleFinishLesson}
               type="button"
             >
               <CheckCircle className="h-4 w-4 mr-2" />
