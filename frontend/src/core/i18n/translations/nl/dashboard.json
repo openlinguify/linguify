@@ -530,13 +530,15 @@
     "markAsComplete": "Markeren als voltooid",
     "contentTypes": {
       "theory": "Theorie",
+      "vocabularylist": "Woordenschat",
       "vocabulary": "Woordenschat",
       "multiple choice": "Meerkeuze",
       "numbers": "Getallen",
       "numbersGame": "Getallenspel",
       "reordering": "Herschikking",
       "fillBlank": "Vul de lege plekken in",
-      "matching": "Matchen"
+      "matching": "Matchen",
+      "speaking": "Spreken"
     },
     "badges": {
       "completed": "Voltooid",

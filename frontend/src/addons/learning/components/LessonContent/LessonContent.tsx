@@ -28,6 +28,7 @@ const getContentTypeIcon = (contentType: string): React.ReactNode => {
   const CONTENT_TYPE_ICONS: Record<string, React.ReactNode> = {
     'theory': <BookOpen className="h-4 w-4" />,
     'vocabulary': <FileText className="h-4 w-4" />,
+    'vocabularylist': <FileText className="h-4 w-4" />,
     'multiple choice': <GraduationCap className="h-4 w-4" />,
     'numbers': <Calculator className="h-4 w-4" />,
     'numbers_game': <Gamepad2 className="h-4 w-4" />,

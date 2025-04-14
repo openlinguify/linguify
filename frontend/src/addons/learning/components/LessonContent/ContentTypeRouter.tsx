@@ -28,7 +28,6 @@ interface ContentTypeRouterProps {
 export default function ContentTypeRouter({
   contentType,
   contentId,
-  parentLessonId,
   language = 'en',
   unitId,
   onComplete
@@ -52,7 +51,9 @@ export default function ContentTypeRouter({
       
     case 'vocabulary':
       return <VocabularyLesson {...commonProps} />;
-      
+    
+    case 'vocabularylist':
+      return <VocabularyLesson {...commonProps} />;
     case 'multiple choice':
       return <MultipleChoiceQuestion {...commonProps} />;
       
@@ -70,7 +71,8 @@ export default function ContentTypeRouter({
       
     case 'matching':
       return <MatchingExercise {...commonProps} />;
-      
+    
+
     case 'speaking':
       return (
         <SpeakingPractice {...commonProps} />

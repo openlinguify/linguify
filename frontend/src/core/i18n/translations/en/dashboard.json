@@ -531,13 +531,15 @@
     "markAsComplete": "Mark as Complete",
     "contentTypes": {
       "theory": "Theory",
+      "vocabularylist": "Vocabulary",
       "vocabulary": "Vocabulary",
       "multiple choice": "Multiple Choice",
       "numbers": "Numbers",
       "numbersGame": "Numbers Game",
       "reordering": "Reordering",
       "fillBlank": "Fill in the Blank",
-      "matching": "Matching"
+      "matching": "Matching",
+      "speaking": "Speaking"
     },
     "badges": {
       "completed": "Completed",
