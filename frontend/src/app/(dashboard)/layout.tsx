@@ -1,3 +1,4 @@
+// src/app/(dashboard)/layout.tsx
 "use client";
 
 import React, { useEffect, useMemo } from "react";
@@ -81,7 +82,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Header />
       {/* Main Content */}
       <main className="flex-1 dark:bg-transparent dark:text-white">
-        <div className="p-6 w-full">{children}</div>
+        <div className="pt-2 p-6 w-full">{children}</div>
       </main>
     </div>
   );

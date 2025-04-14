@@ -270,154 +270,159 @@ export default function EnhancedLearningJourney({
 
 
   return (
-    <div className="mb-6 space-y-4">
-      {/* Main panel with gradient */}
-      <div className="bg-transparent rounded-lg text-black dark:text-white">
 
-        {/* Filters and layout options */}
-        <div className="flex flex-wrap items-center gap-2 mt-4 bg-white/5 dark:bg-black/5 backdrop-blur-sm p-3 rounded-lg border border-gray-200 dark:border-gray-800">
-          {/* Level filter */}
-          {availableLevels.length > 0 && onLevelFilterChange && (
-            <div className="flex items-center gap-2 flex-grow">
-              <Filter className="h-4 w-4" />
-              <span className="text-sm font-medium">{t('dashboard.learningjourney.level')}:</span>
-              <Select value={levelFilter} onValueChange={onLevelFilterChange}>
-                <SelectTrigger className="bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 flex-1 max-w-[180px]">
-                  <SelectValue
-                    placeholder={t('dashboard.learningjourney.allLevels')} />
-                </SelectTrigger>
-                <SelectContent
-                  className="w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-700">
-                  <SelectItem
-                    value="all"
 
-                  >{t('dashboard.learningjourney.allLevels')}</SelectItem>
-                  {availableLevels.map(level => (
+    <div className="mb-2">
+
+      <div className="space-y-2">
+        {/* Main panel with gradient */}
+        <div className="bg-transparent rounded-lg text-black dark:text-white">
+
+          {/* Filters and layout options */}
+          <div className="flex flex-wrap items-center gap-2 mt-2 bg-white/5 dark:bg-black/5 backdrop-blur-sm p-3 rounded-lg border border-gray-200 dark:border-gray-800">
+            {/* Level filter */}
+            {availableLevels.length > 0 && onLevelFilterChange && (
+              <div className="flex items-center gap-2 flex-grow">
+                <Filter className="h-4 w-4" />
+                <span className="text-sm font-medium">{t('dashboard.learningjourney.level')}:</span>
+                <Select value={levelFilter} onValueChange={onLevelFilterChange}>
+                  <SelectTrigger className="bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 flex-1 max-w-[180px]">
+                    <SelectValue
+                      placeholder={t('dashboard.learningjourney.allLevels')} />
+                  </SelectTrigger>
+                  <SelectContent
+                    className="w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-700">
                     <SelectItem
-                      key={level} value={level}>
-                      {t('dashboard.learningjourney.levelX', { level })}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+                      value="all"
 
-          {/* Content type filter */}
-          {onContentTypeChange && (
-            <div className="flex items-center gap-2 flex-grow">
-              <Filter className="h-4 w-4" />
-              <span className="text-sm font-medium">{t('dashboard.learningjourney.content')}:</span>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <div className="relative flex-1 max-w-[180px]">
-                    <Button
-                      variant="outline"
-                      className="w-full justify-between bg-white/30 dark:bg-black/30 border border-gray-200 dark:border-gray-700 h-9 px-3 text-left text-sm font-normal pr-10"
-                    >
-                      {selectedTypes.includes("all")
-                        ? t('dashboard.learningjourney.allContentTypes')
-                        : `${selectedTypes.length} ${t('dashboard.learningjourney.filtered')}`}
-                      {/* Flèche vers le bas */}
-                      <svg
-                        className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </Button>
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 z-50">
-                  <DropdownMenuLabel>{t('dashboard.learningjourney.contentTypes')}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    {CONTENT_TYPES.map((type) => (
-                      <DropdownMenuCheckboxItem
-                        key={type.value}
-                        checked={selectedTypes.includes(type.value)}
-                        onCheckedChange={() => handleContentTypeChange(type.value)}
-                        className="flex items-center gap-2"
-                      >
-                        {type.icon}
-                        {t(`dashboard.learningjourney.contentType.${type.value}`)}
-                      </DropdownMenuCheckboxItem>
+                    >{t('dashboard.learningjourney.allLevels')}</SelectItem>
+                    {availableLevels.map(level => (
+                      <SelectItem
+                        key={level} value={level}>
+                        {t('dashboard.learningjourney.levelX', { level })}
+                      </SelectItem>
                     ))}
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Content type filter */}
+            {onContentTypeChange && (
+              <div className="flex items-center gap-2 flex-grow">
+                <Filter className="h-4 w-4" />
+                <span className="text-sm font-medium">{t('dashboard.learningjourney.content')}:</span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <div className="relative flex-1 max-w-[180px]">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between bg-white/30 dark:bg-black/30 border border-gray-200 dark:border-gray-700 h-9 px-3 text-left text-sm font-normal pr-10"
+                      >
+                        {selectedTypes.includes("all")
+                          ? t('dashboard.learningjourney.allContentTypes')
+                          : `${selectedTypes.length} ${t('dashboard.learningjourney.filtered')}`}
+                        {/* Flèche vers le bas */}
+                        <svg
+                          className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </Button>
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 z-50">
+                    <DropdownMenuLabel>{t('dashboard.learningjourney.contentTypes')}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      {CONTENT_TYPES.map((type) => (
+                        <DropdownMenuCheckboxItem
+                          key={type.value}
+                          checked={selectedTypes.includes(type.value)}
+                          onCheckedChange={() => handleContentTypeChange(type.value)}
+                          className="flex items-center gap-2"
+                        >
+                          {type.icon}
+                          {t(`dashboard.learningjourney.contentType.${type.value}`)}
+                        </DropdownMenuCheckboxItem>
+                      ))}
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
 
 
-          {/* Compact view toggle */}
-          {onCompactViewChange && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">{t('dashboard.learningjourney.compactView')}</span>
-              <Switch
-                checked={isCompactView}
-                onCheckedChange={onCompactViewChange}
-                className="data-[state=checked]:bg-primary/50 data-[state=unchecked]:bg-gray-200 dark:data-[state=unchecked]:bg-gray-700"
-              />
-            </div>
-          )}
+            {/* Compact view toggle */}
+            {onCompactViewChange && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">{t('dashboard.learningjourney.compactView')}</span>
+                <Switch
+                  checked={isCompactView}
+                  onCheckedChange={onCompactViewChange}
+                  className="data-[state=checked]:bg-primary/50 data-[state=unchecked]:bg-gray-200 dark:data-[state=unchecked]:bg-gray-700"
+                />
+              </div>
+            )}
 
-          {/* Layout toggle */}
-          {onLayoutChange && (
-            <div className="flex gap-1 ml-auto">
-              <Button
-                variant={layout === "list" ? "default" : "outline"}
-                size="icon"
-                className="h-8 w-8 bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 hover:bg-white/40 dark:hover:bg-black/40"
-                onClick={() => onLayoutChange("list")}
-              >
-                <LayoutList className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={layout === "grid" ? "default" : "outline"}
-                size="icon"
-                className="h-8 w-8 bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 hover:bg-white/40 dark:hover:bg-black/40"
-                onClick={() => onLayoutChange("grid")}
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Additional info card - now with a transparent style */}
-      <div className="bg-transparent rounded-lg p-4 text-black dark:text-white border border-gray-200 dark:border-gray-800 shadow-md">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          {/* Learning target */}
-          <div>
-            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.learningjourney.learningTarget')}</h3>
-            <div className="flex items-center mt-1">
-              <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
-                {getLanguageFullName(userData?.target_language || "EN")}
-              </span>
-              <Badge className="ml-2 bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 hover:bg-indigo-200 dark:hover:bg-indigo-800">
-                {userData?.language_level || "A1"}
-              </Badge>
-            </div>
+            {/* Layout toggle */}
+            {onLayoutChange && (
+              <div className="flex gap-1 ml-auto">
+                <Button
+                  variant={layout === "list" ? "default" : "outline"}
+                  size="icon"
+                  className="h-8 w-8 bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 hover:bg-white/40 dark:hover:bg-black/40"
+                  onClick={() => onLayoutChange("list")}
+                >
+                  <LayoutList className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={layout === "grid" ? "default" : "outline"}
+                  size="icon"
+                  className="h-8 w-8 bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 hover:bg-white/40 dark:hover:bg-black/40"
+                  onClick={() => onLayoutChange("grid")}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
+        </div>
 
-          {/* Daily goal */}
-          <div>
-            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.learningjourney.dailyGoal')}</h3>
-            <div className="flex items-center mt-1">
-              <Progress
-                className="w-32 h-2 mr-2"
-                value={Math.min(100, (dailyXp / xpGoal) * 100)}
-              />
-              <span className="text-sm font-medium">
-                {dailyXp}/{xpGoal} XP
-              </span>
-              <Trophy className={`h-4 w-4 ml-2 ${dailyXp >= xpGoal ? 'text-amber-500' : 'text-gray-400 dark:text-gray-600'}`} />
+        {/* Additional info card - now with a transparent style */}
+        <div className="bg-transparent rounded-lg p-4 text-black dark:text-white border border-gray-200 dark:border-gray-800 shadow-md">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            {/* Learning target */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.learningjourney.learningTarget')}</h3>
+              <div className="flex items-center mt-1">
+                <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                  {getLanguageFullName(userData?.target_language || "EN")}
+                </span>
+                <Badge className="ml-2 bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 hover:bg-indigo-200 dark:hover:bg-indigo-800">
+                  {userData?.language_level || "A1"}
+                </Badge>
+              </div>
+            </div>
+
+            {/* Daily goal */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.learningjourney.dailyGoal')}</h3>
+              <div className="flex items-center mt-1">
+                <Progress
+                  className="w-32 h-2 mr-2"
+                  value={Math.min(100, (dailyXp / xpGoal) * 100)}
+                />
+                <span className="text-sm font-medium">
+                  {dailyXp}/{xpGoal} XP
+                </span>
+                <Trophy className={`h-4 w-4 ml-2 ${dailyXp >= xpGoal ? 'text-amber-500' : 'text-gray-400 dark:text-gray-600'}`} />
+              </div>
             </div>
           </div>
         </div>
