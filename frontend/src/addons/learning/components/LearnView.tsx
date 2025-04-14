@@ -537,6 +537,7 @@ export default function LearningView() {
           onContentTypeChange={handleContentTypeChange}
           isCompactView={isCompactView}
           onCompactViewChange={handleCompactViewChange}
+          
         />
 
         {/* Units display (default mode) */}
