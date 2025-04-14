@@ -1,22 +1,7 @@
 // src/hooks/useLessonCompletion.ts
 import { useState, useCallback, useEffect } from 'react';
 import lessonCompletionService from '@/addons/progress/api/lessonCompletionService';
-
-interface UseLessonCompletionOptions {
-  lessonId: string;
-  unitId?: string;
-  onComplete?: () => void;
-  autoSound?: boolean;
-  type?: 'lesson' | 'quiz' | 'exercise';
-  initialTimeSpent?: number;
-}
-
-interface LessonCompletionState {
-  showCompletionModal: boolean;
-  score?: string;
-  timeSpent: number;
-  isCompleted: boolean;
-}
+import { LessonCompletionState, UseLessonCompletionOptions } from "@/addons/learning/types";
 
 /**
  * Hook pour gérer l'état de complétion d'une leçon de manière cohérente

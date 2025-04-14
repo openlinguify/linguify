@@ -1,4 +1,9 @@
 // src/app/(dashboard)/(apps)/learning/_components/MatchingExercise.tsx
+/**
+ * This file contains the MatchingExercise component, which is a React component used to create and manage a matching exercise in a language learning application.
+ * The component allows users to match words in the target language with their translations in the native language.
+ * It handles loading exercise data, tracking user progress, checking answers, and providing feedback on the exercise results.
+ */
 'use client';
 
 import React, { useState, useEffect } from "react";
@@ -7,31 +12,24 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { 
-  AlertCircle, 
-  CheckCircle, 
-  XCircle, 
-  RotateCcw, 
+import {
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+  RotateCcw,
   ChevronRight,
   ArrowRight,
-  AlertTriangle 
+  AlertTriangle
 } from "lucide-react";
 import courseAPI from "@/addons/learning/api/courseAPI";
 import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
-import { MatchingAnswers } from "@/addons/learning/types";
+import { MatchingAnswers, MatchingExerciseProps } from "@/addons/learning/types";
 
-interface MatchingExerciseProps {
-  lessonId: string;
-  language?: 'en' | 'fr' | 'es' | 'nl';
-  unitId?: string;
-  onComplete?: () => void;
-}
-
-const MatchingExercise: React.FC<MatchingExerciseProps> = ({ 
-  lessonId, 
+const MatchingExercise: React.FC<MatchingExerciseProps> = ({
+  lessonId,
   language = 'en',
   unitId,
-  onComplete 
+  onComplete
 }) => {
   // States
   const [exercise, setExercise] = useState<any>(null);
@@ -42,14 +40,14 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
   const [timeSpent, setTimeSpent] = useState<number>(0);
   const [startTime] = useState<number>(Date.now());
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
-  const [exerciseCompleted, setExerciseCompleted] = useState<boolean>(false);
+  const [_exerciseCompleted, setExerciseCompleted] = useState<boolean>(false);
 
   // Track time spent
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeSpent(Math.floor((Date.now() - startTime) / 1000));
     }, 1000);
-    
+
     return () => clearInterval(timer);
   }, [startTime]);
 
@@ -58,35 +56,35 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
     const loadExercise = async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
         console.log(`Loading matching exercises for content lesson: ${lessonId}`);
         const exercises = await courseAPI.getMatchingExercises(lessonId, language);
-        
+
         // If exercises exist, use the first one
         if (exercises && exercises.length > 0) {
           setExercise(exercises[0]);
-        } 
+        }
         // Otherwise, try to create one automatically
         else {
           console.log("No matching exercises found, attempting to create one");
           const createdExercise = await courseAPI.createMatchingExercise(lessonId);
-          
+
           if (createdExercise) {
             setExercise(createdExercise);
           } else {
             // Check if the lesson contains vocabulary words
             const vocabData = await courseAPI.getVocabularyContent(lessonId, language);
-            
+
             if (vocabData && vocabData.results && vocabData.results.length > 0) {
               // Collect vocabulary IDs
               const vocabIds = vocabData.results.map((item: any) => item.id);
               // Try to create with specific IDs
               const newExercise = await courseAPI.createMatchingExercise(
-                lessonId, 
+                lessonId,
                 vocabIds.slice(0, 8) // Limit to 8 words maximum
               );
-              
+
               if (newExercise) {
                 setExercise(newExercise);
               } else {
@@ -97,7 +95,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
             }
           }
         }
-        
+
         // Initialize progress tracking
         if (parseInt(lessonId)) {
           lessonCompletionService.updateContentProgress(
@@ -115,7 +113,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
         setLoading(false);
       }
     };
-    
+
     loadExercise();
   }, [lessonId, language]);
 
@@ -123,7 +121,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
   const handleWordSelect = (word: string, wordType: 'target' | 'native') => {
     // Don't allow selection if exercise is completed
     if (result) return;
-    
+
     if (wordType === 'target') {
       // If a target word is selected
       setSelectedWord(word);
@@ -134,7 +132,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
         ...prev,
         [selectedWord]: word
       }));
-      
+
       // Reset selection
       setSelectedWord(null);
     }
@@ -143,15 +141,15 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
   // Check answers
   const checkAnswers = async () => {
     if (!exercise) return;
-    
+
     try {
       const result = await courseAPI.checkMatchingAnswers(exercise.id, matches);
       setResult(result);
-      
+
       // Vérifier si le score est suffisant pour considérer l'exercice comme réussi
       const isSuccessful = result.is_successful === true;
       setExerciseCompleted(isSuccessful);
-      
+
       // Mettre à jour la progression dans la base de données
       await lessonCompletionService.updateContentProgress(
         parseInt(lessonId),
@@ -160,7 +158,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
         Math.round(result.score / 10), // XP basé sur le score
         isSuccessful // Marqué comme complété uniquement si le score est suffisant
       );
-      
+
       // Mettre à jour la leçon parente si unitId est fourni
       if (unitId) {
         await lessonCompletionService.updateLessonProgress(
@@ -171,12 +169,12 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
           isSuccessful // Marquer comme complété uniquement si le score est suffisant
         );
       }
-      
+
       // Notifier que l'exercice est terminé uniquement si réussi
       if (isSuccessful && onComplete) {
         onComplete();
       }
-      
+
     } catch (err) {
       console.error("Error checking answers:", err);
       setError("An error occurred while checking answers");
@@ -214,10 +212,10 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
 
   // Exercise data
   const { target_words = [], native_words = [] } = exercise.exercise_data;
-  
+
   // Calculate completion percentage
   const completionPercentage = Object.keys(matches).length / target_words.length * 100;
-  
+
   // Check if all words are matched
   const allMatched = Object.keys(matches).length === target_words.length;
 
@@ -225,9 +223,9 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
     <div className="w-full space-y-6">
       {/* Progress bar */}
       <div className="w-full">
-        <Progress 
-          value={completionPercentage} 
-          className="h-2" 
+        <Progress
+          value={completionPercentage}
+          className="h-2"
         />
         <div className="flex justify-between text-xs text-gray-500 mt-1">
           <span>{Object.keys(matches).length} / {target_words.length} matched</span>
@@ -245,7 +243,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
             {exercise.exercise_data.instruction || "Match each word in the language you're learning with its translation in your native language."}
           </p>
         </CardHeader>
-        
+
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             {/* Target language words column */}
@@ -253,7 +251,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
               <h3 className="text-lg font-semibold mb-3 text-gray-700">
                 Words to learn ({exercise.exercise_data.target_language?.toUpperCase() || "ES"})
               </h3>
-              
+
               <div className="space-y-2 min-h-[300px]">
                 {target_words.map((word: string, index: number) => (
                   <div
@@ -270,32 +268,32 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
                   >
                     <div className="flex justify-between items-center">
                       <span className="font-medium">{word}</span>
-                      
+
                       {matches[word] && (
                         <div className="flex items-center text-indigo-700">
                           <ArrowRight className="h-4 w-4 mx-1" />
-                          <Badge 
-                            variant="outline" 
+                          <Badge
+                            variant="outline"
                             className={`
-                              ${result?.feedback?.[word]?.is_correct ? 'border-green-500 bg-green-50 text-green-700' : 
-                               result?.feedback?.[word]?.is_correct === false ? 'border-red-500 bg-red-50 text-red-700' : 
-                               'border-indigo-300 text-indigo-700'}
+                              ${result?.feedback?.[word]?.is_correct ? 'border-green-500 bg-green-50 text-green-700' :
+                                result?.feedback?.[word]?.is_correct === false ? 'border-red-500 bg-red-50 text-red-700' :
+                                  'border-indigo-300 text-indigo-700'}
                             `}
                           >
                             {matches[word]}
                           </Badge>
                         </div>
                       )}
-                      
+
                       {result?.feedback?.[word]?.is_correct === true && (
                         <CheckCircle className="h-5 w-5 text-green-600" />
                       )}
-                      
+
                       {result?.feedback?.[word]?.is_correct === false && (
                         <XCircle className="h-5 w-5 text-red-600" />
                       )}
                     </div>
-                    
+
                     {/* Show correct answer if wrong */}
                     {result?.feedback?.[word]?.is_correct === false && (
                       <div className="mt-2 text-sm text-red-700">
@@ -306,13 +304,13 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
                 ))}
               </div>
             </div>
-            
+
             {/* Native language translations column */}
             <div>
               <h3 className="text-lg font-semibold mb-3 text-gray-700">
                 Translations ({exercise.exercise_data.native_language?.toUpperCase() || "EN"})
               </h3>
-              
+
               <div className="space-y-2 min-h-[300px]">
                 {native_words.map((word: string, index: number) => (
                   <div
@@ -332,7 +330,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
               </div>
             </div>
           </div>
-          
+
           {/* Selected word indicator */}
           {selectedWord && !result && (
             <div className="mt-4 p-2 bg-indigo-50 border border-indigo-200 rounded-md">
@@ -342,43 +340,42 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
               </p>
             </div>
           )}
-          
+
           {/* Exercise results */}
           {result && (
-            <div className={`mt-8 p-6 rounded-lg shadow-sm ${
-              result.is_successful
-                ? 'bg-gradient-to-r from-green-50 to-teal-50' 
+            <div className={`mt-8 p-6 rounded-lg shadow-sm ${result.is_successful
+                ? 'bg-gradient-to-r from-green-50 to-teal-50'
                 : 'bg-gradient-to-r from-amber-50 to-orange-50'
-            }`}>
+              }`}>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
                 Result: {result.score.toFixed(1)}%
               </h3>
-              
+
               <div className="flex items-center gap-2 text-gray-700">
                 <span className="font-medium">
                   {result.correct_count}/{result.total_count} correct
                 </span>
-                
+
                 {result.is_successful ? (
                   <CheckCircle className="h-5 w-5 text-green-600 ml-2" />
                 ) : (
                   <AlertTriangle className="h-5 w-5 text-orange-600 ml-2" />
                 )}
               </div>
-              
+
               <div className="mt-4">
-      <p className={result.is_successful ? "text-green-700" : "text-orange-700"}>
-        {result.message}
-      </p>
-      {!result.is_successful && (
-        <p className="text-gray-600 mt-2">
-          You need a score of at least {result.success_threshold}% to complete this exercise.
-        </p>
-      )}
-    </div>
-  </div>
-)}
-          
+                <p className={result.is_successful ? "text-green-700" : "text-orange-700"}>
+                  {result.message}
+                </p>
+                {!result.is_successful && (
+                  <p className="text-gray-600 mt-2">
+                    You need a score of at least {result.success_threshold}% to complete this exercise.
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Action buttons */}
           <div className="flex justify-between mt-10">
             <Button
@@ -390,7 +387,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset
             </Button>
-            
+
             <Button
               onClick={checkAnswers}
               disabled={!allMatched || result !== null}
@@ -405,24 +402,24 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
 
       {/* Complete exercise button */}
       <div className="mt-8 flex justify-end">
-  {result && result.is_successful ? (
-    <Button
-      onClick={onComplete}
-      className="bg-green-600 hover:bg-green-700 text-white"
-    >
-      <CheckCircle className="h-4 w-4 mr-2" />
-      Complete Exercise
-    </Button>
-  ) : result && (
-    <Button
-      onClick={resetExercise}
-      className="bg-orange-600 hover:bg-orange-700 text-white"
-    >
-      <RotateCcw className="h-4 w-4 mr-2" />
-      Try Again
-    </Button>
-  )}
-</div>
+        {result && result.is_successful ? (
+          <Button
+            onClick={onComplete}
+            className="bg-green-600 hover:bg-green-700 text-white"
+          >
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Complete Exercise
+          </Button>
+        ) : result && (
+          <Button
+            onClick={resetExercise}
+            className="bg-orange-600 hover:bg-orange-700 text-white"
+          >
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Try Again
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

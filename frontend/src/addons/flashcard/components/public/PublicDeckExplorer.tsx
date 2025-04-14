@@ -1,4 +1,14 @@
 // src/addons/flashcard/components/PublicDeckExplorer.tsx
+/**
+ * PublicDeckExplorer Component
+ * 
+ * This component allows users to explore public decks of flashcards.
+ * It provides functionalities to view popular and recent decks,
+ * search for decks by name or username, and clone decks.
+ * 
+ * Props:
+ * - onDeckClone: Callback function triggered when a deck is cloned.
+ */
 'use client';
 import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
@@ -21,12 +31,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
 import { useTranslation } from "@/core/i18n/useTranslations";
 import { useRouter } from "next/navigation";
-
-// Types
-interface PublicDeckExplorerProps {
-  onDeckClone?: () => void;
-  initialTab?: 'popular' | 'recent' | 'search';
-}
+import { PublicDeckExplorerProps } from "@/addons/flashcard/types";
 
 const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
   onDeckClone,
@@ -123,14 +128,14 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
   const handleCloneDeck = useCallback(async (deck: any) => {
     try {
       setClonedDecks(prev => new Set(prev).add(deck.id));
-      
+
       await revisionApi.decks.clone(deck.id);
-      
+
       toast({
         title: t('dashboard.flashcards.successTitle'),
         description: t('dashboard.flashcards.deckCloneSuccess', { name: deck.name }),
       });
-      
+
       // Notifier le parent si nécessaire
       if (onDeckClone) {
         onDeckClone();
@@ -174,7 +179,7 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
         searchDecks();
       }
     }, 500);
-    
+
     return () => clearTimeout(timer);
   }, [filters, activeTab, searchDecks]);
 
@@ -184,10 +189,10 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
     const cardCount = deck.card_count || 0;
     const learnedCount = deck.learned_count || 0;
     const completionRate = cardCount > 0 ? Math.round((learnedCount / cardCount) * 100) : 0;
-    
+
     return (
-      <Card 
-        key={deck.id} 
+      <Card
+        key={deck.id}
         className="h-full flex flex-col transition-all duration-200 hover:shadow-md"
         onClick={() => handleViewDeck(deck.id)}
       >
@@ -201,18 +206,18 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
               {cardCount} {t('dashboard.flashcards.cards')}
             </Badge>
           </div>
-          
+
           <div className="flex items-center text-sm text-gray-500 mt-1">
             <User className="h-3 w-3 mr-1" />
             <span>{deck.username || 'Anonymous'}</span>
           </div>
         </CardHeader>
-        
+
         <CardContent className="flex-grow">
           <p className="text-gray-600 text-sm line-clamp-3">
             {deck.description || t('dashboard.flashcards.noDescription')}
           </p>
-          
+
           <div className="mt-4 space-y-2">
             <div className="flex justify-between text-xs text-gray-500">
               <span>{t('dashboard.flashcards.completion')}:</span>
@@ -220,21 +225,21 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
                 {completionRate}%
               </span>
             </div>
-            
+
             <div className="w-full bg-gray-200 rounded-full h-1.5">
-              <div 
-                className="bg-gradient-to-r from-brand-purple to-brand-gold h-1.5 rounded-full" 
+              <div
+                className="bg-gradient-to-r from-brand-purple to-brand-gold h-1.5 rounded-full"
                 style={{ width: `${completionRate}%` }}
               ></div>
             </div>
 
             <div className="pt-2 flex justify-between items-center">
               <span className="text-xs text-gray-500">
-                {t('dashboard.flashcards.createdOn', { 
-                  date: new Date(deck.created_at).toLocaleDateString() 
+                {t('dashboard.flashcards.createdOn', {
+                  date: new Date(deck.created_at).toLocaleDateString()
                 })}
               </span>
-              
+
               <Button
                 variant="outline"
                 size="sm"
@@ -277,7 +282,7 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
             className="pl-8"
           />
         </div>
-        
+
         <div className="relative sm:w-64">
           <User className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
@@ -287,7 +292,7 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
             className="pl-8"
           />
         </div>
-        
+
         <div className="flex gap-2">
           <Button
             variant={filters.sort === 'popularity' ? 'default' : 'outline'}
@@ -298,7 +303,7 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
             <Award className="h-4 w-4 mr-1" />
             {t('dashboard.flashcards.popular')}
           </Button>
-          
+
           <Button
             variant={filters.sort === 'recent' ? 'default' : 'outline'}
             size="sm"
@@ -308,7 +313,7 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
             <Clock className="h-4 w-4 mr-1" />
             {t('dashboard.flashcards.recent')}
           </Button>
-          
+
           <Button
             variant={filters.sort === 'alphabetical' ? 'default' : 'outline'}
             size="sm"
@@ -332,7 +337,7 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
         </div>
       );
     }
-    
+
     if (decks.length === 0) {
       return (
         <div className="text-center py-12">
@@ -347,7 +352,7 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
         </div>
       );
     }
-    
+
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {decks.map(renderDeckCard)}
@@ -373,30 +378,30 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
             {t('dashboard.flashcards.search')}
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="popular">
           {renderDeckGrid(
-            popularDecks, 
-            isLoading, 
-            t('dashboard.flashcards.noPopularDecks'), 
-            <Award className="h-12 w-12" />, 
+            popularDecks,
+            isLoading,
+            t('dashboard.flashcards.noPopularDecks'),
+            <Award className="h-12 w-12" />,
             fetchPopularDecks
           )}
         </TabsContent>
-        
+
         <TabsContent value="recent">
           {renderDeckGrid(
-            recentDecks, 
-            isLoading, 
-            t('dashboard.flashcards.noRecentDecks'), 
-            <Clock className="h-12 w-12" />, 
+            recentDecks,
+            isLoading,
+            t('dashboard.flashcards.noRecentDecks'),
+            <Clock className="h-12 w-12" />,
             fetchRecentDecks
           )}
         </TabsContent>
-        
+
         <TabsContent value="search">
           {renderSearchFilters()}
-          
+
           {isSearching ? (
             <div className="flex justify-center items-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-brand-purple" />
@@ -405,7 +410,7 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
             <div className="text-center py-12">
               <Search className="h-12 w-12 text-gray-300 mx-auto mb-3" />
               <p className="text-gray-500 mb-4">
-                {filters.search || filters.username 
+                {filters.search || filters.username
                   ? t('dashboard.flashcards.noSearchResults')
                   : t('dashboard.flashcards.searchPrompt')}
               </p>

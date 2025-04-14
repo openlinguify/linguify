@@ -21,21 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-
-// Définition des types pour structurer les données
-interface Tutorial {
-  id: number;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  videoUrl?: string;
-}
-
-interface FAQItem {
-  id: number;
-  question: string;
-  answer: string;
-}
+import { Tutorial, FAQItem } from "@/addons/help/types/";
 
 const tutorials: Tutorial[] = [
   {

@@ -30,19 +30,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useTranslation } from "@/core/i18n/useTranslations";
-
-interface LearnQuestion {
-  id: number;
-  term: string;
-  correctAnswer: string;
-  allOptions: string[];
-}
-
-interface LearnSettings {
-  cardLimit: number;
-  cardSource: "all" | "new" | "review" | "difficult";
-  shuffleQuestions: boolean;
-}
+import { LearnQuestion, LearnSettings } from "@/addons/flashcard/types";
 
 export default function LearnPage() {
   const { t } = useTranslation();

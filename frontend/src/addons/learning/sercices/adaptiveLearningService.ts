@@ -1,12 +1,6 @@
 // src/addons/learning/services/adaptiveLearningService.ts
-export interface LearningMetrics {
-    correctAnswerRate: number;
-    timeSpentPerItem: number;
-    mistakePatterns: Record<string, number>;
-    consecutiveCorrectAnswers: number;
-    attemptedQuestions: number;
-  }
-  
+import { LearningMetrics } from "@/addons/learning/types";
+
   export class AdaptiveLearningService {
     // Assess user performance and adjust difficulty
     static assessPerformance(metrics: LearningMetrics): 'decrease' | 'maintain' | 'increase' {

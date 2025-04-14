@@ -4,17 +4,7 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-
-interface LevelProgressChartProps {
-  levelProgression: {
-    [level: string]: {
-      total_units: number;
-      completed_units: number;
-      in_progress_units: number;
-      avg_completion: number;
-    };
-  };
-}
+import { LevelProgressChartProps } from "@/addons/progress/types/";
 
 export const LevelProgressChart: React.FC<LevelProgressChartProps> = ({ levelProgression }) => {
   // Transform the level progression data into format recharts can use
@@ -51,7 +41,7 @@ export const LevelProgressChart: React.FC<LevelProgressChartProps> = ({ levelPro
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="level" />
               <YAxis />
-              <Tooltip 
+              <Tooltip
                 formatter={(value, name) => [`${value} units`, name]}
                 labelFormatter={(label) => `Level ${label}`}
               />

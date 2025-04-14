@@ -2,12 +2,8 @@
 import React from 'react';
 import { Category } from '@/addons/notebook/types';
 import { ChevronRight, ChevronDown, Folder } from 'lucide-react';
+import { CategoryTreeProps } from '@/addons/notebook/types';
 
-interface CategoryTreeProps {
-  categories: Category[];
-  selectedCategory?: number;
-  onSelect: (categoryId: number) => void;
-}
 
 export function CategoryTree({ 
   categories,

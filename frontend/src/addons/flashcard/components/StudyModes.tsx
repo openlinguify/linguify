@@ -1,21 +1,18 @@
 // src/app/(dashboard)/(apps)/flashcard/_components/StudyModes.tsx
 
+/**
+ * StudyModeCard Component
+ * @description 
+ * Card component for each study mode in the flashcard app.
+ * It displays the name, description, and icon of the study mode.
+ * It also provides a link to the corresponding study mode page.
+ */
+
 import React from "react";
 import Link from "next/link";
 import { Clock, BookOpen, Dumbbell, Layers } from "lucide-react";
 import { useTranslation } from "@/core/i18n/useTranslations";
-
-interface StudyModeProps {
-  deckId: number;
-}
-
-interface StudyModeCardProps {
-  name: string;
-  description: string;
-  icon: React.ReactNode;
-  path: string;
-  deckId: number;
-}
+import { StudyModeProps, StudyModeCardProps } from "@/addons/flashcard/types";
 
 const StudyModeCard = ({
   name,
@@ -42,7 +39,7 @@ const StudyModeCard = ({
 
 export default function StudyModes({ deckId }: StudyModeProps) {
   const { t } = useTranslation();
-  
+
   return (
     <div className="mb-8">
       <h3 className="text-base font-semibold mb-4">{t('dashboard.flashcards.studyModes')}</h3>

@@ -9,7 +9,7 @@ import {
   UpdateLessonProgressRequest,
   UpdateContentProgressRequest,
   ApiOptions 
-} from '../types';
+} from '@/addons/progress/types';
  
 // Configurer un cache pour stocker les résultats
 const apiCache = new Map<string, {data: any, timestamp: number}>();

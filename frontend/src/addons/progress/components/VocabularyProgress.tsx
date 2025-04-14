@@ -1,36 +1,22 @@
 // src/app/(dashboard)/(apps)/progress/_components/VocabularyProgress.tsx
 "use client";
 import React, { useState, useEffect } from "react";
-import { Brain, CheckCircle, Clock, AlertTriangle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-
-interface DashboardStats {
-  totalWords: number;
-  masteredWords: number;
-  dueSoon: number;
-  streak: number;
-  todayProgress: number;
-}
-
-interface AccuracyDay {
-  date: string;
-  correct: number;
-  incorrect: number;
-  skipped: number;
-}
-
-interface ReviewHistoryItem {
-  date: string;
-  dueCount: number;
-}
-
-interface StatsResponse {
-  totalWords: number;
-  masteredWords: number;
-  reviewHistory: ReviewHistoryItem[];
-  accuracyByDay: AccuracyDay[];
-}
+import {
+  Brain,
+  CheckCircle,
+  Clock,
+  AlertTriangle
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
+import {
+  Progress
+} from "@/components/ui/progress";
+import { DashboardStats, AccuracyDay, StatsResponse } from "@/addons/progress/types/";
 
 const VocabularyProgress = () => {
   const [stats, setStats] = useState<DashboardStats>({
@@ -95,7 +81,7 @@ const VocabularyProgress = () => {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Vocabulary Revision</h1>
-      
+
       {/* Quick Stats */}
       <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
         <Card>

@@ -6,13 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Info, AlertCircle, MapPin, Cake, Globe, Book, ExternalLink } from "lucide-react";
-import Image from "next/image";
+import { CulturalContextProps } from "@/addons/learning/types";
 
-interface CulturalContextProps {
-  languageCode: 'en' | 'fr' | 'es' | 'nl';
-  lessonId?: string;
-  theme?: string; // e.g., "Greetings", "Food", "Holidays"
-}
+
 
 export default function CulturalContext({ 
   languageCode, 

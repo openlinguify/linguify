@@ -21,7 +21,7 @@ import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
 import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/core/utils/utils";
-import { Flashcard } from "@/addons/revision/types/revision";
+import { Flashcard } from "@/addons/flashcard/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "@/core/i18n/useTranslations";
@@ -47,15 +47,17 @@ export default function ReviewPage() {
     try {
       setIsLoading(true);
       
-      // First try to get cards due for review
-      const dueCards = await revisionApi.flashcards.getDue(10);
-      
-      if (dueCards.length === 0 && id) {
-        // If no cards are due, load all cards from the specified deck
+      // Get all cards from the specified deck
+      if (id) {
         const allCards = await revisionApi.flashcards.getAll(Number(id));
-        setFlashcards(allCards);
-      } else {
+        // Filter cards that are due for review based on some criteria
+        // For now, just use all cards but limit to 10 if needed
+        const dueCards = allCards.slice(0, 10);
         setFlashcards(dueCards);
+      } else {
+        // No deck id specified, use an empty array
+        setFlashcards([]);
+        console.warn("No deck ID provided for flashcard review");
       }
       
       // Initialize review start time

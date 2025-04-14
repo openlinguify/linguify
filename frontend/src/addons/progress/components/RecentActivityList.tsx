@@ -3,32 +3,13 @@
 
 import React from 'react';
 import { format } from 'date-fns';
-import { BookOpen, BookText, GraduationCap, CheckCircle, Clock } from 'lucide-react';
+import { BookOpen, BookText, GraduationCap, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { UserProgress } from "../../../app/(dashboard)/_components/user-progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { RecentActivity } from '@/addons/progress/types/';
-
-interface ActivityItem {
-  id: number;
-  content_details: {
-    id: number;
-    content_type: string;
-    title_en: string;
-    title_fr?: string;
-    title_es?: string;
-    title_nl?: string;
-  };
-  status: 'not_started' | 'in_progress' | 'completed';
-  completion_percentage: number;
-  last_accessed: string; // ISO date string
-}
-
-interface RecentActivityListProps {
-  activities: RecentActivity[];
-}
+import { RecentActivityListProps } from '@/addons/progress/types/';
 
 export const RecentActivityList: React.FC<RecentActivityListProps> = ({ activities }) => {
   if (!activities || activities.length === 0) {

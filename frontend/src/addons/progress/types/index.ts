@@ -1,5 +1,4 @@
-// src/types/progress.ts
-import { Lesson } from '@/addons/learning/types/';
+// addons/progress/types/index.ts
 
 
 export type ProgressStatus = 'not_started' | 'in_progress' | 'completed';
@@ -40,6 +39,7 @@ export interface LevelProgress {
   in_progress_units: number;
   avg_completion: number;
 }
+
 export interface UnitProgress {
   id: number;
   user: number;
@@ -121,7 +121,6 @@ export interface ContentLessonProgress {
   xp_earned: number;
 }
 
-
 export interface ContentDetails {
   id: number;
   content_type: string;
@@ -130,6 +129,7 @@ export interface ContentDetails {
   title_es?: string;
   title_nl?: string;
 }
+
 export interface UpdateContentProgressRequest {
   content_lesson_id: number;
   lesson_id: number;
@@ -139,6 +139,7 @@ export interface UpdateContentProgressRequest {
   mark_completed?: boolean;
   xp_earned?: number;
 }
+
 export interface ContentLessonProgress {
   id: number;
   user: number;
@@ -159,6 +160,7 @@ export interface ContentLessonProgress {
   completed_at: string | null;
   xp_earned: number;
 }
+
 export interface UpdateLessonProgressRequest {
   lesson_id: number;
   content_lesson_id: number;
@@ -175,7 +177,7 @@ export interface LevelStats {
   in_progress_units: number;
   avg_completion: number;
 }
- 
+
 export interface ProgressSummary {
   summary: {
     total_units: number;
@@ -219,3 +221,124 @@ export interface ApiOptions {
   cacheResults?: boolean;
   params?: Record<string, string>;
 }
+
+export interface DashboardStats {
+  totalWords: number;
+  masteredWords: number;
+  dueSoon: number;
+  streak: number;
+  todayProgress: number;
+}
+
+export interface AccuracyDay {
+  date: string;
+  correct: number;
+  incorrect: number;
+  skipped: number;
+}
+
+export interface ReviewHistoryItem {
+  date: string;
+  dueCount: number;
+}
+
+export interface StatsResponse {
+  totalWords: number;
+  masteredWords: number;
+  reviewHistory: ReviewHistoryItem[];
+  accuracyByDay: AccuracyDay[];
+}
+
+export interface ActivityItem {
+  id: number;
+  content_details: {
+    id: number;
+    content_type: string;
+    title_en: string;
+    title_fr?: string;
+    title_es?: string;
+    title_nl?: string;
+  };
+  status: 'not_started' | 'in_progress' | 'completed';
+  completion_percentage: number;
+  last_accessed: string; // ISO date string
+}
+
+export interface RecentActivityListProps {
+  activities: RecentActivity[];
+}
+
+export interface ActivityChartData {
+  date: string;
+  xp: number;
+  minutes: number;
+}
+
+export interface ActivityChartProps {
+  data: ActivityChartData[];
+}
+
+export interface LevelProgressChartProps {
+  levelProgression: {
+    [level: string]: {
+      total_units: number;
+      completed_units: number;
+      in_progress_units: number;
+      avg_completion: number;
+    };
+  };
+}
+
+export interface AchievementCardProps {
+  title: string;
+  value: string;
+  icon: React.ReactNode;
+  description: string;
+  color: string;
+}
+
+export interface WeeklyProgressData {
+  units: number;
+  lessons: number;
+  time: string;
+  xp: number;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

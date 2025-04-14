@@ -3,36 +3,29 @@
 import React, { useState } from 'react';
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Globe, Lock, AlertTriangle, Loader2, Info } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
 import { useTranslation } from "@/core/i18n/useTranslations";
+import { PublicityToggleProps } from "@/addons/flashcard/types";  
 
-interface PublicityToggleProps {
-  deckId: number;
-  isPublic: boolean;
-  isArchived?: boolean;
-  onStatusChange?: (isPublic: boolean) => void;
-  disabled?: boolean;
-}
-
-const PublicityToggle: React.FC<PublicityToggleProps> = ({ 
-  deckId, 
-  isPublic, 
+const PublicityToggle: React.FC<PublicityToggleProps> = ({
+  deckId,
+  isPublic,
   isArchived = false,
   onStatusChange,
-  disabled = false 
+  disabled = false
 }) => {
   const { toast } = useToast();
   const { t } = useTranslation();
@@ -59,12 +52,12 @@ const PublicityToggle: React.FC<PublicityToggleProps> = ({
       setLoading(true);
 
       await revisionApi.decks.togglePublic(deckId, makePublic);
-      
+
       // Notification
       toast({
         title: t('dashboard.flashcards.successTitle'),
-        description: makePublic 
-          ? t('dashboard.flashcards.deckMadePublic') 
+        description: makePublic
+          ? t('dashboard.flashcards.deckMadePublic')
           : t('dashboard.flashcards.deckMadePrivate'),
       });
 
@@ -119,9 +112,9 @@ const PublicityToggle: React.FC<PublicityToggleProps> = ({
             </span>
           )}
         </Label>
-        
+
         {loading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
-        
+
         {isArchived && (
           <TooltipProvider>
             <Tooltip>
@@ -145,7 +138,7 @@ const PublicityToggle: React.FC<PublicityToggleProps> = ({
             </AlertDialogTitle>
             <AlertDialogDescription>
               <p className="mb-4">{t('dashboard.flashcards.confirmMakePublicDesc')}</p>
-              
+
               <div className="bg-amber-50 p-4 rounded-md border border-amber-200 flex">
                 <AlertTriangle className="h-6 w-6 text-amber-500 mr-3 flex-shrink-0" />
                 <div className="text-sm text-amber-800">

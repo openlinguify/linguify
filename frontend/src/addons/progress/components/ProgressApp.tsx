@@ -9,8 +9,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-// Import the vocabulary revision component
 import VocabularyProgress from "./VocabularyProgress";
 
 const ProgressApp: React.FC = () => {
@@ -24,23 +22,23 @@ const ProgressApp: React.FC = () => {
       try {
         // Add a small delay to ensure any auth processes complete first
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // Pre-fetch summary data to check if API is working and data exists
         const summary = await progressService.getSummary()
           .catch(err => {
             console.error("Failed to retrieve summary data", err);
-            
+
             // If the error is a 404, attempt to initialize the data
             if (err.response && err.response.status === 404) {
               return null; // No existing data
             }
-            
+
             // For auth errors, don't treat as fatal, just return null
             if (err.response && err.response.status === 401) {
               console.warn("Authentication issues detected - will retry automatically");
               return null;
             }
-            
+
             throw err; // Propagate other errors
           });
 
@@ -60,14 +58,14 @@ const ProgressApp: React.FC = () => {
             }
           }
         }
-        
+
         setError(null);
       } catch (err) {
         console.error("Failed to initialize progress data:", err);
-        
+
         // Handle different error types
         const error = err as { response?: { status?: number } };
-        
+
         if (error.response?.status === 403) {
           setError("You don't have permission to access this resource.");
         } else {
@@ -77,16 +75,16 @@ const ProgressApp: React.FC = () => {
         setIsLoading(false);
       }
     };
-    
+
     initializeData();
   }, [toast]);
-  
+
   const handleRetry = () => {
     setIsLoading(true);
     setError(null);
     window.location.reload();
   };
-  
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-40">
@@ -94,7 +92,7 @@ const ProgressApp: React.FC = () => {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <Card className="w-full">
@@ -121,11 +119,11 @@ const ProgressApp: React.FC = () => {
             <TabsTrigger value="course">Course Progress</TabsTrigger>
             <TabsTrigger value="vocabulary">Vocabulary Revision</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="course" className="mt-6">
             <ProgressDashboard />
           </TabsContent>
-          
+
           <TabsContent value="vocabulary" className="mt-6">
             <VocabularyProgress />
           </TabsContent>

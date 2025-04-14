@@ -3,20 +3,14 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Save, Pin, Archive, Trash2, Clock } from "lucide-react";
-import { Note, Tag, Category } from "@/addons/notebook/types";
+import { Tag } from "@/addons/notebook/types";
 import dynamic from "next/dynamic";
+import { NoteEditorProps } from "@/addons/notebook/types/";
 
 const Editor = dynamic(
   () => import("@/components/ui/Editor").then((mod) => mod.Editor),
   { ssr: false }
 );
-
-interface NoteEditorProps {
-  note?: Note;
-  categories: Category[];
-  onSave: (note: Partial<Note>) => Promise<void>;
-  onDelete?: () => Promise<void>;
-}
 
 export function NoteEditor({
   note,

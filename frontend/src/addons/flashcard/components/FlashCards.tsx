@@ -17,26 +17,15 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
-import type { Flashcard, FlashcardDeck } from "@/addons/flashcard/types";
+import type {
+  Flashcard,
+  FlashcardAppProps,
+  ApiError,
+  FormData
+} from "@/addons/flashcard/types";
 import EditCardModal from "./EditCardModal";
 import ImportExcelModal from "./ImportExcelModal";
 import { useTranslation } from "@/core/i18n/useTranslations";
-
-// Types
-interface FlashcardAppProps {
-  selectedDeck: FlashcardDeck;
-  onCardUpdate: () => void;
-}
-
-interface ApiError extends Error {
-  status?: number;
-  data?: any;
-}
-
-interface FormData {
-  frontText: string;
-  backText: string;
-}
 
 // Main FlashcardApp Component
 const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate }) => {
@@ -72,7 +61,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
         title: t('dashboard.flashcards.successTitle'),
         description: t('dashboard.flashcards.deleteSuccess'),
       });
-      
+
       // Inform parent component about the change
       onCardUpdate();
     } catch (err) {
@@ -125,7 +114,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
         title: t('dashboard.flashcards.successTitle'),
         description: t('dashboard.flashcards.createSuccess'),
       });
-      
+
       // Inform parent component about the change
       onCardUpdate();
     } catch (err) {
@@ -161,7 +150,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
       );
 
       setEditingCard(null);
-      
+
       // Inform parent component about the change
       onCardUpdate();
     } catch (err) {
@@ -183,7 +172,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
           ? t('dashboard.flashcards.markedKnown')
           : t('dashboard.flashcards.markedReview'),
       });
-      
+
       // Inform parent component about the change
       onCardUpdate();
     } catch (err) {
@@ -200,7 +189,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
   // Data fetching
   const fetchCards = async () => {
     if (!selectedDeck) return;
-    
+
     try {
       setIsLoading(true);
       setCurrentIndex(0);
@@ -258,7 +247,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
           <FileSpreadsheet className="w-4 h-4 mr-2" />
           {t('dashboard.flashcards.importExcel')}
         </Button>
-        
+
         <Button
           onClick={() => setIsAddingCard(true)}
           className="whitespace-nowrap bg-gradient-to-r from-brand-purple to-brand-gold"
@@ -267,7 +256,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
           <Plus className="w-4 h-4 mr-2" />
           {t('dashboard.flashcards.addCard')}
         </Button>
-        
+
         {filteredCards.length > 0 && (
           <Button
             onClick={() => handleDeleteCard(filteredCards[currentIndex].id)}
@@ -430,9 +419,9 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
           </div>
 
           <div className="text-center text-sm text-gray-500">
-            {t('dashboard.flashcards.cardCount', { 
-              current: String(currentIndex + 1), 
-              total: String(filteredCards.length) 
+            {t('dashboard.flashcards.cardCount', {
+              current: String(currentIndex + 1),
+              total: String(filteredCards.length)
             })}
           </div>
         </div>
@@ -496,7 +485,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
           </CardContent>
         </Card>
       )}
-      
+
       {isImporting && selectedDeck && (
         <ImportExcelModal
           deckId={selectedDeck.id}
@@ -508,7 +497,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
           }}
         />
       )}
-      
+
       {editingCard && (
         <EditCardModal
           card={editingCard}

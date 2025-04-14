@@ -7,13 +7,7 @@ import {
   Search, Plus, 
   Bookmark, Archive, Clock 
 } from 'lucide-react';
-import { Note } from '@/addons/notebook/types';
-
-interface NoteListProps {
-  notes: Note[];
-  onNoteSelect: (note: Note) => void;
-  onCreateNote: () => void;
-}
+import { NoteListProps } from '@/addons/notebook/types/';
 
 export function NoteList({ notes, onNoteSelect, onCreateNote }: NoteListProps) {
   const [searchTerm, setSearchTerm] = useState('');
