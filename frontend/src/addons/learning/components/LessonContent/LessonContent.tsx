@@ -1,7 +1,6 @@
 "use client";
 
-// src/addons/learning/components/LessonContent/LessonContent.tsx - Updated version
-// Mise à jour pour utiliser ContentTypeRouter
+// src/addons/learning/components/LessonContent/LessonContent.tsx
 
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
