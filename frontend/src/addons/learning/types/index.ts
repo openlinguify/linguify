@@ -66,6 +66,7 @@ export interface ContentLesson {
   }>;
   order: number;
 }
+
 export interface LessonsByContentResponse {
   results: Lesson[];
   metadata: {
@@ -76,6 +77,7 @@ export interface LessonsByContentResponse {
     error?: string;
   };
 }
+
 export interface LessonContentProps {
   lessonId: string;
   unitId?: string;
@@ -244,6 +246,12 @@ export interface Exercise {
   sentence?: string;
   options?: string[];
   correct_answer?: string;
+  sentence_en: string;
+  sentence_fr: string;
+  sentence_es: string;
+  sentence_nl: string;
+  explanation: string;
+  hint: string;
 }
 
 export interface FillBlankExerciseProps {
@@ -348,8 +356,6 @@ export interface PronunciationFeedback {
   suggestions: string;
 }
 
-
-// Interface from LearnHeader
 export interface FilteredUnit {
   id: number;
   title: string;
@@ -398,3 +404,55 @@ export interface LessonResult {
   unit_level?: string;
   content_count?: number;
 }
+
+export interface CulturalContextProps {
+  languageCode: 'en' | 'fr' | 'es' | 'nl';
+  lessonId?: string;
+  theme?: string; // e.g., "Greetings", "Food", "Holidays"
+}
+
+export interface ContentTypeRouterProps {
+  contentType: string;
+  contentId: string;
+  parentLessonId: string;
+  language?: 'en' | 'fr' | 'es' | 'nl';
+  unitId?: string; 
+  onComplete?: () => void;
+}
+
+export interface LessonCompletionModalProps {
+    show: boolean;
+    onKeepReviewing?: () => void;
+    onComplete?: () => void;
+    onTryAgain?: () => void;
+    onBackToLessons?: () => void;
+    title?: string;
+    subtitle?: string;
+    score?: string;
+    type?: "lesson" | "quiz" | "exercise";
+    completionMessage?: string;
+  }
+
+  export interface UseLessonCompletionOptions {
+    lessonId: string;
+    unitId?: string;
+    onComplete?: () => void;
+    autoSound?: boolean;
+    type?: 'lesson' | 'quiz' | 'exercise';
+    initialTimeSpent?: number;
+  }
+  
+  export interface LessonCompletionState {
+    showCompletionModal: boolean;
+    score?: string;
+    timeSpent: number;
+    isCompleted: boolean;
+  }
+
+  export interface LearningMetrics {
+      correctAnswerRate: number;
+      timeSpentPerItem: number;
+      mistakePatterns: Record<string, number>;
+      consecutiveCorrectAnswers: number;
+      attemptedQuestions: number;
+    }

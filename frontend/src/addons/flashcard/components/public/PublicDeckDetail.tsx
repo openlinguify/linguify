@@ -1,3 +1,4 @@
+// src/addons/flashcard/components/public/PublicDeckDetail.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
@@ -28,23 +29,17 @@ import { useToast } from "@/components/ui/use-toast";
 import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
 import { useTranslation } from "@/core/i18n/useTranslations";
 import { useRouter } from "next/navigation";
-import { FlashcardDeck, Flashcard } from "@/addons/flashcard/types";
+import { FlashcardDeck, Flashcard, PublicDeckDetailProps } from "@/addons/flashcard/types";
 
-interface PublicDeckDetailProps {
-  deckId: number;
-  onGoBack?: () => void;
-  onClone?: (deckId: number) => void;
-}
-
-const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({ 
-  deckId, 
-  onGoBack, 
-  onClone 
+const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
+  deckId,
+  onGoBack,
+  onClone
 }) => {
   const { toast } = useToast();
   const { t } = useTranslation();
   const router = useRouter();
-  
+
   // État
   const [deck, setDeck] = useState<FlashcardDeck | null>(null);
   const [cards, setCards] = useState<Flashcard[]>([]);
@@ -57,7 +52,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
   }>({ field: 'front_text', direction: 'asc' });
   const [activeTab, setActiveTab] = useState('overview');
   const [filteredCards, setFilteredCards] = useState<Flashcard[]>([]);
-  
+
   // Statistiques
   const stats = {
     total: cards.length,
@@ -74,7 +69,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
         // Charger les détails du deck
         const deckData = await revisionApi.decks.getById(deckId);
         setDeck(deckData);
-        
+
         // Charger les cartes
         const cardsData = await revisionApi.flashcards.getAll(deckId);
         setCards(cardsData);
@@ -90,53 +85,53 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
         setIsLoading(false);
       }
     };
-    
+
     loadDeckData();
   }, [deckId, toast, t]);
-  
+
   // Filtrage des cartes
   useEffect(() => {
     if (cards.length === 0) return;
-    
+
     let result = [...cards];
-    
+
     // Appliquer le filtre de recherche
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       result = result.filter(
-        card => card.front_text.toLowerCase().includes(query) || 
-               card.back_text.toLowerCase().includes(query)
+        card => card.front_text.toLowerCase().includes(query) ||
+          card.back_text.toLowerCase().includes(query)
       );
     }
-    
+
     // Appliquer le tri
     result.sort((a, b) => {
       const direction = sortConfig.direction === 'asc' ? 1 : -1;
       return a[sortConfig.field].localeCompare(b[sortConfig.field]) * direction;
     });
-    
+
     setFilteredCards(result);
   }, [cards, searchQuery, sortConfig]);
-  
+
   // Gestion du clone du deck
   const handleClone = async () => {
     if (!deck) return;
-    
+
     try {
       setIsCloning(true);
-      
+
       const result = await revisionApi.decks.clone(deckId);
-      
+
       toast({
         title: t('dashboard.flashcards.successTitle'),
         description: t('dashboard.flashcards.deckCloneSuccess', { name: deck.name }),
       });
-      
+
       // Notifier le parent
       if (onClone) {
         onClone(result.deck.id);
       }
-      
+
       // Naviguer vers le nouveau deck
       if (result.deck && result.deck.id) {
         router.push(`/flashcard/deck/${result.deck.id}`);
@@ -152,7 +147,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
       setIsCloning(false);
     }
   };
-  
+
   // Gestionnaires d'événements
   const handleSort = (field: 'front_text' | 'back_text') => {
     setSortConfig(prevConfig => ({
@@ -160,15 +155,15 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
       direction: prevConfig.field === field && prevConfig.direction === 'asc' ? 'desc' : 'asc'
     }));
   };
-  
+
   // Composant de carte d'exemple
   const renderExampleCard = () => {
     if (cards.length === 0) return null;
-    
+
     // Prendre une carte au hasard pour l'exemple
     const randomIndex = Math.floor(Math.random() * Math.min(cards.length, 3));
     const exampleCard = cards[randomIndex];
-    
+
     return (
       <div className="p-6 rounded-lg border bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col gap-4">
@@ -179,7 +174,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
       </div>
     );
   };
-  
+
   // État de chargement
   if (isLoading) {
     return (
@@ -196,7 +191,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
       </div>
     );
   }
-  
+
   // Si le deck n'existe pas ou n'a pas été trouvé
   if (!deck) {
     return (
@@ -206,7 +201,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
         </div>
         <h2 className="text-2xl font-semibold mb-2">{t('dashboard.flashcards.deckNotFound')}</h2>
         <p className="text-gray-500 mb-6">{t('dashboard.flashcards.deckMayNotExist')}</p>
-        <Button 
+        <Button
           onClick={() => onGoBack ? onGoBack() : router.push('/flashcard')}
           className="flex items-center"
         >
@@ -216,7 +211,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
       </div>
     );
   }
-  
+
   return (
     <div className="space-y-6">
       {/* En-tête avec actions */}
@@ -243,7 +238,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
             <span>{new Date(deck.created_at).toLocaleDateString()}</span>
           </div>
         </div>
-        
+
         <Button
           onClick={handleClone}
           disabled={isCloning}
@@ -262,7 +257,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
           )}
         </Button>
       </div>
-      
+
       {/* Contenu principal avec onglets */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid grid-cols-2">
@@ -275,7 +270,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
             {t('dashboard.flashcards.allCards')} ({cards.length})
           </TabsTrigger>
         </TabsList>
-        
+
         {/* Aperçu du deck */}
         <TabsContent value="overview" className="pt-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -287,7 +282,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
                 <p className="text-gray-700">
                   {deck.description || t('dashboard.flashcards.noDescription')}
                 </p>
-                
+
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
                   <div className="bg-blue-50 p-3 rounded-lg text-center">
                     <div className="text-blue-600 font-semibold text-xl">{stats.total}</div>
@@ -308,7 +303,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">{t('dashboard.flashcards.sampleCard')}</CardTitle>
@@ -323,7 +318,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
               </CardContent>
             </Card>
           </div>
-          
+
           {/* Appel à l'action */}
           <Card className="mt-6 bg-gradient-to-r from-brand-purple/10 to-brand-gold/10">
             <CardContent className="flex flex-col sm:flex-row justify-between items-center p-6">
@@ -356,7 +351,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* Liste des cartes */}
         <TabsContent value="cards" className="pt-4">
           <Card>
@@ -380,28 +375,28 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead 
-                          className="cursor-pointer" 
+                        <TableHead
+                          className="cursor-pointer"
                           onClick={() => handleSort('front_text')}
                         >
                           <div className="flex items-center">
                             {t('dashboard.flashcards.front')}
                             {sortConfig.field === 'front_text' && (
-                              sortConfig.direction === 'asc' 
-                                ? <SortAsc className="ml-1 h-4 w-4" /> 
+                              sortConfig.direction === 'asc'
+                                ? <SortAsc className="ml-1 h-4 w-4" />
                                 : <SortDesc className="ml-1 h-4 w-4" />
                             )}
                           </div>
                         </TableHead>
-                        <TableHead 
+                        <TableHead
                           className="cursor-pointer"
                           onClick={() => handleSort('back_text')}
                         >
                           <div className="flex items-center">
                             {t('dashboard.flashcards.back')}
                             {sortConfig.field === 'back_text' && (
-                              sortConfig.direction === 'asc' 
-                                ? <SortAsc className="ml-1 h-4 w-4" /> 
+                              sortConfig.direction === 'asc'
+                                ? <SortAsc className="ml-1 h-4 w-4" />
                                 : <SortDesc className="ml-1 h-4 w-4" />
                             )}
                           </div>
@@ -455,7 +450,7 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
             {filteredCards.length > 0 && (
               <CardFooter className="flex justify-between items-center border-t px-6 py-4">
                 <div className="text-sm text-gray-500">
-                  {t('dashboard.flashcards.showingCards', { 
+                  {t('dashboard.flashcards.showingCards', {
                     count: filteredCards.length.toString(),
                     total: cards.length.toString()
                   })}

@@ -11,34 +11,12 @@ import {
 import {
   Search,
   Plus,
-  Tag,
   Languages,
-  Volume2} from 'lucide-react';
+  Volume2
+} from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-interface Tag {
-  id: number;
-  name: string;
-  color: string;
-}
-
-interface Note {
-  id: number;
-  title: string;
-  content: string;
-  language: string;
-  type: 'VOCABULARY' | 'GRAMMAR' | 'EXPRESSION' | 'CULTURE';
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  tags: Tag[];
-  translation?: string;
-  pronunciation?: string;
-  example_sentences: string[];
-  related_words: string[];
-  is_pinned: boolean;
-  created_at: string;
-  updated_at: string;
-}
+import { Tag, Note } from "@/addons/notebook/types";
 
 const NotebookApp = () => {
   const { toast } = useToast();
@@ -152,18 +130,18 @@ const NotebookApp = () => {
       {/* Sidebar */}
       <div className="w-64 border-r bg-gray-50">
         <div className="p-4">
-        <Button
-          onClick={() => setIsCreating(true)}
-          className="w-full"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          New Note
-        </Button>
+          <Button
+            onClick={() => setIsCreating(true)}
+            className="w-full"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Note
+          </Button>
 
-        {/* Rest of the sidebar content */}
-        {/* ... */}
+          {/* Rest of the sidebar content */}
+          {/* ... */}
+        </div>
       </div>
-    </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">

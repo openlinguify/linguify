@@ -1,6 +1,6 @@
 // src/services/progressService.ts
-import { Flashcard, StudyProgress } from "@/addons/revision/types/revision";
-
+import { StudyProgress } from "@/addons/revision/types/revision";
+import { Flashcard } from "@/addons/flashcard/types/";
 export const progressService = {
   calculateProgress(cards: Flashcard[]): StudyProgress {
     const totalCards = cards.length;

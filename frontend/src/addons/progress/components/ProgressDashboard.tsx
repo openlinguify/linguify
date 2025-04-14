@@ -1,6 +1,6 @@
 // src/app/(dashboard)/(apps)/progress/_components/ProgressDashboard.tsx
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   AreaChart, Area
 } from 'recharts';
@@ -14,28 +14,21 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { progressService } from "@/addons/progress/api/progressAPI";
-import { 
-  ProgressSummary, 
-  UnitProgress, 
-  RecentActivity, 
-  LevelStats 
+import {
+  ProgressSummary,
+  UnitProgress,
+  RecentActivity,
+  ActivityChartData,
+  ActivityChartProps,
+  AchievementCardProps,
+  WeeklyProgressData
 } from '@/addons/progress/types/';
 
-// Interface pour les données d'activité du graphique
-interface ActivityChartData {
-  date: string;
-  xp: number;
-  minutes: number;
-}
 
-// Define a new component for the activity chart
-interface ActivityChartProps {
-  data: ActivityChartData[];
-}
 
 const ActivityChart: React.FC<ActivityChartProps> = ({ data }) => {
   const [metric, setMetric] = useState<'xp' | 'minutes'>('xp');
-  
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -59,12 +52,12 @@ const ActivityChart: React.FC<ActivityChartProps> = ({ data }) => {
             <AreaChart data={data}>
               <defs>
                 <linearGradient id="colorXp" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#8884d8" stopOpacity={0.1}/>
+                  <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#8884d8" stopOpacity={0.1} />
                 </linearGradient>
                 <linearGradient id="colorMinutes" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#82ca9d" stopOpacity={0.1}/>
+                  <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#82ca9d" stopOpacity={0.1} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -72,21 +65,21 @@ const ActivityChart: React.FC<ActivityChartProps> = ({ data }) => {
               <YAxis />
               <Tooltip />
               {metric === 'xp' && (
-                <Area 
-                  type="monotone" 
-                  dataKey="xp" 
-                  stroke="#8884d8" 
-                  fillOpacity={1} 
-                  fill="url(#colorXp)" 
+                <Area
+                  type="monotone"
+                  dataKey="xp"
+                  stroke="#8884d8"
+                  fillOpacity={1}
+                  fill="url(#colorXp)"
                 />
               )}
               {metric === 'minutes' && (
-                <Area 
-                  type="monotone" 
-                  dataKey="minutes" 
-                  stroke="#82ca9d" 
-                  fillOpacity={1} 
-                  fill="url(#colorMinutes)" 
+                <Area
+                  type="monotone"
+                  dataKey="minutes"
+                  stroke="#82ca9d"
+                  fillOpacity={1}
+                  fill="url(#colorMinutes)"
                 />
               )}
             </AreaChart>
@@ -97,14 +90,7 @@ const ActivityChart: React.FC<ActivityChartProps> = ({ data }) => {
   );
 };
 
-// Achievement Card component
-interface AchievementCardProps {
-  title: string;
-  value: string;
-  icon: React.ReactNode;
-  description: string;
-  color: string;
-}
+
 
 const AchievementCard: React.FC<AchievementCardProps> = ({ title, value, icon, description, color }) => (
   <Card className={`border-l-4 ${color}`}>
@@ -121,12 +107,6 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ title, value, icon, d
   </Card>
 );
 
-// Format date for display
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
-};
-
 // Format relative time
 const getRelativeTime = (dateString: string): string => {
   const date = new Date(dateString);
@@ -135,7 +115,7 @@ const getRelativeTime = (dateString: string): string => {
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
   const diffMinutes = Math.floor(diffTime / (1000 * 60));
-  
+
   if (diffDays > 0) {
     return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
   } else if (diffHours > 0) {
@@ -155,20 +135,20 @@ const transformActivityData = (activities: RecentActivity[]): ActivityChartData[
 
   // Les 7 derniers jours
   const dateFormat = (date: Date): string => `${date.getMonth() + 1}/${date.getDate()}`;
-  
+
   // Initialiser avec les 7 derniers jours
   for (let i = 6; i >= 0; i--) {
     const date = new Date();
     date.setDate(date.getDate() - i);
     activityMap.set(dateFormat(date), { date: dateFormat(date), xp: 0, minutes: 0 });
   }
-  
+
   // Ajouter les données réelles
   if (activities && activities.length > 0) {
     activities.forEach(activity => {
       const activityDate = new Date(activity.last_accessed);
       const dateKey = dateFormat(activityDate);
-      
+
       if (activityMap.has(dateKey)) {
         const current = activityMap.get(dateKey)!;
         // Ajouter XP et minutes si disponibles dans les données
@@ -178,17 +158,12 @@ const transformActivityData = (activities: RecentActivity[]): ActivityChartData[
       }
     });
   }
-  
+
   // Convertir le Map en array pour le graphique
   return Array.from(activityMap.values());
 };
 
-interface WeeklyProgressData {
-  units: number;
-  lessons: number;
-  time: string;
-  xp: number;
-}
+
 
 const ProgressDashboard: React.FC = () => {
   const [summary, setSummary] = useState<ProgressSummary | null>(null);
@@ -203,11 +178,11 @@ const ProgressDashboard: React.FC = () => {
     const fetchProgressData = async () => {
       try {
         setLoading(true);
-        
+
         // Récupérer les données de résumé
         const summaryData = await progressService.getSummary();
         setSummary(summaryData);
-        
+
         // Si pas de données, initialiser la progression
         if (!summaryData || !summaryData.summary) {
           const initialized = await progressService.initializeProgress();
@@ -221,7 +196,7 @@ const ProgressDashboard: React.FC = () => {
         // Récupérer les unités par niveau
         const levels = ["A1", "A2", "B1", "B2", "C1", "C2"];
         const unitsData: Record<string, UnitProgress[]> = {};
-        
+
         for (const level of levels) {
           try {
             const levelUnits = await progressService.getUnitProgressByLevel(level);
@@ -232,9 +207,9 @@ const ProgressDashboard: React.FC = () => {
             console.warn(`Failed to fetch units for level ${level}:`, err);
           }
         }
-        
+
         setUnitsByLevel(unitsData);
-        
+
         // Transformer les données d'activité récente pour le graphique
         if (summaryData && summaryData.recent_activity) {
           const chartData = transformActivityData(summaryData.recent_activity);
@@ -255,7 +230,7 @@ const ProgressDashboard: React.FC = () => {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-bold">Your Learning Progress</h1>
-        
+
         {/* Loading skeleton for stats */}
         <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
           {[1, 2, 3, 4].map(i => (
@@ -325,28 +300,28 @@ const ProgressDashboard: React.FC = () => {
     );
   }
 
-  const { 
-    total_units, 
-    completed_units, 
-    total_lessons, 
+  const {
+    total_units,
+    completed_units,
+    total_lessons,
     completed_lessons,
     total_time_spent_minutes,
     xp_earned
   } = summary.summary;
 
-  const unitCompletionPercentage = total_units > 0 
-    ? Math.round((completed_units / total_units) * 100) 
+  const unitCompletionPercentage = total_units > 0
+    ? Math.round((completed_units / total_units) * 100)
     : 0;
-    
-  const lessonCompletionPercentage = total_lessons > 0 
-    ? Math.round((completed_lessons / total_lessons) * 100) 
+
+  const lessonCompletionPercentage = total_lessons > 0
+    ? Math.round((completed_lessons / total_lessons) * 100)
     : 0;
 
   // Format time spent into hours and minutes
   const formatTimeSpent = (): string => {
     const hours = Math.floor(total_time_spent_minutes / 60);
     const minutes = Math.round(total_time_spent_minutes % 60);
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     }
@@ -367,32 +342,32 @@ const ProgressDashboard: React.FC = () => {
     // Filtrer les activités de la semaine passée
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    
+
     const weeklyActivities = summary.recent_activity.filter(
       activity => new Date(activity.last_accessed) > oneWeekAgo
     );
-    
+
     // Compter les unités et leçons complétées cette semaine
     const completedThisWeek = weeklyActivities.filter(a => a.status === 'completed');
     const unitsThisWeek = new Set(completedThisWeek
       .filter(a => a.content_details.content_type === 'unit')
       .map(a => a.content_details.id)
     ).size;
-    
+
     const lessonsThisWeek = new Set(completedThisWeek
       .filter(a => a.content_details.content_type === 'lesson')
       .map(a => a.content_details.id)
     ).size;
-    
+
     // Calculer le temps et XP
     const timeThisWeek = weeklyActivities.reduce((sum, a) => sum + (a.time_spent || 0), 0) / 60;
     const xpThisWeek = weeklyActivities.reduce((sum, a) => sum + (a.xp_earned || 0), 0);
-    
+
     // Formater le temps
     const hours = Math.floor(timeThisWeek / 60);
     const minutes = Math.round(timeThisWeek % 60);
     const formattedTime = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-    
+
     return {
       units: unitsThisWeek,
       lessons: lessonsThisWeek,
@@ -406,7 +381,7 @@ const ProgressDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Your Learning Progress</h1>
-      
+
       {/* Quick Stats Cards */}
       <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
         <Card>
@@ -497,33 +472,33 @@ const ProgressDashboard: React.FC = () => {
         <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
           {/* Montrer l'accomplissement A1 s'il est complet */}
           {summary.level_progression.A1 && summary.level_progression.A1.avg_completion === 100 && (
-            <AchievementCard 
-              title="A1 Mastery" 
-              value="100%" 
+            <AchievementCard
+              title="A1 Mastery"
+              value="100%"
               icon={<Award className="h-6 w-6 text-yellow-500" />}
-              description="You've completed all A1 level units!" 
+              description="You've completed all A1 level units!"
               color="border-yellow-500"
             />
           )}
-          
+
           {/* Montrer l'accomplissement de streak si des données récentes existent */}
           {summary.recent_activity && summary.recent_activity.length > 0 && (
-            <AchievementCard 
-              title="Learning Streak" 
-              value="Active" 
+            <AchievementCard
+              title="Learning Streak"
+              value="Active"
               icon={<Calendar className="h-6 w-6 text-blue-500" />}
-              description="You've been learning recently!" 
+              description="You've been learning recently!"
               color="border-blue-500"
             />
           )}
-          
+
           {/* Montrer le vocabulaire si xp > 0 */}
           {xp_earned > 0 && (
-            <AchievementCard 
-              title="XP Earned" 
-              value={`${xp_earned} XP`} 
+            <AchievementCard
+              title="XP Earned"
+              value={`${xp_earned} XP`}
               icon={<BookOpen className="h-6 w-6 text-green-500" />}
-              description="Total experience points earned" 
+              description="Total experience points earned"
               color="border-green-500"
             />
           )}
@@ -542,7 +517,7 @@ const ProgressDashboard: React.FC = () => {
           <TabsTrigger value="levels">Level Progress</TabsTrigger>
           <TabsTrigger value="recent">Recent Activity</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
             <Card>
@@ -550,8 +525,8 @@ const ProgressDashboard: React.FC = () => {
                 <CardTitle className="text-lg">Overall Unit Progress</CardTitle>
               </CardHeader>
               <CardContent>
-                <UserProgress 
-                  value={unitCompletionPercentage} 
+                <UserProgress
+                  value={unitCompletionPercentage}
                   label={`${completed_units} of ${total_units} units completed`}
                   size="md"
                   showIcon={true}
@@ -559,14 +534,14 @@ const ProgressDashboard: React.FC = () => {
                 />
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Overall Lesson Progress</CardTitle>
               </CardHeader>
               <CardContent>
-                <UserProgress 
-                  value={lessonCompletionPercentage} 
+                <UserProgress
+                  value={lessonCompletionPercentage}
                   label={`${completed_lessons} of ${total_lessons} lessons completed`}
                   size="md"
                   showIcon={true}
@@ -575,7 +550,7 @@ const ProgressDashboard: React.FC = () => {
               </CardContent>
             </Card>
           </div>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Language Level Journey</CardTitle>
@@ -594,8 +569,8 @@ const ProgressDashboard: React.FC = () => {
                         {data.completed_units}/{data.total_units} units
                       </span>
                     </div>
-                    <UserProgress 
-                      value={data.avg_completion} 
+                    <UserProgress
+                      value={data.avg_completion}
                       size="sm"
                       animated={true}
                       showIcon={data.avg_completion === 100}
@@ -606,7 +581,7 @@ const ProgressDashboard: React.FC = () => {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="levels" className="space-y-4">
           <Card>
             <CardHeader>
@@ -639,7 +614,7 @@ const ProgressDashboard: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-        
+
           {/* Afficher les unités par niveau quand disponibles */}
           {Object.entries(unitsByLevel).map(([level, units]) => (
             <Card key={level}>
@@ -664,8 +639,8 @@ const ProgressDashboard: React.FC = () => {
                           {unit.status.replace('_', ' ')}
                         </Badge>
                       </div>
-                      <UserProgress 
-                        value={unit.completion_percentage} 
+                      <UserProgress
+                        value={unit.completion_percentage}
                         size="sm"
                       />
                     </div>
@@ -675,7 +650,7 @@ const ProgressDashboard: React.FC = () => {
             </Card>
           ))}
         </TabsContent>
-        
+
         <TabsContent value="recent">
           <Card>
             <CardHeader>
@@ -696,7 +671,7 @@ const ProgressDashboard: React.FC = () => {
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="flex-grow">
                         <div className="flex items-start justify-between">
                           <div>
@@ -709,18 +684,18 @@ const ProgressDashboard: React.FC = () => {
                               </Badge>
                             </div>
                             <p className="text-sm text-muted-foreground mt-1">
-                              {activity.content_details.content_type.charAt(0).toUpperCase() + 
-                              activity.content_details.content_type.slice(1)}
+                              {activity.content_details.content_type.charAt(0).toUpperCase() +
+                                activity.content_details.content_type.slice(1)}
                             </p>
                           </div>
                           <div className="text-sm text-muted-foreground">
                             {getRelativeTime(activity.last_accessed)}
                           </div>
                         </div>
-                        
+
                         <div className="mt-2">
-                          <UserProgress 
-                            value={activity.completion_percentage} 
+                          <UserProgress
+                            value={activity.completion_percentage}
                             size="sm"
                             showIcon={activity.completion_percentage === 100}
                           />

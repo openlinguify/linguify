@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, Sparkles, Trophy } from 'lucide-react';
+import { LessonCompletionModalProps } from "@/addons/learning/types";
 
 /**
  * LessonCompletionModal - Un composant réutilisable pour afficher un message
@@ -18,34 +19,21 @@ import { CheckCircle, Sparkles, Trophy } from 'lucide-react';
  * @param {string} props.completionMessage - Message de réussite personnalisé
  */
 
-interface LessonCompletionModalProps {
-    show: boolean;
-    onKeepReviewing?: () => void;
-    onComplete?: () => void;
-    onTryAgain?: () => void;
-    onBackToLessons?: () => void;
-    title?: string;
-    subtitle?: string;
-    score?: string;
-    type?: "lesson" | "quiz" | "exercise";
-    completionMessage?: string;
-  }
+const LessonCompletionModal: React.FC<LessonCompletionModalProps> = ({
+  show,
+  onKeepReviewing,
+  onComplete,
+  onTryAgain,
+  onBackToLessons,
+  title = "Lesson Complete!",
+  subtitle,
+  score,
+  type = "lesson",
+  completionMessage = "Great work! You've completed all the content in this lesson."
+}) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  const LessonCompletionModal: React.FC<LessonCompletionModalProps> = ({
-    show,
-    onKeepReviewing,
-    onComplete,
-    onTryAgain,
-    onBackToLessons,
-    title = "Lesson Complete!",
-    subtitle,
-    score,
-    type = "lesson",
-    completionMessage = "Great work! You've completed all the content in this lesson."
-  }) => {
-    const [isVisible, setIsVisible] = useState(false);
-    const [isAnimating, setIsAnimating] = useState(false);
-  
   useEffect(() => {
     if (show) {
       setIsAnimating(true);
@@ -67,16 +55,16 @@ interface LessonCompletionModalProps {
       return (
         <div className="flex gap-3 justify-center">
           {onBackToLessons && (
-            <button 
-              onClick={onBackToLessons} 
+            <button
+              onClick={onBackToLessons}
               className="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50"
             >
               Back to Lessons
             </button>
           )}
           {onTryAgain && (
-            <button 
-              onClick={onTryAgain} 
+            <button
+              onClick={onTryAgain}
               className="px-4 py-2 rounded-md bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
             >
               Try Again
@@ -89,16 +77,16 @@ interface LessonCompletionModalProps {
     return (
       <div className="flex gap-3 justify-center">
         {onKeepReviewing && (
-          <button 
-            onClick={onKeepReviewing} 
+          <button
+            onClick={onKeepReviewing}
             className="px-4 py-2 border border-purple-300 rounded-md bg-white text-purple-700 hover:bg-purple-50"
           >
             Keep Reviewing
           </button>
         )}
         {onComplete && (
-          <button 
-            onClick={onComplete} 
+          <button
+            onClick={onComplete}
             className="px-4 py-2 rounded-md bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white hover:opacity-90"
           >
             Complete Lesson
@@ -107,7 +95,7 @@ interface LessonCompletionModalProps {
       </div>
     );
   };
-  
+
   const getIcon = () => {
     switch (type) {
       case 'quiz':
@@ -121,10 +109,9 @@ interface LessonCompletionModalProps {
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-      <div 
-        className={`bg-white rounded-xl shadow-xl p-8 max-w-md w-full mx-4 text-center transition-all duration-300 ${
-          isVisible ? 'transform-none opacity-100' : 'transform scale-95 opacity-0'
-        }`}
+      <div
+        className={`bg-white rounded-xl shadow-xl p-8 max-w-md w-full mx-4 text-center transition-all duration-300 ${isVisible ? 'transform-none opacity-100' : 'transform scale-95 opacity-0'
+          }`}
       >
         {/* Header with icon */}
         <div className="flex justify-center mb-4">

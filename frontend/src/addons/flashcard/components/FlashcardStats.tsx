@@ -5,17 +5,9 @@ import { Progress } from "@/components/ui/progress";
 import { Dumbbell, BookOpen, GraduationCap, Flame } from "lucide-react";
 import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
 import { useTranslation } from "@/core/i18n/useTranslations";
+import { FlashcardStatsProps, StudyProgress } from "@/addons/flashcard/types/";
 
-interface FlashcardStatsProps {
-  deckId: number;
-}
 
-interface StudyProgress {
-  totalCards: number;
-  learnedCards: number;
-  toReviewCards: number;
-  completionPercentage: number;
-}
 
 const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
   const [progress, setProgress] = useState<StudyProgress | null>(null);
@@ -28,19 +20,19 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
       try {
         setIsLoading(true);
         const cards = await revisionApi.flashcards.getAll(deckId);
-        
+
         const totalCards = cards.length;
         const learnedCards = cards.filter(card => card.learned).length;
         const toReviewCards = cards.filter(card => !card.learned && card.review_count > 0).length;
         const completionPercentage = totalCards > 0 ? Math.round((learnedCards / totalCards) * 100) : 0;
-        
+
         setProgress({
           totalCards,
           learnedCards,
           toReviewCards,
           completionPercentage
         });
-        
+
         setStreak(3);
       } catch (error) {
         console.error("Failed to load statistics:", error);
@@ -70,7 +62,7 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
     <Card className="mb-4">
       <CardContent className="p-4">
         <h3 className="text-sm font-medium mb-2">{t('dashboard.flashcards.studyProgress')}</h3>
-        
+
         {/* Progression globale */}
         <div className="mb-3">
           <div className="flex justify-between mb-1 text-xs">
@@ -91,7 +83,7 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
               <span className="text-xs text-gray-500 leading-none">{t('dashboard.flashcards.total')}</span>
             </div>
           </div>
-          
+
           <div className="flex items-center">
             <div className="rounded-full p-1.5 bg-gradient-to-r from-indigo-600/80 via-purple-500/80 to-pink-400/80 mr-2">
               <BookOpen className="h-3.5 w-3.5 text-white" />
@@ -101,7 +93,7 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
               <span className="text-xs text-gray-500 leading-none">{t('dashboard.flashcards.learned')}</span>
             </div>
           </div>
-          
+
           <div className="flex items-center">
             <div className="rounded-full p-1.5 bg-gradient-to-r from-indigo-600/80 via-purple-500/80 to-pink-400/80 mr-2">
               <Dumbbell className="h-3.5 w-3.5 text-white" />
@@ -111,7 +103,7 @@ const FlashcardStats = ({ deckId }: FlashcardStatsProps) => {
               <span className="text-xs text-gray-500 leading-none">{t('dashboard.flashcards.review')}</span>
             </div>
           </div>
-          
+
           <div className="flex items-center">
             <div className="rounded-full p-1.5 bg-gradient-to-r from-indigo-600/80 via-purple-500/80 to-pink-400/80 mr-2">
               <Flame className="h-3.5 w-3.5 text-white" />

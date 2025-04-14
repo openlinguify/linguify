@@ -6,13 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pencil, Save, Trash2, Plus } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { notebookAPI } from "@/addons/notebook/api/notebookAPI";
-import { Note } from "@/addons/notebook/api/notebookAPI";
-
-interface NotebookClientProps {
-  searchTerm?: string;
-  filter?: string;
-}
+import { notebookAPI, Note } from "@/addons/notebook/api/notebookAPI";
+import { NotebookClientProps } from "@/addons/notebook/types";
 
 export default function NotebookClient({
   searchTerm,

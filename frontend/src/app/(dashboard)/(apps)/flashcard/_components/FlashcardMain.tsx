@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import FlashcardDeckList from '../../../../../addons/flashcard/components/FlashcardDeckList';
 import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
-import type { FlashcardDeck } from "@/addons/revision/types/revision";
+import type { FlashcardDeck } from "@/addons/flashcard/types";
 import { useAuthContext } from "@/core/auth/AuthProvider";
 import { useTranslation } from "@/core/i18n/useTranslations";
 
@@ -28,7 +28,7 @@ const FlashcardMain = () => {
     try {
       setIsPageLoading(true);
       setLoadError(null);
-      
+
       const fetchedDecks = await revisionApi.decks.getAll();
       setDecks(fetchedDecks);
       setFilteredDecks(fetchedDecks);
@@ -46,8 +46,8 @@ const FlashcardMain = () => {
       setFilteredDecks(decks);
     } else {
       const query = searchQuery.toLowerCase();
-      const filtered = decks.filter(deck => 
-        deck.name.toLowerCase().includes(query) || 
+      const filtered = decks.filter(deck =>
+        deck.name.toLowerCase().includes(query) ||
         deck.description.toLowerCase().includes(query)
       );
       setFilteredDecks(filtered);
@@ -73,7 +73,7 @@ const FlashcardMain = () => {
   // Render search bar for decks view
   const renderSearchBar = () => {
     if (isPageLoading || loadError) return null;
-    
+
     return (
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -116,8 +116,8 @@ const FlashcardMain = () => {
         <Card className="border-2 border-dashed border-red-100">
           <CardContent className="p-8 flex flex-col items-center justify-center space-y-4">
             <p className="text-center text-red-600">{loadError}</p>
-            <Button 
-              onClick={handleRetry} 
+            <Button
+              onClick={handleRetry}
               className="mt-4"
             >
               <RefreshCcw className="mr-2 h-4 w-4" /> {t('dashboard.flashcards.tryAgain')}
@@ -125,8 +125,8 @@ const FlashcardMain = () => {
           </CardContent>
         </Card>
       ) : (
-        <FlashcardDeckList 
-          onDeckSelect={handleDeckSelect} 
+        <FlashcardDeckList
+          onDeckSelect={handleDeckSelect}
           decks={filteredDecks}
         />
       )}

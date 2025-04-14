@@ -1,17 +1,7 @@
 // src/addons/flashcard/api/revisionAPI.ts
 import apiClient from '@/core/api/apiClient';
 import authService from '@/core/auth/authService';
-
-// Types pour les paramètres de recherche et de filtre
-export interface SearchParams {
-  search?: string;
-  username?: string;
-  sort_by?: 'popularity' | 'recent' | 'alphabetical';
-  public?: boolean;
-  mine?: boolean;
-  archived?: boolean;
-  limit?: number;
-}
+import { SearchParams } from '@/addons/flashcard/types/';
 
 // Configuration de base
 const API_BASE = '/api/v1/revision';

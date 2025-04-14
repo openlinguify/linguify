@@ -18,13 +18,6 @@ import { Search, Filter, Plus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { notebookAPI } from "@/addons/notebook/api/notebookAPI";
 
-interface newNote {
-  name: string;
-  content: string;
-  note_type: string;
-  priority: string;
-}
-
 export default function NotebookWrapper() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
