@@ -69,14 +69,15 @@
     "compactView": "Compact",
     "contentType": {
       "all": "Alle",
-      "vocabulary": "Woordenschat",
+      "vocabularylist": "Woordenschat",
       "theory": "Theorie",
       "grammar": "Grammatica",
       "numbers": "Getallen",
       "multiple_choice": "Meerkeuze",
       "fill_blank": "Vul de lege plekken in",
       "matching": "Matchen",
-      "reordering": "Herschikken"
+      "reordering": "Herschikken",
+      "test": "Samenvattingstest"
     },
     "learningTarget": "Taal van leren",
     "dailyGoal": "Dagelijks doel",
@@ -531,14 +532,14 @@
     "contentTypes": {
       "theory": "Theorie",
       "vocabularylist": "Woordenschat",
-      "vocabulary": "Woordenschat",
       "multiple choice": "Meerkeuze",
       "numbers": "Getallen",
       "numbersGame": "Getallenspel",
       "reordering": "Herschikking",
       "fillBlank": "Vul de lege plekken in",
       "matching": "Matchen",
-      "speaking": "Spreken"
+      "speaking": "Spreken",
+      "test": "Test"
     },
     "badges": {
       "completed": "Voltooid",

@@ -2,7 +2,7 @@
 
 // Re-export all components from subdirectories
 export * from './Exercises';
-export * from './LearningInfo';
+export * from './LearnHeader';
 export * from './LessonContent';
 export * from './Lessons';
 export * from './Theory'; 

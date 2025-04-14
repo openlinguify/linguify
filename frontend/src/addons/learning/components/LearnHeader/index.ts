@@ -1,7 +1,7 @@
 // src/addons/learning/components/LearningInfo/index.tsx
  
 // Import from the correct file path
-export { default } from './LearningJourney';
+export { default } from './LearnHeader';
 export type { 
   LearningJourneyProps, 
   // Extended props that include content type management
