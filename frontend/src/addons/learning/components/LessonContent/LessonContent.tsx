@@ -332,7 +332,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
         </div>
 
         {/* Progress bar */}
-        <div className="bg-white rounded-lg p-4 mb-8 shadow-sm">
+        <div className="bg-transparent rounded-lg p-4 mb-8 shadow-sm">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-medium text-gray-600">
               {t('dashboard.learning.lessonProgress')}
@@ -351,7 +351,7 @@ export default function LessonContent({ lessonId, unitId, language }: LessonCont
         {/* Contents List */}
         <div className="space-y-4">
           {contents.length === 0 ? (
-            <div className="bg-white rounded-lg p-6 shadow-sm text-center">
+            <div className="bg-transparent rounded-lg p-6 shadow-sm text-center">
               <AlertCircle className="h-8 w-8 text-purple-500 mx-auto mb-2" />
               <p className="text-lg font-medium text-gray-700">
                 {t('dashboard.learning.noContentFound')}

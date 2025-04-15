@@ -78,12 +78,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen flex flex-col dark:bg-[url('/static/background_dark/dark.jpg')]">
-      <Header />
-      {/* Main Content */}
-      <main className="flex-1 dark:bg-transparent dark:text-white">
-        <div className="pt-2 p-6 w-full">{children}</div>
-      </main>
+    <div className="min-h-screen flex flex-col relative">
+      {/* Background with overlay for light mode */}
+      <div className="absolute inset-0 bg-[url('/static/background_light/light2.jpg')] bg-cover bg-no-repeat bg-fixed opacity-15 dark:hidden"></div>
+      {/* Background with overlay for dark mode */}
+      <div className="absolute inset-0 bg-[url('/static/background_dark/dark.jpg')] bg-cover bg-no-repeat bg-fixed opacity-50 hidden dark:block"></div>
+      {/* Content */}
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Header />
+        {/* Main Content */}
+        <main className="flex-1 dark:text-white">
+          <div className="pt-2 p-6 w-full">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }

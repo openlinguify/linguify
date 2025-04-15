@@ -104,7 +104,7 @@ const Header = () => {
   const CurrentPageIcon = currentPage.icon;
 
   return (
-    <header className="sticky top-0 z-50 w-full h-14 dark:border-gray-800/20 bg-background/70 dark:bg-transparent backdrop-blur-xl">
+    <header className="sticky top-0 z-50 w-full h-14 dark:border-gray-800/20 bg-transparent dark:bg-transparent ">
       <div className="flex h-14 items-center justify-between px-6">
         {/* Logo Section */}
         <LogoSection 
