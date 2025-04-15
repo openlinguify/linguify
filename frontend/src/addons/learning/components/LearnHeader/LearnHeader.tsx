@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/core/auth/AuthProvider";
-import { 
-  Filter, Loader2, LayoutGrid, LayoutList, BookOpen, FileText, 
-  Calculator, ArrowRightLeft, PencilLine, Infinity, Trophy, Library 
+import {
+  Filter, Loader2, LayoutGrid, LayoutList, BookOpen, FileText,
+  Calculator, ArrowRightLeft, PencilLine, Infinity, Trophy
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -18,8 +18,6 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuCheckboxItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +25,6 @@ import { Progress } from "@/components/ui/progress";
 import progressAPI from "@/addons/progress/api/progressAPI";
 import { ProgressSummary, RecentActivity } from "@/addons/progress/types";
 import { useTranslation } from "@/core/i18n/useTranslations";
-import ViewModeToggle from "@/addons/learning/components/ViewModeToggle/view-mode-toggle";
 
 interface EnhancedLearningJourneyProps extends LearningJourneyProps {
   onContentTypeChange?: (type: string) => void;
@@ -103,7 +100,7 @@ export default function EnhancedLearningJourney({
 }: EnhancedLearningJourneyProps) {
   const { user, isAuthenticated, isLoading } = useAuthContext();
   const router = useRouter();
-  
+
   // Component states
   const [userData, setUserData] = useState<Partial<User> | null>(null);
   const [selectedTypes, setSelectedTypes] = useState<string[]>(["all"]);
@@ -271,170 +268,152 @@ export default function EnhancedLearningJourney({
   }
 
   return (
-    <div className="mb-2">
-      <div className="space-y-2">
-        {/* Main panel with gradient */}
-        <div className="bg-transparent rounded-lg text-black dark:text-white">
-          {/* Filters and layout options */}
-          <div className="flex flex-wrap items-center gap-2 mt-2 bg-white/5 dark:bg-black/5 backdrop-blur-sm p-3 rounded-lg border border-gray-200 dark:border-gray-800">
-            {/* Level filter */}
+    <div className="mb-1">
+      <div className="bg-white/10 dark:bg-slate-800/90 backdrop-blur-sm p-2 rounded-lg border border-gray-200 dark:border-gray-700">
+        {/* Layout en une seule ligne avec flex */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Section gauche: langue et niveau */}
+          <div className="flex items-center mr-2">
+            <span className="text-lg font-bold text-indigo-600 dark:text-indigo-300">
+              {getLanguageFullName(userData?.target_language || "EN")}
+            </span>
+            <Badge className="ml-1 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-200">
+              {userData?.language_level || "A1"}
+            </Badge>
+          </div>
+          
+          {/* Séparateur vertical */}
+          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
+          
+          {/* Filtres centraux en row */}
+          <div className="flex flex-wrap items-center gap-2 flex-1">
+            {/* Filtre niveau */}
             {availableLevels.length > 0 && onLevelFilterChange && (
-              <div className="flex items-center gap-2 flex-grow">
-                <Filter className="h-4 w-4" />
-                <span className="text-sm font-medium">{t('dashboard.learningjourney.level')}:</span>
-                <Select value={levelFilter} onValueChange={onLevelFilterChange}>
-                  <SelectTrigger className="bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 flex-1 max-w-[180px]">
-                    <SelectValue placeholder={t('dashboard.learningjourney.allLevels')} />
-                  </SelectTrigger>
-                  <SelectContent className="w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-700">
-                    <SelectItem value="all">
-                      {t('dashboard.learningjourney.allLevels')}
-                    </SelectItem>
-                    {availableLevels.map(level => (
-                      <SelectItem key={level} value={level}>
-                        {t('dashboard.learningjourney.levelX', { level })}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <Select value={levelFilter} onValueChange={onLevelFilterChange}>
+                <SelectTrigger className="bg-white/30 dark:bg-slate-700/80 border-gray-200 dark:border-gray-600 h-7 min-w-[110px] max-w-[140px] truncate text-xs">
+                  <SelectValue placeholder={t('dashboard.learningjourney.allLevels')} />
+                </SelectTrigger>
+                <SelectContent className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700">
+                  <SelectItem value="all">{t('dashboard.learningjourney.allLevels')}</SelectItem>
+                  {availableLevels.map(level => (
+                    <SelectItem key={level} value={level}>{t('dashboard.learningjourney.levelX', { level })}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
-
-            {/* Content type filter */}
+  
+            {/* Filtre type de contenu */}
             {onContentTypeChange && (
-              <div className="flex items-center gap-2 flex-grow">
-                <Filter className="h-4 w-4" />
-                <span className="text-sm font-medium">{t('dashboard.learningjourney.content')}:</span>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <div className="relative flex-1 max-w-[180px]">
-                      <Button
-                        variant="outline"
-                        className="w-full justify-between bg-white/30 dark:bg-black/30 border border-gray-200 dark:border-gray-700 h-9 px-3 text-left text-sm font-normal pr-10"
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="bg-white/30 dark:bg-slate-700/80 border border-gray-200 dark:border-gray-600 h-7 min-w-[110px] max-w-[140px] truncate text-xs"
+                    title={selectedTypes.includes("all") 
+                      ? t('dashboard.learningjourney.allContentTypes')
+                      : selectedTypes.map(type => {
+                          const typeObj = CONTENT_TYPES.find(t => t.value === type);
+                          return typeObj ? t(`dashboard.learningjourney.contentType.${type}`) : type;
+                        }).join(', ')}
+                  >
+                    {selectedTypes.includes("all")
+                      ? t('dashboard.learningjourney.allContentTypes')
+                      : `${selectedTypes.length} ${t('dashboard.learningjourney.filtered')}`}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 z-50">
+                  <DropdownMenuGroup>
+                    {CONTENT_TYPES.map((type) => (
+                      <DropdownMenuCheckboxItem
+                        key={type.value}
+                        checked={selectedTypes.includes(type.value)}
+                        onCheckedChange={() => handleContentTypeChange(type.value)}
+                        className="text-gray-800 dark:text-gray-200"
                       >
-                        {selectedTypes.includes("all")
-                          ? t('dashboard.learningjourney.allContentTypes')
-                          : `${selectedTypes.length} ${t('dashboard.learningjourney.filtered')}`}
-                        <svg
-                          className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </Button>
-                    </div>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 z-50">
-                    <DropdownMenuLabel>{t('dashboard.learningjourney.contentTypes')}</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuGroup>
-                      {CONTENT_TYPES.map((type) => (
-                        <DropdownMenuCheckboxItem
-                          key={type.value}
-                          checked={selectedTypes.includes(type.value)}
-                          onCheckedChange={() => handleContentTypeChange(type.value)}
-                          className="flex items-center gap-2"
-                        >
-                          {type.icon}
-                          {t(`dashboard.learningjourney.contentType.${type.value}`)}
-                        </DropdownMenuCheckboxItem>
-                      ))}
-                    </DropdownMenuGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                        {type.icon}
+                        <span className="ml-2">{t(`dashboard.learningjourney.contentType.${type.value}`)}</span>
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+            
+            {/* Toggle Units/Lessons plus compact */}
+            {viewMode && onViewModeChange && (
+              <div className="flex rounded-md overflow-hidden border border-gray-200 dark:border-gray-600 h-7">
+                <button
+                  className={`px-2 py-0.5 text-xs ${viewMode === "units" 
+                    ? "bg-indigo-600 dark:bg-indigo-700 text-white" 
+                    : "bg-white/30 dark:bg-slate-700/80 text-gray-800 dark:text-gray-200"}`}
+                  onClick={() => onViewModeChange("units")}
+                >
+                  {t('dashboard.learningjourney.units')}
+                </button>
+                <button
+                  className={`px-2 py-0.5 text-xs ${viewMode === "lessons" 
+                    ? "bg-indigo-600 dark:bg-indigo-700 text-white" 
+                    : "bg-white/30 dark:bg-slate-700/80 text-gray-800 dark:text-gray-200"}`}
+                  onClick={() => onViewModeChange("lessons")}
+                >
+                  {t('dashboard.learningjourney.lessons')}
+                </button>
               </div>
             )}
-            {/* NEW: View Mode Toggle (Units/Lessons) with toggle buttons */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">{t('dashboard.learningjourney.view')}:</span>
-              {viewMode && (
-                <div className="flex rounded-md overflow-hidden border border-gray-200 dark:border-gray-700">
-                  <button 
-                    className={`px-3 py-1 text-xs ${viewMode === "units" ? "bg-primary text-white" : "bg-white/30 dark:bg-black/30"}`}
-                    onClick={() => onViewModeChange && onViewModeChange("units")}
-                  >
-                    {t('dashboard.learningjourney.units')}
-                  </button>
-                  <button 
-                    className={`px-3 py-1 text-xs ${viewMode === "lessons" ? "bg-primary text-white" : "bg-white/30 dark:bg-black/30"}`}
-                    onClick={() => onViewModeChange && onViewModeChange("lessons")}
-                  >
-                    {t('dashboard.learningjourney.lessons')}
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Compact view toggle */}
+          </div>
+          
+          {/* Objectif quotidien plus compact */}
+          <div className="flex items-center">
+            <span className="text-xs text-gray-500 dark:text-gray-400 mr-1 hidden sm:inline">{t('dashboard.learningjourney.dailyGoal')}:</span>
+            <Progress
+              className="w-16 h-1.5 mr-1 bg-gray-200 dark:bg-gray-700"
+              value={Math.min(100, (dailyXp / xpGoal) * 100)}
+            />
+            <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
+              {dailyXp}/{xpGoal}
+            </span>
+            <Trophy className="h-3 w-3 ml-1 text-amber-500" />
+          </div>
+  
+          {/* Contrôles à droite */}
+          <div className="flex items-center gap-2 ml-0 sm:ml-auto">
+            {/* Compact toggle */}
             {onCompactViewChange && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">{t('dashboard.learningjourney.compactView')}</span>
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-gray-500 dark:text-gray-400 hidden sm:inline">{t('dashboard.learningjourney.compactView')}</span>
                 <Switch
                   checked={isCompactView}
                   onCheckedChange={onCompactViewChange}
-                  className="data-[state=checked]:bg-primary/50 data-[state=unchecked]:bg-gray-200 dark:data-[state=unchecked]:bg-gray-700"
+                  className="h-4 w-7 data-[state=checked]:bg-indigo-600 dark:data-[state=checked]:bg-indigo-700 data-[state=unchecked]:bg-gray-200 dark:data-[state=unchecked]:bg-gray-700"
                 />
               </div>
             )}
-
-            {/* Layout toggle */}
+  
+            {/* Layout switcher */}
             {onLayoutChange && (
-              <div className="flex gap-1 ml-auto">
+              <div className="flex gap-1">
                 <Button
                   variant={layout === "list" ? "default" : "outline"}
                   size="icon"
-                  className="h-8 w-8 bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 hover:bg-white/40 dark:hover:bg-black/40"
+                  className={`h-7 w-7 ${layout === "list" 
+                    ? "bg-indigo-600 dark:bg-indigo-700 text-white"
+                    : "bg-white/30 dark:bg-slate-700/80 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200"}`}
                   onClick={() => onLayoutChange("list")}
                 >
-                  <LayoutList className="h-4 w-4" />
+                  <LayoutList className="h-3 w-3" />
                 </Button>
                 <Button
                   variant={layout === "grid" ? "default" : "outline"}
                   size="icon"
-                  className="h-8 w-8 bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 hover:bg-white/40 dark:hover:bg-black/40"
+                  className={`h-7 w-7 ${layout === "grid" 
+                    ? "bg-indigo-600 dark:bg-indigo-700 text-white"
+                    : "bg-white/30 dark:bg-slate-700/80 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200"}`}
                   onClick={() => onLayoutChange("grid")}
                 >
-                  <LayoutGrid className="h-4 w-4" />
+                  <LayoutGrid className="h-3 w-3" />
                 </Button>
               </div>
             )}
-          </div>
-        </div>
-
-        {/* Additional info card - now with a transparent style */}
-        <div className="bg-transparent rounded-lg p-4 text-black dark:text-white border border-gray-200 dark:border-gray-800">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            {/* Learning target */}
-            <div>
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.learningjourney.learningTarget')}</h3>
-              <div className="flex items-center mt-1">
-                <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
-                  {getLanguageFullName(userData?.target_language || "EN")}
-                </span>
-                <Badge className="ml-2 bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 hover:bg-indigo-200 dark:hover:bg-indigo-800">
-                  {userData?.language_level || "A1"}
-                </Badge>
-              </div>
-            </div>
-
-            {/* Daily goal */}
-            <div>
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.learningjourney.dailyGoal')}</h3>
-              <div className="flex items-center mt-1">
-                <Progress
-                  className="w-32 h-2 mr-2"
-                  value={Math.min(100, (dailyXp / xpGoal) * 100)}
-                />
-                <span className="text-sm font-medium">
-                  {dailyXp}/{xpGoal} XP
-                </span>
-                <Trophy className={`h-4 w-4 ml-2 ${dailyXp >= xpGoal ? 'text-amber-500' : 'text-gray-400 dark:text-gray-600'}`} />
-              </div>
-            </div>
           </div>
         </div>
       </div>

@@ -52,7 +52,8 @@
   "currentLevel": "Huidig niveau",
   "learningGoals": "Leerdoelen",
   "learningjourney": {
-    "title": "Leerreis",
+    "lessons": "Lessen",
+    "units": "Eenheden",
     "overallProgress": "Algemene voortgang",
     "completedUnits": "{completed} van {total} eenheden voltooid",
     "dailyStreak": "Dagelijkse reeks",

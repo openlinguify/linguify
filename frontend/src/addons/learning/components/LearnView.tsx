@@ -649,7 +649,7 @@ export default function LearningView() {
 
           {/* Lessons display (when in lessons view mode) */}
           {viewMode === "lessons" && (
-            <div className="relative bg-white rounded-lg p-6 shadow-sm border border-purple-100">
+            <div className="relative bg-transparent rounded-lg p-6 shadow-sm border border-purple-100">
               <div className="mb-4">
                 <h2 className="text-xl font-bold text-gray-900 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
                   Leçons {contentTypeFilter !== "all" && `de type "${contentTypeFilter}"`}

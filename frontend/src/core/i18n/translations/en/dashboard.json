@@ -52,7 +52,8 @@
   "currentLevel": "Current level",
   "learningGoals": "Learning goals",
   "learningjourney": {
-    "title": "Learning Journey",
+    "lessons": "Lessons",
+    "units": "Units",
     "overallProgress": "Overall Progress",
     "completedUnits": "Completed {completed} of {total} units",
     "dailyStreak": "Daily Streak",

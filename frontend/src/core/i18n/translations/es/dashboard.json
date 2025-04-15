@@ -52,7 +52,9 @@
   "currentLevel": "Nivel actual",
   "learningGoals": "Objetivos de aprendizaje",
   "learningjourney": {
-    "title": "Viaje de Aprendizaje",
+    "lessons": "Lecciones",
+    "units": "Unidades",
+
     "overallProgress": "Progreso General",
     "completedUnits": "Unidades completadas {completed} de {total}",
     "dailyStreak": "Racha diaria",
