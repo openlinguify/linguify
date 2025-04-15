@@ -1,37 +1,39 @@
-# authentication/tests/conftest.py
+# backend/apps/authentication/tests/conftest.py
 """
-Configuration pour pytest.
-Ce fichier sera automatiquement reconnu par pytest et 
-appliqué à tous les tests utilisant pytest.
+Configuration for pytest.
+This file will be automatically recognized by pytest and
+applied to all tests using pytest.
 """
 import os
 import sys
 import pytest
 from django.conf import settings
 
-# Ajouter le chemin du projet pour permettre les importations
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add the project path to allow imports
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(BASE_DIR)
 
-from .test_settings import SQLITE_MEMORY_DB
+# Import the test settings
+from backend.apps.authentication.tests.test_settings import SQLITE_MEMORY_DB
 
 @pytest.fixture(scope='session')
 def django_db_setup():
     """
-    Configuration de la base de données de test pour pytest.
-    Ce fixture sera utilisé automatiquement par les tests utilisant la base de données.
+    Database test configuration for pytest.
+    This fixture will be used automatically by tests using the database.
     """
-    # Utiliser SQLite en mémoire pour les tests
+    # Use SQLite in-memory for tests
     settings.DATABASES = SQLITE_MEMORY_DB
     
-    # Assurez-vous que les migrations sont appliquées
+    # Ensure migrations are applied
     from django.core.management import call_command
     call_command('migrate')
 
-# Vous pouvez ajouter d'autres fixtures utiles pour vos tests
+# Other useful fixtures for tests
 @pytest.fixture
 def create_user(db):
-    """Fixture pour créer un utilisateur de test"""
-    from authentication.models import User
+    """Fixture to create a test user"""
+    from backend.apps.authentication.models import User
     
     def _create_user(username='testuser', email='test@example.com', password='password123', **kwargs):
         return User.objects.create_user(
@@ -45,8 +47,8 @@ def create_user(db):
 
 @pytest.fixture
 def create_coach(db, create_user):
-    """Fixture pour créer un coach de test"""
-    from authentication.models import CoachProfile
+    """Fixture to create a test coach"""
+    from backend.apps.authentication.models import CoachProfile
     from decimal import Decimal
     
     def _create_coach(user=None, **kwargs):
@@ -67,13 +69,13 @@ def create_coach(db, create_user):
 
 @pytest.fixture
 def api_client():
-    """Fixture pour créer un client API de test"""
+    """Fixture to create a test API client"""
     from rest_framework.test import APIClient
     return APIClient()
 
 @pytest.fixture
 def authenticated_client(create_user, api_client):
-    """Fixture pour créer un client API authentifié"""
+    """Fixture to create an authenticated API client"""
     def _get_authenticated_client(user=None):
         if user is None:
             user = create_user()
