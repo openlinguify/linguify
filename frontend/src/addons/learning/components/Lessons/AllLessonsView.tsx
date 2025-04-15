@@ -214,27 +214,18 @@ if (lessons.length === 0 && !loading && !error) {
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1">
-                      <h3 className="text-sm font-medium text-gray-900 truncate">{lesson.title}</h3>
+                      <h3 className="text-sm font-medium text-gray-900 truncate dark:text-white">{lesson.title}</h3>
                       {lesson.unit_level && (
-                        <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white text-xs">
-                          {lesson.unit_level}
+                        <Badge className="whitespace-nowrap bg-gray-300 text-gray-800">
+                        {lesson.unit_level}
                         </Badge>
                       )}
                     </div>
                     
                     {lesson.unit_title && (
-                      <p className="text-xs text-gray-600 truncate">
+                      <p className="text-xs text-gray-600 truncate dark:text-gray-400 mt-1">
                         {lesson.unit_title}
                       </p>
-                    )}
-                    
-                    {completionPercentage > 0 && (
-                      <div className="mt-1">
-                        <Progress 
-                          className="h-1" 
-                          value={completionPercentage} 
-                        />
-                      </div>
                     )}
                   </div>
                   <ChevronRight className="h-4 w-4 text-gray-400 shrink-0" />
@@ -251,15 +242,15 @@ if (lessons.length === 0 && !loading && !error) {
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="text-xl font-bold text-gray-900">{lesson.title}</h3>
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white">{lesson.title}</h3>
                           {lesson.unit_level && (
-                            <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white">
-                              Level {lesson.unit_level}
+                            <Badge className="whitespace-nowrap bg-gray-300 text-gray-800">
+                            Level {lesson.unit_level}
                             </Badge>
                           )}
                         </div>
                         
-                        <p className="text-gray-600 mt-1 line-clamp-2">{lesson.description}</p>
+                        <p className="text-gray-600 mt-1 line-clamp-2 dark:text-gray-400 mt-1">{lesson.description}</p>
                         
                         {lesson.unit_title && (
                           <p className="text-sm text-purple-600 mt-1">
@@ -270,7 +261,7 @@ if (lessons.length === 0 && !loading && !error) {
                         {completionPercentage > 0 && (
                           <div className="mt-2">
                             <Progress 
-                              className="h-1.5" 
+                              className="h-1.5 " 
                               value={completionPercentage} 
                             />
                           </div>
