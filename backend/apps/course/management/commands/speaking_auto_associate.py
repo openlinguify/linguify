@@ -56,7 +56,7 @@ class Command(BaseCommand):
                 parent_lesson = content_lesson.lesson
                 vocab_lessons = ContentLesson.objects.filter(
                     lesson=parent_lesson,
-                    content_type__iexact='vocabulary'
+                    content_type__iexact='vocabularylist'
                 )
                 
                 if vocab_lessons.exists():
