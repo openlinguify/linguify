@@ -1,4 +1,4 @@
-// src/addons/learning/components/LearningView.tsx
+// src/addons/learning/components/LearnView.tsx
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import courseAPI from "@/addons/learning/api/courseAPI";
 import progressAPI from "@/addons/progress/api/progressAPI";
 import LearningJourney from "./LearnHeader/LearnHeader";
+import AllLessonsView from "./Lessons/AllLessonsView";
 import { Unit, Lesson, FilteredUnit, FilteredLesson, FilteredContentLesson, LevelGroupType, LessonResult } from "@/addons/learning/types";
 import { UnitProgress, LessonProgress, ContentLessonProgress } from "@/addons/progress/types";
 import {
@@ -33,8 +34,6 @@ export default function LearningView() {
   const [lessonProgressData, setLessonProgressData] = useState<Record<number, LessonProgress>>({});
   const [_contentProgressData, setContentProgressData] = useState<Record<number, ContentLessonProgress>>({});
   const [_progressLoading, setProgressLoading] = useState<boolean>(true);
-  const [filteredLessonsByType, setFilteredLessonsByType] = useState<FilteredLesson[]>([]);
-  const [isLoadingFilteredLessons, setIsLoadingFilteredLessons] = useState<boolean>(false);
 
   // Create a map to track which units have already had their lessons loaded
   const loadedUnitsRef = useRef<Set<number>>(new Set());
@@ -343,108 +342,10 @@ export default function LearningView() {
     return unitsWithProgress > 0 ? Math.round(totalProgress / unitsWithProgress) : 0;
   };
 
-  // Méthode optimisée pour charger les leçons par type de contenu
-  const loadLessonsByContentType = useCallback(async (contentType: string): Promise<void> => {
-    if (contentType === "all") {
-      setFilteredLessonsByType([]);
-      return;
-    }
-
-    setIsLoadingFilteredLessons(true);
-    setError(null);
-
-    try {
-      console.log(`Loading lessons with content type: ${contentType}`);
-
-      // Utiliser la nouvelle API qui fournit toutes les données nécessaires en une seule requête
-      const response = await courseAPI.getLessonsByContentType(contentType, levelFilter);
-
-      // Vérifier si la réponse contient une erreur dans les métadonnées
-      if (response.metadata && 'error' in response.metadata && response.metadata.error) {
-        throw new Error(response.metadata.error);
-      }
-
-      if (!response.results || !Array.isArray(response.results) || response.results.length === 0) {
-        console.log(`No lessons found with content type: ${contentType}`);
-        setFilteredLessonsByType([]);
-        return;
-      }
-
-      try {
-        // Les données sont déjà enrichies par le backend, simplement mapper vers le format attendu
-        const formattedLessons: FilteredLesson[] = response.results.map((lesson: LessonResult) => {
-          // Récupérer les données de progression de la leçon si disponible
-          const lessonProgress = lessonProgressData[lesson.id];
-
-          // Ensure status is correctly typed
-          let status: 'not_started' | 'in_progress' | 'completed' | undefined;
-          if (lessonProgress?.status === 'not_started' ||
-            lessonProgress?.status === 'in_progress' ||
-            lessonProgress?.status === 'completed') {
-            status = lessonProgress.status;
-          } else {
-            status = undefined;
-          }
-
-          return {
-            id: lesson.id,
-            title: lesson.title,
-            lesson_type: lesson.lesson_type,
-            unit_id: lesson.unit_id || 0,
-            unitTitle: lesson.unit_title || '',
-            unitLevel: lesson.unit_level || '',
-            estimated_duration: lesson.estimated_duration,
-            contentLessons: [],
-            progress: lessonProgress?.completion_percentage,
-            status: status,
-            filteredContents: Array(lesson.content_count || 0).fill(null).map(() => ({
-              id: 0,
-              title: '',
-              content_type: contentType,
-              lesson_id: lesson.id,
-              order: 0,
-              progress: 0,
-              status: 'not_started' as 'not_started'
-            }))
-          };
-        });
-
-        setFilteredLessonsByType(formattedLessons);
-
-        // Si des métadonnées sont fournies et qu'elles contiennent les niveaux disponibles
-        if (response.metadata?.available_levels?.length > 0) {
-          setAvailableLevels(response.metadata.available_levels);
-        }
-      } catch (mappingError) {
-        const errorMessage = mappingError instanceof Error
-          ? mappingError.message
-          : 'Erreur inconnue';
-
-        console.error("Error during lesson data mapping:", mappingError);
-        setError(`Erreur lors du traitement des données: ${errorMessage}`);
-        setFilteredLessonsByType([]);
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
-      console.error(`Error loading lessons by content type ${contentType}:`, err);
-      setError(`Erreur lors du chargement des leçons de type "${contentType}": ${errorMessage}`);
-      setFilteredLessonsByType([]);
-    } finally {
-      setIsLoadingFilteredLessons(false);
-    }
-  }, [levelFilter, lessonProgressData]);
-
   // Initial effect to load units
   useEffect(() => {
     loadUnits();
   }, [loadUnits]);
-
-  // Effect to handle content type filter changes
-  useEffect(() => {
-    if (contentTypeFilter !== "all") {
-      loadLessonsByContentType(contentTypeFilter);
-    }
-  }, [contentTypeFilter, loadLessonsByContentType]);
 
   // Get layout preferences from localStorage
   useEffect(() => {
@@ -452,8 +353,36 @@ export default function LearningView() {
     if (savedLayout === "list" || savedLayout === "grid") {
       setLayout(savedLayout as "list" | "grid");
     }
-  }, []);
 
+    // Get view mode preference
+    const savedViewMode = localStorage.getItem("units_view_mode");
+    if (savedViewMode === "units" || savedViewMode === "lessons") {
+      setViewMode(savedViewMode as "units" | "lessons");
+    }
+
+    // Get compact view preference
+    const savedCompactView = localStorage.getItem("units_compact_view");
+    if (savedCompactView === "true") {
+      setIsCompactView(true);
+    }
+  }, []);
+  useEffect(() => {
+    // Précharger toutes les leçons lorsqu'on passe en mode "lessons"
+    if (viewMode === "lessons") {
+      console.log("Preloading lessons for lessons view mode");
+      // On peut appeler API ici si nécessaire
+      // Par exemple:
+
+      // Exemple (à adapter selon votre API) :
+      courseAPI.getLessonsByContentType("all", levelFilter)
+        .then(response => {
+          console.log(`Preloaded ${response.results?.length || 0} lessons`);
+        })
+        .catch(err => {
+          console.error("Error preloading lessons:", err);
+        });
+    }
+  }, [viewMode, levelFilter]);
   // Filter units by level
   const filteredUnits = useMemo(() => {
     return levelFilter === "all"
@@ -464,33 +393,34 @@ export default function LearningView() {
   // Content type change
   const handleContentTypeChange = (value: string) => {
     console.log(`Content type filter changing to: ${value}`);
-
-    // If user selects "all", reset to units view
-    if (value === "all") {
-      setContentTypeFilter("all");
-      setViewMode("units");
-      return;
-    }
-
-    // Otherwise, switch to lessons view and set the filter
     setContentTypeFilter(value);
-    setViewMode("lessons");
+    
+    // Si on sélectionne un filtre spécifique, on peut automatiquement 
+    // passer en mode leçons pour plus de cohérence
+    if (value !== "all" && viewMode !== "lessons") {
+      console.log("Automatically switching to lessons view mode due to content filter");
+      setViewMode("lessons");
+      localStorage.setItem("units_view_mode", "lessons");
+    }
+  };
+
+  // Handler for view mode change
+  const handleViewModeChange = (mode: "units" | "lessons") => {
+    console.log(`Changing view mode to: ${mode}`);
+    setViewMode(mode);
+    localStorage.setItem("units_view_mode", mode);
   };
 
   // Navigate to a lesson
   const handleLessonClick = (unitId: number, lessonId: number) => {
     router.push(`/learning/${unitId}/${lessonId}`);
   };
+
   const handleCompactViewChange = (value: boolean) => {
     setIsCompactView(value);
     localStorage.setItem("units_compact_view", value ? "true" : "false");
   };
-  useEffect(() => {
-    const savedCompactView = localStorage.getItem("units_compact_view");
-    if (savedCompactView === "true") {
-      setIsCompactView(true);
-    }
-  }, []);
+
   // Change layout
   const handleLayoutChange = (newLayout: "list" | "grid") => {
     setLayout(newLayout);
@@ -528,7 +458,6 @@ export default function LearningView() {
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden">
       <div className="sticky top-8 z-50 p-6">
-
         <LearningJourney
           levelFilter={levelFilter}
           onLevelFilterChange={setLevelFilter}
@@ -538,6 +467,8 @@ export default function LearningView() {
           onContentTypeChange={handleContentTypeChange}
           isCompactView={isCompactView}
           onCompactViewChange={handleCompactViewChange}
+          viewMode={viewMode}
+          onViewModeChange={handleViewModeChange}
         />
       </div>
       <div className="flex-1 overflow-auto">
@@ -716,7 +647,7 @@ export default function LearningView() {
             </div>
           )}
 
-          {/* Lessons display (when content filter is active) */}
+          {/* Lessons display (when in lessons view mode) */}
           {viewMode === "lessons" && (
             <div className="relative bg-white rounded-lg p-6 shadow-sm border border-purple-100">
               <div className="mb-4">
@@ -725,136 +656,13 @@ export default function LearningView() {
                 </h2>
               </div>
 
-              {isLoadingFilteredLessons ? (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin mb-4 text-purple-600" />
-                  <p className="text-muted-foreground">Chargement des leçons en cours...</p>
-                </div>
-              ) : filteredLessonsByType.length === 0 ? (
-                <div className="text-center py-12">
-                  <AlertCircle className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-muted-foreground">
-                    Aucune leçon ne correspond aux filtres sélectionnés.
-                  </p>
-                </div>
-              ) : (
-                <div className={layout === "list"
-                  ? "space-y-4"
-                  : `grid grid-cols-1 md:grid-cols-2 ${isCompactView ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-${isCompactView ? '2' : '4'}`}>
-                  {filteredLessonsByType.map(lesson => (
-                    <Card
-                      key={lesson.id}
-                      className={`cursor-pointer hover:shadow-md transition-shadow ${lesson.status === 'completed'
-                        ? 'border-l-4 border-purple-500'
-                        : lesson.status === 'in_progress'
-                          ? 'border-l-4 border-amber-500'
-                          : ''
-                        }`}
-                      onClick={() => handleLessonClick(lesson.unit_id, lesson.id)}
-                    >
-                      <CardContent className={isCompactView ? 'p-2' : 'p-4'}>
-                        {isCompactView ? (
-                          // Vue compacte pour les leçons filtrées
-                          <div className="flex items-center gap-2 justify-between">
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                              <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${lesson.status === 'completed'
-                                ? 'bg-green-100'
-                                : 'bg-purple-100'
-                                }`}>
-                                {lesson.status === 'completed'
-                                  ? <CheckCircle className="h-3 w-3 text-green-600" />
-                                  : <BookOpen className="h-3 w-3 text-purple-600" />
-                                }
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-sm truncate">{lesson.title}</h4>
-                                <p className="text-xs text-muted-foreground truncate">{lesson.unitTitle}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Badge variant="outline" className="text-xs">{lesson.unitLevel}</Badge>
-                              {lesson.status && (
-                                <Badge className={`text-xs ${lesson.status === 'completed'
-                                  ? 'bg-purple-100 text-purple-800 border-purple-200'
-                                  : lesson.status === 'in_progress'
-                                    ? 'bg-amber-100 text-amber-800 border-amber-200'
-                                    : 'bg-gray-100 text-gray-800'
-                                  }`}>
-                                  {lesson.status === 'completed' ? 'Terminé' : lesson.status === 'in_progress' ? 'En cours' : ''}
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        ) : (
-                          // Vue normale existante
-                          <>
-                            <Badge className="mb-2" variant="outline">{lesson.unitLevel}</Badge>
-                            <div className="flex items-start gap-3">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${lesson.status === 'completed'
-                                ? 'bg-green-100'
-                                : 'bg-purple-100'
-                                }`}>
-                                {lesson.status === 'completed'
-                                  ? <CheckCircle className="h-5 w-5 text-purple-600" />
-                                  : <BookOpen className="h-5 w-5 text-purple-600" />
-                                }
-                              </div>
-                              <div className="flex-1">
-                                <h4 className="font-medium">{lesson.title}</h4>
-                                <p className="text-xs text-muted-foreground mb-2">
-                                  {lesson.unitTitle}
-                                </p>
-                                <div className="flex flex-wrap items-center gap-2 mt-2">
-                                  <Badge variant="outline" className="text-xs">
-                                    {lesson.lesson_type}
-                                  </Badge>
-                                  <span className="text-xs text-muted-foreground flex items-center">
-                                    <Clock className="h-3 w-3 mr-1" />
-                                    {lesson.estimated_duration} min
-                                  </span>
-
-                                  {lesson.status === 'in_progress' && (
-                                    <Badge className="bg-amber-100 text-amber-800 border-amber-200">
-                                      En cours
-                                    </Badge>
-                                  )}
-
-                                  {lesson.status === 'completed' && (
-                                    <Badge className="bg-purple-100 text-purple-800 border-purple-200">
-                                      Terminé
-                                    </Badge>
-                                  )}
-                                </div>
-
-                                {lesson.progress !== undefined && lesson.progress > 0 && (
-                                  <Progress
-                                    className="mt-3 h-1.5"
-                                    value={lesson.progress}
-                                  />
-                                )}
-
-                                {/* Display available content types */}
-                                {lesson.filteredContents && lesson.filteredContents.length > 0 && (
-                                  <div className="mt-3 pt-2 border-t border-gray-100">
-                                    <p className="text-xs text-muted-foreground mb-1">Contenus disponibles:</p>
-                                    <div className="flex flex-wrap gap-1">
-                                      {lesson.filteredContents.map((content, index) => (
-                                        <Badge key={`${content.id || index}`} variant="secondary" className="text-xs">
-                                          {content.content_type}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+              {/* Utiliser AllLessonsView avec les props correctes */}
+              <AllLessonsView
+                levelFilter={levelFilter}
+                contentTypeFilter={contentTypeFilter}
+                isCompactView={isCompactView}
+                layout={layout}
+              />
             </div>
           )}
 
