@@ -1,11 +1,8 @@
 <p align="center">
   <a href="https://www.linguify.com" target="_blank">
-    <img src="chemin/vers/votre/logo-cercle.svg" alt="Linguify" width="200" />
+    <img src="https://github.com/lp-linguify/linguify/blob/develop/frontend/public/logo/circle-svg%20(2).svg" alt="Linguify" width="200" />
   </a>
 </p>
-
-# Linguify
-
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ![Languages: 4](https://img.shields.io/badge/Languages-4-green.svg)
