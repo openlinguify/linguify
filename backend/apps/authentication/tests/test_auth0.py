@@ -8,8 +8,8 @@ from unittest.mock import patch, Mock, MagicMock
 import json
 import jwt
 from urllib.parse import urlencode
-from ..views import Auth0Login, auth0_callback, auth0_logout, user_profile, get_me_view
-from ..models import User
+from backend.apps.authentication.views import Auth0Login, auth0_callback, auth0_logout, user_profile, get_me_view
+from backend.apps.authentication.models import User
 
 
 class Auth0LoginTests(SimpleTestCase):
@@ -58,7 +58,7 @@ class Auth0LoginTests(SimpleTestCase):
         """Test que la vue gère correctement les exceptions"""
         request = self.factory.get('/api/auth/login/')
         
-        with patch('authentication.views.urlencode', side_effect=Exception('Test error')):
+        with patch('backend.apps.authentication.views.urlencode', side_effect=Exception('Test error')):
             response = self.view(request)
             
             self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
@@ -73,7 +73,7 @@ class Auth0CallbackTests(SimpleTestCase):
     def setUp(self):
         self.factory = RequestFactory()
         
-    @patch('authentication.views.requests.post')
+    @patch('backend.apps.authentication.views.requests.post')
     @override_settings(
         AUTH0_CLIENT_ID='ctNt07qaUrHRnWtHkXoA7QFd3jodpXNu',
         AUTH0_CLIENT_SECRET='IfdLQfxjTpLviHxUWwfjvoUBW7kcmJ9_y0IDy3ASoDnqy0diI9MEaiqej7JUKecG',
@@ -125,7 +125,7 @@ class Auth0CallbackTests(SimpleTestCase):
         response_data = json.loads(response.content)
         self.assertEqual(response_data['error'], 'Authorization code missing')
         
-    @patch('authentication.views.requests.post')
+    @patch('backend.apps.authentication.views.requests.post')
     @override_settings(
         AUTH0_CLIENT_ID='ctNt07qaUrHRnWtHkXoA7QFd3jodpXNu',
         AUTH0_CLIENT_SECRET='IfdLQfxjTpLviHxUWwfjvoUBW7kcmJ9_y0IDy3ASoDnqy0diI9MEaiqej7JUKecG',

@@ -118,55 +118,55 @@ const courseAPI = {
 
   getLessonsByContentType: async (contentType: string, level?: string): Promise<LessonsByContentResponse> => {
     try {
-      if (!contentType) {
-        console.error('Content type parameter is required');
-        return {
-          results: [],
-          metadata: {
-            content_type: '',
-            target_language: '',
-            available_levels: [],
-            total_count: 0
-          }
-        };
+      // Modification: accepter une chaîne vide comme valeur valide
+      // mais log pour débogage
+      if (contentType === undefined || contentType === null) {
+        console.warn('Content type undefined or null, using empty string');
+        contentType = '';
       }
-
+  
       // Générer une clé de cache unique pour cette requête
       const lang = getUserTargetLanguage();
       const levelParam = level && level !== "all" ? level : "";
       const cacheKey = `lessons_by_content_${contentType}_${lang}_${levelParam}`;
-
-      // Vérifier si les données sont déjà en cache
-      const cachedData = Cache.get(cacheKey);
+      
+      // Ne pas utiliser le cache pour les requêtes "all" ou chaîne vide
+      const isAllContentTypes = contentType === "all" || contentType === "";
+      const cachedData = isAllContentTypes ? null : Cache.get(cacheKey);
+      
       if (cachedData) {
         console.log(`Using cached lessons for content type ${contentType} with language ${lang}`);
         return cachedData as LessonsByContentResponse;
       }
-
-      console.log(`API: Fetching lessons with content type ${contentType} with language ${lang}`);
-
+  
+      console.log(`API: Fetching lessons with content type '${contentType}' with language ${lang}`);
+  
       // Préparer les paramètres de requête
       const params: Record<string, string> = {
-        content_type: contentType,
         target_language: lang
       };
-
+  
+      // Ajouter content_type uniquement s'il n'est pas vide
+      // Le backend a été modifié pour gérer l'absence de ce paramètre
+      if (contentType && contentType !== "all") {
+        params.content_type = contentType;
+      }
+      
       // Ajouter le filtre de niveau si spécifié
       if (level && level !== "all") {
         params.level = level;
       }
-
-      // Utiliser la nouvelle API basée sur une classe
+  
+      console.log('API request parameters:', params);
+  
+      // Appel API
       const response = await apiClient.get('/api/v1/course/lessons-by-content/', {
-        params,
-        headers: {
-          'Accept-Language': lang
-        }
+        params
       });
-
+  
       // Vérifier que la réponse a le format attendu
       let responseData: LessonsByContentResponse;
-
+  
       if (response.data && response.data.results) {
         // La réponse est déjà au bon format
         responseData = response.data as LessonsByContentResponse;
@@ -193,17 +193,18 @@ const courseAPI = {
           }
         };
       }
-
-      // Mettre les données en cache pour les futures requêtes
-      Cache.set(cacheKey, responseData);
-
+  
+      // Mettre les données en cache pour les futures requêtes (sauf pour "all")
+      if (!isAllContentTypes) {
+        Cache.set(cacheKey, responseData);
+      }
+  
       return responseData;
     } catch (err: any) {
       // Capture détaillée de l'erreur
       const errorMessage = err.message || 'Unknown error';
-
       console.error('Failed to fetch lessons by content type:', err);
-
+  
       // L'objet de réponse inclut maintenant un champ error valide
       return {
         results: [],
@@ -280,7 +281,7 @@ const courseAPI = {
         }
       });
       if (Array.isArray(response.data)) {
-        return response.data.map(item => adaptTheoryContent(item));
+        return response.data.map((item: any) => adaptTheoryContent(item));
       }
 
       return [adaptTheoryContent(response.data)];

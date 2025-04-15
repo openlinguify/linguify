@@ -850,14 +850,16 @@ class LessonsByContentView(TargetLanguageMixin, generics.ListAPIView):
         # Récupérer le type de contenu depuis les paramètres de requête
         content_type = self.request.query_params.get('content_type')
         
+        # MODIFICATION: Ne pas lever d'exception si content_type est absent
+        # Traiter l'absence comme une demande pour tous les types de contenu
         if not content_type:
-            # Lever une exception si le paramètre obligatoire est manquant
-            raise ValidationError({"error": "content_type parameter is required"})
-        
-        # Construire le queryset filtré
-        queryset = Lesson.objects.filter(
-            content_lessons__content_type__iexact=content_type
-        ).distinct().select_related('unit')
+            # Construire le queryset pour tous les types de contenu
+            queryset = Lesson.objects.all().distinct().select_related('unit')
+        else:
+            # Construire le queryset filtré par type de contenu
+            queryset = Lesson.objects.filter(
+                content_lessons__content_type__iexact=content_type
+            ).distinct().select_related('unit')
         
         # Filtrer davantage par niveau si spécifié
         level = self.request.query_params.get('level')

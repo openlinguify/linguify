@@ -1,9 +1,12 @@
-// src/addons/learning/components/learningInfo/LearningJourney.tsx
+// src/addons/learning/components/learnHeader/LearnHeader.tsx
 'use client';
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/core/auth/AuthProvider";
-import { Filter, Loader2, LayoutGrid, LayoutList, BookOpen, FileText, Calculator, ArrowRightLeft, PencilLine, Infinity, Trophy } from "lucide-react";
+import { 
+  Filter, Loader2, LayoutGrid, LayoutList, BookOpen, FileText, 
+  Calculator, ArrowRightLeft, PencilLine, Infinity, Trophy, Library 
+} from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { User, Language } from "@/core/types/user";
@@ -24,11 +27,14 @@ import { Progress } from "@/components/ui/progress";
 import progressAPI from "@/addons/progress/api/progressAPI";
 import { ProgressSummary, RecentActivity } from "@/addons/progress/types";
 import { useTranslation } from "@/core/i18n/useTranslations";
+import ViewModeToggle from "@/addons/learning/components/ViewModeToggle/view-mode-toggle";
 
 interface EnhancedLearningJourneyProps extends LearningJourneyProps {
   onContentTypeChange?: (type: string) => void;
   isCompactView?: boolean;
   onCompactViewChange?: (isCompact: boolean) => void;
+  viewMode?: "units" | "lessons"; // New prop for view mode
+  onViewModeChange?: (mode: "units" | "lessons") => void; // New handler for view mode
 }
 
 /**
@@ -83,11 +89,6 @@ const mapUserProfileToUser = (profile: UserProfile): Partial<User> => {
   };
 };
 
-// Extended interface to add content type management
-interface EnhancedLearningJourneyProps extends LearningJourneyProps {
-  onContentTypeChange?: (type: string) => void;
-}
-
 export default function EnhancedLearningJourney({
   levelFilter = "all",
   onLevelFilterChange,
@@ -96,11 +97,13 @@ export default function EnhancedLearningJourney({
   onLayoutChange,
   onContentTypeChange,
   isCompactView = false,
-  onCompactViewChange
+  onCompactViewChange,
+  viewMode = "units",
+  onViewModeChange,
 }: EnhancedLearningJourneyProps) {
   const { user, isAuthenticated, isLoading } = useAuthContext();
   const router = useRouter();
-
+  
   // Component states
   const [userData, setUserData] = useState<Partial<User> | null>(null);
   const [selectedTypes, setSelectedTypes] = useState<string[]>(["all"]);
@@ -267,17 +270,11 @@ export default function EnhancedLearningJourney({
     );
   }
 
-
-
   return (
-
-
     <div className="mb-2">
-
       <div className="space-y-2">
         {/* Main panel with gradient */}
         <div className="bg-transparent rounded-lg text-black dark:text-white">
-
           {/* Filters and layout options */}
           <div className="flex flex-wrap items-center gap-2 mt-2 bg-white/5 dark:bg-black/5 backdrop-blur-sm p-3 rounded-lg border border-gray-200 dark:border-gray-800">
             {/* Level filter */}
@@ -287,18 +284,14 @@ export default function EnhancedLearningJourney({
                 <span className="text-sm font-medium">{t('dashboard.learningjourney.level')}:</span>
                 <Select value={levelFilter} onValueChange={onLevelFilterChange}>
                   <SelectTrigger className="bg-white/30 dark:bg-black/30 border-gray-200 dark:border-gray-700 flex-1 max-w-[180px]">
-                    <SelectValue
-                      placeholder={t('dashboard.learningjourney.allLevels')} />
+                    <SelectValue placeholder={t('dashboard.learningjourney.allLevels')} />
                   </SelectTrigger>
-                  <SelectContent
-                    className="w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-700">
-                    <SelectItem
-                      value="all"
-
-                    >{t('dashboard.learningjourney.allLevels')}</SelectItem>
+                  <SelectContent className="w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-700">
+                    <SelectItem value="all">
+                      {t('dashboard.learningjourney.allLevels')}
+                    </SelectItem>
                     {availableLevels.map(level => (
-                      <SelectItem
-                        key={level} value={level}>
+                      <SelectItem key={level} value={level}>
                         {t('dashboard.learningjourney.levelX', { level })}
                       </SelectItem>
                     ))}
@@ -322,7 +315,6 @@ export default function EnhancedLearningJourney({
                         {selectedTypes.includes("all")
                           ? t('dashboard.learningjourney.allContentTypes')
                           : `${selectedTypes.length} ${t('dashboard.learningjourney.filtered')}`}
-                        {/* Flèche vers le bas */}
                         <svg
                           className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
                           xmlns="http://www.w3.org/2000/svg"
@@ -356,7 +348,26 @@ export default function EnhancedLearningJourney({
                 </DropdownMenu>
               </div>
             )}
-
+            {/* NEW: View Mode Toggle (Units/Lessons) with toggle buttons */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">{t('dashboard.learningjourney.view')}:</span>
+              {viewMode && (
+                <div className="flex rounded-md overflow-hidden border border-gray-200 dark:border-gray-700">
+                  <button 
+                    className={`px-3 py-1 text-xs ${viewMode === "units" ? "bg-primary text-white" : "bg-white/30 dark:bg-black/30"}`}
+                    onClick={() => onViewModeChange && onViewModeChange("units")}
+                  >
+                    {t('dashboard.learningjourney.units')}
+                  </button>
+                  <button 
+                    className={`px-3 py-1 text-xs ${viewMode === "lessons" ? "bg-primary text-white" : "bg-white/30 dark:bg-black/30"}`}
+                    onClick={() => onViewModeChange && onViewModeChange("lessons")}
+                  >
+                    {t('dashboard.learningjourney.lessons')}
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Compact view toggle */}
             {onCompactViewChange && (
