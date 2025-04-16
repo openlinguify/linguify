@@ -38,7 +38,7 @@ export default function LearningView() {
   // Create a map to track which units have already had their lessons loaded
   const loadedUnitsRef = useRef<Set<number>>(new Set());
 
-  // Declare loadContentProgress first to avoid circular dependency
+  // Declare loadContentProgress first to avoid circular dependencyooko
   const loadContentProgress = useCallback(async (lessonId: number) => {
     try {
       const contentProgressItems = await progressAPI.getContentLessonProgress(lessonId);
