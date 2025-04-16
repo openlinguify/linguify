@@ -6,12 +6,11 @@ import { AlertCircle, Loader2, BookOpen, Clock, CheckCircle } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import courseAPI from "@/addons/learning/api/courseAPI";
 import progressAPI from "@/addons/progress/api/progressAPI";
 import LearningJourney from "./LearnHeader/LearnHeader";
 import AllLessonsView from "./Lessons/AllLessonsView";
-import { Unit, Lesson, FilteredUnit, FilteredLesson, FilteredContentLesson, LevelGroupType, LessonResult } from "@/addons/learning/types";
+import { Unit, Lesson, FilteredUnit, FilteredLesson, FilteredContentLesson, LevelGroupType } from "@/addons/learning/types";
 import { UnitProgress, LessonProgress, ContentLessonProgress } from "@/addons/progress/types";
 import {
   createUnitProgressMap,
