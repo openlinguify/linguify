@@ -426,6 +426,10 @@ class ExerciseGrammarReorderingSerializer(serializers.ModelSerializer):
         model = ExerciseGrammarReordering
         fields = ['id', 'content_lesson', 'sentence_en', 'sentence_fr', 'sentence_es', 'sentence_nl', 'explanation', 'hint']
 
+'''
+    Serializer for Grammar model.
+    This serializer is designed to handle multiple languages and provide a flexible API response.
+'''
 class GrammarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grammar
