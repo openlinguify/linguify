@@ -431,8 +431,11 @@ class GrammarSerializer(serializers.ModelSerializer):
         model = Grammar
         fields = ['title', 'description', 'example']
 
-# Update this section in course/serializers.py
-
+'''
+    Serializer for FillBlankExercise model.
+    This serializer is designed to handle multiple languages and provide a flexible API response.
+    It includes methods to retrieve the content in the target language, as well as direct accessors for each field.
+'''
 class FillBlankExerciseSerializer(serializers.ModelSerializer):
     """
     Serializer for fill in the blank exercises with enhanced API compatibility
@@ -532,3 +535,5 @@ class FillBlankExerciseSerializer(serializers.ModelSerializer):
         
         # Default fallback
         return 'en'
+    
+
