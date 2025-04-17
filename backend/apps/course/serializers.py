@@ -420,7 +420,9 @@ class MatchingExerciseSerializer(serializers.ModelSerializer):
             target_language = languages[0] if languages else 'fr'
         
         return obj.get_exercise_data(native_language, target_language)  
-
+'''
+    Serializer for ExerciseGrammarReordering model.
+'''
 class ExerciseGrammarReorderingSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExerciseGrammarReordering
