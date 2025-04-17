@@ -884,8 +884,8 @@ class LessonsByContentView(TargetLanguageMixin, generics.ListAPIView):
                 ]
             
             def get_unit_title(self, obj):
-                target_language = self.context.get('target_language', 'en')
-                field_name = f'title_{target_language}'
+                native_language = self.context.get('native_language', 'en')
+                field_name = f'title_{native_language}'
                 return getattr(obj.unit, field_name, obj.unit.title_en)
             
             def get_unit_level(self, obj):

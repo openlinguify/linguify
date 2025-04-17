@@ -80,15 +80,12 @@ class UnitSerializer(serializers.ModelSerializer):
 
     # Méthode pour récupérer le titre dans la langue de l'utilisateur
     def get_title(self, obj):
-        target_language = self._get_target_language().lower()
-        field_name = f'title_{target_language}'
-        return getattr(obj, field_name, obj.title_en)
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f"title_{native_language}", obj.title_en)
     
     def get_description(self, obj):
-        target_language = self._get_target_language().lower()
-        field_name = f"description_{target_language}"
-        value = getattr(obj, field_name, obj.description_en)
-        return value
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f"description_{native_language}", obj.description_en)
     
     def _get_target_language(self):
         request = self.context.get('request')
@@ -125,32 +122,12 @@ class LessonSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'lesson_type', 'estimated_duration', 'order']
 
     def get_title(self, obj):
-        # Get target language from context
-        target_language = self.context.get('target_language', 'en')
-        
-        # Normalize to lowercase
-        if target_language and target_language.upper() in ['EN', 'FR', 'ES', 'NL']:
-            target_language = target_language.lower()
-        
-        # Get the field name based on language
-        field_name = f'title_{target_language}'
-        
-        # Get the value, fallback to title_en if not found
-        value = getattr(obj, field_name, obj.title_en)
-        
-        # Log for debugging
-        logger.info(f"LessonSerializer - Lesson {obj.id}, target_language: {target_language}, field: {field_name}, value: {value}")
-        
-        return value
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f"title_{native_language}", obj.title_en)
 
     def get_description(self, obj):
-        # Même approche que pour title
-        target_language = self.context.get('target_language', 'en')
-        if target_language.upper() in ['EN', 'FR', 'ES', 'NL']:
-            target_language = target_language.lower()
-        
-        field_name = f'description_{target_language}'
-        return getattr(obj, field_name, obj.description_en)
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f"description_{native_language}", obj.description_en)
 
 class ContentLessonSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
