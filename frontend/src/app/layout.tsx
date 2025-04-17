@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   description: "Language learning platform for everyone.",
   icons: {
     icon: [
-      { url: '/logo/logo2.svg', type: 'image/svg+xml' },
+      { url: '/logo/circle-logo.svg', type: 'image/svg+xml' },
     ],
   }
 };
