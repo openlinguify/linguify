@@ -66,6 +66,7 @@ const CONTENT_TYPES = [
   { value: 'fill_blank', label: 'Fill in Blanks', icon: <PencilLine className="h-4 w-4" /> },
   { value: 'matching', label: 'Matching', icon: <Infinity className="h-4 w-4" /> },
   { value: 'reordering', label: 'Reordering', icon: <ArrowRightLeft className="h-4 w-4" /> },
+  { value: 'speaking', label: 'Speaking', icon: <BookOpen className="h-4 w-4" /> },
   { value: 'test', label: 'Test', icon: <BookOpen className="h-4 w-4" /> },
 ];
 
