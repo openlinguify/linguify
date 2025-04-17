@@ -27,9 +27,6 @@ class TargetLanguageMixin:
         # Priorité 1: paramètre de requête
         target_language = self.request.query_params.get('target_language')
         
-        # Ajoutez des logs pour déboguer
-        import logging
-        logger = logging.getLogger(__name__)
         logger.info(f"get_target_language - Lang from query params: {target_language}")
         
         # Priorité 2: header Accept-Language 
@@ -57,16 +54,38 @@ class TargetLanguageMixin:
         logger.info(f"get_target_language - Final lang: {target_language}")
         return target_language
     
+    def get_native_language(self):
+        # Priorité 1: paramètre de requête
+        native_language = self.request.query_params.get('native_language')
+        
+        # Log pour déboguer
+        logger.info(f"get_native_language - Lang from query params: {native_language}")
+        
+        # Priorité 2: utilisateur authentifié
+        if not native_language and hasattr(self.request, 'user') and self.request.user.is_authenticated:
+            user_lang = getattr(self.request.user, 'native_language', None)
+            if user_lang:
+                native_language = user_lang
+                logger.info(f"get_native_language - Lang from user profile: {native_language}")
+        
+        # Normaliser
+        if native_language and native_language.upper() in ['EN', 'FR', 'ES', 'NL']:
+            native_language = native_language.lower()
+        
+        # Valeur par défaut
+        if not native_language or native_language.lower() not in ['en', 'fr', 'es', 'nl']:
+            native_language = 'en'
+            
+        logger.info(f"get_native_language - Final lang: {native_language}")
+        return native_language
+    
     def get_serializer_context(self):
         context = super().get_serializer_context()
         target_language = self.get_target_language()
         context['target_language'] = target_language
-        
-        # Log pour déboguer
-        import logging
-        logger = logging.getLogger(__name__)
+        native_language = self.get_native_language()
+        context['native_language'] = native_language
         logger.info(f"get_serializer_context - Adding target_language to context: {target_language}")
-        
         return context  
 
 class UnitSerializer(serializers.ModelSerializer):

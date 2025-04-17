@@ -27,7 +27,7 @@ jobs:
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
       backend: ${{ steps.filter.outputs.backend }}
-      has_changes: ${{ steps.filter.outputs.frontend == 'true' || steps.filter.outputs.backend == 'true' || github.event_name == 'workflow_dispatch' }}
+      has_changes: ${{ steps.set-has-changes.outputs.has_changes }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -74,7 +74,16 @@ jobs:
           echo "Frontend files: ${{ steps.filter.outputs.frontend_files }}"
           echo "Backend changes: ${{ steps.filter.outputs.backend }}"
           echo "Backend files: ${{ steps.filter.outputs.backend_files }}"
-          echo "Has changes: ${{ steps.filter.outputs.frontend == 'true' || steps.filter.outputs.backend == 'true' || github.event_name == 'workflow_dispatch' }}"        
+          echo "Has changes: ${{ steps.filter.outputs.frontend == 'true' || steps.filter.outputs.backend == 'true' || github.event_name == 'workflow_dispatch' }}"
+
+      - name: Set has_changes
+        id: set-has-changes
+        run: |
+          if [[ "${{ steps.filter.outputs.frontend }}" == "true" || "${{ steps.filter.outputs.backend }}" == "true" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
 
   code-quality:
     needs: detect-changes
