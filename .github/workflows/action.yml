@@ -27,14 +27,33 @@ jobs:
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
       backend: ${{ steps.filter.outputs.backend }}
-      has_changes: ${{ steps.filter.outputs.frontend == 'true' || steps.filter.outputs.backend == 'true' }}
+      has_changes: ${{ steps.filter.outputs.frontend == 'true' || steps.filter.outputs.backend == 'true' || github.event_name == 'workflow_dispatch' }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.branch || github.ref }}
+      - name: Debug repo state
+        run: |
+          echo "Listing repository structure..."
+          find . -type d -not -path "*/\.*" -not -path "*/node_modules/*" -maxdepth 3
+          echo ""
+          echo "Git statut information"
+          git status
+          echo ""
+          echo "recent commits"
+          git log --online -n 5
+          echo "Current branch: ${{ github.ref_name }}"
+          echo "Event name: ${{ github.event_name }}"
+          echo "Inputs: ${{ toJson(github.event.inputs) }}"
+          echo "Changed files:"
+          git diff --name-only HEAD~1 HEAD || true
       
       - name: Check for file changes
         uses: dorny/paths-filter@v2
         id: filter
         with:
+          list-files: 'csv'
           filters: |
             frontend:
               - 'frontend/**'
@@ -45,12 +64,22 @@ jobs:
               - 'tsconfig.json'
             backend:
               - 'backend/**'
+              - 'backend/apps/**'
+              - 'backend/core/**'
               - '**/*.py'
               - 'requirements.txt'
+      - name: Debug outputs
+        run: |
+          echo "Frontend changes: ${{ steps.filter.outputs.frontend }}"
+          echo "Frontend files: ${{ steps.filter.outputs.frontend_files }}"
+          echo "Backend changes: ${{ steps.filter.outputs.backend }}"
+          echo "Backend files: ${{ steps.filter.outputs.backend_files }}"
+          echo "Has changes: ${{ steps.filter.outputs.frontend == 'true' || steps.filter.outputs.backend == 'true' || github.event_name == 'workflow_dispatch' }}"        
 
   code-quality:
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.has_changes == 'true' }}
+    if: ${{ needs.detect-changes.outputs.has_changes == 'true' || github.event_name == 'workflow_dispatch' }}
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -119,7 +148,7 @@ jobs:
 
   test-execution:
     needs: [detect-changes, code-quality]
-    if: ${{ needs.detect-changes.outputs.has_changes == 'true' }}
+    if: ${{ needs.detect-changes.outputs.has_changes == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
