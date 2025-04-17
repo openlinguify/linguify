@@ -42,7 +42,7 @@ jobs:
           git status
           echo ""
           echo "recent commits"
-          git log --online -n 5
+          git log --oneline -n 5
           echo "Current branch: ${{ github.ref_name }}"
           echo "Event name: ${{ github.event_name }}"
           echo "Inputs: ${{ toJson(github.event.inputs) }}"
