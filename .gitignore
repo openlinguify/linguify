@@ -43,5 +43,4 @@ backend/.env
 frontend/node_modules/
 frontend/.next/
 frontend/.env.local
-frontend/public/
 frontend/prisma/
