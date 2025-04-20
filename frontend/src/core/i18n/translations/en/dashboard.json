@@ -87,7 +87,10 @@
     "unitsCount": "{completed}/{total} units"
   },
   "flashcards": {
-    "explorePublicDecks": "Public",
+    "discoverPublicDesc": "Discover the shared lists created by thousands of people",
+    "discoverPublicTitle": "Explorer",
+    "explorePublicDecks": "Explorer",
+    "exploreNow": "Go to Explorer",
     "archived": "Archived",
     "userDecks": "{name}'s Flashcard Decks",
     "refresh": "Refresh",

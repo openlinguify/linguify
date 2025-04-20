@@ -87,7 +87,10 @@
     "unitsCount": "{completed}/{total} unités"
   },
   "flashcards": {
-    "explorePublicDecks": "Public",
+    "explorePublicDecks": "Explorer",
+    "discoverPublicDesc": "Discover des listes partagés par des centaines de personnes",
+    "discoverPublicTitle": "Explorer",
+    "exploreNow": "Aller sur Explorer",
     "archived": "Archivé",
     "userDecks": "Cartes mémoire de {name}",
     "refresh": "Rafraîchir",
