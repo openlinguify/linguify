@@ -1,10 +1,16 @@
 # backend/authentication/models.py
-import uuid
-from django.db import models  # Ensure this is imported correctly
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import MinValueValidator
+from typing import Any, Optional
 from django.http import Http404
+from django.db.models import QuerySet, Q
+from uuid import uuid4
+from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from decimal import Decimal
+from .storage import SecureUniqueFileStorage
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.utils import timezone
+import datetime
 
 LANGUAGE_CHOICES = [
     ('EN', 'English'),
@@ -40,48 +46,79 @@ OBJECTIVES_CHOICES = [
 GENDER_CHOICES = [
     ('M', 'Male'),
     ('F', 'Female'),
+    ('O', 'Other'),
+    ('P', 'Prefer not to say'),
 ]
+
+def validate_profile_picture(file):
+    allowed_types = ['image/jpeg', 'image/png']
+    max_size = 2 * 1024 * 1024  # 2MB
+    if file.size > max_size:
+        raise ValidationError("Profile picture file size must be under 2MB.")
+    if hasattr(file, 'content_type') and file.content_type not in allowed_types:
+        raise ValidationError("Only JPEG and PNG images are allowed.")
 
 
 class UserManager(BaseUserManager):
-    def get_object_by_public_id(self, public_id):
+    def get_object_by_public_id(self, public_id: str) -> Any:
+        """
+        Retrieve a user instance by public_id or raise Http404 if not found.
+        """
         try:
-            instance = self.get(public_id=public_id)
-            return instance
+            return self.get(public_id=public_id)
         except (ObjectDoesNotExist, ValueError, TypeError):
-            raise Http404
+            raise Http404("User not found.")
 
-    def create_user(self, username, email, password=None, **kwargs):
-        """Create and return a `User` with an email, phone number, username, and password."""
-        if username is None:
+    def create_user(
+        self,
+        username: str,
+        email: str,
+        password: Optional[str] = None,
+        **kwargs
+    ) -> Any:
+        """
+        Create and return a `User` with an email, phone number, username, and password.
+        """
+        if not username:
             raise TypeError('Users must have a username.')
-        if email is None:
+        if not email:
             raise TypeError('Users must have an email.')
-        if password is None:
+        if not password:
             raise TypeError('Users must have a password.')
 
-        user = self.model(username=username, email=self.normalize_email(email), **kwargs)
+        user = self.model(
+            username=username,
+            email=self.normalize_email(email),
+            **kwargs
+        )
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, email, password, **kwargs):
-        """Create and return a `User` with superuser (admin) permissions."""
-        if username is None:
+    def create_superuser(
+        self,
+        username: str,
+        email: str,
+        password: str,
+        **kwargs
+    ) -> Any:
+        """
+        Create and return a `User` with superuser (admin) permissions.
+        """
+        if not username:
             raise TypeError('Superusers must have a username.')
-        if email is None:
+        if not email:
             raise TypeError('Superusers must have an email.')
-        if password is None:
+        if not password:
             raise TypeError('Superusers must have a password.')
 
         user = self.create_user(username, email, password, **kwargs)
         user.is_superuser = True
         user.is_staff = True
         user.save(using=self._db)
-
         return user
 
-    def get_all_coaches(self):
+    def get_all_coaches(self) -> QuerySet:
         """
         Retrieve all active users who are coaches.
 
@@ -90,8 +127,7 @@ class UserManager(BaseUserManager):
         """
         return self.filter(is_coach=True, is_active=True)
 
-    def search_by_email(self, email):
-
+    def search_by_email(self, email: str) -> QuerySet:
         """
         Search for users by email.
 
@@ -103,8 +139,7 @@ class UserManager(BaseUserManager):
         """
         return self.filter(email__icontains=email)
 
-    def search_by_username(self, username):
-
+    def search_by_username(self, username: str) -> QuerySet:
         """
         Search for users by username.
 
@@ -116,8 +151,7 @@ class UserManager(BaseUserManager):
         """
         return self.filter(username__icontains=username)
 
-    def search_by_name(self, name):
-
+    def search_by_name(self, name: str) -> QuerySet:
         """
         Search for users by first or last name.
 
@@ -127,10 +161,9 @@ class UserManager(BaseUserManager):
         Returns:
             QuerySet: A QuerySet containing users whose first or last name contains the given name string.
         """
-        return self.filter(first_name__icontains=name)
+        return self.filter(Q(first_name__icontains=name) | Q(last_name__icontains=name))
 
-    def search_by_language(self, language):
-
+    def search_by_language(self, language: str) -> QuerySet:
         """
         Search for users by native or target language.
 
@@ -140,10 +173,9 @@ class UserManager(BaseUserManager):
         Returns:
             QuerySet: A QuerySet containing users whose native or target language matches the given language string.
         """
-        return self.filter(native_language=language)
+        return self.filter(Q(native_language=language) | Q(target_language=language))
 
-    def search_by_level(self, level):
-
+    def search_by_level(self, level: str) -> QuerySet:
         """
         Search for users by language level.
 
@@ -158,30 +190,36 @@ class UserManager(BaseUserManager):
 
 # Base User Model
 class User(AbstractBaseUser, PermissionsMixin):
-    public_id = models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)
-    username = models.CharField(db_index=True, max_length=255, unique=True)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    email = models.EmailField(db_index=True, unique=True)
-    birthday = models.DateField(null=True)
+    public_id = models.UUIDField(db_index=True, default=uuid4, editable=False, unique=True)
+    username = models.CharField(db_index=True, max_length=255, unique=True, blank=False, null=False)
+    first_name = models.CharField(max_length=255, blank=True)
+    last_name = models.CharField(max_length=255, blank=True)
+    email = models.EmailField(db_index=True, unique=True, blank=False, null=False)
+    birthday = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
     # in order to know if the user is active or not; if the user is not active, he/she can't log in to the platform
     # the user can be deactivated by the admin or by the user himself
     # the user progress will be saved even if the user is deactivated during a certain period of time (e.g. 6 months)
     # if the user is deactivated for more than 6 months, the user progress will be deleted
-    is_active = models.BooleanField(null=False, default=1)
-    is_subscribed = models.BooleanField(null=False, default=0)
+    is_active = models.BooleanField(null=False, default=True)
+    is_subscribed = models.BooleanField(null=False, default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     # Common fields for all users
-    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    profile_picture = models.ImageField(
+        upload_to='profile_pictures/',
+        storage=SecureUniqueFileStorage(),
+        null=True,
+        blank=True,
+        validators=[validate_profile_picture]
+    )
     bio = models.TextField(max_length=500, null=True, blank=True)
     native_language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default=LANGUAGE_CHOICES[0][0],
                                        help_text="Your native language")
     # Fields for language learners
-    target_language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default=LANGUAGE_CHOICES[0][0],
+    target_language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default=LANGUAGE_CHOICES[1][0],
                                       help_text="The language you want to learn")
     language_level = models.CharField(max_length=2, choices=LEVEL_CHOICES, default=LEVEL_CHOICES[0][0],
                                       help_text="Your language level")
@@ -195,20 +233,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     push_notifications = models.BooleanField(default=True)
     weekday_reminders = models.BooleanField(default=True)
     weekend_reminders = models.BooleanField(default=False)
-    reminder_time = models.CharField(max_length=5, default='18:00')
+    reminder_time = models.TimeField(default=datetime.time(18, 0))
+
     # learning settings fields
     speaking_exercises = models.BooleanField(default=True)
     listening_exercises = models.BooleanField(default=True)
     reading_exercises = models.BooleanField(default=True)
     writing_exercises = models.BooleanField(default=True)
-    daily_goal = models.IntegerField(default=15)
+    daily_goal = models.IntegerField(default=15, validators=[MinValueValidator(1)])
 
     # Private settings fields
     public_profile = models.BooleanField(default=True)
     share_progress = models.BooleanField(default=True)
     share_activity = models.BooleanField(default=False)
-
-
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
@@ -216,9 +253,34 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def update_profile(self, **kwargs):
+        allowed_fields = {
+            "first_name", "last_name", "bio", "profile_picture", "native_language",
+            "target_language", "language_level", "objectives", "interface_language",
+            "theme", "email_notifications", "push_notifications", "weekday_reminders",
+            "weekend_reminders", "reminder_time", "speaking_exercises", "listening_exercises",
+            "reading_exercises", "writing_exercises", "daily_goal", "public_profile",
+            "share_progress", "share_activity"
+        }
+        
+        # Check if trying to set target language same as native language
+        if ('target_language' in kwargs and 'native_language' in kwargs and 
+            kwargs['target_language'] == kwargs['native_language']):
+            raise ValidationError('Target language cannot be the same as native language')
+        
+        # Check if setting only target language to match existing native language
+        if ('target_language' in kwargs and 
+            kwargs['target_language'] == self.native_language):
+            raise ValidationError('Target language cannot be the same as native language')
+        
+        # Check if setting only native language to match existing target language
+        if ('native_language' in kwargs and 
+            kwargs['native_language'] == self.target_language):
+            raise ValidationError('Native language cannot be the same as target language')
+        
         for k, v in kwargs.items():
-            if hasattr(self, k):
+            if k in allowed_fields:
                 setattr(self, k, v)
+        
         self.save()
 
     def deactivate_user(self):
@@ -228,6 +290,47 @@ class User(AbstractBaseUser, PermissionsMixin):
     def reactivate_user(self):
         self.is_active = True
         self.save()
+        
+    def delete_user_account(self, anonymize: bool = True):
+        """
+        Securely delete the user account.
+        If anonymize is True, anonymize personal data before deletion for GDPR compliance.
+        """
+        if anonymize:
+            self._anonymize_user_data()
+        self._delete_related_objects()
+        super().delete()
+
+    def _anonymize_user_data(self):
+        self.email = f"deleted_user_{self.public_id}@example.com"
+        self.username = f"deleted_user_{self.public_id}"
+        self.first_name = ""
+        self.last_name = ""
+        self.bio = ""
+        profile_pic = getattr(self, 'profile_picture', None)
+        if profile_pic:
+            profile_pic.delete(save=False)
+        self.is_active = False
+        self.save()
+
+    def _delete_related_objects(self):
+        if hasattr(self, 'feedbacks'):
+            self.feedbacks.all().delete()
+        if hasattr(self, 'given_reviews'):
+            self.given_reviews.all().delete()
+        if hasattr(self, 'coach_profile'):
+            self.coach_profile.delete()
+    def clean(self, *args, **kwargs):
+        if self.native_language == self.target_language:
+            raise ValidationError("Native language and target language cannot be the same.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        if self.email:
+            self.email = self.email.lower()
+        if self.username:
+            self.username = self.username.lower()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.email}"
@@ -262,6 +365,8 @@ class CoachProfile(models.Model):
     commission_rate = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('5.00'), help_text="Commission rate taken by Linguify (in %).")
     commission_override = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="Override the default commission rate.")
 
+    class Meta:
+        unique_together = ('user', 'coaching_languages')
     # to update the availability of the coach
     def update_availability(self, new_availability):
         self.availability = new_availability

@@ -50,6 +50,8 @@ export const LANGUAGE_OPTIONS = [
   export const GENDER_OPTIONS = [
     { value: 'M', label: 'Male' },
     { value: 'F', label: 'Female' },
+    { value: 'O', label: 'Other' },
+    { value: 'P', label: 'Prefer not to say' },
   ];
   
   export interface UserSettings {
