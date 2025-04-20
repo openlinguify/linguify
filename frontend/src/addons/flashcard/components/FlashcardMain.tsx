@@ -114,8 +114,7 @@ const FlashcardMain = () => {
             onClick={handleRetry}
             disabled={isPageLoading}
           >
-            <RefreshCcw className="h-4 w-4 mr-2" />
-            {t('dashboard.flashcards.refresh')}
+            <RefreshCcw className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -158,7 +157,7 @@ const FlashcardMain = () => {
                 </div>
                 <Button
                   onClick={handleExplorePublicDecks}
-                  className="bg-gradient-to-r from-green-500 to-blue-500 text-white"
+                  className="bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 text-white"
                 >
                   <Globe className="h-4 w-4 mr-2" />
                   {t('dashboard.flashcards.exploreNow')}

@@ -59,7 +59,7 @@ const ExplorePage = () => {
   }
   
   return (
-    <div className="container mx-auto p-4 max-w-6xl">
+    <div className="w-full">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-2 mb-2">

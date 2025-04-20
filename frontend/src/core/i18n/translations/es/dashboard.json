@@ -88,8 +88,10 @@
     "unitsCount": "{completed}/{total} unidades"
   },
   "flashcards": {
-    "explorePublicDecks": "Publica",
-
+    "discoverPublicDesc": "Discovar the tarjeras de memoria",
+    "discoverPublicTitle": "Explorer",
+    "explorePublicDecks": "Explorer",
+    "exploreNow": "Vamos a Explorer",
     "archived": "Archivado",
     "userDecks": "Tarjetas de memoria de {name}",
     "refresh": "Actualizar",

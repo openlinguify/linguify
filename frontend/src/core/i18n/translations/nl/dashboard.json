@@ -87,7 +87,10 @@
     "unitsCount": "{completed}/{total} eenheden"
   },
   "flashcards": {
-    "explorePublicDecks": "Publiek Listen",
+    "explorePublicDecks": "Explorer",
+    "discoverPublicDesc": "Discover the lists of thousands of people",
+    "discoverPublicTitle": "Explorer",
+    "exploreNow": "Aller sur Explorer",
     "archived": "Gearchiveerd",
     "userDecks": "{name}'s Flashcard Decks",
     "refresh": "Vernieuwen",
