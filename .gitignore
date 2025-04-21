@@ -46,7 +46,7 @@ backend/myenv/
 backend/.env
 backend/media/
 backend/profile_pictures/
-backend/db_linguify/
+backend/db_linguify
 
 # === FRONTEND ===
 frontend/node_modules/
