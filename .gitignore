@@ -1,4 +1,5 @@
 # === GLOBAL ===
+
 *.log
 *.pid
 *.seed
@@ -31,6 +32,11 @@ __pycache__/
 Thumbs.db
 .notes_commandes
 
+# === Root ===
+.coverage
+backup_db.sh
+dev.sh  
+
 # === PYTHON / BACKEND ===
 env/
 venv/
@@ -38,10 +44,14 @@ venv/
 backend/venv/
 backend/myenv/
 backend/.env
+backend/media/
+backend/profile_pictures/
+backend/db_linguify/
 
 # === FRONTEND ===
 frontend/node_modules/
 frontend/.next/
 frontend/.env.local
 frontend/prisma/
+frontend/public/
 .qodo
