@@ -54,4 +54,6 @@ frontend/.next/
 frontend/.env.local
 frontend/prisma/
 frontend/public/media/
+frontend/public/landing/
+frontend/public/templates_storage/
 .qodo
