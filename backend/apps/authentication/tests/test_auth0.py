@@ -10,7 +10,8 @@ import jwt
 from urllib.parse import urlencode
 from backend.apps.authentication.views import Auth0Login, auth0_callback, auth0_logout, user_profile, get_me_view
 from backend.apps.authentication.models import User
-
+import environ
+env = environ.Env()
 
 class Auth0LoginTests(SimpleTestCase):
     """Tests pour la vue Auth0Login qui initialise le processus d'authentification"""
@@ -20,10 +21,10 @@ class Auth0LoginTests(SimpleTestCase):
         self.view = Auth0Login.as_view()
         
     @override_settings(
-        AUTH0_CLIENT_ID='ctNt07qaUrHRnWtHkXoA7QFd3jodpXNu',
-        AUTH0_DOMAIN='dev-7qe275o831ebkhbj.eu.auth0.com',
-        FRONTEND_CALLBACK_URL='http://localhost:3000/callback',
-        FRONTEND_URL='http://localhost:3000',
+        AUTH0_CLIENT_ID= env('AUTH0_CLIENT_ID'),
+        AUTH0_DOMAIN= env('AUTH0_DOMAIN'),
+        FRONTEND_CALLBACK_URL= env('FRONTEND_CALLBACK_URL'),
+        FRONTEND_URL= env('FRONTEND_URL'),
         AUTH0_AUDIENCE='https://linguify-api'
     )
     def test_auth0_login_generates_correct_url(self):

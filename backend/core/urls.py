@@ -4,6 +4,8 @@ from django.contrib import admin
 from django.urls import path, include
 from . import utils
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 def redirect_to_admin(request):
     return redirect('admin/')
@@ -23,4 +25,4 @@ urlpatterns = [
     # path('api/v1/task/', include('task.urls', namespace='task')),
     # path('api/v1/chat/', include('chat.urls', namespace='chat')),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

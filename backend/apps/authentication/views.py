@@ -7,8 +7,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from django.contrib.auth import get_user_model
 from .serializers import UserSerializer, ProfileUpdateSerializer
-
-
+import os
+from PIL import Image
+from io import BytesIO
+from django.core.files.base import ContentFile
 from rest_framework.response import Response
 import requests
 from urllib.parse import urlencode
@@ -328,9 +330,30 @@ def user_profile(request):
         except Exception as e:
             logger.exception(f"Error updating user profile: {str(e)}")
             return Response(
-                {'error': 'Failed to update profile', 'detail': str(e)},
+                {'error': f'Failed to update profile picture: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+        
+def optimize_image(image_file, max_size=(800, 800), quality=85):
+    """Resize and optimize image for web display"""
+    img = Image.open(image_file)
+    
+    # Convert RGBA to RGB if needed
+    if img.mode == 'RGBA':
+        img = img.convert('RGB')
+    
+    # Resize if larger than max_size
+    if img.width > max_size[0] or img.height > max_size[1]:
+        img.thumbnail(max_size, Image.LANCZOS)
+    
+    # Save optimized image
+    output = BytesIO()
+    img.save(output, format='JPEG', quality=quality, optimize=True)
+    output.seek(0)
+    
+    # Return content file with original name but jpg extension
+    original_name = os.path.splitext(image_file.name)[0]
+    return ContentFile(output.read(), name=f"{original_name}.jpg")
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -344,30 +367,67 @@ def update_profile_picture(request):
     if 'profile_picture' not in request.FILES:
         return Response({'error': 'No profile picture provided'}, status=status.HTTP_400_BAD_REQUEST)
     
+    # Add validation for file type
+    uploaded_file = request.FILES['profile_picture']
+    if not uploaded_file.name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+        return Response({'error': 'Invalid file type. Please upload a PNG, JPG, JPEG or GIF'}, 
+                        status=status.HTTP_400_BAD_REQUEST)
+    
+    # Add validation for file size (5MB limit)
+    if uploaded_file.size > 5 * 1024 * 1024:
+        return Response({'error': 'File too large. Maximum size is 5MB'}, 
+                        status=status.HTTP_400_BAD_REQUEST)
+    
     try:
         # Delete existing profile picture if any
         if user.profile_picture:
-            user.profile_picture.delete(save=False)
+            try:
+                user.profile_picture.delete(save=False)
+            except Exception as e:
+                logger.warning(f"Failed to delete old profile picture: {str(e)}")
         
-        # Save new profile picture
-        user.profile_picture = request.FILES['profile_picture']
-        user.save()
+        try:
+            # Process and save optimized image
+            optimized_image = optimize_image(request.FILES['profile_picture'])
+            user.profile_picture = optimized_image
+            user.save()
+        except Exception as e:
+            logger.error(f"Image processing failed: {str(e)}")
+            return Response(
+                {'error': f'Failed to process image: {str(e)}'},
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY
+            )
         
         # Get full URL for the profile picture
         if user.profile_picture:
             picture_url = request.build_absolute_uri(user.profile_picture.url)
+            debug_info = {
+                'file_name': user.profile_picture.name,
+                'file_path': user.profile_picture.path,  # Renamed from file_size to file_path
+                'file_url': user.profile_picture.url,
+                'full_url': picture_url,
+                'exists': os.path.exists(user.profile_picture.path)
+            }
+            logger.debug(f"Profile picture debug info: {debug_info}")
         else:
             picture_url = None
+            debug_info = {'error': 'Profile picture not saved'}
         
-        return Response({
+        # Create response with cache control
+        response = Response({
             'message': 'Profile picture updated successfully',
-            'profile_picture': picture_url
+            'picture': picture_url,  # Matching get_me function field name
+            'debug_info': debug_info if settings.DEBUG else None
         })
+        
+        # Add cache control header for better performance
+        response['Cache-Control'] = 'public, max-age=86400'  # Cache for 24 hours
+        return response
         
     except Exception as e:
         logger.exception(f"Error updating profile picture: {str(e)}")
         return Response(
-            {'error': 'Failed to update profile picture'},
+            {'error': f'Failed to update profile picture: {str(e)}'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
@@ -429,6 +489,3 @@ def debug_profile_endpoint(request):
             'traceback': traceback.format_exc(),
             'success': False
         }, status=500)
-
-
-

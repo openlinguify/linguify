@@ -14,9 +14,16 @@ env = environ.Env()
 # Lire le fichier .env
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# Paramètres Django utilisant les variables d'environnement
+if not env('SECRET_KEY', default=None):
+    raise ValueError("SECRET_KEY must be set in environment variables or .env file")
+
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
+
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+if not DEBUG:
+    if not ALLOWED_HOSTS:
+        raise ValueError("ALLOWED_HOSTS must be set in environment variables or .env file when DEBUG is False")
 
 # Paramètres de base
 BACKEND_URL = env.str('BACKEND_URL', default='http://localhost:8000')
@@ -58,13 +65,10 @@ INSTALLED_APPS = [
     #'subscription',
     #'app_manager', # 'app_manager', # TODO: Uncomment when app_manager is ready
     
-    
-
     # Django REST framework modules
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-
 
     # test
     'pytest_django',
@@ -82,10 +86,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'authentication.auth0_auth.Auth0Authentication',  # Auth0 en premier
-        # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.TokenAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
+        'authentication.auth0_auth.Auth0Authentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -288,6 +289,7 @@ TIME_ZONE = 'UTC'
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_DIRS = []
 
 # Default primary key field type
@@ -335,9 +337,9 @@ LOGGING = {
 
 # Configuration email pour l'envoi depuis les formulaires de contact
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # Ou votre fournisseur de mail
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'linguify.info@gmail.com'  # Remplacez par votre adresse email
-EMAIL_HOST_PASSWORD = 'Sony728596'  # Mot de passe d'application pour Gmail
-DEFAULT_FROM_EMAIL = 'Linguify <no-reply@linguify.com>'
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env.int('EMAIL_PORT')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
