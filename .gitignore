@@ -44,16 +44,10 @@ venv/
 backend/venv/
 backend/myenv/
 backend/.env
-backend/media/
-backend/profile_pictures/
-backend/db_linguify
 
 # === FRONTEND ===
 frontend/node_modules/
 frontend/.next/
 frontend/.env.local
 frontend/prisma/
-frontend/public/media/
-frontend/public/landing/
-frontend/public/templates_storage/
 .qodo
