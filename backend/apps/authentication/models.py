@@ -11,6 +11,9 @@ from .storage import SecureUniqueFileStorage
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils import timezone
 import datetime
+from PIL import Image
+import os
+from django.conf import settings
 
 LANGUAGE_CHOICES = [
     ('EN', 'English'),
@@ -51,14 +54,21 @@ GENDER_CHOICES = [
 ]
 
 def validate_profile_picture(file):
-    allowed_types = ['image/jpeg', 'image/png']
+    allowed_types = ['image/jpeg', 'image/png', 'image/jpg']
     max_size = 2 * 1024 * 1024  # 2MB
     if file.size > max_size:
         raise ValidationError("Profile picture file size must be under 2MB.")
     if hasattr(file, 'content_type') and file.content_type not in allowed_types:
         raise ValidationError("Only JPEG and PNG images are allowed.")
-
-
+    
+    # Additional validation for dimensions
+    try:
+        img = Image.open(file)
+        # Ensure minimum size for good quality
+        if img.width < 200 or img.height < 200:
+            raise ValidationError("Profile picture must be at least 200x200 pixels.")
+    except Exception as e:
+        raise ValidationError(f"Invalid image file: {str(e)}")
 class UserManager(BaseUserManager):
     def get_object_by_public_id(self, public_id: str) -> Any:
         """
