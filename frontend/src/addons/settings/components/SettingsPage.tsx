@@ -206,7 +206,22 @@ export default function SettingsPage() {
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    // Handle the "not-specified" special case for gender
+    if (name === 'native_language' && value === formData.target_language) {
+      toast({
+        title: "Validation Error",
+        description: "Native language and target language must be different",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (name === 'target_language' && value === formData.native_language) {
+      toast({
+        title: "Validation Error",
+        description: "Target language and native language must be different",
+        variant: "destructive",
+      });
+      return;
+    }
     if (name === 'gender' && value === 'not-specified') {
       setFormData(prev => ({ ...prev, [name]: null }));
     } else {
@@ -417,26 +432,27 @@ export default function SettingsPage() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
+  
     try {
       setIsUploading(true);
-
+  
       // Create FormData
       const formData = new FormData();
       formData.append('profile_picture', file);
-
+  
+      // Use the correct endpoint path
       const response = await apiClient.post('/api/auth/profile-picture/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-
-      if (response.data && response.data.profile_picture) {
+  
+      if (response.data && response.data.picture) {
         toast({
           title: "Success",
           description: "Profile picture updated successfully!",
         });
-
+  
         // Refresh user data
         fetchUserProfile();
       }
