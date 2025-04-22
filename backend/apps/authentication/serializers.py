@@ -143,58 +143,42 @@ class MeSerializer(serializers.ModelSerializer):
         """Retrieve user's birthday"""
         return obj.birthday
 
-# authentication/serializers.py
 class ProfileUpdateSerializer(serializers.ModelSerializer):
-    """
-    Serializer for updating user profile
-    """
     class Meta:
         model = User
-        fields = [
-            'first_name', 
-            'last_name', 
-            'username',
-            'profile_picture', 
-            'bio', 
-            'birthday',
-            'native_language', 
-            'target_language', 
-            'language_level', 
-            'objectives',
-            'gender'
-        ]
-        extra_kwargs = {
-            'first_name': {'required': False},
-            'last_name': {'required': False},
-            'username': {'required': False},
-            'profile_picture': {'required': False, 'allow_null': True},
-            'bio': {'required': False, 'allow_null': True, 'allow_blank': True},
-            'native_language': {'required': False},
-            'target_language': {'required': False},
-            'language_level': {'required': False},
-            'objectives': {'required': False},
-            'gender': {'required': False, 'allow_null': True}
-        }
-
+        fields = ['username', 'first_name', 'last_name', 'bio',
+                 'birthday', 'native_language', 'target_language',
+                 'language_level', 'objectives', 'gender']
+        
+    def update(self, instance, validated_data):
+        logger.info(f"Updating user profile with data: {validated_data}")
+        
+        # Don't try to use "update_fields" that might be passed from the view
+        # It should be a parameter to save(), not a field in the model
+        if 'update_fields' in validated_data:
+            validated_data.pop('update_fields')
+        
+        # Standard update logic - set each attribute
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        # Simply save without trying to specify update_fields
+        instance.save()
+        
+        return instance
     def validate(self, data):
         """
         Custom validation
         """
         logger.info(f"Validating profile update data: {data}")
 
-        # Only validate languages if both are provided
-        native_lang = data.get('native_language')
-        target_lang = data.get('target_language')
+        # Vérification complète des langues qui prend en compte toutes les situations
+        native_lang = data.get('native_language', getattr(self.instance, 'native_language', None))
+        target_lang = data.get('target_language', getattr(self.instance, 'target_language', None))
+        
         if native_lang and target_lang and native_lang == target_lang:
             raise serializers.ValidationError({
-                'target_language': 'Target language must be different from native language'
+                'target_language': 'Target language cannot be the same as native language'
             })
 
         return data
-
-    def update(self, instance, validated_data):
-        logger.info(f"Updating user profile with data: {validated_data}")
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        return instance

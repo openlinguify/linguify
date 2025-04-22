@@ -292,7 +292,7 @@ def token_refresh(request):
     except Exception as e:
         logger.error(f"Token refresh error: {str(e)}")
         return JsonResponse({'error': 'Internal server error'}, status=500)
-    
+
 @api_view(['GET', 'PATCH'])
 @permission_classes([IsAuthenticated])
 @parser_classes([JSONParser])
@@ -305,6 +305,20 @@ def user_profile(request):
     
     if request.method == 'GET':
         try:
+            # Vérifier si le profile_picture existe avant de l'utiliser
+            if hasattr(user, 'profile_picture') and user.profile_picture:
+                try:
+                    # Vérifier si le fichier existe physiquement
+                    if not os.path.exists(user.profile_picture.path):
+                        # Le fichier n'existe plus, effacer la référence
+                        logger.warning(f"Profile picture file not found: {user.profile_picture.path}")
+                        user.profile_picture = None
+                        user.save()  # Removed update_fields
+                except Exception as e:
+                    logger.warning(f"Error checking profile picture: {str(e)}")
+                    user.profile_picture = None
+                    user.save()  # Removed update_fields
+            
             serializer = UserSerializer(user)
             return Response(serializer.data)
         except Exception as e:
@@ -319,21 +333,41 @@ def user_profile(request):
             logger.info(f"Updating profile for user {user.email}")
             logger.debug(f"Update data: {request.data}")
             
+            # Vérifier l'existence du fichier de profile picture
+            if hasattr(user, 'profile_picture') and user.profile_picture:
+                try:
+                    if not os.path.exists(user.profile_picture.path):
+                        logger.warning("Profile picture file doesn't exist, resetting reference")
+                        user.profile_picture = None
+                        user.save()  # Removed update_fields
+                except Exception as e:
+                    logger.warning(f"Error checking profile picture: {str(e)}")
+                    user.profile_picture = None
+                    user.save()  # Removed update_fields
+            
             serializer = ProfileUpdateSerializer(user, data=request.data, partial=True)
             if serializer.is_valid():
-                serializer.save()
-                logger.info(f"Profile updated successfully for {user.email}")
-                return Response(serializer.data)
+                try:
+                    # We're not using fields_to_update anymore
+                    serializer.save()
+                    logger.info(f"Profile updated successfully for {user.email}")
+                    return Response(serializer.data)
+                except Exception as e:
+                    logger.exception(f"Error saving user profile: {str(e)}")
+                    return Response(
+                        {'error': f'Failed to save profile: {str(e)}'},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                    )
             
             logger.error(f"Profile update validation errors: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             logger.exception(f"Error updating user profile: {str(e)}")
             return Response(
-                {'error': f'Failed to update profile picture: {str(e)}'},
+                {'error': f'Failed to update profile: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-        
+
 def optimize_image(image_file, max_size=(800, 800), quality=85):
     """Resize and optimize image for web display"""
     img = Image.open(image_file)
@@ -382,7 +416,12 @@ def update_profile_picture(request):
         # Delete existing profile picture if any
         if user.profile_picture:
             try:
-                user.profile_picture.delete(save=False)
+                # Vérifier si le fichier existe avant de tenter de le supprimer
+                if os.path.exists(user.profile_picture.path):
+                    user.profile_picture.delete(save=False)
+                else:
+                    # Le fichier n'existe plus, simplement noter et continuer
+                    logger.warning(f"Profile picture file not found on disk: {user.profile_picture.path}")
             except Exception as e:
                 logger.warning(f"Failed to delete old profile picture: {str(e)}")
         
@@ -390,7 +429,8 @@ def update_profile_picture(request):
             # Process and save optimized image
             optimized_image = optimize_image(request.FILES['profile_picture'])
             user.profile_picture = optimized_image
-            user.save()
+            # Utiliser update_fields pour éviter les problèmes de validation
+            user.save(update_fields=['profile_picture'])
         except Exception as e:
             logger.error(f"Image processing failed: {str(e)}")
             return Response(
@@ -403,7 +443,7 @@ def update_profile_picture(request):
             picture_url = request.build_absolute_uri(user.profile_picture.url)
             debug_info = {
                 'file_name': user.profile_picture.name,
-                'file_path': user.profile_picture.path,  # Renamed from file_size to file_path
+                'file_path': user.profile_picture.path,
                 'file_url': user.profile_picture.url,
                 'full_url': picture_url,
                 'exists': os.path.exists(user.profile_picture.path)
@@ -416,10 +456,14 @@ def update_profile_picture(request):
         # Create response with cache control
         response = Response({
             'message': 'Profile picture updated successfully',
-            'picture': picture_url,  # Matching get_me function field name
+            'picture': picture_url,
             'debug_info': debug_info if settings.DEBUG else None
         })
-        
+        logger.info(
+            f"Received file: {request.FILES['profile_picture'].name}, "
+            f"size: {request.FILES['profile_picture'].size}, "
+            f"content type: {request.FILES['profile_picture'].content_type}")
+    
         # Add cache control header for better performance
         response['Cache-Control'] = 'public, max-age=86400'  # Cache for 24 hours
         return response
@@ -429,7 +473,7 @@ def update_profile_picture(request):
         return Response(
             {'error': f'Failed to update profile picture: {str(e)}'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+        )  
 
 @api_view(['GET'])
 @permission_classes([AllowAny])

@@ -49,6 +49,7 @@ OBJECTIVES_CHOICES = [
 GENDER_CHOICES = [
     ('M', 'Male'),
     ('F', 'Female'),
+    ('N', 'Non-binary'),
     ('O', 'Other'),
     ('P', 'Prefer not to say'),
 ]
@@ -335,12 +336,14 @@ class User(AbstractBaseUser, PermissionsMixin):
             raise ValidationError("Native language and target language cannot be the same.")
 
     def save(self, *args, **kwargs):
-        self.full_clean()
-        if self.email:
-            self.email = self.email.lower()
-        if self.username:
-            self.username = self.username.lower()
-        super().save(*args, **kwargs)
+        # Si update_fields est spécifié, utiliser cette méthode pour éviter la validation complète
+        if 'update_fields' in kwargs:
+            super().save(*args, **kwargs)
+        else:
+            # Sinon, effectuer la validation complète (pour les nouveaux utilisateurs)
+            if not self.pk:  # Nouveau utilisateur
+                self.full_clean()
+            super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.email}"
