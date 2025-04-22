@@ -54,51 +54,80 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """
-        Retourne les decks appropriés selon le contexte:
-        - Utilisateur authentifié: par défaut uniquement ses decks, peut voir les publics sur demande
-        - Utilisateur anonyme: uniquement les decks publics
+        Retourne les decks appropriés selon le contexte
         """
         user = self.request.user
         
-        # Paramètres de requête avec valeurs par défaut modifiées
-        show_public = self.request.query_params.get('public', 'false').lower() == 'true'  # Changé à false par défaut
+        # Paramètres de requête
+        show_public = self.request.query_params.get('public', 'false').lower() == 'true'
         show_mine = self.request.query_params.get('mine', 'true').lower() == 'true' and user.is_authenticated
         show_archived = self.request.query_params.get('archived', 'false').lower() == 'true'
         username_filter = self.request.query_params.get('username')
+        search_query = self.request.query_params.get('search', '')
         
-        # Construction du filtre de base
-        filter_query = Q(is_active=True)
-        
-        # Commencer avec une requête vide
-        queryset = FlashcardDeck.objects.none()
-        
-        if user.is_authenticated and show_mine:
-            # Ajouter les decks de l'utilisateur courant
-            owner_filter = Q(user=user)
-            
-            # Filtrage par statut d'archivage pour les decks de l'utilisateur
+        # Cas de base : si aucun filtre n'est spécifié, afficher les cartes de l'utilisateur
+        # Important pour l'espace personnel
+        if not search_query and not username_filter and not show_public and show_mine and user.is_authenticated:
+            # Filtre simple pour espace personnel
+            personal_query = Q(user=user, is_active=True)
             if not show_archived:
-                owner_filter &= Q(is_archived=False)
+                personal_query &= Q(is_archived=False)
+            return FlashcardDeck.objects.filter(personal_query)
+        
+        # Si recherche ou filtre username
+        if search_query or username_filter:
+            query = Q(is_active=True)
             
-            # Obtenir les decks de l'utilisateur
-            user_decks = FlashcardDeck.objects.filter(owner_filter)
-            queryset = user_decks
-        
-        if show_public:
-            # Ajouter les decks publics (non archivés) des autres utilisateurs
-            public_filter = Q(is_public=True, is_archived=False)
-            if user.is_authenticated:
-                # Exclure les decks de l'utilisateur courant des decks publics
-                public_filter &= ~Q(user=user)
+            # Pour l'explorateur, on veut les decks publics
+            if show_public:
+                query &= Q(is_public=True, is_archived=False)
+            
+            # Pour les decks perso
+            if show_mine and user.is_authenticated:
+                user_query = Q(user=user)
+                if not show_archived:
+                    user_query &= Q(is_archived=False)
+                    
+                if show_public:
+                    query |= user_query
+                else:
+                    query &= user_query
+                    
+            # Filtre par username
+            if username_filter:
+                query &= Q(user__username__icontains=username_filter)
                 
-            public_decks = FlashcardDeck.objects.filter(public_filter)
-            queryset = queryset.union(public_decks)
+            # Recherche textuelle
+            if search_query:
+                search_filter = Q(name__icontains=search_query) | Q(description__icontains=search_query)
+                query &= search_filter
+                
+            return FlashcardDeck.objects.filter(query).distinct()
         
-        if username_filter:
-            # Filtrer par nom d'utilisateur spécifique (seulement les decks publics et non archivés)
-            queryset = queryset.filter(user__username=username_filter)
+        # Construction de la requête pour les autres cas
+        query = Q(is_active=True)
         
-        return queryset.distinct()
+        # Logique pour les decks personnels et publics
+        if show_mine and user.is_authenticated:
+            personal_filter = Q(user=user)
+            if not show_archived:
+                personal_filter &= Q(is_archived=False)
+                
+            if show_public:
+                public_filter = Q(is_public=True, is_archived=False)
+                if user.is_authenticated:
+                    public_filter &= ~Q(user=user)  # Exclure decks perso des publics
+                    
+                # Combinaison OR entre perso et public
+                query &= (personal_filter | public_filter)
+            else:
+                query &= personal_filter
+        elif show_public:
+            query &= Q(is_public=True, is_archived=False)
+        else:
+            return FlashcardDeck.objects.none()
+            
+        return FlashcardDeck.objects.filter(query)
 
     def perform_create(self, serializer):
         """Associe automatiquement l'utilisateur actuel lors de la création d'un deck."""
@@ -256,7 +285,7 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
         try:
             deck = self.get_object()
             
-            # Vérifier l'accès aux cartes
+            # Vérifier l'accès aux cartes - autoriser pour les decks publics
             if not deck.is_public and (not request.user.is_authenticated or deck.user != request.user):
                 return Response(
                     {"detail": "You don't have permission to view cards in this deck"},
@@ -285,7 +314,6 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         
         except Exception as e:
-            logger.error(f"Error fetching cards for deck {pk}: {str(e)}")
             return Response(
                 {"detail": f"Failed to fetch cards: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
@@ -397,6 +425,30 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
             return Response(
                 {"detail": f"Failed to delete decks: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Récupère un deck spécifique.
+        Permet l'accès aux decks publics pour tous les utilisateurs
+        """
+        try:
+            instance = self.get_object()
+            
+            # Vérification des permissions - autoriser l'accès aux decks publics
+            if not instance.is_public and instance.user != request.user:
+                return Response(
+                    {"detail": "You don't have permission to view this deck"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+                
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+            
+        except Exception as e:
+            return Response(
+                {"detail": f"Error retrieving deck: {str(e)}"},
+                status=status.HTTP_404_NOT_FOUND
             )
 
 class FlashcardViewSet(viewsets.ModelViewSet):
@@ -777,37 +829,50 @@ class PublicDecksViewSet(viewsets.ReadOnlyModelViewSet):
         # Filtres supplémentaires
         language = self.request.query_params.get('language')
         username = self.request.query_params.get('username')
+        search = self.request.query_params.get('search')
         
         # Filtrer par langue si spécifié
-        # Note: Cela suppose que vous avez un champ "language" sur votre modèle FlashcardDeck
-        # Si ce n'est pas le cas, vous pouvez l'ignorer ou l'adapter à vos besoins
         if language:
             queryset = queryset.filter(language=language)
             
         # Filtrer par nom d'utilisateur si spécifié
         if username:
-            queryset = queryset.filter(user__username=username)
-            
+            queryset = queryset.filter(user__username__icontains=username)
+
+        # Recherche textuelle
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) | 
+                Q(description__icontains=search) | 
+                Q(user__username__icontains=search)
+            ).distinct()
+
         # Tri par popularité si demandé
         sort_by = self.request.query_params.get('sort_by')
         if sort_by == 'popularity':
-            # Annoter avec le nombre de cartes
             queryset = queryset.annotate(card_count=Count('flashcards')).order_by('-card_count')
-            
+                
         return queryset
-        
+            
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def clone(self, request, pk=None):
         """
-        Action pour cloner un deck public.
+        Action pour cloner un deck public d'un autre utilisateur.
         Crée une copie du deck et de ses cartes pour l'utilisateur courant.
         """
         source_deck = self.get_object()
         
-        # Si nous sommes dans ce viewset, le deck est forcément public, mais vérifions quand même
-        if not source_deck.is_public:
+        # Vérifier que le deck est public ou appartient à l'utilisateur
+        if not source_deck.is_public and source_deck.user != request.user:
             return Response(
-                {"detail": "You can only clone public decks"},
+                {"detail": "You can only clone public decks or your own decks"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Ne pas permettre de cloner un deck archivé, sauf s'il appartient à l'utilisateur
+        if source_deck.is_archived and source_deck.user != request.user:
+            return Response(
+                {"detail": "You cannot clone an archived deck from another user"},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
@@ -817,10 +882,10 @@ class PublicDecksViewSet(viewsets.ReadOnlyModelViewSet):
                 user=request.user,
                 name=request.data.get('name', f"Clone of {source_deck.name}"),
                 description=request.data.get('description', 
-                                          f"Cloned from {source_deck.user.username}'s deck: {source_deck.description}"),
+                                        f"Cloned from {source_deck.user.username}'s deck: {source_deck.description}"),
                 is_active=True,
                 is_public=False,  # Par défaut, les clones sont privés
-                is_archived=False
+                is_archived=False # Les clones ne sont jamais archivés
             )
             
             # Copier toutes les cartes
@@ -831,8 +896,8 @@ class PublicDecksViewSet(viewsets.ReadOnlyModelViewSet):
                     deck=new_deck,
                     front_text=card.front_text,
                     back_text=card.back_text,
-                    learned=False,
-                    review_count=0
+                    learned=False,  # Réinitialiser l'état d'apprentissage
+                    review_count=0  # Réinitialiser les stats d'apprentissage
                 )
                 cards_created += 1
             
@@ -845,7 +910,6 @@ class PublicDecksViewSet(viewsets.ReadOnlyModelViewSet):
             }, status=status.HTTP_201_CREATED)
             
         except Exception as e:
-            logger.error(f"Error cloning public deck {pk}: {str(e)}")
             return Response(
                 {"detail": f"Failed to clone deck: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
