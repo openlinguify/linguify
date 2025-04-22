@@ -87,6 +87,15 @@
     "unitsCount": "{completed}/{total} eenheden"
   },
   "flashcards": {
+    "cards": "kaarten",
+    "clone": "Klonen",
+    "completion": "Voltooiing",
+    "popular": "Populariteit",
+    "recent": "Recent",
+    "search": "Zoeken",
+    "searchDecks": "Zoek een lijst...",
+    "filterByUsername": "Filter op gebruikersnaam",
+    "az": "A-Z",
     "explorePublicDecks": "Explorer",
     "discoverPublicDesc": "Discover the lists of thousands of people",
     "discoverPublicTitle": "Explorer",

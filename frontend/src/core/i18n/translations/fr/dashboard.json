@@ -87,6 +87,15 @@
     "unitsCount": "{completed}/{total} unités"
   },
   "flashcards": {
+    "cards": "cartes",
+    "clone": "Cloner",
+    "completion": "Achèvement",
+    "popular": "Popularité",
+    "recent": "Récent",
+    "search": "Recherche",
+    "searchDecks": "Rechercher une liste...",
+    "filterByUsername": "Filtrer par nom d'utilisateur",
+    "az": "A-Z",
     "explorePublicDecks": "Explorer",
     "discoverPublicDesc": "Discover des listes partagés par des centaines de personnes",
     "discoverPublicTitle": "Explorer",

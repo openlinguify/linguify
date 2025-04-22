@@ -88,6 +88,15 @@
     "unitsCount": "{completed}/{total} unidades"
   },
   "flashcards": {
+    "cards": "tarjetas",
+    "clone": "Clonar",
+    "completion": "Finalización",
+    "popular": "Popularidad",
+    "recent": "Reciente",
+    "search": "Buscar",
+    "searchDecks": "Buscar una lista...",
+    "filterByUsername": "Filtrar por nombre de usuario",
+    "az": "A-Z",
     "discoverPublicDesc": "Discovar the tarjeras de memoria",
     "discoverPublicTitle": "Explorer",
     "explorePublicDecks": "Explorer",
