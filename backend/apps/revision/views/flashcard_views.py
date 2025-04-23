@@ -57,7 +57,22 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
         Retourne les decks appropriés selon le contexte
         """
         user = self.request.user
+        # Handle public_access parameter for direct access to a public deck
+        public_access = self.request.query_params.get('public_access', '').lower() == 'true'
         
+        # If requesting a specific deck with public_access=true
+        if public_access:
+            # Return both public decks and user's own decks (if authenticated)
+            if user.is_authenticated:
+                return FlashcardDeck.objects.filter(
+                    Q(is_public=True, is_archived=False) | Q(user=user)
+                )
+            else:
+                # For anonymous users, only return public decks
+                return FlashcardDeck.objects.filter(
+                    is_public=True, 
+                    is_archived=False
+                )
         # Paramètres de requête
         show_public = self.request.query_params.get('public', 'false').lower() == 'true'
         show_mine = self.request.query_params.get('mine', 'true').lower() == 'true' and user.is_authenticated
@@ -219,23 +234,17 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def clone(self, request, pk=None):
-        """
-        Action pour cloner un deck public d'un autre utilisateur.
-        Crée une copie du deck et de ses cartes pour l'utilisateur courant.
-        """
+        """Action pour cloner un deck public"""
         source_deck = self.get_object()
         
-        # Vérifier que le deck est public ou appartient à l'utilisateur
-        if not source_deck.is_public and source_deck.user != request.user:
-            return Response(
-                {"detail": "You can only clone public decks or your own decks"},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # Journaliser pour le débogage
+        logger.debug(f"Tentative de clonage du deck public {pk} par l'utilisateur {request.user.username}")
+        logger.debug(f"Données de la requête: {request.data}")
         
-        # Ne pas permettre de cloner un deck archivé, sauf s'il appartient à l'utilisateur
-        if source_deck.is_archived and source_deck.user != request.user:
+        # Vérifier que le deck est public
+        if not source_deck.is_public:
             return Response(
-                {"detail": "You cannot clone an archived deck from another user"},
+                {"detail": "You can only clone public decks"},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
@@ -243,12 +252,12 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
             # Créer un nouveau deck pour l'utilisateur
             new_deck = FlashcardDeck.objects.create(
                 user=request.user,
-                name=request.data.get('name', f"Clone of {source_deck.name}"),
-                description=request.data.get('description', 
-                                            f"Cloned from {source_deck.user.username}'s deck: {source_deck.description}"),
+                # Fournir des valeurs par défaut pour éviter les erreurs
+                name=request.data.get('name') or f"Clone of {source_deck.name}",
+                description=request.data.get('description') or f"Cloned from {source_deck.user.username}'s deck: {source_deck.description}",
                 is_active=True,
-                is_public=False,  # Par défaut, les clones sont privés
-                is_archived=False # Les clones ne sont jamais archivés
+                is_public=False,
+                is_archived=False
             )
             
             # Copier toutes les cartes
@@ -259,21 +268,19 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
                     deck=new_deck,
                     front_text=card.front_text,
                     back_text=card.back_text,
-                    learned=False,  # Réinitialiser l'état d'apprentissage
-                    review_count=0  # Réinitialiser les stats d'apprentissage
+                    learned=False,
+                    review_count=0
                 )
                 cards_created += 1
             
-            # Retourner les informations sur le nouveau deck
             serializer = FlashcardDeckSerializer(new_deck, context={'request': request})
-            
             return Response({
                 "message": f"Successfully cloned '{source_deck.name}' with {cards_created} cards",
                 "deck": serializer.data
             }, status=status.HTTP_201_CREATED)
             
         except Exception as e:
-            logger.error(f"Error cloning deck {pk}: {str(e)}")
+            logger.error(f"Erreur lors du clonage du deck {pk}: {str(e)}")
             return Response(
                 {"detail": f"Failed to clone deck: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
@@ -853,7 +860,37 @@ class PublicDecksViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.annotate(card_count=Count('flashcards')).order_by('-card_count')
                 
         return queryset
+
+    @action(detail=True, methods=['get'])
+    def cards(self, request, pk=None):
+        """Récupérer toutes les cartes d'un deck public spécifique."""
+        try:
+            deck = self.get_object()
             
+            # Vérifier que le deck est bien public
+            if not deck.is_public:
+                return Response(
+                    {"detail": "This deck is not public."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+                
+            # Ne pas permettre de voir les cartes d'un deck archivé
+            if deck.is_archived:
+                return Response(
+                    {"detail": "This deck is archived and not available for viewing"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            cards = deck.flashcards.all().order_by('-created_at')
+            serializer = FlashcardSerializer(cards, many=True, context={'request': request})
+            return Response(serializer.data)
+            
+        except Exception as e:
+            logger.error(f"Error fetching cards for public deck {pk}: {str(e)}")
+            return Response(
+                {"detail": f"Failed to fetch cards: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def clone(self, request, pk=None):
         """
