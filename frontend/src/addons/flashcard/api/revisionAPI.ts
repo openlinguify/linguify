@@ -95,17 +95,39 @@ export const revisionApi = {
      */
     async clone(id: number, options?: { name?: string; description?: string }): Promise<any> {
       logDebug('Clonage du deck', { id, options });
-      const response = await apiClient.post(`${API_BASE}/decks/${id}/clone/`, options || {});
-      return response.data;
+      
+      try {
+        // Essayer directement avec l'endpoint public, qui est le plus susceptible de fonctionner
+        // pour les decks vus dans l'explorateur
+        const response = await apiClient.post(`${API_BASE}/public/${id}/clone/`, options || {});
+        return response.data;
+      } catch (error: unknown) {
+        const err = error as { response?: { status?: number; data?: any }; message?: string };
+        
+        if (err.response && err.response.status === 404) {
+          // Si 404, essayer l'endpoint classique
+          logDebug('Endpoint public échoué, tentative avec l\'endpoint normal');
+          const response = await apiClient.post(`${API_BASE}/decks/${id}/clone/`, options || {});
+          return response.data;
+        } else {
+          // Journaliser les détails de l'erreur pour un meilleur diagnostic
+          logError('Erreur lors du clonage du deck', {
+            id, 
+            error: err.response?.data || err.message, 
+            status: err.response?.status
+          });
+          throw error;
+        }
+      }
     },
 
     /**
      * Gère l'archivage et la prolongation des decks
      */
-    async archiveManagement(data: { 
-      deck_id: number; 
+    async archiveManagement(data: {
+      deck_id: number;
       action: 'archive' | 'unarchive' | 'extend';
-      extension_days?: number; 
+      extension_days?: number;
     }): Promise<any> {
       logDebug('Gestion de l\'archivage', data);
       const response = await apiClient.post(`${API_BASE}/decks/archive_management/`, data);
@@ -138,14 +160,31 @@ export const revisionApi = {
       const response = await apiClient.get(`${API_BASE}/public/`, { params });
       return response.data;
     },
-
+    /**
+     * Récupère un deck public par son ID
+     */
+    async getPublicById(id: number): Promise<any> {
+      logDebug('Récupération du deck public par ID', { id });
+      const response = await apiClient.get(`${API_BASE}/decks/${id}/`, {
+        params: { public_access: true }
+      });
+      return response.data;
+    },
+    
+    async getPublicCards(id: number): Promise<any[]> {
+      logDebug('Récupération des cartes du deck public', { id });
+      const response = await apiClient.get(`${API_BASE}/decks/${id}/cards/`, {
+        params: { public_access: true }
+      });
+      return response.data;
+    },
     /**
      * Récupère les decks publics populaires
      */
     async getPopular(limit: number = 10): Promise<any[]> {
       logDebug('Récupération des decks populaires', { limit });
-      const response = await apiClient.get(`${API_BASE}/public/popular/`, { 
-        params: { limit } 
+      const response = await apiClient.get(`${API_BASE}/public/popular/`, {
+        params: { limit }
       });
       return response.data;
     },
@@ -155,8 +194,8 @@ export const revisionApi = {
      */
     async getRecent(limit: number = 10): Promise<any[]> {
       logDebug('Récupération des decks récents', { limit });
-      const response = await apiClient.get(`${API_BASE}/public/recent/`, { 
-        params: { limit } 
+      const response = await apiClient.get(`${API_BASE}/public/recent/`, {
+        params: { limit }
       });
       return response.data;
     },

@@ -66,12 +66,12 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
     const loadDeckData = async () => {
       setIsLoading(true);
       try {
-        // Charger les détails du deck
-        const deckData = await revisionApi.decks.getById(deckId);
+        // Utiliser directement deckId qui est passé en props
+        const deckData = await revisionApi.decks.getPublicById(deckId);
         setDeck(deckData);
-
+    
         // Charger les cartes
-        const cardsData = await revisionApi.flashcards.getAll(deckId);
+        const cardsData = await revisionApi.decks.getPublicCards(deckId);
         setCards(cardsData);
         setFilteredCards(cardsData);
       } catch (error) {
@@ -116,31 +116,40 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
   // Gestion du clone du deck
   const handleClone = async () => {
     if (!deck) return;
-
+  
     try {
       setIsCloning(true);
-
-      const result = await revisionApi.decks.clone(deckId);
-
+  
+      const result = await revisionApi.decks.clone(deckId, {
+        name: `Clone of ${deck.name}`,
+        description: `Cloned from ${deck.username}'s deck: ${deck.description}`,
+      });
+  
       toast({
         title: t('dashboard.flashcards.successTitle'),
         description: t('dashboard.flashcards.deckCloneSuccess', { name: deck.name }),
       });
-
-      // Notifier le parent
+  
+      // Notifier le parent et naviguer
       if (onClone) {
-        onClone(result.deck.id);
+        onClone(result.deck?.id);
       }
-
-      // Naviguer vers le nouveau deck
-      if (result.deck && result.deck.id) {
+  
+      if (result.deck?.id) {
         router.push(`/flashcard/deck/${result.deck.id}`);
       }
     } catch (error) {
       console.error('Error cloning deck:', error);
+      
+      // Afficher un message d'erreur plus précis si disponible
+      let errorMessage = t('dashboard.flashcards.cloneError');
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      }
+      
       toast({
         title: t('dashboard.flashcards.errorTitle'),
-        description: t('dashboard.flashcards.cloneError'),
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
