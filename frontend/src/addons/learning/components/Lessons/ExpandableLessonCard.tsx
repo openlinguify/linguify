@@ -1,19 +1,20 @@
 // src/addons/learning/components/Lessons/ExpandableLessonCard.tsx
 'use client';
+
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import courseAPI from "@/addons/learning/api/courseAPI";
 import progressAPI from "@/addons/progress/api/progressAPI";
 import { Cache } from "@/core/utils/cacheUtils";
+import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import { ContentLesson, Lesson } from "@/addons/learning/types";
 import {
   BookOpen,
   ChevronRight,
   ChevronDown,
   Clock,
-  Video,
   FileText,
   GraduationCap,
   AlertCircle,
@@ -23,13 +24,20 @@ import {
   PencilLine
 } from "lucide-react";
 
+// Type augmenté pour les statuts et progression de leçon
+interface LessonWithProgress extends Lesson {
+  progress?: number;
+  status?: 'not_started' | 'in_progress' | 'completed';
+}
+
 interface ExpandableLessonCardProps {
-  lesson: Lesson;
+  lesson: LessonWithProgress;
   onContentClick: (contentLessonId: number) => void;
   showProgress?: boolean;
   isCompactView?: boolean;
   refreshTrigger?: number;
   cacheTTL?: number;
+  targetLanguage?: string;
 }
 
 const getContentTypeIcon = (type: string) => {
@@ -46,23 +54,60 @@ const getContentTypeIcon = (type: string) => {
   }
 };
 
+// Fonction utilitaire pour extraire le contenu localisé
+const getLocalizedContent = (content: any, language: string, field: string, fallback: string = ''): string => {
+  if (!content) return fallback;
+  
+  if (typeof content[field] === 'object') {
+    // Essayer d'abord la langue spécifiée
+    if (content[field][language]) {
+      return content[field][language];
+    }
+    // Puis essayer l'anglais comme fallback
+    if (content[field].en) {
+      return content[field].en;
+    }
+    // Sinon essayer d'utiliser la première valeur disponible
+    const values = Object.values(content[field]);
+    if (values.length > 0) {
+      return String(values[0]);
+    }
+  } else if (content[field]) {
+    // Si le champ existe mais n'est pas un objet
+    return String(content[field]);
+  }
+  
+  return fallback;
+};
+
 const ExpandableLessonCard: React.FC<ExpandableLessonCardProps> = ({
   lesson,
   onContentClick,
   showProgress = true,
   isCompactView = false,
   refreshTrigger = 0,
-  cacheTTL = 5 * 60 * 1000 // 5 minutes
+  cacheTTL = 5 * 60 * 1000,
+  targetLanguage
 }) => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [contents, setContents] = useState<ContentLesson[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [progressData, setProgressData] = useState<Record<number, any>>({});
-  
+  const [effectiveLanguage, setEffectiveLanguage] = useState<string>(targetLanguage || getUserTargetLanguage());
+
   // Clés de cache
   const contentsCacheKey = `lesson_${lesson.id}_contents`;
   const progressCacheKey = `lesson_${lesson.id}_progress`;
+  
+  // Mettre à jour la langue effective quand la prop change ou au démarrage
+  useEffect(() => {
+    if (targetLanguage) {
+      setEffectiveLanguage(targetLanguage);
+    } else {
+      setEffectiveLanguage(getUserTargetLanguage());
+    }
+  }, [targetLanguage]);
   
   // Fonction pour charger les contenus de la leçon
   useEffect(() => {
@@ -82,7 +127,7 @@ const ExpandableLessonCard: React.FC<ExpandableLessonCardProps> = ({
             setError(null);
           } else {
             // Pas de cache, récupérer depuis l'API
-            const data = await courseAPI.getContentLessons(lesson.id);
+            const data = await courseAPI.getContentLessons(lesson.id, effectiveLanguage);
             const sortedContents = Array.isArray(data)
               ? data.sort((a: ContentLesson, b: ContentLesson) => a.order - b.order) 
               : [];
@@ -110,7 +155,7 @@ const ExpandableLessonCard: React.FC<ExpandableLessonCardProps> = ({
     };
     
     fetchContents();
-  }, [expanded, lesson.id, contents.length, cacheTTL, contentsCacheKey]);
+  }, [expanded, lesson.id, contents.length, cacheTTL, contentsCacheKey, effectiveLanguage]);
   
   // Fonction pour récupérer les données de progression
   const fetchProgressData = async () => {
@@ -154,10 +199,13 @@ const ExpandableLessonCard: React.FC<ExpandableLessonCardProps> = ({
   }, [refreshTrigger, lesson.id, contentsCacheKey, progressCacheKey]);
   
   // Calculer le pourcentage de progression
-  const calculateProgress = () => {
-    if (contents.length === 0) return lesson.progress || 0;
+  const calculateProgress = (): number => {
+    // Si pas de contenu, utiliser la progression stockée dans la leçon si disponible
+    if (contents.length === 0) {
+      return lesson.progress !== undefined ? lesson.progress : 0;
+    }
     
-    // Compter les contenus complétés
+    // Sinon calculer la progression basée sur les contenus complétés
     const completedCount = Object.values(progressData).filter(
       item => item.status === 'completed'
     ).length;
@@ -205,6 +253,11 @@ const ExpandableLessonCard: React.FC<ExpandableLessonCardProps> = ({
     };
   };
 
+  // Statut de la leçon avec fallback
+  const lessonStatus = lesson.status || 'not_started';
+  // Progression calculée
+  const progressPercentage = calculateProgress();
+
   return (
     <Card className="group overflow-hidden border-2 border-transparent hover:border-brand-purple/20 transition-all duration-300 relative w-full">
       <div 
@@ -222,10 +275,10 @@ const ExpandableLessonCard: React.FC<ExpandableLessonCardProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center 
-              ${lesson.status === 'completed' 
+              ${lessonStatus === 'completed' 
                 ? 'bg-green-100 text-green-600' 
                 : 'bg-purple-100 text-purple-600'}`}>
-              {lesson.status === 'completed' 
+              {lessonStatus === 'completed' 
                 ? <CheckCircle className="h-4 w-4" /> 
                 : <BookOpen className="h-4 w-4" />}
             </div>
@@ -241,9 +294,9 @@ const ExpandableLessonCard: React.FC<ExpandableLessonCardProps> = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {showProgress && lesson.progress > 0 && (
+            {showProgress && progressPercentage > 0 && (
               <span className="text-sm text-muted-foreground">
-                {calculateProgress()}%
+                {progressPercentage}%
               </span>
             )}
             {expanded ? 
@@ -253,10 +306,10 @@ const ExpandableLessonCard: React.FC<ExpandableLessonCardProps> = ({
           </div>
         </div>
 
-        {showProgress && (lesson.progress > 0 || Object.keys(progressData).length > 0) && (
+        {showProgress && (progressPercentage > 0 || Object.keys(progressData).length > 0) && (
           <div className="w-full">
             <Progress 
-              value={calculateProgress()} 
+              value={progressPercentage} 
               className="h-1.5 [&>div]:bg-gradient-to-r [&>div]:from-indigo-600 [&>div]:via-purple-600 [&>div]:to-pink-400"
             />
           </div>
@@ -284,14 +337,9 @@ const ExpandableLessonCard: React.FC<ExpandableLessonCardProps> = ({
               {contents.map((content) => {
                 const { statusBadge, statusClass, progressValue } = getContentStyle(content.id);
                 
-                // Obtenir les informations localisées
-                const title = typeof content.title === 'object' 
-                  ? (content.title[targetLanguage] || content.title.en || 'Untitled')
-                  : content.title || 'Untitled';
-                  
-                const instruction = typeof content.instruction === 'object'
-                  ? (content.instruction[targetLanguage] || content.instruction.en || '')
-                  : content.instruction || '';
+                // Utiliser notre fonction utilitaire pour extraire le titre et l'instruction
+                const title = getLocalizedContent(content, effectiveLanguage, 'title', 'Untitled');
+                const instruction = getLocalizedContent(content, effectiveLanguage, 'instruction', '');
                 
                 return (
                   <div

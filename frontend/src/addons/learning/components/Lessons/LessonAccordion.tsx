@@ -1,7 +1,6 @@
 // src/addons/learning/components/Lessons/LessonAccordion.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import courseAPI from "@/addons/learning/api/courseAPI";
 import { ContentLesson, Lesson } from "@/addons/learning/types";
 import {
