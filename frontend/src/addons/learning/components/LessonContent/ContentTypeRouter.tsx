@@ -25,10 +25,10 @@ export default function ContentTypeRouter({
   onComplete
 }: ContentTypeRouterProps) {
 
-  // Normaliser le type de contenu
-  const normalizedType = contentType.toLowerCase().trim();
+  // Normalize the content type and decode URL-encoded characters
+  const normalizedType = decodeURIComponent(contentType).toLowerCase().trim();
 
-  // Props communs à tous les types de contenu
+  // Common props for all content components
   const commonProps = {
     lessonId: contentId,
     language,
@@ -36,16 +36,15 @@ export default function ContentTypeRouter({
     onComplete
   };
 
-  // Router vers le bon composant en fonction du type de contenu
+  // Route to the correct component based on content type
   switch (normalizedType) {
     case 'theory':
       return <TheoryContent {...commonProps} />;
 
     case 'vocabulary':
-      return <VocabularyLesson {...commonProps} />;
-
     case 'vocabularylist':
       return <VocabularyLesson {...commonProps} />;
+      
     case 'multiple choice':
       return <MultipleChoiceQuestion {...commonProps} />;
 
@@ -64,11 +63,8 @@ export default function ContentTypeRouter({
     case 'matching':
       return <MatchingExercise {...commonProps} />;
 
-
     case 'speaking':
-      return (
-        <SpeakingPractice {...commonProps} />
-      );
+      return <SpeakingPractice {...commonProps} />;
 
     default:
       return (
