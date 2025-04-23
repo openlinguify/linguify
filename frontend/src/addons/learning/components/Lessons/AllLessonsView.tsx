@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Lesson } from "@/addons/learning/types";
 import courseAPI from "@/addons/learning/api/courseAPI";
 import progressAPI from "@/addons/progress/api/progressAPI";
+import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import {
   Clock,
   BookOpen,
@@ -20,7 +21,6 @@ import {
   ChevronDown,
   Infinity,
   Mic,
-  PencilLine
 } from "lucide-react";
 
 // Helper function to get the appropriate icon for lesson type
@@ -74,35 +74,36 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
   const [expandedLessonId, setExpandedLessonId] = useState<number | null>(null);
   const [contentMap, setContentMap] = useState<Record<number, any[]>>({});
   const [loadingContentMap, setLoadingContentMap] = useState<Record<number, boolean>>({});
+  const [_targetLanguage, setTargetLanguage] = useState<string>(getUserTargetLanguage());
 
   useEffect(() => {
     const fetchLessons = async () => {
       setLoading(true);
       try {
         console.log(`AllLessonsView: Fetching lessons with contentType=${contentTypeFilter}, level=${levelFilter}`);
-        
+
         // Modification: condition explicite pour traiter "all" correctement
         let apiContentType = contentTypeFilter;
-        
+
         // S'assurer que même avec "all", on envoie une valeur au backend
         // Cette approche est complémentaire à la modification du backend
         if (apiContentType === "all") {
           apiContentType = ""; // Envoyer une chaîne vide pour "all"
         }
-        
+
         const response = await courseAPI.getLessonsByContentType(
-          apiContentType, 
+          apiContentType,
           levelFilter
         );
-        
+
         console.log(`API Response for "${contentTypeFilter}":`, {
           hasResults: response.results && response.results.length > 0,
           resultCount: response.results?.length || 0
         });
-        
+
         if (response.results && response.results.length > 0) {
           setLessons(response.results);
-          
+
           // Fetch progress data for all lessons
           const lessonIds = response.results.map(lesson => lesson.id);
           fetchLessonProgressData(lessonIds);
@@ -110,7 +111,7 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
           console.log(`No lessons found for content type "${contentTypeFilter}"`);
           setLessons([]);
         }
-        
+
         setError(null);
       } catch (err) {
         console.error("Failed to fetch lessons:", err);
@@ -119,17 +120,24 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
         setLoading(false);
       }
     };
-    
+
     fetchLessons();
   }, [levelFilter, contentTypeFilter]);
-  
+
+  useEffect(() => {
+    // Get user's target language from settings
+    const userLang = getUserTargetLanguage();
+    setTargetLanguage(userLang);
+  }, []);
+
+
   const fetchLessonProgressData = async (lessonIds: number[]) => {
     if (!lessonIds.length) return;
-    
+
     try {
       // Fetch progress for all lessons
       const progressMap: Record<number, any> = {};
-      
+
       // In a real implementation, you'd fetch all progress at once
       // For now, we'll simulate batch fetching
       for (const lessonId of lessonIds) {
@@ -138,13 +146,13 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
           progressMap[lessonId] = progress[0];
         }
       }
-      
+
       setProgressData(progressMap);
     } catch (err) {
       console.error("Failed to fetch lesson progress:", err);
     }
   };
-  
+
   const handleLessonClick = (lessonId: number) => {
     if (expandedLessonId === lessonId) {
       // Si la leçon est déjà développée, on la replie
@@ -152,18 +160,18 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
     } else {
       // Sinon, on développe la nouvelle leçon
       setExpandedLessonId(lessonId);
-      
+
       // Si on n'a pas encore chargé les contenus pour cette leçon, on les charge maintenant
       if (!contentMap[lessonId] && !loadingContentMap[lessonId]) {
         loadLessonContents(lessonId);
       }
     }
   };
-  
+
   const loadLessonContents = async (lessonId: number) => {
     // Marquer comme en chargement
     setLoadingContentMap(prev => ({ ...prev, [lessonId]: true }));
-    
+
     try {
       const contents = await courseAPI.getContentLessons(lessonId);
       if (Array.isArray(contents)) {
@@ -177,22 +185,18 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
       setLoadingContentMap(prev => ({ ...prev, [lessonId]: false }));
     }
   };
+
+
+// In AllLessonsView.tsx or any component that navigates to content
+const handleContentClick = (unitId: number, lessonId: number, contentId: number, contentType: string) => {
+  const targetLanguage = getUserTargetLanguage();
   
-  const handleContentClick = (unitId: number, lessonId: number, contentId: number, contentType: string) => {
-    // Au lieu de naviguer vers la page de leçon avec un paramètre content
-    // router.push(`/learning/${unitId}/${lessonId}?content=${contentId}`);
-    
-    // Naviguer directement vers le contenu spécifique
-    router.push(`/learning/content/${contentType.toLowerCase()}/${contentId}`);
-    
-    // Si votre structure d'URL est différente, adaptez selon votre besoin
-    // Par exemple, si c'est organisé par type:
-    // router.push(`/learning/${contentType.toLowerCase()}/${contentId}`);
-    
-    // Ou si vous avez une route plus spécifique:
-    // router.push(`/learning/${unitId}/${lessonId}/content/${contentId}`);
-  };
-  
+  // Include both parentLessonId and unitId in the URL
+  router.push(
+    `/learning/content/${contentType.toLowerCase()}/${contentId}?language=${targetLanguage}&parentLessonId=${lessonId}&unitId=${unitId}`
+  );
+};
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center p-8 space-y-4">
@@ -201,7 +205,7 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="p-6 bg-red-50 rounded-lg border border-red-200 text-red-700 flex items-center gap-2">
@@ -216,7 +220,7 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
       <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 text-gray-700">
         <p className="text-center">No lessons found matching your filters.</p>
         <div className="flex justify-center mt-4">
-          <button 
+          <button
             className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
             onClick={() => {
               console.log("Manual refresh triggered");
@@ -247,10 +251,10 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
       </div>
     );
   }
-  
+
   return (
-    <div className={layout === "grid" 
-      ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4` 
+    <div className={layout === "grid"
+      ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4`
       : "space-y-4"
     }>
       {lessons.map((lesson) => {
@@ -260,12 +264,12 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
         const isExpanded = expandedLessonId === lesson.id;
         const contents = contentMap[lesson.id] || [];
         const isLoadingContents = loadingContentMap[lesson.id] || false;
-        
+
         return (
           <div key={lesson.id} className="space-y-1">
-            <Card 
+            <Card
               className={`transform transition-all duration-300 hover:scale-[1.01] cursor-pointer hover:shadow-md
-                ${status === 'completed' ? 'border-l-4 border-green-500' : 
+                ${status === 'completed' ? 'border-l-4 border-green-500' :
                   status === 'in_progress' ? 'border-l-4 border-amber-500' : ''}`}
               onClick={() => handleLessonClick(lesson.id)}
             >
@@ -277,24 +281,24 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
                       ${status === 'completed' ? 'bg-green-100 text-green-600' : 'bg-purple-100 text-purple-600'}`}>
                       {status === 'completed' ? <CheckCircle className="h-4 w-4" /> : getLessonTypeIcon(lesson.lesson_type)}
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
                         <h3 className="text-sm font-medium text-gray-900 truncate dark:text-white">{lesson.title}</h3>
                         {lesson.unit_level && (
                           <Badge className="whitespace-nowrap bg-gray-300 text-gray-800">
-                          {lesson.unit_level}
+                            {lesson.unit_level}
                           </Badge>
                         )}
                       </div>
-                      
+
                       {lesson.unit_title && (
                         <p className="text-xs text-gray-600 truncate dark:text-gray-400 mt-1">
                           {lesson.unit_title}
                         </p>
                       )}
                     </div>
-                    {isExpanded ? 
+                    {isExpanded ?
                       <ChevronDown className="h-4 w-4 text-purple-600" /> :
                       <ChevronRight className="h-4 w-4 text-gray-400 shrink-0" />
                     }
@@ -306,7 +310,7 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
                       ${status === 'completed' ? 'bg-green-100 text-green-600' : 'bg-purple-100 text-purple-600'}`}>
                       {status === 'completed' ? <CheckCircle className="h-5 w-5" /> : getLessonTypeIcon(lesson.lesson_type)}
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-4">
                         <div>
@@ -314,51 +318,51 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white">{lesson.title}</h3>
                             {lesson.unit_level && (
                               <Badge className="whitespace-nowrap bg-gray-300 text-gray-800">
-                              Level {lesson.unit_level}
+                                Level {lesson.unit_level}
                               </Badge>
                             )}
                           </div>
-                          
+
                           <p className="text-gray-600 mt-1 line-clamp-2 dark:text-gray-400 mt-1">{lesson.description}</p>
-                          
+
                           {lesson.unit_title && (
                             <p className="text-sm text-purple-600 mt-1">
                               Unit: {lesson.unit_title}
                             </p>
                           )}
-                          
+
                           {completionPercentage > 0 && (
                             <div className="mt-2">
-                              <Progress 
-                                className="h-1.5 " 
-                                value={completionPercentage} 
+                              <Progress
+                                className="h-1.5 "
+                                value={completionPercentage}
                               />
                             </div>
                           )}
                         </div>
-                        {isExpanded ? 
+                        {isExpanded ?
                           <ChevronDown className="h-5 w-5 text-purple-600" /> :
                           <ChevronRight className="h-5 w-5 text-gray-400 shrink-0" />
                         }
                       </div>
-                      
+
                       <div className="flex flex-wrap items-center gap-3 mt-4">
                         <span className="flex items-center gap-2 text-sm text-gray-600">
                           <Clock className="h-4 w-4" />
                           {lesson.estimated_duration} min
                         </span>
-                        
+
                         <span className="flex items-center gap-2 text-sm font-medium px-3 py-1 rounded-full bg-purple-50 text-purple-700">
                           {getLessonTypeIcon(lesson.lesson_type)}
                           {lesson.lesson_type}
                         </span>
-                        
+
                         {status === 'in_progress' && (
                           <span className="flex items-center gap-1 text-sm font-medium px-3 py-1 rounded-full bg-amber-50 text-amber-700">
                             In Progress
                           </span>
                         )}
-                        
+
                         {status === 'completed' && (
                           <span className="flex items-center gap-1 text-sm font-medium px-3 py-1 rounded-full bg-green-50 text-green-700">
                             <CheckCircle className="h-4 w-4 mr-1" />
@@ -371,7 +375,7 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
                 )}
               </CardContent>
             </Card>
-            
+
             {/* Contenus de la leçon (visible seulement si développé) */}
             {isExpanded && (
               <div className="border-2 border-purple-200 rounded-lg overflow-hidden bg-white p-2">
@@ -387,18 +391,18 @@ const AllLessonsView: React.FC<AllLessonsViewProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2">
                     {contents.map(content => {
                       // Extraire le titre dans la langue appropriée
-                      const title = typeof content.title === 'object' 
+                      const title = typeof content.title === 'object'
                         ? (content.title.en || Object.values(content.title)[0] || 'Content')
                         : content.title || 'Content';
-                      
+
                       return (
-                        <div 
-                        key={content.id}
-                        className="border border-purple-300 p-2 rounded-md hover:bg-purple-50 cursor-pointer flex items-center justify-between"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Important pour éviter que le clic ferme l'accordéon
-                          handleContentClick(lesson.unit_id || 0, lesson.id, content.id, content.content_type);
-                        }}
+                        <div
+                          key={content.id}
+                          className="border border-purple-300 p-2 rounded-md hover:bg-purple-50 cursor-pointer flex items-center justify-between"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Important pour éviter que le clic ferme l'accordéon
+                            handleContentClick(lesson.unit_id || 0, lesson.id, content.id, content.content_type);
+                          }}
                         >
                           <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center">
