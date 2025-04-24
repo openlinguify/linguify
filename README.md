@@ -55,6 +55,12 @@ Our modern tech stack offers plenty of opportunities to enhance your skills:
 
 We welcome contributions of all types and sizes! Here's how to get started:
 
+### Prerequisites
+
+For the backend:
+ - Docker [install guide](https://docs.docker.com/get-docker/)
+ - Poetry: [install guide](https://python-poetry.org/docs/)
+
 ### Code Contributions
 
 1. **Set up your environment**:
@@ -67,9 +73,8 @@ We welcome contributions of all types and sizes! Here's how to get started:
    npm run dev
    # Backend setup (in a separate terminal)
    cd backend
-   pip install -r requirements.txt
-   python manage.py migrate
-   python manage.py runserver
+   poetry run python manage.py migrate
+   poetry run python manage.py runserver
    ```
 
 2. **Find your first issue**:
