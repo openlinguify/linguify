@@ -4,12 +4,12 @@
 export * from './Exercises';
 export * from './LearnHeader';
 export * from './LessonContent';
-export * from './Lessons';
+export * from './Navigation';
 export * from './Theory'; 
 export * from './Units';
 
 // Export main view component
-export { default as LearningView } from './LearnView';
+export { default as LearningView } from './Navigation/LearnView';
 
 // Export types
 export type { 

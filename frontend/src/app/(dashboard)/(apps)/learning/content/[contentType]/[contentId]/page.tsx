@@ -1,7 +1,7 @@
 // src/app/(dashboard)/(apps)/learning/content/[contentType]/[contentId]/page.tsx
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
-import ContentTypeRouter from '../../../../../../../addons/learning/components/LessonContent/ContentTypeRouter';
+import ContentTypeRouter from '../../../../../../../addons/learning/components/Navigation/ContentTypeRouter';
 import { getUserTargetLanguage } from '../../../../../../../core/utils/languageUtils';
 
 interface PageProps {
