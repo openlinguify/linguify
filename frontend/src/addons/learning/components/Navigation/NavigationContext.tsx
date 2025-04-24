@@ -5,6 +5,12 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import courseAPI from "@/addons/learning/api/courseAPI";
 
+// Define a Unit interface for better typing
+interface Unit {
+  level: string;
+  // Add other properties as needed
+}
+
 interface NavigationContextType {
   // Filters
   levelFilter: string;
@@ -13,8 +19,8 @@ interface NavigationContextType {
   setContentTypeFilter: (type: string) => void;
   
   // View options
-  viewMode: "units" | "lessons";
-  setViewMode: (mode: "units" | "lessons") => void;
+  viewMode: "units" | "lessons" | "hierarchical"; // Add hierarchical to be consistent
+  setViewMode: (mode: "units" | "lessons" | "hierarchical") => void;
   layout: "list" | "grid";
   setLayout: (layout: "list" | "grid") => void;
   isCompactView: boolean;
@@ -42,11 +48,14 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
   // State for all navigation-related data
   const [levelFilter, setLevelFilter] = useState<string>("all");
   const [contentTypeFilter, setContentTypeFilter] = useState<string>("all");
-  const [viewMode, setViewMode] = useState<"units" | "lessons">("units");
+  const [viewMode, setViewMode] = useState<"units" | "lessons" | "hierarchical">("units");
   const [layout, setLayout] = useState<"list" | "grid">("list");
   const [isCompactView, setIsCompactView] = useState<boolean>(false);
   const [availableLevels, setAvailableLevels] = useState<string[]>([]);
-  const [targetLanguage, setTargetLanguage] = useState<string>(getUserTargetLanguage());
+  
+  // We're keeping this state but the setter is not used directly in the code
+  // This is fine since it's part of the state initialization
+  const [targetLanguage, _setTargetLanguage] = useState<string>(getUserTargetLanguage());
   
   // Load user preferences and available levels on mount
   useEffect(() => {
@@ -58,8 +67,8 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
 
     // Get view mode preference
     const savedViewMode = localStorage.getItem("units_view_mode");
-    if (savedViewMode === "units" || savedViewMode === "lessons") {
-      setViewMode(savedViewMode as "units" | "lessons");
+    if (savedViewMode === "units" || savedViewMode === "lessons" || savedViewMode === "hierarchical") {
+      setViewMode(savedViewMode as "units" | "lessons" | "hierarchical");
     }
 
     // Get compact view preference
@@ -71,9 +80,16 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     // Fetch available levels
     const fetchLevels = async () => {
       try {
-        const unitsData = await courseAPI.getUnits();
-        // Extract levels from units data
-        const levels = Array.from(new Set(unitsData.map((unit: any) => unit.level)));
+        // Get properly typed data from API
+        const unitsData = await courseAPI.getUnits() as Unit[];
+        
+        // Extract level strings with proper typing
+        const levelValues: string[] = unitsData.map(unit => unit.level);
+        
+        // Create a Set to get unique values and convert back to array
+        const levels: string[] = [...new Set(levelValues)];
+        
+        // Sort and set the levels
         setAvailableLevels(levels.sort());
       } catch (err) {
         console.error("Failed to load levels:", err);

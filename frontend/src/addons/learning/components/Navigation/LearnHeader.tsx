@@ -1,10 +1,9 @@
-// src/addons/learning/components/Navigation/EnhancedLearnHeader.tsx
+// src/addons/learning/components/Navigation/LearnHeader.tsx
 'use client';
 import React from "react";
 import {
   Filter, LayoutGrid, LayoutList, BookOpen, FileText,
-  Calculator, ArrowRightLeft, PencilLine, Infinity, Layers,
-  List, SquareStack
+  Calculator, ArrowRightLeft, PencilLine, Infinity, Layers
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -17,21 +16,8 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { LearnHeaderProps } from "@/addons/learning/types";
 
-interface EnhancedLearnHeaderProps {
-  levelFilter: string;
-  onLevelFilterChange: (value: string) => void;
-  availableLevels: string[];
-  contentTypeFilter: string;
-  onContentTypeChange: (value: string) => void;
-  viewMode: "units" | "lessons" | "hierarchical";
-  onViewModeChange: (mode: "units" | "lessons" | "hierarchical") => void;
-  layout: "list" | "grid";
-  onLayoutChange: (layout: "list" | "grid") => void;
-  isCompactView: boolean;
-  onCompactViewChange: (value: boolean) => void;
-  targetLanguage?: string;
-}
 
 // Definition of content types with their icons
 const CONTENT_TYPES = [
@@ -64,7 +50,7 @@ function getLanguageFullName(languageCode: string): string {
   return languageMap[normalizedCode] || languageCode || '';
 }
 
-export default function EnhancedLearnHeader({
+export default function LearnHeader({
   levelFilter,
   onLevelFilterChange,
   availableLevels,
@@ -77,7 +63,7 @@ export default function EnhancedLearnHeader({
   isCompactView,
   onCompactViewChange,
   targetLanguage
-}: EnhancedLearnHeaderProps) {
+}: LearnHeaderProps) {
   // Track selected content types for multi-select
   const [selectedTypes, setSelectedTypes] = React.useState<string[]>([contentTypeFilter]);
   
@@ -123,13 +109,13 @@ export default function EnhancedLearnHeader({
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
+    <div className="bg-transparent p-4 rounded-lg shadow-sm mb-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         {/* Left: Language and Level */}
         <div className="flex items-center gap-2">
           {targetLanguage && (
             <div className="flex items-center gap-2">
-              <span className="font-bold text-purple-700">
+              <span className="font-bold text-purple-700 dark:text-purple-300">
                 {getLanguageFullName(targetLanguage)}
               </span>
               <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white">
@@ -146,7 +132,7 @@ export default function EnhancedLearnHeader({
             <Select value={levelFilter} onValueChange={onLevelFilterChange}>
               <SelectTrigger className="w-[120px] h-9">
                 <div className="flex items-center gap-1">
-                  <Layers className="h-4 w-4 text-gray-500" />
+                  <Layers className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                   <SelectValue placeholder="Level" />
                 </div>
               </SelectTrigger>
@@ -163,7 +149,7 @@ export default function EnhancedLearnHeader({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="h-9">
-                <Filter className="h-4 w-4 mr-2 text-gray-500" />
+                <Filter className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
                 {contentTypeFilter === "all" 
                   ? "All Content Types"
                   : CONTENT_TYPES.find(t => t.value === contentTypeFilter)?.label || contentTypeFilter}
@@ -185,13 +171,14 @@ export default function EnhancedLearnHeader({
             </DropdownMenuContent>
           </DropdownMenu>
           
-          {/* View mode selector - Text labels for better clarity */}
+          {/* View mode selector avec boutons bien définis */}
           <div className="flex gap-0 border rounded-md overflow-hidden">
             <Button
-              variant={viewMode === "units" ? "default" : "outline"}
+              variant={viewMode === "units" || viewMode === "hierarchical" ? "default" : "outline"}
               size="sm"
-              className={`rounded-none h-9 px-3 ${viewMode === "units" ? "bg-purple-600" : ""}`}
+              className={`rounded-none h-9 px-3 ${viewMode === "units" || viewMode === "hierarchical" ? "bg-purple-600 dark:bg-purple-800" : ""}`}
               onClick={() => onViewModeChange("units")}
+              title="Afficher les unités avec leurs leçons"
             >
               <Layers className="h-4 w-4 mr-1" />
               <span className="text-xs">Unités</span>
@@ -199,13 +186,13 @@ export default function EnhancedLearnHeader({
             <Button
               variant={viewMode === "lessons" ? "default" : "outline"}
               size="sm"
-              className={`rounded-none h-9 px-3 ${viewMode === "lessons" ? "bg-purple-600" : ""}`}
+              className={`rounded-none h-9 px-3 ${viewMode === "lessons" ? "bg-purple-600 dark:bg-purple-800" : ""}`}
               onClick={() => onViewModeChange("lessons")}
+              title="Afficher uniquement les leçons regroupées par niveau"
             >
               <BookOpen className="h-4 w-4 mr-1" />
               <span className="text-xs">Leçons</span>
             </Button>
-
           </div>
         </div>
         
@@ -213,7 +200,7 @@ export default function EnhancedLearnHeader({
         <div className="flex items-center gap-2">
           {/* Compact view toggle */}
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Compact</span>
+            <span className="text-sm text-gray-600 dark:text-gray-300">Compact</span>
             <Switch
               checked={isCompactView}
               onCheckedChange={onCompactViewChange}
@@ -226,7 +213,8 @@ export default function EnhancedLearnHeader({
               variant={layout === "list" ? "default" : "ghost"}
               size="icon"
               onClick={() => onLayoutChange("list")}
-              className={`rounded-none h-9 w-9 ${layout === "list" ? "bg-purple-600" : ""}`}
+              className={`rounded-none h-9 w-9 ${layout === "list" ? "bg-purple-600 dark:bg-purple-800" : ""}`}
+              title="Affichage en liste"
             >
               <LayoutList className="h-4 w-4" />
             </Button>
@@ -234,7 +222,8 @@ export default function EnhancedLearnHeader({
               variant={layout === "grid" ? "default" : "ghost"}
               size="icon"
               onClick={() => onLayoutChange("grid")}
-              className={`rounded-none h-9 w-9 ${layout === "grid" ? "bg-purple-600" : ""}`}
+              className={`rounded-none h-9 w-9 ${layout === "grid" ? "bg-purple-600 dark:bg-purple-800" : ""}`}
+              title="Affichage en grille"
             >
               <LayoutGrid className="h-4 w-4" />
             </Button>

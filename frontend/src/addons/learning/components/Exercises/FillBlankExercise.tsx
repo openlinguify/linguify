@@ -20,7 +20,7 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -87,6 +87,7 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
           if (unitId) {
             lessonCompletionService.updateContentProgress(
               parseInt(lessonId),
+              unitId ? parseInt(unitId) : 0, // unitId as second parameter
               1, // 1% progress to start
               0,
               0,
@@ -169,7 +170,7 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
           newProgress,
           timeSpent,
           Math.floor(newProgress / 10),
-          false
+          0
         );
       }
     } else {
@@ -183,7 +184,7 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
           100,
           timeSpent,
           10,
-          true
+          1
         );
         
         if (onComplete) {

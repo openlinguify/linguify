@@ -51,17 +51,17 @@ export function useLessonCompletion({
         completionPercentage,
         state.timeSpent,
         score || Math.round(completionPercentage / 10),
-        true // marquer comme complété
+        1 // marquer comme complété (1 = true)
       );
       
       // Si nous avons l'unitId, mettre à jour aussi la progression de la leçon parent
       if (unitId) {
         await lessonCompletionService.updateLessonProgress(
-          contentLessonId, 
           parseInt(unitId),
           completionPercentage,
           state.timeSpent,
-          true
+          true,
+          contentLessonId
         );
       }
       
@@ -118,7 +118,7 @@ export function useLessonCompletion({
         percentage,
         state.timeSpent,
         Math.round(percentage / 10),
-        percentage >= 100
+        percentage >= 100 ? 1 : 0
       );
     } catch (error) {
       console.error("Error updating progress:", error);

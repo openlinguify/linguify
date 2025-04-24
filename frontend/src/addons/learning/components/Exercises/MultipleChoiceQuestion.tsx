@@ -12,6 +12,7 @@ import { Question, MultipleChoiceProps } from "@/addons/learning/types";
 import LessonCompletionModal from "../shared/LessonCompletionModal";
 import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 
+
 const MultipleChoice = ({ lessonId, language = 'en', unitId, onComplete }: MultipleChoiceProps) => {
   // Main state
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -101,7 +102,7 @@ const MultipleChoice = ({ lessonId, language = 'en', unitId, onComplete }: Multi
               1, // 1% to start
               0,
               0,
-              false
+              0
             );
           } catch (err) {
             console.error("Error initializing quiz progress:", err);
@@ -131,17 +132,18 @@ const MultipleChoice = ({ lessonId, language = 'en', unitId, onComplete }: Multi
         completionPercentage,
         timeSpent,
         Math.round(completionPercentage / 10), // XP gained proportional to progress
+        undefined, // No specific XP earned value
         completionPercentage >= 100 // mark as completed if 100%
       );
 
       // If we have the unit ID and this is a completion, update the parent lesson progress too
       if (unitId && completionPercentage >= 100 && !quizCompleted) {
         await lessonCompletionService.updateLessonProgress(
-          contentLessonId,
           parseInt(unitId),
-          100, // 100% progress for the lesson
+          100,
           timeSpent,
-          true // Mark as completed
+          true,
+          contentLessonId
         );
 
         if (mountedRef.current) {

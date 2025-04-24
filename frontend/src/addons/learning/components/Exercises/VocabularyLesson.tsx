@@ -96,19 +96,19 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
         contentLessonId,
         completionPercentage,
         timeSpent,
-        Math.round(completionPercentage / 10), // XP gained proportional to progress
-        completionPercentage >= 100 // mark as completed if 100%
+        Math.round(completionPercentage / 10),
+        completionPercentage >= 100 ? 1 : 0 // Convert boolean to number
       );
       
       // If we also have the unit ID, update the parent lesson progress
       if (unitId && completionPercentage >= 100 && !lessonCompleted) {
         // Update parent lesson progress too
         await lessonCompletionService.updateLessonProgress(
-          contentLessonId, 
           parseInt(unitId),
           100, // 100% progress
           timeSpent,
-          true // Mark as completed
+          true, // Mark as completed
+          contentLessonId
         );
         
         if (mountedRef.current) {
