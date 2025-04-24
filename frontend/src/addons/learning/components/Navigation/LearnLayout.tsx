@@ -12,7 +12,7 @@ interface NavigationContextType {
   // State
   levelFilter: string;
   contentTypeFilter: string;
-  viewMode: "units" | "lessons";
+  viewMode: "units" | "lessons" | "hierarchical";
   layout: "list" | "grid";
   isCompactView: boolean;
   availableLevels: string[];
@@ -21,7 +21,7 @@ interface NavigationContextType {
   // Setters
   setLevelFilter: (value: string) => void;
   setContentTypeFilter: (value: string) => void;
-  setViewMode: (mode: "units" | "lessons") => void;
+  setViewMode: (mode: "units" | "lessons" | "hierarchical") => void;
   setLayout: (layout: "list" | "grid") => void;
   setIsCompactView: (value: boolean) => void;
   
@@ -47,6 +47,12 @@ interface LearnLayoutProps {
   children: React.ReactNode;
 }
 
+// Define the unit interface to help with typing
+interface Unit {
+  level: string;
+  // Add other properties as needed
+}
+
 const LearnLayout: React.FC<LearnLayoutProps> = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -54,7 +60,7 @@ const LearnLayout: React.FC<LearnLayoutProps> = ({ children }) => {
   // Navigation state
   const [levelFilter, setLevelFilter] = useState<string>("all");
   const [contentTypeFilter, setContentTypeFilter] = useState<string>("all");
-  const [viewMode, setViewMode] = useState<"units" | "lessons">("units");
+  const [viewMode, setViewMode] = useState<"units" | "lessons" | "hierarchical">("units");
   const [layout, setLayout] = useState<"list" | "grid">("list");
   const [isCompactView, setIsCompactView] = useState<boolean>(false);
   const [availableLevels, setAvailableLevels] = useState<string[]>([]);
@@ -70,8 +76,8 @@ const LearnLayout: React.FC<LearnLayoutProps> = ({ children }) => {
 
     // Get view mode preference
     const savedViewMode = localStorage.getItem("units_view_mode");
-    if (savedViewMode === "units" || savedViewMode === "lessons") {
-      setViewMode(savedViewMode as "units" | "lessons");
+    if (savedViewMode === "units" || savedViewMode === "lessons" || savedViewMode === "hierarchical") {
+      setViewMode(savedViewMode as "units" | "lessons" | "hierarchical");
     }
 
     // Get compact view preference
@@ -87,14 +93,21 @@ const LearnLayout: React.FC<LearnLayoutProps> = ({ children }) => {
     // Load available levels from API
     const fetchLevels = async () => {
       try {
-        const unitsData = await courseAPI.getUnits();
-        const levels = Array.from(new Set(unitsData.map((unit: any) => unit.level)));
+        const unitsData = await courseAPI.getUnits() as Unit[];
+        
+        // Extract level strings from units and ensure it's properly typed
+        const levelValues: string[] = unitsData.map(unit => unit.level);
+        
+        // Create a Set to get unique values and convert back to array
+        const levels: string[] = [...new Set(levelValues)];
+        
         // Sort levels appropriately (A1, A2, B1, B2, etc.)
         const sortedLevels = levels.sort((a, b) => {
           const aLevel = a.charAt(0) + parseInt(a.substring(1));
           const bLevel = b.charAt(0) + parseInt(b.substring(1));
           return aLevel.localeCompare(bLevel);
         });
+        
         setAvailableLevels(sortedLevels);
       } catch (err) {
         console.error("Failed to load levels:", err);

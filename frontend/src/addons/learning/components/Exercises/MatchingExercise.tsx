@@ -103,7 +103,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
             1, // 1% to indicate start
             0,
             0,
-            false
+            0
           ).catch(err => console.error('Error updating initial progress:', err));
         }
       } catch (err) {
@@ -156,17 +156,17 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
         isSuccessful ? 100 : Math.round(result.score), // 100% si réussi, sinon le score actuel
         timeSpent,
         Math.round(result.score / 10), // XP basé sur le score
-        isSuccessful // Marqué comme complété uniquement si le score est suffisant
+        isSuccessful ? 1 : 0 // Mark as completed if successful
       );
 
       // Mettre à jour la leçon parente si unitId est fourni
       if (unitId) {
         await lessonCompletionService.updateLessonProgress(
-          parseInt(lessonId),
           parseInt(unitId),
-          result.score,
+          100, // completionPercentage (set to 100 if completed, or use result.score if partial)
           timeSpent,
-          isSuccessful // Marquer comme complété uniquement si le score est suffisant
+          Boolean(isSuccessful),
+          parseInt(lessonId)
         );
       }
 

@@ -92,7 +92,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
           1, // Initial 1% progress
           0,
           0,
-          false
+          0
         );
         
         setShouldAnimate(true);
@@ -174,7 +174,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
         newProgress,
         studyTime,
         earnedXp,
-        newProgress === 100
+        newProgress === 100 ? 1 : 0
       );
     } catch (err) {
       console.error('Error updating progress:', err);
@@ -212,7 +212,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
         100,
         studyTime,
         earnedXp + 5, // Bonus XP for completion
-        true
+        1
       );
       
       if (onComplete) {

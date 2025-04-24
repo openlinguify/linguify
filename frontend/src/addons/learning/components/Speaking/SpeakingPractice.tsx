@@ -504,7 +504,7 @@ export default function SpeakingPractice({
             newProgress,
             timeSpent,
             Math.round(newProgress / 10),
-            newProgress === 100
+            newProgress === 100 ? 1 : 0
           );
         }
       } else {
@@ -560,10 +560,10 @@ export default function SpeakingPractice({
       if (unitId) {
         lessonCompletionService.updateLessonProgress(
           parseInt(lessonId),
-          parseInt(unitId),
-          100,
-          timeSpent,
-          true
+          100,           // completionPercentage
+          timeSpent,     // timeSpent
+          true,          // complete
+          parseInt(unitId) // contentLessonId
         );
       }
     }
