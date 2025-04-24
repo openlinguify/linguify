@@ -1,4 +1,4 @@
-// src/addons/learning/components/Navigation/LearnHeader.tsx
+// src/addons/learning/components/Navigation/EnhancedLearnHeader.tsx
 'use client';
 import React from "react";
 import {
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 
-interface LearnHeaderProps {
+interface EnhancedLearnHeaderProps {
   levelFilter: string;
   onLevelFilterChange: (value: string) => void;
   availableLevels: string[];
@@ -64,7 +64,7 @@ function getLanguageFullName(languageCode: string): string {
   return languageMap[normalizedCode] || languageCode || '';
 }
 
-export default function LearnHeader({
+export default function EnhancedLearnHeader({
   levelFilter,
   onLevelFilterChange,
   availableLevels,
@@ -77,7 +77,7 @@ export default function LearnHeader({
   isCompactView,
   onCompactViewChange,
   targetLanguage
-}: LearnHeaderProps) {
+}: EnhancedLearnHeaderProps) {
   // Track selected content types for multi-select
   const [selectedTypes, setSelectedTypes] = React.useState<string[]>([contentTypeFilter]);
   
@@ -185,35 +185,27 @@ export default function LearnHeader({
             </DropdownMenuContent>
           </DropdownMenu>
           
-          {/* View mode selector */}
-          <div className="flex gap-1 border rounded-md overflow-hidden">
+          {/* View mode selector - Text labels for better clarity */}
+          <div className="flex gap-0 border rounded-md overflow-hidden">
             <Button
               variant={viewMode === "units" ? "default" : "outline"}
               size="sm"
-              className={`rounded-none h-9 ${viewMode === "units" ? "bg-purple-600" : ""}`}
+              className={`rounded-none h-9 px-3 ${viewMode === "units" ? "bg-purple-600" : ""}`}
               onClick={() => onViewModeChange("units")}
-              title="Units View"
             >
-              <Layers className="h-4 w-4" />
+              <Layers className="h-4 w-4 mr-1" />
+              <span className="text-xs">Unités</span>
             </Button>
             <Button
               variant={viewMode === "lessons" ? "default" : "outline"}
               size="sm"
-              className={`rounded-none h-9 ${viewMode === "lessons" ? "bg-purple-600" : ""}`}
+              className={`rounded-none h-9 px-3 ${viewMode === "lessons" ? "bg-purple-600" : ""}`}
               onClick={() => onViewModeChange("lessons")}
-              title="Lessons View"
             >
-              <BookOpen className="h-4 w-4" />
+              <BookOpen className="h-4 w-4 mr-1" />
+              <span className="text-xs">Leçons</span>
             </Button>
-            <Button
-              variant={viewMode === "hierarchical" ? "default" : "outline"}
-              size="sm"
-              className={`rounded-none h-9 ${viewMode === "hierarchical" ? "bg-purple-600" : ""}`}
-              onClick={() => onViewModeChange("hierarchical")}
-              title="Hierarchical View"
-            >
-              <SquareStack className="h-4 w-4" />
-            </Button>
+
           </div>
         </div>
         
