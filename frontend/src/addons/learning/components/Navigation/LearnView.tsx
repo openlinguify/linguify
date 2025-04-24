@@ -139,7 +139,7 @@ export default function LearnView() {
 
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden">
-      <div className="sticky top-0 z-50 p-4 bg-white/80 backdrop-blur-sm">
+      <div className="sticky top-8 z-50 p-4 bg-white/80 backdrop-blur-sm">
         <LearnHeader
           levelFilter={levelFilter}
           onLevelFilterChange={handleLevelFilterChange}
@@ -163,27 +163,6 @@ export default function LearnView() {
           targetLanguage={targetLanguage}
         />
         
-        {/* Add custom viewmode toggle for hierarchical view */}
-        <div className="flex items-center justify-center mt-2 space-x-2">
-          <button
-            className={`px-3 py-1 text-sm rounded-full ${viewMode === "units" ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-            onClick={() => handleViewModeChange("units")}
-          >
-            Unités
-          </button>
-          <button
-            className={`px-3 py-1 text-sm rounded-full ${viewMode === "lessons" ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-            onClick={() => handleViewModeChange("lessons")}
-          >
-            Leçons
-          </button>
-          <button
-            className={`px-3 py-1 text-sm rounded-full ${viewMode === "hierarchical" ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-            onClick={() => handleViewModeChange("hierarchical")}
-          >
-            Hiérarchique
-          </button>
-        </div>
       </div>
       
       <div className="flex-1 overflow-auto">
