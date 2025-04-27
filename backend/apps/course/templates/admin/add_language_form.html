@@ -7,31 +7,85 @@
   <form method="post" action="">
     {% csrf_token %}
     <fieldset class="module aligned">
-      <h2>Add Language to Theory</h2>
+      <h2>Ajouter une langue à la théorie</h2>
+      
+      {% if theory.using_json_format %}
+        <div class="form-row">
+          <p>Langues actuellement disponibles: 
+            {% for lang in theory.available_languages %}
+              <span class="badge" style="background-color: #e9e9e9; padding: 2px 6px; margin: 0 2px; border-radius: 3px;">{{ lang }}</span>
+            {% endfor %}
+          </p>
+        </div>
+      {% endif %}
       
       <div class="form-row">
-        <label for="language_code">Language Code:</label>
-        <input type="text" name="language_code" id="language_code" required>
-        <p class="help">Two letter code (e.g. 'it' for Italian)</p>
+        <div>
+          <label for="language_code" class="required">Code de langue:</label>
+          <select name="language_code" id="language_code" required>
+            {% for lang in available_languages %}
+              <option value="{{ lang.code }}">{{ lang.name }} ({{ lang.code }})</option>
+            {% endfor %}
+          </select>
+          <p class="help">Code à deux lettres de la langue (ex: 'fr' pour Français)</p>
+        </div>
       </div>
       
       <div class="form-row">
-        <label for="content">Content:</label>
-        <textarea name="content" id="content" rows="4" cols="50"></textarea>
+        <div>
+          <label for="content" class="required">Contenu principal:</label>
+          <textarea name="content" id="content" rows="5" cols="80" required class="vLargeTextField"></textarea>
+          <p class="help">Texte principal de la théorie</p>
+        </div>
       </div>
       
       <div class="form-row">
-        <label for="explanation">Explanation:</label>
-        <textarea name="explanation" id="explanation" rows="4" cols="50"></textarea>
+        <div>
+          <label for="explanation" class="required">Explication:</label>
+          <textarea name="explanation" id="explanation" rows="5" cols="80" required class="vLargeTextField"></textarea>
+          <p class="help">Explication détaillée du concept</p>
+        </div>
       </div>
       
-      <!-- Ajoutez d'autres champs selon besoin -->
+      <div class="form-row">
+        <div>
+          <label for="formula">Formule/Règle:</label>
+          <textarea name="formula" id="formula" rows="3" cols="80" class="vLargeTextField"></textarea>
+          <p class="help">Formulation concise de la règle (optionnel)</p>
+        </div>
+      </div>
       
+      <div class="form-row">
+        <div>
+          <label for="example">Exemples:</label>
+          <textarea name="example" id="example" rows="3" cols="80" class="vLargeTextField"></textarea>
+          <p class="help">Exemples d'utilisation (optionnel)</p>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div>
+          <label for="exception">Exceptions:</label>
+          <textarea name="exception" id="exception" rows="3" cols="80" class="vLargeTextField"></textarea>
+          <p class="help">Exceptions à la règle (optionnel)</p>
+        </div>
+      </div>
     </fieldset>
     
     <div class="submit-row">
-      <input type="submit" value="Add Language" class="default">
+      <input type="submit" value="Ajouter la langue" class="default">
+      <a href="{% url 'admin:course_theorycontent_change' theory.pk %}" class="closelink">Annuler</a>
     </div>
   </form>
+  
+  <div class="module">
+    <h2>Conseils pour le formatage</h2>
+    <ul>
+      <li>Utilisez des <b>sauts de ligne doubles</b> pour créer des paragraphes distincts (entrez deux fois la touche Entrée)</li>
+      <li>Créez des <b>listes à puces</b> en commençant les lignes par un tiret suivi d'un espace (- )</li>
+      <li>Pour mettre du texte en <b>gras</b>, entourez-le de deux astérisques (**mot**)</li>
+      <li>Pour mettre du texte en <i>italique</i>, entourez-le d'un astérisque (*mot*)</li>
+    </ul>
+  </div>
 </div>
 {% endblock %}

@@ -322,8 +322,8 @@ class MultipleChoiceQuestionSerializer(serializers.ModelSerializer):
         ]
 
     def get_question(self, obj):
-        target_language = self.context.get('target_language', 'en')
-        return getattr(obj, f'question_{target_language}', obj.question_en)
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f'question_{native_language}', obj.question_en)
 
     def get_correct_answer(self, obj):
         target_language = self.context.get('target_language', 'en')
@@ -339,8 +339,8 @@ class MultipleChoiceQuestionSerializer(serializers.ModelSerializer):
         return fake_answers
 
     def get_hint_answer(self, obj):
-        target_language = self.context.get('target_language', 'en')
-        return getattr(obj, f'hint_answer_{target_language}', obj.hint_answer_en)
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f'hint_answer_{native_language}', obj.hint_answer_en)
 
     def to_representation(self, instance):
         """Personnaliser la sortie finale du serializer"""

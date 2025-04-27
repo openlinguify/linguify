@@ -605,7 +605,9 @@ class MultipleChoiceQuestionAPIView(APIView):
     def get(self, request, *args, **kwargs):
         content_lesson = request.query_params.get('content_lesson')
         target_language = request.query_params.get('target_language', 'en')
-
+        native_language = request.query_params.get('native_language', 'en')
+        
+        print(f"Native language received: {native_language}")  # Pour debug
 
         queryset = self.get_queryset()
         if content_lesson:
@@ -614,7 +616,11 @@ class MultipleChoiceQuestionAPIView(APIView):
         serializer = self.serializer_class(
             queryset,
             many=True,
-            context={'target_language': target_language, 'request': request}
+            context={
+                'target_language': target_language, 
+                'native_language': native_language,
+                'request': request
+            }
         )
 
         return Response(serializer.data)
