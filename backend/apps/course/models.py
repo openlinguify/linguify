@@ -360,7 +360,9 @@ class Lesson(models.Model):
     description_nl = models.TextField(blank=True, null=True)
     estimated_duration = models.IntegerField(default=0, help_text="In minutes")
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
-
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Dernière modification")
+    
     class Meta:
         ordering = ['id']
 
