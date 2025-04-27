@@ -1,6 +1,7 @@
 // src/app/(dashboard)/(apps)/learning/[unitId]/[lessonId]/page.tsx
+'use client';
 import { Suspense } from 'react';
-import LessonContent from '../../../../../../addons/learning/components/Navigation/LessonContent';
+import LearnView from '../../../../../../addons/learning/components/Navigation/LearnView';
 import { notFound } from 'next/navigation';
 
 interface PageProps {
@@ -23,7 +24,7 @@ export default async function LessonPage({ params }: PageProps) {
         </div>
       }
     >
-      <LessonContent lessonId={lessonId} unitId={unitId} />
+      <LearnView />
     </Suspense>
   );
 }
