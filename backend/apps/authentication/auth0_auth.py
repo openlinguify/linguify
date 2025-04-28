@@ -67,9 +67,9 @@ class Auth0Authentication(authentication.BaseAuthentication):
         return self.jwks
     
     def verify_token(self, token):
-        """Verify the JWT token using the JWKS from Auth0 with enhanced caching and error handling"""
+        """Verify the JWT token using the JWKS from Auth0 with enhanced clock skew tolerance"""
         try:
-            # Check if we already have token verification results in cache
+            # Check cache first
             token_hash = hash(token)
             token_cache_key = f"auth0_token_{token_hash}"
             cached_result = cache.get(token_cache_key)
@@ -104,49 +104,92 @@ class Auth0Authentication(authentication.BaseAuthentication):
                 logger.error(f"No matching key found in JWKS for kid: {token_header.get('kid')}")
                 return None
             
-            # Verify token with more parameters
-            payload = jwt.decode(
-                token,
-                RSAAlgorithm.from_jwk(json.dumps(rsa_key)),
-                algorithms=['RS256'],
-                audience=settings.AUTH0_AUDIENCE,
-                issuer=f'https://{settings.AUTH0_DOMAIN}/',
-                options={
-                    'verify_signature': True,
-                    'verify_exp': True,
-                    'verify_nbf': True,
-                    'verify_iat': True,
-                    'verify_aud': True,
-                    'verify_iss': True,
-                    'require_exp': True,
-                    'require_iat': True,
-                    'require_nbf': False
-                }
-            )
-            
-            # If verification succeeds, cache the result
-            if payload:
-                # Get token expiration time
-                exp = payload.get('exp', 0)
-                current_time = int(time.time())
-                # Cache until token expiration or max 1 hour, whichever is shorter
-                cache_time = min(exp - current_time, 3600) if exp > current_time else 3600
-                if cache_time > 0:
-                    cache.set(token_cache_key, payload, cache_time)
-                    logger.debug(f"Token verification result cached for {cache_time} seconds")
-
-            # Log token without email claim
-            if payload and 'sub' in payload and 'email' not in payload:
-                logger.warning(f"Token for {payload['sub']} has no email claim. Check Auth0 configuration.")
-            
-            return payload
-            
-        except jwt.ExpiredSignatureError:
-            logger.warning("Token has expired")
-            return None
-        except jwt.InvalidTokenError as e:
-            logger.error(f"Invalid token: {str(e)}")
-            return None
+            try:
+                # Verify token with more parameters and clock skew tolerance
+                payload = jwt.decode(
+                    token,
+                    RSAAlgorithm.from_jwk(json.dumps(rsa_key)),
+                    algorithms=['RS256'],
+                    audience=settings.AUTH0_AUDIENCE,
+                    issuer=f'https://{settings.AUTH0_DOMAIN}/',
+                    options={
+                        'verify_signature': True,
+                        'verify_exp': True,
+                        'verify_nbf': True,
+                        'verify_iat': True,
+                        'verify_aud': True,
+                        'verify_iss': True,
+                        'require_exp': True,
+                        'require_iat': True,
+                        'require_nbf': False
+                    },
+                    # Add a generous leeway for clock skew
+                    leeway=120  # 2 minutes tolerance
+                )
+                
+                # Cache successful verification result
+                if payload:
+                    # Cache until token expiration or max 1 hour
+                    exp = payload.get('exp', 0)
+                    current_time = int(time.time())
+                    cache_time = min(exp - current_time, 3600) if exp > current_time else 3600
+                    if cache_time > 0:
+                        cache.set(token_cache_key, payload, cache_time)
+                        logger.debug(f"Token verification result cached for {cache_time} seconds")
+                
+                return payload
+                
+            except jwt.InvalidTokenError as e:
+                # Specifically handle "token not yet valid" errors with more detail
+                if 'invalid claim' in str(e) and 'iat' in str(e):
+                    try:
+                        # Get unverified payload to log more details
+                        unverified = jwt.decode(token, options={"verify_signature": False, "verify_iat": False})
+                        if 'iat' in unverified:
+                            iat_time = unverified['iat']
+                            current_time = int(time.time())
+                            time_diff = iat_time - current_time
+                            
+                            logger.warning(f"Clock skew detected: Token iat is {time_diff} seconds in the future. " 
+                                        f"Current time: {current_time}, Token iat: {iat_time}")
+                            
+                            # If within reasonable range, consider accepting it anyway
+                            if time_diff <= 300:  # 5 minutes
+                                logger.info("Clock skew within acceptable range, manually accepting token")
+                                
+                                # Remove iat validation and decode again
+                                payload = jwt.decode(
+                                    token,
+                                    RSAAlgorithm.from_jwk(json.dumps(rsa_key)),
+                                    algorithms=['RS256'],
+                                    audience=settings.AUTH0_AUDIENCE,
+                                    issuer=f'https://{settings.AUTH0_DOMAIN}/',
+                                    options={
+                                        'verify_signature': True,
+                                        'verify_exp': True,
+                                        'verify_iat': False,  # Skip iat verification
+                                        'verify_aud': True,
+                                        'verify_iss': True,
+                                        'require_exp': True,
+                                        'require_iat': False
+                                    }
+                                )
+                                
+                                if payload:
+                                    # Cache with shorter time due to manual verification
+                                    exp = payload.get('exp', 0)
+                                    current_time = int(time.time())
+                                    cache_time = min(exp - current_time, 1800) if exp > current_time else 1800
+                                    if cache_time > 0:
+                                        cache.set(token_cache_key, payload, cache_time)
+                                    
+                                    return payload
+                    except Exception as nested_error:
+                        logger.error(f"Error during token clock skew analysis: {str(nested_error)}")
+                        
+                logger.error(f"Invalid token: {str(e)}")
+                return None
+                
         except Exception as e:
             logger.exception(f"Token verification error: {str(e)}")
             return None
