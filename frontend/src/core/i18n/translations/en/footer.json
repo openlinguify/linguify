@@ -3,7 +3,7 @@
       "navigation": {
         "title": "Navigation",
         "items": [
-          { "name": "Home", "href": "/" },
+          { "name": "Home", "href": "/home" },
           { "name": "Features", "href": "/features" },
           { "name": "Pricing", "href": "/pricing" },
           { "name": "About", "href": "/company" },

@@ -33,7 +33,7 @@ SQLITE_MEMORY_DB = {
 # Configuration avec les paramètres Auth0/Okta
 AUTH0_SETTINGS = {
     'AUTH0_DOMAIN': 'dev-7qe275o831ebkhbj.eu.auth0.com',
-    'AUTH0_CLIENT_ID': 'ctNt07qaUrHRnWtHkXoA7QFd3jodpXNu',
+    'AUTH0_CLIENT_ID': '3e0iFOwYLe3h2QkrqrxtSu8h3gGah2ml',
     'AUTH0_CLIENT_SECRET': env('AUTH0_CLIENT_SECRET'),
     'AUTH0_AUDIENCE': 'https://linguify-api',
     'FRONTEND_URL': 'http://localhost:3000',

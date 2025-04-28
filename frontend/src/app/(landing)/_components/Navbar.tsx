@@ -33,7 +33,7 @@ export const Navbar = () => {
 
   const { login, isAuthenticated, logout } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
 
   // Load language from localStorage on startup
   useEffect(() => {
