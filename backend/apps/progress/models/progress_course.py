@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
-from course.models import Unit, Lesson
+from apps.course.models import Unit, Lesson
 
 class UserCourseProgress(BaseProgress):
     """Track user progress in courses"""
@@ -63,7 +63,7 @@ class UserUnitProgress(BaseProgress):
         
     def update_progress(self, language_code=None):
         """Calculate unit progress based on associated lesson progress"""
-        from course.models import Lesson
+        from apps.course.models import Lesson
         
         language_code = language_code or self.language_code
         

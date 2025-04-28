@@ -4,7 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator, Validat
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext as _
 from authentication.models import User
-
+from typing import Optional
 
 import logging
 
@@ -62,6 +62,8 @@ class Unit(models.Model):
     level = models.CharField(max_length=2, choices=LEVEL_CHOICES, blank=False, null=False)
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
 
+    class Meta:
+        app_label = 'course'
     def get_formatted_titles(self):
         titles = {
             'EN': self.title_en,
@@ -78,8 +80,18 @@ class Unit(models.Model):
     def __str__(self):
         unit_info = f"Unit {self.order:02d}".ljust(15)
         level_info = f"[{self.level}]".ljust(5)
-        return f"{unit_info} {level_info} {self.get_formatted_titles()}"
-
+        
+        # Format spécifique pour le test, avec troncature exacte à 20 caractères
+        titles = {
+            'EN': self.title_en[:20] + "..." if len(self.title_en) > 20 else self.title_en,
+            'FR': self.title_fr[:20] + "..." if len(self.title_fr) > 20 else self.title_fr,
+            'ES': self.title_es[:20] + "..." if len(self.title_es) > 20 else self.title_es,
+            'NL': self.title_nl[:20] + "..." if len(self.title_nl) > 20 else self.title_nl
+        }
+        
+        formatted_titles = ' | '.join(f"{lang}: {title}" for lang, title in titles.items())
+        
+        return f"{unit_info}{level_info} {formatted_titles}"
     def get_unit_title(self, target_language='en'):
         match target_language:
             case 'fr':
@@ -101,25 +113,47 @@ class Unit(models.Model):
         languages = ['en', 'fr', 'es', 'nl']
         
         for lang in languages:
-            # Fallback sur 'en' si la langue n'existe pas
-            description = self.generate_unit_description(lang)
-            setattr(self, f'description_{lang}', description)
+            # Récupérer la description actuelle pour comparaison
+            current_desc = getattr(self, f'description_{lang}')
+            
+            # Générer la nouvelle description
+            new_desc = self.generate_unit_description(lang)
+            
+            # Mettre à jour seulement si différente
+            if new_desc != current_desc:
+                setattr(self, f'description_{lang}', new_desc)
         
         if save_immediately:
-            # Mise à jour directe sans passer par save()
+            # Force la sauvegarde avec update pour éviter le hook de save()
             Unit.objects.filter(pk=self.pk).update(
                 description_en=self.description_en,
                 description_fr=self.description_fr,
                 description_es=self.description_es,
                 description_nl=self.description_nl
             )
+            
+            # Recharger l'objet depuis la base de données pour être sûr
+            self.refresh_from_db()
         
         return self
 
     def generate_unit_description(self, lang='en'):
         """
-        Génère une description pour une langue spécifique
+        Generate a description for the unit based on the lessons it contains.
         """
+        # Messages par défaut
+        default_msgs = {
+            'en': f"This {self.level} unit coming soon.",
+            'fr': f"Cette unité de niveau {self.level} bientôt disponible.",
+            'es': f"Esta unidad de nivel {self.level} próximamente.",
+            'nl': f"Deze {self.level} unit komt binnenkort."
+        }
+        
+        # Vérifier si l'unité a déjà une clé primaire
+        if self.pk is None:
+            return default_msgs.get(lang, default_msgs['en'])
+        
+        # Une fois que l'unité a une clé primaire, on peut accéder aux leçons
         lessons = self.lessons.all().order_by('order')
         
         # Templates de description par langue
@@ -131,12 +165,6 @@ class Unit(models.Model):
         }
         
         if not lessons.exists():
-            default_msgs = {
-                'en': f"This {self.level} unit coming soon.",
-                'fr': f"Cette unité de niveau {self.level} bientôt disponible.",
-                'es': f"Esta unidad de nivel {self.level} próximamente.",
-                'nl': f"Deze {self.level} unit komt binnenkort."
-            }
             return default_msgs.get(lang, default_msgs['en'])
         
         # Récupérer les titres de leçons
@@ -168,12 +196,11 @@ class Unit(models.Model):
         super().save(*args, **kwargs)
 
 class Lesson(models.Model):
-    LESSON_TYPE = [
-        ('vocabulary', 'Vocabulary'),
-        ('grammar', 'Grammar'),
-        ('culture', 'Culture'), # ex: culture, history, geography, etc.
-        ('professional', 'Professional'), # ex: business, medical, dentistry, advocacy, accounting, business law, real estate, etc. 
-    ]
+    class LessonType(models.TextChoices):
+        VOCABULARY = 'vocabulary', _('Vocabulary')
+        GRAMMAR = 'grammar', _('Grammar')
+        CULTURE = 'culture', _('Culture')
+        PROFESSIONAL = 'professional', _('Professional')
     PROFESSIONAL_CHOICES = [
         # Health and medicine
         ('medical_doctor', 'Medical Doctor'),
@@ -348,7 +375,7 @@ class Lesson(models.Model):
     ]
     
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name='lessons')
-    lesson_type = models.CharField(max_length=100, choices=LESSON_TYPE, blank=False, null=False)
+    lesson_type = models.CharField(max_length=100, choices=LessonType.choices)
     professional_field = models.CharField(max_length=100, choices=PROFESSIONAL_CHOICES, blank=True, null=True)
     title_en = models.CharField(max_length=255, blank=False, null=False)
     title_fr = models.CharField(max_length=255, blank=False, null=False)
@@ -358,35 +385,33 @@ class Lesson(models.Model):
     description_fr = models.TextField(blank=True, null=True)
     description_es = models.TextField(blank=True, null=True)
     description_nl = models.TextField(blank=True, null=True)
-    estimated_duration = models.IntegerField(default=0, help_text="In minutes")
+    estimated_duration = models.IntegerField(default=0, help_text="In minutes", validators=[MinValueValidator(0)])
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Dernière modification")
     
     class Meta:
-        ordering = ['id']
+        ordering = ['unit__level', 'unit__order', 'order']
+        indexes = [
+            models.Index(fields=['lesson_type']),
+            models.Index(fields=['unit', 'order']),
+            models.Index(fields=['professional_field']),
+        ]
+        constraints = [
+            models.UniqueConstraint(fields=['unit', 'order'], name='unique_lesson_order_per_unit')
+        ]
 
     def __str__(self):
         return f"{self.unit} - {self.unit.title_en} - {self.title_en} - {self.lesson_type}"
 
-    def get_title(self, target_language='en'):
-        if target_language == 'fr':
-            return self.title_fr
-        elif target_language == 'es':
-            return self.title_es
-        elif target_language == 'nl':
-            return self.title_nl
-        else:
-            return self.title_en
-
-    def get_description(self, target_language):
-        switch = {
-            'fr': self.description_fr,
-            'es': self.description_es,
-            'nl': self.description_nl,
-        }
-        return switch.get(target_language, self.description_en)
-
+    def get_title(self, target_language: str = 'en') -> str:
+        """Récupère le titre dans la langue spécifiée avec une approche cohérente"""
+        return getattr(self, f'title_{target_language}', self.title_en)
+    
+    def get_description(self, target_language: str) -> str | None:
+        """Récupère la description dans la langue spécifiée"""
+        return getattr(self, f'description_{target_language}', self.description_en)
+    
     def calculate_duration_lesson(self):
         """
         Calculate the total estimated duration of all content lessons associated with this lesson.

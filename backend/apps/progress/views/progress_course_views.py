@@ -8,7 +8,7 @@ from django.db.models import Q, Sum
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 
-from course.models import Unit, Lesson, ContentLesson
+from apps.course.models import Unit, Lesson, ContentLesson
 from ..models.progress_course import (
     UserCourseProgress, 
     UserLessonProgress, 

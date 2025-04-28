@@ -1,6 +1,6 @@
 # backend/apps/course/management/commands/matching_auto_associate.py
 from django.core.management.base import BaseCommand
-from course.models import MatchingExercise, ContentLesson, VocabularyList
+from apps.course.models import MatchingExercise, ContentLesson, VocabularyList
 
 class Command(BaseCommand):
     help = 'Automatically associate vocabulary items with matching exercises'

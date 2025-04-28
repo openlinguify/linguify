@@ -3,7 +3,7 @@
 from rest_framework import serializers
 from django.contrib.contenttypes.models import ContentType
 from ..models.progress_course import UserCourseProgress, UserLessonProgress, UserUnitProgress
-from course.models import Lesson, Unit, ContentLesson
+from apps.course.models import Lesson, Unit, ContentLesson
 
 class UserCourseProgressSerializer(serializers.ModelSerializer):
     content_object_info = serializers.SerializerMethodField()

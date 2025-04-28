@@ -165,7 +165,7 @@ DROP TABLE IF EXISTS course_grammar, course_grammarrule, course_lesson, course_u
 2. Test if the data is accessible via Django ORM:
    ```
    python
-   from course.models import Lesson
+   from apps.course.models import Lesson
    print(Lesson.objects.count())  # Total number of objects
    lessons = Lesson.objects.all()
    for lesson in lessons[:10]:

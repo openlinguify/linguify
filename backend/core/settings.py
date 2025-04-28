@@ -8,6 +8,7 @@ from datetime import timedelta
 sys.path.insert(0, os.path.join(Path(__file__).resolve().parent.parent, 'apps'))
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 # Initialiser environ.Env
 env = environ.Env()
 

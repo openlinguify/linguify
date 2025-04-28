@@ -16,7 +16,7 @@ urlpatterns = [
     path('csrf/', utils.get_csrf_token, name='get_csrf_token'),
     path('api/', include('rest_framework.urls')),
     path('api/auth/', include('authentication.urls')),
-    path('api/v1/course/', include('course.urls', namespace='course')),
+    path('api/v1/course/', include('apps.course.urls', namespace='course')),
     path('api/v1/revision/', include('revision.urls', namespace='revision')),
     path('api/v1/notebook/', include('notebook.urls', namespace='notebook')),
     path('api/contact/', views.contact_view, name='contact'),

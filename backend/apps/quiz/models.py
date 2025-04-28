@@ -1,7 +1,7 @@
 # backend/django_apps/quiz/models.py
 from django.db import models
 from django.conf import settings  # Import settings for AUTH_USER_MODEL
-from course.models import Unit, Lesson
+from apps.course.models import Unit, Lesson
 
 class Quiz(models.Model):
     quiz_id = models.AutoField(primary_key=True)
