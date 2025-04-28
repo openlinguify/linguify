@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 import logging
 
-from course.models import Unit, Lesson, ContentLesson
+from apps.course.models import Unit, Lesson, ContentLesson
 from ..models.progress_course import UserUnitProgress, UserLessonProgress, UserCourseProgress
 from django.contrib.contenttypes.models import ContentType
 

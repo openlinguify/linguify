@@ -47,7 +47,7 @@ book,livre,libro,boek,A reading object,Un objet de lecture,Un objeto de lectura,
 
 ```python
 import csv
-from course.models import Unit
+from apps.course.models import Unit
 
 def import_units_from_csv(file_path):
     with open(file_path, encoding='utf-8') as csv_file:
@@ -81,7 +81,7 @@ import_units_from_csv(file_path)
 
 ```python
 import csv
-from course.models import VocabularyList
+from apps.course.models import VocabularyList
 
 def import_vocabulary_lists_from_csv(file_path):
     with open(file_path, encoding='utf-8') as csv_file:
@@ -182,10 +182,10 @@ iconv -f ISO-8859-1 -t UTF-8 input.csv -o output.csv
 Après chaque importation, vérifiez les données :
 
 ```python
-from course.models import Unit
+from apps.course.models import Unit
 print(Unit.objects.all())
 
-from course.models import VocabularyList
+from apps.course.models import VocabularyList
 print(VocabularyList.objects.all())
 ```
 
