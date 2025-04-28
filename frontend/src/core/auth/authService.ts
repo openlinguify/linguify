@@ -468,6 +468,10 @@ export function getStoredUserData(): UserProfile | null {
   }
 }
 
+export function redirectToAuth0Signup() {
+  window.location.href = `https://${process.env.NEXT_PUBLIC_AUTH0_DOMAIN}/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_FRONTEND_URL + '/callback')}&scope=openid%20profile%20email&audience=${process.env.NEXT_PUBLIC_AUTH0_AUDIENCE}&screen_hint=signup`;
+}
+
 /**
  * Utilitaire pour les requêtes authentifiées
  */

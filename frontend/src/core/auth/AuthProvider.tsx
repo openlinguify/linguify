@@ -116,6 +116,7 @@ function AuthContentProvider({ children }: { children: ReactNode }) {
       setError("Registration failed. Please try again.");
     }
   }, [loginWithRedirect]);
+  
   // Fonction de logout
   const logout = useCallback(async () => {
     try {
