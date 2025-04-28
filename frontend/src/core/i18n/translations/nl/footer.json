@@ -3,7 +3,7 @@
     "navigation": {
       "title": "Navigatie",
       "items": [
-        { "name": "Home", "href": "/" },
+        { "name": "Home", "href": "/home" },
         { "name": "Functies", "href": "/features" },
         { "name": "Prijzen", "href": "/pricing" },
         { "name": "Over ons", "href": "/company" },
@@ -13,9 +13,9 @@
     "legal": {
       "title": "Juridisch",
       "items": [
-        { "name": "Voorwaarden", "href": "/terms" },
-        { "name": "Privacy", "href": "/privacy" },
-        { "name": "Juridische kennisgeving", "href": "/legal" }
+        { "name": "Voorwaarden", "href": "/annexes/terms" },
+        { "name": "Privacy", "href": "/annexes/privacy" },
+        { "name": "Juridische kennisgeving", "href": "/annexes/legal" }
       ]
     },
     "social": {
