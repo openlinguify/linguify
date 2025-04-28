@@ -9,6 +9,7 @@ import logging
 import time
 from jwt.algorithms import RSAAlgorithm
 from django.core.cache import cache
+from uuid import uuid4
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -279,9 +280,10 @@ class Auth0Authentication(authentication.BaseAuthentication):
                 
                 user = User.objects.create(
                     email=email,
-                    username=username,
-                    first_name=first_name,
-                    last_name=last_name
+                    username=username or email.split('@')[0],
+                    first_name=first_name or '',
+                    last_name=last_name or '',
+                    password=uuid4().hex
                 )
                 logger.info(f"Created new user: {email}")
             

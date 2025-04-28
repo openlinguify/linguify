@@ -3,7 +3,7 @@
     "navigation": {
       "title": "Navegación",
       "items": [
-        { "name": "Inicio", "href": "/" },
+        { "name": "Inicio", "href": "/home" },
         { "name": "Características", "href": "/features" },
         { "name": "Precios", "href": "/pricing" },
         { "name": "Acerca de", "href": "/company" },
