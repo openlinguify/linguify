@@ -95,70 +95,239 @@ class LessonAdminForm(forms.ModelForm):
         
         return cleaned_data
 
-
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    form = LessonAdminForm  # Utilise notre formulaire personnalisé
-    list_display = ('id', 'get_title', 'unit', 'lesson_type', 'get_professional_field', 'estimated_duration', 'order', 'content_count')
-    list_filter = ('lesson_type', 'unit', 'professional_field')
-    search_fields = ('title_en', 'title_fr', 'description_en')
-    ordering = ('unit', 'order')
+    form = LessonAdminForm  # Conserve votre formulaire personnalisé
+    
+    # Améliorations des champs affichés
+    list_display = (
+        'id', 
+        'get_title', 
+        'get_unit_with_level',
+        'lesson_type', 
+        'get_professional_field', 
+        'get_languages_status',
+        'estimated_duration', 
+        'order',
+        'content_count',
+    )
+    
+    # Filtres simples sans spécifier de classe
+    list_filter = (
+        'unit__level',  # Filtre simple par niveau
+        'lesson_type',
+        'unit',
+        'professional_field',
+        'estimated_duration',
+    )
+    
+    # Recherche améliorée
+    search_fields = (
+        'title_en', 'title_fr', 'title_es', 'title_nl',
+        'description_en', 'description_fr', 'description_es', 'description_nl',
+        'unit__title_en',  # Recherche sur le titre de l'unité
+    )
+    
+    # Ordre par défaut
+    ordering = ('unit__level', 'unit__order', 'order')
+    
+    # Actions personnalisées
+    actions = ['duplicate_lesson', 'export_as_csv', 'recalculate_duration']
+    
+    # Conserver vos inlines existants
     inlines = [ContentLessonInline]
     
+    # Fonctions d'affichage améliorées
     def get_title(self, obj):
-        return f"{obj.title_en} | {obj.title_fr}"
-    get_title.short_description = 'Title'
+        """Afficher le titre en plusieurs langues"""
+        return format_html(
+            "<strong>{}</strong><br/>"
+            "<small style='color:#666'>{} | {} | {}</small>",
+            obj.title_en, 
+            obj.title_fr, 
+            obj.title_es, 
+            obj.title_nl
+        )
+    get_title.short_description = 'Title (All Languages)'
+    get_title.admin_order_field = 'title_en'
+    
+    def get_unit_with_level(self, obj):
+        """Affiche l'unité avec son niveau et son ordre"""
+        return format_html(
+            "[{}] {} <br/><small>(ordre: {})</small>",
+            obj.unit.level,
+            obj.unit.title_en,
+            obj.unit.order
+        )
+    get_unit_with_level.short_description = 'Unit'
+    get_unit_with_level.admin_order_field = 'unit__level'
     
     def get_professional_field(self, obj):
         if obj.lesson_type == 'professional' and obj.professional_field:
-            return obj.professional_field
+            # Rendre le champ plus visible s'il est rempli
+            return format_html('<span style="background:#e2f0d9; padding:3px 6px; border-radius:3px">{}</span>', obj.professional_field)
         return "-"
     get_professional_field.short_description = 'Professional Field'
     
-    def get_fieldsets(self, request, obj=None):
-        """Personnalisation dynamique des fieldsets selon le type de leçon"""
-        fieldsets = [
-            ('Basic Information', {
-                'fields': ('unit', 'lesson_type',)  # Notez que professional_field n'est PAS ici
-            }),
-            ('Professional Information', {
-                'fields': ('professional_field',),
-                'classes': ('professional-settings',),
-                'description': 'Ces champs ne sont pertinents que pour les leçons de type professionnel.'
-            }),
-            ('Titles', {
-                'fields': ('title_en', 'title_fr', 'title_es', 'title_nl')
-            }),
-            ('Descriptions', {
-                'fields': ('description_en', 'description_fr', 'description_es', 'description_nl')
-            }),
-            ('Other', {
-                'fields': ('order', 'estimated_duration')
-            })
-        ]
+    def get_languages_status(self, obj):
+        """Indique si toutes les langues sont complètes pour cette leçon"""
+        languages = ['en', 'fr', 'es', 'nl']
+        status_html = []
         
-        return fieldsets
+        for lang_code in languages:
+            title_field = f'title_{lang_code}'
+            desc_field = f'description_{lang_code}'
+            
+            has_title = bool(getattr(obj, title_field))
+            has_desc = bool(getattr(obj, desc_field))
+            
+            if has_title and has_desc:
+                status = "✓"
+                color = "green"
+            elif has_title or has_desc:
+                status = "~"
+                color = "orange"
+            else:
+                status = "✗"
+                color = "red"
+                
+            status_html.append(f'<span style="color:{color}">{lang_code.upper()}:{status}</span>')
+        
+        return format_html(' | '.join(status_html))
+    get_languages_status.short_description = 'Languages'
     
-    def get_changeform_initial_data(self, request):
-        """Préremplit le type de leçon à partir des paramètres GET"""
-        initial = super().get_changeform_initial_data(request)
-        if 'lesson_type' in request.GET:
-            initial['lesson_type'] = request.GET.get('lesson_type')
-        return initial
+    def content_count(self, obj):
+        """Affiche le nombre de contenus avec indication visuelle"""
+        count = obj.content_lessons.count()
+        if count == 0:
+            color = 'red'
+        elif count < 3:
+            color = 'orange'
+        else:
+            color = 'green'
+            
+        return format_html(
+            '<span style="color:white; background-color:{0}; padding:3px 8px; border-radius:10px; font-weight:bold">{1}</span>',
+            color, count
+        )
+    content_count.short_description = 'Contents'
     
+    # Actions personnalisées (implémentations)
+    def duplicate_lesson(self, request, queryset):
+        """Action pour dupliquer les leçons sélectionnées"""
+        count = 0
+        for lesson in queryset:
+            # Créer une copie de la leçon
+            lesson_copy = Lesson.objects.create(
+                unit=lesson.unit,
+                lesson_type=lesson.lesson_type,
+                professional_field=lesson.professional_field,
+                title_en=f"Copy of {lesson.title_en}",
+                title_fr=f"Copie de {lesson.title_fr}",
+                title_es=f"Copia de {lesson.title_es}",
+                title_nl=f"Kopie van {lesson.title_nl}",
+                description_en=lesson.description_en,
+                description_fr=lesson.description_fr,
+                description_es=lesson.description_es,
+                description_nl=lesson.description_nl,
+                estimated_duration=lesson.estimated_duration,
+                order=lesson.order + 1000  # Valeur temporaire élevée
+            )
+            count += 1
+            
+        # Message de confirmation
+        self.message_user(request, f"{count} leçon(s) dupliquée(s) avec succès.")
+        
+        # Réordonner les leçons
+        self._reorder_lessons(request)
+    duplicate_lesson.short_description = "Dupliquer les leçons sélectionnées"
+
+    def export_as_csv(self, request, queryset):
+        """Exporte les leçons sélectionnées au format CSV avec plus de champs pour une meilleure gestion"""
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="lessons.csv"'
+        
+        writer = csv.writer(response)
+        # En-têtes enrichis
+        writer.writerow([
+            'ID',
+            'Title (EN)', 'Title (FR)', 'Title (ES)', 'Title (NL)',
+            'Description (EN)', 'Description (FR)', 'Description (ES)', 'Description (NL)',
+            'Unit ID', 'Unit Title', 'Unit Level', 'Unit Order',
+            'Lesson Type',
+        ])
+        
+        for lesson in queryset:
+            # Récupérer le nombre de contenus et les types de contenus
+            content_lessons = lesson.content_lessons.all()
+            content_count = content_lessons.count()
+            content_types = ', '.join(content_lessons.values_list('content_type', flat=True).distinct())
+            
+            # Statut des langues
+            languages = ['en', 'fr', 'es', 'nl']
+            lang_status = []
+            for lang in languages:
+                has_title = bool(getattr(lesson, f"title_{lang}", ""))
+                has_desc = bool(getattr(lesson, f"description_{lang}", ""))
+                if has_title and has_desc:
+                    lang_status.append(f"{lang.upper()}:✓")
+                elif has_title or has_desc:
+                    lang_status.append(f"{lang.upper()}:~")
+                else:
+                    lang_status.append(f"{lang.upper()}:✗")
+            
+            writer.writerow([
+                lesson.id,
+                lesson.title_en, lesson.title_fr, lesson.title_es, lesson.title_nl,
+                lesson.description_en, lesson.description_fr, lesson.description_es, lesson.description_nl,
+                lesson.unit.id if lesson.unit else '',
+                lesson.unit.title_en if lesson.unit else '',
+                lesson.unit.level if lesson.unit else '',
+                lesson.unit.order if lesson.unit else '',
+                lesson.lesson_type, 
+                ', '.join(lang_status),
+                content_types
+            ])
+        
+        return response
+    export_as_csv.short_description = "Exporter en CSV (détaillé)"
+    def recalculate_duration(self, request, queryset):
+        """Recalcule la durée estimée en fonction des content lessons"""
+        updated = 0
+        for lesson in queryset:
+            old_duration = lesson.estimated_duration
+            # Force le recalcul de la durée via la méthode save()
+            lesson.save()
+            if old_duration != lesson.estimated_duration:
+                updated += 1
+                
+        self.message_user(
+            request, 
+            f"Durée recalculée pour {updated} leçon(s) sur {queryset.count()} sélectionnée(s)."
+        )
+    recalculate_duration.short_description = "Recalculer la durée estimée"
+    
+    def _reorder_lessons(self, request):
+        """Réordonne les leçons pour chaque unité"""
+        # Obtenir toutes les unités avec des leçons
+        units = Unit.objects.filter(lessons__isnull=False).distinct()
+        
+        for unit in units:
+            # Obtenir toutes les leçons de cette unité
+            lessons = Lesson.objects.filter(unit=unit).order_by('order')
+            
+            # Réordonner les leçons
+            for i, lesson in enumerate(lessons, 1):
+                if lesson.order != i:
+                    lesson.order = i
+                    lesson.save(update_fields=['order'])
+    
+    # Style et ressources additionnelles
     class Media:
         js = ('js/lesson_admin.js',)
         css = {
             'all': ('css/lesson_admin.css',)
         }
-    
-    def content_count(self, obj):
-        count = obj.content_lessons.count()
-        return format_html('<span class="badge {}">{} contents</span>', 
-                        'badge-success' if count > 0 else 'badge-danger', 
-                        count)
-    content_count.short_description = 'Contents'
-
 
 class VocabularyInline(admin.TabularInline):
     model = SpeakingExercise.vocabulary_items.through
@@ -258,13 +427,64 @@ class SpeakingExerciseAdmin(admin.ModelAdmin):
     associate_vocabulary_from_lesson.short_description = "Associate vocabulary items from lessons"
 
 
+class TheoryContentAdminForm(forms.ModelForm):
+    """Formulaire personnalisé pour l'édition des contenus théoriques"""
+    
+    language_specific_content = AdminJSONFormField(
+        label="Contenu spécifique par langue",
+        help_text="Contenu pour chaque langue (format JSON structuré)"
+    )
+    
+    class Meta:
+        model = TheoryContent
+        fields = '__all__'
+        
+    def clean_language_specific_content(self):
+        """Validation et formatage automatique du JSON"""
+        data = self.cleaned_data['language_specific_content']
+        
+        # Vérifier que la structure est correcte
+        required_fields = ['content', 'explanation']
+        
+        for lang, content in data.items():
+            if not isinstance(content, dict):
+                raise forms.ValidationError(f"Le contenu pour la langue '{lang}' doit être un objet JSON.")
+            
+            # Vérifier la présence des champs obligatoires
+            for field in required_fields:
+                if field not in content:
+                    raise forms.ValidationError(f"Champ '{field}' manquant pour la langue '{lang}'")
+        
+        return data
+
 @admin.register(TheoryContent)
 class TheoryContentAdmin(admin.ModelAdmin):
+    form = TheoryContentAdminForm
     list_display = ('id', 'get_content_title', 'has_formula', 'has_examples', 'format_indicator', 'language_count')
     list_filter = ('content_lesson__lesson__unit', 'using_json_format')
     search_fields = ('content_en', 'content_fr', 'content_lesson__title_en', 'language_specific_content')
     actions = ['migrate_to_json_format', 'add_custom_language']
     
+    class Media:
+        css = {
+            'all': ('css/codemirror.css', 'css/language_editor.css')
+        }
+        js = ('js/codemirror.js', 'js/codemirror-mode-javascript.js', 'js/language_editor.js')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        
+        # Initialiser le contenu JSON si c'est un nouvel enregistrement et le format JSON est activé
+        if not obj and request.method == 'POST' and request.POST.get('using_json_format') == 'on':
+            # Structure JSON par défaut avec les champs requis
+            form.base_fields['language_specific_content'].initial = {
+                "en": {"content": "", "explanation": ""},
+                "fr": {"content": "", "explanation": ""},
+                "es": {"content": "", "explanation": ""},
+                "nl": {"content": "", "explanation": ""}
+            }
+            form.base_fields['available_languages'].initial = ["en", "fr", "es", "nl"]
+        
+        return form
     def get_fieldsets(self, request, obj=None):
         """Affiche différents fieldsets selon que l'objet utilise le format JSON ou non"""
         base_fieldsets = [
@@ -273,8 +493,19 @@ class TheoryContentAdmin(admin.ModelAdmin):
             }),
         ]
         
-        # Si l'objet existe et utilise le format JSON
+        # Déterminer si nous utilisons JSON - vérifier à la fois l'objet et les données POST
+        using_json_format = False
+        
+        # Vérifier si c'est une édition d'un objet existant utilisant JSON
         if obj and obj.using_json_format:
+            using_json_format = True
+        
+        # Vérifier si c'est un nouvel objet avec JSON sélectionné
+        elif request.method == 'POST' and 'using_json_format' in request.POST:
+            using_json_format = request.POST.get('using_json_format') == 'on'
+        
+        # Si le format JSON est activé (nouveau ou existant)
+        if using_json_format:
             json_fieldsets = [
                 ('Format Settings', {
                     'fields': ('using_json_format', 'available_languages'),
@@ -284,18 +515,23 @@ class TheoryContentAdmin(admin.ModelAdmin):
                     'fields': ('language_specific_content',),
                     'description': 'This content is in JSON format. Edit with caution.',
                 }),
-                ('Content Preview', {
-                    'fields': ('content_preview',),
-                    'classes': ('collapse',),
-                }),
             ]
+            
+            # Ajouter la prévisualisation seulement pour les objets existants
+            if obj:
+                json_fieldsets.append(
+                    ('Content Preview', {
+                        'fields': ('content_preview',),
+                        'classes': ('collapse',),
+                    })
+                )
+                
             return base_fieldsets + json_fieldsets
         
         # Sinon, afficher les champs traditionnels
         traditional_fieldsets = [
             ('Format Options', {
                 'fields': ('using_json_format',),
-                'classes': ('collapse',),
                 'description': 'Enable JSON format for more flexible language support.'
             }),
             ('English Content', {
@@ -315,15 +551,27 @@ class TheoryContentAdmin(admin.ModelAdmin):
     
     def get_readonly_fields(self, request, obj=None):
         """Définit les champs en lecture seule selon le format utilisé"""
+        readonly_fields = ['content_preview']
+        
+        # Vérifier si nous utilisons JSON (en édition ou en création)
+        using_json_format = False
+        
         if obj and obj.using_json_format:
-            # Quand on utilise le format JSON, tous les champs traditionnels sont en lecture seule
-            return ('content_en', 'content_fr', 'content_es', 'content_nl',
-                    'explication_en', 'explication_fr', 'explication_es', 'explication_nl',
-                    'formula_en', 'formula_fr', 'formula_es', 'formula_nl',
-                    'example_en', 'example_fr', 'example_es', 'example_nl',
-                    'exception_en', 'exception_fr', 'exception_es', 'exception_nl',
-                    'content_preview')
-        return ('content_preview',)
+            using_json_format = True
+        elif request.method == 'POST' and request.POST.get('using_json_format') == 'on':
+            using_json_format = True
+        
+        # Si format JSON, tous les champs traditionnels sont en lecture seule
+        if using_json_format:
+            readonly_fields.extend([
+                'content_en', 'content_fr', 'content_es', 'content_nl',
+                'explication_en', 'explication_fr', 'explication_es', 'explication_nl',
+                'formula_en', 'formula_fr', 'formula_es', 'formula_nl',
+                'example_en', 'example_fr', 'example_es', 'example_nl',
+                'exception_en', 'exception_fr', 'exception_es', 'exception_nl'
+            ])
+        
+        return readonly_fields
     
     def get_content_title(self, obj):
         return obj.content_lesson.title_en
@@ -468,16 +716,66 @@ class TheoryContentAdmin(admin.ModelAdmin):
         """Vue personnalisée pour ajouter une langue à une théorie"""
         theory = get_object_or_404(TheoryContent, pk=object_id)
         
-        # À implémenter: un formulaire pour ajouter une langue
+        if request.method == 'POST':
+            language_code = request.POST.get('language_code')
+            content = request.POST.get('content')
+            explanation = request.POST.get('explanation')
+            formula = request.POST.get('formula', '')
+            example = request.POST.get('example', '')
+            exception = request.POST.get('exception', '')
+            
+            # Validation basique
+            if not language_code or not content or not explanation:
+                messages.error(request, "Tous les champs obligatoires doivent être remplis.")
+            elif len(language_code) != 2:
+                messages.error(request, "Le code de langue doit être de 2 caractères (ex: 'fr', 'en').")
+            else:
+                # Créer/mettre à jour le contenu JSON
+                if not theory.using_json_format:
+                    theory.migrate_to_json_format()
+                
+                # Ajouter ou mettre à jour la langue
+                current_content = theory.language_specific_content.copy() if theory.language_specific_content else {}
+                
+                current_content[language_code] = {
+                    'content': content,
+                    'explanation': explanation,
+                    'formula': formula,
+                    'example': example,
+                    'exception': exception
+                }
+                
+                # Mettre à jour les langues disponibles
+                available_languages = theory.available_languages.copy() if theory.available_languages else []
+                if language_code not in available_languages:
+                    available_languages.append(language_code)
+                
+                # Sauvegarder les modifications
+                theory.language_specific_content = current_content
+                theory.available_languages = available_languages
+                theory.save()
+                
+                messages.success(request, f"Langue '{language_code}' ajoutée avec succès!")
+                return redirect('admin:course_theorycontent_change', object_id=theory.pk)
+        
+        # Template context
         context = {
-            'title': f'Add Language to Theory {object_id}',
+            **self.admin_site.each_context(request),
+            'opts': self.model._meta,
+            'title': f'Ajouter une langue à la théorie #{object_id}',
             'theory': theory,
-            # Autres éléments de contexte...
+            'available_languages': [
+                {'code': 'en', 'name': 'Anglais'},
+                {'code': 'fr', 'name': 'Français'},
+                {'code': 'es', 'name': 'Espagnol'},
+                {'code': 'nl', 'name': 'Néerlandais'},
+                {'code': 'de', 'name': 'Allemand'},
+                {'code': 'it', 'name': 'Italien'},
+                {'code': 'pt', 'name': 'Portugais'},
+            ]
         }
         
-        # Exemple minimal - à développer selon vos besoins
         return TemplateResponse(request, 'admin/add_language_form.html', context)
-
 
 @admin.register(VocabularyList)
 class VocabularyListAdmin(admin.ModelAdmin):

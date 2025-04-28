@@ -5,7 +5,7 @@
       "items": [
         {
           "name": "Accueil",
-          "href": "/"
+          "href": "/home"
         },
         {
           "name": "Fonctionnalités",

@@ -38,7 +38,7 @@ class Auth0LoginTests(SimpleTestCase):
         # Vérifier que l'URL contient tous les paramètres requis
         auth_url = response.data['auth_url']
         self.assertIn('https://dev-7qe275o831ebkhbj.eu.auth0.com/authorize?', auth_url)
-        self.assertIn('client_id=ctNt07qaUrHRnWtHkXoA7QFd3jodpXNu', auth_url)
+        self.assertIn('client_id=3e0iFOwYLe3h2QkrqrxtSu8h3gGah2ml', auth_url)
         self.assertIn('redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcallback', auth_url)
         self.assertIn('response_type=code', auth_url)
         self.assertIn('scope=openid+profile+email', auth_url)
@@ -49,7 +49,7 @@ class Auth0LoginTests(SimpleTestCase):
         self.assertEqual(response['Access-Control-Allow-Credentials'], 'true')
         
     @override_settings(
-        AUTH0_CLIENT_ID='ctNt07qaUrHRnWtHkXoA7QFd3jodpXNu',
+        AUTH0_CLIENT_ID='3e0iFOwYLe3h2QkrqrxtSu8h3gGah2ml',
         AUTH0_DOMAIN='dev-7qe275o831ebkhbj.eu.auth0.com',
         FRONTEND_CALLBACK_URL='http://localhost:3000/callback',
         FRONTEND_URL='http://localhost:3000',
@@ -76,7 +76,7 @@ class Auth0CallbackTests(SimpleTestCase):
         
     @patch('backend.apps.authentication.views.requests.post')
     @override_settings(
-        AUTH0_CLIENT_ID='ctNt07qaUrHRnWtHkXoA7QFd3jodpXNu',
+        AUTH0_CLIENT_ID='3e0iFOwYLe3h2QkrqrxtSu8h3gGah2ml',
         AUTH0_CLIENT_SECRET='IfdLQfxjTpLviHxUWwfjvoUBW7kcmJ9_y0IDy3ASoDnqy0diI9MEaiqej7JUKecG',
         AUTH0_DOMAIN='dev-7qe275o831ebkhbj.eu.auth0.com',
         FRONTEND_URL='http://localhost:3000'
@@ -109,7 +109,7 @@ class Auth0CallbackTests(SimpleTestCase):
             'https://dev-7qe275o831ebkhbj.eu.auth0.com/oauth/token',
             data={
                 'grant_type': 'authorization_code',
-                'client_id': 'ctNt07qaUrHRnWtHkXoA7QFd3jodpXNu',
+                'client_id': '3e0iFOwYLe3h2QkrqrxtSu8h3gGah2ml',
                 'client_secret': 'IfdLQfxjTpLviHxUWwfjvoUBW7kcmJ9_y0IDy3ASoDnqy0diI9MEaiqej7JUKecG',
                 'code': 'test-auth-code',
                 'redirect_uri': 'http://localhost:3000/callback'
@@ -128,7 +128,7 @@ class Auth0CallbackTests(SimpleTestCase):
         
     @patch('backend.apps.authentication.views.requests.post')
     @override_settings(
-        AUTH0_CLIENT_ID='ctNt07qaUrHRnWtHkXoA7QFd3jodpXNu',
+        AUTH0_CLIENT_ID='3e0iFOwYLe3h2QkrqrxtSu8h3gGah2ml',
         AUTH0_CLIENT_SECRET='IfdLQfxjTpLviHxUWwfjvoUBW7kcmJ9_y0IDy3ASoDnqy0diI9MEaiqej7JUKecG',
         AUTH0_DOMAIN='dev-7qe275o831ebkhbj.eu.auth0.com',
         FRONTEND_URL='http://localhost:3000'
@@ -172,7 +172,7 @@ class AuthWithDatabaseTests:
             self.client.force_authenticate(user=self.user)
             
         @override_settings(
-            AUTH0_CLIENT_ID='ctNt07qaUrHRnWtHkXoA7QFd3jodpXNu',
+            AUTH0_CLIENT_ID='3e0iFOwYLe3h2QkrqrxtSu8h3gGah2ml',
             AUTH0_DOMAIN='dev-7qe275o831ebkhbj.eu.auth0.com',
             FRONTEND_LOGOUT_REDIRECT='http://localhost:3000'
         )
@@ -187,7 +187,7 @@ class AuthWithDatabaseTests:
             self.assertIn('logout_url', response_data)
             logout_url = response_data['logout_url']
             self.assertIn('https://dev-7qe275o831ebkhbj.eu.auth0.com/v2/logout?', logout_url)
-            self.assertIn('client_id=ctNt07qaUrHRnWtHkXoA7QFd3jodpXNu', logout_url)
+            self.assertIn('client_id=3e0iFOwYLe3h2QkrqrxtSu8h3gGah2ml', logout_url)
             self.assertIn('returnTo=http%3A%2F%2Flocalhost%3A3000', logout_url)
             
         def test_auth0_logout_unauthenticated(self):

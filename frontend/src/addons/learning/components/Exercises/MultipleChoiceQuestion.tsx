@@ -11,9 +11,16 @@ import { commonStyles } from "@/styles/gradient_style";
 import { Question, MultipleChoiceProps } from "@/addons/learning/types";
 import LessonCompletionModal from "../shared/LessonCompletionModal";
 import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
+import { getUserNativeLanguage, getUserTargetLanguage } from "@/core/utils/languageUtils";
 
 
-const MultipleChoice = ({ lessonId, language = 'en', unitId, onComplete }: MultipleChoiceProps) => {
+
+const MultipleChoice = ({ 
+  lessonId, 
+  language = 'en',
+  unitId, 
+  onComplete 
+}: MultipleChoiceProps) => {
   // Main state
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -26,6 +33,8 @@ const MultipleChoice = ({ lessonId, language = 'en', unitId, onComplete }: Multi
   const [answerStreak, setAnswerStreak] = useState(0);
   const [timeSpent, setTimeSpent] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [nativeLanguage, setNativeLanguage] = useState('en');
+
 
   // Refs for tracking
   const startTimeRef = React.useRef(Date.now());
@@ -68,9 +77,13 @@ const MultipleChoice = ({ lessonId, language = 'en', unitId, onComplete }: Multi
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
+        const targetLang = language || getUserTargetLanguage();
+        const nativeLang = getUserNativeLanguage();
+        setNativeLanguage(nativeLang);
+
         setLoading(true);
         const response = await fetch(
-          `http://localhost:8000/api/v1/course/multiple-choice-question/?content_lesson=${lessonId}&target_language=${language}`,
+          `http://localhost:8000/api/v1/course/multiple-choice-question/?content_lesson=${lessonId}&target_language=${targetLang}&native_language=${nativeLang}`,
           {
             method: "GET",
             headers: {
@@ -119,7 +132,7 @@ const MultipleChoice = ({ lessonId, language = 'en', unitId, onComplete }: Multi
     if (lessonId) {
       fetchQuestions();
     }
-  }, [lessonId, language, unitId]);
+  }, [lessonId, language, unitId, nativeLanguage]);
 
   // Update progress in API
   const updateProgressInAPI = useCallback(async (completionPercentage: number) => {
@@ -332,14 +345,14 @@ const MultipleChoice = ({ lessonId, language = 'en', unitId, onComplete }: Multi
           </div>
 
           {/* Question */}
-          <div className={commonStyles.contentBox}>
-            <div className={commonStyles.gradientBackground} />
-            <div className="relative p-8 text-center">
-              <GradientText className="text-2xl font-bold">
-                {currentQuestion.question}
-              </GradientText>
-            </div>
-          </div>
+<div className={commonStyles.contentBox}>
+  <div className={commonStyles.gradientBackground} />
+  <div className="relative p-8 text-center">
+    <GradientText className="text-2xl font-bold">
+      {currentQuestion.question} {/* Question en langue native */}
+    </GradientText>
+  </div>
+</div>
 
           {/* Answers in Grid with centered last item when count is odd */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

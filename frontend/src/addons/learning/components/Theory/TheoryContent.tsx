@@ -62,9 +62,9 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
     if (!theory) return defaultValue;
 
     // Try using new JSON format first
-    if (theory.using_json_format && 
-        theory.language_specific_content && 
-        theory.language_specific_content[language]) {
+    if (theory.using_json_format &&
+      theory.language_specific_content &&
+      theory.language_specific_content[language]) {
       return theory.language_specific_content[language][field] || defaultValue;
     }
 
@@ -85,7 +85,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
         }
 
         setTheory(data[0]);
-        
+
         // Initialize progress tracking
         await lessonCompletionService.updateContentProgress(
           parseInt(lessonId),
@@ -94,7 +94,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
           0,
           0
         );
-        
+
         setShouldAnimate(true);
         setError(null);
       } catch (err) {
@@ -121,18 +121,18 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
   // Determine available sections
   const getAvailableSections = useCallback(() => {
     if (!theory) return ['content'];
-    
+
     const sections = ['content'];
-    
+
     // Add formula section if available
     if (getLanguageContent('formula')) sections.push('formula');
-    
+
     // Add examples section if available
     if (getLanguageContent('example')) sections.push('examples');
-    
+
     // Add exceptions section if available
     if (getLanguageContent('exception')) sections.push('exceptions');
-    
+
     return sections;
   }, [theory, getLanguageContent]);
 
@@ -141,18 +141,18 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
     if (readSections.length > 0 && theory) {
       const newProgress = Math.round((readSections.length / getAvailableSections().length) * 100);
       setProgress(newProgress);
-      
+
       // Calculate XP earned - base + streak bonus
       const baseXp = 2;
       const streakBonus = Math.min(readSections.length - 1, 3); // Max 3 XP bonus
       const earnedXp = baseXp + streakBonus;
       setXpEarned(earnedXp);
-      
+
       // Update progress in backend if changed significantly
       if (newProgress % 25 === 0 || newProgress === 100) {
         updateProgressInBackend(newProgress, earnedXp);
       }
-      
+
       // Set completed if all sections are read
       if (newProgress === 100 && !isCompleted) {
         setIsCompleted(true);
@@ -184,18 +184,18 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
   // Text-to-speech functionality
   const speak = useCallback((text: string | null) => {
     if (!text) return;
-    
+
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = language === 'fr' ? 'fr-FR' : 
-                     language === 'es' ? 'es-ES' :
-                     language === 'nl' ? 'nl-NL' : 'en-GB';
+    utterance.lang = language === 'fr' ? 'fr-FR' :
+      language === 'es' ? 'es-ES' :
+        language === 'nl' ? 'nl-NL' : 'en-GB';
     window.speechSynthesis.speak(utterance);
   }, [language]);
 
   // Mark a section as read
   const markAsRead = useCallback((section: string) => {
     if (audioTab) audioTab.play().catch(e => console.log('Audio error:', e));
-    
+
     setReadSections(prev => {
       if (!prev.includes(section)) {
         return [...prev, section];
@@ -214,7 +214,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
         earnedXp + 5, // Bonus XP for completion
         1
       );
-      
+
       if (onComplete) {
         onComplete();
       }
@@ -243,7 +243,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full"/>
+          <div className="animate-spin h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full" />
           <p className="text-gray-500">Loading content...</p>
         </div>
       </div>
@@ -267,8 +267,8 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
     <div className="w-full max-w-5xl mx-auto px-4">
       {/* Back button */}
       <div className="mb-4">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           onClick={handleBack}
           className="text-gray-500 hover:text-gray-700 px-2 py-1"
           size="sm"
@@ -277,7 +277,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
           Back to Lesson
         </Button>
       </div>
-      
+
       {/* Language badge */}
       <div className="mb-5">
         <Badge className="bg-indigo-100 text-indigo-800 font-medium uppercase">
@@ -287,7 +287,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
           theory
         </Badge>
       </div>
-      
+
       <motion.div
         initial="hidden"
         animate={shouldAnimate ? "visible" : "hidden"}
@@ -304,7 +304,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                     <h1 className="text-3xl font-bold text-gray-800">
                       {theory?.content_lesson.title[language] || "Theory Content"}
                     </h1>
-                    <button 
+                    <button
                       onClick={() => speak(theory?.content_lesson.title[language] || '')}
                       className="ml-2 text-indigo-600 hover:text-indigo-800 focus:outline-none"
                       aria-label="Listen to pronunciation"
@@ -329,9 +329,9 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                   </div>
                 </div>
                 <div className="w-48">
-                  <Progress 
-                    value={progress} 
-                    className="h-2" 
+                  <Progress
+                    value={progress}
+                    className="h-2"
                     style={{
                       background: "linear-gradient(to right, rgba(79, 70, 229, 1) 0%, rgba(147, 51, 234, 1) 50%, rgba(236, 72, 153, 1) 100%)"
                     }}
@@ -358,7 +358,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                     )}
                   </div>
                 </TabsTrigger>
-                
+
                 <TabsTrigger value="formula" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
                   <div className="flex items-center">
                     <Code className="h-4 w-4 mr-2" />
@@ -368,7 +368,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                     )}
                   </div>
                 </TabsTrigger>
-                
+
                 <TabsTrigger value="examples" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
                   <div className="flex items-center">
                     <BookOpen className="h-4 w-4 mr-2" />
@@ -378,7 +378,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                     )}
                   </div>
                 </TabsTrigger>
-                
+
                 <TabsTrigger value="exceptions" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
                   <div className="flex items-center">
                     <AlertTriangle className="h-4 w-4 mr-2" />
@@ -406,7 +406,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                         <h2 className="text-lg font-semibold text-gray-800">
                           Règle grammaticale : {theory?.content_lesson.title[language]}
                         </h2>
-                        <button 
+                        <button
                           onClick={() => speak(getLanguageContent('content'))}
                           className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
                           aria-label="Listen to content"
@@ -414,13 +414,14 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                           <Volume2 className="h-4 w-4" />
                         </button>
                       </div>
-                      
+
                       {/* Content */}
                       <div className="p-6">
                         {getLanguageContent('content') ? (
                           <div className="space-y-4">
                             {getLanguageContent('content')
-                              .split('\\n')
+                              .split(/\r?\n/) // Handle both \r\n and \n line breaks
+                              .filter(line => line.trim() !== '')
                               .map((line: string, index: number) => (
                                 <p key={index} className="text-gray-700">{line}</p>
                               ))}
@@ -429,14 +430,15 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                           <p className="text-gray-500 italic">No content available</p>
                         )}
                       </div>
-                      
+
                       {/* Explanation */}
                       <div className="bg-gray-50 p-6 mt-4 rounded-lg">
                         <h3 className="text-lg font-semibold mb-3">Explanation</h3>
                         {getLanguageContent('explanation') ? (
                           <div className="space-y-3">
                             {getLanguageContent('explanation')
-                              .split('\\n')
+                              .split(/\r?\n/) // Handle both \r\n and \n line breaks
+                              .filter(line => line.trim() !== '')
                               .map((line: string, index: number) => (
                                 <p key={index} className="text-gray-700">{line}</p>
                               ))}
@@ -453,7 +455,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                       {/* Title */}
                       <div className="border-b border-gray-100 p-4 flex justify-between items-center">
                         <h2 className="text-lg font-semibold text-gray-800">Formula</h2>
-                        <button 
+                        <button
                           onClick={() => speak(getLanguageContent('formula'))}
                           className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
                           aria-label="Listen to formula"
@@ -461,13 +463,14 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                           <Volume2 className="h-4 w-4" />
                         </button>
                       </div>
-                      
+
                       {/* Content */}
                       <div className="p-6">
                         {getLanguageContent('formula') ? (
                           <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100">
                             {getLanguageContent('formula')
-                              .split('\\n')
+                              .split(/\r?\n/) // Handle both \r\n and \n line breaks
+                              .filter(line => line.trim() !== '')
                               .map((line: string, index: number) => (
                                 <p key={index} className="text-gray-800 mb-2">{line}</p>
                               ))}
@@ -487,7 +490,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                       {/* Title */}
                       <div className="border-b border-gray-100 p-4 flex justify-between items-center">
                         <h2 className="text-lg font-semibold text-gray-800">Examples</h2>
-                        <button 
+                        <button
                           onClick={() => speak(getLanguageContent('example'))}
                           className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
                           aria-label="Listen to examples"
@@ -495,13 +498,14 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                           <Volume2 className="h-4 w-4" />
                         </button>
                       </div>
-                      
+
                       {/* Content */}
                       <div className="p-6">
                         {getLanguageContent('example') ? (
                           <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
                             {getLanguageContent('example')
-                              .split('\\n')
+                              .split(/\r?\n/) // Handle both \r\n and \n line breaks
+                              .filter(line => line.trim() !== '')
                               .map((line: string, index: number) => (
                                 <p key={index} className="text-gray-800 mb-2">{line}</p>
                               ))}
@@ -521,7 +525,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                       {/* Title */}
                       <div className="border-b border-gray-100 p-4 flex justify-between items-center">
                         <h2 className="text-lg font-semibold text-gray-800">Exceptions</h2>
-                        <button 
+                        <button
                           onClick={() => speak(getLanguageContent('exception'))}
                           className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
                           aria-label="Listen to exceptions"
@@ -529,13 +533,14 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                           <Volume2 className="h-4 w-4" />
                         </button>
                       </div>
-                      
+
                       {/* Content */}
                       <div className="p-6">
                         {getLanguageContent('exception') ? (
                           <div className="p-4 bg-amber-50 rounded-lg border border-amber-100">
                             {getLanguageContent('exception')
-                              .split('\\n')
+                              .split(/\r?\n/) // Handle both \r\n and \n line breaks
+                              .filter(line => line.trim() !== '')
                               .map((line: string, index: number) => (
                                 <p key={index} className="text-gray-800 mb-2">{line}</p>
                               ))}
@@ -555,14 +560,14 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
 
             {/* Navigation and status */}
             <div className="flex justify-between items-center mt-8 border-t pt-4">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="text-gray-500"
                 onClick={handleBack}
               >
                 Previous
               </Button>
-              
+
               <div className="flex items-center">
                 {progress === 100 ? (
                   <div className="flex items-center text-green-600">
@@ -575,10 +580,10 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                   </div>
                 )}
               </div>
-              
-              <Button 
-                className={`font-medium ${isCompleted 
-                  ? 'bg-green-500 hover:bg-green-600' 
+
+              <Button
+                className={`font-medium ${isCompleted
+                  ? 'bg-green-500 hover:bg-green-600'
                   : 'bg-indigo-600 hover:bg-indigo-700'}`}
                 disabled={progress === 100}
                 onClick={() => handleComplete(xpEarned + 5)}
@@ -594,14 +599,14 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
           </div>
         </Card>
       </motion.div>
-      
+
       {/* Confetti effect */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative w-full h-full">
               {Array.from({ length: 50 }).map((_, i) => (
-                <div 
+                <div
                   key={i}
                   className="absolute animate-confetti"
                   style={{
