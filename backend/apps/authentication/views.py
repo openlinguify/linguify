@@ -211,7 +211,7 @@ def get_me(request):
                          status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @extend_schema(
-    tags=["User Settings"],
+    tags=["Auth: User Settings"],
     summary="Retrieve or update user settings",
     description="GET: Retrieve all user settings\nPOST: Update user settings",
     responses={

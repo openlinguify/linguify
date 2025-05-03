@@ -347,6 +347,66 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
+def generate_api_schema_tags():
+    """
+    Génère la structure des tags pour l'API schema basée sur les applications installées
+    et ajoute les endpoints spécifiques pour chaque application.
+    """
+    tags = []
+    
+    # Mappage entre les applications et leurs endpoints associés
+    app_endpoints = {
+        'authentication': [
+            {'name': 'Auth: User Profile', 'description': 'User profile management endpoints'},
+            {'name': 'Auth: User Settings', 'description': 'User settings and preferences'},
+        ],
+        'course': [
+            {'name': 'Lessons', 'description': 'Lesson endpoints for course content'},
+            {'name': 'Content', 'description': 'Learning content and materials'},
+        ],
+        'data': [],
+        'revision': [
+            {'name': 'Flashcards', 'description': 'Flashcard creation and management'},
+            {'name': 'Decks', 'description': 'Flashcard deck organization'},
+        ],
+        'notebook': [
+            {'name': 'Notes', 'description': 'Note creation and management'},
+            {'name': 'Categories', 'description': 'Note categorization'},
+        ],
+        'progress': [
+            {'name': 'Statistics', 'description': 'Learning statistics and analytics'},
+        ],
+    }
+    
+    # Descriptions par défaut pour les applications
+    app_descriptions = {
+        'authentication': 'Authentication management and functionality',
+        'course': 'Course management and functionality',
+        'data': 'Data management and functionality',
+        'revision': 'Revision management and functionality',
+        'notebook': 'Notebook management and functionality',
+        'progress': 'User learning progress tracking',
+    }
+    
+    # Parcourir les applications installées
+    for app in INSTALLED_APPS:
+        if app.startswith('apps.'):
+            app_name = app.replace('apps.', '')
+            
+            # Vérifier si cette application est dans notre mappage
+            if app_name in app_endpoints:
+                # Ajouter le tag principal pour l'application
+                app_display_name = app_name.capitalize()
+                tags.append({
+                    'name': app_display_name,
+                    'description': app_descriptions.get(app_name, f"{app_display_name} management and functionality")
+                })
+                
+                # Ajouter les endpoints associés à cette application
+                tags.extend(app_endpoints[app_name])
+    
+    return tags
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Linguify API',
     'DESCRIPTION': 'API documentation for Linguify language learning platform',
@@ -361,35 +421,7 @@ SPECTACULAR_SETTINGS = {
     },
     
     # Organiser les endpoints par tags
-    'TAGS': [
-        # Authentication app
-        {'name': 'Authentication', 'description': "Authentication endpoints for login, registration, and token management"},
-        {'name': 'User Profile', 'description': "User profile management endpoints"},
-        {'name': 'User Settings', 'description': "User settings and preferences"},
-        
-        # Course app
-        {'name': 'Course', 'description': "Course management and learning content"},
-        {'name': 'Lessons', 'description': "Lesson endpoints for course content"},
-        {'name': 'Content', 'description': "Learning content and materials"},
-        
-        # Revision app
-        {'name': 'Revision', 'description': "Spaced repetition and revision tools"},
-        {'name': 'Flashcards', 'description': "Flashcard creation and management"},
-        {'name': 'Decks', 'description': "Flashcard deck organization"},
-        
-        # Notebook app
-        {'name': 'Notebook', 'description': "Language learning notebook and notes"},
-        {'name': 'Notes', 'description': "Note creation and management"},
-        {'name': 'Categories', 'description': "Note categorization"},
-        
-        # Progress app
-        {'name': 'Progress', 'description': "User learning progress tracking"},
-        {'name': 'Statistics', 'description': "Learning statistics and analytics"},
-        
-        # Other apps (commented out for now)
-        {'name': 'Chat', 'description': "Language practice chat functionality"},
-        {'name': 'Tasks', 'description': "Learning task management"},
-    ],
+    'TAGS': generate_api_schema_tags(),
     
     # Performance and organization settings
     'COMPONENT_SPLIT_REQUEST': True,
