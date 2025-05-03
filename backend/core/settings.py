@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_filters',
     'channels',
+    'drf_spectacular',
 
     # Project django_apps
     'apps.authentication',
@@ -83,6 +84,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
@@ -344,3 +346,54 @@ EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Linguify API',
+    'DESCRIPTION': 'API documentation for Linguify language learning platform',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    
+    # Interface Swagger personnalisée
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+        'displayOperationId': False,
+    },
+    
+    # Organiser les endpoints par tags
+    'TAGS': [
+        # Authentication app
+        {'name': 'Authentication', 'description': "Authentication endpoints for login, registration, and token management"},
+        {'name': 'User Profile', 'description': "User profile management endpoints"},
+        {'name': 'User Settings', 'description': "User settings and preferences"},
+        
+        # Course app
+        {'name': 'Course', 'description': "Course management and learning content"},
+        {'name': 'Lessons', 'description': "Lesson endpoints for course content"},
+        {'name': 'Content', 'description': "Learning content and materials"},
+        
+        # Revision app
+        {'name': 'Revision', 'description': "Spaced repetition and revision tools"},
+        {'name': 'Flashcards', 'description': "Flashcard creation and management"},
+        {'name': 'Decks', 'description': "Flashcard deck organization"},
+        
+        # Notebook app
+        {'name': 'Notebook', 'description': "Language learning notebook and notes"},
+        {'name': 'Notes', 'description': "Note creation and management"},
+        {'name': 'Categories', 'description': "Note categorization"},
+        
+        # Progress app
+        {'name': 'Progress', 'description': "User learning progress tracking"},
+        {'name': 'Statistics', 'description': "Learning statistics and analytics"},
+        
+        # Other apps (commented out for now)
+        {'name': 'Chat', 'description': "Language practice chat functionality"},
+        {'name': 'Tasks', 'description': "Learning task management"},
+    ],
+    
+    # Performance and organization settings
+    'COMPONENT_SPLIT_REQUEST': True,
+    'COMPONENT_SPLIT_RESPONSE': True,
+    'SCHEMA_PATH_PREFIX': r'/api/v[0-9]',
+    'SCHEMA_PATH_PREFIX_TRIM': True,
+}
