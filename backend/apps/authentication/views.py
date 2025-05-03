@@ -1,5 +1,5 @@
 # authentication/views.py
-from rest_framework import status
+from rest_framework import status, serializers
 from django.http import JsonResponse
 from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes, parser_classes
@@ -15,12 +15,32 @@ from rest_framework.response import Response
 import requests
 from urllib.parse import urlencode
 import logging
+from drf_spectacular.utils import extend_schema, inline_serializer
+
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
+class LoginResponseSerializer(serializers.Serializer):
+    auth_url = serializers.URLField(help_text="URL d'authentification Auth0")
 
+class ErrorResponseSerializer(serializers.Serializer):
+    error = serializers.CharField(help_text="Message d'erreur")
 
+class TokenResponseSerializer(serializers.Serializer):
+    access_token = serializers.CharField(help_text="Token d'accès JWT")
+    id_token = serializers.CharField(help_text="Token d'identité JWT", required=False)
+    expires_in = serializers.IntegerField(help_text="Temps d'expiration en secondes")
+
+@extend_schema(
+    tags=["Authentication"],
+    summary="Générer l'URL de connexion Auth0",
+    description="Crée une URL pour rediriger l'utilisateur vers la page de connexion Auth0",
+    responses={
+        200: LoginResponseSerializer,
+        503: ErrorResponseSerializer
+    }
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def auth0_login(request):
@@ -190,7 +210,22 @@ def get_me(request):
         return JsonResponse({'error': 'Internal server error'}, 
                          status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
+@extend_schema(
+    tags=["User Settings"],
+    summary="Retrieve or update user settings",
+    description="GET: Retrieve all user settings\nPOST: Update user settings",
+    responses={
+        200: inline_serializer(
+            name="UserSettingsResponse",
+            fields={
+                "email_notifications": serializers.BooleanField(),
+                "push_notifications": serializers.BooleanField(),
+                # Add other settings fields
+            }
+        ),
+        500: ErrorResponseSerializer
+    }
+)
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def user_settings(request):
