@@ -4,6 +4,9 @@ from pathlib import Path
 import os
 import environ
 from datetime import timedelta
+import logging
+logger = logging.getLogger(__name__)
+
 
 sys.path.insert(0, os.path.join(Path(__file__).resolve().parent.parent, 'apps'))
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -312,10 +315,6 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
-# Au début du fichier
-import logging
-logger = logging.getLogger(__name__)
 
 
 LOGGING = {
