@@ -10,35 +10,56 @@ const lessonCompletionService = {
   /**
    * Met à jour la progression d'une leçon et actualise la progression de l'unité parente
    * @param lessonId - ID de la leçon complétée ou en progression
-   * @param unitId - ID de l'unité parente
    * @param completionPercentage - Pourcentage de complétion (0-100)
    * @param timeSpent - Temps passé en secondes (optionnel)
    * @param complete - Marquer comme complété si true
+   * @param contentLessonId - ID du contenu de leçon associé (optionnel)
    */
   async updateLessonProgress(
     lessonId: number,
-
     completionPercentage: number = 100,
     timeSpent?: number,
     complete: boolean = false,
     contentLessonId?: number
   ): Promise<void> {
     try {
+      // Validation des paramètres
+      if (!lessonId) {
+        console.error('Erreur: lessonId est obligatoire');
+        toast({
+          title: "Erreur de paramètre",
+          description: "Paramètres invalides pour la mise à jour de la progression de leçon.",
+          variant: "destructive",
+          duration: 4000
+        });
+        return;
+      }
+
+      // S'assurer que les IDs sont des nombres
+      const lessonIdNum = typeof lessonId === 'string' ? parseInt(lessonId) : lessonId;
+      const contentIdNum = contentLessonId ? 
+        (typeof contentLessonId === 'string' ? parseInt(contentLessonId) : contentLessonId) : 0;
+      
+      // Assurer que le pourcentage est dans la plage 0-100
+      const validPercentage = Math.max(0, Math.min(100, completionPercentage));
+      
+      // Log de debug pour faciliter le dépannage
+      console.log(`Mise à jour de la progression de leçon: lessonId=${lessonIdNum}, contentId=${contentIdNum}, percentage=${validPercentage}, complete=${complete}`);
+      
       // 1. Mettre à jour la progression de la leçon
       await progressAPI.updateLessonProgress({
-        lesson_id: lessonId,
-        content_lesson_id: contentLessonId || 0, // Providing a default value if not specified
-        completion_percentage: completionPercentage,
+        lesson_id: lessonIdNum,
+        content_lesson_id: contentIdNum,
+        completion_percentage: validPercentage,
         time_spent: timeSpent,
         mark_completed: complete
       });
 
       // 2. L'API backend met automatiquement à jour l'unité parente
-      // Mais on peut le forcer si nécessaire
       if (complete) {
-        // L'API backend met à jour automatiquement l'unité parente
-        // On ne force plus la mise à jour car la méthode n'existe pas dans l'API
-
+        // Vider le cache de progression pour assurer des données fraîches
+        progressAPI.clearCache();
+        
         toast({
           title: "Leçon terminée !",
           description: "Votre progression a été enregistrée.",
@@ -60,6 +81,7 @@ const lessonCompletionService = {
   /**
    * Met à jour la progression d'un contenu de leçon spécifique
    * @param contentLessonId - ID du contenu de leçon
+   * @param lessonId - ID de la leçon parente
    * @param completionPercentage - Pourcentage de complétion (0-100)
    * @param timeSpent - Temps passé en secondes (optionnel)
    * @param xpEarned - Points d'expérience gagnés (optionnel)
@@ -74,10 +96,32 @@ const lessonCompletionService = {
     complete: boolean = false
   ): Promise<void> {
     try {
+      // Validation des paramètres obligatoires
+      if (!contentLessonId || !lessonId) {
+        console.error('Erreur: contentLessonId et lessonId sont obligatoires');
+        toast({
+          title: "Erreur de paramètre",
+          description: "Paramètres invalides pour la mise à jour de la progression.",
+          variant: "destructive",
+          duration: 4000
+        });
+        return;
+      }
+
+      // S'assurer que les IDs sont des nombres
+      const contentId = typeof contentLessonId === 'string' ? parseInt(contentLessonId) : contentLessonId;
+      const parentLessonId = typeof lessonId === 'string' ? parseInt(lessonId) : lessonId;
+      
+      // Assurer que le pourcentage est dans la plage 0-100
+      const validPercentage = Math.max(0, Math.min(100, completionPercentage));
+      
+      // Log de debug pour faciliter le dépannage
+      console.log(`Mise à jour de la progression du contenu: contentId=${contentId}, lessonId=${parentLessonId}, percentage=${validPercentage}, complete=${complete}`);
+      
       await progressAPI.updateContentLessonProgress({
-        content_lesson_id: contentLessonId,
-        lesson_id: lessonId,
-        completion_percentage: completionPercentage,
+        content_lesson_id: contentId,
+        lesson_id: parentLessonId,
+        completion_percentage: validPercentage,
         time_spent: timeSpent,
         xp_earned: xpEarned,
         mark_completed: complete
@@ -86,6 +130,9 @@ const lessonCompletionService = {
       // Note: l'API backend mettra automatiquement à jour la leçon parent et l'unité
 
       if (complete) {
+        // Vider le cache de progression pour assurer des données fraîches
+        progressAPI.clearCache();
+        
         toast({
           title: "Contenu terminé !",
           description: "Votre progression a été enregistrée.",

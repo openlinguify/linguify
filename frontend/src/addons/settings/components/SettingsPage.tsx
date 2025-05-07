@@ -34,7 +34,9 @@ import {
 import { useAuthContext } from "@/core/auth/AuthProvider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteAccountDialog } from "./DeleteAccountDialog";
+import { ResetProgressDialog } from "./ResetProgressDialog";
 import apiClient from '@/core/api/apiClient';
+import progressAPI from '@/addons/progress/api/progressAPI';
 
 import { 
   LANGUAGE_OPTIONS, 
@@ -60,6 +62,7 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_USER_SETTINGS);
@@ -545,6 +548,54 @@ export default function SettingsPage() {
         variant: "destructive",
       });
       setIsDeleting(false);
+    }
+  };
+  
+  const handleResetProgress = async () => {
+    try {
+      setIsResetting(true);
+      
+      // Récupérer la langue cible actuelle
+      const targetLanguage = formData.target_language;
+      console.log(`Réinitialisation de la progression pour la langue: ${targetLanguage}`);
+      
+      // Appeler l'API de réinitialisation de la progression avec la langue cible
+      const success = await progressAPI.resetAllProgress(targetLanguage);
+      
+      if (success) {
+        // Forcer un nettoyage complet du cache local
+        Object.keys(localStorage).forEach(key => {
+          if (key.includes('progress') || key.includes('Progress') || 
+              key.includes('cache') || key.includes('Cache')) {
+            localStorage.removeItem(key);
+          }
+        });
+        
+        // Vider explicitement le cache de l'API
+        progressAPI.clearCache();
+        
+        // Message de succès
+        toast({
+          title: "Progression réinitialisée",
+          description: `Votre progression pour la langue ${targetLanguage} a été réinitialisée avec succès. La page va être rechargée.`,
+        });
+        
+        // Attendre que le toast soit affiché puis recharger la page
+        setTimeout(() => {
+          // Forcer un hard reload pour s'assurer que tout est rechargé
+          window.location.href = "/settings?reset=true";
+        }, 1500);
+      } else {
+        throw new Error("Échec de la réinitialisation de la progression");
+      }
+    } catch (error) {
+      console.error('Erreur lors de la réinitialisation de la progression:', error);
+      toast({
+        title: "Échec de la réinitialisation",
+        description: error instanceof Error ? error.message : "Une erreur s'est produite lors de la réinitialisation de votre progression.",
+        variant: "destructive",
+      });
+      setIsResetting(false);
     }
   };
 
@@ -1684,13 +1735,14 @@ export default function SettingsPage() {
                 </div>
                 
                 <div className="pb-4 border-b">
-                  <h3 className="text-lg font-medium mb-2">Reset Progress</h3>
+                  <h3 className="text-lg font-medium mb-2">Reset Learning Progress</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    This will reset all your learning progress and statistics
+                    This will reset all your progress in the Learning app (courses and lessons)
                   </p>
-                  <Button variant="outline" className="text-red-500">
-                    Reset Progress
-                  </Button>
+                  <ResetProgressDialog 
+                    onConfirmReset={handleResetProgress}
+                    isResetting={isResetting}
+                  />
                 </div>
                 
                 <div>
