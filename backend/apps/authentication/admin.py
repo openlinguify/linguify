@@ -152,3 +152,11 @@ class UserFeedbackAdmin(admin.ModelAdmin):
             return f"{obj.feedback_content[:50]}..."
         return getattr(obj, 'feedback_content', '') or "No content"
     feedback_preview.short_description = "Feedback"
+
+# Enhance the admin interface with additional features
+try:
+    from apps.authentication.enhanced_admin.admin_enhancements import enhance_user_admin, enhance_coach_admin
+    enhance_user_admin(UserAdmin)
+    enhance_coach_admin(CoachProfileAdmin)
+except ImportError:
+    pass

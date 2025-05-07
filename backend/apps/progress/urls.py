@@ -9,7 +9,9 @@ from .views import (
     UserProgressSummaryView,
     InitializeProgressView,
     BatchProgressUpdateView,
-    BatchProgressStatusView
+    BatchProgressStatusView,
+    reset_all_progress,
+    reset_progress_by_language
 )
 
 app_name = 'progress'
@@ -27,4 +29,8 @@ urlpatterns = [
     # Batch progress endpoints
     path('batch/update/', BatchProgressUpdateView.as_view(), name='batch-progress-update'),
     path('batch/status/', BatchProgressStatusView.as_view(), name='batch-progress-status'),
+    
+    # Reset progress endpoints
+    path('reset/', reset_all_progress, name='reset-all-progress'),
+    path('reset_by_language/', reset_progress_by_language, name='reset-progress-by-language'),
 ]
