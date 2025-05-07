@@ -46,3 +46,5 @@ frontend/.next/
 frontend/.env.local
 frontend/prisma/
 .qodo
+
+**/.claude/settings.local.json

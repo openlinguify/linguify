@@ -9,11 +9,17 @@ from .progress_course_views import (
 from .progress_initialize_views import (
     InitializeProgressView
 )
+from .batch_progress_views import (
+    BatchProgressUpdateView,
+    BatchProgressStatusView
+)
 
 __all__ = [
     'UserLessonProgressViewSet',
     'UserUnitProgressViewSet',
     'ContentLessonProgressViewSet',
     'UserProgressSummaryView',
-    'InitializeProgressView'
+    'InitializeProgressView',
+    'BatchProgressUpdateView',
+    'BatchProgressStatusView'
 ]

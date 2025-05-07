@@ -10,8 +10,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 import pandas as pd
 from rest_framework import filters
 from django.shortcuts import get_object_or_404
-from revision.models import FlashcardDeck, Flashcard
-from revision.serializers import (
+from apps.revision.models import FlashcardDeck, Flashcard
+from apps.revision.serializers import (
     FlashcardDeckSerializer, 
     FlashcardSerializer,
     FlashcardDeckDetailSerializer,

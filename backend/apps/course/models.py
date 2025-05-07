@@ -3,7 +3,7 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator, ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext as _
-from authentication.models import User
+from apps.authentication.models import User
 from typing import Optional
 
 import logging

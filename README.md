@@ -36,8 +36,9 @@ Linguify offers a comprehensive language learning experience:
 - **Adaptive Grammar System** – Exercises that adjust to your learning pace
 - **Spaced Repetition Flashcards** – Science-backed memory optimization techniques
 - **Personal Language Notebook** – Capture and organize your own learning materials
-- **Progress Dashboard** – Data-driven insights to track your language journey.
+- **Progress Dashboard** – Data-driven insights to track your language journey
 - **Gamification Elements** – Stay motivated with achievements and streaks
+- **GDPR Compliance** – Full account management with 30-day grace period for deletion
 
 ## 🛠️ Technology Stack
 
@@ -46,7 +47,7 @@ Our modern tech stack offers plenty of opportunities to enhance your skills:
 - **Frontend**: React, Next.js, TypeScript, Tailwind CSS
 - **Backend**: Django, Python, RESTful APIs
 - **Database**: PostgreSQL
-- **Authentication**: Auth0, JWT
+- **Authentication**: Auth0, JWT with GDPR-compliant account management
 - **UI/UX**: Figma designs, accessibility-focused components
 - **DevOps**: GitHub Actions, Docker
 - **Testing**: Jest, Pytest

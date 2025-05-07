@@ -5,7 +5,7 @@ from channels.middleware import BaseMiddleware
 
 from rest_framework_simplejwt.tokens import AccessToken
 
-from authentication.models import User
+from apps.authentication.models import User
 
 
 @database_sync_to_async

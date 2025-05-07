@@ -1,7 +1,7 @@
 # app_manager/models.py
 from django.db import models
 from django.apps import apps
-from authentication.models import User
+from apps.authentication.models import User
 
 class AppModule(models.Model):
     name = models.CharField(max_length=100)  # Nom technique de l'app Django

@@ -78,6 +78,8 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'authentication.User'
 
+# App config declarations in individual apps
+
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'django.contrib.auth.backends.RemoteUserBackend',
@@ -89,7 +91,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'authentication.auth0_auth.Auth0Authentication',
+        'apps.authentication.auth0_auth.Auth0Authentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -136,9 +138,9 @@ AUTH0_ALGORITHM = 'RS256'
 
 JWT_AUTH = {
     'JWT_PAYLOAD_GET_USERNAME_HANDLER':
-        'authentication.utils.jwt_get_username_from_payload_handler',
+        'apps.authentication.utils.jwt_get_username_from_payload_handler',
     'JWT_DECODE_HANDLER':
-        'authentication.utils.jwt_decode_token',
+        'apps.authentication.utils.jwt_decode_token',
     'JWT_ALGORITHM': 'RS256',
     'JWT_AUDIENCE': AUTH0_AUDIENCE,
     'JWT_ISSUER': f'https://{AUTH0_DOMAIN}/',
@@ -194,7 +196,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'authentication.middleware.JWTMiddleware',
+    'apps.authentication.middleware.JWTMiddleware',
 ]
 
 CORS_ALLOW_METHODS = [
@@ -234,6 +236,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR.joinpath('templates'),
+            BASE_DIR.joinpath('apps/authentication/templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -329,7 +332,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'authentication': {
+        'apps.authentication': {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
@@ -409,10 +412,18 @@ def generate_api_schema_tags():
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Linguify API',
-    'DESCRIPTION': 'API documentation for Linguify language learning platform',
+    'DESCRIPTION': 'API documentation for Linguify',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    
+    'CONTACT': {
+        'name': 'Linguify Support', 
+        'email': 'dev@linguify.com',
+        'url': 'https://linguify.com/support',
+    },
+    'LICENSE': {
+        'name': 'LGPLv3',
+        'url': 'https://www.gnu.org/licenses/lgpl-3.0.html',
+    },
     # Interface Swagger personnalisée
     'SWAGGER_UI_SETTINGS': {
         'deepLinking': True,

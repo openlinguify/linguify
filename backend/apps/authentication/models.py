@@ -201,6 +201,10 @@ class UserManager(BaseUserManager):
 
 # Base User Model
 class User(AbstractBaseUser, PermissionsMixin):
+    # Explicitly set app_label to solve the Django model registration issue
+    class Meta:
+        app_label = 'authentication'
+    
     public_id = models.UUIDField(db_index=True, default=uuid4, editable=False, unique=True)
     username = models.CharField(db_index=True, max_length=255, unique=True, blank=False, null=False)
     first_name = models.CharField(max_length=255, blank=True)
@@ -216,6 +220,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_subscribed = models.BooleanField(null=False, default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    # Fields for tracking account deletion with 30-day grace period
+    is_pending_deletion = models.BooleanField(default=False, help_text="Whether the account is scheduled for deletion")
+    deletion_scheduled_at = models.DateTimeField(null=True, blank=True, help_text="When the account deletion was requested")
+    deletion_date = models.DateTimeField(null=True, blank=True, help_text="When the account will be permanently deleted")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     # Common fields for all users
@@ -302,15 +310,84 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.is_active = True
         self.save()
         
-    def delete_user_account(self, anonymize: bool = True):
+    def schedule_account_deletion(self, days_retention=30):
+        """
+        Schedule account deletion with a grace period.
+        Account will be deactivated immediately but only permanently deleted after the grace period.
+        """
+        import datetime
+        from django.utils import timezone
+        
+        # Calculate scheduled deletion date
+        deletion_date = timezone.now() + datetime.timedelta(days=days_retention)
+        
+        # Mark account for deletion
+        self.is_pending_deletion = True
+        self.deletion_scheduled_at = timezone.now()
+        self.deletion_date = deletion_date
+        
+        # Deactivate the account immediately
+        self.is_active = False
+        
+        # Save each field individually to avoid update_fields issues
+        try:
+            # First try the normal way with update_fields
+            self.save(update_fields=[
+                'is_pending_deletion', 
+                'deletion_scheduled_at', 
+                'deletion_date', 
+                'is_active'
+            ])
+        except Exception as e:
+            # If that fails, fall back to a full save
+            self.save()
+        
+        return {
+            'scheduled_at': self.deletion_scheduled_at,
+            'deletion_date': self.deletion_date
+        }
+    
+    def cancel_account_deletion(self):
+        """
+        Cancel a scheduled account deletion and reactivate the account.
+        """
+        if not self.is_pending_deletion:
+            return False
+        
+        self.is_pending_deletion = False
+        self.deletion_scheduled_at = None
+        self.deletion_date = None
+        self.is_active = True
+        
+        try:
+            # First try the normal way with update_fields
+            self.save(update_fields=[
+                'is_pending_deletion', 
+                'deletion_scheduled_at', 
+                'deletion_date', 
+                'is_active'
+            ])
+        except Exception as e:
+            # If that fails, fall back to a full save
+            self.save()
+        
+        return True
+        
+    def delete_user_account(self, anonymize: bool = True, immediate: bool = False):
         """
         Securely delete the user account.
         If anonymize is True, anonymize personal data before deletion for GDPR compliance.
+        If immediate is False, the account is scheduled for deletion after 30 days.
         """
+        if not immediate:
+            return self.schedule_account_deletion()
+            
         if anonymize:
             self._anonymize_user_data()
         self._delete_related_objects()
         super().delete()
+        
+        return True
 
     def _anonymize_user_data(self):
         self.email = f"deleted_user_{self.public_id}@example.com"
@@ -331,19 +408,54 @@ class User(AbstractBaseUser, PermissionsMixin):
             self.given_reviews.all().delete()
         if hasattr(self, 'coach_profile'):
             self.coach_profile.delete()
+    
+    def days_until_deletion(self):
+        """
+        Calculate days remaining until permanent deletion.
+        """
+        if not self.is_pending_deletion or not self.deletion_date:
+            return None
+        
+        from django.utils import timezone
+        remaining = self.deletion_date - timezone.now()
+        return max(0, remaining.days)
     def clean(self, *args, **kwargs):
         if self.native_language == self.target_language:
             raise ValidationError("Native language and target language cannot be the same.")
 
     def save(self, *args, **kwargs):
-        # Si update_fields est spécifié, utiliser cette méthode pour éviter la validation complète
-        if 'update_fields' in kwargs:
-            super().save(*args, **kwargs)
-        else:
-            # Sinon, effectuer la validation complète (pour les nouveaux utilisateurs)
-            if not self.pk:  # Nouveau utilisateur
-                self.full_clean()
-            super().save(*args, **kwargs)
+        """
+        Override the save method to handle validation and update_fields correctly.
+        """
+        try:
+            # If update_fields is specified, use that method to avoid full validation
+            if 'update_fields' in kwargs:
+                # Ensure all fields in update_fields exist on the model
+                valid_fields = []
+                for field in kwargs['update_fields']:
+                    if hasattr(self, field):
+                        valid_fields.append(field)
+                
+                if valid_fields:
+                    kwargs['update_fields'] = valid_fields
+                    super().save(*args, **kwargs)
+                else:
+                    # If no valid fields, fall back to a normal save
+                    kwargs.pop('update_fields')
+                    super().save(*args, **kwargs)
+            else:
+                # For new users, do full validation
+                if not self.pk:
+                    self.full_clean()
+                super().save(*args, **kwargs)
+        except Exception as e:
+            # If save with update_fields fails, try without it
+            if 'update_fields' in kwargs:
+                kwargs.pop('update_fields')
+                super().save(*args, **kwargs)
+            else:
+                # If it's still failing, re-raise the exception
+                raise
 
     def __str__(self):
         return f"{self.email}"
@@ -369,6 +481,8 @@ class CoachProfile(models.Model):
         availability (str): Text field describing the coach's availability.
         description (str): Detailed description of the coach's profile.
     """
+    class Meta:
+        app_label = 'authentication'
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='coach_profile')
     coaching_languages = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default=LANGUAGE_CHOICES[0][0])
     price_per_hour = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
@@ -379,6 +493,7 @@ class CoachProfile(models.Model):
     commission_override = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="Override the default commission rate.")
 
     class Meta:
+        app_label = 'authentication'
         unique_together = ('user', 'coaching_languages')
     # to update the availability of the coach
     def update_availability(self, new_availability):
@@ -414,6 +529,8 @@ class Review(models.Model):
         comment (str): Optional text content of the review.
         review_date (datetime): Date and time when the review was created.
     """
+    class Meta:
+        app_label = 'authentication'
     coach = models.ForeignKey(CoachProfile, on_delete=models.CASCADE, related_name='reviews', default=None)
     reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='given_reviews')
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
@@ -439,6 +556,8 @@ class UserFeedback(models.Model):
         feedback_content (str): Optional text content of the feedback.
         feedback_date (datetime): Date and time when the feedback was created.
     """
+    class Meta:
+        app_label = 'authentication'
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedbacks')
     feedback_type = models.CharField(max_length=10, choices=[('like', 'Like'), ('dislike', 'Dislike')], default='like')
     feedback_content = models.TextField(null=True, blank=True)
