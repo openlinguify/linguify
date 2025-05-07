@@ -1,6 +1,7 @@
 // src/services/progressAPI.ts
 import apiClient from '@/core/api/apiClient';
-import { handleApiError, waitForNetwork } from '@/core/api/errorHandling';
+import { handleApiError, waitForNetwork, withRetry } from '@/core/api/errorHandling';
+import { toast } from '@/components/ui/use-toast';
 import { 
   ProgressSummary, 
   UnitProgress, 
@@ -642,66 +643,81 @@ export const progressService = {
       }
     };
 
-    // Fonction pour effectuer la requête
-    const performUpdate = async (retryCount = 0): Promise<ContentLessonProgress | null> => {
-      try {
-        // Vider le cache pour ce contenu car les données vont changer
-        apiCache.clear(); // On vide tout le cache pour simplifier
-        
-        const response = await apiClient.post<ContentLessonProgress>(
-          '/api/v1/progress/content-lessons/update_progress/', 
-          data
-        );
-        
-        return response.data;
-      } catch (error: unknown) {
-        // Si c'est une erreur réseau
-        if (error instanceof Error && error.message.includes('Network Error')) {
-          // Stocker pour synchronisation ultérieure
-          addToPendingUpdates();
-          
-          // Si on doit réessayer immédiatement
-          if (retryOnNetworkError && retryCount < maxRetries) {
-            console.log(`Tentative de mise à jour du contenu ${data.content_lesson_id} (${retryCount + 1}/${maxRetries})...`);
-            
-            // Attendre que le réseau soit disponible
-            const isNetworkAvailable = await waitForNetwork(3000);
-            if (!isNetworkAvailable) {
-              // Retourner un faux succès, la synchronisation se fera plus tard
-              return null;
-            }
-            
-            // Réessayer avec un délai exponentiel
-            await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
-            return performUpdate(retryCount + 1);
-          }
-          
-          // Retourner un "succès" même si on est hors ligne
-          // La mise à jour sera synchronisée quand on sera en ligne
-          return null;
-        }
-
-        // Gérer les autres types d'erreurs
-        handleApiError(
-          error,
-          `Erreur lors de la mise à jour du contenu de leçon ${data.content_lesson_id}`,
-          {
-            showToast: showErrorToast,
-            retryCallback: retryOnNetworkError ? () => performUpdate(0) : undefined
-          }
-        );
-        
-        return null;
-      }
-    };
-
     // Ajouter l'opération à la file d'attente si on est hors ligne
     if (!navigator.onLine) {
       addToPendingUpdates();
       return null;
     }
 
-    return performUpdate();
+    // Vider le cache pour ce contenu car les données vont changer
+    apiCache.clear(); // On vide tout le cache pour simplifier
+
+    try {
+      // Utiliser notre nouvelle fonction withRetry pour gérer automatiquement les tentatives
+      const result = await withRetry(
+        async () => {
+          const response = await apiClient.post<ContentLessonProgress>(
+            '/api/v1/progress/content-lessons/update_progress/', 
+            data
+          );
+          return response.data;
+        },
+        {
+          maxRetries: maxRetries,
+          retryNetworkErrors: retryOnNetworkError,
+          onRetry: (error, retryCount, delayMs) => {
+            console.log(`Tentative de mise à jour du contenu ${data.content_lesson_id} (${retryCount}/${maxRetries}), prochain essai dans ${delayMs}ms...`);
+            
+            // Si c'est une erreur réseau, stocker pour synchronisation ultérieure
+            if (error instanceof Error && error.message.includes('Network Error')) {
+              addToPendingUpdates();
+            }
+            
+            if (showErrorToast) {
+              toast({
+                title: "Problème de connexion",
+                description: `Tentative de mise à jour du contenu (${retryCount}/${maxRetries})...`,
+                duration: 3000,
+              });
+            }
+          }
+        }
+      );
+      
+      return result;
+    } catch (error: unknown) {
+      // En cas d'échec après toutes les tentatives
+      
+      // Si c'est une erreur réseau, stocker pour synchronisation ultérieure
+      if (error instanceof Error && error.message.includes('Network Error')) {
+        addToPendingUpdates();
+        // On considère que c'est un "succès" car on synchronisera plus tard
+        return null;
+      }
+      
+      // Pour les autres types d'erreurs, gérer avec notre utilitaire
+      handleApiError(
+        error,
+        `Erreur lors de la mise à jour du contenu de leçon ${data.content_lesson_id}`,
+        {
+          showToast: showErrorToast,
+          retryCallback: retryOnNetworkError ? async () => {
+            try {
+              // Réessayer une dernière fois avec withRetry
+              return await withRetry(() => apiClient.post<ContentLessonProgress>(
+                '/api/v1/progress/content-lessons/update_progress/', 
+                data
+              ));
+            } catch (retryError) {
+              console.error('Échec de la dernière tentative:', retryError);
+              return null;
+            }
+          } : undefined
+        }
+      );
+      
+      return null;
+    }
   },
 
   /**

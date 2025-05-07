@@ -1,27 +1,46 @@
 'use client';
 // src/app/Providers.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ThemeProvider } from 'next-themes';
 import { AuthProvider } from '@/core/auth/AuthProvider';
 import { UserSettingsProvider } from '@/core/context/UserSettingsContext';
 import { OnboardingProvider } from '@/components/onboarding/OnboardingProvider';
+import { NotificationProvider } from '@/core/context/NotificationContext';
+import QueryProvider from '@/core/providers/QueryProvider';
+import { LanguageProvider } from '@/core/i18n/i18nProvider';
+import { registerServiceWorker } from '@/core/api/serviceWorkerRegistration';
 import { Toaster } from '@/components/ui/toaster';
 
 interface ProvidersProps {
   children: React.ReactNode;
 }
 
+function ServiceWorkerRegistration() {
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
+  
+  return null;
+}
+
 export default function Providers({ children }: ProvidersProps) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <AuthProvider>
-        <UserSettingsProvider>
-          <OnboardingProvider>
-            {children}
-            <Toaster />
-          </OnboardingProvider>
-        </UserSettingsProvider>
-      </AuthProvider>
+      <QueryProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <UserSettingsProvider>
+              <NotificationProvider>
+                <OnboardingProvider>
+                  <ServiceWorkerRegistration />
+                  {children}
+                  <Toaster />
+                </OnboardingProvider>
+              </NotificationProvider>
+            </UserSettingsProvider>
+          </AuthProvider>
+        </LanguageProvider>
+      </QueryProvider>
     </ThemeProvider>
   );
 }

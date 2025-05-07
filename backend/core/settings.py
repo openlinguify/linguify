@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'apps.notebook',
     # 'apps.task',
     'apps.progress',
+    'apps.notification',
     #'subscription',
     #'app_manager', # 'app_manager', # TODO: Uncomment when app_manager is ready
     
@@ -314,7 +315,12 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+            # Use Redis from Docker Compose by default in development
+            # or use environment variable for production
+            "hosts": [(
+                os.environ.get('REDIS_HOST', 'redis'), 
+                int(os.environ.get('REDIS_PORT', 6379))
+            )],
         },
     },
 }
