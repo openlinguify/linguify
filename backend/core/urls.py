@@ -19,6 +19,8 @@ def redirect_to_admin(request):
 urlpatterns = [
     path('', redirect_to_admin),
     path('admin/', admin.site.urls),
+    # Add admin dashboard
+    path('admin/stats/users/', include('apps.authentication.enhanced_admin.urls')),
     path('csrf/', utils.get_csrf_token, name='get_csrf_token'),
     path('api/', include('rest_framework.urls')),
     path('api/auth/', include('apps.authentication.urls')),

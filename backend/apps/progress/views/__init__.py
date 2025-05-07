@@ -13,6 +13,10 @@ from .batch_progress_views import (
     BatchProgressUpdateView,
     BatchProgressStatusView
 )
+from .progress_reset_views import (
+    reset_all_progress,
+    reset_progress_by_language
+)
 
 __all__ = [
     'UserLessonProgressViewSet',
@@ -21,5 +25,7 @@ __all__ = [
     'UserProgressSummaryView',
     'InitializeProgressView',
     'BatchProgressUpdateView',
-    'BatchProgressStatusView'
+    'BatchProgressStatusView',
+    'reset_all_progress',
+    'reset_progress_by_language'
 ]
