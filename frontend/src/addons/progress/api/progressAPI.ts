@@ -847,6 +847,85 @@ export const progressService = {
     if (process.env.NODE_ENV === 'development') {
       enableOfflineMode(durationMs);
     }
+  },
+  
+  /**
+   * Réinitialise toute la progression d'apprentissage d'un utilisateur
+   * Spécifique à l'app "course" (learning)
+   * @returns Promise<boolean> - true si la réinitialisation a réussi
+   */
+  /**
+   * Réinitialise les données de progression pour une langue cible spécifique
+   * Si aucune langue n'est fournie, utilise la langue cible actuelle de l'utilisateur
+   */
+  resetAllProgress: async (targetLanguage?: string): Promise<boolean> => {
+    try {
+      // Récupérer la langue cible si non fournie
+      if (!targetLanguage) {
+        try {
+          // Tenter de récupérer la langue cible actuelle de l'utilisateur
+          const profileResponse = await apiClient.get('/api/auth/profile/');
+          targetLanguage = profileResponse.data?.target_language;
+          console.log(`Langue cible détectée: ${targetLanguage}`);
+        } catch (error) {
+          console.error("Impossible de récupérer le profil utilisateur:", error);
+          // Si on ne peut pas récupérer la langue, on continue sans filtrer
+        }
+      }
+      
+      console.log(`Début de la réinitialisation de la progression pour la langue: ${targetLanguage || 'toutes'}`);
+      
+      // Utiliser l'URL de l'API avec la langue cible
+      const progressResetUrl = targetLanguage 
+        ? `/api/v1/progress/reset_by_language/?target_language=${targetLanguage}`
+        : '/api/v1/progress/reset/';
+      
+      // Appeler l'API de réinitialisation maintenant disponible dans le backend
+      console.log(`Appel de l'API: ${progressResetUrl}`);
+      const response = await apiClient.post(progressResetUrl);
+      
+      if (response.data && response.data.success) {
+        console.log('Réinitialisation réussie:', response.data.message);
+        
+        // Vider le cache API
+        apiCache.clear();
+        
+        // Vider les entrées de localStorage liées à la progression
+        for (const key of Object.keys(localStorage)) {
+          if (key.includes('progress') || key.includes('Progress') || 
+              key.includes('cache') || key.includes('Cache')) {
+            localStorage.removeItem(key);
+          }
+        }
+        
+        // Réinitialiser les mises à jour en attente
+        localStorage.setItem('pendingProgressUpdates', JSON.stringify([]));
+        
+        // Forcer une mise à jour du résumé de progression
+        try {
+          if (targetLanguage) {
+            await progressService.getSummary({ 
+              cacheResults: false,
+              params: { target_language: targetLanguage }
+            });
+          } else {
+            await progressService.getSummary({ cacheResults: false });
+          }
+        } catch (summaryError) {
+          console.warn('Erreur lors de la mise à jour du résumé:', summaryError);
+        }
+        
+        return true;
+      } else {
+        throw new Error('La réinitialisation a échoué côté serveur');
+      }
+      
+      console.log('Réinitialisation de la progression réussie');
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de la réinitialisation de la progression:', error);
+      return false;
+    }
   }
 };
 
