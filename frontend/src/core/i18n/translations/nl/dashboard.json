@@ -11,6 +11,19 @@
     "noNewNotifications": "Geen nieuwe meldingen",
     "checkBackLater": "Kom later terug voor updates"
   },
+  "notification": {
+    "continueLesson": "Ga door met leren",
+    "inUnit": "In eenheid",
+    "progress": "Voortgang",
+    "resume": "Hervatten",
+    "dismiss": "Sluiten",
+    "recentLessons": "Recente lessen",
+    "view": "Bekijken",
+    "completed": "Voltooid",
+    "timeSpent": "Tijd besteed",
+    "moreRecent": "Bekijk alle recente",
+    "noRecent": "Geen recente lessen"
+  },
   "welcome": "Welkom, {name}!",
   "targetLanguage": "Doeltaal",
   "learningCard": {

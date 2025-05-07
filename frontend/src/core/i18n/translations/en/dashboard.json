@@ -11,6 +11,19 @@
     "noNewNotifications": "No new notifications",
     "checkBackLater": "Check back later for updates"
   },
+  "notification": {
+    "continueLesson": "Continue Learning",
+    "inUnit": "In unit",
+    "progress": "Progress",
+    "resume": "Resume",
+    "dismiss": "Dismiss",
+    "recentLessons": "Recent lessons",
+    "view": "View",
+    "completed": "Completed",
+    "timeSpent": "Time spent",
+    "moreRecent": "View all recent",
+    "noRecent": "No recent lessons"
+  },
   "welcome": "Welcome, {name}!",
   "targetLanguage": "Target language",
   "learningCard": {

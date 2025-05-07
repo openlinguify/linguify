@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/v1/notebook/', include('apps.notebook.urls', namespace='notebook')),
     path('api/contact/', views.contact_view, name='contact'),
     path('api/v1/progress/', include('apps.progress.urls', namespace='progress')),
+    path('api/v1/notifications/', include('apps.notification.urls', namespace='notification')),
     # path('api/v1/flashcard/', include('flashcard.urls', namespace='flashcard')),
     # path('api/v1/task/', include('task.urls', namespace='task')),
     # path('api/v1/chat/', include('chat.urls', namespace='chat')),

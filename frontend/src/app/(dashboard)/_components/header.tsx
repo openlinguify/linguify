@@ -127,7 +127,7 @@ const Header = () => {
           {isAuthenticated && user ? (
             <div className="flex items-center gap-4">
               {/* Notifications */}
-              <NotificationButton count={1} />
+              <NotificationButton count={0} />
 
               {/* User Menu */}
               <UserMenu user={user} />
