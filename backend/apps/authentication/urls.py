@@ -9,7 +9,9 @@ from .views import (
     token_refresh, 
     user_profile, 
     update_profile_picture,
-    debug_profile_endpoint
+    debug_profile_endpoint,
+    delete_account,
+    cancel_account_deletion
 )
 from django.conf import settings
 from .debug_views import cors_debug
@@ -24,6 +26,8 @@ urlpatterns = [
     path('profile/', user_profile, name='user_profile'),
     path('profile-picture/', update_profile_picture, name='user_profile_picture'),
     path('debug-profile/', debug_profile_endpoint, name='debug_profile'),
+    path('delete-account/', delete_account, name='delete_account'),
+    path('restore-account/', cancel_account_deletion, name='restore_account'),
 ]
 
 if settings.DEBUG:

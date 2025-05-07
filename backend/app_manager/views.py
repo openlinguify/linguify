@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from app_manager.models import AppModule, UserAppAccess
 from app_manager.serializers import AppModuleSerializer, UserAppAccessSerializer
-from authentication.models import User
+from apps.authentication.models import User
 
 class AppManagerViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])

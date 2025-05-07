@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 from django.conf import settings
-from authentication.models import User
+from apps.authentication.models import User
 
 class FlashcardDeck(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='flashcard_decks')
@@ -22,6 +22,7 @@ class FlashcardDeck(models.Model):
     DEFAULT_EXPIRATION_DAYS = 30
 
     class Meta:
+        app_label = 'revision'
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['user', 'is_active']),
@@ -262,6 +263,7 @@ class Flashcard(models.Model):
     next_review = models.DateTimeField(null=True, blank=True)
 
     class Meta:
+        app_label = 'revision'
         ordering = ['deck', '-created_at']
         indexes = [
             models.Index(fields=['user', 'deck']),  # Accélère les requêtes par utilisateur et deck

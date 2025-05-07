@@ -11,17 +11,21 @@ interface PageProps {
   };
   searchParams: {
     language?: string;
-    parentLessonId?: string; // Add this to accept parentLessonId from URL query
-    unitId?: string; // Also add unitId for completeness
+    parentLessonId?: string; 
+    unitId?: string;
   };
 }
 
-export default function DirectContentPage({ params, searchParams }: PageProps) {
-  const { contentType, contentId } = params;
+export default async function DirectContentPage({ params, searchParams }: PageProps) {
+  // Make all parameters awaitable first by using Promise.resolve
+  const resolvedParams = await Promise.resolve(params);
+  const resolvedSearchParams = await Promise.resolve(searchParams);
+  
+  const { contentType, contentId } = resolvedParams;
   const decodedContentType = decodeURIComponent(contentType);
   
   // Get language from query param or user settings
-  const rawLanguage = searchParams.language || getUserTargetLanguage();
+  const rawLanguage = resolvedSearchParams.language || getUserTargetLanguage();
   
   // Validate and convert to expected type
   const supportedLanguages = ['en', 'fr', 'es', 'nl'] as const;
@@ -30,10 +34,10 @@ export default function DirectContentPage({ params, searchParams }: PageProps) {
     : 'en'; // Default to English if not valid
 
   // Get parentLessonId from query params or default to contentId
-  const parentLessonId = searchParams.parentLessonId || contentId;
+  const parentLessonId = resolvedSearchParams.parentLessonId || contentId;
   
   // Get unitId from query params if available
-  const unitId = searchParams.unitId;
+  const unitId = resolvedSearchParams.unitId;
 
   if (!contentType || !contentId || isNaN(Number(contentId))) {
     return notFound();
@@ -44,9 +48,9 @@ export default function DirectContentPage({ params, searchParams }: PageProps) {
       <ContentTypeRouter
         contentType={decodedContentType}
         contentId={contentId}
-        parentLessonId={parentLessonId} // Add this required prop
+        parentLessonId={parentLessonId}
         language={language}
-        unitId={unitId} // Pass unitId if available
+        unitId={unitId}
       />
     </Suspense>
   );

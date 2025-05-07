@@ -45,13 +45,17 @@ export function useLessonCompletion({
       const contentLessonId = parseInt(lessonId);
       const completionPercentage = 100;
       
-      // Mettre à jour progression du contenu
+      // Déterminer la leçon parent (contentLessonId ou unitId)
+      const parentLessonId = unitId ? parseInt(unitId) : contentLessonId;
+      
+      // Mettre à jour progression du contenu avec tous les paramètres requis
       await lessonCompletionService.updateContentProgress(
-        contentLessonId,
-        completionPercentage,
-        state.timeSpent,
-        score || Math.round(completionPercentage / 10),
-        1 // marquer comme complété (1 = true)
+        contentLessonId,        // contentLessonId
+        parentLessonId,         // lessonId (paramètre manquant auparavant)
+        completionPercentage,   // completionPercentage
+        state.timeSpent,        // timeSpent
+        score || Math.round(completionPercentage / 10), // xpEarned
+        true                    // complete (vrai au lieu de 1)
       );
       
       // Si nous avons l'unitId, mettre à jour aussi la progression de la leçon parent
@@ -113,17 +117,21 @@ export function useLessonCompletion({
     
     try {
       const contentLessonId = parseInt(lessonId);
+      // Déterminer la leçon parent (contentLessonId ou unitId)
+      const parentLessonId = unitId ? parseInt(unitId) : contentLessonId;
+      
       await lessonCompletionService.updateContentProgress(
-        contentLessonId,
-        percentage,
-        state.timeSpent,
-        Math.round(percentage / 10),
-        percentage >= 100 ? 1 : 0
+        contentLessonId,                  // contentLessonId
+        parentLessonId,                   // lessonId (paramètre manquant auparavant)
+        percentage,                       // completionPercentage
+        state.timeSpent,                  // timeSpent
+        Math.round(percentage / 10),      // xpEarned
+        percentage >= 100                 // complete (boolean au lieu de 0/1)
       );
     } catch (error) {
       console.error("Error updating progress:", error);
     }
-  }, [lessonId, state.timeSpent]);
+  }, [lessonId, unitId, state.timeSpent]);
   
   return {
     showCompletionModal: state.showCompletionModal,

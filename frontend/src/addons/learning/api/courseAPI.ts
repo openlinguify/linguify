@@ -291,35 +291,73 @@ const courseAPI = {
     }
   },
 
-  getVocabularyContent: async (contentLessonId: number | string, targetLanguage?: string) => {
+  getVocabularyContent: async (
+    contentLessonId: number | string, 
+    targetLanguage?: string,
+    page: number = 1,
+    pageSize: number = 100,
+    word?: string
+  ) => {
     try {
       // Validate content lesson ID
       const parsedContentLessonId = Number(contentLessonId);
 
       if (isNaN(parsedContentLessonId)) {
         console.error(`Invalid content lesson ID provided: ${contentLessonId}`);
-        return { results: [] }; // Match expected API response format
+        return { 
+          results: [],
+          count: 0,
+          next: null,
+          previous: null,
+          meta: {
+            total_count: 0,
+            page_size: pageSize,
+            filters_applied: {}
+          }
+        };
       }
 
       const params: Record<string, string> = {
-        content_lesson: parsedContentLessonId.toString()
+        content_lesson: parsedContentLessonId.toString(),
+        page: page.toString(),
+        page_size: pageSize.toString()
       };
 
-      // Utiliser la langue spécifiée ou récupérer depuis localStorage
+      // Add word filter if provided
+      if (word) {
+        params.word = word;
+      }
+
+      // Use the specified language or get from user settings
       const lang = targetLanguage || getUserTargetLanguage();
       params.target_language = lang;
 
-      console.log(`Fetching vocabulary for content lesson ${parsedContentLessonId} with language: ${lang}`);
+      console.log(`Fetching vocabulary for content lesson ${parsedContentLessonId} with language: ${lang}, page: ${page}, pageSize: ${pageSize}`);
       const response = await apiClient.get(`/api/v1/course/vocabulary-list/`, {
         params,
         headers: {
           'Accept-Language': lang
         }
       });
+      
+      // Return the full response including pagination info
       return response.data;
     } catch (err: any) {
       console.error('Failed to fetch vocabulary content:', err);
-      return { results: [] }; // Match expected API response format
+      return { 
+        results: [],
+        count: 0,
+        next: null,
+        previous: null,
+        meta: {
+          total_count: 0,
+          page_size: pageSize,
+          filters_applied: {
+            content_lesson: contentLessonId.toString(),
+            word: word || null
+          }
+        }
+      };
     }
   },
 

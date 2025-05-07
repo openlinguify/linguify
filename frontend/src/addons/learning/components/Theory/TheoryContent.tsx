@@ -23,6 +23,7 @@ import { Progress } from "@/components/ui/progress";
 import { TheoryData, TheoryContentProps } from "@/addons/learning/types";
 import courseAPI from "@/addons/learning/api/courseAPI";
 import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
+import lastAccessedLessonService from "@/addons/progress/api/lastAccessedLessonService";
 import { useRouter } from "next/navigation";
 
 // Animation variants
@@ -95,6 +96,56 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
           0
         );
 
+        // Direct session tracking for notifications 
+        try {
+          // Get content lesson title from data
+          let lessonTitle = data[0].content_lesson?.title?.en || "Theory Lesson";
+          
+          // Extract unit title if available
+          let unitTitleValue = unitId ? `Unit ${unitId}` : undefined;
+          
+          // If lesson has unit_id, try to get the proper unit title
+          if (unitId) {
+            try {
+              const units = await courseAPI.getUnits();
+              const unit = Array.isArray(units) ? units.find(u => u.id === parseInt(unitId)) : null;
+              if (unit && unit.title) {
+                unitTitleValue = unit.title;
+              }
+            } catch (e) {
+              console.error("Error fetching unit title:", e);
+            }
+          }
+          
+          // Store important information for notifications and resuming session
+          const contentLessonId = parseInt(lessonId);
+          const now = new Date();
+          
+          // Use service method instead of direct localStorage
+          lastAccessedLessonService.trackLesson(
+            // Cast to ContentLessonProgress with extra fields
+            {
+              id: contentLessonId,
+              title: lessonTitle,
+              content_type: "theory",
+              completion_percentage: 1,
+              // Add custom properties
+              language: language,
+              parentLessonId: unitId ? parseInt(unitId) : undefined,
+              contentId: contentLessonId,
+              routeType: "content",
+              lastViewedSection: 'content',
+              timeSpent: 0
+            } as any,
+            unitTitleValue,
+            unitId ? parseInt(unitId) : undefined
+          );
+          
+          console.log(`TheoryContent: Using tracking service for lesson access`);
+        } catch (trackError) {
+          console.error("Error tracking theory session:", trackError);
+        }
+
         setShouldAnimate(true);
         setError(null);
       } catch (err) {
@@ -113,10 +164,21 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
   // Track study time
   useEffect(() => {
     const timer = setInterval(() => {
-      setStudyTime(Math.floor((Date.now() - startTime) / 1000));
+      const currentTime = Math.floor((Date.now() - startTime) / 1000);
+      setStudyTime(currentTime);
+      
+      // Update time spent in last accessed lesson every 30 seconds
+      if (currentTime % 30 === 0 && currentTime > 0) {
+        try {
+          const contentLessonId = parseInt(lessonId);
+          lastAccessedLessonService.updateTimeSpent(contentLessonId, 30);
+        } catch (e) {
+          console.error("Error updating time spent:", e);
+        }
+      }
     }, 1000);
     return () => clearInterval(timer);
-  }, [startTime]);
+  }, [startTime, lessonId]);
 
   // Determine available sections
   const getAvailableSections = useCallback(() => {
