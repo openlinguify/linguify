@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 
 from .models import Conversation
 from .serializers import ConversationListSerializer, ConversationDetailSerializer, ConversationMessageSerializer
-from authentication.models import User
+from apps.authentication.models import User
 
 
 @api_view(['GET'])

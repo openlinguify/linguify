@@ -6,9 +6,11 @@ from .views import (
     UserLessonProgressViewSet,
     UserUnitProgressViewSet,
     ContentLessonProgressViewSet,
-    UserProgressSummaryView
+    UserProgressSummaryView,
+    InitializeProgressView,
+    BatchProgressUpdateView,
+    BatchProgressStatusView
 )
-from .views import InitializeProgressView
 
 app_name = 'progress'
 
@@ -21,4 +23,8 @@ urlpatterns = [
     path('', include(router.urls)),
     path('summary/', UserProgressSummaryView.as_view(), name='progress-summary'),
     path('initialize/', InitializeProgressView.as_view(), name='initialize-progress'),
+    
+    # Batch progress endpoints
+    path('batch/update/', BatchProgressUpdateView.as_view(), name='batch-progress-update'),
+    path('batch/status/', BatchProgressStatusView.as_view(), name='batch-progress-status'),
 ]

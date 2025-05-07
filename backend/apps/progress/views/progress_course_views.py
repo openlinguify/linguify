@@ -484,31 +484,38 @@ class UserProgressSummaryView(generics.RetrieveAPIView):
     def retrieve(self, request, *args, **kwargs):
         user = request.user
         
-        logger.debug(f"User {user.username} retrieving progress summary")
+        # Obtenir la langue cible depuis les paramètres de requête ou le profil utilisateur
+        language_code = request.query_params.get('language_code') or request.query_params.get('target_language')
+        if not language_code and request.user.is_authenticated:
+            language_code = getattr(request.user, 'target_language', 'en')
+        language_code = language_code.lower() if language_code else 'en'
         
-        # Create initial unit progress entries if none exist
+        logger.debug(f"User {user.username} retrieving progress summary for language {language_code}")
+        
+        # Create initial unit progress entries if none exist for the current language
         units = Unit.objects.all()
-        existing_unit_progress = UserUnitProgress.objects.filter(user=user)
+        existing_unit_progress = UserUnitProgress.objects.filter(user=user, language_code=language_code)
         existing_unit_ids = set(existing_unit_progress.values_list('unit_id', flat=True))
         
-        # Create missing unit progress entries
+        # Create missing unit progress entries for the current language only
         new_unit_progress = []
         for unit in units:
             if unit.id not in existing_unit_ids:
                 new_unit_progress.append(UserUnitProgress(
                     user=user,
                     unit=unit,
+                    language_code=language_code,  # Ensure language code is set
                     status='not_started',
                     completion_percentage=0
                 ))
         
         if new_unit_progress:
             UserUnitProgress.objects.bulk_create(new_unit_progress)
-            logger.info(f"Created {len(new_unit_progress)} initial unit progress entries for user {user.username}")
+            logger.info(f"Created {len(new_unit_progress)} initial unit progress entries for user {user.username} and language {language_code}")
         
-        # Refresh the queryset after potentially creating new entries
-        units_progress = UserUnitProgress.objects.filter(user=user)
-        lessons_progress = UserLessonProgress.objects.filter(user=user)
+        # Refresh the queryset after potentially creating new entries - filter by language
+        units_progress = UserUnitProgress.objects.filter(user=user, language_code=language_code)
+        lessons_progress = UserLessonProgress.objects.filter(user=user, language_code=language_code)
         
         # Progress by level
         level_stats = {}
@@ -527,24 +534,35 @@ class UserProgressSummaryView(generics.RetrieveAPIView):
                 total_completion = sum(u.completion_percentage for u in units_in_level)
                 level_stats[level_code]['avg_completion'] = total_completion // units_in_level.count()
         
-        # Contenus récemment consultés
-        recent_items = UserCourseProgress.objects.filter(user=user).order_by('-last_accessed')[:5]
+        # Contenus récemment consultés - filter by language
+        recent_items = UserCourseProgress.objects.filter(
+            user=user, 
+            language_code=language_code
+        ).order_by('-last_accessed')[:5]
         recent_items_data = UserCourseContentProgressSerializer(recent_items, many=True).data
         
         # Statistiques d'activité
         total_time_spent = sum(l.time_spent for l in lessons_progress) / 60  # En minutes
         
+        # Get count of all units (regardless of progress)
+        total_units = Unit.objects.count()
+        
         return Response({
             'summary': {
-                'total_units': units_progress.count(),
+                'language_code': language_code,
+                'total_units': total_units,  # Total units from Units model (not progress entries)
+                'tracked_units': total_units,  # Should be the same as total_units to fix the counting issue
                 'completed_units': units_progress.filter(status='completed').count(),
                 'total_lessons': lessons_progress.count(),
                 'completed_lessons': lessons_progress.filter(status='completed').count(),
                 'total_time_spent_minutes': total_time_spent,
-                'xp_earned': UserCourseProgress.objects.filter(user=user).aggregate(
+                'xp_earned': UserCourseProgress.objects.filter(
+                    user=user, 
+                    language_code=language_code
+                ).aggregate(
                     total_xp=Sum('xp_earned')
                 )['total_xp'] or 0
             },
-            'level_progression': level_stats,
+        'level_progression': level_stats,
             'recent_activity': recent_items_data
         })

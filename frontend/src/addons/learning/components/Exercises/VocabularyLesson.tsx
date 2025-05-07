@@ -18,8 +18,10 @@ import { GradientCard } from "@/components/ui/gradient-card";
 import { commonStyles } from "@/styles/gradient_style";
 import { motion, AnimatePresence } from "framer-motion";
 import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
+import batchProgressAPI from '@/addons/progress/api/batchProgressAPI';
 import { VocabularyItem, VocabularyLessonProps } from "@/addons/learning/types";
 import useSpeechSynthesis from '@/core/speech/useSpeechSynthesis';
+import courseAPI from "@/addons/learning/api/courseAPI";
 
 // API base URL from environment variable or default to localhost for development
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
@@ -86,24 +88,26 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
     }
   }, []);
   
-  // Function to update progress in API - wrapped in useCallback to prevent recreation
+  // Function to update progress in API using batch API - wrapped in useCallback to prevent recreation
   const updateProgressInAPI = useCallback(async (completionPercentage: number) => {
     if (!lessonId || !mountedRef.current) return;
     
     try {
       const contentLessonId = parseInt(lessonId);
-      await lessonCompletionService.updateContentProgress(
+      
+      // Use batch progress API instead of individual calls
+      await batchProgressAPI.trackContentProgress(
         contentLessonId,
         completionPercentage,
         timeSpent,
         Math.round(completionPercentage / 10),
-        completionPercentage >= 100 ? 1 : 0 // Convert boolean to number
+        completionPercentage >= 100
       );
       
       // If we also have the unit ID, update the parent lesson progress
       if (unitId && completionPercentage >= 100 && !lessonCompleted) {
-        // Update parent lesson progress too
-        await lessonCompletionService.updateLessonProgress(
+        // Update parent lesson progress too with batch API
+        await batchProgressAPI.trackLessonProgress(
           parseInt(unitId),
           100, // 100% progress
           timeSpent,
@@ -125,11 +129,16 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
     }
   }, [lessonId, unitId, timeSpent, onComplete, lessonCompleted]);
 
-  // Track lesson mount/unmount status
+  // Track lesson mount/unmount status and ensure progress is saved
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
+      
+      // Flush any pending progress updates before unmounting
+      batchProgressAPI.flushQueue().catch(err => 
+        console.error("Error flushing progress queue on unmount:", err)
+      );
     };
   }, []);
 
@@ -263,10 +272,10 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
     }
   }, [currentIndex, vocabulary.length, progressPercentage, updateProgressInAPI, lessonCompleted]);
 
-  // Fetch vocabulary data - only once
+  // Fetch vocabulary data with pagination
   useEffect(() => {
-    // Only fetch if we haven't already loaded data
-    if (dataLoadedRef.current || !lessonId) return;
+    // Only fetch if we don't have the data or lessonId
+    if (!lessonId) return;
     
     const fetchVocabulary = async () => {
       if (!mountedRef.current) return;
@@ -280,26 +289,13 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
         const settings = getUserSettings();
         const targetLanguage = settings.target_language || 'EN';
         
-        const response = await fetch(
-          `${API_BASE_URL}/api/v1/course/vocabulary-list/?content_lesson=${lessonId}&target_language=${targetLanguage.toLowerCase()}`,
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            mode: "cors",
-            credentials: "include",
-          }
+        // Use the courseAPI for better error handling and consistency
+        const data = await courseAPI.getVocabularyContent(
+          lessonId,
+          targetLanguage.toLowerCase(),
+          1,  // First page
+          200 // Maximum page size to get all vocabulary at once
         );
-
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch vocabulary content: ${response.status}`
-          );
-        }
-
-        const data = await response.json();
         
         if (mountedRef.current) {
           if (data.results && data.results.length > 0) {
@@ -310,6 +306,11 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete }: VocabularyLessonProp
             if (!progressInitializedRef.current) {
               updateProgressInAPI(1);
               progressInitializedRef.current = true;
+            }
+            
+            // Log metadata for debugging
+            if (data.meta) {
+              console.log(`Loaded ${data.results.length} of ${data.meta.total_count} vocabulary items`);
             }
           } else {
             setError("No vocabulary items found for this lesson");

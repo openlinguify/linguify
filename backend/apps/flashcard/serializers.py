@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Deck, Tag, Card, UserFlashcardProgress
-from authentication.models import User
+from apps.authentication.models import User
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:

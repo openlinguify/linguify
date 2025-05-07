@@ -196,6 +196,7 @@ export interface ProgressSummary {
 export interface ProgressSummary {
   summary: {
     total_units: number;
+    tracked_units: number;
     completed_units: number;
     total_lessons: number;
     completed_lessons: number;

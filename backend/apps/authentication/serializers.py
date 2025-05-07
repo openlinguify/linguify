@@ -11,7 +11,7 @@ User = get_user_model()
 from django.contrib.auth.password_validation import validate_password
 from decimal import Decimal
 from django.core.validators import validate_email
-from authentication.models import User
+from apps.authentication.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):

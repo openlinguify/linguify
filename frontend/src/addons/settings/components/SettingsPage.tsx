@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { useAuthContext } from "@/core/auth/AuthProvider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { DeleteAccountDialog } from "./DeleteAccountDialog";
 import apiClient from '@/core/api/apiClient';
 
 import { 
@@ -468,34 +469,79 @@ export default function SettingsPage() {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    // Show confirmation dialog
-    const confirmed = window.confirm(
-      "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently lost."
-    );
-    
-    if (!confirmed) return;
-    
+  const handleDeleteAccountTemporary = async () => {
     try {
       setIsDeleting(true);
       
-      // Implement account deletion when backend is ready
-      // For now, just log the user out
-      
-      toast({
-        title: "Account Deletion",
-        description: "Account deletion request received. You will be logged out now.",
+      // Call the account deletion API endpoint with temporary deletion
+      const response = await apiClient.post('/api/auth/delete-account/', {
+        deletion_type: 'temporary',
+        anonymize: true // GDPR-compliant anonymization
       });
       
-      setTimeout(() => {
+      if (response.data.success) {
+        toast({
+          title: "Account Scheduled for Deletion",
+          description: "Your account has been deactivated and will be permanently deleted in 30 days.",
+        });
+        
+        // Store deletion info in localStorage for the confirmation page
+        localStorage.setItem('account_deletion_type', 'temporary');
+        if (response.data.deletion_date) {
+          localStorage.setItem('account_deletion_date', response.data.deletion_date);
+        }
+        if (response.data.days_remaining !== undefined) {
+          localStorage.setItem('account_deletion_days_remaining', 
+                              response.data.days_remaining.toString());
+        }
+        
+        // Log the user out and redirect to confirmation page
         logout();
-        router.push('/');
-      }, 2000);
+        router.push('/account-deleted?type=temporary');
+      } else {
+        throw new Error(response.data.message || "Failed to schedule account deletion");
+      }
+    } catch (error) {
+      console.error('Error scheduling account deletion:', error);
+      toast({
+        title: "Account Deactivation Failed",
+        description: error instanceof Error ? error.message : "There was an error deactivating your account.",
+        variant: "destructive",
+      });
+      setIsDeleting(false);
+    }
+  };
+  
+  const handleDeleteAccountPermanent = async () => {
+    try {
+      setIsDeleting(true);
+      
+      // Call the account deletion API endpoint with permanent deletion
+      const response = await apiClient.post('/api/auth/delete-account/', {
+        deletion_type: 'permanent',
+        anonymize: true // GDPR-compliant anonymization
+      });
+      
+      if (response.data.success) {
+        toast({
+          title: "Account Deleted",
+          description: "Your account has been permanently deleted.",
+        });
+        
+        // Store deletion type in localStorage for the confirmation page
+        localStorage.setItem('account_deletion_type', 'permanent');
+        
+        // Log the user out and redirect to confirmation page
+        logout();
+        router.push('/account-deleted?type=permanent');
+      } else {
+        throw new Error(response.data.message || "Failed to delete account");
+      }
     } catch (error) {
       console.error('Error deleting account:', error);
       toast({
         title: "Account Deletion Failed",
-        description: "There was an error deleting your account.",
+        description: error instanceof Error ? error.message : "There was an error deleting your account.",
         variant: "destructive",
       });
       setIsDeleting(false);
@@ -1652,20 +1698,11 @@ export default function SettingsPage() {
                   <p className="text-sm text-muted-foreground mb-4">
                     Once you delete your account, there is no going back. This action cannot be undone.
                   </p>
-                  <Button 
-                    variant="destructive"
-                    onClick={handleDeleteAccount}
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Deleting...
-                      </>
-                    ) : (
-                      <>Delete Account</>
-                    )}
-                  </Button>
+                  <DeleteAccountDialog
+                    onConfirmTemporary={handleDeleteAccountTemporary}
+                    onConfirmPermanent={handleDeleteAccountPermanent}
+                    isDeleting={isDeleting}
+                  />
                 </div>
               </CardContent>
             </Card>

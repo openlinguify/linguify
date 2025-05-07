@@ -8,6 +8,7 @@ from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from django.contrib.auth import get_user_model
 from .serializers import UserSerializer, ProfileUpdateSerializer
 import os
+import datetime
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -15,14 +16,19 @@ from rest_framework.response import Response
 import requests
 from urllib.parse import urlencode
 import logging
-from drf_spectacular.utils import extend_schema, inline_serializer
-
+from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParameter, OpenApiExample, OpenApiTypes
+from drf_spectacular.types import OpenApiTypes
+from django.contrib.auth import logout
+from django.utils import timezone
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
 class LoginResponseSerializer(serializers.Serializer):
     auth_url = serializers.URLField(help_text="URL d'authentification Auth0")
+
+class LogoutResponseSerializer(serializers.Serializer):
+    logout_url = serializers.URLField(help_text="URL de déconnexion Auth0")
 
 class ErrorResponseSerializer(serializers.Serializer):
     error = serializers.CharField(help_text="Message d'erreur")
@@ -32,8 +38,11 @@ class TokenResponseSerializer(serializers.Serializer):
     id_token = serializers.CharField(help_text="Token d'identité JWT", required=False)
     expires_in = serializers.IntegerField(help_text="Temps d'expiration en secondes")
 
+class RefreshTokenRequestSerializer(serializers.Serializer):
+    refresh_token = serializers.CharField(required=True, help_text="Le refresh token obtenu lors du login.")
+
 @extend_schema(
-    tags=["Authentication"],
+    tags=["Authentication - Auth0 Flow"],
     summary="Générer l'URL de connexion Auth0",
     description="Crée une URL pour rediriger l'utilisateur vers la page de connexion Auth0",
     responses={
@@ -61,6 +70,21 @@ def auth0_login(request):
         return JsonResponse({'error': 'Authentication service unavailable'}, 
                           status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
+@extend_schema(
+    tags=["Authentication - Auth0 Flow"],
+    summary="Gérer le callback Auth0",
+    description="Reçoit le code d'autorisation d'Auth0 et l'échange contre des tokens (access token, id token). Ne pas appeler directement, c'est une redirection.",
+    parameters=[
+        OpenApiParameter(name='code', description='Code d\'autorisation fourni par Auth0.', required=True, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+        OpenApiParameter(name='state', description='Valeur state optionnelle si utilisée lors de la redirection initiale.', required=False, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY)
+    ],
+    responses={
+        200: TokenResponseSerializer,
+        400: ErrorResponseSerializer,
+        401: ErrorResponseSerializer, 
+        500: ErrorResponseSerializer
+    }
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def auth0_callback(request):
@@ -85,8 +109,8 @@ def auth0_callback(request):
             data=token_payload,
             timeout=10
         )
-        
         if token_response.status_code != 200:
+            logger.error(f"Auth0 token exchange failed: {token_response.status_code} - {token_response.text}")
             return JsonResponse({'error': 'Failed to obtain token'}, 
                              status=status.HTTP_401_UNAUTHORIZED)
 
@@ -102,6 +126,16 @@ def auth0_callback(request):
         return JsonResponse({'error': 'Authentication failed'}, 
                          status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@extend_schema(
+    tags=["Authentication - Auth0 Flow"],
+    summary="Gérer la déconnexion Auth0",
+    description="Génère l'URL pour déconnecter l'utilisateur d'Auth0 et le rediriger vers l'application frontend.",
+    request=None, # Pas de corps de requête
+    responses={
+        200: LogoutResponseSerializer,
+        500: ErrorResponseSerializer
+    }
+)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def auth0_logout(request):
@@ -119,6 +153,19 @@ def auth0_logout(request):
         return JsonResponse({'error': 'Logout failed'}, 
                           status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@extend_schema(
+    tags=["User Profile"],
+    summary="Obtenir ou mettre à jour le profil de l'utilisateur authentifié",
+    description="GET: Retourne les informations de l'utilisateur actuellement authentifié.\nPATCH: Met à jour les informations de l'utilisateur actuellement authentifié.",
+    responses={
+        200: UserSerializer, # UserSerializer est utilisé pour la réponse GET et PATCH réussie
+        400: ErrorResponseSerializer, # Pour les erreurs de validation du PATCH
+        500: ErrorResponseSerializer
+    },
+    request={ # Spécifier le corps de la requête pour PATCH
+        'application/json': ProfileUpdateSerializer,
+    }
+)
 @api_view(['GET', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def get_me(request):
@@ -509,6 +556,183 @@ def update_profile_picture(request):
             {'error': f'Failed to update profile picture: {str(e)}'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )  
+
+@extend_schema(
+    tags=["User Account"],
+    summary="Delete user account",
+    description="Delete the authenticated user's account. By default, the account will be scheduled for deletion after 30 days.",
+    request=inline_serializer(
+        name="DeleteAccountRequest", 
+        fields={
+            "deletion_type": serializers.ChoiceField(
+                choices=["temporary", "permanent"], 
+                help_text="Whether to delete the account immediately or after 30 days"
+            ),
+            "anonymize": serializers.BooleanField(
+                help_text="Whether to anonymize personal data (GDPR compliance)", 
+                default=True
+            ),
+        }
+    ),
+    responses={
+        200: inline_serializer(
+            name="DeleteAccountResponse",
+            fields={
+                "success": serializers.BooleanField(),
+                "message": serializers.CharField(),
+                "deletion_type": serializers.CharField(),
+                "scheduled_at": serializers.DateTimeField(required=False),
+                "deletion_date": serializers.DateTimeField(required=False),
+                "days_remaining": serializers.IntegerField(required=False),
+            }
+        ),
+        500: ErrorResponseSerializer
+    }
+)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def delete_account(request):
+    """
+    Delete the authenticated user's account with option for immediate or delayed deletion.
+    """
+    try:
+        user = request.user
+        logger.info(f"Account deletion requested by user: {user.email}")
+        
+        # Get deletion preferences
+        deletion_type = request.data.get('deletion_type', 'temporary')
+        anonymize = request.data.get('anonymize', True)
+        immediate = deletion_type == 'permanent'
+        
+        # Process the deletion based on type
+        if immediate:
+            # Execute immediate account deletion with anonymization
+            user.delete_user_account(anonymize=anonymize, immediate=True)
+            
+            # Logout the user from the current session
+            logout(request)
+            
+            return Response({
+                'success': True,
+                'message': 'Your account has been permanently deleted.',
+                'deletion_type': 'permanent'
+            })
+        else:
+            # Schedule the account for deletion after 30 days
+            result = user.delete_user_account(anonymize=anonymize, immediate=False)
+            
+            # Logout the user from the current session
+            logout(request)
+            
+            # Format dates for response
+            scheduled_at = result['scheduled_at'].isoformat() if result['scheduled_at'] else None
+            deletion_date = result['deletion_date'].isoformat() if result['deletion_date'] else None
+            
+            # Calculate days remaining
+            days_remaining = user.days_until_deletion()
+            
+            return Response({
+                'success': True,
+                'message': 'Your account has been scheduled for deletion. It will be permanently deleted in 30 days.',
+                'deletion_type': 'temporary',
+                'scheduled_at': scheduled_at,
+                'deletion_date': deletion_date,
+                'days_remaining': days_remaining
+            })
+        
+    except Exception as e:
+        logger.exception(f"Account deletion failed: {str(e)}")
+        
+        # Fallback approach - try to deactivate the account directly
+        try:
+            user.is_active = False
+            user.save()
+            logger.info(f"Fallback: Successfully deactivated user {user.email}")
+            
+            # Try to set deletion flags directly without update_fields
+            user.is_pending_deletion = True
+            user.deletion_scheduled_at = timezone.now()
+            user.deletion_date = timezone.now() + datetime.timedelta(days=30)
+            user.save()
+            
+            return Response(
+                {
+                    'success': True,
+                    'message': 'Your account has been scheduled for deletion using fallback method.',
+                    'deletion_type': 'temporary',
+                    'scheduled_at': user.deletion_scheduled_at.isoformat() if user.deletion_scheduled_at else None,
+                    'deletion_date': user.deletion_date.isoformat() if user.deletion_date else None,
+                },
+                status=status.HTTP_200_OK
+            )
+        except Exception as fallback_error:
+            logger.exception(f"Account deletion fallback also failed: {str(fallback_error)}")
+            return Response(
+                {
+                    'success': False,
+                    'error': 'Failed to delete account',
+                    'message': str(e),
+                    'fallback_error': str(fallback_error)
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+@extend_schema(
+    tags=["User Account"],
+    summary="Cancel account deletion",
+    description="Cancel a scheduled account deletion and reactivate the account.",
+    responses={
+        200: inline_serializer(
+            name="CancelDeletionResponse",
+            fields={
+                "success": serializers.BooleanField(),
+                "message": serializers.CharField(),
+            }
+        ),
+        400: inline_serializer(
+            name="CancelDeletionError",
+            fields={
+                "success": serializers.BooleanField(),
+                "message": serializers.CharField(),
+            }
+        ),
+        500: ErrorResponseSerializer
+    }
+)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def cancel_account_deletion(request):
+    """
+    Cancel a scheduled account deletion and reactivate the account.
+    """
+    try:
+        user = request.user
+        logger.info(f"Account deletion cancellation requested by user: {user.email}")
+        
+        if not user.is_pending_deletion:
+            return Response({
+                'success': False,
+                'message': 'Your account is not scheduled for deletion.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Cancel the scheduled deletion
+        user.cancel_account_deletion()
+        
+        return Response({
+            'success': True,
+            'message': 'Account deletion has been cancelled. Your account is now active again.'
+        })
+        
+    except Exception as e:
+        logger.exception(f"Cancelling account deletion failed: {str(e)}")
+        return Response(
+            {
+                'success': False,
+                'error': 'Failed to cancel account deletion',
+                'message': str(e)
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
