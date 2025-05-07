@@ -11,8 +11,8 @@ from django.db import transaction
 import pandas as pd
 import logging
 
-from revision.models import RevisionSession, VocabularyWord, VocabularyList, Flashcard
-from revision.serializers import RevisionSessionSerializer, VocabularyWordSerializer, VocabularyListSerializer
+from apps.revision.models import RevisionSession, VocabularyWord, VocabularyList, Flashcard
+from apps.revision.serializers import RevisionSessionSerializer, VocabularyWordSerializer, VocabularyListSerializer
 
 logger = logging.getLogger(__name__)
 

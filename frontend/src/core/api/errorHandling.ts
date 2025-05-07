@@ -317,9 +317,134 @@ export async function waitForNetwork(
   });
 }
 
+/**
+ * Configuration pour le mécanisme de nouvelle tentative
+ */
+export interface RetryConfig {
+  maxRetries: number;        // Nombre maximum de tentatives
+  initialDelayMs: number;    // Délai initial avant la première nouvelle tentative
+  maxDelayMs: number;        // Délai maximum entre les tentatives
+  backoffFactor: number;     // Facteur multiplicatif pour l'augmentation du délai (backoff exponentiel)
+  retryStatusCodes: number[]; // Codes de statut HTTP pour lesquels une nouvelle tentative sera effectuée
+  retryNetworkErrors: boolean; // Réessayer en cas d'erreurs réseau
+  onRetry?: (error: any, retryCount: number, delayMs: number) => void; // Callback appelé avant chaque nouvelle tentative
+}
+
+/**
+ * Configuration par défaut pour les nouvelles tentatives
+ */
+export const DEFAULT_RETRY_CONFIG: RetryConfig = {
+  maxRetries: 3,
+  initialDelayMs: 1000, // 1 seconde
+  maxDelayMs: 10000,    // 10 secondes
+  backoffFactor: 2,     // Délai doublé à chaque tentative
+  retryStatusCodes: [408, 429, 500, 502, 503, 504], // Codes de statut à réessayer
+  retryNetworkErrors: true, // Réessayer les erreurs réseau par défaut
+};
+
+/**
+ * Fonction utilitaire pour attendre un délai spécifié
+ */
+const delay = (ms: number): Promise<void> => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+/**
+ * Vérifier si l'erreur est une erreur réseau
+ */
+const isNetworkError = (error: any): boolean => {
+  return !error.response && error.request && navigator.onLine;
+};
+
+/**
+ * Vérifier si l'erreur est retryable selon la configuration
+ */
+const isRetryableError = (error: any, config: RetryConfig): boolean => {
+  // Erreur réseau et configuration pour réessayer les erreurs réseau
+  if (isNetworkError(error) && config.retryNetworkErrors) {
+    return true;
+  }
+  
+  // Vérifier si le code de statut est dans la liste des codes retryables
+  const statusCode = error.response?.status;
+  if (statusCode && config.retryStatusCodes.includes(statusCode)) {
+    return true;
+  }
+  
+  return false;
+};
+
+/**
+ * Calculer le délai pour la prochaine tentative avec backoff exponentiel
+ */
+const calculateBackoff = (retryCount: number, config: RetryConfig): number => {
+  // Backoff exponentiel avec jitter pour éviter les pics de requêtes
+  const exponentialDelay = config.initialDelayMs * Math.pow(config.backoffFactor, retryCount);
+  const jitter = Math.random() * 0.3 + 0.85; // Jitter entre 0.85 et 1.15
+  return Math.min(exponentialDelay * jitter, config.maxDelayMs);
+};
+
+/**
+ * Fonction pour réessayer une fonction asynchrone avec backoff exponentiel
+ * @param fn Fonction asynchrone à exécuter
+ * @param retryConfig Configuration des tentatives
+ * @returns Résultat de la fonction ou rejette une erreur
+ */
+export async function withRetry<T>(
+  fn: () => Promise<T>,
+  retryConfig: Partial<RetryConfig> = {}
+): Promise<T> {
+  // Fusionner avec la configuration par défaut
+  const config: RetryConfig = {
+    ...DEFAULT_RETRY_CONFIG,
+    ...retryConfig
+  };
+  
+  let lastError: any;
+  
+  for (let retryCount = 0; retryCount <= config.maxRetries; retryCount++) {
+    try {
+      // Premier essai ou tentative suivante
+      if (retryCount > 0) {
+        const delayMs = calculateBackoff(retryCount - 1, config);
+        
+        // Appeler le callback onRetry si défini
+        if (config.onRetry) {
+          config.onRetry(lastError, retryCount, delayMs);
+        }
+        
+        // Attendre avant de réessayer
+        await delay(delayMs);
+      }
+      
+      // Exécuter la fonction
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      
+      // Si c'est la dernière tentative ou l'erreur n'est pas retriable, lever l'erreur
+      if (retryCount >= config.maxRetries || !isRetryableError(error, config)) {
+        throw error;
+      }
+      
+      // Si nous sommes hors ligne, attendre que le réseau soit rétabli
+      if (!navigator.onLine) {
+        const networkRestored = await waitForNetwork(30000, 1000);
+        if (!networkRestored) {
+          throw new Error('Impossible de récupérer la connexion réseau après plusieurs tentatives.');
+        }
+      }
+    }
+  }
+  
+  // Ceci ne devrait jamais être atteint, mais TypeScript l'exige
+  throw lastError;
+}
+
 export default { 
   handleApiError,
   useIsOnline,
   waitForNetwork,
+  withRetry,
   ErrorType
 };

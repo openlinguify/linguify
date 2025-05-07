@@ -11,6 +11,19 @@
     "noNewNotifications": "Aucune nouvelle notification",
     "checkBackLater": "Vérifiez plus tard pour les mises à jour"
   },
+  "notification": {
+    "continueLesson": "Continuer l'apprentissage",
+    "inUnit": "Dans l'unité",
+    "progress": "Progression",
+    "resume": "Reprendre",
+    "dismiss": "Ignorer",
+    "recentLessons": "Leçons récentes",
+    "view": "Voir",
+    "completed": "Terminé",
+    "timeSpent": "Temps passé",
+    "moreRecent": "Voir toutes les récentes",
+    "noRecent": "Aucune leçon récente"
+  },
   "welcome": "Bienvenue, {name} !",
   "targetLanguage": "Langue cible",
   "learningCard": {

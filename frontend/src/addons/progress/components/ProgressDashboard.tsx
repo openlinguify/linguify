@@ -340,6 +340,7 @@ const ProgressDashboard: React.FC = () => {
 
   const { 
     total_units, 
+    tracked_units,
     completed_units, 
     total_lessons, 
     completed_lessons,
@@ -347,6 +348,7 @@ const ProgressDashboard: React.FC = () => {
     xp_earned
   } = summary.summary;
 
+  // Calculate unit completion percentage using total_units (not tracked_units)
   const unitCompletionPercentage = total_units > 0 
     ? Math.round((completed_units / total_units) * 100) 
     : 0;

@@ -117,6 +117,30 @@ const MultipleChoice = ({
               0,
               0
             );
+            
+            // Create a basic direct tracking of lesson access for notification purposes
+            // This ensures we track this specific access independently of progress updates
+            try {
+              // Store a basic record directly in localStorage with normalized content type
+              const lessonData = {
+                id: contentLessonId,
+                title: `Multiple Choice Quiz`,
+                contentType: "multiple choice", // Using exact normalized format
+                lastAccessed: new Date().toISOString(),
+                unitId: unitId ? parseInt(unitId) : undefined,
+                completionPercentage: 1,
+                // Add routing specific information
+                language: targetLang,
+                parentLessonId: unitId ? parseInt(unitId) : undefined,
+                contentId: contentLessonId,
+                routeType: 'content'
+              };
+              
+              localStorage.setItem('last_accessed_lesson', JSON.stringify(lessonData));
+              console.log(`MultipleChoice: Direct tracking of lesson access:`, lessonData);
+            } catch (trackErr) {
+              console.error("Error directly tracking multiple choice access:", trackErr);
+            }
           } catch (err) {
             console.error("Error initializing quiz progress:", err);
           }

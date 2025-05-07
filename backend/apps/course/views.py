@@ -48,7 +48,7 @@ from .serializers import (
     SpeakingExerciseSerializer
 )
 from .filters import LessonFilter, VocabularyListFilter
-from authentication.models import User
+from apps.authentication.models import User
 import random
 import django_filters
 from django.db import models
@@ -281,7 +281,25 @@ class VocabularyListAPIView(APIView):
     ordering_fields = ['word_en', 'word_fr', 'word_es', 'word_nl']
 
     def get_queryset(self):
-        return VocabularyList.objects.all()
+        queryset = VocabularyList.objects.all()
+        
+        # Apply content_lesson filter directly here for better performance
+        content_lesson = self.request.query_params.get('content_lesson')
+        if content_lesson:
+            queryset = queryset.filter(content_lesson=content_lesson)
+            
+        # Filter by word if requested
+        word_filter = self.request.query_params.get('word')
+        if word_filter:
+            # Query across all languages
+            queryset = queryset.filter(
+                models.Q(word_en__icontains=word_filter) |
+                models.Q(word_fr__icontains=word_filter) |
+                models.Q(word_es__icontains=word_filter) |
+                models.Q(word_nl__icontains=word_filter)
+            )
+        
+        return queryset
 
     def filter_queryset(self, queryset):
         for backend in self.filter_backends:
@@ -302,19 +320,50 @@ class VocabularyListAPIView(APIView):
         return context
 
     def get(self, request):
+        # Start with the base queryset
         queryset = self.get_queryset()
+        
+        # Apply filters
         filtered_queryset = self.filter_queryset(queryset)
         
+        # Apply pagination
+        page_size = request.query_params.get('page_size', 100)
+        try:
+            page_size = int(page_size)
+            # Limit page size for performance reasons
+            page_size = min(max(page_size, 10), 200)
+        except (ValueError, TypeError):
+            page_size = 100
+            
         paginator = self.pagination_class()
+        paginator.page_size = page_size
+        
         page = paginator.paginate_queryset(filtered_queryset, request)
         
+        # Get the total count for statistics
+        total_count = filtered_queryset.count()
+        
+        # Serialize the data
         serializer = self.serializer_class(
             page, 
             many=True, 
             context=self.get_serializer_context()
         )
         
-        return paginator.get_paginated_response(serializer.data)
+        # Get the paginated response
+        response = paginator.get_paginated_response(serializer.data)
+        
+        # Add extra metadata
+        response.data['meta'] = {
+            'total_count': total_count,
+            'page_size': page_size,
+            'filters_applied': {
+                'content_lesson': request.query_params.get('content_lesson'),
+                'word': request.query_params.get('word')
+            }
+        }
+        
+        return response
 
 class NumbersViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]

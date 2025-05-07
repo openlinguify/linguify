@@ -6,9 +6,13 @@ from .views import (
     UserLessonProgressViewSet,
     UserUnitProgressViewSet,
     ContentLessonProgressViewSet,
-    UserProgressSummaryView
+    UserProgressSummaryView,
+    InitializeProgressView,
+    BatchProgressUpdateView,
+    BatchProgressStatusView,
+    reset_all_progress,
+    reset_progress_by_language
 )
-from .views import InitializeProgressView
 
 app_name = 'progress'
 
@@ -21,4 +25,12 @@ urlpatterns = [
     path('', include(router.urls)),
     path('summary/', UserProgressSummaryView.as_view(), name='progress-summary'),
     path('initialize/', InitializeProgressView.as_view(), name='initialize-progress'),
+    
+    # Batch progress endpoints
+    path('batch/update/', BatchProgressUpdateView.as_view(), name='batch-progress-update'),
+    path('batch/status/', BatchProgressStatusView.as_view(), name='batch-progress-status'),
+    
+    # Reset progress endpoints
+    path('reset/', reset_all_progress, name='reset-all-progress'),
+    path('reset_by_language/', reset_progress_by_language, name='reset-progress-by-language'),
 ]

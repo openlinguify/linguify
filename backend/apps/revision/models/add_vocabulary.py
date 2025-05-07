@@ -7,6 +7,9 @@ class CreateRevisionList(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        app_label = 'revision'
 
 class AddField(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -15,7 +18,10 @@ class AddField(models.Model):
     field_2 = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     last_reviewed = models.DateTimeField(null=True, blank=True)
-
+    
+    class Meta:
+        app_label = 'revision'
+        
     def __str__(self):
         return f"{self.user} -> {self.field_1} -> {self.field_2}"
 

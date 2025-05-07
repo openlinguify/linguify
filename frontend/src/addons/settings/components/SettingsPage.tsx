@@ -33,7 +33,10 @@ import {
 } from "lucide-react";
 import { useAuthContext } from "@/core/auth/AuthProvider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { DeleteAccountDialog } from "./DeleteAccountDialog";
+import { ResetProgressDialog } from "./ResetProgressDialog";
 import apiClient from '@/core/api/apiClient';
+import progressAPI from '@/addons/progress/api/progressAPI';
 
 import { 
   LANGUAGE_OPTIONS, 
@@ -59,6 +62,7 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_USER_SETTINGS);
@@ -468,37 +472,130 @@ export default function SettingsPage() {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    // Show confirmation dialog
-    const confirmed = window.confirm(
-      "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently lost."
-    );
-    
-    if (!confirmed) return;
-    
+  const handleDeleteAccountTemporary = async () => {
     try {
       setIsDeleting(true);
       
-      // Implement account deletion when backend is ready
-      // For now, just log the user out
-      
-      toast({
-        title: "Account Deletion",
-        description: "Account deletion request received. You will be logged out now.",
+      // Call the account deletion API endpoint with temporary deletion
+      const response = await apiClient.post('/api/auth/delete-account/', {
+        deletion_type: 'temporary',
+        anonymize: true // GDPR-compliant anonymization
       });
       
-      setTimeout(() => {
+      if (response.data.success) {
+        toast({
+          title: "Account Scheduled for Deletion",
+          description: "Your account has been deactivated and will be permanently deleted in 30 days.",
+        });
+        
+        // Store deletion info in localStorage for the confirmation page
+        localStorage.setItem('account_deletion_type', 'temporary');
+        if (response.data.deletion_date) {
+          localStorage.setItem('account_deletion_date', response.data.deletion_date);
+        }
+        if (response.data.days_remaining !== undefined) {
+          localStorage.setItem('account_deletion_days_remaining', 
+                              response.data.days_remaining.toString());
+        }
+        
+        // Log the user out and redirect to confirmation page
         logout();
-        router.push('/');
-      }, 2000);
+        router.push('/account-deleted?type=temporary');
+      } else {
+        throw new Error(response.data.message || "Failed to schedule account deletion");
+      }
+    } catch (error) {
+      console.error('Error scheduling account deletion:', error);
+      toast({
+        title: "Account Deactivation Failed",
+        description: error instanceof Error ? error.message : "There was an error deactivating your account.",
+        variant: "destructive",
+      });
+      setIsDeleting(false);
+    }
+  };
+  
+  const handleDeleteAccountPermanent = async () => {
+    try {
+      setIsDeleting(true);
+      
+      // Call the account deletion API endpoint with permanent deletion
+      const response = await apiClient.post('/api/auth/delete-account/', {
+        deletion_type: 'permanent',
+        anonymize: true // GDPR-compliant anonymization
+      });
+      
+      if (response.data.success) {
+        toast({
+          title: "Account Deleted",
+          description: "Your account has been permanently deleted.",
+        });
+        
+        // Store deletion type in localStorage for the confirmation page
+        localStorage.setItem('account_deletion_type', 'permanent');
+        
+        // Log the user out and redirect to confirmation page
+        logout();
+        router.push('/account-deleted?type=permanent');
+      } else {
+        throw new Error(response.data.message || "Failed to delete account");
+      }
     } catch (error) {
       console.error('Error deleting account:', error);
       toast({
         title: "Account Deletion Failed",
-        description: "There was an error deleting your account.",
+        description: error instanceof Error ? error.message : "There was an error deleting your account.",
         variant: "destructive",
       });
       setIsDeleting(false);
+    }
+  };
+  
+  const handleResetProgress = async () => {
+    try {
+      setIsResetting(true);
+      
+      // Récupérer la langue cible actuelle
+      const targetLanguage = formData.target_language;
+      console.log(`Réinitialisation de la progression pour la langue: ${targetLanguage}`);
+      
+      // Appeler l'API de réinitialisation de la progression avec la langue cible
+      const success = await progressAPI.resetAllProgress(targetLanguage);
+      
+      if (success) {
+        // Forcer un nettoyage complet du cache local
+        Object.keys(localStorage).forEach(key => {
+          if (key.includes('progress') || key.includes('Progress') || 
+              key.includes('cache') || key.includes('Cache')) {
+            localStorage.removeItem(key);
+          }
+        });
+        
+        // Vider explicitement le cache de l'API
+        progressAPI.clearCache();
+        
+        // Message de succès
+        toast({
+          title: "Progression réinitialisée",
+          description: `Votre progression pour la langue ${targetLanguage} a été réinitialisée avec succès. La page va être rechargée.`,
+        });
+        
+        // Attendre que le toast soit affiché puis recharger la page
+        setTimeout(() => {
+          // Forcer un hard reload pour s'assurer que tout est rechargé
+          window.location.href = "/settings?reset=true";
+        }, 1500);
+      } else {
+        throw new Error("Échec de la réinitialisation de la progression");
+      }
+    } catch (error) {
+      console.error('Erreur lors de la réinitialisation de la progression:', error);
+      toast({
+        title: "Échec de la réinitialisation",
+        description: error instanceof Error ? error.message : "Une erreur s'est produite lors de la réinitialisation de votre progression.",
+        variant: "destructive",
+      });
+      setIsResetting(false);
     }
   };
 
@@ -1638,13 +1735,14 @@ export default function SettingsPage() {
                 </div>
                 
                 <div className="pb-4 border-b">
-                  <h3 className="text-lg font-medium mb-2">Reset Progress</h3>
+                  <h3 className="text-lg font-medium mb-2">Reset Learning Progress</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    This will reset all your learning progress and statistics
+                    This will reset all your progress in the Learning app (courses and lessons)
                   </p>
-                  <Button variant="outline" className="text-red-500">
-                    Reset Progress
-                  </Button>
+                  <ResetProgressDialog 
+                    onConfirmReset={handleResetProgress}
+                    isResetting={isResetting}
+                  />
                 </div>
                 
                 <div>
@@ -1652,20 +1750,11 @@ export default function SettingsPage() {
                   <p className="text-sm text-muted-foreground mb-4">
                     Once you delete your account, there is no going back. This action cannot be undone.
                   </p>
-                  <Button 
-                    variant="destructive"
-                    onClick={handleDeleteAccount}
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Deleting...
-                      </>
-                    ) : (
-                      <>Delete Account</>
-                    )}
-                  </Button>
+                  <DeleteAccountDialog
+                    onConfirmTemporary={handleDeleteAccountTemporary}
+                    onConfirmPermanent={handleDeleteAccountPermanent}
+                    isDeleting={isDeleting}
+                  />
                 </div>
               </CardContent>
             </Card>

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_filters',
     'channels',
+    'drf_spectacular',
 
     # Project django_apps
     'apps.authentication',
@@ -66,6 +67,7 @@ INSTALLED_APPS = [
     'apps.notebook',
     # 'apps.task',
     'apps.progress',
+    'apps.notification',
     #'subscription',
     #'app_manager', # 'app_manager', # TODO: Uncomment when app_manager is ready
     
@@ -80,17 +82,20 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'authentication.User'
 
+# App config declarations in individual apps
+
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'django.contrib.auth.backends.RemoteUserBackend',
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'authentication.auth0_auth.Auth0Authentication',
+        'apps.authentication.auth0_auth.Auth0Authentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -137,9 +142,9 @@ AUTH0_ALGORITHM = 'RS256'
 
 JWT_AUTH = {
     'JWT_PAYLOAD_GET_USERNAME_HANDLER':
-        'authentication.utils.jwt_get_username_from_payload_handler',
+        'apps.authentication.utils.jwt_get_username_from_payload_handler',
     'JWT_DECODE_HANDLER':
-        'authentication.utils.jwt_decode_token',
+        'apps.authentication.utils.jwt_decode_token',
     'JWT_ALGORITHM': 'RS256',
     'JWT_AUDIENCE': AUTH0_AUDIENCE,
     'JWT_ISSUER': f'https://{AUTH0_DOMAIN}/',
@@ -195,7 +200,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'authentication.middleware.JWTMiddleware',
+    'apps.authentication.middleware.JWTMiddleware',
 ]
 
 CORS_ALLOW_METHODS = [
@@ -235,6 +240,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR.joinpath('templates'),
+            BASE_DIR.joinpath('apps/authentication/templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -294,6 +300,7 @@ TIME_ZONE = 'UTC'
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = []
 
 # Default primary key field type
@@ -311,7 +318,12 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+            # Use Redis from Docker Compose by default in development
+            # or use environment variable for production
+            "hosts": [(
+                os.environ.get('REDIS_HOST', 'redis'), 
+                int(os.environ.get('REDIS_PORT', 6379))
+            )],
         },
     },
 }
@@ -326,7 +338,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'authentication': {
+        'apps.authentication': {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
@@ -343,3 +355,94 @@ EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+
+def generate_api_schema_tags():
+    """
+    Génère la structure des tags pour l'API schema basée sur les applications installées
+    et ajoute les endpoints spécifiques pour chaque application.
+    """
+    tags = []
+    
+    # Mappage entre les applications et leurs endpoints associés
+    app_endpoints = {
+        'authentication': [
+            {'name': 'Auth: User Profile', 'description': 'User profile management endpoints'},
+            {'name': 'Auth: User Settings', 'description': 'User settings and preferences'},
+        ],
+        'course': [
+            {'name': 'Lessons', 'description': 'Lesson endpoints for course content'},
+            {'name': 'Content', 'description': 'Learning content and materials'},
+        ],
+        'data': [],
+        'revision': [
+            {'name': 'Flashcards', 'description': 'Flashcard creation and management'},
+            {'name': 'Decks', 'description': 'Flashcard deck organization'},
+        ],
+        'notebook': [
+            {'name': 'Notes', 'description': 'Note creation and management'},
+            {'name': 'Categories', 'description': 'Note categorization'},
+        ],
+        'progress': [
+            {'name': 'Statistics', 'description': 'Learning statistics and analytics'},
+        ],
+    }
+    
+    # Descriptions par défaut pour les applications
+    app_descriptions = {
+        'authentication': 'Authentication management and functionality',
+        'course': 'Course management and functionality',
+        'data': 'Data management and functionality',
+        'revision': 'Revision management and functionality',
+        'notebook': 'Notebook management and functionality',
+        'progress': 'User learning progress tracking',
+    }
+    
+    # Parcourir les applications installées
+    for app in INSTALLED_APPS:
+        if app.startswith('apps.'):
+            app_name = app.replace('apps.', '')
+            
+            # Vérifier si cette application est dans notre mappage
+            if app_name in app_endpoints:
+                # Ajouter le tag principal pour l'application
+                app_display_name = app_name.capitalize()
+                tags.append({
+                    'name': app_display_name,
+                    'description': app_descriptions.get(app_name, f"{app_display_name} management and functionality")
+                })
+                
+                # Ajouter les endpoints associés à cette application
+                tags.extend(app_endpoints[app_name])
+    
+    return tags
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Linguify API',
+    'DESCRIPTION': 'API documentation for Linguify',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'CONTACT': {
+        'name': 'Linguify Support', 
+        'email': 'dev@linguify.com',
+        'url': 'https://linguify.com/support',
+    },
+    'LICENSE': {
+        'name': 'LGPLv3',
+        'url': 'https://www.gnu.org/licenses/lgpl-3.0.html',
+    },
+    # Interface Swagger personnalisée
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+        'displayOperationId': False,
+    },
+    
+    # Organiser les endpoints par tags
+    'TAGS': generate_api_schema_tags(),
+    
+    # Performance and organization settings
+    'COMPONENT_SPLIT_REQUEST': True,
+    'COMPONENT_SPLIT_RESPONSE': True,
+    'SCHEMA_PATH_PREFIX': r'/api/v[0-9]',
+    'SCHEMA_PATH_PREFIX_TRIM': True,
+}

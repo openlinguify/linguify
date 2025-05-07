@@ -1,5 +1,5 @@
 from django.db import models
-from authentication.models import User
+from apps.authentication.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 from decimal import Decimal
