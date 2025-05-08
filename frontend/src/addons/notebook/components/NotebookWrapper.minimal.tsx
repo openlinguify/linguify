@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -44,11 +44,23 @@ export default function NotebookWrapper() {
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   
+  // Référence pour la sauvegarde automatique
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSavedNoteRef = useRef<string>('');
+  const editorRef = useRef<any>(null);
+  
   // State for UI elements
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // États pour les filtres avancés
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [filterLanguage, setFilterLanguage] = useState<string | undefined>(undefined);
+  const [filterNoteType, setFilterNoteType] = useState<string | undefined>(undefined);
+  const [filterShowArchived, setFilterShowArchived] = useState<boolean>(false);
   
   // New note state
   const [newNote, setNewNote] = useState({
@@ -120,24 +132,64 @@ export default function NotebookWrapper() {
     }
   };
 
-  // Search handler
+  // Gestionnaire de recherche avancé avec filtres
   useEffect(() => {
     const searchNotes = async () => {
-      if (searchTerm.trim()) {
-        try {
-          const searchResults = await notebookAPI.searchNotes(searchTerm);
-          setNotes(searchResults);
-        } catch (error) {
-          console.error("Search failed:", error);
+      // Réinitialiser le filtre de catégorie lors d'une recherche
+      if (searchTerm.trim() && selectedCategory) {
+        setSelectedCategory(undefined);
+      }
+      
+      try {
+        // Afficher un indicateur de chargement
+        setIsLoading(true);
+        
+        // Si nous avons un terme de recherche ou des filtres actifs
+        if (searchTerm.trim() || filterLanguage || filterNoteType || filterShowArchived) {
+          // Options de recherche avancées
+          const searchOptions = {
+            noteType: filterNoteType || (activeFilter !== 'all' ? activeFilter : undefined),
+            language: filterLanguage,
+            isArchived: filterShowArchived
+          };
+          
+          // Effectuer la recherche avec les options
+          const searchResults = await notebookAPI.searchNotes(searchTerm, searchOptions);
+          
+          // Tri des résultats par pertinence
+          const sortedResults = [...searchResults].sort((a, b) => {
+            // Les notes épinglées apparaissent en premier
+            if (a.is_pinned && !b.is_pinned) return -1;
+            if (!a.is_pinned && b.is_pinned) return 1;
+            
+            // Pertinence du titre pour le terme de recherche (si présent)
+            if (searchTerm.trim()) {
+              const titleExactA = a.title.toLowerCase().includes(searchTerm.toLowerCase());
+              const titleExactB = b.title.toLowerCase().includes(searchTerm.toLowerCase());
+              if (titleExactA && !titleExactB) return -1;
+              if (!titleExactA && titleExactB) return 1;
+            }
+            
+            // Enfin, trier par date de mise à jour
+            return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+          });
+          
+          setNotes(sortedResults);
+        } else {
+          // Si aucun filtre actif, charger toutes les notes
+          refreshData();
         }
-      } else {
-        refreshData();
+      } catch (error) {
+        console.error("Search failed:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
+    // Debounce pour éviter trop de requêtes pendant la frappe
     const debounce = setTimeout(searchNotes, 300);
     return () => clearTimeout(debounce);
-  }, [searchTerm]);
+  }, [searchTerm, activeFilter, filterLanguage, filterNoteType, filterShowArchived]);
 
   // Category selection handler
   const handleCategorySelect = async (categoryId: number) => {
@@ -184,14 +236,69 @@ export default function NotebookWrapper() {
     }
   };
 
+  // Initiate auto-save for current note
+  const setupAutoSave = useCallback(() => {
+    // Clear any existing timer
+    if (autoSaveTimerRef.current) {
+      clearInterval(autoSaveTimerRef.current);
+    }
+    
+    // Set up new auto-save timer - save every 30 seconds
+    autoSaveTimerRef.current = setInterval(() => {
+      if (selectedNote && editorRef.current && !isSaving) {
+        const currentNote = editorRef.current.getNote();
+        // Convert to string for comparison
+        const noteStr = JSON.stringify(currentNote);
+        
+        // Only save if content has changed
+        if (noteStr !== lastSavedNoteRef.current) {
+          console.log('Auto-saving note...');
+          handleSaveNote(currentNote, true);
+          lastSavedNoteRef.current = noteStr;
+        }
+      }
+    }, 30000); // 30 seconds
+    
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+      }
+    };
+  }, [selectedNote, isSaving]);
+  
+  // Set up auto-save when note changes
+  useEffect(() => {
+    const cleanup = setupAutoSave();
+    return cleanup;
+  }, [selectedNote, setupAutoSave]);
+  
   // Handle saving note
-  const handleSaveNote = async (noteData: Partial<Note>) => {
+  const handleSaveNote = async (noteData: Partial<Note>, isAutoSave = false) => {
     if (selectedNote) {
+      if (!isAutoSave) setIsSaving(true);
       try {
         await notebookAPI.updateNote(selectedNote.id, noteData);
-        refreshData();
+        if (!isAutoSave) {
+          refreshData();
+          // Add visual feedback
+          const saveIndicator = document.createElement('div');
+          saveIndicator.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50 animate-fade-out';
+          saveIndicator.textContent = 'Note saved';
+          document.body.appendChild(saveIndicator);
+          
+          // Remove after 2 seconds
+          setTimeout(() => {
+            document.body.removeChild(saveIndicator);
+          }, 2000);
+        }
       } catch (error) {
         console.error("Failed to update note:", error);
+        if (!isAutoSave) {
+          // Show error notification
+          alert("Failed to save note. Please try again.");
+        }
+      } finally {
+        if (!isAutoSave) setIsSaving(false);
       }
     }
   };
@@ -220,18 +327,111 @@ export default function NotebookWrapper() {
           </h1>
         </div>
         
-        <div className="relative flex-1 max-w-md mx-4">
-          <Search
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-            size={18}
-          />
-          <Input
-            type="text"
-            placeholder="Search notes..."
-            className="pl-10 w-full border-gray-200 dark:border-gray-700 focus-within:ring-indigo-500 focus-within:border-indigo-500"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="flex flex-col md:flex-row gap-2 relative flex-1 max-w-md mx-4">
+          <div className="relative flex-1">
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={18}
+            />
+            <Input
+              type="text"
+              placeholder="Search notes..."
+              className="pl-10 w-full border-gray-200 dark:border-gray-700 focus-within:ring-indigo-500 focus-within:border-indigo-500"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          
+          {/* Bouton pour afficher/masquer les filtres avancés */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            className="whitespace-nowrap"
+          >
+            {showAdvancedFilters ? "Hide Filters" : "Filters"}
+          </Button>
+          
+          {/* Panneau de filtres avancés */}
+          {showAdvancedFilters && (
+            <div className="absolute top-full left-0 right-0 mt-2 p-4 bg-white dark:bg-gray-800 border rounded-lg shadow-lg z-10">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Language</label>
+                  <Select
+                    value={filterLanguage || ""}
+                    onValueChange={(value) => setFilterLanguage(value || undefined)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="All languages" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All languages</SelectItem>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="fr">French</SelectItem>
+                      <SelectItem value="es">Spanish</SelectItem>
+                      <SelectItem value="de">German</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Note Type</label>
+                  <Select
+                    value={filterNoteType || ""}
+                    onValueChange={(value) => setFilterNoteType(value || undefined)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="All types" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All types</SelectItem>
+                      <SelectItem value="VOCABULARY">Vocabulary</SelectItem>
+                      <SelectItem value="GRAMMAR">Grammar</SelectItem>
+                      <SelectItem value="EXPRESSION">Expression</SelectItem>
+                      <SelectItem value="CULTURE">Culture</SelectItem>
+                      <SelectItem value="NOTE">General Note</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="mt-4 flex items-center">
+                <input
+                  type="checkbox"
+                  id="showArchived"
+                  checked={filterShowArchived}
+                  onChange={(e) => setFilterShowArchived(e.target.checked)}
+                  className="mr-2 h-4 w-4"
+                />
+                <label htmlFor="showArchived" className="text-sm">
+                  Include archived notes
+                </label>
+              </div>
+              
+              <div className="mt-4 flex justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setFilterLanguage(undefined);
+                    setFilterNoteType(undefined);
+                    setFilterShowArchived(false);
+                  }}
+                  className="mr-2"
+                >
+                  Reset
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => setShowAdvancedFilters(false)}
+                >
+                  Apply
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
         
         <div className="flex items-center gap-2">
@@ -343,32 +543,69 @@ export default function NotebookWrapper() {
             <Button 
               variant="ghost" 
               size="sm"
-              className="h-7 w-7 p-0 rounded-full"
+              className="h-7 w-7 p-0 rounded-full hover:bg-indigo-50 dark:hover:bg-indigo-900/30"
               title="Add category"
+              onClick={() => {
+                // Ouvrir le dialogue de création de catégorie si disponible
+                const categoryTree = document.querySelector('.category-tree') as HTMLElement;
+                const newCategoryButton = categoryTree?.querySelector('button[title="Add category"]') as HTMLButtonElement;
+                if (newCategoryButton) {
+                  newCategoryButton.click();
+                }
+              }}
             >
-              <Plus className="h-4 w-4 text-gray-500" />
+              <Plus className="h-4 w-4 text-indigo-500" />
             </Button>
           </div>
           
-          <div className="overflow-auto flex-1">
-            <CategoryTree 
-              categories={categories} 
-              selectedCategory={selectedCategory} 
-              onSelect={handleCategorySelect}
-            />
+          <div className="overflow-auto flex-1 category-tree">
+            {isLoading && categories.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
+                <p className="text-sm text-gray-500 mt-2">Chargement des catégories...</p>
+              </div>
+            ) : (
+              <CategoryTree 
+                categories={categories} 
+                selectedCategory={selectedCategory} 
+                onSelect={handleCategorySelect}
+              />
+            )}
           </div>
           
           <div className="mt-4">
             <div className="bg-gray-50 dark:bg-gray-900/30 p-3 rounded-lg">
-              <div className="text-xs text-gray-500 mb-2">QUICK LINKS</div>
+              <div className="text-xs text-gray-500 mb-2">RACCOURCIS</div>
               <div className="space-y-1">
-                <div className="flex items-center p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+                <div 
+                  className="flex items-center p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                  onClick={() => {
+                    setActiveFilter('favorites');
+                    setSelectedCategory(undefined);
+                  }}
+                >
                   <Star className="h-4 w-4 text-yellow-500 mr-2" />
-                  <span className="text-sm">Favorites</span>
+                  <span className="text-sm">Notes épinglées</span>
                 </div>
-                <div className="flex items-center p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+                <div 
+                  className="flex items-center p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                  onClick={() => {
+                    setActiveFilter('recent');
+                    setSelectedCategory(undefined);
+                  }}
+                >
                   <Clock className="h-4 w-4 text-blue-500 mr-2" />
-                  <span className="text-sm">Recent Notes</span>
+                  <span className="text-sm">Notes récentes</span>
+                </div>
+                <div 
+                  className="flex items-center p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                  onClick={() => {
+                    setActiveFilter('review');
+                    setSelectedCategory(undefined);
+                  }}
+                >
+                  <BookOpen className="h-4 w-4 text-green-500 mr-2" />
+                  <span className="text-sm">À réviser</span>
                 </div>
               </div>
             </div>
