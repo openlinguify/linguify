@@ -52,6 +52,11 @@ class Note(models.Model):
         ('IMAGE', 'Image'),
         ('VIDEO', 'Video')
     ]
+    DIFFICULTY_CHOICES = [
+        ('BEGINNER', 'Beginner'),
+        ('INTERMEDIATE', 'Intermediate'),
+        ('ADVANCED', 'Advanced'),
+    ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notes')
     title = models.CharField(max_length=255)
@@ -59,6 +64,14 @@ class Note(models.Model):
     category = models.ForeignKey(NoteCategory, on_delete=models.SET_NULL, blank=True, null=True)
     tags = models.ManyToManyField(Tag, blank=True)
     note_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='NOTE')
+    
+    # Language learning specific fields
+    language = models.CharField(max_length=50, blank=True, null=True)
+    translation = models.TextField(blank=True, null=True)
+    pronunciation = models.CharField(max_length=255, blank=True, null=True)
+    example_sentences = models.JSONField(default=list, blank=True, null=True)
+    related_words = models.JSONField(default=list, blank=True, null=True)
+    difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES, blank=True, null=True)
 
     # Metadata fields
     created_at = models.DateTimeField(auto_now_add=True)

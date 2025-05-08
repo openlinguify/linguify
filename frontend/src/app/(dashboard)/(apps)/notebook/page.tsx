@@ -1,13 +1,13 @@
 // src/app/(dashboard)/(apps)/notebook/page.tsx
 "use client";
 
-import NotebookApp from '../../../../addons/notebook/components/NotebookApp';
+import NotebookWrapper from '@/addons/notebook/components/NotebookWrapper.minimal';
 
 export default function NotebookPage() {
   return (
-    // Enlever toutes les marges et remplir tout l'espace disponible
-    <div className="-ml-4 h-[calc(100vh-4rem)] flex-1 overflow-hidden">
-      <NotebookApp />
+    // Utiliser tout l'espace disponible pour le notebook
+    <div className="-mx-4 -mt-4 h-[calc(100vh-3rem)] overflow-hidden">
+      <NotebookWrapper />
     </div>
   );
 }

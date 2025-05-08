@@ -64,7 +64,8 @@ class NoteCategoryViewSet(viewsets.ModelViewSet):
         return queryset.prefetch_related(
             Prefetch(
                 'note_set',
-                queryset=Note.objects.order_by('-created_at')[:5]
+                queryset=Note.objects.order_by('-created_at').all()[:5],
+                to_attr='recent_notes'
             )
         )
 
