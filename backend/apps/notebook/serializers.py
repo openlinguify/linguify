@@ -62,7 +62,10 @@ class NoteCategorySerializer(serializers.ModelSerializer):
 
     def get_notes(self, obj):
         """Retourne les 5 dernières notes de la catégorie"""
-        notes = obj.note_set.all()[:5]
+        if hasattr(obj, 'recent_notes'):
+            notes = obj.recent_notes
+        else:
+            notes = obj.note_set.order_by('-created_at').all()[:5]
         from .serializers import NoteListSerializer
         return NoteListSerializer(notes, many=True, context=self.context).data
 
@@ -118,7 +121,10 @@ class NoteSerializer(serializers.ModelSerializer):
             'id', 'title', 'content', 'category', 'category_name',
             'category_path', 'tags', 'note_type', 'created_at', 'updated_at',
             'last_reviewed_at', 'review_count', 'is_pinned', 'is_archived',
-            'priority', 'is_shared', 'is_due_for_review', 'time_until_review'
+            'priority', 'is_shared', 'is_due_for_review', 'time_until_review',
+            # Language learning fields
+            'language', 'translation', 'pronunciation', 'example_sentences', 
+            'related_words', 'difficulty'
         ]
         read_only_fields = [
             'created_at', 'updated_at', 'last_reviewed_at',

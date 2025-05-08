@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -22,18 +22,14 @@ import {
 } from "@/components/ui/select";
 import {
   Search,
-  Filter,
   Plus,
-  Book,
   BookOpenText,
-  Star,
-  Clock,
   Languages,
   Bookmark,
   BookOpen,
-  Template,
+  Star,
+  Clock,
 } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
 import { notebookAPI } from "@/addons/notebook/api/notebookAPI";
 import { CategoryTree } from "./CategoryTree";
 import { NoteList } from "./NoteList";
@@ -51,7 +47,6 @@ export default function NotebookWrapper() {
   // State for UI elements
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -65,9 +60,6 @@ export default function NotebookWrapper() {
     example_sentences: [],
     related_words: [],
   });
-  
-  // Template dialog state
-  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
 
   // Initial data fetch
   useEffect(() => {
@@ -216,17 +208,6 @@ export default function NotebookWrapper() {
       }
     }
   };
-  
-  // Handle template selection
-  const handleSelectTemplate = (templateData: Partial<Note>) => {
-    setNewNote({
-      ...newNote,
-      ...templateData,
-      title: templateData.title || newNote.title,
-    });
-    setIsTemplateDialogOpen(false);
-    setIsCreateDialogOpen(true);
-  };
 
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
@@ -254,37 +235,6 @@ export default function NotebookWrapper() {
         </div>
         
         <div className="flex items-center gap-2">
-          <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                variant="outline" 
-                className="border-indigo-200 hover:border-indigo-300 text-indigo-600 flex items-center gap-1"
-              >
-                <Template size={16} />
-                <span className="hidden sm:inline">Templates</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-3xl max-h-[80vh] overflow-auto">
-              <DialogHeader>
-                <DialogTitle className={`${gradientText} text-xl`}>Note Templates</DialogTitle>
-              </DialogHeader>
-              <div className="py-4">
-                {/* Temporarily comment out NoteTemplates until we debug it */}
-                {/* <NoteTemplates onSelectTemplate={handleSelectTemplate} /> */}
-                <div className="text-center py-8">
-                  <p className="text-gray-500">Templates feature is coming soon!</p>
-                  <Button 
-                    variant="outline" 
-                    className="mt-4"
-                    onClick={() => setIsTemplateDialogOpen(false)}
-                  >
-                    Close
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-          
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2">
@@ -384,12 +334,45 @@ export default function NotebookWrapper() {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar - Categories */}
-        <div className="w-64 border-r bg-white dark:bg-gray-800 overflow-auto p-4 hidden md:block shadow-sm">
-          <CategoryTree 
-            categories={categories} 
-            selectedCategory={selectedCategory} 
-            onSelect={handleCategorySelect}
-          />
+        <div className="w-72 border-r bg-white dark:bg-gray-800 overflow-auto p-4 hidden md:flex flex-col shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className={`${gradientText} font-bold text-sm flex items-center`}>
+              <Bookmark className="h-4 w-4 mr-2 text-indigo-500" />
+              CATEGORIES
+            </h3>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="h-7 w-7 p-0 rounded-full"
+              title="Add category"
+            >
+              <Plus className="h-4 w-4 text-gray-500" />
+            </Button>
+          </div>
+          
+          <div className="overflow-auto flex-1">
+            <CategoryTree 
+              categories={categories} 
+              selectedCategory={selectedCategory} 
+              onSelect={handleCategorySelect}
+            />
+          </div>
+          
+          <div className="mt-4">
+            <div className="bg-gray-50 dark:bg-gray-900/30 p-3 rounded-lg">
+              <div className="text-xs text-gray-500 mb-2">QUICK LINKS</div>
+              <div className="space-y-1">
+                <div className="flex items-center p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+                  <Star className="h-4 w-4 text-yellow-500 mr-2" />
+                  <span className="text-sm">Favorites</span>
+                </div>
+                <div className="flex items-center p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+                  <Clock className="h-4 w-4 text-blue-500 mr-2" />
+                  <span className="text-sm">Recent Notes</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         
         {/* Center - Note List or Editor */}
@@ -441,12 +424,14 @@ export default function NotebookWrapper() {
             </div>
           ) : (
             <div className="flex-1 overflow-auto bg-white dark:bg-gray-800 shadow-sm">
-              <NoteEditor 
-                note={selectedNote} 
-                categories={categories} 
-                onSave={handleSaveNote}
-                onDelete={handleDeleteNote}
-              />
+              <div className="max-w-4xl mx-auto p-6">
+                <NoteEditor 
+                  note={selectedNote} 
+                  categories={categories} 
+                  onSave={handleSaveNote}
+                  onDelete={handleDeleteNote}
+                />
+              </div>
             </div>
           )}
         </div>

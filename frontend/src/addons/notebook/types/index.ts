@@ -4,8 +4,7 @@ export interface Note {
   title: string;
   content: string;
   language: string;
-  type: 'VOCABULARY' | 'GRAMMAR' | 'EXPRESSION' | 'CULTURE';
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
   category?: number;
   category_name?: string;
   tags: Tag[];
@@ -13,7 +12,7 @@ export interface Note {
   translation?: string;
   pronunciation?: string;
   example_sentences: string[];
-  note_type: string;
+  note_type: 'VOCABULARY' | 'GRAMMAR' | 'EXPRESSION' | 'CULTURE' | 'NOTE' | 'TASK' | 'REMINDER' | 'MEETING' | 'IDEA' | 'PROJECT' | 'EVENT' | 'TEXT' | 'IMAGE' | 'VIDEO';
   created_at: string;
   updated_at: string;
   last_reviewed_at?: string;

@@ -1,8 +1,9 @@
-// src/components/notes/CategoryTree.tsx
+// src/addons/notebook/components/DraggableCategoryTree.tsx
 import React, { useState, useCallback, useEffect } from 'react';
-import { ChevronRight, ChevronDown, Folder, FolderOpen, Plus, Edit, Trash2, Library } from 'lucide-react';
+import { ChevronRight, ChevronDown, Folder, FolderOpen, Plus, Edit, Trash2, Library, Move } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -11,12 +12,12 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { CategoryTreeProps, Category } from '@/addons/notebook/types';
 import { notebookAPI } from '../api/notebookAPI';
 import { gradientText } from "@/styles/gradient_style";
 
-export function CategoryTree({ 
+export function DraggableCategoryTree({ 
   categories, 
   selectedCategory, 
   onSelect 
@@ -28,7 +29,14 @@ export function CategoryTree({
   const [parentCategory, setParentCategory] = useState<number | null>(null);
   const [categoryName, setCategoryName] = useState('');
   const [categoryDescription, setCategoryDescription] = useState('');
+  const [categoryOrder, setCategoryOrder] = useState<Category[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
   
+  // Initialize and maintain category order
+  useEffect(() => {
+    setCategoryOrder(categories);
+  }, [categories]);
+
   // Auto-expand categories with subcategories on first render
   useEffect(() => {
     if (categories.length > 0 && expandedCategories.length === 0) {
@@ -127,93 +135,162 @@ export function CategoryTree({
     }
   };
 
-  const renderCategory = useCallback((category: Category, level = 0) => {
+  // Handle drag and drop
+  const handleDragEnd = async (result: DropResult) => {
+    setIsDragging(false);
+    
+    // Dropped outside the list or no destination
+    if (!result.destination) {
+      return;
+    }
+    
+    // If the item didn't move, don't do anything
+    if (result.destination.index === result.source.index) {
+      return;
+    }
+    
+    // Get the dragged category ID
+    const draggedCategoryId = parseInt(result.draggable.id.split('-')[1]);
+    
+    // Extract parent ID if present
+    const parentId = result.droppableId === 'root' 
+      ? null 
+      : parseInt(result.droppableId.split('-')[1]);
+    
+    // Update local state
+    const updatedCategories = [...categoryOrder];
+    const [reorderedItem] = updatedCategories.splice(result.source.index, 1);
+    updatedCategories.splice(result.destination.index, 0, reorderedItem);
+    setCategoryOrder(updatedCategories);
+    
+    // Update on the server
+    try {
+      await notebookAPI.moveCategory(draggedCategoryId, parentId);
+    } catch (error) {
+      console.error('Failed to update category order:', error);
+      // Revert the local state in case of error
+      setCategoryOrder(categories);
+    }
+  };
+
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const renderDraggableCategory = (category: Category, index: number, level = 0) => {
     const isExpanded = expandedCategories.includes(category.id);
     const isSelected = selectedCategory === category.id;
     const hasSubcategories = category.subcategories && category.subcategories.length > 0;
     
     return (
-      <div key={category.id} className="select-none">
-        <div 
-          className={`
-            flex items-center py-1.5 px-2 my-0.5 group transition-all
-            ${isSelected 
-              ? 'bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-800 dark:from-indigo-900/30 dark:to-indigo-900/20 dark:text-indigo-300 rounded-md' 
-              : 'hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md'}
-          `}
-          style={{ paddingLeft: `${(level * 12) + 8}px` }}
-          onClick={() => onSelect(category.id)}
-        >
-          {hasSubcategories ? (
-            <button
-              onClick={(e) => toggleExpanded(category.id, e)}
-              className="mr-1 focus:outline-none"
+      <Draggable 
+        key={`cat-${category.id}`} 
+        draggableId={`cat-${category.id}`} 
+        index={index}
+      >
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            className={`select-none ${snapshot.isDragging ? 'opacity-70' : ''}`}
+          >
+            <div 
+              className={`
+                flex items-center py-1.5 px-2 my-0.5 group transition-all
+                ${isSelected 
+                  ? 'bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-800 dark:from-indigo-900/30 dark:to-indigo-900/20 dark:text-indigo-300 rounded-md' 
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md'}
+              `}
+              style={{ paddingLeft: `${(level * 12) + 8}px` }}
+              onClick={() => onSelect(category.id)}
             >
-              {isExpanded ? (
-                <ChevronDown className={`h-4 w-4 ${isSelected ? 'text-indigo-500' : 'text-gray-400'}`} />
+              {hasSubcategories ? (
+                <button
+                  onClick={(e) => toggleExpanded(category.id, e)}
+                  className="mr-1 focus:outline-none"
+                >
+                  {isExpanded ? (
+                    <ChevronDown className={`h-4 w-4 ${isSelected ? 'text-indigo-500' : 'text-gray-400'}`} />
+                  ) : (
+                    <ChevronRight className={`h-4 w-4 ${isSelected ? 'text-indigo-500' : 'text-gray-400'}`} />
+                  )}
+                </button>
               ) : (
-                <ChevronRight className={`h-4 w-4 ${isSelected ? 'text-indigo-500' : 'text-gray-400'}`} />
+                <span className="w-5"></span>
               )}
-            </button>
-          ) : (
-            <span className="w-5"></span>
-          )}
-          
-          {isExpanded ? (
-            <FolderOpen className={`h-4 w-4 mr-2 ${isSelected ? 'text-indigo-500' : 'text-indigo-400'}`} />
-          ) : (
-            <Folder className={`h-4 w-4 mr-2 ${isSelected ? 'text-indigo-500' : 'text-indigo-400'}`} />
-          )}
-          
-          <span className="flex-1 truncate text-sm">
-            {category.name}
-            {category.notes_count > 0 && (
-              <Badge 
-                variant="outline" 
-                className={`ml-2 h-4 min-w-4 text-[10px] px-1 py-0 rounded-full ${
-                  isSelected 
-                    ? 'bg-indigo-100 text-indigo-700 border-indigo-300 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700' 
-                    : 'bg-gray-100 text-gray-600 border-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700'
-                }`}
-              >
-                {category.notes_count}
-              </Badge>
+              
+              {isExpanded ? (
+                <FolderOpen className={`h-4 w-4 mr-2 ${isSelected ? 'text-indigo-500' : 'text-indigo-400'}`} />
+              ) : (
+                <Folder className={`h-4 w-4 mr-2 ${isSelected ? 'text-indigo-500' : 'text-indigo-400'}`} />
+              )}
+              
+              <span className="flex-1 truncate text-sm">
+                {category.name}
+                {category.notes_count > 0 && (
+                  <Badge 
+                    variant="outline" 
+                    className={`ml-2 h-4 min-w-4 text-[10px] px-1 py-0 rounded-full ${
+                      isSelected 
+                        ? 'bg-indigo-100 text-indigo-700 border-indigo-300 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700' 
+                        : 'bg-gray-100 text-gray-600 border-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700'
+                    }`}
+                  >
+                    {category.notes_count}
+                  </Badge>
+                )}
+              </span>
+              
+              <div {...provided.dragHandleProps} className="px-1 cursor-move">
+                <Move className="h-4 w-4 text-gray-400" />
+              </div>
+              
+              <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={(e) => handleNewSubcategory(category.id, e)}
+                  className="p-1 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-full"
+                  title="Add subcategory"
+                >
+                  <Plus className="h-3 w-3 text-indigo-500" />
+                </button>
+                <button
+                  onClick={(e) => handleEditCategory(category, e)}
+                  className="p-1 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-full"
+                  title="Edit category"
+                >
+                  <Edit className="h-3 w-3 text-indigo-500" />
+                </button>
+                <button
+                  onClick={(e) => handleDeleteCategory(category.id, e)}
+                  className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-full"
+                  title="Delete category"
+                >
+                  <Trash2 className="h-3 w-3 text-red-500" />
+                </button>
+              </div>
+            </div>
+            
+            {isExpanded && hasSubcategories && (
+              <Droppable droppableId={`parent-${category.id}`} type="category">
+                {(droppableProvided) => (
+                  <div 
+                    ref={droppableProvided.innerRef}
+                    {...droppableProvided.droppableProps}
+                    className="ml-2"
+                  >
+                    {category.subcategories.map((subcategory, subIndex) => 
+                      renderDraggableCategory(subcategory, subIndex, level + 1)
+                    )}
+                    {droppableProvided.placeholder}
+                  </div>
+                )}
+              </Droppable>
             )}
-          </span>
-          
-          <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={(e) => handleNewSubcategory(category.id, e)}
-              className="p-1 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-full"
-              title="Add subcategory"
-            >
-              <Plus className="h-3 w-3 text-indigo-500" />
-            </button>
-            <button
-              onClick={(e) => handleEditCategory(category, e)}
-              className="p-1 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-full"
-              title="Edit category"
-            >
-              <Edit className="h-3 w-3 text-indigo-500" />
-            </button>
-            <button
-              onClick={(e) => handleDeleteCategory(category.id, e)}
-              className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-full"
-              title="Delete category"
-            >
-              <Trash2 className="h-3 w-3 text-red-500" />
-            </button>
-          </div>
-        </div>
-        
-        {isExpanded && hasSubcategories && (
-          <div className="ml-2">
-            {category.subcategories.map(subcategory => renderCategory(subcategory, level + 1))}
           </div>
         )}
-      </div>
+      </Draggable>
     );
-  }, [expandedCategories, selectedCategory, onSelect, toggleExpanded, handleEditCategory, handleNewSubcategory, handleDeleteCategory]);
+  };
 
   return (
     <div className="space-y-2">
@@ -253,7 +330,25 @@ export function CategoryTree({
             </Button>
           </div>
         ) : (
-          categories.map(category => renderCategory(category))
+          <DragDropContext 
+            onDragEnd={handleDragEnd}
+            onDragStart={handleDragStart}
+          >
+            <Droppable droppableId="root" type="category">
+              {(provided) => (
+                <div 
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className={`${isDragging ? 'bg-gray-50 dark:bg-gray-800/50 rounded-lg' : ''}`}
+                >
+                  {categoryOrder.map((category, index) => 
+                    renderDraggableCategory(category, index)
+                  )}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         )}
       </div>
       
