@@ -53,8 +53,28 @@ export const notebookAPI = {
   },
 
   async updateNote(id: number, noteData: Partial<Note>): Promise<Note> {
-    const { data } = await apiClient.patch<Note>(`${NOTEBOOK_API}/notes/${id}/`, noteData);
-    return data;
+    try {
+      // Créer un objet minimal pour éviter les problèmes de validation
+      const minimalData = {
+        title: noteData.title || "",
+        tags: noteData.tags || [],
+      };
+      
+      // Si le contenu est présent et n'est pas une chaîne vide, l'ajouter
+      if (noteData.content) {
+        minimalData["content"] = noteData.content;
+      }
+      
+      console.log('Sending minimal data to backend:', JSON.stringify(minimalData));
+      
+      // Essayer avec uniquement les champs essentiels
+      const { data } = await apiClient.patch<Note>(`${NOTEBOOK_API}/notes/${id}/`, minimalData);
+      console.log('Update successful with minimal data');
+      return data;
+    } catch (error: any) {
+      console.error('Update note error details:', error.response?.data);
+      throw error;
+    }
   },
 
   async deleteNote(id: number): Promise<void> {
