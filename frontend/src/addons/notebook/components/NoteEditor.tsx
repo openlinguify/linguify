@@ -113,23 +113,44 @@ export function NoteEditor({
     }
   }, [note]);
 
+  // Cette fonction vérifie si l'éditeur est vide, même s'il contient des nœuds vides
+  const isEditorEmpty = (editorContent: string) => {
+    // Si le contenu est vide ou null
+    if (!editorContent) return true;
+    
+    // Si le contenu est juste des balises HTML sans texte
+    const div = document.createElement('div');
+    div.innerHTML = editorContent;
+    const textContent = div.textContent?.trim();
+    
+    return !textContent || textContent === '';
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Create a plain text version of content to avoid editor HTML issues
-      const contentToSave = content ? content.replace(/<[^>]*>/g, '') : "";
+      // Vérifier si le titre est vide
+      if (!title.trim()) {
+        alert("Le titre ne peut pas être vide");
+        setIsSaving(false);
+        return;
+      }
       
-      console.log("Content before saving:", {
-        original: content,
-        plainText: contentToSave
-      });
-
-      // Create the data object with all fields explicitly
+      // Vérifier si l'éditeur a du contenu
+      const editorIsEmpty = isEditorEmpty(content);
+      
+      // Préparer le contenu de manière plus robuste
+      const contentToSave = editorIsEmpty ? "" : content;
+      
+      // Feedback visuel pour l'utilisateur
+      const saveStartTime = Date.now();
+      
+      // Créer l'objet de données à sauvegarder
       const noteData = {
         ...(note || {}),
         id: note?.id, // Make sure we keep the ID for updating
-        title: title || "",
-        content: contentToSave, // Use plain text content without HTML or encoding
+        title: title.trim(),
+        content: contentToSave,
         category,
         tags: selectedTags || [],
         note_type: noteType || "VOCABULARY",
@@ -142,10 +163,18 @@ export function NoteEditor({
         related_words: relatedWords || []
       };
       
-      console.log("Saving note data:", noteData);
+      // Sauvegarder la note
       await onSave(noteData);
+      
+      // Assurer un minimum de temps pour le feedback visuel (au moins 500ms)
+      const elapsedTime = Date.now() - saveStartTime;
+      if (elapsedTime < 500) {
+        await new Promise(resolve => setTimeout(resolve, 500 - elapsedTime));
+      }
+      
     } catch (error) {
       console.error("Save error:", error);
+      alert("Une erreur est survenue lors de la sauvegarde. Veuillez réessayer.");
     } finally {
       setIsSaving(false);
     }

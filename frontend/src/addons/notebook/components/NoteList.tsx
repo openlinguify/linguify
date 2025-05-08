@@ -171,13 +171,20 @@ export function NoteList({ notes, onNoteSelect, onCreateNote }: NoteListProps) {
           <div className="pt-2 pb-4">
             <Button
               variant="outline"
-              className="w-full border border-dashed border-gray-300 dark:border-gray-600 hover:border-indigo-500 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400"
+              className="w-full border border-dashed border-gray-300 dark:border-gray-600 hover:border-indigo-500 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all hover:shadow-md"
               onClick={onCreateNote}
             >
               <Plus className="h-4 w-4 mr-2" />
               Add New Note
             </Button>
           </div>
+          
+          {/* Pagination/Stats footer */}
+          {notes.length > 0 && (
+            <div className="text-xs text-gray-500 text-center py-2 border-t">
+              {notes.length} note{notes.length !== 1 ? 's' : ''}
+            </div>
+          )}
         </div>
       )}
     </div>
