@@ -52,6 +52,17 @@ export function Editor({
       }),
     ],
     content: value,
+    editorProps: {
+      attributes: {
+        class: 'focus:outline-none',
+      },
+      handleDOMEvents: {
+        keydown: (_, event) => {
+          // Prevent default browser behavior for special characters
+          return false;
+        },
+      },
+    },
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },

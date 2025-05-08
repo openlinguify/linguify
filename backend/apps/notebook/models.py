@@ -60,7 +60,7 @@ class Note(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notes')
     title = models.CharField(max_length=255)
-    content = models.TextField()
+    content = models.TextField(blank=True, default="") # Make content optional with default empty string
     category = models.ForeignKey(NoteCategory, on_delete=models.SET_NULL, blank=True, null=True)
     tags = models.ManyToManyField(Tag, blank=True)
     note_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='NOTE')

@@ -15,6 +15,9 @@ import { NoteEditorProps } from "@/addons/notebook/types/";
 import useSpeechSynthesis from '@/core/speech/useSpeechSynthesis';
 import { notebookAPI } from "../api/notebookAPI";
 
+// Import Editor directly for debugging
+import { Editor as StaticEditor } from "@/components/ui/Editor";
+
 const Editor = dynamic(
   () => import("@/components/ui/Editor").then((mod) => mod.Editor),
   { ssr: false }
@@ -113,21 +116,36 @@ export function NoteEditor({
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await onSave({
-        ...note,
-        title,
-        content,
-        category,
-        tags: selectedTags,
-        note_type: noteType,
-        priority,
-        language,
-        translation,
-        pronunciation,
-        difficulty,
-        example_sentences: exampleSentences,
-        related_words: relatedWords,
+      // Create a plain text version of content to avoid editor HTML issues
+      const contentToSave = content ? content.replace(/<[^>]*>/g, '') : "";
+      
+      console.log("Content before saving:", {
+        original: content,
+        plainText: contentToSave
       });
+
+      // Create the data object with all fields explicitly
+      const noteData = {
+        ...(note || {}),
+        id: note?.id, // Make sure we keep the ID for updating
+        title: title || "",
+        content: contentToSave, // Use plain text content without HTML or encoding
+        category,
+        tags: selectedTags || [],
+        note_type: noteType || "VOCABULARY",
+        priority: priority || "MEDIUM",
+        language: language || "fr",
+        translation: translation || "",
+        pronunciation: pronunciation || "",
+        difficulty: difficulty || "INTERMEDIATE",
+        example_sentences: exampleSentences || [],
+        related_words: relatedWords || []
+      };
+      
+      console.log("Saving note data:", noteData);
+      await onSave(noteData);
+    } catch (error) {
+      console.error("Save error:", error);
     } finally {
       setIsSaving(false);
     }

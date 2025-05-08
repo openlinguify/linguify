@@ -130,6 +130,20 @@ class NoteSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at', 'last_reviewed_at',
             'review_count', 'is_shared', 'is_due_for_review'
         ]
+        
+    def to_internal_value(self, data):
+        # Make a copy of data to avoid modifying the original
+        data_copy = data.copy() if hasattr(data, 'copy') else dict(data)
+        
+        # No longer try to decode content - let it pass through as is
+        # This avoids potential encoding/decoding issues
+        
+        # Ensure JSON fields are properly handled
+        for field in ['example_sentences', 'related_words']:
+            if field in data_copy and data_copy[field] is None:
+                data_copy[field] = []
+                
+        return super().to_internal_value(data_copy)
 
     def get_category_path(self, obj):
         if not obj.category:
@@ -189,12 +203,12 @@ class NoteSerializer(serializers.ModelSerializer):
         return note
 
     def update(self, instance, validated_data):
-        tags_data = self.context.get('tags')
+        tags_data = self.context.get('tags', [])
         note = super().update(instance, validated_data)
         
-        if tags_data is not None:
-            tags = Tag.objects.filter(id__in=tags_data, user=instance.user)
-            note.tags.set(tags)
+        # Always update tags, using an empty list if tags_data is None
+        tags = Tag.objects.filter(id__in=tags_data or [], user=instance.user)
+        note.tags.set(tags)
         
         return note
 
