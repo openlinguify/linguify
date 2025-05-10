@@ -1,34 +1,124 @@
-name: ci
+name: Linguify CI
 
 on:
   workflow_dispatch:
   push:
+    branches: [ main, develop ]
     paths:
       - '**/*.py'
-      - './Dockerfile'
-      - './.github/**/*'
+      - '**/*.ts'
+      - '**/*.tsx'
+      - '**/package.json'
+      - '**/pyproject.toml'
+      - 'backend/poetry.lock'
+      - 'frontend/package-lock.json'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main, develop ]
 
 jobs:
-  pytest:
+  backend-tests:
+    name: Backend Tests
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_linguify
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_linguify
+      DEBUG: 'True'
+      SECRET_KEY: 'test-secret-key-for-ci'
+      DJANGO_SETTINGS_MODULE: core.settings
+
     steps:
       - uses: actions/checkout@v4
-      - name: Install Python
+      
+      - name: Set up Python
         uses: actions/setup-python@v5
-        # see details (matrix, python-version, python-version-file, etc.)
-        # https://github.com/actions/setup-python
-      - name: Install poetry
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      
+      - name: Install Poetry
         uses: abatilo/actions-poetry@v4
-      - name: Setup a local virtual environment (if no poetry.toml file)
+        with:
+          poetry-version: '1.7.1'
+      
+      - name: Configure Poetry
         run: |
           poetry config virtualenvs.create true --local
           poetry config virtualenvs.in-project true --local
-      - uses: actions/cache@v4
-        name: Define a cache for the virtual environment based on the dependencies lock file
+      
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v4
         with:
-          path: ./.venv
-          key: venv-${{ hashFiles('poetry.lock') }}
-      - name: Install the project dependencies
+          path: ./backend/.venv
+          key: venv-${{ runner.os }}-${{ hashFiles('./backend/poetry.lock') }}
+      
+      - name: Install dependencies
         run: poetry install
-      - name: Run the automated tests (for example)
+      
+      - name: Run linting
+        run: |
+          poetry run python -m pip install flake8
+          poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+      
+      - name: Run tests
         run: poetry run pytest -v
+
+  frontend-tests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ./frontend/package-lock.json
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run linting
+        run: npm run lint
+      
+      - name: Build application
+        run: npm run build
+
+  notify-success:
+    needs: [backend-tests, frontend-tests]
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Success notification
+        run: echo "All tests passed successfully!"
+
+  notify-failure:
+    needs: [backend-tests, frontend-tests]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Failure notification
+        run: echo "Some tests have failed. Check the logs for details."
