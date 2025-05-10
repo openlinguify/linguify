@@ -50,6 +50,10 @@
     "title": "Settings",
     "description": "Gérez votre compte et vos préférences"
   },
+  "conversationAICard": {
+    "title": "Conversation AI",
+    "description": "Practice conversations with AI"
+  },
   "editProfile": {
     "editProfileName": "Edit my profile"
   },

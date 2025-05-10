@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'apps.course',
     'apps.data',
     # 'apps.flashcard',
+    'apps.language_ai',
     # 'apps.payments',
     # 'apps.quiz',
     'apps.revision',

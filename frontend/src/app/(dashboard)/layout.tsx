@@ -21,6 +21,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     '/settings': 'dashboard.layoutpathname.settings',
     '/learning': 'dashboard.layoutpathname.learning',
     '/progress': 'dashboard.layoutpathname.progress',
+    '/language_ai': 'dashboard.conversationAICard.title',
   }), []);
 
   useEffect(() => {

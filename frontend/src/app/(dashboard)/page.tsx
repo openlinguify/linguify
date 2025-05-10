@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { Card, CardContent, } from "@/components/ui/card";
-import { BookOpen, BarChart, Brain, NotebookPen, Settings, User, HandHelping } from "lucide-react";
+import { BookOpen, BarChart, Brain, NotebookPen, Settings, User, HandHelping, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { useAuthContext } from "@/core/auth/AuthProvider";
 import { useTranslation } from "@/core/i18n/useTranslations";
@@ -50,6 +50,13 @@ export default function DashboardHome() {
       icon: NotebookPen,
       href: "/notebook",
       color: "bg-amber-50 text-amber-500 dark:bg-amber-900/20 dark:text-amber-400"
+    },
+    {
+      titleKey: "dashboard.conversationAICard.title",
+      fallbackTitle: "Conversation AI",
+      icon: MessageCircle,
+      href: "/language_ai",
+      color: "bg-pink-50 text-pink-500 dark:bg-pink-900/20 dark:text-pink-400"
     },
     {
       titleKey: "dashboard.progressCard.title",

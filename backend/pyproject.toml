@@ -25,6 +25,9 @@ jwt = "^1.3.1"
 pyjwt = "^2.10.1"
 pandas = "^2.2.3"
 
+# AI providers - optional dependencies
+openai = "^1.12.0"  # Pour l'intégration OpenAI
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
 

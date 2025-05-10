@@ -137,12 +137,12 @@ def notify_lesson_completion(sender, instance, created, update_fields=None, **kw
     if created:
         return
     
-    # Vérifier si les champs mis à jour contiennent completion_percentage
-    if update_fields and 'is_completed' not in update_fields:
+    # Vérifier si les champs mis à jour contiennent status
+    if update_fields and 'status' not in update_fields:
         return
-    
+
     # Envoyer une notification uniquement si la leçon vient d'être complétée
-    if instance.is_completed:
+    if instance.status == 'completed':
         try:
             # Récupérer la leçon
             lesson = Lesson.objects.get(id=instance.lesson_id)
@@ -188,7 +188,7 @@ def check_consecutive_days(user):
     # Récupérer les dates des dernières leçons complétées
     daily_completions = UserLessonProgress.objects.filter(
         user=user,
-        is_completed=True
+        status='completed'
     ).annotate(
         completion_date=TruncDate('updated_at')
     ).values('completion_date').annotate(

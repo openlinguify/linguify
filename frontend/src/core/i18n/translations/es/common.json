@@ -97,6 +97,28 @@
     "title": "Cuaderno de notas",
     "description": "Toma de notas centralizada con organización inteligente"
   },
+  "language_ai": {
+    "title": "Conversación IA",
+    "description": "Practica con un compañero lingüístico IA en cualquier momento",
+    "new_conversation": "Nueva conversación",
+    "current_conversation": "Conversación actual",
+    "history": "Historial",
+    "choose_topic": "Elegir un tema de conversación",
+    "select_topic": "Selecciona un tema que te interese para empezar a practicar",
+    "conversation_history": "Historial de conversaciones",
+    "past_conversations": "Tus conversaciones anteriores con la IA",
+    "start_conversation": "Iniciar una conversación",
+    "no_conversations": "Aún no tienes conversaciones",
+    "loading": "Cargando conversación...",
+    "send_message": "Enviar mensaje",
+    "type_message": "Escribe tu mensaje aquí...",
+    "conversation_empty": "Comienza a conversar enviando un mensaje",
+    "conversation_tip": "Practica tus habilidades lingüísticas en tiempo real con nuestra IA. ¡Haz preguntas, solicita traducciones o inicia una conversación!",
+    "enter_to_send": "Presiona Enter para enviar, Shift+Enter para un salto de línea",
+    "network_error": "Problema de conexión de red",
+    "retry": "Reintentar conexión",
+    "demo_mode": "Modo demo activo"
+  },
   "community": {
     "title": "Comunidad",
     "description": "Intercambia y aprende con otros usuarios"

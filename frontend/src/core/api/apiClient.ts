@@ -78,6 +78,15 @@ export function createAuthenticatedApiClient(baseURL: string): AxiosInstance {
       } else if (error.request) {
         // La requête a été faite mais pas de réponse (problème réseau)
         console.error('[API] No response received:', error.request);
+        
+        // Afficher un message plus convivial (optionnel)
+        if (typeof window !== 'undefined') {
+          // Créer un événement personnalisé pour les erreurs réseau
+          const networkErrorEvent = new CustomEvent('api:networkError', { 
+            detail: { url: error.config?.url, method: error.config?.method }
+          });
+          window.dispatchEvent(networkErrorEvent);
+        }
       } else {
         // Erreur lors de la configuration de la requête
         console.error('[API] Request error:', error.message);

@@ -101,6 +101,28 @@
     "title": "Voortgang",
     "description": "Gedetailleerde tracking van je evolutie en prestaties"
   },
+  "language_ai": {
+    "title": "AI Conversatie",
+    "description": "Oefen met een AI-taalpartner wanneer je maar wilt",
+    "new_conversation": "Nieuwe conversatie",
+    "current_conversation": "Huidige conversatie",
+    "history": "Geschiedenis",
+    "choose_topic": "Kies een gespreksonderwerp",
+    "select_topic": "Selecteer een onderwerp dat je interesseert om te beginnen met oefenen",
+    "conversation_history": "Gespreksgeschiedenis",
+    "past_conversations": "Je eerdere gesprekken met AI",
+    "start_conversation": "Start een gesprek",
+    "no_conversations": "Je hebt nog geen gesprekken",
+    "loading": "Gesprek laden...",
+    "send_message": "Bericht versturen",
+    "type_message": "Typ hier je bericht...",
+    "conversation_empty": "Begin met converseren door een bericht te sturen",
+    "conversation_tip": "Oefen je taalvaardigheden in realtime met onze AI. Stel vragen, vraag om vertalingen of begin een gesprek!",
+    "enter_to_send": "Druk op Enter om te verzenden, Shift+Enter voor een nieuwe regel",
+    "network_error": "Netwerkverbindingsprobleem",
+    "retry": "Opnieuw verbinden",
+    "demo_mode": "Demo-modus actief"
+  },
   "community": {
     "title": "Gemeenschap",
     "description": "Wissel uit en leer met andere gebruikers"
