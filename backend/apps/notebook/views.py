@@ -162,7 +162,9 @@ class NoteViewSet(viewsets.ModelViewSet):
     def get_serializer_context(self):
         context = super().get_serializer_context()
         if self.request.method in ['POST', 'PUT', 'PATCH']:
-            context['tags'] = self.request.data.get('tags', [])
+            # Ensure tags is always a list, never None
+            tags = self.request.data.get('tags')
+            context['tags'] = tags if tags is not None else []
         return context
 
     @action(detail=True, methods=['post'])

@@ -52,8 +52,35 @@ export function Editor({
       }),
     ],
     content: value,
+    editorProps: {
+      attributes: {
+        class: 'focus:outline-none min-h-[100px]', // Ensure a minimum height
+      },
+      handleDOMEvents: {
+        keydown: (_, event) => {
+          // Prevent default browser behavior for special characters
+          return false;
+        },
+      },
+    },
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      try {
+        // Store both HTML and raw text content for better serialization options
+        const html = editor.getHTML();
+        // Also get text content for storage fallback
+        const text = editor.getText();
+        
+        // Validate content before passing it back to parent
+        if (text.trim() === '' && html.includes('<')) {
+          // If there's no text but there are HTML tags, provide empty content
+          onChange('');
+        } else {
+          onChange(html);
+        }
+      } catch (error) {
+        console.error('Editor update error:', error);
+        onChange(''); // Fallback to empty string
+      }
     },
   });
 

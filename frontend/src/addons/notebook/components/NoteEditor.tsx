@@ -15,6 +15,9 @@ import { NoteEditorProps } from "@/addons/notebook/types/";
 import useSpeechSynthesis from '@/core/speech/useSpeechSynthesis';
 import { notebookAPI } from "../api/notebookAPI";
 
+// Import Editor directly for debugging
+import { Editor as StaticEditor } from "@/components/ui/Editor";
+
 const Editor = dynamic(
   () => import("@/components/ui/Editor").then((mod) => mod.Editor),
   { ssr: false }
@@ -110,24 +113,68 @@ export function NoteEditor({
     }
   }, [note]);
 
+  // Cette fonction vérifie si l'éditeur est vide, même s'il contient des nœuds vides
+  const isEditorEmpty = (editorContent: string) => {
+    // Si le contenu est vide ou null
+    if (!editorContent) return true;
+    
+    // Si le contenu est juste des balises HTML sans texte
+    const div = document.createElement('div');
+    div.innerHTML = editorContent;
+    const textContent = div.textContent?.trim();
+    
+    return !textContent || textContent === '';
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await onSave({
-        ...note,
-        title,
-        content,
+      // Vérifier si le titre est vide
+      if (!title.trim()) {
+        alert("Le titre ne peut pas être vide");
+        setIsSaving(false);
+        return;
+      }
+      
+      // Vérifier si l'éditeur a du contenu
+      const editorIsEmpty = isEditorEmpty(content);
+      
+      // Préparer le contenu de manière plus robuste
+      const contentToSave = editorIsEmpty ? "" : content;
+      
+      // Feedback visuel pour l'utilisateur
+      const saveStartTime = Date.now();
+      
+      // Créer l'objet de données à sauvegarder
+      const noteData = {
+        ...(note || {}),
+        id: note?.id, // Make sure we keep the ID for updating
+        title: title.trim(),
+        content: contentToSave,
         category,
-        tags: selectedTags,
-        note_type: noteType,
-        priority,
-        language,
-        translation,
-        pronunciation,
-        difficulty,
-        example_sentences: exampleSentences,
-        related_words: relatedWords,
-      });
+        tags: selectedTags || [],
+        note_type: noteType || "VOCABULARY",
+        priority: priority || "MEDIUM",
+        language: language || "fr",
+        translation: translation || "",
+        pronunciation: pronunciation || "",
+        difficulty: difficulty || "INTERMEDIATE",
+        example_sentences: exampleSentences || [],
+        related_words: relatedWords || []
+      };
+      
+      // Sauvegarder la note
+      await onSave(noteData);
+      
+      // Assurer un minimum de temps pour le feedback visuel (au moins 500ms)
+      const elapsedTime = Date.now() - saveStartTime;
+      if (elapsedTime < 500) {
+        await new Promise(resolve => setTimeout(resolve, 500 - elapsedTime));
+      }
+      
+    } catch (error) {
+      console.error("Save error:", error);
+      alert("Une erreur est survenue lors de la sauvegarde. Veuillez réessayer.");
     } finally {
       setIsSaving(false);
     }
