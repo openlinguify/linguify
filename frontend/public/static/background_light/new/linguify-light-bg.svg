@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fond principal subtil -->
+  <rect width="1920" height="1080" fill="#fafafa" />
+  
+  <!-- Motif de bulles de dialogue abstraites en arrière-plan -->
+  <g opacity="0.08">
+    <!-- Motifs de bulles et formes linguistiques -->
+    <path d="M200 200 C300 150 400 180 450 250 C500 320 470 400 400 450 C330 500 250 480 200 420 C150 360 150 250 200 200 Z" fill="#DB80A9" />
+    <path d="M1600 300 C1700 250 1800 280 1850 350 C1900 420 1870 500 1800 550 C1730 600 1650 580 1600 520 C1550 460 1550 350 1600 300 Z" fill="#9364D2" />
+    <path d="M400 850 C500 800 600 830 650 900 C700 970 670 1050 600 1100 C530 1150 450 1130 400 1070 C350 1010 350 900 400 850 Z" fill="#F6B66C" />
+    <path d="M1500 700 C1600 650 1700 680 1750 750 C1800 820 1770 900 1700 950 C1630 1000 1550 980 1500 920 C1450 860 1450 750 1500 700 Z" fill="#DB80A9" />
+    
+    <!-- Symboles linguistiques abstraits -->
+    <circle cx="300" cy="300" r="20" fill="#DB80A9" />
+    <circle cx="350" cy="300" r="20" fill="#DB80A9" />
+    <circle cx="400" cy="300" r="20" fill="#DB80A9" />
+    
+    <circle cx="1700" cy="400" r="20" fill="#9364D2" />
+    <circle cx="1750" cy="400" r="20" fill="#9364D2" />
+    <circle cx="1800" cy="400" r="20" fill="#9364D2" />
+    
+    <!-- Symboles aléatoires de ponctuation -->
+    <text x="250" y="500" font-family="Arial" font-size="120" opacity="0.2" fill="#DB80A9">?</text>
+    <text x="1600" y="200" font-family="Arial" font-size="150" opacity="0.2" fill="#9364D2">!</text>
+    <text x="800" y="400" font-family="Arial" font-size="180" opacity="0.15" fill="#F6B66C">...</text>
+    <text x="1200" y="800" font-family="Arial" font-size="140" opacity="0.15" fill="#DB80A9">"</text>
+    
+    <!-- Lignes de connectivité légères -->
+    <path d="M300 300 L600 500" stroke="#DB80A9" stroke-width="3" opacity="0.1" />
+    <path d="M1700 400 L1400 600" stroke="#9364D2" stroke-width="3" opacity="0.1" />
+    <path d="M800 400 L600 800" stroke="#F6B66C" stroke-width="3" opacity="0.1" />
+    <path d="M1200 800 L1500 500" stroke="#DB80A9" stroke-width="3" opacity="0.1" />
+    
+    <!-- Texte "linguify" presque invisible en arrière-plan -->
+    <text x="960" y="540" font-family="Arial" font-size="200" text-anchor="middle" opacity="0.05" fill="#DB80A9">linguify</text>
+    
+    <!-- Motifs de lettres aléatoires -->
+    <g opacity="0.06">
+      <text x="200" y="200" font-family="Arial" font-size="24" fill="#333">A</text>
+      <text x="240" y="240" font-family="Arial" font-size="20" fill="#333">B</text>
+      <text x="280" y="200" font-family="Arial" font-size="22" fill="#333">C</text>
+      <text x="1700" y="300" font-family="Arial" font-size="24" fill="#333">X</text>
+      <text x="1740" y="340" font-family="Arial" font-size="20" fill="#333">Y</text>
+      <text x="1780" y="300" font-family="Arial" font-size="22" fill="#333">Z</text>
+      
+      <!-- Lettres d'alphabets différents -->
+      <text x="400" y="700" font-family="Arial" font-size="30" fill="#333">α</text>
+      <text x="450" y="740" font-family="Arial" font-size="32" fill="#333">β</text>
+      <text x="1500" y="200" font-family="Arial" font-size="28" fill="#333">é</text>
+      <text x="1550" y="240" font-family="Arial" font-size="26" fill="#333">è</text>
+      <text x="800" y="500" font-family="Arial" font-size="34" fill="#333">ñ</text>
+      <text x="1000" y="300" font-family="Arial" font-size="32" fill="#333">ç</text>
+    </g>
+  </g>
+  
+  <!-- Dégradé subtil pour donner de la profondeur -->
+  <rect width="1920" height="1080" fill="url(#gradient)" opacity="0.2" />
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DB80A9" stop-opacity="0.05" />
+      <stop offset="50%" stop-color="#9364D2" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#F6B66C" stop-opacity="0.05" />
+    </linearGradient>
+  </defs>
+</svg>

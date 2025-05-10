@@ -64,8 +64,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const isPublicPage = publicPages.includes(pathname);
 
     if (!isLoading && !isAuthenticated && !isPublicPage) {
+      // Journaliser l'accès au dashboard sans authentification
+      console.log("[Auth Flow] Unauthorized access attempt to dashboard", {
+        path: pathname,
+        isLoading,
+        isAuthenticated,
+        isPublicPage,
+        timestamp: new Date().toISOString()
+      });
+
       // Rediriger vers la page de connexion en préservant l'URL de retour
+      console.log(`[Auth Flow] Redirecting to login with returnTo=${pathname}`);
       login(pathname);
+    } else if (!isLoading && isAuthenticated) {
+      console.log("[Auth Flow] User successfully entered dashboard", {
+        path: pathname,
+        timestamp: new Date().toISOString()
+      });
     }
   }, [isAuthenticated, isLoading, pathname, login, t, titleMap, translationsLoading]);
 
@@ -80,10 +95,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      {/* Background with overlay for light mode */}
-      <div className="absolute inset-0 bg-[url('/static/background_light/light2.jpg')] bg-cover bg-no-repeat bg-fixed opacity-10 dark:hidden"></div>
-      {/* Background with overlay for dark mode */}
-      <div className="absolute inset-0 bg-[url('/static/background_dark/dark.jpg')] bg-cover bg-no-repeat bg-fixed opacity-70 hidden dark:block"></div>
+      {/* Background with overlay for light mode - Minimal Linguify branded background */}
+      <div className="absolute inset-0 bg-[url('/static/background_light/new/linguify-light-minimal.svg')] bg-cover bg-no-repeat bg-fixed dark:hidden"></div>
+      {/* Background with overlay for dark mode - Minimal Linguify branded background */}
+      <div className="absolute inset-0 bg-[url('/static/background_dark/new/linguify-dark-minimal.svg')] bg-cover bg-no-repeat bg-fixed hidden dark:block"></div>
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header />
