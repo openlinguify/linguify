@@ -2,10 +2,11 @@ name: CI Failure Issue
 
 on:
   workflow_run:
-    workflows: ["build"]
+    workflows: ["Linguify CI"]
     types:
       - completed
     branches:
+      - main
       - develop
   workflow_dispatch:
 
@@ -28,15 +29,16 @@ jobs:
           script: |
             const workflowName = "${{ github.event.workflow_run.name }}";
             const runId = "${{ github.event.workflow_run.id }}";
+            const branch = "${{ github.event.workflow_run.head_branch }}";
             const repo = context.repo;
-            const issueTitle = `🚨 Workflow Failed: ${workflowName}`;
-            const issueBody = `The workflow **${workflowName}** failed on the \`main\` branch.
+            const issueTitle = `🚨 CI Failed: ${workflowName} on ${branch}`;
+            const issueBody = `The CI workflow **${workflowName}** failed on the \`${branch}\` branch.
 
             **Run URL**: [View Failed Run](https://github.com/${repo.owner}/${repo.repo}/actions/runs/${runId})
 
             **Time**: ${new Date().toISOString()}
 
-            Please investigate the issue.`;
+            Please investigate the issue and fix the failing tests.`;
 
             await github.rest.issues.create({
               owner: repo.owner,
