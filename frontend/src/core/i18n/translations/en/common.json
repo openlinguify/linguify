@@ -578,5 +578,19 @@
       "or": "or",
       "contact": "contact our team"
     }
+  },
+  "termsNotification": {
+    "banner": {
+      "message": "Please review and accept our updated Terms and Conditions to continue using Linguify.",
+      "button": "Review Now"
+    },
+    "inline": {
+      "title": "Terms and Conditions Update",
+      "message": "We've updated our Terms and Conditions. Please review and accept them to continue.",
+      "button": "Review & Accept"
+    },
+    "minimal": {
+      "ariaLabel": "Review new Terms and Conditions"
+    }
   }
 }

@@ -1,0 +1,99 @@
+{
+  "nl": {
+    "title": "Algemene Voorwaarden",
+    "lastUpdate": "Laatst bijgewerkt:",
+    "print": "Afdrukken",
+    "download": "PDF",
+    "acceptLabel": "Ik heb de algemene voorwaarden gelezen en accepteer deze",
+    "acceptButton": "Accepteren en doorgaan",
+    "copyright": "Alle rechten voorbehouden.",
+    "legalNotice": "Juridische Kennisgeving",
+    "privacyPolicy": "Privacybeleid",
+    "termsOfService": "Gebruiksvoorwaarden",
+    "contact": "Contact",
+    "help": "Hulp nodig?",
+    "helpText": "Als u vragen heeft over onze algemene voorwaarden, aarzel dan niet om contact met ons op te nemen.",
+    "disclaimer": "Linguify is een taalplatform gemaakt door GPI Software. Door gebruik te maken van deze site accepteert u onze algemene voorwaarden en ons privacybeleid.",
+    "summary": "Samenvatting van de belangrijkste punten van onze algemene voorwaarden",
+    "summaryDisclaimer": "Deze samenvatting wordt voor uw gemak verstrekt. Voor een volledig begrip, lees de volledige voorwaarden.",
+    "readFullTerms": "Lees volledige voorwaarden",
+    "close": "Sluiten",
+    "cancel": "Annuleren",
+    "openNew": "Openen in nieuw venster",
+    "pdfAlert": "Deze functie zou de algemene voorwaarden in PDF-formaat downloaden in een echte implementatie.",
+    "sections": [
+      {
+        "id": "item-1",
+        "title": "1. Doel",
+        "content": "Deze Algemene Gebruiksvoorwaarden (\"AV\") hebben tot doel de rechten en plichten van gebruikers van de Linguify-applicatie te definiëren, een taalleerplatform toegankelijk via abonnement. Linguify is een product gemaakt door GPI Software dat tot doel heeft taalonderwijs te verbeteren."
+      },
+      {
+        "id": "item-2",
+        "title": "2. Acceptatie van de Voorwaarden",
+        "content": "Door zich te registreren op Linguify en de applicatie te gebruiken, erkent de gebruiker kennis te hebben genomen van deze AV en stemt ermee in deze na te leven."
+      },
+      {
+        "id": "item-3",
+        "title": "3. Toegang en Gebruik",
+        "content": "Linguify is toegankelijk via een maandelijks abonnement van €10. Toegang tot de diensten is persoonlijk en niet overdraagbaar. De gebruiker is verantwoordelijk voor de vertrouwelijkheid van zijn inloggegevens."
+      },
+      {
+        "id": "item-4",
+        "title": "4. Abonnement en Betaling",
+        "content": "Prijzen: Het abonnement op Linguify kost €10 per maand. Betalingen worden online gedaan via beveiligde betaalmethoden aangeboden op het platform.\n\nVernieuwing en Beëindiging: Het abonnement wordt automatisch elke maand vernieuwd tenzij het door de gebruiker wordt beëindigd vóór de vervaldatum.\n\nHerroepingsrecht: In overeenstemming met artikel L.221-28 van de Consumentenwet is het herroepingsrecht niet van toepassing op de levering van onmiddellijk toegankelijke digitale inhoud."
+      },
+      {
+        "id": "item-5",
+        "title": "5. Verantwoordelijkheden",
+        "content": "Verantwoordelijkheid van Linguify: Linguify verbindt zich ertoe de toegankelijkheid en goede werking van zijn dienst te verzekeren, maar kan niet verantwoordelijk worden gehouden voor onderbrekingen, technische storingen of gegevensverlies.\n\nVerantwoordelijkheid van de gebruiker: De gebruiker verbindt zich ertoe Linguify niet te gebruiken voor frauduleuze, illegale doeleinden of op manieren die in strijd zijn met deze AV."
+      },
+      {
+        "id": "item-6",
+        "title": "6. Intellectuele Eigendom",
+        "content": "Alle inhoud aanwezig op de Linguify-applicatie, inclusief maar niet beperkt tot teksten, afbeeldingen, video's en software, is gemaakt en beheerd door Linguify, een product van GPI Software. Ze zijn beschermd door intellectuele eigendomswetten. Elke ongeautoriseerde reproductie, distributie of gebruik is verboden zonder voorafgaande toestemming van Linguify."
+      },
+      {
+        "id": "item-7",
+        "title": "7. Bescherming van Persoonsgegevens",
+        "content": "Linguify verzamelt en verwerkt de persoonsgegevens van de gebruiker in overeenstemming met zijn Privacybeleid, beschikbaar op de site."
+      },
+      {
+        "id": "item-8",
+        "title": "8. Wijziging van de AV",
+        "content": "Linguify behoudt zich het recht voor deze AV te wijzigen. De gebruiker zal op de hoogte worden gebracht van wijzigingen via elk geschikt middel."
+      },
+      {
+        "id": "item-9",
+        "title": "9. Toepasselijk Recht en Geschillen",
+        "content": "Deze AV zijn onderworpen aan het Franse recht. Elk geschil valt onder de exclusieve bevoegdheid van de rechtbanken in het rechtsgebied van de hoofdzetel van Linguify."
+      },
+      {
+        "id": "item-10",
+        "title": "10. Contact",
+        "content": "Voor vragen over de AV kan de gebruiker contact opnemen met Linguify op het volgende adres: support@linguify.com."
+      }
+    ],
+    "keyPoints": [
+      {
+        "title": "Maandelijks Abonnement",
+        "description": "Linguify is toegankelijk via een maandelijks abonnement van €10 dat automatisch wordt verlengd."
+      },
+      {
+        "title": "Persoonlijke Toegang",
+        "description": "Uw account is persoonlijk en niet overdraagbaar. U bent verantwoordelijk voor het behoud van de vertrouwelijkheid van uw inloggegevens."
+      },
+      {
+        "title": "Beschermde Inhoud",
+        "description": "Alle Linguify-inhoud is beschermd door intellectuele eigendomswetten."
+      },
+      {
+        "title": "Gegevensbescherming",
+        "description": "Uw persoonlijke gegevens worden verwerkt in overeenstemming met ons Privacybeleid."
+      },
+      {
+        "title": "Toepasselijk Recht",
+        "description": "De AV zijn onderworpen aan Frans recht. Alle geschillen vallen onder de jurisdictie van Franse rechtbanken."
+      }
+    ]
+  }
+}

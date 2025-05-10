@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Action Required: Accept Terms and Conditions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .logo {
+            max-width: 120px;
+            margin-bottom: 15px;
+        }
+        .content {
+            padding: 20px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4F46E5;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .footer {
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img class="logo" src="https://linguify.com/logo.png" alt="{{ app_name }} Logo">
+            <h1>Action Required: Accept Terms and Conditions</h1>
+        </div>
+        
+        <div class="content">
+            <p>Dear {{ user.first_name|default:user.username }},</p>
+            
+            <p>We've updated our Terms and Conditions for {{ app_name }}, and we need your acceptance to continue using the platform with full functionality.</p>
+            
+            <p>Please take a moment to review and accept our updated terms:</p>
+            
+            <p style="text-align: center;">
+                <a href="{{ terms_url }}" class="cta-button">Review and Accept Terms</a>
+            </p>
+            
+            <p>If you have any questions about these changes, please contact our support team at support@linguify.com.</p>
+            
+            <p>Thank you for being part of our community!</p>
+            
+            <p>Best regards,<br>The {{ app_name }} Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>This email was sent to {{ user.email }}.</p>
+            <p>&copy; {% now "Y" %} {{ app_name }}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

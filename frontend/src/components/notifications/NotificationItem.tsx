@@ -1,10 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  CheckCircle, 
-  XCircle, 
+import {
+  CheckCircle,
+  XCircle,
   BookOpen,
   ArrowRightCircle,
   Bell,
@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { Notification, NotificationType } from '@/core/context/NotificationContext';
+import { useNotifications } from '@/core/context/NotificationContext';
+import { Notification, NotificationType } from '@/core/types/notification.types';
 
 interface NotificationItemProps {
   notification: Notification;

@@ -6,81 +6,153 @@ const translationModules = {
   en: async () => {
     try {
       const common = await import('./translations/en/common.json');
+      const commonAdditions = await import('./translations/en/common_additions.json');
       const footer = await import('./translations/en/footer.json');
       const sidebar = await import('./translations/en/sidebar.json');
       const dashboard = await import('./translations/en/dashboard.json');
-      
-      // Note the change here: dashboard is now a nested object instead of being spread
-      return { 
-        ...common.default, 
-        ...footer.default, 
+      const terms = await import('./translations/en/terms.json');
+      const onboarding = await import('./translations/en/onboarding.json');
+      const onboardingTerms = await import('./translations/en/onboarding_terms.json');
+      const languages = await import('./translations/en/languages.json');
+
+      // Note: dashboard, terms, onboarding, and languages are nested objects
+      return {
+        ...common.default,
+        ...commonAdditions.default,
+        ...footer.default,
         ...sidebar.default,
-        dashboard: dashboard.default
+        dashboard: dashboard.default,
+        terms: terms.default.en,
+        onboarding: {
+          ...onboarding.default,
+          ...onboardingTerms.default
+        },
+        languages: languages.default
       };
     } catch (error) {
       console.error('Error loading English translations:', error);
-      // Return at least an empty dashboard object in case of error
-      return { dashboard: {} };
+      // Return at least empty objects for nested namespaces in case of error
+      return { dashboard: {}, terms: {}, onboarding: {}, languages: {} };
     }
   },
   fr: async () => {
     try {
       const common = await import('./translations/fr/common.json');
+      const commonAdditions = await import('./translations/fr/common_additions.json');
       const footer = await import('./translations/fr/footer.json');
       const sidebar = await import('./translations/fr/sidebar.json');
       const dashboard = await import('./translations/fr/dashboard.json');
-      
-      return { 
-        ...common.default, 
-        ...footer.default, 
+      const terms = await import('./translations/fr/terms.json');
+      const onboarding = await import('./translations/fr/onboarding.json');
+      const onboardingTerms = await import('./translations/fr/onboarding_terms.json');
+      const languages = await import('./translations/fr/languages.json');
+
+      return {
+        ...common.default,
+        ...commonAdditions.default,
+        ...footer.default,
         ...sidebar.default,
-        dashboard: dashboard.default
+        dashboard: dashboard.default,
+        terms: terms.default.fr,
+        onboarding: {
+          ...onboarding.default,
+          ...onboardingTerms.default
+        },
+        languages: languages.default
       };
     } catch (error) {
       console.error('Error loading French translations:', error);
-      // Use English dashboard as fallback
+      // Use English translations as fallback
       const enDashboard = await import('./translations/en/dashboard.json').catch(() => ({ default: {} }));
-      return { dashboard: enDashboard.default || {} };
+      const enTerms = await import('./translations/en/terms.json').catch(() => ({ default: { en: {} } }));
+      const enOnboarding = await import('./translations/en/onboarding.json').catch(() => ({ default: {} }));
+      const enLanguages = await import('./translations/en/languages.json').catch(() => ({ default: {} }));
+      return {
+        dashboard: enDashboard.default || {},
+        terms: enTerms.default.en || {},
+        onboarding: enOnboarding.default || {},
+        languages: enLanguages.default || {}
+      };
     }
   },
   es: async () => {
     try {
       const common = await import('./translations/es/common.json');
+      const commonAdditions = await import('./translations/es/common_additions.json');
       const footer = await import('./translations/es/footer.json');
       const sidebar = await import('./translations/es/sidebar.json');
       const dashboard = await import('./translations/es/dashboard.json');
-      
-      return { 
-        ...common.default, 
-        ...footer.default, 
+      const terms = await import('./translations/es/terms.json');
+      const onboarding = await import('./translations/es/onboarding.json');
+      const onboardingTerms = await import('./translations/es/onboarding_terms.json');
+      const languages = await import('./translations/es/languages.json');
+
+      return {
+        ...common.default,
+        ...commonAdditions.default,
+        ...footer.default,
         ...sidebar.default,
-        dashboard: dashboard.default
+        dashboard: dashboard.default,
+        terms: terms.default.es,
+        onboarding: {
+          ...onboarding.default,
+          ...onboardingTerms.default
+        },
+        languages: languages.default
       };
     } catch (error) {
       console.error('Error loading Spanish translations:', error);
-      // Use English dashboard as fallback
+      // Use English translations as fallback
       const enDashboard = await import('./translations/en/dashboard.json').catch(() => ({ default: {} }));
-      return { dashboard: enDashboard.default || {} };
+      const enTerms = await import('./translations/en/terms.json').catch(() => ({ default: { en: {} } }));
+      const enOnboarding = await import('./translations/en/onboarding.json').catch(() => ({ default: {} }));
+      const enLanguages = await import('./translations/en/languages.json').catch(() => ({ default: {} }));
+      return {
+        dashboard: enDashboard.default || {},
+        terms: enTerms.default.en || {},
+        onboarding: enOnboarding.default || {},
+        languages: enLanguages.default || {}
+      };
     }
   },
   nl: async () => {
     try {
       const common = await import('./translations/nl/common.json');
+      const commonAdditions = await import('./translations/nl/common_additions.json');
       const footer = await import('./translations/nl/footer.json');
       const sidebar = await import('./translations/nl/sidebar.json');
       const dashboard = await import('./translations/nl/dashboard.json');
-      
-      return { 
-        ...common.default, 
-        ...footer.default, 
+      const terms = await import('./translations/nl/terms.json');
+      const onboarding = await import('./translations/nl/onboarding.json');
+      const onboardingTerms = await import('./translations/nl/onboarding_terms.json');
+      const languages = await import('./translations/nl/languages.json');
+
+      return {
+        ...common.default,
+        ...commonAdditions.default,
+        ...footer.default,
         ...sidebar.default,
-        dashboard: dashboard.default
+        dashboard: dashboard.default,
+        terms: terms.default.nl,
+        onboarding: {
+          ...onboarding.default,
+          ...onboardingTerms.default
+        },
+        languages: languages.default
       };
     } catch (error) {
       console.error('Error loading Dutch translations:', error);
-      // Use English dashboard as fallback
+      // Use English translations as fallback
       const enDashboard = await import('./translations/en/dashboard.json').catch(() => ({ default: {} }));
-      return { dashboard: enDashboard.default || {} };
+      const enTerms = await import('./translations/en/terms.json').catch(() => ({ default: { en: {} } }));
+      const enOnboarding = await import('./translations/en/onboarding.json').catch(() => ({ default: {} }));
+      const enLanguages = await import('./translations/en/languages.json').catch(() => ({ default: {} }));
+      return {
+        dashboard: enDashboard.default || {},
+        terms: enTerms.default.en || {},
+        onboarding: enOnboarding.default || {},
+        languages: enLanguages.default || {}
+      };
     }
   }
 };
@@ -105,19 +177,18 @@ if (typeof window !== 'undefined') {
   }
 }
 
-// Direct import of dashboard.json for fallback
-let dashboardFallback = {};
-if (typeof window !== 'undefined') {
-  // In browser, we can try to load the dashboard.json file directly
-  fetch('/dashboard.json')
-    .then(response => response.json())
-    .then(data => {
-      dashboardFallback = data;
-    })
-    .catch(err => {
-      console.warn('Could not load dashboard fallback:', err);
-    });
-}
+// Default fallback for dashboard translations
+const dashboardFallback = {
+  // Add basic dashboard translation keys here
+  "dashboard": {
+    "welcome": "Welcome to Linguify",
+    "todayGoal": "Today's Goal",
+    "streak": "Current Streak",
+    "level": "Current Level",
+    "recentActivity": "Recent Activity",
+    "continueLesson": "Continue Learning"
+  }
+};
 
 export function useTranslation() {
   const [locale, setLocale] = useState<AvailableLocales>(currentLocale);
@@ -176,11 +247,25 @@ export function useTranslation() {
   const getNestedValue = useCallback((obj: any, keys: string[]): any => {
     if (!obj || typeof obj !== 'object' || keys.length === 0) return undefined;
 
-    // Handle special case for dashboard.X access pattern
-    // Due to the nested structure where dashboard is stored as { dashboard: { ... } } in translations
-    // but accessed as 'dashboard.X' in code, we need special handling
-    if (keys.length === 2 && keys[0] === 'dashboard' && obj.dashboard && typeof obj.dashboard === 'object') {
-      return obj.dashboard[keys[1]];
+    // Handle special cases for namespaced objects (dashboard, terms, onboarding)
+    if (keys.length >= 2) {
+      const namespace = keys[0];
+
+      // If the first key is a namespace and it exists as an object
+      if (obj[namespace] && typeof obj[namespace] === 'object') {
+        if (keys.length === 2) {
+          // Simple namespace.key pattern
+          return obj[namespace][keys[1]];
+        } else {
+          // Deeper nesting like namespace.section.key
+          let nestedValue = obj[namespace];
+          for (let i = 1; i < keys.length; i++) {
+            if (!nestedValue || typeof nestedValue !== 'object') return undefined;
+            nestedValue = nestedValue[keys[i]];
+          }
+          return nestedValue;
+        }
+      }
     }
 
     // Normal nested key traversal
@@ -200,12 +285,28 @@ export function useTranslation() {
       if (process.env.NODE_ENV === 'development') {
         console.debug(`Translation not found for key: ${key}, current locale: ${locale}`);
       }
+
+      // Check if fallback is provided in params
+      if (params.fallback !== undefined) {
+        return params.fallback;
+      }
+
       return fallback || key;
     }
 
-    // Simple parameter replacement
+    // Simple parameter replacement for strings
     if (typeof value === 'string') {
       return value.replace(/\{(\w+)\}/g, (_, p) => params[p] !== undefined ? params[p] : `{${p}}`);
+    }
+
+    // If value is an array or object and we have a fallback, use it directly
+    if ((Array.isArray(value) || typeof value === 'object') && params.fallback !== undefined) {
+      return params.fallback;
+    }
+
+    // Support for array and object values
+    if (Array.isArray(value) || typeof value === 'object') {
+      return value;
     }
 
     if (process.env.NODE_ENV === 'development') {

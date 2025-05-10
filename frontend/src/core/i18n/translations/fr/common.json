@@ -585,5 +585,19 @@
       "or": "ou",
       "contact": "contactez notre équipe"
     }
+  },
+  "termsNotification": {
+    "banner": {
+      "message": "Veuillez consulter et accepter nos conditions générales d'utilisation mises à jour pour continuer à utiliser Linguify.",
+      "button": "Consulter maintenant"
+    },
+    "inline": {
+      "title": "Mise à jour des Conditions d'Utilisation",
+      "message": "Nous avons mis à jour nos conditions générales d'utilisation. Veuillez les consulter et les accepter pour continuer.",
+      "button": "Consulter et accepter"
+    },
+    "minimal": {
+      "ariaLabel": "Consulter les nouvelles conditions d'utilisation"
+    }
   }
 }

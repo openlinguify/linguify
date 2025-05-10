@@ -1731,7 +1731,24 @@ export default function SettingsPage() {
                   <p className="text-sm text-muted-foreground mb-4">
                     Download your data before resetting or deleting your account
                   </p>
-                  <Button variant="outline">Export All Data</Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline">Export All Data</Button>
+                    <Button
+                      variant="destructive"
+                      onClick={() => {
+                        localStorage.removeItem("onboardingCompleted");
+                        toast({
+                          title: "Onboarding Reset",
+                          description: "Onboarding reset successfully. Refresh the page to see the onboarding flow.",
+                        });
+                        setTimeout(() => {
+                          window.location.reload();
+                        }, 1500);
+                      }}
+                    >
+                      Reset Onboarding
+                    </Button>
+                  </div>
                 </div>
                 
                 <div className="pb-4 border-b">

@@ -1,0 +1,17 @@
+{
+  "steps": {
+    "terms": {
+      "title": "Términos Legales",
+      "description": "Por favor, revise y acepte nuestros términos y condiciones antes de continuar.",
+      "alertTitle": "Información Importante",
+      "reviewPrompt": "Por favor, revise nuestros términos",
+      "instructions": "Haga clic en la casilla de verificación a continuación después de leer nuestros términos y condiciones para continuar con su registro.",
+      "additionalNote": "Al aceptar nuestros términos, también reconoce nuestra Política de Privacidad y acepta recibir actualizaciones importantes sobre nuestro servicio.",
+      "acceptError": "Debe aceptar los términos y condiciones para continuar"
+    }
+  },
+  "validationErrors": {
+    "termsRequired": "Se requiere aceptación de términos",
+    "pleaseAcceptTerms": "Por favor, acepte los términos y condiciones para continuar"
+  }
+}

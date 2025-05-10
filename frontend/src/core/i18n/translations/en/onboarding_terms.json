@@ -1,0 +1,17 @@
+{
+  "steps": {
+    "terms": {
+      "title": "Legal Terms",
+      "description": "Please review and accept our terms and conditions before continuing.",
+      "alertTitle": "Important Information",
+      "reviewPrompt": "Please review our terms",
+      "instructions": "Click on the checkbox below after reading our terms and conditions to proceed with your registration.",
+      "additionalNote": "By accepting our terms, you also acknowledge our Privacy Policy and agree to receive important updates about our service.",
+      "acceptError": "You must accept the terms and conditions to continue"
+    }
+  },
+  "validationErrors": {
+    "termsRequired": "Terms acceptance required",
+    "pleaseAcceptTerms": "Please accept the terms and conditions to continue"
+  }
+}

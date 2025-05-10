@@ -7,11 +7,20 @@ import { usePathname } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useAuthContext } from "@/core/auth/AuthProvider";
 import { useTranslation } from "@/core/i18n/useTranslations";
+import { useTermsGuard } from "@/core/auth/termsGuard";
+import TermsAcceptance from "@/components/terms/TermsAcceptance";
+import TermsNotification from "@/components/notifications/TermsNotification";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, login } = useAuthContext();
   const pathname = usePathname();
-  const { t, isLoading: translationsLoading } = useTranslation();
+  const { t, isLoading: translationsLoading, locale } = useTranslation();
+  const {
+    termsAccepted,
+    showTermsDialog,
+    setShowTermsDialog,
+    handleTermsAccepted
+  } = useTermsGuard();
 
   // Créer une map de correspondance entre les chemins et les clés de traduction
   const titleMap = useMemo(() => ({
@@ -101,6 +110,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="absolute inset-0 bg-[url('/static/background_dark/new/linguify-dark-minimal.svg')] bg-cover bg-no-repeat bg-fixed hidden dark:block"></div>
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
+        {/* Show terms notification if terms not accepted */}
+        {isAuthenticated && !termsAccepted && <TermsNotification variant="banner" locale={locale as 'en' | 'fr' | 'es' | 'nl'} />}
+
+        {/* Terms acceptance dialog */}
+        <TermsAcceptance
+          isOpen={showTermsDialog}
+          onClose={() => setShowTermsDialog(false)}
+          onAccept={handleTermsAccepted}
+          showCancelButton={true}
+          locale={locale as 'en' | 'fr' | 'es' | 'nl'}
+        />
+
         <Header />
         {/* Main Content */}
         <main className="flex-1 dark:text-white">

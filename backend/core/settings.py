@@ -322,7 +322,7 @@ CHANNEL_LAYERS = {
             # Use Redis from Docker Compose by default in development
             # or use environment variable for production
             "hosts": [(
-                os.environ.get('REDIS_HOST', 'redis'), 
+                os.environ.get('REDIS_HOST', '127.0.0.1'),
                 int(os.environ.get('REDIS_PORT', 6379))
             )],
         },
