@@ -266,6 +266,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     share_progress = models.BooleanField(default=True)
     share_activity = models.BooleanField(default=False)
 
+    # Terms and conditions acceptance fields
+    terms_accepted = models.BooleanField(default=False, help_text='Whether the user has accepted the terms and conditions')
+    terms_accepted_at = models.DateTimeField(null=True, blank=True, help_text='When the user accepted the terms and conditions')
+    terms_version = models.CharField(max_length=10, null=True, blank=True, default='v1.0', help_text='Version of terms that was accepted')
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
@@ -278,7 +283,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             "theme", "email_notifications", "push_notifications", "weekday_reminders",
             "weekend_reminders", "reminder_time", "speaking_exercises", "listening_exercises",
             "reading_exercises", "writing_exercises", "daily_goal", "public_profile",
-            "share_progress", "share_activity"
+            "share_progress", "share_activity", "terms_accepted", "terms_accepted_at", "terms_version"
         }
         
         # Check if trying to set target language same as native language
@@ -459,6 +464,18 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.email}"
+
+    def accept_terms(self, version='v1.0'):
+        """
+        Mark terms and conditions as accepted by the user
+        """
+        from django.utils import timezone
+
+        self.terms_accepted = True
+        self.terms_accepted_at = timezone.now()
+        self.terms_version = version
+        self.save(update_fields=['terms_accepted', 'terms_accepted_at', 'terms_version'])
+        return True
 
     @property
     def name(self):

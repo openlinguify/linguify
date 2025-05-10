@@ -8,12 +8,8 @@ services:
     volumes:
       - redis_data:/data
     restart: always
-    networks:
-      - linguify_network
-
-networks:
-  linguify_network:
-    driver: bridge
+    # Expose to host network for Windows WSL access
+    network_mode: "host"
 
 volumes:
   redis_data:

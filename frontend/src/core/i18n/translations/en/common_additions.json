@@ -1,0 +1,12 @@
+{
+  "accepted": "Accepted",
+  "notAccepted": "Not accepted",
+  "notSet": "Not set",
+  "expandAll": "Expand All",
+  "collapseAll": "Collapse All",
+  "completeRequired": "Please complete all required fields",
+  "interface": {
+    "changeLanguage": "Change interface language",
+    "languageChanged": "Interface language changed to {language}"
+  }
+}

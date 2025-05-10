@@ -1,83 +1,101 @@
-import React from "react";
+'use client';
 
-const TermsAndConditions: React.FC = () => {
+import React, { useState, useEffect } from "react";
+import { TermsAccordion } from '@/components/terms';
+import { AvailableLocale } from '@/components/terms/termsContent';
+
+export default function TermsAndConditions() {
+  const [currentLocale, setCurrentLocale] = useState<AvailableLocale>('fr');
+
+  // Traductions pour les titres et descriptions
+  const translations = {
+    fr: {
+      title: "Conditions Générales d'Utilisation",
+      description: "Veuillez lire attentivement ces conditions générales d'utilisation régissant votre utilisation de Linguify, notre plateforme d'apprentissage de langues.",
+      help: "Besoin d'aide?",
+      helpText: "Si vous avez des questions concernant nos conditions générales d'utilisation, n'hésitez pas à nous contacter.",
+      contact: "Contactez-nous"
+    },
+    en: {
+      title: "Terms and Conditions",
+      description: "Please carefully read these terms and conditions governing your use of Linguify, our language learning platform.",
+      help: "Need help?",
+      helpText: "If you have any questions regarding our terms and conditions, please don't hesitate to contact us.",
+      contact: "Contact us"
+    },
+    es: {
+      title: "Términos y Condiciones",
+      description: "Por favor, lea detenidamente estos términos y condiciones que rigen su uso de Linguify, nuestra plataforma de aprendizaje de idiomas.",
+      help: "¿Necesita ayuda?",
+      helpText: "Si tiene alguna pregunta sobre nuestros términos y condiciones, no dude en contactarnos.",
+      contact: "Contáctenos"
+    },
+    nl: {
+      title: "Algemene Voorwaarden",
+      description: "Lees deze algemene voorwaarden zorgvuldig door die uw gebruik van Linguify, ons taalplatform, regelen.",
+      help: "Hulp nodig?",
+      helpText: "Als u vragen heeft over onze algemene voorwaarden, aarzel dan niet om contact met ons op te nemen.",
+      contact: "Neem contact op"
+    }
+  };
+
+  // Load language from localStorage on startup
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language');
+    if (savedLanguage && ['fr', 'en', 'es', 'nl'].includes(savedLanguage)) {
+      setCurrentLocale(savedLanguage as AvailableLocale);
+    }
+  }, []);
+
+  // Listen for language changes from other components
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      const savedLanguage = localStorage.getItem('language');
+      if (savedLanguage && ['fr', 'en', 'es', 'nl'].includes(savedLanguage)) {
+        setCurrentLocale(savedLanguage as AvailableLocale);
+      }
+    };
+
+    window.addEventListener('languageChanged', handleLanguageChange);
+
+    return () => {
+      window.removeEventListener('languageChanged', handleLanguageChange);
+    };
+  }, []);
+
+  // Get current translation
+  const t = translations[currentLocale] || translations.fr;
+
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Conditions Générales d'Utilisation de Linguify</h1>
-      
-      <h2 className="text-xl font-semibold mt-4">1. Objet</h2>
-      <p>
-        Les présentes Conditions Générales d'Utilisation ("CGU") ont pour objet de définir les droits et obligations
-        des utilisateurs de l'application Linguify, une plateforme d'apprentissage des langues accessible via abonnement.
-        Linguify est un produit créé par GPI Software qui a pour but d'améliorer l'éducation linguistique.
-      </p>
-      
-      <h2 className="text-xl font-semibold mt-4">2. Acceptation des Conditions</h2>
-      <p>
-        En s'inscrivant sur Linguify et en utilisant l'application, l'utilisateur reconnaît avoir pris connaissance des
-        présentes CGU et s'engage à les respecter.
-      </p>
-      
-      <h2 className="text-xl font-semibold mt-4">3. Accès et Utilisation</h2>
-      <p>
-        Linguify est accessible via un abonnement mensuel de 10€. L'accès aux services est personnel et non cessible.
-        L'utilisateur est responsable de la confidentialité de ses identifiants.
-      </p>
-      
-      <h2 className="text-xl font-semibold mt-4">4. Abonnement et Paiement</h2>
-      <p>
-        <strong>Tarification :</strong> L'abonnement à Linguify est facturé 10€ par mois. Les paiements sont effectués en ligne
-        via les moyens de paiement sécurisés proposés sur la plateforme.
-      </p>
-      <p>
-        <strong>Renouvellement et Résiliation :</strong> L'abonnement est reconduit automatiquement chaque mois sauf résiliation par
-        l'utilisateur avant la date d'échéance.
-      </p>
-      <p>
-        <strong>Droit de rétractation :</strong> Conformément à l'article L.221-28 du Code de la consommation, le droit de rétractation
-        ne s'applique pas à la fourniture de contenus numériques immédiatement accessibles.
-      </p>
-      
-      <h2 className="text-xl font-semibold mt-4">5. Responsabilités</h2>
-      <p>
-        <strong>Responsabilité de Linguify :</strong> Linguify s'engage à assurer l'accessibilité et le bon fonctionnement de son service
-        mais ne saurait être tenu responsable des interruptions, défaillances techniques ou pertes de données.
-      </p>
-      <p>
-        <strong>Responsabilité de l'utilisateur :</strong> L'utilisateur s'engage à ne pas utiliser Linguify à des fins frauduleuses,
-        illégales ou contraires aux présentes CGU.
-      </p>
-      
-      <h2 className="text-xl font-semibold mt-4">6. Propriété Intellectuelle</h2>
-      <p>
-        Tous les contenus présents sur l'application Linguify, y compris mais sans s'y limiter, les textes, images, vidéos,
-        et logiciels, sont créés et gérés par Linguify, un produit de GPI Software. Ils sont protégés par les lois sur la
-        propriété intellectuelle. Toute reproduction, diffusion ou utilisation non autorisée est interdite sans l'accord
-        préalable de Linguify.
-      </p>
-      
-      <h2 className="text-xl font-semibold mt-4">7. Protection des Données Personnelles</h2>
-      <p>
-        Linguify collecte et traite les données personnelles de l'utilisateur conformément à sa Politique de Confidentialité,
-        disponible sur le site.
-      </p>
-      
-      <h2 className="text-xl font-semibold mt-4">8. Modification des CGU</h2>
-      <p>
-        Linguify se réserve le droit de modifier les présentes CGU. L'utilisateur sera informé des modifications par tout moyen approprié.
-      </p>
-      
-      <h2 className="text-xl font-semibold mt-4">9. Droit Applicable et Litiges</h2>
-      <p>
-        Les présentes CGU sont soumises au droit français. Tout litige relève de la compétence exclusive des tribunaux du ressort du siège social de Linguify.
-      </p>
-      
-      <h2 className="text-xl font-semibold mt-4">10. Contact</h2>
-      <p>
-        Pour toute question relative aux CGU, l'utilisateur peut contacter Linguify à l'adresse suivante : <a href="mailto:support@linguify.com" className="text-blue-600">support@linguify.com</a>.
-      </p>
+    <div className="py-10 px-4 md:px-6 max-w-5xl mx-auto">
+      <div className="text-center mb-10">
+        <h1 className="text-3xl font-bold text-primary mb-4">{t.title}</h1>
+        <p className="text-muted-foreground max-w-3xl mx-auto">
+          {t.description}
+        </p>
+      </div>
+
+      <TermsAccordion
+        showAcceptButton={false}
+        defaultValue="item-1"
+        locale={currentLocale}
+      />
+
+      <div className="mt-10 p-6 border rounded-lg bg-slate-50">
+        <h2 className="text-xl font-semibold mb-4">{t.help}</h2>
+        <p className="mb-4">
+          {t.helpText}
+        </p>
+        <p className="flex flex-col sm:flex-row sm:space-x-4">
+          <a href="mailto:support@linguify.com" className="text-primary hover:underline mb-2 sm:mb-0">
+            support@linguify.com
+          </a>
+          <span className="hidden sm:inline text-slate-300">|</span>
+          <a href="/contact" className="text-primary hover:underline">
+            {t.contact}
+          </a>
+        </p>
+      </div>
     </div>
   );
-};
-
-export default TermsAndConditions;
+}

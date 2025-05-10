@@ -1,0 +1,99 @@
+{
+  "fr": {
+    "title": "Conditions Générales d'Utilisation",
+    "lastUpdate": "Dernière mise à jour :",
+    "print": "Imprimer",
+    "download": "PDF",
+    "acceptLabel": "J'ai lu et j'accepte les conditions générales d'utilisation",
+    "acceptButton": "Accepter et continuer",
+    "copyright": "Tous droits réservés.",
+    "legalNotice": "Mentions Légales",
+    "privacyPolicy": "Politique de Confidentialité",
+    "termsOfService": "Conditions d'Utilisation",
+    "contact": "Contact",
+    "help": "Besoin d'aide?",
+    "helpText": "Si vous avez des questions concernant nos conditions générales d'utilisation, n'hésitez pas à nous contacter.",
+    "disclaimer": "Linguify est une plateforme d'apprentissage des langues créée par GPI Software. En utilisant ce site, vous acceptez nos conditions générales d'utilisation et notre politique de confidentialité.",
+    "summary": "Résumé des points clés de nos conditions générales d'utilisation",
+    "summaryDisclaimer": "Ce résumé est fourni pour votre commodité. Pour une compréhension complète, veuillez lire l'intégralité des conditions.",
+    "readFullTerms": "Lire les conditions complètes",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "openNew": "Ouvrir dans une nouvelle fenêtre",
+    "pdfAlert": "Cette fonctionnalité téléchargerait les termes et conditions au format PDF dans une implémentation réelle.",
+    "sections": [
+      {
+        "id": "item-1",
+        "title": "1. Objet",
+        "content": "Les présentes Conditions Générales d'Utilisation (\"CGU\") ont pour objet de définir les droits et obligations des utilisateurs de l'application Linguify, une plateforme d'apprentissage des langues accessible via abonnement. Linguify est un produit créé par GPI Software qui a pour but d'améliorer l'éducation linguistique."
+      },
+      {
+        "id": "item-2",
+        "title": "2. Acceptation des Conditions",
+        "content": "En s'inscrivant sur Linguify et en utilisant l'application, l'utilisateur reconnaît avoir pris connaissance des présentes CGU et s'engage à les respecter."
+      },
+      {
+        "id": "item-3",
+        "title": "3. Accès et Utilisation",
+        "content": "Linguify est accessible via un abonnement mensuel de 10€. L'accès aux services est personnel et non cessible. L'utilisateur est responsable de la confidentialité de ses identifiants."
+      },
+      {
+        "id": "item-4",
+        "title": "4. Abonnement et Paiement",
+        "content": "Tarification : L'abonnement à Linguify est facturé 10€ par mois. Les paiements sont effectués en ligne via les moyens de paiement sécurisés proposés sur la plateforme.\n\nRenouvellement et Résiliation : L'abonnement est reconduit automatiquement chaque mois sauf résiliation par l'utilisateur avant la date d'échéance.\n\nDroit de rétractation : Conformément à l'article L.221-28 du Code de la consommation, le droit de rétractation ne s'applique pas à la fourniture de contenus numériques immédiatement accessibles."
+      },
+      {
+        "id": "item-5",
+        "title": "5. Responsabilités",
+        "content": "Responsabilité de Linguify : Linguify s'engage à assurer l'accessibilité et le bon fonctionnement de son service mais ne saurait être tenu responsable des interruptions, défaillances techniques ou pertes de données.\n\nResponsabilité de l'utilisateur : L'utilisateur s'engage à ne pas utiliser Linguify à des fins frauduleuses, illégales ou contraires aux présentes CGU."
+      },
+      {
+        "id": "item-6",
+        "title": "6. Propriété Intellectuelle",
+        "content": "Tous les contenus présents sur l'application Linguify, y compris mais sans s'y limiter, les textes, images, vidéos, et logiciels, sont créés et gérés par Linguify, un produit de GPI Software. Ils sont protégés par les lois sur la propriété intellectuelle. Toute reproduction, diffusion ou utilisation non autorisée est interdite sans l'accord préalable de Linguify."
+      },
+      {
+        "id": "item-7",
+        "title": "7. Protection des Données Personnelles",
+        "content": "Linguify collecte et traite les données personnelles de l'utilisateur conformément à sa Politique de Confidentialité, disponible sur le site."
+      },
+      {
+        "id": "item-8",
+        "title": "8. Modification des CGU",
+        "content": "Linguify se réserve le droit de modifier les présentes CGU. L'utilisateur sera informé des modifications par tout moyen approprié."
+      },
+      {
+        "id": "item-9",
+        "title": "9. Droit Applicable et Litiges",
+        "content": "Les présentes CGU sont soumises au droit français. Tout litige relève de la compétence exclusive des tribunaux du ressort du siège social de Linguify."
+      },
+      {
+        "id": "item-10",
+        "title": "10. Contact",
+        "content": "Pour toute question relative aux CGU, l'utilisateur peut contacter Linguify à l'adresse suivante : support@linguify.com."
+      }
+    ],
+    "keyPoints": [
+      {
+        "title": "Abonnement mensuel",
+        "description": "Linguify est accessible via un abonnement mensuel de 10€ automatiquement renouvelé."
+      },
+      {
+        "title": "Accès personnel",
+        "description": "Votre compte est personnel et non cessible. Vous êtes responsable de la confidentialité de vos identifiants."
+      },
+      {
+        "title": "Contenu protégé",
+        "description": "Tous les contenus de Linguify sont protégés par les lois sur la propriété intellectuelle."
+      },
+      {
+        "title": "Protection des données",
+        "description": "Vos données personnelles sont traitées conformément à notre Politique de Confidentialité."
+      },
+      {
+        "title": "Droit applicable",
+        "description": "Les CGU sont soumises au droit français. Tout litige relève de la compétence des tribunaux français."
+      }
+    ]
+  }
+}

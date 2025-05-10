@@ -1,0 +1,17 @@
+{
+  "steps": {
+    "terms": {
+      "title": "Juridische Voorwaarden",
+      "description": "Lees en accepteer onze algemene voorwaarden voordat u doorgaat.",
+      "alertTitle": "Belangrijke Informatie",
+      "reviewPrompt": "Lees onze voorwaarden",
+      "instructions": "Klik op het selectievakje hieronder nadat u onze algemene voorwaarden heeft gelezen om door te gaan met uw registratie.",
+      "additionalNote": "Door onze voorwaarden te accepteren, erkent u ook ons Privacybeleid en gaat u ermee akkoord belangrijke updates over onze service te ontvangen.",
+      "acceptError": "U moet de algemene voorwaarden accepteren om door te gaan"
+    }
+  },
+  "validationErrors": {
+    "termsRequired": "Acceptatie van voorwaarden vereist",
+    "pleaseAcceptTerms": "Accepteer de algemene voorwaarden om door te gaan"
+  }
+}

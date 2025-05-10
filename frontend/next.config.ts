@@ -18,6 +18,20 @@ const nextConfig: NextConfig = {
         ],
       },
     ]
+  },
+
+  // Proxy API requests to backend server
+  async rewrites() {
+    return [
+      {
+        source: '/api/auth/terms/:path*',
+        destination: 'http://localhost:8000/api/auth/terms/:path*'
+      },
+      {
+        source: '/api/auth/:path*',
+        destination: 'http://localhost:8000/api/auth/:path*'
+      }
+    ]
   }
 };
 

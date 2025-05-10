@@ -1,0 +1,20 @@
+Action Required: Accept Terms and Conditions
+==========================================
+
+Dear {{ user.first_name|default:user.username }},
+
+We've updated our Terms and Conditions for {{ app_name }}, and we need your acceptance to continue using the platform with full functionality.
+
+Please take a moment to review and accept our updated terms by visiting:
+{{ terms_url }}
+
+If you have any questions about these changes, please contact our support team at support@linguify.com.
+
+Thank you for being part of our community!
+
+Best regards,
+The {{ app_name }} Team
+
+---
+This email was sent to {{ user.email }}.
+© {% now "Y" %} {{ app_name }}. All rights reserved.

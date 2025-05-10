@@ -11,6 +11,7 @@ from drf_spectacular.views import (
     SpectacularSwaggerView, 
     SpectacularRedocView
     )
+from apps.authentication.views_terms import accept_terms, terms_status
 
 
 def redirect_to_admin(request):
@@ -24,6 +25,9 @@ urlpatterns = [
     path('csrf/', utils.get_csrf_token, name='get_csrf_token'),
     path('api/', include('rest_framework.urls')),
     path('api/auth/', include('apps.authentication.urls')),
+    # Terms and conditions endpoints
+    path('api/auth/terms/accept', accept_terms, name='accept_terms'),
+    path('api/auth/terms/status', terms_status, name='terms_status'),
     path('api/v1/course/', include('apps.course.urls', namespace='course')),
     path('api/v1/revision/', include('apps.revision.urls', namespace='revision')),
     path('api/v1/notebook/', include('apps.notebook.urls', namespace='notebook')),

@@ -1,0 +1,167 @@
+{
+  "title": "Welkom bij Linguify",
+  "progress": {
+    "step": "Stap {current} van {total}",
+    "percentComplete": "{percent}% Voltooid"
+  },
+  "actions": {
+    "next": "Volgende",
+    "back": "Terug",
+    "skip": "Overslaan",
+    "continue": "Doorgaan",
+    "saveProfile": "Profiel opslaan",
+    "startLearning": "Begin met leren"
+  },
+  "steps": {
+    "welcome": {
+      "title": "Welkom bij Linguify!",
+      "description": "Laten we je profiel en taalvoorkeuren instellen om je leerervaring aan te passen.",
+      "timePromise": "Dit duurt slechts 2 minuten om te voltooien.",
+      "features": {
+        "profileSetup": {
+          "title": "Profielinstellingen",
+          "description": "Personaliseer je account"
+        },
+        "languageSettings": {
+          "title": "Taalinstellingen",
+          "description": "Kies wat je wilt leren"
+        }
+      }
+    },
+    "personalInfo": {
+      "title": "Vertel ons over jezelf",
+      "description": "Deze informatie helpt je leerervaring te personaliseren. Velden gemarkeerd met * zijn verplicht.",
+      "fields": {
+        "firstName": {
+          "label": "Voornaam",
+          "required": true,
+          "error": "Voornaam is verplicht"
+        },
+        "lastName": {
+          "label": "Achternaam",
+          "required": true,
+          "error": "Achternaam is verplicht"
+        },
+        "username": {
+          "label": "Gebruikersnaam",
+          "required": true,
+          "helper": "Dit wordt je weergavenaam op het platform",
+          "error": "Gebruikersnaam is verplicht",
+          "minLengthError": "Gebruikersnaam moet minimaal 3 tekens bevatten"
+        },
+        "bio": {
+          "label": "Bio (Optioneel)",
+          "helper": "Vertel andere leerlingen een beetje over jezelf"
+        }
+      }
+    },
+    "languages": {
+      "title": "Jouw talen",
+      "description": "Je moedertaal en doeltaal moeten verschillend zijn. Dit helpt ons je leertraject te personaliseren.",
+      "fields": {
+        "nativeLanguage": {
+          "label": "Moedertaal",
+          "required": true,
+          "helper": "De taal waarin je vloeiend bent",
+          "error": "Moedertaal is verplicht"
+        },
+        "targetLanguage": {
+          "label": "Doeltaal",
+          "required": true,
+          "helper": "De taal die je wilt leren",
+          "error": "Doeltaal is verplicht",
+          "sameAsNativeError": "Doeltaal moet verschillen van moedertaal"
+        },
+        "learningConfirmation": "{target} leren vanuit {native}"
+      }
+    },
+    "learningPreferences": {
+      "title": "Leervoorkeuren",
+      "description": "Deze instellingen helpen je lessen aan te passen en bepalen welke inhoud je zult zien.",
+      "settingsBoxTitle": "Pas je leerervaring aan",
+      "settingsBoxDescription": "Deze instellingen helpen je lessen aan te passen en bepalen welke inhoud je zult zien.",
+      "fields": {
+        "languageLevel": {
+          "label": "Je huidige niveau",
+          "helper": "Je huidige vaardigheid in de doeltaal"
+        },
+        "objectives": {
+          "label": "Leerdoelen",
+          "helper": "Wat je wilt bereiken met je taaltraining"
+        },
+        "interfaceLanguage": {
+          "label": "Interfacetaal",
+          "helper": "De taal die wordt gebruikt voor knoppen, menu's en instructies"
+        }
+      }
+    },
+    "review": {
+      "title": "Controleer je informatie",
+      "description": "Controleer je informatie voordat je je profielinstellingen afrondt.",
+      "table": {
+        "field": "Veld",
+        "currentValue": "Huidige waarde",
+        "newValue": "Nieuwe waarde",
+        "updated": "Bijgewerkt"
+      },
+      "refreshData": "Huidige gegevens vernieuwen",
+      "fieldsToUpdate": "{count} veld(en) worden bijgewerkt"
+    },
+    "completion": {
+      "title": "Je bent klaar!",
+      "description": "Je profiel is geconfigureerd. Nu kun je beginnen met je taalreis bij Linguify.",
+      "learningPath": {
+        "title": "Jouw leertraject",
+        "targetLanguage": "Leertaal:",
+        "nativeLanguage": "Moedertaal:",
+        "level": "Huidig niveau:",
+        "objectives": "Leerdoelen:",
+        "interfaceLanguage": "Interfacetaal:"
+      },
+      "successMessage": {
+        "title": "Profiel succesvol bijgewerkt",
+        "timestamp": "Je profiel is bijgewerkt op {timestamp}",
+        "viewResponse": "Serverrespons bekijken"
+      }
+    }
+  },
+  "validationErrors": {
+    "required": "{field} is verplicht",
+    "missingInformation": "Ontbrekende informatie",
+    "fillRequired": "Vul alle verplichte velden in",
+    "languageSelection": "Taalselectie vereist",
+    "selectBothLanguages": "Selecteer zowel je moedertaal als je doeltaal",
+    "sameLanguage": "Ongeldige taalselectie",
+    "differentLanguages": "Moedertaal en doeltaal moeten verschillend zijn"
+  },
+  "messages": {
+    "saving": "Opslaan...",
+    "profileUpdated": "Profiel succesvol bijgewerkt!",
+    "journeyBegins": "Je taalreis begint nu.",
+    "errorUpdating": "Fout bij het bijwerken van profiel",
+    "errorFetching": "Fout bij het ophalen van profiel",
+    "couldNotLoad": "Kon je huidige profielgegevens niet laden",
+    "validationError": "Validatiefout",
+    "fixErrors": "Corrigeer de fouten voordat je verzendt",
+    "profileDataRefreshed": "Profielgegevens vernieuwd",
+    "dataLoaded": "Nieuwste gegevens geladen van server"
+  },
+  "devTools": {
+    "toggle": "Ontwikkelaarshulpmiddelen in-/uitschakelen",
+    "sections": {
+      "formData": "Formuliergegevens",
+      "serverResponse": "Laatste serverrespons",
+      "userData": "Huidige gebruikersgegevens",
+      "apiLog": "API-verzoeken logboek"
+    },
+    "noData": {
+      "response": "Nog geen respons ontvangen",
+      "user": "Geen gebruikersgegevens beschikbaar",
+      "api": "Geen API-verzoeken gelogd"
+    },
+    "actions": {
+      "refreshData": "Servergegevens vernieuwen",
+      "clearLog": "Logboek wissen"
+    }
+  }
+}

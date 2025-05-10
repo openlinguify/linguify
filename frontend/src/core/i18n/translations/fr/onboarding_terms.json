@@ -1,0 +1,17 @@
+{
+  "steps": {
+    "terms": {
+      "title": "Conditions Légales",
+      "description": "Veuillez consulter et accepter nos conditions d'utilisation avant de continuer.",
+      "alertTitle": "Information Importante",
+      "reviewPrompt": "Veuillez consulter nos conditions",
+      "instructions": "Cliquez sur la case ci-dessous après avoir lu nos conditions d'utilisation pour poursuivre votre inscription.",
+      "additionalNote": "En acceptant nos conditions, vous reconnaissez également notre Politique de Confidentialité et acceptez de recevoir des mises à jour importantes concernant notre service.",
+      "acceptError": "Vous devez accepter les conditions d'utilisation pour continuer"
+    }
+  },
+  "validationErrors": {
+    "termsRequired": "Acceptation des conditions requise",
+    "pleaseAcceptTerms": "Veuillez accepter les conditions d'utilisation pour continuer"
+  }
+}

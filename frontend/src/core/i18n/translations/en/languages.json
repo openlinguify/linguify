@@ -1,0 +1,28 @@
+{
+  "english": "English",
+  "french": "French",
+  "spanish": "Spanish",
+  "dutch": "Dutch",
+  "frenchNative": "Français",
+  "spanishNative": "Español",
+  "dutchNative": "Nederlands",
+  "levels": {
+    "a1": "A1 - Beginner",
+    "a2": "A2 - Elementary",
+    "b1": "B1 - Intermediate",
+    "b2": "B2 - Upper Intermediate", 
+    "c1": "C1 - Advanced",
+    "c2": "C2 - Mastery"
+  },
+  "objectives": {
+    "travel": "Travel",
+    "business": "Business",
+    "liveAbroad": "Live Abroad",
+    "exam": "Exam Preparation",
+    "fun": "For Fun",
+    "work": "Work",
+    "school": "School",
+    "study": "Study",
+    "personal": "Personal Development"
+  }
+}

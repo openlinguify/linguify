@@ -1,0 +1,99 @@
+{
+  "en": {
+    "title": "Terms and Conditions",
+    "lastUpdate": "Last updated:",
+    "print": "Print",
+    "download": "PDF",
+    "acceptLabel": "I have read and accept the terms and conditions",
+    "acceptButton": "Accept and continue",
+    "copyright": "All rights reserved.",
+    "legalNotice": "Legal Notice",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "contact": "Contact",
+    "help": "Need help?",
+    "helpText": "If you have any questions regarding our terms and conditions, please don't hesitate to contact us.",
+    "disclaimer": "Linguify is a language learning platform created by GPI Software. By using this site, you accept our terms and conditions and our privacy policy.",
+    "summary": "Summary of key points of our terms and conditions",
+    "summaryDisclaimer": "This summary is provided for your convenience. For a complete understanding, please read the full terms.",
+    "readFullTerms": "Read full terms",
+    "close": "Close",
+    "cancel": "Cancel",
+    "openNew": "Open in new window",
+    "pdfAlert": "This feature would download the terms and conditions in PDF format in a real implementation.",
+    "sections": [
+      {
+        "id": "item-1",
+        "title": "1. Purpose",
+        "content": "These Terms and Conditions of Use (\"T&Cs\") define the rights and obligations of users of the Linguify application, a language learning platform accessible via subscription. Linguify is a product created by GPI Software that aims to improve language education."
+      },
+      {
+        "id": "item-2",
+        "title": "2. Acceptance of Terms",
+        "content": "By registering on Linguify and using the application, the user acknowledges having read these T&Cs and agrees to abide by them."
+      },
+      {
+        "id": "item-3",
+        "title": "3. Access and Use",
+        "content": "Linguify is accessible via a monthly subscription of €10. Access to services is personal and non-transferable. The user is responsible for the confidentiality of their credentials."
+      },
+      {
+        "id": "item-4",
+        "title": "4. Subscription and Payment",
+        "content": "Pricing: The Linguify subscription is charged at €10 per month. Payments are made online via secure payment methods offered on the platform.\n\nRenewal and Termination: The subscription is automatically renewed each month unless terminated by the user before the due date.\n\nRight of Withdrawal: In accordance with Article L.221-28 of the Consumer Code, the right of withdrawal does not apply to the supply of immediately accessible digital content."
+      },
+      {
+        "id": "item-5",
+        "title": "5. Responsibilities",
+        "content": "Linguify's Responsibility: Linguify commits to ensuring the accessibility and proper functioning of its service but cannot be held responsible for interruptions, technical failures, or data loss.\n\nUser's Responsibility: The user agrees not to use Linguify for fraudulent, illegal purposes or in ways contrary to these T&Cs."
+      },
+      {
+        "id": "item-6",
+        "title": "6. Intellectual Property",
+        "content": "All content present on the Linguify application, including but not limited to texts, images, videos, and software, is created and managed by Linguify, a product of GPI Software. They are protected by intellectual property laws. Any unauthorized reproduction, distribution, or use is prohibited without the prior consent of Linguify."
+      },
+      {
+        "id": "item-7",
+        "title": "7. Personal Data Protection",
+        "content": "Linguify collects and processes user personal data in accordance with its Privacy Policy, available on the site."
+      },
+      {
+        "id": "item-8",
+        "title": "8. Modification of T&Cs",
+        "content": "Linguify reserves the right to modify these T&Cs. The user will be informed of modifications by any appropriate means."
+      },
+      {
+        "id": "item-9",
+        "title": "9. Applicable Law and Disputes",
+        "content": "These T&Cs are subject to French law. Any dispute falls under the exclusive jurisdiction of the courts in the jurisdiction of Linguify's headquarters."
+      },
+      {
+        "id": "item-10",
+        "title": "10. Contact",
+        "content": "For any questions regarding the T&Cs, the user can contact Linguify at the following address: support@linguify.com."
+      }
+    ],
+    "keyPoints": [
+      {
+        "title": "Monthly Subscription",
+        "description": "Linguify is accessible via a €10 monthly subscription that automatically renews."
+      },
+      {
+        "title": "Personal Access",
+        "description": "Your account is personal and non-transferable. You are responsible for maintaining the confidentiality of your credentials."
+      },
+      {
+        "title": "Protected Content",
+        "description": "All Linguify content is protected by intellectual property laws."
+      },
+      {
+        "title": "Data Protection",
+        "description": "Your personal data is processed in accordance with our Privacy Policy."
+      },
+      {
+        "title": "Applicable Law",
+        "description": "The T&Cs are subject to French law. Any disputes fall under the jurisdiction of French courts."
+      }
+    ]
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "title": "Bienvenue sur Linguify",
+  "progress": {
+    "step": "Étape {current} sur {total}",
+    "percentComplete": "{percent}% Complété"
+  },
+  "actions": {
+    "next": "Suivant",
+    "back": "Retour",
+    "skip": "Passer",
+    "continue": "Continuer",
+    "saveProfile": "Enregistrer le profil",
+    "startLearning": "Commencer à apprendre"
+  },
+  "steps": {
+    "welcome": {
+      "title": "Bienvenue sur Linguify !",
+      "description": "Configurons votre profil et vos préférences linguistiques pour personnaliser votre expérience d'apprentissage.",
+      "timePromise": "Cela ne prendra que 2 minutes.",
+      "features": {
+        "profileSetup": {
+          "title": "Configuration du profil",
+          "description": "Personnalisez votre compte"
+        },
+        "languageSettings": {
+          "title": "Paramètres de langue",
+          "description": "Choisissez ce que vous voulez apprendre"
+        }
+      }
+    },
+    "personalInfo": {
+      "title": "Parlez-nous de vous",
+      "description": "Ces informations aident à personnaliser votre expérience d'apprentissage. Les champs marqués d'un * sont obligatoires.",
+      "fields": {
+        "firstName": {
+          "label": "Prénom",
+          "required": true,
+          "error": "Le prénom est requis"
+        },
+        "lastName": {
+          "label": "Nom",
+          "required": true,
+          "error": "Le nom est requis"
+        },
+        "username": {
+          "label": "Nom d'utilisateur",
+          "required": true,
+          "helper": "Ce nom sera affiché sur la plateforme",
+          "error": "Le nom d'utilisateur est requis",
+          "minLengthError": "Le nom d'utilisateur doit comporter au moins 3 caractères"
+        },
+        "bio": {
+          "label": "Bio (Optionnel)",
+          "helper": "Parlez un peu de vous aux autres apprenants"
+        }
+      }
+    },
+    "languages": {
+      "title": "Vos langues",
+      "description": "Votre langue maternelle et votre langue cible doivent être différentes. Cela nous aide à personnaliser votre parcours d'apprentissage.",
+      "fields": {
+        "nativeLanguage": {
+          "label": "Langue maternelle",
+          "required": true,
+          "helper": "La langue que vous maîtrisez",
+          "error": "La langue maternelle est requise"
+        },
+        "targetLanguage": {
+          "label": "Langue cible",
+          "required": true,
+          "helper": "La langue que vous souhaitez apprendre",
+          "error": "La langue cible est requise",
+          "sameAsNativeError": "La langue cible doit être différente de la langue maternelle"
+        },
+        "learningConfirmation": "Apprentissage du {target} à partir du {native}"
+      }
+    },
+    "learningPreferences": {
+      "title": "Préférences d'apprentissage",
+      "description": "Ces paramètres aident à adapter vos leçons et à déterminer le contenu que vous verrez.",
+      "settingsBoxTitle": "Personnalisez votre expérience d'apprentissage",
+      "settingsBoxDescription": "Ces paramètres aident à adapter vos leçons et à déterminer le contenu que vous verrez.",
+      "fields": {
+        "languageLevel": {
+          "label": "Votre niveau actuel",
+          "helper": "Votre niveau de compétence actuel dans la langue cible"
+        },
+        "objectives": {
+          "label": "Objectifs d'apprentissage",
+          "helper": "Ce que vous voulez accomplir avec votre apprentissage des langues"
+        },
+        "interfaceLanguage": {
+          "label": "Langue de l'interface",
+          "helper": "La langue utilisée pour les boutons, menus et instructions"
+        }
+      }
+    },
+    "review": {
+      "title": "Vérifiez vos informations",
+      "description": "Veuillez vérifier vos informations avant de finaliser la configuration de votre profil.",
+      "table": {
+        "field": "Champ",
+        "currentValue": "Valeur actuelle",
+        "newValue": "Nouvelle valeur",
+        "updated": "Mis à jour"
+      },
+      "refreshData": "Actualiser les données",
+      "fieldsToUpdate": "{count} champ(s) seront mis à jour"
+    },
+    "completion": {
+      "title": "Tout est prêt !",
+      "description": "Votre profil a été configuré. Vous pouvez maintenant commencer votre parcours d'apprentissage des langues avec Linguify.",
+      "learningPath": {
+        "title": "Votre parcours d'apprentissage",
+        "targetLanguage": "Langue d'apprentissage :",
+        "nativeLanguage": "Langue maternelle :",
+        "level": "Niveau actuel :",
+        "objectives": "Objectifs d'apprentissage :",
+        "interfaceLanguage": "Langue de l'interface :"
+      },
+      "successMessage": {
+        "title": "Profil mis à jour avec succès",
+        "timestamp": "Votre profil a été mis à jour le {timestamp}",
+        "viewResponse": "Voir la réponse du serveur"
+      }
+    }
+  },
+  "validationErrors": {
+    "required": "{field} est requis",
+    "missingInformation": "Informations manquantes",
+    "fillRequired": "Veuillez remplir tous les champs obligatoires",
+    "languageSelection": "Sélection de langue requise",
+    "selectBothLanguages": "Veuillez sélectionner à la fois votre langue maternelle et votre langue cible",
+    "sameLanguage": "Sélection de langue invalide",
+    "differentLanguages": "La langue maternelle et la langue cible doivent être différentes"
+  },
+  "messages": {
+    "saving": "Enregistrement en cours...",
+    "profileUpdated": "Profil mis à jour avec succès !",
+    "journeyBegins": "Votre parcours d'apprentissage des langues commence maintenant.",
+    "errorUpdating": "Erreur lors de la mise à jour du profil",
+    "errorFetching": "Erreur lors de la récupération du profil",
+    "couldNotLoad": "Impossible de charger les données de votre profil actuel",
+    "validationError": "Erreur de validation",
+    "fixErrors": "Veuillez corriger les erreurs avant de soumettre",
+    "profileDataRefreshed": "Données du profil actualisées",
+    "dataLoaded": "Dernières données chargées du serveur"
+  },
+  "devTools": {
+    "toggle": "Afficher/masquer les outils de développement",
+    "sections": {
+      "formData": "Données du formulaire",
+      "serverResponse": "Dernière réponse du serveur",
+      "userData": "Données utilisateur actuelles",
+      "apiLog": "Journal des requêtes API"
+    },
+    "noData": {
+      "response": "Aucune réponse reçue pour le moment",
+      "user": "Aucune donnée utilisateur disponible",
+      "api": "Aucune requête API enregistrée"
+    },
+    "actions": {
+      "refreshData": "Actualiser les données du serveur",
+      "clearLog": "Effacer le journal"
+    }
+  }
+}

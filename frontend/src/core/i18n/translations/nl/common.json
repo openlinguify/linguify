@@ -588,5 +588,19 @@
       "or": "of",
       "contact": "neem contact op met ons team"
     }
+  },
+  "termsNotification": {
+    "banner": {
+      "message": "Gelieve onze bijgewerkte Algemene Voorwaarden te bekijken en te accepteren om Linguify te blijven gebruiken.",
+      "button": "Nu bekijken"
+    },
+    "inline": {
+      "title": "Bijwerking van Algemene Voorwaarden",
+      "message": "We hebben onze Algemene Voorwaarden bijgewerkt. Gelieve deze te bekijken en te accepteren om door te gaan.",
+      "button": "Bekijken & Accepteren"
+    },
+    "minimal": {
+      "ariaLabel": "Bekijk nieuwe Algemene Voorwaarden"
+    }
   }
 }

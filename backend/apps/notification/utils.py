@@ -113,26 +113,33 @@ class NotificationManager:
     def send_realtime_notification(notification):
         """
         Send a real-time notification via WebSocket
-        
+
         Args:
             notification: The Notification instance to send
         """
         try:
             # Serialize notification
             serializer = NotificationSerializer(notification)
-            
+
             # Get channel layer
-            channel_layer = get_channel_layer()
-            
-            # Send to user's notification group
-            async_to_sync(channel_layer.group_send)(
-                f'user_{notification.user.id}_notifications',
-                {
-                    'type': 'notification_message',
-                    'notification': serializer.data
-                }
-            )
-            return True
+            try:
+                channel_layer = get_channel_layer()
+
+                # Send to user's notification group
+                async_to_sync(channel_layer.group_send)(
+                    f'user_{notification.user.id}_notifications',
+                    {
+                        'type': 'notification_message',
+                        'notification': serializer.data
+                    }
+                )
+                return True
+            except Exception as channel_error:
+                print(f"Error sending notification via WebSocket: {channel_error}")
+                # If WebSocket fails but we still created the notification,
+                # consider it a partial success since the notification will be
+                # visible in the UI when it loads
+                return True
         except Exception as e:
             print(f"Error sending real-time notification: {e}")
             return False

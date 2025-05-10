@@ -26,8 +26,8 @@ class CoachProfileInline(admin.StackedInline):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'username', 'full_name', 'language_info', 'is_active', 'is_staff', 'is_coach')
-    list_filter = ('is_active', 'is_staff', 'is_coach', 'native_language', 'target_language')
+    list_display = ('email', 'username', 'full_name', 'language_info', 'terms_status', 'is_active', 'is_staff', 'is_coach')
+    list_filter = ('terms_accepted', 'is_active', 'is_staff', 'is_coach', 'native_language', 'target_language')
     search_fields = ('email', 'username', 'first_name', 'last_name', 'public_id')
     readonly_fields = ('public_id', 'created_at', 'updated_at', 'last_login')
     exclude = ('password',)  # Do not expose password hash in admin forms
@@ -44,6 +44,9 @@ class UserAdmin(admin.ModelAdmin):
         }),
         ('Language Settings', {
             'fields': ('native_language', 'target_language', 'language_level', 'objectives'),
+        }),
+        ('Terms & Conditions', {
+            'fields': ('terms_accepted', 'terms_accepted_at', 'terms_version'),
         }),
         ('Status', {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'is_coach'),
@@ -69,6 +72,14 @@ class UserAdmin(admin.ModelAdmin):
     def language_info(self, obj):
         return f"{obj.native_language} → {obj.target_language} ({obj.language_level})"
     language_info.short_description = "Languages"
+
+    def terms_status(self, obj):
+        if obj.terms_accepted:
+            accepted_date = obj.terms_accepted_at.strftime('%Y-%m-%d') if obj.terms_accepted_at else 'Unknown date'
+            return format_html('<span style="color: green;">✓</span> Accepted ({}, v{})',
+                              accepted_date, obj.terms_version or 'n/a')
+        return format_html('<span style="color: red;">✗</span> Not accepted')
+    terms_status.short_description = "Terms & Conditions"
     
     def activate_users(self, request, queryset):
         updated = queryset.update(is_active=True)

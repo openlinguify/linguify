@@ -12,6 +12,7 @@ from django.contrib.auth.password_validation import validate_password
 from decimal import Decimal
 from django.core.validators import validate_email
 from apps.authentication.models import User
+from django.utils import timezone
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -106,14 +107,14 @@ class MeSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'public_id',  # UUID
-            'username', 
-            'email', 
-            'first_name', 
+            'username',
+            'email',
+            'first_name',
             'last_name',
             'name',  # Full name
             'birthday',
             'gender',
-            'native_language', 
+            'native_language',
             'target_language',
             'language_level',
             'objectives',
@@ -123,16 +124,20 @@ class MeSerializer(serializers.ModelSerializer):
             'profile_picture',
             'bio',
             'created_at',
-            'updated_at'
+            'updated_at',
+            'terms_accepted',
+            'terms_accepted_at',
+            'terms_version'
         ]
         read_only_fields = [
-            'public_id', 
-            'email', 
-            'is_active', 
+            'public_id',
+            'email',
+            'is_active',
             'is_coach',
-            'is_subscribed', 
-            'created_at', 
-            'updated_at'
+            'is_subscribed',
+            'created_at',
+            'updated_at',
+            'terms_accepted_at'
         ]
 
     def get_name(self, obj):
@@ -142,6 +147,37 @@ class MeSerializer(serializers.ModelSerializer):
     def get_age(self, obj):
         """Retrieve user's birthday"""
         return obj.birthday
+
+class TermsAcceptanceSerializer(serializers.Serializer):
+    """
+    Serializer for accepting terms and conditions
+    """
+    accept = serializers.BooleanField(required=True)
+    version = serializers.CharField(required=False, default='v1.0')
+
+    def validate_accept(self, value):
+        if not value:
+            raise serializers.ValidationError("You must accept the terms and conditions to continue.")
+        return value
+
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        version = self.validated_data.get('version', 'v1.0')
+
+        print(f"Saving terms acceptance for user: {user.email}")
+
+        try:
+            # Mark terms as accepted
+            user.terms_accepted = True
+            user.terms_accepted_at = timezone.now()
+            user.terms_version = version
+            user.save()
+            print(f"Terms acceptance saved successfully for {user.email}")
+            return user
+        except Exception as e:
+            print(f"Error saving terms acceptance: {str(e)}")
+            raise
+
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
