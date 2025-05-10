@@ -32,7 +32,14 @@ export default function NotebookClient({
       } else {
         data = await notebookAPI.getNotes(filter);
       }
-      setNotes(data);
+      
+      // Process notes to decode content for display
+      const processedNotes = data.map(note => ({
+        ...note,
+        content: note.content ? decodeURIComponent(note.content) : ""
+      }));
+      
+      setNotes(processedNotes);
       setError(null);
     } catch (err) {
       setError("Failed to load notes. Please try again later.");
@@ -46,8 +53,21 @@ export default function NotebookClient({
     if (!newNote.title || !newNote.content) return;
 
     try {
-      const createdNote = await notebookAPI.createNote(newNote);
-      setNotes([...notes, createdNote]);
+      // Encode content before creating the note
+      const noteToCreate = {
+        ...newNote,
+        content: encodeURIComponent(newNote.content)
+      };
+      
+      const createdNote = await notebookAPI.createNote(noteToCreate);
+      
+      // Make sure to decode the content for display
+      const displayNote = {
+        ...createdNote,
+        content: createdNote.content ? decodeURIComponent(createdNote.content) : ""
+      };
+      
+      setNotes([...notes, displayNote]);
       setNewNote({ title: "", content: "" });
     } catch (err) {
       setError("Failed to create note. Please try again.");
@@ -57,8 +77,24 @@ export default function NotebookClient({
 
   const handleUpdateNote = async (id: number, updatedData: Partial<Note>) => {
     try {
+      // Encode content if it exists in updatedData
+      if (updatedData.content) {
+        updatedData = {
+          ...updatedData,
+          content: encodeURIComponent(updatedData.content)
+        };
+      }
+      
       const updatedNote = await notebookAPI.updateNote(id, updatedData);
-      setNotes(notes.map((note) => (note.id === id ? updatedNote : note)));
+      
+      // If the note is updated successfully, update the local state
+      // We need to ensure the content is displayed properly by decoding it
+      const displayNote = {
+        ...updatedNote,
+        content: updatedNote.content ? decodeURIComponent(updatedNote.content) : ""
+      };
+      
+      setNotes(notes.map((note) => (note.id === id ? displayNote : note)));
       setEditingId(null);
     } catch (err) {
       setError("Failed to update note. Please try again.");
