@@ -29,42 +29,68 @@ export default function CallbackPage() {
 
   // Traitement du retour Auth0
   useEffect(() => {
+    console.log("[Auth Flow] Callback page loaded, processing Auth0 response");
+    console.log("[Auth Flow] Auth0 state:", {
+      isLoading,
+      isAuthenticated,
+      hasUser: !!user,
+      hasError: !!error,
+      url: typeof window !== 'undefined' ? window.location.href : 'SSR'
+    });
+
     // Débloquer automatiquement après 30 secondes quoi qu'il arrive
     const emergencyTimeout = setTimeout(() => {
-      console.log("Redirection de secours activée après 30s");
+      console.log("[Auth Flow] Emergency timeout triggered after 30s, forcing redirect");
       router.push('/');
     }, 30000);
 
     if (!isLoading) {
       if (isAuthenticated && user) {
+        console.log("[Auth Flow] User successfully authenticated with Auth0", {
+          email: user.email,
+          name: user.name,
+          sub: user.sub
+        });
+
         // Récupérer la destination de retour (si spécifiée dans state)
         let returnTo = '/';
         try {
           const urlParams = new URLSearchParams(window.location.search);
           const stateParam = urlParams.get('state');
-          
+          const codeParam = urlParams.get('code');
+
+          console.log("[Auth Flow] Auth0 callback parameters", {
+            hasState: !!stateParam,
+            hasCode: !!codeParam
+          });
+
           if (stateParam) {
             try {
               const decodedState = JSON.parse(atob(stateParam));
               if (decodedState && decodedState.returnTo) {
                 returnTo = decodedState.returnTo;
+                console.log(`[Auth Flow] Return destination found in state: ${returnTo}`);
               }
             } catch (e) {
-              console.log("Could not parse state");
+              console.log("[Auth Flow] Could not parse state as JSON");
               if (stateParam.startsWith('/')) {
                 returnTo = stateParam;
+                console.log(`[Auth Flow] Using state directly as returnTo: ${returnTo}`);
               }
             }
           }
         } catch (e) {
-          console.error("Error processing state:", e);
+          console.error("[Auth Flow] Error processing state:", e);
         }
-        
+
         // Redirection instantanée après authentification réussie
+        console.log(`[Auth Flow] Authentication successful, redirecting to: ${returnTo}`);
         router.push(returnTo);
       } else if (error) {
-        console.error("Auth0 error:", error);
+        console.error("[Auth Flow] Auth0 authentication error:", error);
         setTimeoutReached(true);
+      } else if (!isAuthenticated && !isLoading) {
+        console.log("[Auth Flow] Callback executed but user is not authenticated and no error was reported");
       }
     }
 

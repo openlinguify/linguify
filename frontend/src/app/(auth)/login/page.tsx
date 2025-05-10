@@ -50,21 +50,29 @@ export default function LoginPage() {
   // Rediriger immédiatement vers Auth0 après le montage
   useEffect(() => {
     if (mounted && !isLoading) {
+      console.log("[Auth Flow] Login page mounted, isAuthenticated:", isAuthenticated);
+
       if (isAuthenticated) {
         // Si déjà authentifié, aller directement au tableau de bord
+        console.log("[Auth Flow] User already authenticated, redirecting to dashboard");
         router.push('/');
       } else {
         // Sinon lancer la connexion avec Auth0
+        console.log("[Auth Flow] User not authenticated, initiating Auth0 login");
         const initiateLogin = async () => {
           try {
+            // Capture l'URL d'origine pour la traçabilité
+            const origin = window.location.href;
+            console.log(`[Auth Flow] Login initiated from: ${origin}`);
+
             // returnTo sera utilisé pour rediriger vers la bonne page après connexion
             await login(window.location.pathname);
           } catch (error) {
-            console.error("Login error:", error);
+            console.error("[Auth Flow] Login initiation error:", error);
             setTimeoutReached(true);
           }
         };
-        
+
         initiateLogin();
       }
     }

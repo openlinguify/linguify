@@ -103,7 +103,7 @@ export default function DashboardHome() {
               <div>
                 <h3 className="font-medium font-montserrat">{user?.name || "User"}</h3>
                 <p className="text-sm text-muted-foreground font-inter">
-                  {t('dashboard.learning', {}, "Learning")}: {targetLanguageName} ({languageLevel})
+                  {t('dashboard.learningLanguage', {}, "Learning language")}: {targetLanguageName} ({languageLevel})
                 </p>
               </div>
             </div>

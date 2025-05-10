@@ -172,16 +172,35 @@ export function useTranslation() {
   }, [locale]);
 
   // Translation function with fallback support
+  // Helper function to safely get nested keys
+  const getNestedValue = useCallback((obj: any, keys: string[]): any => {
+    if (!obj || typeof obj !== 'object' || keys.length === 0) return undefined;
+
+    // Handle special case for dashboard.X access pattern
+    // Due to the nested structure where dashboard is stored as { dashboard: { ... } } in translations
+    // but accessed as 'dashboard.X' in code, we need special handling
+    if (keys.length === 2 && keys[0] === 'dashboard' && obj.dashboard && typeof obj.dashboard === 'object') {
+      return obj.dashboard[keys[1]];
+    }
+
+    // Normal nested key traversal
+    let current = obj;
+    for (const key of keys) {
+      if (!current || typeof current !== 'object') return undefined;
+      current = current[key];
+    }
+    return current;
+  }, []);
+
   const t: TranslationFunction = useCallback((key, params = {}, fallback) => {
     const keys = key.split('.');
-    let value: any = translations;
+    let value = getNestedValue(translations, keys);
 
-    for (const k of keys) {
-      if (!value || typeof value !== 'object') {
+    if (value === undefined) {
+      if (process.env.NODE_ENV === 'development') {
         console.debug(`Translation not found for key: ${key}, current locale: ${locale}`);
-        return fallback || key;
       }
-      value = value[k];
+      return fallback || key;
     }
 
     // Simple parameter replacement
@@ -189,9 +208,11 @@ export function useTranslation() {
       return value.replace(/\{(\w+)\}/g, (_, p) => params[p] !== undefined ? params[p] : `{${p}}`);
     }
 
-    console.debug(`No translation string found for key: ${key}, got:`, value);
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(`No translation string found for key: ${key}, got:`, value);
+    }
     return fallback || key;
-  }, [translations, locale]);
+  }, [translations, locale, getNestedValue]);
 
   // Language change handler
   const changeLanguage = useCallback((newLocale: AvailableLocales) => {

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fond principal très clair -->
+  <rect width="1920" height="1080" fill="#fcfcfc" />
+  
+  <!-- Motif subtil avec des formes très discrètes -->
+  <g opacity="0.035">
+    <!-- Quelques courbes discrètes -->
+    <path d="M0 300 Q 480 200, 960 300 T 1920 300" stroke="#DB80A9" stroke-width="50" fill="none" />
+    <path d="M0 600 Q 480 500, 960 600 T 1920 600" stroke="#9364D2" stroke-width="50" fill="none" />
+    <path d="M0 900 Q 480 800, 960 900 T 1920 900" stroke="#F6B66C" stroke-width="50" fill="none" />
+  </g>
+  
+  <!-- Motif de points minimalistes -->
+  <g opacity="0.03">
+    <circle cx="480" cy="150" r="5" fill="#DB80A9" />
+    <circle cx="960" cy="150" r="5" fill="#DB80A9" />
+    <circle cx="1440" cy="150" r="5" fill="#DB80A9" />
+    
+    <circle cx="480" cy="450" r="5" fill="#9364D2" />
+    <circle cx="960" cy="450" r="5" fill="#9364D2" />
+    <circle cx="1440" cy="450" r="5" fill="#9364D2" />
+    
+    <circle cx="480" cy="750" r="5" fill="#F6B66C" />
+    <circle cx="960" cy="750" r="5" fill="#F6B66C" />
+    <circle cx="1440" cy="750" r="5" fill="#F6B66C" />
+  </g>
+  
+  <!-- Dégradé subtil de coin à coin -->
+  <rect width="1920" height="1080" fill="url(#subtle-gradient)" opacity="0.02" />
+  <defs>
+    <linearGradient id="subtle-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DB80A9" />
+      <stop offset="50%" stop-color="#9364D2" />
+      <stop offset="100%" stop-color="#F6B66C" />
+    </linearGradient>
+  </defs>
+</svg>
