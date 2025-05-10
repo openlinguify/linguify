@@ -74,6 +74,28 @@
     "title": "Progress tracking",
     "description": "Visualize your progress and stay motivated"
   },
+  "language_ai": {
+    "title": "AI Conversation",
+    "description": "Practice with an AI language partner anytime",
+    "new_conversation": "New conversation",
+    "current_conversation": "Current conversation",
+    "history": "History",
+    "choose_topic": "Choose a conversation topic",
+    "select_topic": "Select a topic that interests you to start practicing",
+    "conversation_history": "Conversation history",
+    "past_conversations": "Your previous conversations with AI",
+    "start_conversation": "Start a conversation",
+    "no_conversations": "You don't have any conversations yet",
+    "loading": "Loading conversation...",
+    "send_message": "Send message",
+    "type_message": "Type your message here...",
+    "conversation_empty": "Start conversing by sending a message",
+    "conversation_tip": "Practice your language skills in real-time with our AI. Ask questions, request translations, or start a conversation!",
+    "enter_to_send": "Press Enter to send, Shift+Enter for a new line",
+    "network_error": "Network connection issue",
+    "retry": "Retry connection",
+    "demo_mode": "Demo mode active"
+  },
   "community": {
     "title": "Community",
     "description": "Exchange and learn with other users"

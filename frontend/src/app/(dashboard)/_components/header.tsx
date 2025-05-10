@@ -23,6 +23,7 @@ import {
   NotebookPen,
   HandHelping,
   Settings,
+  MessageCircle,
 } from "lucide-react";
 
 // Define types for page configuration
@@ -53,6 +54,7 @@ const Header = () => {
     '/flashcard': { title: t('dashboard.layoutpathname.flashcard'), icon: Brain },
     '/progress': { title: t('dashboard.layoutpathname.progress'), icon: BarChart },
     '/notebook': { title: t('dashboard.layoutpathname.notebook'), icon: NotebookPen },
+    '/language_ai': { title: t('dashboard.conversationAICard.title'), icon: MessageCircle },
     '/help': { title: t('dashboard.helpCard.title'), icon: HandHelping },
     '/settings': { title: t('dashboard.layoutpathname.settings'), icon: Settings },
   };

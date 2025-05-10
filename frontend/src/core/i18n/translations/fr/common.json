@@ -94,6 +94,28 @@
     "title": "Progression",
     "description": "Suivez votre évolution et fixez-vous des objectifs pour rester motivé"
   },
+  "language_ai": {
+    "title": "Conversation IA",
+    "description": "Pratiquez avec un partenaire linguistique IA à tout moment",
+    "new_conversation": "Nouvelle conversation",
+    "current_conversation": "Conversation actuelle",
+    "history": "Historique",
+    "choose_topic": "Choisir un sujet de conversation",
+    "select_topic": "Sélectionnez un sujet qui vous intéresse pour commencer à pratiquer",
+    "conversation_history": "Historique des conversations",
+    "past_conversations": "Vos conversations précédentes avec l'IA",
+    "start_conversation": "Commencer une conversation",
+    "no_conversations": "Vous n'avez pas encore de conversations",
+    "loading": "Chargement de la conversation...",
+    "send_message": "Envoyer le message",
+    "type_message": "Écrivez votre message ici...",
+    "conversation_empty": "Commencez à converser en envoyant un message",
+    "conversation_tip": "Pratiquez vos compétences linguistiques en temps réel avec notre IA. Posez des questions, demandez des traductions ou lancez une conversation !",
+    "enter_to_send": "Appuyez sur Entrée pour envoyer, Maj+Entrée pour un saut de ligne",
+    "network_error": "Problème de connexion réseau",
+    "retry": "Réessayer la connexion",
+    "demo_mode": "Mode démo actif"
+  },
   "community": {
     "title": "Communauté",
     "description": "Échangez et apprenez avec d'autres utilisateurs"

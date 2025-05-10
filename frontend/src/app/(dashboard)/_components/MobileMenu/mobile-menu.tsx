@@ -9,7 +9,8 @@ import {
   Trophy,
   Settings,
   LogOut,
-  Menu
+  Menu,
+  MessageCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/core/i18n/useTranslations";
@@ -81,6 +82,7 @@ export function MobileMenu({
       <div className="p-4 space-y-3">
         <NavItem href="/learning" icon={BookOpen} label={t('sidebar.learning')} onClick={handleClose} />
         <NavItem href="/progress" icon={Trophy} label={t('sidebar.progress')} onClick={handleClose} />
+        <NavItem href="/language_ai" icon={MessageCircle} label={t('dashboard.conversationAICard.title')} onClick={handleClose} />
 
         {isAuthenticated ? (
           <>
