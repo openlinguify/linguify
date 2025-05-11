@@ -74,14 +74,14 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     if (typeof window === 'undefined') {
       return;
     }
-    
+
     // Safely try to initialize
     try {
       if (isAuthenticated && user) {
         // Initialize notification service with auth token
         if (user.token) {
           notificationService.initialize(user.token);
-          
+
           // Add listener for incoming notifications
           const serviceListener = (notification: Notification) => {
             // Add notification to state (if not already there)
@@ -92,13 +92,13 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
               return current;
             });
           };
-          
+
           notificationService.addListener(serviceListener);
-          
+
           // Load notifications from service
           const storedNotifications = notificationService.getNotifications();
           setNotifications(storedNotifications);
-          
+
           return () => {
             // Clean up listener on unmount
             notificationService.removeListener(serviceListener);
@@ -111,16 +111,44 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
         // Not authenticated, use local storage
         loadNotifications();
       }
-      
+
       // Check browser notification permission
       checkNotificationPermission();
-      
+
       // Cleanup expired notifications
       cleanupExpiredNotifications();
     } catch (error) {
       console.error('[NotificationContext] Error initializing notifications:', error);
     }
   }, [isAuthenticated, user]);
+
+  // Listen for notification creation events
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handleNotificationCreated = (event: CustomEvent) => {
+      const notification = event.detail as Notification;
+      if (notification) {
+        // Update notifications state
+        setNotifications(current => {
+          if (!current.some(n => n.id === notification.id)) {
+            return [notification, ...current];
+          }
+          return current;
+        });
+      }
+    };
+
+    window.addEventListener('notificationCreated',
+      handleNotificationCreated as EventListener);
+
+    return () => {
+      window.removeEventListener('notificationCreated',
+        handleNotificationCreated as EventListener);
+    };
+  }, []);
   
   // Load notifications from storage
   const loadNotifications = () => {
@@ -627,6 +655,17 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
   };
   
+  // Ensure the notification service state is synced
+  useEffect(() => {
+    if (typeof window !== 'undefined' && notifications.length === 0) {
+      // Try to load from storage if we have none
+      const storedNotifications = notificationService.getNotifications();
+      if (storedNotifications.length > 0) {
+        setNotifications(storedNotifications);
+      }
+    }
+  }, [notifications.length]);
+
   // Create context value
   const contextValue: NotificationContextType = {
     notifications,

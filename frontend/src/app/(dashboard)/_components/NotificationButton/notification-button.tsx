@@ -43,34 +43,100 @@ export function NotificationButton({ count = 0, className = "" }: NotificationBu
     }
   }, [isAuthenticated]);
 
-  // When user logs in, check for notification
-  useEffect(() => {
-    const checkForNotifications = () => {
-      if (isAuthenticated) {
-        const lesson = lastAccessedLessonService.getLastAccessedLesson();
+  // Function to check for notifications - extracted as a callback to reuse
+  const checkForNotifications = React.useCallback(() => {
+    if (isAuthenticated) {
+      const lesson = lastAccessedLessonService.getLastAccessedLesson();
+      console.log("Checking for notifications, found:", lesson);
+
+      // Only update if the notification status has changed
+      if ((lesson === null && hasNotification) ||
+          (lesson !== null && !hasNotification) ||
+          (lesson !== null && lastLesson?.id !== lesson.id)) {
+
         setLastLesson(lesson);
         setHasNotification(lesson !== null);
-      }
-    };
 
+        // If we have a new notification, show it automatically
+        if (lesson !== null && (!lastLesson || lastLesson.id !== lesson.id)) {
+          console.log("New notification detected!");
+
+          // Only open automatically if this is the first time we see this notification
+          if (!document.hidden) {
+            console.log("Showing notification automatically");
+            setOpen(true);
+            startAutoDismissTimer();
+          }
+        }
+      }
+
+      // If notification is already open, manage timer
+      if (lesson !== null && open) {
+        startAutoDismissTimer();
+      }
+    }
+  }, [isAuthenticated, hasNotification, lastLesson, open]);
+
+  // When user logs in, check for notification
+  useEffect(() => {
     // Check on page load
     checkForNotifications();
 
+    // Create an interval to check for new notifications (every 3 seconds)
+    const notificationInterval = setInterval(checkForNotifications, 3000);
+
     // Setup event listener for when user returns to the tab
     window.addEventListener('focus', checkForNotifications);
-    
+
     return () => {
+      clearInterval(notificationInterval);
       window.removeEventListener('focus', checkForNotifications);
+      // Clean up timer on unmount
+      clearAutoDismissTimer();
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, checkForNotifications]);
+
+  // Auto-dismiss notification timer reference
+  const autoDismissTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  // Function to clear the auto-dismiss timer
+  const clearAutoDismissTimer = () => {
+    if (autoDismissTimerRef.current) {
+      clearTimeout(autoDismissTimerRef.current);
+      autoDismissTimerRef.current = null;
+    }
+  };
+
+  // Function to start auto-dismiss timer (5-7 seconds)
+  const startAutoDismissTimer = () => {
+    clearAutoDismissTimer(); // Clear any existing timer
+    autoDismissTimerRef.current = setTimeout(() => {
+      setOpen(false);
+      // Don't clear the notification data here, just close the popover
+      // This allows the notification to be shown again if the user clicks the bell
+    }, 6000); // 6 seconds - average of the requested 5-7 second range
+  };
+
+  // Dedicated effect to manage auto-dismiss timer based on open state
+  useEffect(() => {
+    // Start timer when popover is opened
+    if (open && (lastLesson || hasNotification)) {
+      startAutoDismissTimer();
+    }
+
+    // Always clean up when component unmounts or dependencies change
+    return () => {
+      clearAutoDismissTimer();
+    };
+  }, [open]);
 
   const handleNotificationClick = () => {
     console.log("Notification button clicked!", { hasNotification, lastLesson });
-    
-    // Force a fresh check from localStorage 
+
+    // Force a fresh check from localStorage
     const currentLesson = lastAccessedLessonService.getLastAccessedLesson();
     console.log("Current lesson data on click (fresh check):", currentLesson);
-    
+
     // If we have a notification, open the popover
     if ((hasNotification && lastLesson) || currentLesson) {
       // Always update state with the latest data from localStorage
@@ -78,9 +144,12 @@ export function NotificationButton({ count = 0, className = "" }: NotificationBu
         setLastLesson(currentLesson);
         setHasNotification(true);
       }
-      
+
       // Open the popover to show notification
       setOpen(true);
+
+      // Start auto-dismiss timer
+      startAutoDismissTimer();
     } else {
       // Otherwise show the default toast
       toast({
@@ -92,6 +161,8 @@ export function NotificationButton({ count = 0, className = "" }: NotificationBu
 
   const handleClose = () => {
     setOpen(false);
+    // Clear the auto-dismiss timer when manually closed
+    clearAutoDismissTimer();
     // Clear the notification after it's been shown
     lastAccessedLessonService.clearLastAccessedLesson();
     setHasNotification(false);
@@ -166,7 +237,7 @@ export function NotificationButton({ count = 0, className = "" }: NotificationBu
       </TooltipProvider>
         
       {currentLessonData && (
-        <PopoverContent className="p-0 border-0 shadow-xl w-[380px]" align="end">
+        <PopoverContent className="p-0 border shadow-xl w-[380px] bg-background" align="end">
           <div className="flex flex-col">
             {/* Current notification */}
             <LessonNotification 

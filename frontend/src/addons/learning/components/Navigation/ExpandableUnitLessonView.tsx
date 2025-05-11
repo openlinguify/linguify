@@ -344,18 +344,21 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
     // Code unchanged
     try {
       const contentProgressData = await progressAPI.getContentLessonProgress(lessonId);
-      
+
       if (contentProgressData && Array.isArray(contentProgressData)) {
         // Convert to map for easy access
         const progressMap: Record<number, any> = {};
-        
+
         contentProgressData.forEach(item => {
-          progressMap[item.content_lesson_details.id] = {
-            completion_percentage: item.completion_percentage || 0,
-            status: item.status || 'not_started'
-          };
+          // Add null check to prevent TypeError
+          if (item && item.content_lesson_details && item.content_lesson_details.id) {
+            progressMap[item.content_lesson_details.id] = {
+              completion_percentage: item.completion_percentage || 0,
+              status: item.status || 'not_started'
+            };
+          }
         });
-        
+
         // Update content progress
         setContentProgress(prev => ({ ...prev, ...progressMap }));
       }
@@ -381,7 +384,6 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
 
   // Handle lesson click
   const handleLessonClick = async (lessonId: number, _unitId: number) => {
-    // Code unchanged
     if (expandedLessonId === lessonId) {
       // If lesson is already expanded, collapse it
       setExpandedLessonId(null);
@@ -389,6 +391,25 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
       // Otherwise expand the lesson and load its content
       setExpandedLessonId(lessonId);
       await loadContentForLesson(lessonId);
+    }
+  };
+
+  // Prefetch data on hover to improve perceived performance
+  const handleLessonHover = (lessonId: number) => {
+    // Only prefetch if not already expanded
+    if (expandedLessonId !== lessonId) {
+      // Direct preloading approach for content lessons
+      const lang = getUserTargetLanguage();
+
+      // Use getContentLessons instead of getLessons - this is the correct API
+      // to preload for better UX when navigating to lesson details
+      courseAPI.getContentLessons(lessonId, lang)
+        .then(() => {
+          console.log(`Prefetched content lessons for lesson ${lessonId}`);
+        })
+        .catch(err => {
+          console.error("Error prefetching content lessons:", err);
+        });
     }
   };
 
@@ -732,13 +753,14 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
                           
                           return (
                             <div key={lesson.id} className="space-y-2">
-                              {/* Lesson card */}
+                              {/* Lesson card with hover prefetching for better performance */}
                               <Card
                                 className={`transform hover:shadow-md cursor-pointer bg-white dark:bg-transparent ${
                                   lessonStatus === 'completed' ? 'border-l-4 border-green-500' :
                                   lessonStatus === 'in_progress' ? 'border-l-4 border-amber-500' : ''
                                 }`}
                                 onClick={() => handleLessonClick(lesson.id, unit.id)}
+                                onMouseEnter={() => handleLessonHover(lesson.id)}
                               >
                                 <div className={isCompactView ? "p-3" : "p-6"}>
                                   {isCompactView ? (

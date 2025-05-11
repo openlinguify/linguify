@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 from django.contrib.contenttypes.models import ContentType
-from ..models.progress_course import UserCourseProgress, UserLessonProgress, UserUnitProgress
+from ..models.progress_course import UserCourseProgress, UserLessonProgress, UserUnitProgress, UserContentLessonProgress
 from apps.course.models import Lesson, Unit, ContentLesson
 
 class UserCourseProgressSerializer(serializers.ModelSerializer):
@@ -115,31 +115,29 @@ class UserUnitProgressSerializer(serializers.ModelSerializer):
         }
 
 class ContentLessonProgressSerializer(serializers.ModelSerializer):
-    """Sérialiseur utilisant UserCourseProgress pour suivre la progression des contenus de leçon"""
+    """Sérialiseur pour suivre la progression des contenus de leçon"""
     content_lesson_details = serializers.SerializerMethodField()
-    
+
     class Meta:
-        model = UserCourseProgress
+        model = UserContentLessonProgress
         fields = [
-            'id', 'user', 'content_lesson_details',
+            'id', 'user', 'content_lesson', 'content_lesson_details',
             'status', 'completion_percentage', 'score', 'time_spent',
-            'last_accessed', 'started_at', 'completed_at', 'xp_earned'
+            'last_accessed', 'started_at', 'completed_at', 'language_code'
         ]
         read_only_fields = ['last_accessed', 'started_at', 'completed_at']
-    
+
     def get_content_lesson_details(self, obj):
         """Récupère des détails sur le contenu de leçon"""
-        if obj.content_type.model == 'contentlesson':
-            content_lesson = obj.content_object
-            return {
-                'id': content_lesson.id,
-                'title': content_lesson.title_en,
-                'content_type': content_lesson.content_type,
-                'lesson_id': content_lesson.lesson_id,
-                'lesson_title': content_lesson.lesson.title_en,
-                'order': content_lesson.order
-            }
-        return None
+        content_lesson = obj.content_lesson
+        return {
+            'id': content_lesson.id,
+            'title': content_lesson.title_en,
+            'content_type': content_lesson.content_type,
+            'lesson_id': content_lesson.lesson_id,
+            'lesson_title': content_lesson.lesson.title_en,
+            'order': content_lesson.order
+        }
 
 class UserUnitProgressSerializer(serializers.ModelSerializer):
     unit_details = serializers.SerializerMethodField()
@@ -275,13 +273,13 @@ class ContentLessonProgressUpdateSerializer(serializers.Serializer):
     """Sérialiseur pour mettre à jour la progression d'un contenu de leçon spécifique"""
     content_lesson_id = serializers.IntegerField(required=True)
     completion_percentage = serializers.IntegerField(
-        required=False, 
-        min_value=0, 
+        required=False,
+        min_value=0,
         max_value=100
     )
     score = serializers.IntegerField(
-        required=False, 
-        min_value=0, 
+        required=False,
+        min_value=0,
         max_value=100
     )
     time_spent = serializers.IntegerField(
@@ -290,7 +288,8 @@ class ContentLessonProgressUpdateSerializer(serializers.Serializer):
     )
     mark_completed = serializers.BooleanField(required=False, default=False)
     xp_earned = serializers.IntegerField(required=False, min_value=0)
-    
+    language_code = serializers.CharField(required=False, max_length=10)  # Ajout du champ langue
+
     def validate_content_lesson_id(self, value):
         """Valide que le contenu de leçon existe"""
         try:

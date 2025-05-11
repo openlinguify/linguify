@@ -110,12 +110,18 @@ const MultipleChoice = ({
         if (unitId && data.length > 0) {
           try {
             const contentLessonId = parseInt(lessonId);
+            const parentLessonId = unitId ? parseInt(unitId) : 0;
+
+            console.log(`Initializing progress for contentLessonId=${contentLessonId}, parentLessonId=${parentLessonId}`);
+
+            // Fix parameter order - contentLessonId, lessonId (parent), completion%, timeSpent, xpEarned, complete
             await lessonCompletionService.updateContentProgress(
               contentLessonId,
+              parentLessonId, // Pass the parent lesson ID correctly
               1, // 1% to start
-              0,
-              0,
-              0
+              0, // timeSpent
+              0, // xpEarned
+              false // not marked as complete yet
             );
             
             // Create a basic direct tracking of lesson access for notification purposes
@@ -164,12 +170,18 @@ const MultipleChoice = ({
 
     try {
       const contentLessonId = parseInt(lessonId);
+      const parentLessonId = unitId ? parseInt(unitId) : 0;
+
+      console.log(`Updating progress: contentId=${contentLessonId}, parentId=${parentLessonId}, percent=${completionPercentage}`);
+
+      // Fix parameter order according to the function signature:
+      // updateContentProgress(contentLessonId, lessonId, completionPercentage, timeSpent, xpEarned, complete)
       await lessonCompletionService.updateContentProgress(
         contentLessonId,
+        parentLessonId,
         completionPercentage,
         timeSpent,
         Math.round(completionPercentage / 10), // XP gained proportional to progress
-        undefined, // No specific XP earned value
         completionPercentage >= 100 // mark as completed if 100%
       );
 
@@ -291,8 +303,9 @@ const MultipleChoice = ({
   if (loading) {
     return (
       <div className="w-full space-y-6">
-        <div className="flex items-center justify-center h-96">
-          <div className="animate-pulse">Loading questions...</div>
+        <div className="flex flex-col items-center justify-center h-96 gap-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-brand-purple"></div>
+          <p className="text-brand-purple animate-pulse font-medium">Loading questions...</p>
         </div>
       </div>
     );
@@ -302,9 +315,9 @@ const MultipleChoice = ({
   if (error) {
     return (
       <div className="w-full space-y-6">
-        <Alert variant={error ? "destructive" : "default"}>
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
+        <Alert variant="destructive" className="border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 shadow-sm">
+          <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+          <AlertDescription className="text-red-700 dark:text-red-300 font-medium">
             {error || "No questions found for this lesson."}
           </AlertDescription>
         </Alert>
@@ -316,9 +329,9 @@ const MultipleChoice = ({
   if (!questions.length) {
     return (
       <div className="w-full space-y-6">
-        <Alert>
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
+        <Alert className="border-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 shadow-sm">
+          <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+          <AlertDescription className="text-amber-700 dark:text-amber-300 font-medium">
             No questions available for this lesson.
           </AlertDescription>
         </Alert>
@@ -349,19 +362,22 @@ const MultipleChoice = ({
         type="quiz"
       />
 
-      <GradientCard className="h-full relative overflow-hidden">
+      <GradientCard className="h-full relative overflow-hidden shadow-lg">
         <div className="p-6 flex flex-col gap-4 h-full relative z-10">
           {/* Progress Section */}
           <div>
             <Progress
               value={progressPercentage}
-              className="h-2"
+              className="h-2 bg-gray-100 dark:bg-gray-700"
+              style={{
+                '--progress-background': 'linear-gradient(to right, var(--brand-purple), var(--brand-gold))'
+              } as React.CSSProperties}
             />
-            <div className="flex justify-between text-sm text-muted-foreground mt-2">
+            <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-2">
               <span>Question {currentIndex + 1} of {questions.length}</span>
               <div className="flex items-center gap-2">
-                <span>Score: {score}/{currentIndex}</span>
-                <span className="px-2 py-0.5 bg-brand-purple/10 rounded-full">
+                <span>Score: <span className="font-medium text-brand-purple">{score}</span>/{currentIndex}</span>
+                <span className="px-2 py-0.5 bg-brand-purple/10 dark:bg-brand-purple/20 text-brand-purple rounded-full font-medium">
                   {answerStreak} 🔥
                 </span>
               </div>
@@ -369,14 +385,14 @@ const MultipleChoice = ({
           </div>
 
           {/* Question */}
-<div className={commonStyles.contentBox}>
-  <div className={commonStyles.gradientBackground} />
-  <div className="relative p-8 text-center">
-    <GradientText className="text-2xl font-bold">
-      {currentQuestion.question} {/* Question en langue native */}
-    </GradientText>
-  </div>
-</div>
+          <div className={commonStyles.contentBox}>
+            <div className={commonStyles.gradientBackground} />
+            <div className="relative p-8 text-center">
+              <GradientText className="text-2xl font-bold">
+                {currentQuestion.question}
+              </GradientText>
+            </div>
+          </div>
 
           {/* Answers in Grid with centered last item when count is odd */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -385,40 +401,45 @@ const MultipleChoice = ({
                 key={index}
                 onClick={() => handleAnswerSelect(answer)}
                 disabled={!!selectedAnswer}
-                className={`w-full h-full p-4 justify-center transition-all text-purple ${selectedAnswer
+                className={`
+                  w-full h-full p-4 justify-center transition-all
+                  ${selectedAnswer
                     ? answer === currentQuestion.correct_answer
-                      ? "bg-green-500 text-white hover:bg-green-600"
+                      ? "bg-green-500 dark:bg-green-600 text-white hover:bg-green-600 dark:hover:bg-green-700"
                       : answer === selectedAnswer
-                        ? "bg-red-500 text-white hover:bg-red-600"
-                        : "bg-gray-100 text-gray-500"
-                    : "bg-transparent border-2 border-brand-purple/20 hover:bg-brand-purple/10 text-left"
+                        ? "bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-700"
+                        : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
+                    : "bg-white dark:bg-gray-800 border-2 border-brand-purple/30 dark:border-brand-purple/20 hover:bg-brand-purple/10 dark:hover:bg-brand-purple/20 text-left"
                   } ${
-                  /* Centrer le dernier élément si le nombre est impair et que c'est le dernier élément */
-                  currentQuestion.answers.length % 2 !== 0 &&
+                    /* Center the last item if the count is odd and it's the last item */
+                    currentQuestion.answers.length % 2 !== 0 &&
                     index === currentQuestion.answers.length - 1
                     ? "sm:col-span-2 sm:max-w-md sm:mx-auto"
                     : ""
-                  }`}
+                  }
+                  shadow-sm rounded-lg font-medium
+                `}
               >
-                <span className="mr-3">{String.fromCharCode(65 + index)}.</span>
+                <span className="mr-3 font-semibold">{String.fromCharCode(65 + index)}.</span>
                 {answer}
               </Button>
             ))}
           </div>
+
           {/* Hint Section */}
           {currentQuestion.hint && (
             <div className="mt-4">
               <Button
                 variant="ghost"
                 onClick={() => setShowHint(!showHint)}
-                className="text-brand-purple hover:text-brand-purple/80"
+                className="text-brand-purple hover:bg-brand-purple/10"
               >
                 <Info className="h-4 w-4 mr-2" />
                 {showHint ? 'Hide Hint' : 'Show Hint'}
               </Button>
               {showHint && (
-                <Alert className="mt-2 bg-brand-purple/5 border-brand-purple/20">
-                  <AlertDescription className="text-brand-purple">
+                <Alert className="mt-2 bg-brand-purple/5 dark:bg-brand-purple/10 border border-brand-purple/20 dark:border-brand-purple/30">
+                  <AlertDescription className="text-brand-purple dark:text-brand-purple-light">
                     {currentQuestion.hint}
                   </AlertDescription>
                 </Alert>
@@ -431,7 +452,7 @@ const MultipleChoice = ({
             {selectedAnswer && (
               <Button
                 onClick={handleNext}
-                className="bg-gradient-to-r from-brand-purple to-brand-gold text-white hover:opacity-90"
+                className="bg-gradient-to-r from-brand-purple to-brand-gold text-white hover:opacity-90 shadow-md"
               >
                 {currentIndex === questions.length - 1 ? 'Complete Quiz' : 'Next Question'}
               </Button>

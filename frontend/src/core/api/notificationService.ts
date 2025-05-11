@@ -138,10 +138,15 @@ class NotificationService {
   private handleNewNotification(notification: Notification): void {
     // Add to storage
     notificationStorage.addNotification(notification);
-    
+
     // Notify listeners
     this.notifyListeners(notification);
-    
+
+    // Dispatch a global event for components to detect
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('notificationCreated', { detail: notification }));
+    }
+
     // Show toast for high priority
     if (notification.priority === NotificationPriority.HIGH) {
       toast({

@@ -3,6 +3,89 @@
 import apiClient from '@/core/api/apiClient';
 import { getUserTargetLanguage, getUserNativeLanguage } from '@/core/utils/languageUtils';
 import { Cache } from "@/core/utils/cacheUtils";
+
+// Helper to extract and export the fastcache singleton separately
+let fastCacheInstance: EnhancedCache | null = null;
+
+// Enhanced cache with improved performance
+class EnhancedCache {
+  private static instance: EnhancedCache;
+  private cache: Map<string, { data: any, timestamp: number }>;
+  private prefetchQueue: Set<string>;
+  private ttl: number = 10 * 60 * 1000; // 10 minutes in milliseconds
+
+  private constructor() {
+    this.cache = new Map();
+    this.prefetchQueue = new Set();
+
+    // Clean expired cache entries every minute
+    setInterval(() => this.cleanExpiredEntries(), 60 * 1000);
+  }
+
+  public static getInstance(): EnhancedCache {
+    if (!EnhancedCache.instance) {
+      EnhancedCache.instance = new EnhancedCache();
+      // Store the instance in our external reference for simpler import
+      fastCacheInstance = EnhancedCache.instance;
+    }
+    return EnhancedCache.instance;
+  }
+
+  public get(key: string): any {
+    const entry = this.cache.get(key);
+    if (!entry) return null;
+
+    // Check if entry has expired
+    if (Date.now() - entry.timestamp > this.ttl) {
+      this.cache.delete(key);
+      return null;
+    }
+
+    return entry.data;
+  }
+
+  public set(key: string, data: any): void {
+    this.cache.set(key, { data, timestamp: Date.now() });
+  }
+
+  public prefetch(key: string, fetcher: () => Promise<any>): void {
+    // Don't prefetch if already in progress or in cache
+    if (this.prefetchQueue.has(key) || this.get(key)) return;
+
+    // Add to prefetch queue
+    this.prefetchQueue.add(key);
+
+    // Execute prefetch in the background
+    fetcher()
+      .then(data => {
+        this.set(key, data);
+        console.log(`Prefetched data for: ${key}`);
+      })
+      .catch(err => {
+        console.error(`Failed to prefetch data for: ${key}`, err);
+      })
+      .finally(() => {
+        this.prefetchQueue.delete(key);
+      });
+  }
+
+  private cleanExpiredEntries(): void {
+    const now = Date.now();
+    this.cache.forEach((entry, key) => {
+      if (now - entry.timestamp > this.ttl) {
+        this.cache.delete(key);
+      }
+    });
+  }
+}
+
+// Export instance for use throughout the app
+export const FastCache = EnhancedCache.getInstance();
+
+// Separate access function to get the cache instance without circular dependencies
+export function getFastCache(): EnhancedCache | null {
+  return fastCacheInstance || FastCache;
+}
 import {
   MatchingResult,
   LessonsByContentResponse,
@@ -79,18 +162,32 @@ const courseAPI = {
         return []; // Return empty array instead of failing completely
       }
 
-      // Générer une clé de cache unique pour cette requête
+      // Generate unique cache key for this request
       const lang = targetLanguage || getUserTargetLanguage();
       const cacheKey = `lessons_${parsedUnitId}_${lang}`;
 
-      // Vérifier si les données sont déjà en cache
-      const cachedData = Cache.get(cacheKey);
+      // Check if data is already in the enhanced cache
+      const cachedData = FastCache.get(cacheKey);
       if (cachedData) {
-        console.log(`Using cached lessons for unit ${parsedUnitId} with language ${lang}`);
+        console.log(`Using fast-cached lessons for unit ${parsedUnitId} with language ${lang}`);
+
+        // When lessons are retrieved from cache, prefetch content lessons for each lesson
+        // This helps make the transition to lesson view faster
+        if (Array.isArray(cachedData) && cachedData.length > 0) {
+          const firstLesson = cachedData[0];
+          if (firstLesson && firstLesson.id) {
+            // Prefetch content lessons for the first lesson in the background
+            const contentLessonsCacheKey = `content_lessons_${firstLesson.id}_${lang}`;
+            FastCache.prefetch(contentLessonsCacheKey, () =>
+              courseAPI.getContentLessons(firstLesson.id, lang)
+            );
+          }
+        }
+
         return cachedData;
       }
 
-      // Si pas en cache, continuer avec la requête API
+      // If not in cache, continue with API request
       const params: Record<string, string> = {
         unit: parsedUnitId.toString(),
         target_language: lang
@@ -104,9 +201,24 @@ const courseAPI = {
         }
       });
 
-      // Mettre les données en cache pour les futures requêtes
+      // Cache the data for future requests in both caches
       if (response.data && Array.isArray(response.data)) {
-        Cache.set(cacheKey, response.data);
+        FastCache.set(cacheKey, response.data);
+        Cache.set(cacheKey, response.data); // Keep old cache updated for backward compatibility
+
+        // Prefetch content lessons for the first lesson in the result
+        if (response.data.length > 0) {
+          const firstLesson = response.data[0];
+          if (firstLesson && firstLesson.id) {
+            // Schedule prefetch in the background after a small delay to prioritize current request
+            setTimeout(() => {
+              const contentLessonsCacheKey = `content_lessons_${firstLesson.id}_${lang}`;
+              FastCache.prefetch(contentLessonsCacheKey, () =>
+                courseAPI.getContentLessons(firstLesson.id, lang)
+              );
+            }, 300);
+          }
+        }
       }
 
       return response.data;
@@ -229,12 +341,20 @@ const courseAPI = {
         return [];
       }
 
+      // Generate cache key
+      const lang = targetLanguage || getUserTargetLanguage();
+      const cacheKey = `content_lessons_${parsedLessonId}_${lang}`;
+
+      // Try to get from enhanced cache first
+      const cachedData = FastCache.get(cacheKey);
+      if (cachedData) {
+        console.log(`Using fast-cached content lessons for lesson ${parsedLessonId}`);
+        return cachedData;
+      }
+
       const params: Record<string, string> = {
         lesson: parsedLessonId.toString()
       };
-
-      // Utiliser la langue spécifiée ou récupérer depuis localStorage
-      const lang = targetLanguage || getUserTargetLanguage();
       params.target_language = lang;
 
       console.log(`Fetching content lessons for lesson ${parsedLessonId} with language: ${lang}`);
@@ -244,6 +364,32 @@ const courseAPI = {
           'Accept-Language': lang
         }
       });
+
+      // Store in cache
+      if (response.data) {
+        FastCache.set(cacheKey, response.data);
+
+        // Prefetch the first content item's specific data if available
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          const firstContentLesson = response.data[0];
+          if (firstContentLesson && firstContentLesson.id && firstContentLesson.content_type) {
+            // Based on content type, prefetch appropriate data
+            setTimeout(() => {
+              const contentType = firstContentLesson.content_type.toLowerCase();
+              if (contentType === 'theory') {
+                FastCache.prefetch(`theory_${firstContentLesson.id}_${lang}`, () =>
+                  courseAPI.getTheoryContent(firstContentLesson.id, lang)
+                );
+              } else if (contentType === 'vocabulary') {
+                FastCache.prefetch(`vocabulary_${firstContentLesson.id}_${lang}`, () =>
+                  courseAPI.getVocabularyContent(firstContentLesson.id, lang)
+                );
+              }
+            }, 300);
+          }
+        }
+      }
+
       return response.data;
     } catch (err: any) {
       console.error('Failed to fetch content lessons:', {

@@ -314,6 +314,31 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = []
 
+# Profile pictures settings - Style réseau social
+PROFILE_PICTURES_ROOT = os.path.join(MEDIA_ROOT, 'profiles')
+PROFILE_PICTURES_URL = f'{MEDIA_URL}profiles/'
+
+# Tailles d'images pour différents contextes
+PROFILE_PICTURE_SIZES = {
+    'small': (50, 50),       # Pour commentaires, notifications
+    'medium': (150, 150),    # Pour les cartes profil
+    'large': (300, 300),     # Pour la page profil
+}
+
+# Paramètres de qualité et format
+PROFILE_PICTURE_QUALITY = 85       # Qualité JPEG (1-100)
+PROFILE_PICTURE_FORMAT = 'JPEG'    # Format par défaut pour les images converties
+PROFILE_PICTURE_MAX_DISPLAY_SIZE = (800, 800)  # Dimensions max pour la version d'affichage
+
+# Validation des images téléchargées
+PROFILE_PICTURE_MAX_SIZE = 5 * 1024 * 1024  # Taille max 5MB
+PROFILE_PICTURE_MIN_WIDTH = 200    # Largeur minimale en pixels
+PROFILE_PICTURE_MIN_HEIGHT = 200   # Hauteur minimale en pixels
+
+# Comportement de stockage
+PROFILE_PICTURE_KEEP_ORIGINALS = True     # Conserver les fichiers originaux
+PROFILE_PICTURE_MAX_VERSIONS = 5          # Nombre de versions historiques à conserver
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

@@ -9,7 +9,7 @@ import { useTranslation } from "@/core/i18n/useTranslations";
 // Import refactored components
 import { ModeToggle } from "./ThemeToggle";
 import { LanguageSelector } from "./LanguageSelector";
-import { NotificationButton } from "./NotificationButton";
+import { NotificationButton, NotificationDropdownButton, TestNotificationPanel } from "./NotificationButton";
 import { UserMenu } from "./UserMenu";
 import { AuthButtons } from "./AuthButtons";
 import LogoSection from "@/app/(dashboard)/_components/LogoSection/logo-section";
@@ -129,7 +129,10 @@ const Header = () => {
           {isAuthenticated && user ? (
             <div className="flex items-center gap-4">
               {/* Notifications */}
-              <NotificationButton count={0} />
+              <NotificationDropdownButton className="mr-1" />
+
+              {/* Test Notification Panel - Show only in development */}
+              {process.env.NODE_ENV === 'development' && <TestNotificationPanel />}
 
               {/* User Menu */}
               <UserMenu user={user} />

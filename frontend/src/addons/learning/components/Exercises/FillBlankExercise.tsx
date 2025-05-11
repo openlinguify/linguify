@@ -121,18 +121,20 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
 
   const formatSentenceWithBlank = (sentence: string, selectedOption: string | null = null) => {
     if (!sentence || !sentence.includes('___')) return sentence;
-    
+
     const parts = sentence.split('___');
-    
+
     return (
       <div className="text-lg">
         {parts[0]}
-        <span className={`px-2 py-1 mx-1 rounded ${
-          selectedOption 
-            ? (isAnswerCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') 
-            : 'border-2 border-dashed border-purple-400 text-transparent'
+        <span className={`px-3 py-1 mx-1 rounded-md font-medium ${
+          selectedOption
+            ? (isAnswerCorrect
+                ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-300 dark:border-green-800'
+                : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-800')
+            : 'border-2 border-dashed border-brand-purple/70 dark:border-brand-purple/50 bg-brand-purple/5 dark:bg-brand-purple/10'
         }`}>
-          {selectedOption || '_____'}
+          {selectedOption || <span className="opacity-30">_____</span>}
         </span>
         {parts[1]}
       </div>
@@ -197,8 +199,9 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
   // Loading state
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-500"></div>
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-brand-purple"></div>
+        <p className="text-brand-purple animate-pulse font-medium">Loading exercise...</p>
       </div>
     );
   }
@@ -206,9 +209,9 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
   // API Error state
   if (apiError) {
     return (
-      <Alert variant="destructive" className="mb-6">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
+      <Alert variant="destructive" className="mb-6 border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 shadow-sm">
+        <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+        <AlertDescription className="text-red-700 dark:text-red-300 font-medium">
           There was a problem connecting to the exercise service. Please try again later.
         </AlertDescription>
       </Alert>
@@ -218,9 +221,11 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
   // No exercises available
   if (exercises.length === 0) {
     return (
-      <Alert>
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>No fill in the blank exercises available for this lesson.</AlertDescription>
+      <Alert className="border-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 shadow-sm">
+        <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+        <AlertDescription className="text-amber-700 dark:text-amber-300 font-medium">
+          No fill in the blank exercises available for this lesson.
+        </AlertDescription>
       </Alert>
     );
   }
@@ -238,25 +243,32 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
     <div className="w-full space-y-6">
       {/* Progress bar */}
       <div className="mb-4">
-        <Progress value={progress} className="h-2" />
-        <div className="flex justify-between text-sm text-muted-foreground mt-2">
+        <Progress
+          value={progress}
+          className="h-2 bg-gray-100 dark:bg-gray-700"
+          style={{
+            '--progress-background': 'linear-gradient(to right, var(--brand-purple), var(--brand-gold))'
+          } as React.CSSProperties}
+        />
+        <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-2">
           <span>Exercise {currentIndex + 1} of {exercises.length}</span>
-          <span>{Math.round(progress)}% complete</span>
+          <span className="font-medium text-brand-purple">{Math.round(progress)}% complete</span>
         </div>
       </div>
 
       {/* Main exercise card */}
-      <Card className="p-6">
+      <Card className="p-6 bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 backdrop-blur-sm shadow-lg">
         <div className="space-y-6">
           {/* Instruction */}
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">{instruction}</h2>
-            <Button 
-              variant="ghost" 
+            <h2 className="text-xl font-semibold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">{instruction}</h2>
+            <Button
+              variant="ghost"
               size="sm"
+              className="text-brand-purple hover:bg-brand-purple/10"
               onClick={() => {
                 const utterance = new SpeechSynthesisUtterance(instruction);
-                utterance.lang = targetLanguage === 'fr' ? 'fr-FR' : 
+                utterance.lang = targetLanguage === 'fr' ? 'fr-FR' :
                                   targetLanguage === 'es' ? 'es-ES' :
                                   targetLanguage === 'nl' ? 'nl-NL' : 'en-US';
                 window.speechSynthesis.speak(utterance);
@@ -267,40 +279,36 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
           </div>
 
           {/* Sentence with blank */}
-          <div className="bg-gray-50 p-4 rounded-lg text-center">
+          <div className="bg-gradient-to-br from-brand-purple/5 to-brand-gold/5 p-6 rounded-lg text-center border border-brand-purple/10 shadow-sm">
             {formatSentenceWithBlank(sentence, selectedAnswer)}
           </div>
 
           {/* Options */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {options.map((option, index) => (
               <Button
                 key={index}
-                variant={
-                  selectedAnswer === option
-                    ? isAnswerCorrect 
-                      ? "outline" 
-                      : "destructive" 
-                    : "outline"
-                }
-                className={
-                  selectedAnswer === option
+                variant="outline"
+                className={`
+                  transition-all duration-200 border-2 hover:bg-brand-purple/5
+                  ${selectedAnswer === option
                     ? isAnswerCorrect
-                      ? "border-2 border-green-500 bg-green-50"
-                      : "border-2 border-red-500 bg-red-50"
+                      ? "border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                      : "border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
                     : selectedAnswer && option === correctAnswer
-                    ? "border-2 border-green-500 bg-green-50" // Show correct answer if user was wrong
-                    : ""
-                }
+                    ? "border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300" // Show correct answer if user was wrong
+                    : "border-brand-purple/30 hover:border-brand-purple"
+                  }
+                `}
                 onClick={() => handleSelectAnswer(option)}
                 disabled={selectedAnswer !== null}
               >
                 {option}
                 {selectedAnswer && option === correctAnswer && (
-                  <CheckCircle className="ml-2 h-4 w-4 text-green-600" />
+                  <CheckCircle className="ml-2 h-4 w-4 text-green-600 dark:text-green-400" />
                 )}
                 {selectedAnswer === option && !isAnswerCorrect && (
-                  <X className="ml-2 h-4 w-4 text-red-600" />
+                  <X className="ml-2 h-4 w-4 text-red-600 dark:text-red-400" />
                 )}
               </Button>
             ))}
@@ -308,13 +316,21 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
 
           {/* Feedback section */}
           {showFeedback && (
-            <div className={`p-4 rounded-lg mt-4 ${isAnswerCorrect ? 'bg-green-50' : 'bg-red-50'}`}>
-              <h3 className={`font-medium ${isAnswerCorrect ? 'text-green-700' : 'text-red-700'}`}>
+            <div className={`p-4 rounded-lg mt-4 border ${
+              isAnswerCorrect
+                ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+            }`}>
+              <h3 className={`font-medium ${
+                isAnswerCorrect
+                  ? 'text-green-700 dark:text-green-300'
+                  : 'text-red-700 dark:text-red-300'
+              }`}>
                 {isAnswerCorrect ? 'Correct!' : 'Incorrect'}
               </h3>
-              
+
               {!isAnswerCorrect && (
-                <p className="text-gray-700 mt-1">
+                <p className="text-gray-700 dark:text-gray-300 mt-1">
                   The correct answer is: <span className="font-medium">{correctAnswer}</span>
                 </p>
               )}
@@ -325,17 +341,21 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
           <div className="flex justify-between mt-6">
             <Button
               variant="outline"
+              className="border-brand-purple text-brand-purple hover:bg-brand-purple/10"
               disabled={currentIndex === 0}
               onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
             >
               Previous
             </Button>
-            
+
             <Button
               variant={showFeedback ? "default" : "outline"}
               disabled={!showFeedback && !exerciseCompleted}
               onClick={handleNextExercise}
-              className={showFeedback ? "bg-purple-600 hover:bg-purple-700" : ""}
+              className={showFeedback
+                ? "bg-gradient-to-r from-brand-purple to-brand-gold text-white hover:opacity-90"
+                : "border-brand-purple/30 text-brand-purple hover:bg-brand-purple/10"
+              }
             >
               {currentIndex === exercises.length - 1 ? 'Complete' : 'Next'}
             </Button>
@@ -345,9 +365,9 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
 
       {/* Completion message */}
       {exerciseCompleted && (
-        <Alert className="bg-green-50 border-green-200">
-          <CheckCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-700">
+        <Alert className="bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 shadow-sm">
+          <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+          <AlertDescription className="text-green-700 dark:text-green-300 font-medium">
             Congratulations! You've completed all the exercises.
           </AlertDescription>
         </Alert>
