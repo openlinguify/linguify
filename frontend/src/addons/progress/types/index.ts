@@ -103,6 +103,7 @@ export interface LessonProgress {
 export interface ContentLessonProgress {
   id: number;
   user: number;
+  content_lesson: number;
   content_lesson_details: {
     id: number;
     title: string;
@@ -119,6 +120,7 @@ export interface ContentLessonProgress {
   started_at: string | null;
   completed_at: string | null;
   xp_earned: number;
+  language_code: string;
 }
 
 export interface ContentDetails {
@@ -138,27 +140,7 @@ export interface UpdateContentProgressRequest {
   time_spent?: number;
   mark_completed?: boolean;
   xp_earned?: number;
-}
-
-export interface ContentLessonProgress {
-  id: number;
-  user: number;
-  content_lesson_details: {
-    id: number;
-    title: string;
-    content_type: string;
-    lesson_id: number;
-    lesson_title: string;
-    order: number;
-  };
-  status: string;
-  completion_percentage: number;
-  score: number;
-  time_spent: number;
-  last_accessed: string;
-  started_at: string | null;
-  completed_at: string | null;
-  xp_earned: number;
+  language_code?: string;
 }
 
 export interface UpdateLessonProgressRequest {
@@ -169,6 +151,7 @@ export interface UpdateLessonProgressRequest {
   time_spent?: number;
   mark_completed?: boolean;
   xp_earned?: number;
+  language_code?: string;
 }
 
 export interface LevelStats {
@@ -304,42 +287,3 @@ export interface WeeklyProgressData {
   time: string;
   xp: number;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

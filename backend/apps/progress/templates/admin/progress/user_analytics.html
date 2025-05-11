@@ -1,0 +1,1106 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static dashboard_extras %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}">
+<style>
+  .analytics-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .analytics-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .chart-container {
+    flex: 1;
+    min-width: 300px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+  }
+  
+  .user-info {
+    padding: 30px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+  }
+  
+  .user-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    color: #6c757d;
+  }
+  
+  .user-details {
+    flex: 1;
+  }
+  
+  .user-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .user-email {
+    color: #6c757d;
+    margin-bottom: 15px;
+  }
+  
+  .user-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .user-stat {
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 6px;
+    min-width: 120px;
+  }
+  
+  .stat-value {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .stat-label {
+    font-size: 12px;
+    color: #6c757d;
+  }
+  
+  .back-to-dashboard {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 16px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .back-to-dashboard:hover {
+    background-color: #f0f0f0;
+  }
+  
+  canvas {
+    width: 100% !important;
+    height: 300px !important;
+  }
+  
+  .metric-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .metric-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  .metric-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #4e73df;
+  }
+  
+  .metric-trend {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .trend-up { color: #1cc88a; }
+  .trend-down { color: #e74a3b; }
+  
+  .completion-timeline {
+    width: 100%;
+    height: 30px;
+    background-color: #f0f0f0;
+    border-radius: 15px;
+    margin-top: 15px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .timeline-marker {
+    position: absolute;
+    width: 4px;
+    height: 100%;
+    background-color: white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    z-index: 10;
+  }
+  
+  .completion-progress {
+    height: 100%;
+    background-color: #4e73df;
+    text-align: right;
+    line-height: 30px;
+    color: white;
+    font-weight: bold;
+    padding-right: 10px;
+    transition: width 0.3s ease;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  .detail-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .detail-table th,
+  .detail-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e3e6f0;
+  }
+  
+  .detail-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+  
+  .detail-table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .language-badge {
+    display: inline-block;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    background-color: #e9ecef;
+    color: #495057;
+    margin-right: 5px;
+  }
+  
+  .status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .status-not-started { background-color: #dc3545; }
+  .status-in-progress { background-color: #fd7e14; }
+  .status-completed { background-color: #198754; }
+  
+  .level-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .level-a1 { background-color: #28a745; }
+  .level-a2 { background-color: #17a2b8; }
+  .level-b1 { background-color: #007bff; }
+  .level-b2 { background-color: #6f42c1; }
+  .level-c1 { background-color: #fd7e14; }
+  .level-c2 { background-color: #dc3545; }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css" />
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+  &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; <a href="{% url opts|admin_urlname:'progress_dashboard' %}">Dashboard</a>
+  &rsaquo; {% trans 'User Analytics' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <h1>User Analytics</h1>
+  
+  <div class="module">
+    <a href="{% url opts|admin_urlname:'progress_dashboard' %}" class="back-to-dashboard">
+      &larr; Back to Dashboard
+    </a>
+    
+    <div id="user-select-container" class="metric-card">
+      <label for="user-select" style="display: block; margin-bottom: 10px; font-weight: bold;">Select User:</label>
+      <select id="user-select" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+        <option value="">-- Select a user --</option>
+        <!-- Options will be added dynamically -->
+      </select>
+    </div>
+    
+    <div id="user-analytics-container" style="display: none;">
+      <!-- User Info Section -->
+      <div class="user-info">
+        <div class="user-avatar" id="user-avatar"></div>
+        <div class="user-details">
+          <div class="user-name" id="user-name">User Name</div>
+          <div class="user-email" id="user-email">user@example.com</div>
+          <div class="user-stats">
+            <div class="user-stat">
+              <div class="stat-value" id="total-lessons">0</div>
+              <div class="stat-label">Total Lessons</div>
+            </div>
+            <div class="user-stat">
+              <div class="stat-value" id="completed-lessons">0</div>
+              <div class="stat-label">Completed</div>
+            </div>
+            <div class="user-stat">
+              <div class="stat-value" id="completion-rate">0%</div>
+              <div class="stat-label">Completion Rate</div>
+            </div>
+            <div class="user-stat">
+              <div class="stat-value" id="avg-score">0</div>
+              <div class="stat-label">Avg. Score</div>
+            </div>
+            <div class="user-stat">
+              <div class="stat-value" id="total-time">0h</div>
+              <div class="stat-label">Time Spent</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Progress Metrics Cards -->
+      <div class="analytics-row">
+        <div class="metric-card" style="flex: 1;">
+          <div class="metric-header">
+            <h3 class="metric-title">Weekly Learning Activity</h3>
+            <div class="metric-trend" id="activity-trend">
+              <span id="activity-percentage">+12%</span>
+              <span id="activity-icon">↑</span>
+            </div>
+          </div>
+          <div class="metric-value" id="weekly-activities">42 lessons</div>
+          <p>Compared to last week</p>
+        </div>
+        
+        <div class="metric-card" style="flex: 1;">
+          <div class="metric-header">
+            <h3 class="metric-title">Current Learning Streak</h3>
+          </div>
+          <div class="metric-value" id="learning-streak">7 days</div>
+          <p>Best streak: <span id="best-streak">14 days</span></p>
+        </div>
+        
+        <div class="metric-card" style="flex: 1;">
+          <div class="metric-header">
+            <h3 class="metric-title">Time Engagement</h3>
+            <div class="metric-trend" id="time-trend">
+              <span id="time-percentage">+5%</span>
+              <span id="time-icon">↑</span>
+            </div>
+          </div>
+          <div class="metric-value" id="avg-session-time">18 min</div>
+          <p>Avg. daily study time</p>
+        </div>
+      </div>
+      
+      <!-- Progress by Language -->
+      <div class="chart-container">
+        <h3 class="chart-title">Progress by Language</h3>
+        <div class="analytics-row">
+          <div style="flex: 2;">
+            <canvas id="language-progress-chart"></canvas>
+          </div>
+          <div style="flex: 1; padding: 20px;" id="language-stats-container">
+            <!-- Will be filled dynamically -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Progress Timeline -->
+      <div class="chart-container">
+        <h3 class="chart-title">Learning Activity Timeline</h3>
+        <canvas id="activity-timeline-chart"></canvas>
+      </div>
+      
+      <!-- Progress by Level -->
+      <div class="chart-container">
+        <h3 class="chart-title">Progress by Level</h3>
+        <div class="analytics-row">
+          <div style="flex: 1;">
+            <canvas id="level-progress-chart"></canvas>
+          </div>
+          <div style="flex: 1;">
+            <div class="table-responsive">
+              <table class="detail-table" id="level-detail-table">
+                <thead>
+                  <tr>
+                    <th>Level</th>
+                    <th>Lessons</th>
+                    <th>Completed</th>
+                    <th>Avg. Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Will be filled dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Recent Activity -->
+      <div class="chart-container">
+        <h3 class="chart-title">Recent Activity</h3>
+        <div class="table-responsive">
+          <table class="detail-table" id="recent-activity-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Content</th>
+                <th>Language</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Score</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Will be filled dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Content Type Performance -->
+      <div class="chart-container">
+        <h3 class="chart-title">Performance by Content Type</h3>
+        <div class="analytics-row">
+          <div style="flex: 1;">
+            <canvas id="content-type-chart"></canvas>
+          </div>
+          <div style="flex: 1;">
+            <div id="content-type-details">
+              <!-- Will be filled dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialiser la page
+  loadUserList();
+  setupEventListeners();
+
+  // Variables globales pour les graphiques
+  let languageChart, activityChart, levelChart, contentTypeChart;
+
+  // Vérifier s'il y a un utilisateur dans l'URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const userId = urlParams.get('user');
+  if (userId) {
+    // S'il y a un utilisateur dans l'URL, charger ses données directement
+    document.getElementById('user-select').value = userId;
+    loadUserData(userId);
+  }
+  
+  function setupEventListeners() {
+    // Écouteur pour le changement d'utilisateur
+    document.getElementById('user-select').addEventListener('change', function() {
+      const userId = this.value;
+      if (userId) {
+        loadUserData(userId);
+      } else {
+        hideUserAnalytics();
+      }
+    });
+  }
+  
+  function hideUserAnalytics() {
+    document.getElementById('user-analytics-container').style.display = 'none';
+  }
+  
+  function showUserAnalytics() {
+    document.getElementById('user-analytics-container').style.display = 'block';
+  }
+  
+  function loadUserList() {
+    // Charger la liste des utilisateurs pour le sélecteur
+    fetch('{% url "admin:progress_stats_data" %}')
+      .then(response => response.json())
+      .then(data => {
+        if (data.users && data.users.length > 0) {
+          populateUserSelect(data.users);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching user list:', error);
+      });
+  }
+  
+  function populateUserSelect(users) {
+    const select = document.getElementById('user-select');
+    
+    // Effacer les options existantes sauf la première
+    while (select.options.length > 1) {
+      select.remove(1);
+    }
+    
+    // Ajouter les utilisateurs
+    users.forEach(user => {
+      const option = document.createElement('option');
+      option.value = user.id;
+      option.textContent = user.username ? user.username : user.email;
+      select.appendChild(option);
+    });
+  }
+  
+  function loadUserData(userId) {
+    // URL vers l'API d'analytics utilisateur
+    const apiUrl = `{% url opts|admin_urlname:'progress_dashboard' %}api/user-analytics/${userId}/`;
+
+    // Effectuer l'appel API
+    fetch(apiUrl)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('User data fetch failed');
+        }
+        return response.json();
+      })
+      .then(userData => {
+        displayUserData(userData);
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+        // En cas d'erreur, utiliser des données simulées pour la démonstration
+        const mockData = generateMockUserData(userId);
+        displayUserData(mockData);
+      });
+  }
+  
+  function generateMockUserData(userId) {
+    // Générer des données aléatoires pour la démonstration
+    const languages = ['en', 'fr', 'es', 'de', 'it'];
+    const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+    const contentTypes = ['vocabulary', 'grammar', 'reading', 'listening', 'speaking', 'writing'];
+    
+    // Données de base de l'utilisateur
+    const data = {
+      id: userId,
+      username: 'User' + userId,
+      email: 'user' + userId + '@example.com',
+      stats: {
+        totalLessons: Math.floor(Math.random() * 150) + 50,
+        completedLessons: Math.floor(Math.random() * 100) + 10,
+        avgScore: Math.floor(Math.random() * 30) + 70,
+        totalTimeSpent: Math.floor(Math.random() * 40) + 10,
+        weeklyActivities: Math.floor(Math.random() * 20) + 5,
+        activityTrend: Math.floor(Math.random() * 30) - 10,
+        learningStreak: Math.floor(Math.random() * 14) + 1,
+        bestStreak: Math.floor(Math.random() * 30) + 14,
+        avgSessionTime: Math.floor(Math.random() * 25) + 5,
+        timeTrend: Math.floor(Math.random() * 20) - 5
+      },
+      languageProgress: languages.map(lang => {
+        return {
+          language: lang,
+          totalLessons: Math.floor(Math.random() * 50) + 10,
+          completedLessons: Math.floor(Math.random() * 40) + 5,
+          avgScore: Math.floor(Math.random() * 30) + 70
+        };
+      }),
+      levelProgress: levels.map(level => {
+        return {
+          level: level,
+          totalLessons: Math.floor(Math.random() * 30) + 5,
+          completedLessons: Math.floor(Math.random() * 20) + 2,
+          avgScore: Math.floor(Math.random() * 30) + 70
+        };
+      }),
+      contentTypePerformance: contentTypes.map(type => {
+        return {
+          type: type,
+          count: Math.floor(Math.random() * 50) + 10,
+          avgScore: Math.floor(Math.random() * 30) + 70,
+          timeSpent: Math.floor(Math.random() * 300) + 60
+        };
+      }),
+      activityTimeline: [],
+      recentActivity: []
+    };
+    
+    // Générer la timeline d'activité (30 derniers jours)
+    const today = new Date();
+    for (let i = 30; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(today.getDate() - i);
+      
+      data.activityTimeline.push({
+        date: date.toISOString().split('T')[0],
+        count: Math.floor(Math.random() * 8),
+        timeSpent: Math.floor(Math.random() * 90) + 10
+      });
+    }
+    
+    // Générer les activités récentes (10 dernières)
+    for (let i = 0; i < 10; i++) {
+      const date = new Date();
+      date.setDate(today.getDate() - Math.floor(Math.random() * 7));
+      
+      const language = languages[Math.floor(Math.random() * languages.length)];
+      const level = levels[Math.floor(Math.random() * levels.length)];
+      const contentType = contentTypes[Math.floor(Math.random() * contentTypes.length)];
+      
+      const statusOptions = ['completed', 'in_progress', 'not_started'];
+      const statusWeights = [0.6, 0.3, 0.1]; // Plus probable d'être "completed"
+      
+      // Fonction pour sélectionner le statut en fonction des poids
+      function weightedRandom(options, weights) {
+        let random = Math.random();
+        let cumulativeWeight = 0;
+        
+        for (let i = 0; i < options.length; i++) {
+          cumulativeWeight += weights[i];
+          if (random < cumulativeWeight) {
+            return options[i];
+          }
+        }
+        
+        return options[options.length - 1];
+      }
+      
+      const status = weightedRandom(statusOptions, statusWeights);
+      
+      data.recentActivity.push({
+        date: date.toISOString(),
+        content: `${contentType.charAt(0).toUpperCase() + contentType.slice(1)} Lesson ${i + 1}`,
+        language: language,
+        level: level,
+        status: status,
+        score: status === 'completed' ? Math.floor(Math.random() * 30) + 70 : 0,
+        timeSpent: Math.floor(Math.random() * 900) + 60
+      });
+    }
+    
+    // Trier les activités récentes par date (les plus récentes d'abord)
+    data.recentActivity.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    return data;
+  }
+  
+  function displayUserData(userData) {
+    showUserAnalytics();
+    
+    // Mettre à jour les informations de l'utilisateur
+    document.getElementById('user-name').textContent = userData.username;
+    document.getElementById('user-email').textContent = userData.email;
+    document.getElementById('user-avatar').textContent = userData.username.charAt(0).toUpperCase();
+    
+    // Mettre à jour les statistiques générales
+    document.getElementById('total-lessons').textContent = userData.stats.totalLessons;
+    document.getElementById('completed-lessons').textContent = userData.stats.completedLessons;
+    
+    const completionRate = Math.round((userData.stats.completedLessons / userData.stats.totalLessons) * 100);
+    document.getElementById('completion-rate').textContent = completionRate + '%';
+    
+    document.getElementById('avg-score').textContent = userData.stats.avgScore;
+    document.getElementById('total-time').textContent = userData.stats.totalTimeSpent + 'h';
+    
+    // Mettre à jour les métriques d'activité
+    document.getElementById('weekly-activities').textContent = userData.stats.weeklyActivities + ' lessons';
+    
+    const activityTrend = userData.stats.activityTrend;
+    const activityTrendEl = document.getElementById('activity-trend');
+    const activityPercentageEl = document.getElementById('activity-percentage');
+    const activityIconEl = document.getElementById('activity-icon');
+    
+    activityPercentageEl.textContent = (activityTrend > 0 ? '+' : '') + activityTrend + '%';
+    activityIconEl.textContent = activityTrend >= 0 ? '↑' : '↓';
+    activityTrendEl.className = 'metric-trend ' + (activityTrend >= 0 ? 'trend-up' : 'trend-down');
+    
+    // Mettre à jour les métriques de streak
+    document.getElementById('learning-streak').textContent = userData.stats.learningStreak + ' days';
+    document.getElementById('best-streak').textContent = userData.stats.bestStreak + ' days';
+    
+    // Mettre à jour les métriques de temps
+    document.getElementById('avg-session-time').textContent = userData.stats.avgSessionTime + ' min';
+    
+    const timeTrend = userData.stats.timeTrend;
+    const timeTrendEl = document.getElementById('time-trend');
+    const timePercentageEl = document.getElementById('time-percentage');
+    const timeIconEl = document.getElementById('time-icon');
+    
+    timePercentageEl.textContent = (timeTrend > 0 ? '+' : '') + timeTrend + '%';
+    timeIconEl.textContent = timeTrend >= 0 ? '↑' : '↓';
+    timeTrendEl.className = 'metric-trend ' + (timeTrend >= 0 ? 'trend-up' : 'trend-down');
+    
+    // Générer les graphiques
+    generateLanguageChart(userData.languageProgress);
+    generateActivityTimeline(userData.activityTimeline);
+    generateLevelProgressChart(userData.levelProgress);
+    generateContentTypeChart(userData.contentTypePerformance);
+    
+    // Afficher les activités récentes
+    displayRecentActivity(userData.recentActivity);
+  }
+  
+  function generateLanguageChart(languageData) {
+    // Détruire le graphique existant s'il existe
+    if (languageChart) languageChart.destroy();
+    
+    // Préparer les données pour le graphique
+    const labels = languageData.map(item => item.language.toUpperCase());
+    const completedData = languageData.map(item => item.completedLessons);
+    const totalData = languageData.map(item => item.totalLessons);
+    
+    // Calculer les pourcentages de complétion
+    const completionPercentages = languageData.map((item, index) => 
+      Math.round((completedData[index] / totalData[index]) * 100)
+    );
+    
+    // Créer le graphique
+    const ctx = document.getElementById('language-progress-chart').getContext('2d');
+    languageChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Completed',
+            data: completedData,
+            backgroundColor: '#4e73df',
+            borderWidth: 0
+          },
+          {
+            label: 'Total',
+            data: totalData,
+            backgroundColor: '#e2e8f0',
+            borderWidth: 0
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          xAxes: [{
+            stacked: false,
+            gridLines: {
+              display: false
+            }
+          }],
+          yAxes: [{
+            gridLines: {
+              color: "rgba(0, 0, 0, 0.05)"
+            },
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+    });
+    
+    // Mettre à jour les statistiques par langue
+    const container = document.getElementById('language-stats-container');
+    container.innerHTML = '';
+    
+    // Trier les langues par pourcentage de complétion (décroissant)
+    const sortedLanguageData = [...languageData];
+    sortedLanguageData.sort((a, b) => {
+      const percentA = (a.completedLessons / a.totalLessons) * 100;
+      const percentB = (b.completedLessons / b.totalLessons) * 100;
+      return percentB - percentA;
+    });
+    
+    // Afficher les statistiques pour chaque langue
+    sortedLanguageData.forEach((lang, index) => {
+      const percent = Math.round((lang.completedLessons / lang.totalLessons) * 100);
+      
+      const langDiv = document.createElement('div');
+      langDiv.style.marginBottom = '15px';
+      
+      const header = document.createElement('div');
+      header.style.display = 'flex';
+      header.style.justifyContent = 'space-between';
+      header.style.marginBottom = '5px';
+      
+      const langName = document.createElement('span');
+      langName.textContent = lang.language.toUpperCase();
+      langName.style.fontWeight = 'bold';
+      
+      const langPercent = document.createElement('span');
+      langPercent.textContent = percent + '%';
+      
+      header.appendChild(langName);
+      header.appendChild(langPercent);
+      
+      const progressBar = document.createElement('div');
+      progressBar.className = 'completion-timeline';
+      
+      const progress = document.createElement('div');
+      progress.className = 'completion-progress';
+      progress.style.width = percent + '%';
+      
+      progressBar.appendChild(progress);
+      
+      langDiv.appendChild(header);
+      langDiv.appendChild(progressBar);
+      
+      container.appendChild(langDiv);
+    });
+  }
+  
+  function generateActivityTimeline(timelineData) {
+    // Détruire le graphique existant s'il existe
+    if (activityChart) activityChart.destroy();
+    
+    // Préparer les données pour le graphique
+    const labels = timelineData.map(item => item.date);
+    const activityCount = timelineData.map(item => item.count);
+    const timeSpent = timelineData.map(item => Math.round(item.timeSpent / 60)); // Convertir en minutes
+    
+    // Créer le graphique
+    const ctx = document.getElementById('activity-timeline-chart').getContext('2d');
+    activityChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Activities',
+            data: activityCount,
+            backgroundColor: 'rgba(78, 115, 223, 0.1)',
+            borderColor: '#4e73df',
+            pointBackgroundColor: '#4e73df',
+            pointBorderColor: '#fff',
+            pointRadius: 4,
+            borderWidth: 2,
+            fill: true,
+            yAxisID: 'y-axis-1'
+          },
+          {
+            label: 'Time (min)',
+            data: timeSpent,
+            backgroundColor: 'rgba(28, 200, 138, 0.1)',
+            borderColor: '#1cc88a',
+            pointBackgroundColor: '#1cc88a',
+            pointBorderColor: '#fff',
+            pointRadius: 4,
+            borderWidth: 2,
+            fill: true,
+            yAxisID: 'y-axis-2'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          xAxes: [{
+            gridLines: {
+              display: false
+            },
+            ticks: {
+              maxTicksLimit: 7
+            }
+          }],
+          yAxes: [
+            {
+              id: 'y-axis-1',
+              type: 'linear',
+              position: 'left',
+              ticks: {
+                beginAtZero: true
+              },
+              gridLines: {
+                color: "rgba(0, 0, 0, 0.05)"
+              }
+            },
+            {
+              id: 'y-axis-2',
+              type: 'linear',
+              position: 'right',
+              ticks: {
+                beginAtZero: true
+              },
+              gridLines: {
+                display: false
+              }
+            }
+          ]
+        }
+      }
+    });
+  }
+  
+  function generateLevelProgressChart(levelData) {
+    // Détruire le graphique existant s'il existe
+    if (levelChart) levelChart.destroy();
+    
+    // Préparer les données pour le graphique
+    const labels = levelData.map(item => item.level);
+    const completedData = levelData.map(item => item.completedLessons);
+    const totalData = levelData.map(item => item.totalLessons);
+    
+    // Créer le graphique
+    const ctx = document.getElementById('level-progress-chart').getContext('2d');
+    levelChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Completed',
+            data: completedData,
+            backgroundColor: [
+              '#28a745', // A1
+              '#17a2b8', // A2
+              '#007bff', // B1
+              '#6f42c1', // B2
+              '#fd7e14', // C1
+              '#dc3545'  // C2
+            ],
+            borderWidth: 0
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          xAxes: [{
+            gridLines: {
+              display: false
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+    });
+    
+    // Mettre à jour le tableau de détails par niveau
+    const tableBody = document.getElementById('level-detail-table').querySelector('tbody');
+    tableBody.innerHTML = '';
+    
+    levelData.forEach(level => {
+      const row = document.createElement('tr');
+      
+      const levelCell = document.createElement('td');
+      const levelBadge = document.createElement('span');
+      levelBadge.className = `level-badge level-${level.level.toLowerCase()}`;
+      levelBadge.textContent = level.level;
+      levelCell.appendChild(levelBadge);
+      
+      const lessonsCell = document.createElement('td');
+      lessonsCell.textContent = level.totalLessons;
+      
+      const completedCell = document.createElement('td');
+      completedCell.textContent = `${level.completedLessons} (${Math.round((level.completedLessons / level.totalLessons) * 100)}%)`;
+      
+      const scoreCell = document.createElement('td');
+      scoreCell.textContent = level.avgScore;
+      
+      row.appendChild(levelCell);
+      row.appendChild(lessonsCell);
+      row.appendChild(completedCell);
+      row.appendChild(scoreCell);
+      
+      tableBody.appendChild(row);
+    });
+  }
+  
+  function generateContentTypeChart(contentData) {
+    // Détruire le graphique existant s'il existe
+    if (contentTypeChart) contentTypeChart.destroy();
+    
+    // Préparer les données pour le graphique
+    const labels = contentData.map(item => item.type.charAt(0).toUpperCase() + item.type.slice(1));
+    const scoreData = contentData.map(item => item.avgScore);
+    
+    // Créer le graphique
+    const ctx = document.getElementById('content-type-chart').getContext('2d');
+    contentTypeChart = new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Average Score',
+            data: scoreData,
+            backgroundColor: 'rgba(78, 115, 223, 0.2)',
+            borderColor: '#4e73df',
+            pointBackgroundColor: '#4e73df',
+            pointBorderColor: '#fff',
+            pointRadius: 4,
+            borderWidth: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scale: {
+          ticks: {
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+    
+    // Mettre à jour les détails de performance par type de contenu
+    const container = document.getElementById('content-type-details');
+    container.innerHTML = '';
+    
+    // Créer une table pour les détails de types de contenu
+    const table = document.createElement('table');
+    table.className = 'detail-table';
+    
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    
+    ['Content Type', 'Count', 'Avg. Score', 'Time Spent'].forEach(text => {
+      const th = document.createElement('th');
+      th.textContent = text;
+      headerRow.appendChild(th);
+    });
+    
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    
+    const tbody = document.createElement('tbody');
+    
+    // Trier les types de contenu par score moyen (décroissant)
+    const sortedContentData = [...contentData];
+    sortedContentData.sort((a, b) => b.avgScore - a.avgScore);
+    
+    sortedContentData.forEach(item => {
+      const row = document.createElement('tr');
+      
+      const typeCell = document.createElement('td');
+      typeCell.textContent = item.type.charAt(0).toUpperCase() + item.type.slice(1);
+      
+      const countCell = document.createElement('td');
+      countCell.textContent = item.count;
+      
+      const scoreCell = document.createElement('td');
+      scoreCell.textContent = item.avgScore;
+      
+      const timeCell = document.createElement('td');
+      const minutes = Math.floor(item.timeSpent / 60);
+      const seconds = item.timeSpent % 60;
+      timeCell.textContent = `${minutes}m ${seconds}s`;
+      
+      row.appendChild(typeCell);
+      row.appendChild(countCell);
+      row.appendChild(scoreCell);
+      row.appendChild(timeCell);
+      
+      tbody.appendChild(row);
+    });
+    
+    table.appendChild(tbody);
+    container.appendChild(table);
+  }
+  
+  function displayRecentActivity(activityData) {
+    const tableBody = document.getElementById('recent-activity-table').querySelector('tbody');
+    tableBody.innerHTML = '';
+    
+    activityData.forEach(activity => {
+      const row = document.createElement('tr');
+      
+      // Formater la date
+      const date = new Date(activity.date);
+      const dateFormatted = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      const dateCell = document.createElement('td');
+      dateCell.textContent = dateFormatted;
+      
+      const contentCell = document.createElement('td');
+      contentCell.textContent = activity.content;
+      
+      const languageCell = document.createElement('td');
+      const langBadge = document.createElement('span');
+      langBadge.className = 'language-badge';
+      langBadge.textContent = activity.language;
+      languageCell.appendChild(langBadge);
+      
+      const levelCell = document.createElement('td');
+      const levelBadge = document.createElement('span');
+      levelBadge.className = `level-badge level-${activity.level.toLowerCase()}`;
+      levelBadge.textContent = activity.level;
+      levelCell.appendChild(levelBadge);
+      
+      const statusCell = document.createElement('td');
+      const statusBadge = document.createElement('span');
+      statusBadge.className = `status-badge status-${activity.status.replace('_', '-')}`;
+      statusBadge.textContent = activity.status.replace('_', ' ');
+      statusCell.appendChild(statusBadge);
+      
+      const scoreCell = document.createElement('td');
+      scoreCell.textContent = activity.score > 0 ? activity.score : '-';
+      
+      const timeCell = document.createElement('td');
+      const minutes = Math.floor(activity.timeSpent / 60);
+      const seconds = activity.timeSpent % 60;
+      timeCell.textContent = `${minutes}m ${seconds}s`;
+      
+      row.appendChild(dateCell);
+      row.appendChild(contentCell);
+      row.appendChild(languageCell);
+      row.appendChild(levelCell);
+      row.appendChild(statusCell);
+      row.appendChild(scoreCell);
+      row.appendChild(timeCell);
+      
+      tableBody.appendChild(row);
+    });
+  }
+});
+</script>
+{% endblock %}

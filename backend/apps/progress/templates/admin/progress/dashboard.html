@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n static %}
+{% load i18n static dashboard_extras %}
 
 {% block extrastyle %}
 {{ block.super }}
@@ -85,6 +85,145 @@
   .color-completed { color: #198754; }
   .color-progress { color: #fd7e14; }
   .color-primary { color: #007bff; }
+
+  /* Styles pour les nouveaux filtres */
+  .filter-controls {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 15px;
+  }
+
+  .filter-item {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .filter-item label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .filter-item select, 
+  .filter-item input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .filter-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .filter-buttons button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .filter-buttons .apply-filter {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .filter-buttons .reset-filter {
+    background-color: #eee;
+    color: #333;
+  }
+
+  /* Style pour les tableaux de données utilisateur */
+  .user-progress-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .user-progress-table thead th {
+    background-color: #f8f9fa;
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  .user-progress-table tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  .user-progress-table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 10px;
+  }
+
+  .pagination a {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  .pagination a.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+
+  .pagination a:hover:not(.active) {
+    background-color: #f0f0f0;
+  }
+
+  /* Status badges */
+  .status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+  }
+
+  .status-not-started { background-color: #dc3545; }
+  .status-in-progress { background-color: #fd7e14; }
+  .status-completed { background-color: #198754; }
+
+  /* Language badges */
+  .language-badge {
+    display: inline-block;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    background-color: #e9ecef;
+    color: #495057;
+    margin-right: 5px;
+  }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css" />
 {% endblock %}
@@ -103,9 +242,85 @@
   <h1>{{ opts.verbose_name_plural|capfirst }} Dashboard</h1>
   
   <div class="module">
-    <a href="{% url opts|admin_urlname:'changelist' %}" class="back-to-list">
-      &larr; Back to {{ opts.verbose_name_plural }}
-    </a>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+      <a href="{% url opts|admin_urlname:'changelist' %}" class="back-to-list">
+        &larr; Back to {{ opts.verbose_name_plural }}
+      </a>
+
+      <a href="{% url opts|admin_urlname:'user_analytics' %}" class="back-to-list" style="background-color: #007bff; color: white;">
+        User Analytics &rarr;
+      </a>
+    </div>
+    
+    <!-- Filtres avancés -->
+    <div class="filter-controls">
+      <h3>Filters</h3>
+      <form id="dashboard-filters">
+        <div class="filter-group">
+          <div class="filter-item">
+            <label for="filter-user">User:</label>
+            <select id="filter-user" name="user">
+              <option value="">All Users</option>
+              <!-- Sera rempli dynamiquement -->
+            </select>
+          </div>
+          
+          <div class="filter-item">
+            <label for="filter-language">Language:</label>
+            <select id="filter-language" name="language">
+              <option value="">All Languages</option>
+              <option value="en">English</option>
+              <option value="fr">French</option>
+              <option value="es">Spanish</option>
+              <option value="de">German</option>
+              <option value="it">Italian</option>
+              <option value="nl">Dutch</option>
+              <!-- Autres langues selon les besoins -->
+            </select>
+          </div>
+          
+          <div class="filter-item">
+            <label for="filter-level">Level:</label>
+            <select id="filter-level" name="level">
+              <option value="">All Levels</option>
+              <option value="A1">A1</option>
+              <option value="A2">A2</option>
+              <option value="B1">B1</option>
+              <option value="B2">B2</option>
+              <option value="C1">C1</option>
+              <option value="C2">C2</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="filter-group">
+          <div class="filter-item">
+            <label for="filter-status">Status:</label>
+            <select id="filter-status" name="status">
+              <option value="">All Statuses</option>
+              <option value="not_started">Not Started</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+          
+          <div class="filter-item">
+            <label for="filter-date-start">From Date:</label>
+            <input type="date" id="filter-date-start" name="date_start">
+          </div>
+          
+          <div class="filter-item">
+            <label for="filter-date-end">To Date:</label>
+            <input type="date" id="filter-date-end" name="date_end">
+          </div>
+        </div>
+        
+        <div class="filter-buttons">
+          <button type="button" class="reset-filter" id="reset-filters">Reset Filters</button>
+          <button type="button" class="apply-filter" id="apply-filters">Apply Filters</button>
+        </div>
+      </form>
+    </div>
     
     <div class="dashboard-container">
       <div class="summary-stats">
@@ -149,6 +364,66 @@
       <div id="special-stats-container" style="display: none;">
         <!-- Will be filled dynamically based on model type -->
       </div>
+
+      <!-- Top users section -->
+      <div class="chart-container">
+        <h3 class="chart-title">Top Users by Activity</h3>
+        <div class="table-responsive">
+          <table class="detail-table" id="top-users-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Items</th>
+                <th>Completed</th>
+                <th>Completion Rate</th>
+                <th>Avg. Progress</th>
+                <th>Time Spent</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="top-users-body">
+              <!-- Will be filled dynamically -->
+              <tr>
+                <td colspan="7" class="text-center">Loading user data...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Table des données utilisateur -->
+      <div class="chart-container" style="padding: 0; overflow: hidden;">
+        <div style="padding: 20px;">
+          <h3 class="chart-title">User Progress Data</h3>
+        </div>
+        
+        <div style="overflow-x: auto;">
+          <table class="user-progress-table" id="user-progress-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Content</th>
+                <th>Language</th>
+                <th>Status</th>
+                <th>Completion %</th>
+                <th>Score</th>
+                <th>Time Spent</th>
+                <th>Last Access</th>
+              </tr>
+            </thead>
+            <tbody id="progress-table-body">
+              <!-- Sera rempli dynamiquement -->
+              <tr>
+                <td colspan="8" class="text-center">Loading data...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="pagination" id="table-pagination">
+          <!-- Sera rempli dynamiquement -->
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -156,157 +431,490 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Fetch stats data
-  fetch('{% url "admin:progress_stats_data" %}')
-    .then(response => response.json())
-    .then(data => {
-      // Update summary stats
-      document.getElementById('total-records').textContent = data.total_records.toLocaleString();
-      document.getElementById('completed-records').textContent = data.complete_records.toLocaleString();
-      document.getElementById('completion-rate').textContent = data.completion_rate + '%';
-      document.getElementById('total-time').textContent = data.total_time_display;
-      
-      // Process special stats if available
-      if (data.special_stats && Object.keys(data.special_stats).length > 0) {
-        const specialStatsContainer = document.getElementById('special-stats-container');
-        specialStatsContainer.style.display = 'block';
-        
-        // Add custom visualizations based on model type
-        // This would be expanded based on the specific model stats
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching stats data:', error);
-    });
+  // Variables globales pour les filtres et la pagination
+  let currentFilters = {};
+  let currentPage = 1;
+  let itemsPerPage = 10;
+  let userData = [];
+  let filteredData = [];
   
-  // Fetch chart data
-  fetch('{% url "admin:progress_chart_data" %}')
-    .then(response => response.json())
-    .then(data => {
-      // Status Chart
-      const statusCtx = document.getElementById('status-chart').getContext('2d');
-      new Chart(statusCtx, {
-        type: 'doughnut',
-        data: {
-          labels: data.status_data.labels,
-          datasets: [{
-            data: data.status_data.data,
-            backgroundColor: data.status_data.colors || [
-              '#dc3545', // not started
-              '#fd7e14', // in progress
-              '#198754'  // completed
-            ],
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          legend: {
-            position: 'right',
-          }
-        }
+  // Initialiser les filtres
+  function initializeFilters() {
+    // Charger les utilisateurs dans le filtre
+    fetch('/api/v1/progress/users/')
+      .then(response => response.json())
+      .then(users => {
+        const userSelect = document.getElementById('filter-user');
+        users.forEach(user => {
+          const option = document.createElement('option');
+          option.value = user.id;
+          option.textContent = user.username;
+          userSelect.appendChild(option);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching users:', error);
       });
       
-      // Language Chart
-      const languageCtx = document.getElementById('language-chart').getContext('2d');
-      new Chart(languageCtx, {
-        type: 'bar',
-        data: {
-          labels: data.language_data.labels,
-          datasets: [{
-            label: 'Records by Language',
-            data: data.language_data.data,
-            backgroundColor: '#4e73df',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            yAxes: [{
-              ticks: {
-                beginAtZero: true
-              }
-            }]
-          }
-        }
+    // Définir les dates par défaut (30 derniers jours)
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    document.getElementById('filter-date-end').valueAsDate = today;
+    document.getElementById('filter-date-start').valueAsDate = thirtyDaysAgo;
+    
+    // Event listeners pour les boutons de filtre
+    document.getElementById('apply-filters').addEventListener('click', applyFilters);
+    document.getElementById('reset-filters').addEventListener('click', resetFilters);
+  }
+  
+  // Appliquer les filtres
+  function applyFilters() {
+    const form = document.getElementById('dashboard-filters');
+    const formData = new FormData(form);
+    
+    currentFilters = {
+      user: formData.get('user'),
+      language: formData.get('language'),
+      level: formData.get('level'),
+      status: formData.get('status'),
+      date_start: formData.get('date_start'),
+      date_end: formData.get('date_end')
+    };
+    
+    // Réinitialiser la pagination
+    currentPage = 1;
+    
+    // Recharger les données avec les filtres
+    fetchDataWithFilters();
+  }
+  
+  // Réinitialiser les filtres
+  function resetFilters() {
+    document.getElementById('dashboard-filters').reset();
+    currentFilters = {};
+    currentPage = 1;
+    fetchDataWithFilters();
+  }
+  
+  // Charger les données avec filtres
+  function fetchDataWithFilters() {
+    // Construire l'URL avec les paramètres de filtre
+    let url = '{% url "admin:progress_stats_data" %}';
+    const params = new URLSearchParams();
+    
+    for (const [key, value] of Object.entries(currentFilters)) {
+      if (value) {
+        params.append(key, value);
+      }
+    }
+    
+    if (params.toString()) {
+      url += '?' + params.toString();
+    }
+    
+    // Charger les données filtrées
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        updateDashboard(data);
+        fetchUserProgressData();
+      })
+      .catch(error => {
+        console.error('Error fetching filtered data:', error);
       });
-      
-      // Daily Progress Chart
-      const dailyCtx = document.getElementById('daily-chart').getContext('2d');
-      new Chart(dailyCtx, {
-        type: 'line',
-        data: {
-          labels: data.daily_data.labels,
-          datasets: [
+  }
+  
+  // Mettre à jour le tableau de bord avec les données
+  function updateDashboard(data) {
+    // Mettre à jour les statistiques de résumé
+    document.getElementById('total-records').textContent = data.total_records.toLocaleString();
+    document.getElementById('completed-records').textContent = data.complete_records.toLocaleString();
+    document.getElementById('completion-rate').textContent = data.completion_rate + '%';
+    document.getElementById('total-time').textContent = data.total_time_display;
+
+    // Charger les données pour les graphiques
+    fetchChartData();
+
+    // Process special stats if available
+    if (data.special_stats && Object.keys(data.special_stats).length > 0) {
+      const specialStatsContainer = document.getElementById('special-stats-container');
+      specialStatsContainer.style.display = 'block';
+
+      // Add custom visualizations based on model type
+      // Check if we have user statistics
+      if (data.special_stats.users && data.special_stats.users.length > 0) {
+        updateUsersTable(data.special_stats.users);
+      }
+    }
+  }
+  
+  // Charger les données pour les graphiques
+  function fetchChartData() {
+    // Construire l'URL avec les paramètres de filtre
+    let url = '{% url "admin:progress_chart_data" %}';
+    const params = new URLSearchParams();
+    
+    for (const [key, value] of Object.entries(currentFilters)) {
+      if (value) {
+        params.append(key, value);
+      }
+    }
+    
+    if (params.toString()) {
+      url += '?' + params.toString();
+    }
+    
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        updateCharts(data);
+      })
+      .catch(error => {
+        console.error('Error fetching chart data:', error);
+      });
+  }
+  
+  // Mettre à jour les graphiques
+  function updateCharts(data) {
+    // Détruire les graphiques existants s'ils existent
+    if (window.statusChart) window.statusChart.destroy();
+    if (window.languageChart) window.languageChart.destroy();
+    if (window.dailyChart) window.dailyChart.destroy();
+    
+    // Status Chart
+    const statusCtx = document.getElementById('status-chart').getContext('2d');
+    window.statusChart = new Chart(statusCtx, {
+      type: 'doughnut',
+      data: {
+        labels: data.status_data.labels,
+        datasets: [{
+          data: data.status_data.data,
+          backgroundColor: data.status_data.colors || [
+            '#dc3545', // not started
+            '#fd7e14', // in progress
+            '#198754'  // completed
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+          position: 'right',
+        }
+      }
+    });
+    
+    // Language Chart
+    const languageCtx = document.getElementById('language-chart').getContext('2d');
+    window.languageChart = new Chart(languageCtx, {
+      type: 'bar',
+      data: {
+        labels: data.language_data.labels,
+        datasets: [{
+          label: 'Records by Language',
+          data: data.language_data.data,
+          backgroundColor: '#4e73df',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+    });
+    
+    // Daily Progress Chart
+    const dailyCtx = document.getElementById('daily-chart').getContext('2d');
+    window.dailyChart = new Chart(dailyCtx, {
+      type: 'line',
+      data: {
+        labels: data.daily_data.labels,
+        datasets: [
+          {
+            label: 'Average Completion %',
+            data: data.daily_data.avg_progress,
+            borderColor: '#4e73df',
+            backgroundColor: 'rgba(78, 115, 223, 0.1)',
+            borderWidth: 2,
+            pointRadius: 3,
+            fill: true,
+            yAxisID: 'y-axis-1'
+          },
+          {
+            label: 'Record Count',
+            data: data.daily_data.count,
+            borderColor: '#36b9cc',
+            backgroundColor: 'rgba(54, 185, 204, 0.1)',
+            borderWidth: 2,
+            pointRadius: 3,
+            fill: true,
+            yAxisID: 'y-axis-2'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          xAxes: [{
+            gridLines: {
+              display: false
+            }
+          }],
+          yAxes: [
             {
-              label: 'Average Completion %',
-              data: data.daily_data.avg_progress,
-              borderColor: '#4e73df',
-              backgroundColor: 'rgba(78, 115, 223, 0.1)',
-              borderWidth: 2,
-              pointRadius: 3,
-              fill: true,
-              yAxisID: 'y-axis-1'
+              id: 'y-axis-1',
+              type: 'linear',
+              position: 'left',
+              ticks: {
+                beginAtZero: true,
+                max: 100,
+                callback: function(value) {
+                  return value + '%';
+                }
+              },
+              gridLines: {
+                color: "rgba(0, 0, 0, 0.05)"
+              }
             },
             {
-              label: 'Record Count',
-              data: data.daily_data.count,
-              borderColor: '#36b9cc',
-              backgroundColor: 'rgba(54, 185, 204, 0.1)',
-              borderWidth: 2,
-              pointRadius: 3,
-              fill: true,
-              yAxisID: 'y-axis-2'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            xAxes: [{
+              id: 'y-axis-2',
+              type: 'linear',
+              position: 'right',
+              ticks: {
+                beginAtZero: true
+              },
               gridLines: {
                 display: false
               }
-            }],
-            yAxes: [
-              {
-                id: 'y-axis-1',
-                type: 'linear',
-                position: 'left',
-                ticks: {
-                  beginAtZero: true,
-                  max: 100,
-                  callback: function(value) {
-                    return value + '%';
-                  }
-                },
-                gridLines: {
-                  color: "rgba(0, 0, 0, 0.05)"
-                }
-              },
-              {
-                id: 'y-axis-2',
-                type: 'linear',
-                position: 'right',
-                ticks: {
-                  beginAtZero: true
-                },
-                gridLines: {
-                  display: false
-                }
-              }
-            ]
-          }
+            }
+          ]
         }
-      });
-    })
-    .catch(error => {
-      console.error('Error fetching chart data:', error);
+      }
     });
+  }
+  
+  // Charger les données d'utilisateur pour le tableau
+  function fetchUserProgressData() {
+    // URL pour obtenir les données d'utilisateur avec les mêmes filtres
+    let url = '{% url "admin:app_list" app_label=opts.app_label %}';
+    url += '{{ opts.model_name }}/api/user-progress/';
+    
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(currentFilters)) {
+      if (value) {
+        params.append(key, value);
+      }
+    }
+    
+    if (params.toString()) {
+      url += '?' + params.toString();
+    }
+    
+    // Utiliser des données statiques pour l'instant puisque cette API n'existe pas encore
+    // Dans une implémentation réelle, vous feriez un fetch ici
+    const mockData = generateMockUserData(50);
+    userData = mockData;
+    filteredData = mockData;
+    
+    // Afficher les données
+    updateUserProgressTable();
+  }
+  
+  // Générer des données d'exemple pour la table
+  function generateMockUserData(count) {
+    const data = [];
+    const users = ['john.doe', 'jane.smith', 'alice.wonder', 'bob.builder', 'charlie.brown'];
+    const contents = ['Vocabulary Lesson', 'Grammar Exercise', 'Reading Comprehension', 'Listening Practice', 'Speaking Test'];
+    const languages = ['en', 'fr', 'es', 'de', 'it'];
+    const statuses = ['not_started', 'in_progress', 'completed'];
+    
+    for (let i = 0; i < count; i++) {
+      const user = users[Math.floor(Math.random() * users.length)];
+      const content = contents[Math.floor(Math.random() * contents.length)];
+      const language = languages[Math.floor(Math.random() * languages.length)];
+      const status = statuses[Math.floor(Math.random() * statuses.length)];
+      const completion = status === 'completed' ? 100 : (status === 'in_progress' ? Math.floor(Math.random() * 99) + 1 : 0);
+      const score = status === 'completed' ? Math.floor(Math.random() * 100) + 1 : 0;
+      const timeSpent = Math.floor(Math.random() * 3600); // Seconds
+      
+      // Date aléatoire dans les 30 derniers jours
+      const lastAccess = new Date();
+      lastAccess.setDate(lastAccess.getDate() - Math.floor(Math.random() * 30));
+      
+      data.push({
+        id: i + 1,
+        user: user,
+        content: content,
+        language: language,
+        status: status,
+        completion_percentage: completion,
+        score: score,
+        time_spent: timeSpent,
+        last_accessed: lastAccess.toISOString()
+      });
+    }
+    
+    return data;
+  }
+  
+  // Mettre à jour le tableau des données utilisateur
+  function updateUserProgressTable() {
+    const tableBody = document.getElementById('progress-table-body');
+    tableBody.innerHTML = '';
+    
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
+    const pageData = filteredData.slice(startIndex, endIndex);
+    
+    if (pageData.length === 0) {
+      const row = document.createElement('tr');
+      row.innerHTML = '<td colspan="8" style="text-align: center;">No data found.</td>';
+      tableBody.appendChild(row);
+    } else {
+      pageData.forEach(item => {
+        const row = document.createElement('tr');
+        
+        // Formatage du temps passé
+        let timeDisplay = '';
+        const minutes = Math.floor(item.time_spent / 60);
+        const seconds = item.time_spent % 60;
+        if (minutes > 0) {
+          timeDisplay = `${minutes}m ${seconds}s`;
+        } else {
+          timeDisplay = `${seconds}s`;
+        }
+        
+        // Formatage de la date
+        const lastAccess = new Date(item.last_accessed).toLocaleString();
+        
+        // Status badge class
+        const statusClass = `status-badge status-${item.status}`;
+        
+        row.innerHTML = `
+          <td>${item.user}</td>
+          <td>${item.content}</td>
+          <td><span class="language-badge">${item.language}</span></td>
+          <td><span class="${statusClass}">${item.status.replace('_', ' ')}</span></td>
+          <td>${item.completion_percentage}%</td>
+          <td>${item.score}</td>
+          <td>${timeDisplay}</td>
+          <td>${lastAccess}</td>
+        `;
+        
+        tableBody.appendChild(row);
+      });
+    }
+    
+    // Mettre à jour la pagination
+    updatePagination();
+  }
+  
+  // Mettre à jour les contrôles de pagination
+  function updatePagination() {
+    const paginationContainer = document.getElementById('table-pagination');
+    paginationContainer.innerHTML = '';
+
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+    // Créer les liens de pagination
+    for (let i = 1; i <= totalPages; i++) {
+      const pageLink = document.createElement('a');
+      pageLink.textContent = i;
+      pageLink.href = '#';
+      if (i === currentPage) {
+        pageLink.classList.add('active');
+      }
+
+      pageLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        currentPage = i;
+        updateUserProgressTable();
+      });
+
+      paginationContainer.appendChild(pageLink);
+    }
+  }
+
+  // Mettre à jour le tableau des utilisateurs les plus actifs
+  function updateUsersTable(users) {
+    const tableBody = document.getElementById('top-users-body');
+    tableBody.innerHTML = '';
+
+    if (users.length === 0) {
+      const row = document.createElement('tr');
+      row.innerHTML = '<td colspan="7" style="text-align: center;">No user data available.</td>';
+      tableBody.appendChild(row);
+      return;
+    }
+
+    users.forEach(user => {
+      const row = document.createElement('tr');
+
+      // Formatage du temps passé
+      let timeDisplay = '';
+      const totalSeconds = user.total_time;
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      if (hours > 0) {
+        timeDisplay = `${hours}h ${minutes}m ${seconds}s`;
+      } else if (minutes > 0) {
+        timeDisplay = `${minutes}m ${seconds}s`;
+      } else {
+        timeDisplay = `${seconds}s`;
+      }
+
+      // URL pour les analytics de l'utilisateur
+      const userAnalyticsUrl = `{% url opts|admin_urlname:'user_analytics' %}?user=${user.id}`;
+
+      row.innerHTML = `
+        <td>${user.username}</td>
+        <td>${user.count}</td>
+        <td>${user.completed}</td>
+        <td>${user.completion_rate}%</td>
+        <td>${user.avg_progress}%</td>
+        <td>${timeDisplay}</td>
+        <td>
+          <a href="${userAnalyticsUrl}" class="button" style="background-color: #4e73df; color: white; padding: 4px 8px; border-radius: 4px; text-decoration: none; font-size: 12px;">
+            View Analytics
+          </a>
+        </td>
+      `;
+
+      tableBody.appendChild(row);
+    });
+  }
+  
+  // Charger les données initiales
+  function loadInitialData() {
+    // Récupérer les statistiques
+    fetch('{% url "admin:progress_stats_data" %}')
+      .then(response => response.json())
+      .then(data => {
+        updateDashboard(data);
+        fetchUserProgressData();
+      })
+      .catch(error => {
+        console.error('Error fetching stats data:', error);
+      });
+  }
+  
+  // Initialisation
+  initializeFilters();
+  loadInitialData();
 });
 </script>
 {% endblock %}

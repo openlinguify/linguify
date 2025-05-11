@@ -133,13 +133,17 @@ const lessonCompletionService = {
           mark_completed: complete
         });
 
-        // Envoi de la requête au serveur
+        // Obtenir le code langue de l'utilisateur depuis localStorage ou utiliser 'en' par défaut
+        const userLang = localStorage.getItem('userTargetLanguage') || 'en';
+
+        // Envoi de la requête au serveur avec le code langue
         await progressAPI.updateLessonProgress({
           lesson_id: lessonIdNum,
           content_lesson_id: contentIdNum,
           completion_percentage: validPercentage,
           time_spent: timeSpent || 0,
-          mark_completed: complete
+          mark_completed: complete,
+          language_code: userLang // Ajouter le code langue
         }, {
           // Options robustes
           maxRetries: 3,
@@ -298,14 +302,18 @@ const lessonCompletionService = {
           mark_completed: complete
         });
 
-        // IMPORTANT: Réactiver l'appel API
+        // Obtenir le code langue de l'utilisateur depuis localStorage ou utiliser 'en' par défaut
+        const userLang = localStorage.getItem('userTargetLanguage') || 'en';
+
+        // IMPORTANT: Réactiver l'appel API avec le code langue
         await progressAPI.updateContentLessonProgress({
           content_lesson_id: contentId,
           lesson_id: parentLessonId,
           completion_percentage: validPercentage,
           time_spent: timeSpent || 0,
           xp_earned: xpEarned || 10, // Valeur par défaut non-nulle
-          mark_completed: complete
+          mark_completed: complete,
+          language_code: userLang // Ajouter le code langue
         }, {
           // Options robustes
           maxRetries: 3,

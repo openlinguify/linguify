@@ -14,14 +14,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { 
-  User, 
-  Bell, 
+import {
+  User,
+  Bell,
   Languages,
-  Lock, 
-  CreditCard, 
-  Shield, 
-  AlertCircle, 
+  Lock,
+  CreditCard,
+  Shield,
+  AlertCircle,
   Loader2,
   Save,
   Camera,
@@ -32,6 +32,8 @@ import {
   Palette
 } from "lucide-react";
 import { useAuthContext } from "@/core/auth/AuthProvider";
+import { useLanguageSync } from "@/core/i18n/useLanguageSync";
+import { triggerLanguageTransition } from "@/core/i18n/LanguageTransition";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteAccountDialog } from "./DeleteAccountDialog";
 import { ResetProgressDialog } from "./ResetProgressDialog";
@@ -55,6 +57,9 @@ export default function SettingsPage() {
   const { user, isAuthenticated, isLoading, logout } = useAuthContext();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
+
+  // Active le système de synchronisation des langues entre les composants
+  useLanguageSync();
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem('settingsActiveTab') || 'profile';
   });
@@ -231,14 +236,36 @@ export default function SettingsPage() {
       setFormData(prev => ({ ...prev, [name]: null }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
-      
+
       // Also update settings for language-related fields
       if (['native_language', 'target_language', 'language_level', 'objectives', 'interface_language'].includes(name)) {
         setSettings(prev => ({ ...prev, [name]: value }));
-        
-        // Apply theme change if interface language is changed
-        if (name === 'interface_language' && (value === 'light' || value === 'dark')) {
-          setTheme(value);
+
+        // If changing interface language, also update the UI translation system
+        if (name === 'interface_language') {
+          // Check if it's a theme value or a language code
+          if (value === 'light' || value === 'dark') {
+            setTheme(value);
+          } else {
+            // Update the UI language via localStorage to maintain consistency with header selector
+            localStorage.setItem('language', value);
+
+            // Forcer la mise à jour des traductions via notre événement personnalisé
+            const event = new CustomEvent('app:language:changed', {
+              detail: { locale: value, source: 'settings' }
+            });
+            window.dispatchEvent(event);
+
+            // Trigger legacy language change event for backward compatibility
+            window.dispatchEvent(new Event('languageChanged'));
+
+            // Déclencher la transition visuelle avant de recharger
+            triggerLanguageTransition(value);
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
+          }
         }
       }
     }
@@ -269,7 +296,7 @@ export default function SettingsPage() {
         ...prev,
         interface_language: formData.interface_language
       }));
-      
+
       // Save settings to localStorage
       localStorage.setItem('userSettings', JSON.stringify({
         ...settings,
@@ -284,6 +311,32 @@ export default function SettingsPage() {
         });
       } catch (error) {
         console.log('Settings API not available, saved locally only');
+      }
+
+      // Update UI language if it's a language code
+      if (['en', 'fr', 'es', 'nl'].includes(formData.interface_language)) {
+        // Update the UI language system
+        localStorage.setItem('language', formData.interface_language);
+
+        // Forcer la mise à jour des traductions via notre événement personnalisé
+        const event = new CustomEvent('app:language:changed', {
+          detail: { locale: formData.interface_language, source: 'settings-profile' }
+        });
+        window.dispatchEvent(event);
+
+        // Trigger legacy language change event for backward compatibility
+        window.dispatchEvent(new Event('languageChanged'));
+
+        // Déclencher la transition visuelle avant de recharger
+        triggerLanguageTransition(formData.interface_language);
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }
+      // Apply theme if it's a theme value
+      else if (formData.interface_language === 'light' || formData.interface_language === 'dark') {
+        setTheme(formData.interface_language);
       }
 
       setAlert({
@@ -315,17 +368,17 @@ export default function SettingsPage() {
     try {
       setIsSaving(true);
       setAlert({ show: false, type: 'success', message: '' });
-      
+
       // Store in localStorage
       localStorage.setItem('userSettings', JSON.stringify(settings));
-      
+
       // Try to save to backend
       try {
         await apiClient.post('/api/auth/me/settings/', settings);
       } catch (error) {
         console.log('Settings API not available, saved locally only');
       }
-      
+
       // Save language settings to user profile
       const languageSettings = {
         native_language: settings.native_language,
@@ -334,22 +387,43 @@ export default function SettingsPage() {
         objectives: settings.objectives,
         interface_language: settings.interface_language
       };
-      
+
       await apiClient.patch('/api/auth/profile/', languageSettings);
-      
+
       setAlert({
         show: true,
         type: 'success',
         message: 'Settings saved successfully!'
       });
-      
+
       // Theme is managed by next-themes
       if (settings.interface_language === 'dark') {
         setTheme('dark');
       } else if (settings.interface_language === 'light') {
         setTheme('light');
       }
-      
+      // If it's a language code, update UI language
+      else if (['en', 'fr', 'es', 'nl'].includes(settings.interface_language)) {
+        // Update the UI language system
+        localStorage.setItem('language', settings.interface_language);
+
+        // Forcer la mise à jour des traductions via notre événement personnalisé
+        const event = new CustomEvent('app:language:changed', {
+          detail: { locale: settings.interface_language, source: 'settings-general' }
+        });
+        window.dispatchEvent(event);
+
+        // Trigger legacy language change event for backward compatibility
+        window.dispatchEvent(new Event('languageChanged'));
+
+        // Déclencher la transition visuelle avant de recharger
+        triggerLanguageTransition(formData.interface_language);
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }
+
       // Clear alert after 3 seconds
       setTimeout(() => {
         setAlert(prev => ({ ...prev, show: false }));

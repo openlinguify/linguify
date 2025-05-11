@@ -172,11 +172,30 @@ type TranslationFunction = (key: string, params?: Record<string, string>, fallba
 
 // Create a singleton to share language state between components
 let currentLocale: AvailableLocales = 'en';
+let eventBus: EventTarget | null = null;
+const LANGUAGE_CHANGE_EVENT = 'app:language:changed';
 const listeners: (() => void)[] = [];
 
+// Setup global event bus for more reactive updates
+if (typeof window !== 'undefined' && !eventBus) {
+  eventBus = new EventTarget();
+}
+
 // Function to notify all translation hooks of a change
-const notifyLocaleChange = () => {
+const notifyLocaleChange = (newLocale: AvailableLocales) => {
+  // Update current locale
+  currentLocale = newLocale;
+
+  // Notify hook listeners
   listeners.forEach(listener => listener());
+
+  // Dispatch global event for all components
+  if (eventBus) {
+    const event = new CustomEvent(LANGUAGE_CHANGE_EVENT, {
+      detail: { locale: newLocale }
+    });
+    eventBus.dispatchEvent(event);
+  }
 };
 
 // Load saved language at module initialization
@@ -328,17 +347,14 @@ export function useTranslation() {
   // Language change handler
   const changeLanguage = useCallback((newLocale: AvailableLocales) => {
     console.log('Changing language to:', newLocale);
-    
-    // Update the singleton
-    currentLocale = newLocale;
-    
+
     // Update localStorage
     localStorage.setItem('language', newLocale);
-    
-    // Notify other hook instances
-    notifyLocaleChange();
-    
-    // Emit event for other components (for backward compatibility)
+
+    // Notify all instances and components with the new locale
+    notifyLocaleChange(newLocale);
+
+    // Emit legacy event for backward compatibility
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('languageChanged'));
     }

@@ -34,10 +34,124 @@ class ProgressAdminMixin:
         urls = super().get_urls()
         custom_urls = [
             path('dashboard/', self.admin_site.admin_view(self.progress_dashboard_view), name='progress_dashboard'),
+            path('user-analytics/', self.admin_site.admin_view(self.user_analytics_view), name='user_analytics'),
             path('api/chart-data/', self.admin_site.admin_view(self.get_chart_data), name='progress_chart_data'),
             path('api/stats/', self.admin_site.admin_view(self.get_stats_data), name='progress_stats_data'),
+            path('api/user-progress/', self.admin_site.admin_view(self.get_user_progress_data), name='progress_user_data'),
+            path('api/user-analytics/<int:user_id>/', self.admin_site.admin_view(self.get_user_analytics_data), name='user_analytics_data'),
         ]
         return custom_urls + urls
+
+    def get_filtered_queryset(self, request):
+        """Retourne un queryset filtré selon les paramètres de la requête"""
+        queryset = self.model.objects.all()
+
+        # Filtrer par utilisateur
+        user_id = request.GET.get('user')
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+
+        # Filtrer par langue
+        language = request.GET.get('language')
+        if language:
+            queryset = queryset.filter(language_code=language)
+
+        # Filtrer par niveau (pour les modèles qui ont une relation avec 'level')
+        level = request.GET.get('level')
+        if level:
+            if self.model._meta.model_name == 'userunitprogress':
+                queryset = queryset.filter(unit__level=level)
+            elif self.model._meta.model_name == 'userlessonprogress':
+                queryset = queryset.filter(lesson__unit__level=level)
+            elif self.model._meta.model_name == 'usercontentlessonprogress':
+                queryset = queryset.filter(content_lesson__lesson__unit__level=level)
+
+        # Filtrer par statut
+        status_filter = request.GET.get('status')
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+
+        # Filtrer par date
+        date_start = request.GET.get('date_start')
+        date_end = request.GET.get('date_end')
+
+        if date_start:
+            start_date = datetime.datetime.strptime(date_start, '%Y-%m-%d').date()
+            queryset = queryset.filter(last_accessed__date__gte=start_date)
+
+        if date_end:
+            end_date = datetime.datetime.strptime(date_end, '%Y-%m-%d').date()
+            queryset = queryset.filter(last_accessed__date__lte=end_date)
+
+        return queryset
+
+    def get_user_progress_data(self, request):
+        """Renvoie les données de progression par utilisateur au format JSON"""
+        queryset = self.get_filtered_queryset(request)
+        page = int(request.GET.get('page', 1))
+        items_per_page = int(request.GET.get('per_page', 20))
+
+        # Calculer l'offset et la limite pour la pagination
+        offset = (page - 1) * items_per_page
+        limit = offset + items_per_page
+
+        # Limiter les résultats pour la pagination
+        paginated_queryset = queryset.order_by('-last_accessed')[offset:limit]
+
+        # Préparer les données de réponse
+        response_data = []
+
+        for progress in paginated_queryset:
+            # Formatter le temps passé
+            minutes, seconds = divmod(progress.time_spent, 60)
+            hours, minutes = divmod(minutes, 60)
+
+            if hours > 0:
+                time_display = f"{hours}h {minutes}m {seconds}s"
+            elif minutes > 0:
+                time_display = f"{minutes}m {seconds}s"
+            else:
+                time_display = f"{seconds}s"
+
+            # Préparer les détails du contenu spécifiques au modèle
+            content_name = ""
+            if self.model._meta.model_name == 'userlessonprogress':
+                content_name = progress.lesson.title_en if hasattr(progress.lesson, 'title_en') else f"Lesson #{progress.lesson.id}"
+            elif self.model._meta.model_name == 'userunitprogress':
+                content_name = progress.unit.title_en if hasattr(progress.unit, 'title_en') else f"Unit #{progress.unit.id}"
+            elif self.model._meta.model_name == 'usercontentlessonprogress':
+                content_name = progress.content_lesson.title_en if hasattr(progress.content_lesson, 'title_en') else f"Content #{progress.content_lesson.id}"
+
+            # Ajouter les données formatées
+            response_data.append({
+                'id': progress.id,
+                'user': {
+                    'id': progress.user.id,
+                    'username': progress.user.username,
+                    'email': progress.user.email
+                },
+                'content': content_name,
+                'language': progress.language_code,
+                'status': progress.status,
+                'completion_percentage': progress.completion_percentage,
+                'score': progress.score,
+                'time_spent': progress.time_spent,
+                'time_display': time_display,
+                'last_accessed': progress.last_accessed.isoformat(),
+            })
+
+        # Ajouter des métadonnées de pagination
+        result = {
+            'data': response_data,
+            'meta': {
+                'total': queryset.count(),
+                'page': page,
+                'per_page': items_per_page,
+                'total_pages': (queryset.count() + items_per_page - 1) // items_per_page
+            }
+        }
+
+        return JsonResponse(result)
 
     def progress_dashboard_view(self, request):
         """Vue pour le tableau de bord de progression"""
@@ -51,12 +165,25 @@ class ProgressAdminMixin:
         }
         return render(request, 'admin/progress/dashboard.html', context)
 
+    def user_analytics_view(self, request):
+        """Vue pour l'analyse détaillée par utilisateur"""
+        context = {
+            **self.admin_site.each_context(request),
+            'title': 'User Progress Analytics',
+            'has_permission': True,
+            'model_name': self.model._meta.model_name,
+            'app_label': self.model._meta.app_label,
+            'opts': self.model._meta,
+        }
+        return render(request, 'admin/progress/user_analytics.html', context)
+
     def get_chart_data(self, request):
         """Fournit les données pour les graphiques du tableau de bord"""
         model = self.model
+        queryset = self.get_filtered_queryset(request)
 
         # Statistiques par statut
-        status_counts = model.objects.values('status').annotate(count=Count('id'))
+        status_counts = queryset.values('status').annotate(count=Count('id'))
         status_data = {
             'labels': [s['status'].replace('_', ' ').title() for s in status_counts],
             'data': [s['count'] for s in status_counts],
@@ -64,18 +191,33 @@ class ProgressAdminMixin:
         }
 
         # Statistiques par langue
-        lang_counts = model.objects.values('language_code').annotate(count=Count('id'))
+        lang_counts = queryset.values('language_code').annotate(count=Count('id'))
         lang_counts = sorted(lang_counts, key=lambda x: x['count'], reverse=True)
         lang_data = {
             'labels': [l['language_code'] for l in lang_counts],
             'data': [l['count'] for l in lang_counts]
         }
 
-        # Progression moyenne par jour (30 derniers jours)
+        # Progression moyenne par jour (période filtrée ou 30 derniers jours)
         today = now().date()
-        thirty_days_ago = today - datetime.timedelta(days=30)
-        daily_progress = model.objects.filter(
-            last_accessed__date__gte=thirty_days_ago
+
+        # Utiliser les dates du filtre si fournies, sinon les 30 derniers jours
+        date_start = request.GET.get('date_start')
+        date_end = request.GET.get('date_end')
+
+        if date_start:
+            start_date = datetime.datetime.strptime(date_start, '%Y-%m-%d').date()
+        else:
+            start_date = today - datetime.timedelta(days=30)
+
+        if date_end:
+            end_date = datetime.datetime.strptime(date_end, '%Y-%m-%d').date()
+        else:
+            end_date = today
+
+        daily_progress = queryset.filter(
+            last_accessed__date__gte=start_date,
+            last_accessed__date__lte=end_date
         ).values(
             'last_accessed__date'
         ).annotate(
@@ -97,11 +239,11 @@ class ProgressAdminMixin:
 
     def get_stats_data(self, request):
         """Fournit les statistiques générales pour le tableau de bord"""
-        model = self.model
+        queryset = self.get_filtered_queryset(request)
 
-        total_records = model.objects.count()
-        complete_records = model.objects.filter(status='completed').count()
-        total_time_spent = model.objects.aggregate(total=Sum('time_spent'))['total'] or 0
+        total_records = queryset.count()
+        complete_records = queryset.filter(status='completed').count()
+        total_time_spent = queryset.aggregate(total=Sum('time_spent'))['total'] or 0
 
         # Convertir le temps total en un format lisible
         minutes, seconds = divmod(total_time_spent, 60)
@@ -121,7 +263,7 @@ class ProgressAdminMixin:
 
         if model_name == 'usercontentlessonprogress':
             # Ajouter des statistiques spécifiques aux contenus
-            content_type_stats = model.objects.values(
+            content_type_stats = queryset.values(
                 'content_lesson__content_type'
             ).annotate(
                 count=Count('id'),
@@ -139,13 +281,40 @@ class ProgressAdminMixin:
                 for ct in content_type_stats
             ]
 
+        # Statistiques par utilisateur
+        user_stats = queryset.values('user__username').annotate(
+            count=Count('id'),
+            completed=Count('id', filter=Q(status='completed')),
+            avg_progress=Avg('completion_percentage'),
+            total_time=Sum('time_spent')
+        ).order_by('-count')[:10]  # Limiter aux 10 utilisateurs les plus actifs
+
+        special_stats['users'] = [
+            {
+                'id': queryset.filter(user__username=u['user__username']).values_list('user_id', flat=True).first(),
+                'username': u['user__username'],
+                'count': u['count'],
+                'completed': u['completed'],
+                'completion_rate': round(u['completed'] / u['count'] * 100, 1) if u['count'] > 0 else 0,
+                'avg_progress': round(u['avg_progress'] or 0, 1),
+                'total_time': u['total_time'] or 0
+            }
+            for u in user_stats
+        ]
+
+        # Ajouter une liste des utilisateurs pour le filtre
+        users = User.objects.filter(
+            id__in=queryset.values_list('user_id', flat=True).distinct()
+        ).values('id', 'username', 'email')
+
         return JsonResponse({
             'total_records': total_records,
             'complete_records': complete_records,
             'completion_rate': round(complete_records / total_records * 100, 1) if total_records > 0 else 0,
             'total_time_spent': total_time_spent,
             'total_time_display': total_time_display,
-            'special_stats': special_stats
+            'special_stats': special_stats,
+            'users': list(users)
         })
 
     def reset_progress(self, request, queryset):
@@ -231,6 +400,368 @@ class ProgressAdminMixin:
 
         return response
     export_progress_data.short_description = "Export selected items to JSON"
+
+    def get_user_analytics_data(self, request, user_id):
+        """Fournit les données d'analyse détaillées pour un utilisateur spécifique"""
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+        # Récupérer toutes les progressions de cet utilisateur
+        model_name = self.model._meta.model_name
+
+        # Statistiques de base de l'utilisateur
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'stats': {}
+        }
+
+        # Obtenir les statistiques selon le modèle de progression
+        if model_name == 'userlessonprogress':
+            queryset = self.model.objects.filter(user=user)
+
+            # Statistiques générales
+            total_lessons = queryset.count()
+            completed_lessons = queryset.filter(status='completed').count()
+            total_time_spent = queryset.aggregate(Sum('time_spent'))['time_spent__sum'] or 0
+            avg_score = queryset.filter(score__gt=0).aggregate(Avg('score'))['score__avg'] or 0
+
+            user_data['stats'] = {
+                'totalLessons': total_lessons,
+                'completedLessons': completed_lessons,
+                'avgScore': round(avg_score),
+                'totalTimeSpent': round(total_time_spent / 3600, 1)  # Convertir en heures
+            }
+
+            # Progression par langue
+            language_progress = queryset.values('language_code').annotate(
+                totalLessons=Count('id'),
+                completedLessons=Count('id', filter=Q(status='completed')),
+                avgScore=Avg('score', filter=Q(score__gt=0))
+            )
+
+            user_data['languageProgress'] = [
+                {
+                    'language': lang['language_code'],
+                    'totalLessons': lang['totalLessons'],
+                    'completedLessons': lang['completedLessons'],
+                    'avgScore': round(lang['avgScore'] or 0)
+                }
+                for lang in language_progress
+            ]
+
+            # Progression par niveau
+            level_progress = queryset.values('lesson__unit__level').annotate(
+                totalLessons=Count('id'),
+                completedLessons=Count('id', filter=Q(status='completed')),
+                avgScore=Avg('score', filter=Q(score__gt=0))
+            ).exclude(lesson__unit__level__isnull=True)
+
+            user_data['levelProgress'] = [
+                {
+                    'level': level['lesson__unit__level'],
+                    'totalLessons': level['totalLessons'],
+                    'completedLessons': level['completedLessons'],
+                    'avgScore': round(level['avgScore'] or 0)
+                }
+                for level in level_progress
+            ]
+
+            # Activités récentes
+            recent_activities = queryset.order_by('-last_accessed')[:10]
+
+            user_data['recentActivity'] = [
+                {
+                    'date': activity.last_accessed.isoformat(),
+                    'content': activity.lesson.title_en if hasattr(activity.lesson, 'title_en') else f"Lesson #{activity.lesson.id}",
+                    'language': activity.language_code,
+                    'level': activity.lesson.unit.level if activity.lesson.unit else "N/A",
+                    'status': activity.status,
+                    'score': activity.score,
+                    'timeSpent': activity.time_spent
+                }
+                for activity in recent_activities
+            ]
+
+            # Timeline d'activité (30 derniers jours)
+            today = now().date()
+            thirty_days_ago = today - datetime.timedelta(days=30)
+
+            daily_activity = queryset.filter(
+                last_accessed__date__gte=thirty_days_ago
+            ).values(
+                'last_accessed__date'
+            ).annotate(
+                count=Count('id'),
+                timeSpent=Sum('time_spent')
+            ).order_by('last_accessed__date')
+
+            # Remplir les jours manquants
+            date_range = [(thirty_days_ago + datetime.timedelta(days=i)) for i in range(31)]
+            timeline_data = []
+
+            for date in date_range:
+                day_data = next((d for d in daily_activity if d['last_accessed__date'] == date), None)
+
+                if day_data:
+                    timeline_data.append({
+                        'date': date.isoformat(),
+                        'count': day_data['count'],
+                        'timeSpent': day_data['timeSpent']
+                    })
+                else:
+                    timeline_data.append({
+                        'date': date.isoformat(),
+                        'count': 0,
+                        'timeSpent': 0
+                    })
+
+            user_data['activityTimeline'] = timeline_data
+
+            # Analyse des performances par type de contenu (pour les leçons associées à des ContentLesson)
+            if ContentLesson.objects.filter(lesson__in=queryset.values_list('lesson', flat=True)).exists():
+                content_lesson_stats = ContentLesson.objects.filter(
+                    lesson__in=queryset.values_list('lesson', flat=True)
+                ).values(
+                    'content_type'
+                ).annotate(
+                    count=Count('id')
+                )
+
+                # Obtenir les performances pour ces types de contenu
+                content_performance = []
+
+                for content_type in content_lesson_stats:
+                    # Obtenir les progressions des leçons qui ont ce type de contenu
+                    content_lessons = ContentLesson.objects.filter(content_type=content_type['content_type'])
+                    lesson_ids = content_lessons.values_list('lesson_id', flat=True)
+
+                    lesson_progress = queryset.filter(lesson_id__in=lesson_ids)
+
+                    if lesson_progress.exists():
+                        avg_score = lesson_progress.filter(score__gt=0).aggregate(Avg('score'))['score__avg'] or 0
+                        time_spent = lesson_progress.aggregate(Sum('time_spent'))['time_spent__sum'] or 0
+
+                        content_performance.append({
+                            'type': content_type['content_type'],
+                            'count': lesson_progress.count(),
+                            'avgScore': round(avg_score),
+                            'timeSpent': time_spent
+                        })
+
+                user_data['contentTypePerformance'] = content_performance
+            else:
+                user_data['contentTypePerformance'] = []
+
+        elif model_name == 'usercontentlessonprogress':
+            # Similaire à ci-dessus, mais adapté pour les UserContentLessonProgress
+            queryset = self.model.objects.filter(user=user)
+
+            # Statistiques générales
+            total_lessons = queryset.count()
+            completed_lessons = queryset.filter(status='completed').count()
+            total_time_spent = queryset.aggregate(Sum('time_spent'))['time_spent__sum'] or 0
+            avg_score = queryset.filter(score__gt=0).aggregate(Avg('score'))['score__avg'] or 0
+
+            user_data['stats'] = {
+                'totalLessons': total_lessons,
+                'completedLessons': completed_lessons,
+                'avgScore': round(avg_score),
+                'totalTimeSpent': round(total_time_spent / 3600, 1)  # Convertir en heures
+            }
+
+            # Progression par langue
+            language_progress = queryset.values('language_code').annotate(
+                totalLessons=Count('id'),
+                completedLessons=Count('id', filter=Q(status='completed')),
+                avgScore=Avg('score', filter=Q(score__gt=0))
+            )
+
+            user_data['languageProgress'] = [
+                {
+                    'language': lang['language_code'],
+                    'totalLessons': lang['totalLessons'],
+                    'completedLessons': lang['completedLessons'],
+                    'avgScore': round(lang['avgScore'] or 0)
+                }
+                for lang in language_progress
+            ]
+
+            # Progression par niveau (via content_lesson -> lesson -> unit)
+            level_progress = queryset.values('content_lesson__lesson__unit__level').annotate(
+                totalLessons=Count('id'),
+                completedLessons=Count('id', filter=Q(status='completed')),
+                avgScore=Avg('score', filter=Q(score__gt=0))
+            ).exclude(content_lesson__lesson__unit__level__isnull=True)
+
+            user_data['levelProgress'] = [
+                {
+                    'level': level['content_lesson__lesson__unit__level'],
+                    'totalLessons': level['totalLessons'],
+                    'completedLessons': level['completedLessons'],
+                    'avgScore': round(level['avgScore'] or 0)
+                }
+                for level in level_progress
+            ]
+
+            # Analyse des performances par type de contenu
+            content_type_performance = queryset.values('content_lesson__content_type').annotate(
+                count=Count('id'),
+                avgScore=Avg('score', filter=Q(score__gt=0)),
+                timeSpent=Sum('time_spent')
+            )
+
+            user_data['contentTypePerformance'] = [
+                {
+                    'type': ct['content_lesson__content_type'],
+                    'count': ct['count'],
+                    'avgScore': round(ct['avgScore'] or 0),
+                    'timeSpent': ct['timeSpent'] or 0
+                }
+                for ct in content_type_performance
+            ]
+
+            # Activités récentes
+            recent_activities = queryset.select_related(
+                'content_lesson', 'content_lesson__lesson', 'content_lesson__lesson__unit'
+            ).order_by('-last_accessed')[:10]
+
+            user_data['recentActivity'] = [
+                {
+                    'date': activity.last_accessed.isoformat(),
+                    'content': activity.content_lesson.title_en if hasattr(activity.content_lesson, 'title_en') else f"Content #{activity.content_lesson.id}",
+                    'language': activity.language_code,
+                    'level': activity.content_lesson.lesson.unit.level if (activity.content_lesson.lesson and activity.content_lesson.lesson.unit) else "N/A",
+                    'status': activity.status,
+                    'score': activity.score,
+                    'timeSpent': activity.time_spent
+                }
+                for activity in recent_activities
+            ]
+
+            # Timeline d'activité (30 derniers jours)
+            today = now().date()
+            thirty_days_ago = today - datetime.timedelta(days=30)
+
+            daily_activity = queryset.filter(
+                last_accessed__date__gte=thirty_days_ago
+            ).values(
+                'last_accessed__date'
+            ).annotate(
+                count=Count('id'),
+                timeSpent=Sum('time_spent')
+            ).order_by('last_accessed__date')
+
+            # Remplir les jours manquants
+            date_range = [(thirty_days_ago + datetime.timedelta(days=i)) for i in range(31)]
+            timeline_data = []
+
+            for date in date_range:
+                day_data = next((d for d in daily_activity if d['last_accessed__date'] == date), None)
+
+                if day_data:
+                    timeline_data.append({
+                        'date': date.isoformat(),
+                        'count': day_data['count'],
+                        'timeSpent': day_data['timeSpent']
+                    })
+                else:
+                    timeline_data.append({
+                        'date': date.isoformat(),
+                        'count': 0,
+                        'timeSpent': 0
+                    })
+
+            user_data['activityTimeline'] = timeline_data
+
+        # Ajouter des statistiques de streak (consécutives)
+        # Ceci est une version simplifiée, pourrait être améliorée
+        completed_days = queryset.filter(
+            status='completed'
+        ).values(
+            'completed_at__date'
+        ).distinct().values_list('completed_at__date', flat=True)
+
+        # Convertir en liste pour le traitement
+        completed_days = sorted(list(completed_days))
+
+        if completed_days:
+            # Calculer le streak actuel
+            current_streak = 1
+            max_streak = 1
+
+            # Calculer les jours consécutifs de connexion
+            if len(completed_days) > 1:
+                for i in range(1, len(completed_days)):
+                    current_date = completed_days[i]
+                    prev_date = completed_days[i-1]
+
+                    if (current_date - prev_date).days == 1:
+                        current_streak += 1
+                        max_streak = max(max_streak, current_streak)
+                    elif (current_date - prev_date).days > 1:
+                        current_streak = 1
+
+            # Vérifier si le streak est toujours actif (aujourd'hui ou hier)
+            last_day = completed_days[-1]
+            days_since_last = (today - last_day).days
+
+            if days_since_last > 1:
+                current_streak = 0
+
+            user_data['stats']['weeklyActivities'] = len([d for d in completed_days if (today - d).days <= 7])
+            user_data['stats']['learningStreak'] = current_streak
+            user_data['stats']['bestStreak'] = max_streak
+
+            # Calculer la tendance d'activité
+            prev_week_count = len([d for d in completed_days if 7 < (today - d).days <= 14])
+            curr_week_count = user_data['stats']['weeklyActivities']
+
+            if prev_week_count > 0:
+                activity_trend = ((curr_week_count - prev_week_count) / prev_week_count) * 100
+            else:
+                activity_trend = 100 if curr_week_count > 0 else 0
+
+            user_data['stats']['activityTrend'] = round(activity_trend)
+
+            # Temps moyen par session
+            active_days_count = len(completed_days)
+            if active_days_count > 0:
+                avg_time_per_day = total_time_spent / active_days_count / 60  # en minutes
+                user_data['stats']['avgSessionTime'] = round(avg_time_per_day)
+
+                # Tendance de temps
+                prev_week_time = queryset.filter(
+                    completed_at__date__gte=today - datetime.timedelta(days=14),
+                    completed_at__date__lt=today - datetime.timedelta(days=7)
+                ).aggregate(Sum('time_spent'))['time_spent__sum'] or 0
+
+                curr_week_time = queryset.filter(
+                    completed_at__date__gte=today - datetime.timedelta(days=7)
+                ).aggregate(Sum('time_spent'))['time_spent__sum'] or 0
+
+                if prev_week_time > 0:
+                    time_trend = ((curr_week_time - prev_week_time) / prev_week_time) * 100
+                else:
+                    time_trend = 100 if curr_week_time > 0 else 0
+
+                user_data['stats']['timeTrend'] = round(time_trend)
+            else:
+                user_data['stats']['avgSessionTime'] = 0
+                user_data['stats']['timeTrend'] = 0
+        else:
+            # Valeurs par défaut si l'utilisateur n'a pas d'activités terminées
+            user_data['stats']['weeklyActivities'] = 0
+            user_data['stats']['learningStreak'] = 0
+            user_data['stats']['bestStreak'] = 0
+            user_data['stats']['activityTrend'] = 0
+            user_data['stats']['avgSessionTime'] = 0
+            user_data['stats']['timeTrend'] = 0
+
+        return JsonResponse(user_data)
 
     def status_display(self, obj):
         """Affichage du statut avec couleur"""
