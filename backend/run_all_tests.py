@@ -68,22 +68,10 @@ if __name__ == "__main__":
     
     # Arguments pour pytest
     pytest_args = ["-v"]  # Verbose output
-    
-    # Add coverage reporting only if pytest-cov is installed
-    try:
-        import pytest_cov
-        pytest_args.extend([
-            "--junitxml=junit-report.xml",  # XML report for CI
-            "--cov=.",                      # Coverage for all modules
-            "--cov-report=xml",             # Coverage XML report
-            "--cov-report=term"             # Terminal coverage report
-        ])
-        print("Coverage reporting enabled.")
-    except ImportError:
-        print("Note: pytest-cov package not found. Coverage reporting disabled.")
-        # Add junit report if running in CI environment
-        if os.environ.get('CI'):
-            pytest_args.append("--junitxml=junit-report.xml")
+
+    # Ne pas utiliser la couverture de code pour l'instant
+    # car cela cause des problèmes dans l'environnement CI
+    print("Note: Running tests without coverage reporting.")
     
     # Exécuter tous les tests découverts avec pytest
     sys.exit(pytest.main(pytest_args + test_files))
