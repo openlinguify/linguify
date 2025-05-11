@@ -136,16 +136,7 @@ jobs:
           TEST_MODE: 'True'
           CI: 'True'
       
-      # Génération de rapport supprimée car les fichiers ne sont pas générés correctement
-
-      # Envoi des résultats de test simples
-      - name: Upload test results
-        if: success() || failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: backend/.pytest_cache
-          retention-days: 3
+      # Pas de génération de rapport pour simplifier la configuration CI
 
   notify:
     name: Notify on failure
