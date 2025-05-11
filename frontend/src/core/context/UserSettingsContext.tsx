@@ -42,54 +42,69 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
     const loadSettings = async () => {
       // Déjà en cours de chargement, ne pas recharger
       if (isLoading && initialized) return;
-      
+
       setIsLoading(true);
       setError(null);
-      
+
       try {
+        // Récupérer la langue UI stockée dans localStorage pour synchronisation
+        const storedUILanguage = localStorage.getItem('language');
+        let finalSettings = { ...DEFAULT_USER_SETTINGS };
+
         // Si authentifié, essayer de charger depuis le backend
         if (isAuthenticated && token) {
           try {
             const response = await apiClient.get('/api/auth/me/settings/');
-            
+
             if (response.data) {
               // Fusionner avec les valeurs par défaut
-              const mergedSettings = { ...DEFAULT_USER_SETTINGS, ...response.data };
-              setSettings(mergedSettings);
-              
-              // Mettre à jour localStorage
-              localStorage.setItem('userSettings', JSON.stringify(mergedSettings));
-              console.log('[UserSettings] Loaded settings from backend', mergedSettings);
+              finalSettings = { ...finalSettings, ...response.data };
+              console.log('[UserSettings] Loaded settings from backend', finalSettings);
             }
           } catch (apiError) {
             console.error('[UserSettings] Error loading from API:', apiError);
-            
+
             // En cas d'erreur API, essayer de charger depuis localStorage
             const storedData = localStorage.getItem('userSettings');
             if (storedData) {
               try {
                 const parsedSettings = JSON.parse(storedData);
-                setSettings({ ...DEFAULT_USER_SETTINGS, ...parsedSettings });
+                finalSettings = { ...finalSettings, ...parsedSettings };
                 console.log('[UserSettings] Loaded settings from localStorage', parsedSettings);
               } catch (parseError) {
                 console.error('[UserSettings] Error parsing stored settings:', parseError);
               }
             }
           }
-        } 
+        }
         // Si non authentifié, charger depuis localStorage
         else {
           const storedData = localStorage.getItem('userSettings');
           if (storedData) {
             try {
               const parsedSettings = JSON.parse(storedData);
-              setSettings({ ...DEFAULT_USER_SETTINGS, ...parsedSettings });
+              finalSettings = { ...finalSettings, ...parsedSettings };
               console.log('[UserSettings] Loaded settings from localStorage', parsedSettings);
             } catch (parseError) {
               console.error('[UserSettings] Error parsing stored settings:', parseError);
             }
           }
         }
+
+        // Synchroniser avec la langue UI si elle existe et est valide
+        if (storedUILanguage && ['en', 'fr', 'es', 'nl'].includes(storedUILanguage)) {
+          // Si la langue UI diffère de celle des paramètres, la priorité va à la langue UI
+          if (finalSettings.interface_language !== storedUILanguage) {
+            console.log('[UserSettings] Synchronizing with UI language:', storedUILanguage);
+            finalSettings.interface_language = storedUILanguage;
+          }
+        }
+
+        // Mettre à jour les paramètres
+        setSettings(finalSettings);
+
+        // Mettre à jour localStorage
+        localStorage.setItem('userSettings', JSON.stringify(finalSettings));
       } catch (e) {
         console.error('[UserSettings] Error loading settings:', e);
         setError('Failed to load user settings');

@@ -8,6 +8,8 @@ import { OnboardingProvider } from '@/components/onboarding/OnboardingProvider';
 import { NotificationProvider } from '@/core/context/NotificationContext';
 import QueryProvider from '@/core/providers/QueryProvider';
 import { LanguageProvider } from '@/core/i18n/i18nProvider';
+import { LanguageSyncProvider } from '@/core/i18n/LanguageSyncProvider';
+import { LanguageTransition } from '@/core/i18n/LanguageTransition';
 import { registerServiceWorker } from '@/core/api/serviceWorkerRegistration';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -30,13 +32,16 @@ export default function Providers({ children }: ProvidersProps) {
         <LanguageProvider>
           <AuthProvider>
             <UserSettingsProvider>
-              <NotificationProvider>
-                <OnboardingProvider>
-                  <ServiceWorkerRegistration />
-                  {children}
-                  <Toaster />
-                </OnboardingProvider>
-              </NotificationProvider>
+              <LanguageSyncProvider>
+                <NotificationProvider>
+                  <OnboardingProvider>
+                    <ServiceWorkerRegistration />
+                    {children}
+                    <Toaster />
+                    <LanguageTransition />
+                  </OnboardingProvider>
+                </NotificationProvider>
+              </LanguageSyncProvider>
             </UserSettingsProvider>
           </AuthProvider>
         </LanguageProvider>

@@ -115,13 +115,25 @@ def notify_lesson_progress(sender, instance, created, update_fields=None, **kwar
                 content_lesson = ContentLesson.objects.get(id=instance.content_lesson_id)
                 lesson = content_lesson.lesson
                 
+                # Récupérer le titre avec le bon code de langue ou fallback à l'anglais
+                lang_code = instance.language_code or 'en'
+                lesson_title = getattr(lesson, f'title_{lang_code}', None)
+                if not lesson_title:
+                    lesson_title = getattr(lesson, 'title_en', f"Leçon {lesson.id}")
+
+                unit_title = None
+                if lesson.unit:
+                    unit_title = getattr(lesson.unit, f'title_{lang_code}', None)
+                    if not unit_title:
+                        unit_title = getattr(lesson.unit, 'title_en', f"Unité {lesson.unit.id}")
+
                 # Créer une notification pour encourager l'utilisateur à terminer
                 NotificationManager.send_lesson_reminder(
                     user=instance.user,
-                    lesson_title=lesson.title,
+                    lesson_title=lesson_title,
                     lesson_id=lesson.id,
                     unit_id=lesson.unit.id if lesson.unit else None,
-                    unit_title=lesson.unit.title if lesson.unit else None
+                    unit_title=unit_title
                 )
             except (ContentLesson.DoesNotExist, Lesson.DoesNotExist):
                 # Gérer le cas où la leçon n'existe plus
@@ -147,11 +159,17 @@ def notify_lesson_completion(sender, instance, created, update_fields=None, **kw
             # Récupérer la leçon
             lesson = Lesson.objects.get(id=instance.lesson_id)
             
+            # Récupérer le titre avec le bon code de langue ou fallback à l'anglais
+            lang_code = instance.language_code or 'en'
+            lesson_title = getattr(lesson, f'title_{lang_code}', None)
+            if not lesson_title:
+                lesson_title = getattr(lesson, 'title_en', f"Leçon {lesson.id}")
+
             # Créer une notification d'accomplissement
             NotificationManager.create_notification(
                 user=instance.user,
                 title="Leçon terminée!",
-                message=f"Bravo! Vous avez terminé la leçon '{lesson.title}'.",
+                message=f"Bravo! Vous avez terminé la leçon '{lesson_title}'.",
                 notification_type='achievement',
                 priority='medium',
                 data={
@@ -190,7 +208,7 @@ def check_consecutive_days(user):
         user=user,
         status='completed'
     ).annotate(
-        completion_date=TruncDate('updated_at')
+        completion_date=TruncDate('completed_at')  # Use completed_at instead of updated_at
     ).values('completion_date').annotate(
         count=Count('id')
     ).order_by('-completion_date')
