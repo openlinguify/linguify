@@ -15,8 +15,32 @@ on:
       - '.github/workflows/**'
   pull_request:
     branches: [ main, develop ]
+  schedule:
+    # Run weekly on Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
 
 jobs:
+  backend-security:
+    name: Backend Security Scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Bandit
+        run: pip install bandit
+
+      - name: Run Bandit security scan
+        run: bandit -r apps/ -ll -ii
+
   backend-tests:
     name: Backend Tests
     runs-on: ubuntu-latest
@@ -78,8 +102,40 @@ jobs:
           poetry run python -m pip install flake8
           poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
       
-      - name: Run tests
-        run: poetry run pytest -v
+      - name: Run all tests with coverage
+        run: |
+          poetry add pytest-cov
+          poetry run python -m pytest run_all_tests.py --cov=apps --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          fail_ci_if_error: false
+
+  frontend-security:
+    name: Frontend Security Scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ./frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --production
 
   frontend-tests:
     name: Frontend Tests
@@ -87,38 +143,41 @@ jobs:
     defaults:
       run:
         working-directory: ./frontend
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: ./frontend/package-lock.json
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run linting
         run: npm run lint
-      
+
+      - name: Run unit tests
+        run: npm test
+
       - name: Build application
         run: npm run build
 
   notify-success:
-    needs: [backend-tests, frontend-tests]
+    needs: [backend-security, backend-tests, frontend-security, frontend-tests]
     if: success()
     runs-on: ubuntu-latest
     steps:
       - name: Success notification
-        run: echo "All tests passed successfully!"
+        run: echo "All tests and security scans passed successfully!"
 
   notify-failure:
-    needs: [backend-tests, frontend-tests]
+    needs: [backend-security, backend-tests, frontend-security, frontend-tests]
     if: failure()
     runs-on: ubuntu-latest
     steps:
       - name: Failure notification
-        run: echo "Some tests have failed. Check the logs for details."
+        run: echo "Some tests or security scans have failed. Check the logs for details."
