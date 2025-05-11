@@ -206,9 +206,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Status notification
-        run: |
-          if [ "${{ contains(needs.*.result, 'failure') }}" == "true" ]; then
-            echo "Some jobs have failed but workflow continued. Check the logs for details."
-          else
-            echo "All jobs completed. Some warnings may exist in the logs."
-          fi
+        if: contains(needs.*.result, 'failure')
+        run: echo "Some jobs have failed but workflow continued. Check the logs for details."
+
+      - name: Success notification
+        if: ${{ !contains(join(needs.*.result, ','), 'failure') }}
+        run: echo "All jobs completed. Some warnings may exist in the logs."
