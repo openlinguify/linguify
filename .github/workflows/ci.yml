@@ -47,7 +47,6 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      max-attempts: 3
     defaults:
       run:
         working-directory: ./backend
@@ -108,13 +107,18 @@ jobs:
           poetry run flake8 . --count --select=E9,F63,F7,F82 --ignore=W605 --show-source --statistics
       
       - name: Run all tests with coverage
-        run: |
-          poetry add pytest-cov
-          poetry run python -m pytest run_all_tests.py --cov=apps --cov-report=xml || true
-          # Créer un rapport de couverture même en cas d'échec des tests
-          if [ ! -f coverage.xml ]; then
-            poetry run python -m pytest run_all_tests.py --cov=apps --cov-report=xml --no-tests-ran
-          fi
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: |
+            cd backend
+            poetry add pytest-cov
+            poetry run python -m pytest run_all_tests.py --cov=apps --cov-report=xml || true
+            # Créer un rapport de couverture même en cas d'échec des tests
+            if [ ! -f coverage.xml ]; then
+              poetry run python -m pytest run_all_tests.py --cov=apps --cov-report=xml --no-tests-ran
+            fi
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -152,7 +156,6 @@ jobs:
     timeout-minutes: 30
     strategy:
       fail-fast: false
-      max-attempts: 2
     defaults:
       run:
         working-directory: ./frontend
@@ -174,7 +177,11 @@ jobs:
         run: npm run lint
 
       - name: Run unit tests
-        run: npm test || echo "Tests failed, but continuing"
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 5
+          max_attempts: 2
+          command: cd frontend && npm test || echo "Tests failed, but continuing"
 
       - name: Build application
         run: npm run build
