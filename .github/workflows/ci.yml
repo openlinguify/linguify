@@ -80,6 +80,8 @@ jobs:
       SECRET_KEY: 'test-secret-key-for-ci'
       DJANGO_SETTINGS_MODULE: core.settings
       TEST_MODE: 'True'
+      PGUSER: postgres
+      PGPASSWORD: postgres
 
     steps:
       - uses: actions/checkout@v4
@@ -109,84 +111,121 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
+      - name: Debug environment
+        run: |
+          echo "Environment debug information:"
+          echo "Python version: $(poetry run python --version)"
+          echo "PostgreSQL status: $(pg_isready -h localhost -p 5432 || echo 'Not accessible')"
+          echo "Django available: $(poetry run python -c 'import django; print(django.__version__)' 2>/dev/null || echo 'Not available')"
+          echo "Path: $PATH"
+
       - name: Run escape sequence fix script
         run: |
           echo "Fixing invalid escape sequences in Python files"
           chmod +x scripts/fix_escapes.py
           poetry run python scripts/fix_escapes.py
+          # Show the files that were modified
+          echo "Modified Python files:"
+          git diff --name-only -- "*.py" || echo "No Python files modified"
 
       - name: Validate database connection
         run: |
           echo "Testing database connection with postgres user"
-          poetry run python -c 'import psycopg2, os; conn = psycopg2.connect(dbname=os.environ.get("DB_NAME", "test_linguify"), user=os.environ.get("DB_USER", "postgres"), password=os.environ.get("DB_PASSWORD", "postgres"), host=os.environ.get("DB_HOST", "localhost"), port=os.environ.get("DB_PORT", "5432")); print("Database connection successful"); conn.close()'
+          poetry run python -c '
+          run: |
+          python -c '
+          import psycopg2
+          import os
+          import sys
 
-      - name: Basic validation
-        run: |
-          poetry run python -m compileall .
-          echo "Syntax check passed"
+          try:
+              conn = psycopg2.connect(
+                  dbname=os.environ.get("DB_NAME", "test_linguify"),
+                  user=os.environ.get("DB_USER", "postgres"),
+                  password=os.environ.get("DB_PASSWORD", "postgres"),
+                  host=os.environ.get("DB_HOST", "localhost"),
+                  port=int(os.environ.get("DB_PORT", "5432"))
+              )
+              print("Database connection successful")
+              conn.close()
+          except psycopg2.Error as e:
+              print(f"Database connection error: {e}")
+              sys.exit(1)
+          '
 
-      - name: Verify Django settings
-        run: |
-          echo "Checking Django database configuration"
-          poetry run python -c 'import os, django; os.environ["TEST_MODE"] = "True"; os.environ["DJANGO_SETTINGS_MODULE"] = "core.settings"; django.setup(); from django.conf import settings; print(f"Django version: {django.__version__}"); print(f"TEST_MODE: {os.environ.get(\"TEST_MODE\")}"); print(f"Database engine: {settings.DATABASES[\"default\"][\"ENGINE\"]}"); print(f"Database name: {settings.DATABASES[\"default\"][\"NAME\"]}"); print(f"Database user: {settings.DATABASES[\"default\"].get(\"USER\", \"N/A\")}")'
+                - name: Basic validation
+                  run: |
+                    echo "Running Python syntax check..."
+                    # Use a more verbose mode to see detailed compilation errors
+                    poetry run python -m compileall -q ./ 2>&1 || {
+                      echo "Compilation failed. Verbose output:"
+                      poetry run python -m compileall -v ./
+                      exit 1
+                    }
+                    echo "Syntax check passed"
 
-      - name: Run simplified tests
-        run: |
-          poetry run python -c "import pytest; print(f'Pytest version: {pytest.__version__}')"
-          echo "Running core tests only"
-          TEST_MODE=True poetry run python -m pytest tests/test_database_config.py tests/test_core_simple.py -v
+                - name: Verify Django settings
+                  run: |
+                    echo "Checking Django database configuration"
+                    poetry run python -c 'import os, django; os.environ["TEST_MODE"] = "True"; os.environ["DJANGO_SETTINGS_MODULE"] = "core.settings"; django.setup(); from django.conf import settings; print(f"Django version: {django.__version__}"); print(f"TEST_MODE: {os.environ.get(\"TEST_MODE\")}"); print(f"Database engine: {settings.DATABASES[\"default\"][\"ENGINE\"]}"); print(f"Database name: {settings.DATABASES[\"default\"][\"NAME\"]}"); print(f"Database user: {settings.DATABASES[\"default\"].get(\"USER\", \"N/A\")}")'
 
-  frontend-security:
-    name: Frontend Security Scan
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    concurrency:
-      group: frontend-security-${{ github.ref }}
-      cancel-in-progress: true
-    defaults:
-      run:
-        working-directory: ./frontend
+                - name: Run simplified tests
+                  run: |
+                    poetry run python -c "import pytest; print(f'Pytest version: {pytest.__version__}')"
+                    echo "Running core tests only"
+                    TEST_MODE=True poetry run python -m pytest tests/test_database_config.py tests/test_core_simple.py -v
 
-    steps:
-      - uses: actions/checkout@v4
+            frontend-security:
+              name: Frontend Security Scan
+              runs-on: ubuntu-latest
+              timeout-minutes: 10
+              concurrency:
+                group: frontend-security-${{ github.ref }}
+                cancel-in-progress: true
+              defaults:
+                run:
+                  working-directory: ./frontend
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: ./frontend/package-lock.json
+              steps:
+                - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: npm ci
+                - name: Setup Node.js
+                  uses: actions/setup-node@v4
+                  with:
+                    node-version: '20'
+                    cache: 'npm'
+                    cache-dependency-path: ./frontend/package-lock.json
 
-      - name: Run npm audit
-        run: |
-          echo "Running npm security audit..."
-          npm audit --production || echo "::warning::Security vulnerabilities found - please review them carefully"
+                - name: Install dependencies
+                  run: npm ci
 
-  frontend-tests:
-    name: Frontend Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    concurrency:
-      group: frontend-tests-${{ github.ref }}
-      cancel-in-progress: true
-    strategy:
-      fail-fast: false
-    defaults:
-      run:
-        working-directory: ./frontend
+                - name: Run npm audit
+                  run: |
+                    echo "Running npm security audit..."
+                    npm audit --production || echo "::warning::Security vulnerabilities found - please review them carefully"
 
-    steps:
-      - uses: actions/checkout@v4
+            frontend-tests:
+              name: Frontend Tests
+              runs-on: ubuntu-latest
+              timeout-minutes: 10
+              concurrency:
+                group: frontend-tests-${{ github.ref }}
+                cancel-in-progress: true
+              strategy:
+                fail-fast: false
+              defaults:
+                run:
+                  working-directory: ./frontend
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: ./frontend/package-lock.json
+              steps:
+                - uses: actions/checkout@v4
+
+                - name: Setup Node.js
+                  uses: actions/setup-node@v4
+                  with:
+                    node-version: '20'
+                    cache: 'npm'
+                    cache-dependency-path: ./frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -201,7 +240,7 @@ jobs:
         run: npm run build
 
   notify-completion:
-    needs: [backend-security, backend-tests, frontend-security, frontend-tests]
+    needs: [backend-security, backend-tests]
     if: always()
     runs-on: ubuntu-latest
     steps:
