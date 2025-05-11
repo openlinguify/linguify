@@ -10,21 +10,34 @@ from pathlib import Path
 
 
 def fix_invalid_escapes(file_path):
-    """Remplace les séquences d'échappement \d par [0-9] dans les fichiers."""
+    """Corrige les séquences d'échappement invalides dans les fichiers Python."""
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # Détection des séquences d'échappement problématiques
+    modified = False
+
+    # Option 1: Ajouter des préfixes 'r' aux chaînes qui contiennent des séquences d'échappement regex
+    # Recherche des chaînes sans préfixe 'r' qui contiennent des séquences d'échappement regex
+    pattern_strings = re.compile(r'(?<!r)(["\'])((?:\\d|\\w|\\s|\\b)+.*?)\\1')
+    for match in pattern_strings.finditer(content):
+        # Ajouter le préfixe 'r' avant la chaîne
+        old_str = match.group(0)
+        new_str = 'r' + old_str
+        content = content.replace(old_str, new_str)
+        modified = True
+
+    # Option 2: Remplacer directement les séquences d'échappement problématiques
     if '\\d' in content:
-        # Remplacer \d par [0-9] seulement lorsqu'il s'agit d'une regex
-        # (généralement dans des chaînes de caractères r"..." ou dans des URLs)
-        content_fixed = re.sub(r'\\d', '[0-9]', content)
-        
+        # Remplacer \d par [0-9]
+        content = re.sub(r'(?<!r)(["\']).*?\\d', lambda m: m.group(0).replace('\\d', '[0-9]'), content)
+        modified = True
+
+    # Autres corrections d'échappement courantes
+    if modified:
         with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(content_fixed)
-        
-        return True
-    return False
+            f.write(content)
+
+    return modified
 
 
 def main():

@@ -71,9 +71,15 @@ jobs:
     
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_linguify
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: test_linguify
+      DB_HOST: localhost
+      DB_PORT: 5432
       DEBUG: 'True'
       SECRET_KEY: 'test-secret-key-for-ci'
       DJANGO_SETTINGS_MODULE: core.settings
+      TEST_MODE: 'True'
 
     steps:
       - uses: actions/checkout@v4
@@ -107,19 +113,57 @@ jobs:
         run: |
           echo "Fixing invalid escape sequences in Python files"
           chmod +x scripts/fix_escapes.py
-          python scripts/fix_escapes.py
+          poetry run python scripts/fix_escapes.py
+
+      - name: Validate database connection
+        run: |
+          echo "Testing database connection with postgres user"
+          poetry run python -c "
+import psycopg2
+import os
+try:
+    conn = psycopg2.connect(
+        dbname=os.environ.get('DB_NAME', 'test_linguify'),
+        user=os.environ.get('DB_USER', 'postgres'),
+        password=os.environ.get('DB_PASSWORD', 'postgres'),
+        host=os.environ.get('DB_HOST', 'localhost'),
+        port=os.environ.get('DB_PORT', '5432')
+    )
+    print('Database connection successful')
+    conn.close()
+except Exception as e:
+    print(f'Database connection error: {e}')
+    exit(1)
+"
 
       - name: Basic validation
         run: |
           poetry run python -m compileall .
           echo "Syntax check passed"
 
+      - name: Verify Django settings
+        run: |
+          echo "Checking Django database configuration"
+          poetry run python -c "
+import os
+os.environ['TEST_MODE'] = 'True'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'core.settings'
+import django
+django.setup()
+from django.conf import settings
+print(f'Django version: {django.__version__}')
+print(f'TEST_MODE: {os.environ.get(\"TEST_MODE\")}')
+print(f'Database engine: {settings.DATABASES[\"default\"][\"ENGINE\"]}')
+print(f'Database name: {settings.DATABASES[\"default\"][\"NAME\"]}')
+if 'USER' in settings.DATABASES['default']:
+    print(f'Database user: {settings.DATABASES[\"default\"][\"USER\"]}')
+"
+
       - name: Run simplified tests
         run: |
-          poetry run python -c "import django; print(f'Django version: {django.__version__}')"
           poetry run python -c "import pytest; print(f'Pytest version: {pytest.__version__}')"
           echo "Running core tests only"
-          poetry run python -m pytest tests/test_core_simple.py -v
+          TEST_MODE=True poetry run python -m pytest tests/test_database_config.py tests/test_core_simple.py -v
 
       # Désactivé temporairement jusqu'à ce que les tests soient plus stables
       # - name: Upload coverage to Codecov
