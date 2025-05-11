@@ -12,7 +12,7 @@ TODO
 1. Create mappings <payment_method> => <payment_class> to make views more clear, i.e.:
 
 in urls.py
- (r'^(?P<object_id>\d+)/(?P<payment_method>(standard|pro|authorize))$', 'subscription_detail', {}, 'subscription_detail'),
+ (r'^(?P<object_id>[0-9]+)/(?P<payment_method>(standard|pro|authorize))$', 'subscription_detail', {}, 'subscription_detail'),
 
 in settings.py:
 PAYMENT_METHODS_MAPPINGS = {
