@@ -11,6 +11,13 @@ from jwt.algorithms import RSAAlgorithm
 from django.core.cache import cache
 from uuid import uuid4
 
+# Fix for newer versions of PyJWT
+try:
+    from jwt.exceptions import InvalidKeyError
+except ImportError:
+    # Use InvalidKeyTypeError as InvalidKeyError for newer PyJWT versions
+    from jwt.exceptions import InvalidKeyTypeError as InvalidKeyError
+
 logger = logging.getLogger(__name__)
 User = get_user_model()
 
