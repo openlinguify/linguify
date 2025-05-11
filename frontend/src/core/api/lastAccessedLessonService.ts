@@ -5,7 +5,7 @@ import { LessonProgress, ContentLessonProgress } from '@/addons/progress/types';
 export interface LastAccessedLesson {
   id: number;
   title: string;
-  contentType: string;
+  contentType: string;  // This is the normalized content type (lowercase)
   lastAccessed: string;
   unitId?: number;
   unitTitle?: string;
@@ -19,6 +19,8 @@ export interface LastAccessedLesson {
   timeSpent?: number; // Time spent in seconds
   lastViewedSection?: string; // Last section viewed in the lesson
   dateCreated?: string; // When this record was first created
+  // Optional fields that might come from ContentLessonProgress
+  content_type?: string; // This might be present in raw data objects
 }
 
 // Storage keys
@@ -53,12 +55,12 @@ const lastAccessedLessonService = {
       
       const lessonData: LastAccessedLesson = {
         id: lesson.id,
-        title: isContentLesson 
+        title: isContentLesson
           ? (lesson as ContentLessonProgress).title
           : (lesson as LessonProgress).title,
-        contentType: isContentLesson 
-          ? (lesson as ContentLessonProgress).content_type.toLowerCase().trim()
-          : 'lesson',
+        contentType: isContentLesson
+          ? ((lesson as ContentLessonProgress).content_type || '').toLowerCase().trim()
+          : (lesson.contentType || 'lesson').toLowerCase().trim(),
         lastAccessed,
         dateCreated: now.toISOString(),
         completionPercentage: lesson.completion_percentage || 0,

@@ -35,6 +35,7 @@ import { useAuthContext } from "@/core/auth/AuthProvider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteAccountDialog } from "./DeleteAccountDialog";
 import { ResetProgressDialog } from "./ResetProgressDialog";
+import NotificationSettingsPanel from "./NotificationSettingsPanel";
 import apiClient from '@/core/api/apiClient';
 import progressAPI from '@/addons/progress/api/progressAPI';
 
@@ -1169,82 +1170,7 @@ export default function SettingsPage() {
           )}
 
           {activeTab === "notifications" && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Notification Settings</CardTitle>
-                <CardDescription>
-                  Manage how you receive notifications
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="email_notifications">Email Notifications</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Receive notifications via email
-                    </p>
-                  </div>
-                  <Switch
-                    id="email_notifications"
-                    checked={settings.email_notifications}
-                    onCheckedChange={(value) => setSettings({...settings, email_notifications: value})}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="push_notifications">Push Notifications</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Receive notifications on your device
-                    </p>
-                  </div>
-                  <Switch
-                    id="push_notifications"
-                    checked={settings.push_notifications}
-                    onCheckedChange={(value) => setSettings({...settings, push_notifications: value})}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="weekday_reminders">Weekday Reminders</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Receive reminders on weekdays
-                    </p>
-                  </div>
-                  <Switch
-                    id="weekday_reminders"
-                    checked={settings.weekday_reminders}
-                    onCheckedChange={(value) => setSettings({...settings, weekday_reminders: value})}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="weekend_reminders">Weekend Reminders</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Receive reminders on weekends
-                    </p>
-                  </div>
-                  <Switch
-                    id="weekend_reminders"
-                    checked={settings.weekend_reminders}
-                    onCheckedChange={(value) => setSettings({...settings, weekend_reminders: value})}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="reminder_time">Reminder Time</Label>
-                  <Input
-                    id="reminder_time"
-                    type="time"
-                    value={settings.reminder_time}
-                    onChange={(e) => setSettings({...settings, reminder_time: e.target.value})}
-                    className="w-[200px]"
-                  />
-                </div>
-              </CardContent>
-            </Card>
+            <NotificationSettingsPanel defaultTab={new URL(window.location.href).searchParams.get('tab') || 'channels'} />
           )}
 
           {activeTab === "language" && (

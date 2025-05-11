@@ -1,0 +1,62 @@
+{% comment %}
+Template pour l'affichage d'une photo de profil
+Permet d'ajouter du HTML plus complexe autour de l'image si nécessaire.
+{% endcomment %}
+
+{% if urls %}
+    {% if is_default %}
+    <div class="profile-picture-wrapper {{ size }} {{ css_class }}">
+        <div class="profile-picture-placeholder">
+            {% if user %}
+                {{ user.first_name.0|default:""|upper }}{{ user.last_name.0|default:""|upper }}
+                {% if not user.first_name and not user.last_name %}
+                    {{ user.username.0|default:""|upper }}
+                {% endif %}
+            {% endif %}
+        </div>
+        <img src="{{ urls.default }}"
+             alt="{{ alt }}"
+             class="profile-picture {{ size }} visually-hidden"
+             {% if urls.small and urls.medium and urls.large %}
+             data-small="{{ urls.small }}"
+             data-medium="{{ urls.medium }}"
+             data-large="{{ urls.large }}"
+             {% endif %}
+             loading="lazy"
+        />
+    </div>
+    {% elif urls.legacy %}
+    {# Format legacy - ancien système #}
+    <div class="profile-picture-wrapper {{ size }} {{ css_class }}">
+        <img src="{{ urls.default }}"
+             alt="{{ alt }}"
+             class="profile-picture {{ size }}"
+             loading="lazy"
+        />
+    </div>
+    {% else %}
+    <div class="profile-picture-wrapper {{ size }} {{ css_class }}">
+        <img src="{{ urls.default }}"
+             alt="{{ alt }}"
+             class="profile-picture {{ size }}"
+             {% if urls.small and urls.medium and urls.large %}
+             data-small="{{ urls.small }}"
+             data-medium="{{ urls.medium }}"
+             data-large="{{ urls.large }}"
+             {% endif %}
+             loading="lazy"
+        />
+    </div>
+    {% endif %}
+{% else %}
+    <div class="profile-picture-wrapper {{ size }} {{ css_class }}">
+        <div class="profile-picture-placeholder">
+            {% if user %}
+                {{ user.first_name.0|default:""|upper }}{{ user.last_name.0|default:""|upper }}
+                {% if not user.first_name and not user.last_name %}
+                    {{ user.username.0|default:""|upper }}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

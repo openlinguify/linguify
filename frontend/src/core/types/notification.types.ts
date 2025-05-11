@@ -11,6 +11,7 @@ export enum NotificationType {
   REMINDER = 'reminder',
   FLASHCARD = 'flashcard',
   ANNOUNCEMENT = 'announcement',
+  STREAK = 'streak',
 }
 
 /**

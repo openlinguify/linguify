@@ -1,6 +1,6 @@
 # Notification System Testing Guide
 
-This document provides guidance on how to test and debug the Linguify notification system, including both WebSocket real-time notifications and browser notifications.
+This document provides guidance on how to test and debug the Linguify notification system, including WebSocket real-time notifications, browser notifications, and our enhanced frontend notification testing utilities.
 
 ## Setup Requirements
 
@@ -179,8 +179,67 @@ Browser notifications require user permission. To test:
 3. Click "Enable Notifications" to request permission
 4. Send a high-priority notification to test browser notification
 
+## Frontend Testing Utilities
+
+Linguify provides a comprehensive frontend testing utility for creating and testing notifications without requiring backend integration.
+
+### Test Notification Panel
+
+The **Test Notification Panel** is a component that provides an easy way to create test notifications through the UI. It's automatically available in the dashboard header when the app is running in development mode.
+
+To use it:
+
+1. Run the frontend in development mode (`npm run dev`)
+2. Log in to access the dashboard
+3. Click on the "Test Notifications" button in the header
+4. Choose from two testing modes:
+   - **Enhanced System** - For creating notifications via the NotificationContext
+   - **Legacy System** - For creating notifications via localStorage (for backward compatibility)
+
+### Enhanced Notification Types
+
+The enhanced system supports the following notification types:
+
+- **Lesson Reminder** - Notifications about continuing lessons
+- **System Notification** - Important system updates and messages
+- **Achievement Notification** - User achievements and milestones
+- **Study Reminder** - General study reminders
+- **Flashcard Notification** - Reminders about flashcard practice
+- **Announcement** - New features and important announcements
+
+You can create individual notifications or generate all types at once with the "Create All Notification Types" option.
+
+### Legacy Notification Types
+
+The legacy system supports various lesson notification types:
+
+- **Vocabulary Lesson**
+- **Numbers Game**
+- **Theory Lesson**
+- **Unit Lesson**
+- **Fill Blank Exercise**
+
+### Programmatic Testing
+
+If you need to test notifications programmatically, you can use the utilities in `frontend/src/core/test-notification-system.ts`:
+
+```typescript
+import {
+  createTestNotification,
+  createAllTestNotifications
+} from '@/core/test-notification-system';
+import { NotificationType } from '@/core/types/notification.types';
+
+// Create a specific notification type
+const notification = createTestNotification(NotificationType.LESSON_REMINDER);
+
+// Create all notification types
+const allNotifications = createAllTestNotifications();
+```
+
 ## Performance Considerations
 
 - The system is designed to handle multiple concurrent connections
 - Redis provides scalability for WebSocket communication
 - For testing high loads, consider using a tool like [websocket-bench](https://github.com/M6Web/websocket-bench)
+- The frontend notification context is optimized to handle large numbers of notifications efficiently

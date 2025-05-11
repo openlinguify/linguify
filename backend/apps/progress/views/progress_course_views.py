@@ -409,18 +409,11 @@ class ContentLessonProgressViewSet(UserProgressViewSet):
         )
         unit_progress.update_progress(language_code=language_code)
 
-        # Modifier le sérialiseur pour qu'il fonctionne avec UserContentLessonProgress au lieu de UserCourseProgress
-        return Response({
-            'id': progress.id,
-            'status': progress.status,
-            'completion_percentage': progress.completion_percentage,
-            'score': progress.score,
-            'time_spent': progress.time_spent,
-            'content_lesson_id': progress.content_lesson.id,
-            'user': progress.user.id,
-            'last_accessed': progress.last_accessed,
-            'language_code': progress.language_code
-        }, status=status.HTTP_200_OK)
+        # Utiliser le sérialiseur mis à jour avec UserContentLessonProgress
+        return Response(
+            ContentLessonProgressSerializer(progress).data,
+            status=status.HTTP_200_OK
+        )
     
     @action(detail=False, methods=['get'])
     def by_lesson(self, request):
@@ -447,22 +440,9 @@ class ContentLessonProgressViewSet(UserProgressViewSet):
             language_code=language_code  # Filtrer par langue
         )
 
-        # Format the response to maintain API compatibility
-        response_data = []
-        for progress in queryset:
-            response_data.append({
-                'id': progress.id,
-                'status': progress.status,
-                'completion_percentage': progress.completion_percentage,
-                'score': progress.score,
-                'time_spent': progress.time_spent,
-                'content_lesson_id': progress.content_lesson.id,
-                'user': progress.user.id,
-                'last_accessed': progress.last_accessed,
-                'language_code': progress.language_code
-            })
-
-        return Response(response_data)
+        # Utiliser le sérialiseur pour formater la réponse
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
         
     @action(detail=False, methods=['get'])
     def by_language(self, request):
@@ -480,22 +460,9 @@ class ContentLessonProgressViewSet(UserProgressViewSet):
             language_code=language_code
         )
 
-        # Format the response to maintain API compatibility
-        response_data = []
-        for progress in queryset:
-            response_data.append({
-                'id': progress.id,
-                'status': progress.status,
-                'completion_percentage': progress.completion_percentage,
-                'score': progress.score,
-                'time_spent': progress.time_spent,
-                'content_lesson_id': progress.content_lesson.id,
-                'user': progress.user.id,
-                'last_accessed': progress.last_accessed,
-                'language_code': progress.language_code
-            })
-
-        return Response(response_data)
+        # Utiliser le sérialiseur pour formater la réponse
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class UserProgressSummaryView(generics.RetrieveAPIView):
     """Vue pour obtenir un résumé global de la progression de l'utilisateur"""

@@ -155,8 +155,13 @@ export function LessonNotification({ lesson, onClose }: LessonNotificationProps)
       
       <CardContent className="pb-3 bg-white dark:bg-gray-950">
         <div className="space-y-2">
-          <h3 className="font-medium text-sm">{lesson.title}</h3>
-          
+          <h3 className="font-medium text-sm">
+            {lesson.title}
+            <span className="ml-1 text-xs text-muted-foreground">
+              ({lesson.contentType || 'lesson'})
+            </span>
+          </h3>
+
           {lesson.unitTitle && (
             <p className="text-xs text-muted-foreground">
               {t('dashboard.notification.inUnit')} {lesson.unitTitle}

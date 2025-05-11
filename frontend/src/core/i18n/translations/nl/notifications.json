@@ -1,0 +1,90 @@
+{
+  "notifications": {
+    "title": "Meldingen",
+    "unread": "{count} ongelezen meldingen",
+    "no_unread": "Geen ongelezen meldingen",
+    "mark_all_read": "Alles als gelezen markeren",
+    "clear_all": "Alles wissen",
+    "all": "Alle",
+    "empty": "Je hebt geen meldingen",
+    "check_back": "Kom later terug voor updates",
+    "count": "{count} meldingen",
+    "no_notifications": "Geen meldingen",
+    "settings": "Instellingen",
+    "enable": "Meldingen inschakelen",
+    "disable": "Meldingen uitschakelen",
+    "browser_permission": "Browsermachtigingen vereist om meldingen te ontvangen",
+    "allow": "Toestaan",
+    "denied": "Meldingen geblokkeerd",
+    "granted": "Meldingen ingeschakeld",
+    "test": "Meldingen testen",
+    "manage_subscriptions": "Abonnementen beheren",
+    "subscription_settings": "Meldingsvoorkeuren",
+    "subscription_description": "Kies welke soorten meldingen je wilt ontvangen",
+    "connection_required": "Verbinding vereist om meldingsvoorkeuren bij te werken",
+    "browser_notifications": "Browsermeldingen",
+    "browser_notifications_description": "Schakel browsermeldingen in om waarschuwingen te ontvangen, zelfs wanneer je de app niet gebruikt",
+    "enable_browser_notifications": "Browsermeldingen inschakelen",
+    "settings_saved": "Instellingen opgeslagen",
+    "settings_saved_description": "Je meldingsvoorkeuren zijn bijgewerkt",
+    "settings_error": "Instellingsfout",
+    "settings_error_description": "Er is een probleem opgetreden bij het opslaan van je meldingsvoorkeuren",
+    "permission_granted": "Toestemming verleend",
+    "permission_granted_description": "Je ontvangt nu browsermeldingen",
+    "permission_denied": "Toestemming geweigerd",
+    "permission_denied_description": "Je ontvangt geen browsermeldingen",
+    "subscription_updated": "Abonnement bijgewerkt",
+    "subscription_success": "Je meldingsvoorkeuren zijn opgeslagen",
+    "permission": {
+      "enable_title": "Browsermeldingen inschakelen",
+      "banner_description": "Sta meldingen toe om op de hoogte te blijven van je leervoortgang",
+      "enable": "Inschakelen"
+    }
+  },
+  "notification_types": {
+    "lesson_reminder": "Lesherinnering",
+    "flashcard": "Geheugenkaart",
+    "achievement": "Prestatie",
+    "streak": "Reeks",
+    "system": "Systeem",
+    "reminder": "Herinnering",
+    "announcement": "Aankondiging",
+    "info": "Informatie",
+    "progress": "Voortgang"
+  },
+  "types": {
+    "lesson_reminder": "Lesherinneringen",
+    "flashcard": "Geheugenkaart-herinneringen",
+    "achievement": "Prestatiemeldingen",
+    "streak": "Reeksupdates",
+    "system": "Systeemberichten",
+    "info": "Informatie",
+    "progress": "Voortgangsupdates"
+  },
+  "descriptions": {
+    "lesson_reminder": "Herinneringen om je lessen en leeractiviteiten voort te zetten",
+    "flashcard": "Meldingen over geheugenkaarten die aan herziening toe zijn",
+    "achievement": "Meldingen voor ontgrendelde prestaties en mijlpalen",
+    "streak": "Updates over je leerreeks",
+    "system": "Belangrijke systeemaankondigingen en updates",
+    "info": "Algemene informatie over het platform",
+    "progress": "Updates over je leervoortgang"
+  },
+  "actions": {
+    "resume": "Hervatten",
+    "view": "Bekijken",
+    "dismiss": "Negeren",
+    "snooze": "Later herinneren"
+  },
+  "test_notifications": {
+    "title": "Testpaneel voor meldingen",
+    "enhanced_system": "Verbeterd systeem",
+    "legacy_system": "Ouder systeem",
+    "create_single": "Enkele melding maken",
+    "create_all": "Alle meldingstypen maken",
+    "batch_operations": "Batchbewerkingen",
+    "utility_description": "Dit hulpprogramma maakt testmeldingen voor ontwikkeling en testdoeleinden.",
+    "notification_created": "Testmelding gemaakt",
+    "all_notifications_created": "{count} testmeldingen gemaakt"
+  }
+}

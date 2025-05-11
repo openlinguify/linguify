@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Bell, BellOff, Info, Settings } from 'lucide-react';
+import { Bell, BellOff, Info, Settings, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
@@ -19,12 +19,14 @@ import { useTranslation } from '@/core/i18n/useTranslations';
 
 interface NotificationPermissionProps {
   children?: React.ReactNode;
-  variant?: 'card' | 'alert' | 'inline';
+  variant?: 'card' | 'alert' | 'inline' | 'banner';
+  onRequestPermission?: () => Promise<boolean>;
 }
 
-export default function NotificationPermission({ 
-  children, 
-  variant = 'alert'
+export default function NotificationPermission({
+  children,
+  variant = 'alert',
+  onRequestPermission
 }: NotificationPermissionProps) {
   const { t } = useTranslation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -55,10 +57,13 @@ export default function NotificationPermission({
     if (!('Notification' in window)) {
       return;
     }
-    
+
     try {
-      const permission = await requestNotificationPermission();
-      
+      // Use the prop if provided, otherwise use the context
+      const permission = onRequestPermission
+        ? await onRequestPermission()
+        : await requestNotificationPermission();
+
       if (permission) {
         checkPermission();
       }
@@ -248,12 +253,73 @@ export default function NotificationPermission({
     }
   }
   
+  // Banner variant (for notification dropdown)
+  if (variant === 'banner') {
+    return (
+      <div className="p-3 bg-amber-50 dark:bg-amber-950/20 border-t border-amber-100 dark:border-amber-800">
+        <div className="flex gap-2">
+          <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0" />
+          <div className="flex-1">
+            <p className="text-sm font-medium">{t('notifications.permission.enable_title')}</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('notifications.permission.banner_description')}</p>
+            <div className="mt-2 flex gap-2">
+              <Button
+                size="sm"
+                className="h-8"
+                onClick={handleRequestPermission}
+              >
+                {t('notifications.permission.enable')}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8"
+                onClick={() => setIsDialogOpen(true)}
+              >
+                {t('common.learn_more')}
+              </Button>
+
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{t('notifications.permission.settings_dialog_title')}</DialogTitle>
+                    <DialogDescription>
+                      {t('notifications.permission.settings_dialog_description')}
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="space-y-4 py-4">
+                    <h3 className="font-medium">{t('notifications.permission.why_enable')}</h3>
+                    <ul className="ml-6 list-disc space-y-1 text-sm">
+                      <li>{t('notifications.permission.benefit1')}</li>
+                      <li>{t('notifications.permission.benefit2')}</li>
+                      <li>{t('notifications.permission.benefit3')}</li>
+                    </ul>
+                  </div>
+
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                      {t('common.cancel')}
+                    </Button>
+                    <Button onClick={handleRequestPermission}>
+                      {t('notifications.permission.enable')}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Inline variant
   return (
     <div className="flex items-center gap-2">
       {permissionState === 'default' && (
-        <Button 
-          size="sm" 
+        <Button
+          size="sm"
           onClick={handleRequestPermission}
           className="gap-2"
         >
@@ -261,19 +327,19 @@ export default function NotificationPermission({
           {t('notifications.permission.enable')}
         </Button>
       )}
-      
+
       {permissionState === 'denied' && (
         <>
-          <Button 
+          <Button
             size="sm"
-            variant="outline" 
+            variant="outline"
             onClick={handleShowSettings}
             className="gap-2"
           >
             <Settings className="h-3 w-3" />
             {t('notifications.permission.browser_settings')}
           </Button>
-          
+
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent>
               <DialogHeader>
@@ -282,10 +348,10 @@ export default function NotificationPermission({
                   {t('notifications.permission.settings_dialog_description')}
                 </DialogDescription>
               </DialogHeader>
-              
+
               <div className="space-y-4 py-4">
                 <h3 className="font-medium">{t('notifications.permission.browser_instructions')}</h3>
-                
+
                 <div className="ml-6 space-y-2">
                   <h4 className="font-medium">Chrome</h4>
                   <ol className="list-decimal pl-5 space-y-1 text-sm">
@@ -295,7 +361,7 @@ export default function NotificationPermission({
                     <li>{t('notifications.permission.chrome_step4')}</li>
                   </ol>
                 </div>
-                
+
                 <div className="ml-6 space-y-2">
                   <h4 className="font-medium">Firefox</h4>
                   <ol className="list-decimal pl-5 space-y-1 text-sm">
@@ -304,7 +370,7 @@ export default function NotificationPermission({
                     <li>{t('notifications.permission.firefox_step3')}</li>
                   </ol>
                 </div>
-                
+
                 <div className="ml-6 space-y-2">
                   <h4 className="font-medium">Safari</h4>
                   <ol className="list-decimal pl-5 space-y-1 text-sm">
@@ -314,7 +380,7 @@ export default function NotificationPermission({
                   </ol>
                 </div>
               </div>
-              
+
               <DialogFooter>
                 <Button onClick={() => setIsDialogOpen(false)}>
                   {t('notifications.permission.close')}

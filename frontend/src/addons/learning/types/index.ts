@@ -416,10 +416,38 @@
   export interface ContentTypeRouterProps {
     contentType: string;
     contentId: string;
-    parentLessonId: string;
+    parentLessonId?: string;
     language?: 'en' | 'fr' | 'es' | 'nl';
-    unitId?: string; 
+    unitId?: string;
     onComplete?: () => void;
+  }
+
+  // Props for exercise components with progress tracking
+  export interface ProgressTrackingProps {
+    currentStep?: number;
+    totalSteps?: number;
+    onStepChange?: (step: number) => void;
+  }
+
+  // Props for the content wrapper that displays the progress indicator
+  export interface ContentTypeWrapperProps {
+    children: React.ReactNode;
+    lessonId: string;
+    contentType: string;
+    currentStep: number;
+    totalSteps: number;
+    unitId?: string;
+    language?: string;
+  }
+
+  // Props for the progress indicator component
+  export interface LessonProgressIndicatorProps {
+    currentStep: number;
+    totalSteps: number;
+    lessonTitle?: string;
+    contentType?: string;
+    showStepNumbers?: boolean;
+    className?: string;
   }
 
   export interface LessonCompletionModalProps {

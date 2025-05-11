@@ -142,4 +142,6 @@ const LessonCompletionModal: React.FC<LessonCompletionModalProps> = ({
   );
 };
 
+// Export as both default and named export
 export default LessonCompletionModal;
+export { LessonCompletionModal };

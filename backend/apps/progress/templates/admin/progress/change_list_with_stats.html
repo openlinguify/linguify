@@ -1,0 +1,194 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  .stats-box {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .stats-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 15px;
+  }
+  
+  .stat-card {
+    flex: 1;
+    min-width: 200px;
+    padding: 15px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  }
+  
+  .stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #007bff;
+  }
+  
+  .stat-label {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .dashboard-link {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    transition: background-color 0.2s;
+  }
+  
+  .dashboard-link:hover {
+    background-color: #0069d9;
+    color: white;
+  }
+  
+  .special-stats {
+    margin-top: 20px;
+  }
+  
+  .special-stats h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .special-stats table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .special-stats th,
+  .special-stats td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .special-stats th {
+    background-color: #f5f5f5;
+  }
+  
+  .color-completed {
+    color: #198754;
+  }
+  
+  .color-progress {
+    color: #fd7e14;
+  }
+</style>
+{% endblock %}
+
+{% block object-tools-items %}
+{{ block.super }}
+<li>
+  <a href="{% url 'admin:progress_dashboard' %}" class="dashboard-link">
+    <i class="fas fa-chart-bar"></i> View Dashboard
+  </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="stats-box">
+  <h3>{% blocktrans with name=opts.verbose_name_plural %}{{ name }} Statistics{% endblocktrans %}</h3>
+  <div class="stats-container" id="progress-stats">
+    <div class="stat-card">
+      <div class="stat-label">Total Records</div>
+      <div class="stat-value" id="total-records">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Completed</div>
+      <div class="stat-value color-completed" id="completed-records">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Completion Rate</div>
+      <div class="stat-value" id="completion-rate">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Time Spent</div>
+      <div class="stat-value color-progress" id="total-time">-</div>
+    </div>
+  </div>
+
+  <div class="special-stats" id="special-stats-container" style="display: none;">
+    <!-- This will be populated dynamically -->
+  </div>
+</div>
+
+{{ block.super }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Fetch stats data from API
+  fetch('{% url "admin:progress_stats_data" %}')
+    .then(response => response.json())
+    .then(data => {
+      // Update basic stats
+      document.getElementById('total-records').textContent = data.total_records.toLocaleString();
+      document.getElementById('completed-records').textContent = data.complete_records.toLocaleString();
+      document.getElementById('completion-rate').textContent = data.completion_rate + '%';
+      document.getElementById('total-time').textContent = data.total_time_display;
+      
+      // Process special stats if available
+      if (data.special_stats && Object.keys(data.special_stats).length > 0) {
+        const specialStatsContainer = document.getElementById('special-stats-container');
+        specialStatsContainer.style.display = 'block';
+        
+        // Content Type Stats
+        if (data.special_stats.content_types) {
+          const contentTypeStats = document.createElement('div');
+          contentTypeStats.innerHTML = `
+            <h4>Progress by Content Type</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Content Type</th>
+                  <th>Count</th>
+                  <th>Completed</th>
+                  <th>Average Completion</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.special_stats.content_types.map(ct => `
+                  <tr>
+                    <td>${ct.type.replace('_', ' ').charAt(0).toUpperCase() + ct.type.replace('_', ' ').slice(1)}</td>
+                    <td>${ct.count}</td>
+                    <td>${ct.complete} (${Math.round(ct.complete/ct.count*100)}%)</td>
+                    <td>${ct.percent}%</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `;
+          specialStatsContainer.appendChild(contentTypeStats);
+        }
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching stats data:', error);
+    });
+});
+</script>
+{% endblock %}

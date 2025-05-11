@@ -1,0 +1,312 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}">
+<style>
+  .dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .dashboard-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .chart-container {
+    flex: 1;
+    min-width: 300px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+  }
+  
+  .summary-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .stat-card {
+    flex: 1;
+    min-width: 180px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    text-align: center;
+  }
+  
+  .stat-value {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  .stat-label {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .chart-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  canvas {
+    width: 100% !important;
+    height: 300px !important;
+  }
+  
+  .back-to-list {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 16px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .back-to-list:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .color-completed { color: #198754; }
+  .color-progress { color: #fd7e14; }
+  .color-primary { color: #007bff; }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css" />
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+  &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; {% trans 'Dashboard' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <h1>{{ opts.verbose_name_plural|capfirst }} Dashboard</h1>
+  
+  <div class="module">
+    <a href="{% url opts|admin_urlname:'changelist' %}" class="back-to-list">
+      &larr; Back to {{ opts.verbose_name_plural }}
+    </a>
+    
+    <div class="dashboard-container">
+      <div class="summary-stats">
+        <div class="stat-card">
+          <div class="stat-label">Total Records</div>
+          <div class="stat-value" id="total-records">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Completed</div>
+          <div class="stat-value color-completed" id="completed-records">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Completion Rate</div>
+          <div class="stat-value color-primary" id="completion-rate">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Time Spent</div>
+          <div class="stat-value color-progress" id="total-time">-</div>
+        </div>
+      </div>
+      
+      <div class="dashboard-row">
+        <div class="chart-container">
+          <h3 class="chart-title">Progress Status Distribution</h3>
+          <canvas id="status-chart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+          <h3 class="chart-title">Progress by Language</h3>
+          <canvas id="language-chart"></canvas>
+        </div>
+      </div>
+      
+      <div class="dashboard-row">
+        <div class="chart-container">
+          <h3 class="chart-title">Daily Progress (Last 30 Days)</h3>
+          <canvas id="daily-chart"></canvas>
+        </div>
+      </div>
+      
+      <div id="special-stats-container" style="display: none;">
+        <!-- Will be filled dynamically based on model type -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Fetch stats data
+  fetch('{% url "admin:progress_stats_data" %}')
+    .then(response => response.json())
+    .then(data => {
+      // Update summary stats
+      document.getElementById('total-records').textContent = data.total_records.toLocaleString();
+      document.getElementById('completed-records').textContent = data.complete_records.toLocaleString();
+      document.getElementById('completion-rate').textContent = data.completion_rate + '%';
+      document.getElementById('total-time').textContent = data.total_time_display;
+      
+      // Process special stats if available
+      if (data.special_stats && Object.keys(data.special_stats).length > 0) {
+        const specialStatsContainer = document.getElementById('special-stats-container');
+        specialStatsContainer.style.display = 'block';
+        
+        // Add custom visualizations based on model type
+        // This would be expanded based on the specific model stats
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching stats data:', error);
+    });
+  
+  // Fetch chart data
+  fetch('{% url "admin:progress_chart_data" %}')
+    .then(response => response.json())
+    .then(data => {
+      // Status Chart
+      const statusCtx = document.getElementById('status-chart').getContext('2d');
+      new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+          labels: data.status_data.labels,
+          datasets: [{
+            data: data.status_data.data,
+            backgroundColor: data.status_data.colors || [
+              '#dc3545', // not started
+              '#fd7e14', // in progress
+              '#198754'  // completed
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          legend: {
+            position: 'right',
+          }
+        }
+      });
+      
+      // Language Chart
+      const languageCtx = document.getElementById('language-chart').getContext('2d');
+      new Chart(languageCtx, {
+        type: 'bar',
+        data: {
+          labels: data.language_data.labels,
+          datasets: [{
+            label: 'Records by Language',
+            data: data.language_data.data,
+            backgroundColor: '#4e73df',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          }
+        }
+      });
+      
+      // Daily Progress Chart
+      const dailyCtx = document.getElementById('daily-chart').getContext('2d');
+      new Chart(dailyCtx, {
+        type: 'line',
+        data: {
+          labels: data.daily_data.labels,
+          datasets: [
+            {
+              label: 'Average Completion %',
+              data: data.daily_data.avg_progress,
+              borderColor: '#4e73df',
+              backgroundColor: 'rgba(78, 115, 223, 0.1)',
+              borderWidth: 2,
+              pointRadius: 3,
+              fill: true,
+              yAxisID: 'y-axis-1'
+            },
+            {
+              label: 'Record Count',
+              data: data.daily_data.count,
+              borderColor: '#36b9cc',
+              backgroundColor: 'rgba(54, 185, 204, 0.1)',
+              borderWidth: 2,
+              pointRadius: 3,
+              fill: true,
+              yAxisID: 'y-axis-2'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            xAxes: [{
+              gridLines: {
+                display: false
+              }
+            }],
+            yAxes: [
+              {
+                id: 'y-axis-1',
+                type: 'linear',
+                position: 'left',
+                ticks: {
+                  beginAtZero: true,
+                  max: 100,
+                  callback: function(value) {
+                    return value + '%';
+                  }
+                },
+                gridLines: {
+                  color: "rgba(0, 0, 0, 0.05)"
+                }
+              },
+              {
+                id: 'y-axis-2',
+                type: 'linear',
+                position: 'right',
+                ticks: {
+                  beginAtZero: true
+                },
+                gridLines: {
+                  display: false
+                }
+              }
+            ]
+          }
+        }
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching chart data:', error);
+    });
+});
+</script>
+{% endblock %}

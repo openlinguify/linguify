@@ -7,7 +7,7 @@ from uuid import uuid4
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from decimal import Decimal
-from .storage import SecureUniqueFileStorage
+from .storage import ProfileStorage
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils import timezone
 import datetime
@@ -55,19 +55,38 @@ GENDER_CHOICES = [
 ]
 
 def validate_profile_picture(file):
+    """
+    Validates profile picture uploads by checking:
+    - File size (max 5MB)
+    - File type (only JPEG, PNG)
+    - Minimum dimensions (200x200 pixels)
+    """
+    from django.conf import settings
+
+    # Configure validation parameters
     allowed_types = ['image/jpeg', 'image/png', 'image/jpg']
-    max_size = 2 * 1024 * 1024  # 2MB
+    max_size = getattr(settings, 'PROFILE_PICTURE_MAX_SIZE', 5 * 1024 * 1024)  # 5MB default
+    min_width = getattr(settings, 'PROFILE_PICTURE_MIN_WIDTH', 200)
+    min_height = getattr(settings, 'PROFILE_PICTURE_MIN_HEIGHT', 200)
+
+    # Check file size
     if file.size > max_size:
-        raise ValidationError("Profile picture file size must be under 2MB.")
+        raise ValidationError(f"Profile picture file size must be under {max_size // (1024 * 1024)}MB.")
+
+    # Check file type
     if hasattr(file, 'content_type') and file.content_type not in allowed_types:
         raise ValidationError("Only JPEG and PNG images are allowed.")
-    
-    # Additional validation for dimensions
+
+    # Check dimensions
     try:
         img = Image.open(file)
+
         # Ensure minimum size for good quality
-        if img.width < 200 or img.height < 200:
-            raise ValidationError("Profile picture must be at least 200x200 pixels.")
+        if img.width < min_width or img.height < min_height:
+            raise ValidationError(f"Profile picture must be at least {min_width}x{min_height} pixels.")
+
+        # Reset file pointer for further use
+        file.seek(0)
     except Exception as e:
         raise ValidationError(f"Invalid image file: {str(e)}")
 class UserManager(BaseUserManager):
@@ -228,8 +247,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     updated_at = models.DateTimeField(auto_now=True)
     # Common fields for all users
     profile_picture = models.ImageField(
-        upload_to='profile_pictures/',
-        storage=SecureUniqueFileStorage(),
+        upload_to='profiles',
+        storage=ProfileStorage(),
         null=True,
         blank=True,
         validators=[validate_profile_picture]
@@ -480,6 +499,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def name(self):
         return f"{self.first_name} {self.last_name}"
+
+    def get_profile_picture_urls(self):
+        """
+        Obtient les URLs pour toutes les versions de la photo de profil.
+
+        Returns:
+            dict: Dictionnaire avec les URLs pour chaque taille (small, medium, large, optimized, original)
+        """
+        from .helpers import get_profile_picture_urls
+        return get_profile_picture_urls(self)
 
 # Extended Coach Profile Model: the additional fields for a coach profile are added here as a separate model.
 # This model has a Many-to-many relationship with the User model.

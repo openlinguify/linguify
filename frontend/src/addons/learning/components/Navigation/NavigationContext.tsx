@@ -4,6 +4,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import courseAPI from "@/addons/learning/api/courseAPI";
+import { useRouter as useNextRouter } from 'next/navigation';
 
 // Define a Unit interface for better typing
 interface Unit {
@@ -45,6 +46,9 @@ interface NavigationProviderProps {
 }
 
 export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children }) => {
+  // Get next router for navigation
+  const router = useNextRouter();
+
   // State for all navigation-related data
   const [levelFilter, setLevelFilter] = useState<string>("all");
   const [contentTypeFilter, setContentTypeFilter] = useState<string>("all");
@@ -52,7 +56,7 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
   const [layout, setLayout] = useState<"list" | "grid">("list");
   const [isCompactView, setIsCompactView] = useState<boolean>(false);
   const [availableLevels, setAvailableLevels] = useState<string[]>([]);
-  
+
   // We're keeping this state but the setter is not used directly in the code
   // This is fine since it's part of the state initialization
   const [targetLanguage, _setTargetLanguage] = useState<string>(getUserTargetLanguage());
@@ -112,17 +116,43 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     localStorage.setItem("units_compact_view", isCompactView ? "true" : "false");
   }, [isCompactView]);
   
-  // Navigation handlers
+  // Navigation handlers with client-side routing to improve performance
   const navigateToLesson = (unitId: number, lessonId: number) => {
-    window.location.href = `/learning/${unitId}/${lessonId}`;
+    // Prefetch lesson data before navigation to reduce loading time
+    courseAPI.getLessons(unitId.toString(), targetLanguage)
+      .then(() => {
+        // Use Next.js router
+        router.push(`/learning/${unitId}/${lessonId}`);
+      })
+      .catch(err => {
+        console.error("Error prefetching lesson data:", err);
+        // Fallback to traditional navigation if prefetch fails
+        window.location.href = `/learning/${unitId}/${lessonId}`;
+      });
   };
-  
+
   const navigateToContent = (contentType: string, contentId: number, lessonId: number, unitId: number) => {
-    window.location.href = `/learning/content/${contentType.toLowerCase()}/${contentId}?language=${targetLanguage}&parentLessonId=${lessonId}&unitId=${unitId}`;
+    try {
+      // Use the router directly (already imported)
+      router.push(
+        `/learning/content/${contentType.toLowerCase()}/${contentId}?language=${targetLanguage}&parentLessonId=${lessonId}&unitId=${unitId}`
+      );
+    } catch (err) {
+      console.error("Error navigating to content:", err);
+      // Fallback if router fails
+      window.location.href = `/learning/content/${contentType.toLowerCase()}/${contentId}?language=${targetLanguage}&parentLessonId=${lessonId}&unitId=${unitId}`;
+    }
   };
-  
+
   const navigateToUnit = (unitId: number) => {
-    window.location.href = `/learning/${unitId}`;
+    try {
+      // Use the router directly (already imported)
+      router.push(`/learning/${unitId}`);
+    } catch (err) {
+      console.error("Error navigating to unit:", err);
+      // Fallback if router fails
+      window.location.href = `/learning/${unitId}`;
+    }
   };
   
   const navigateBack = () => {
