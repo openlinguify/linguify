@@ -5,10 +5,11 @@
 </p>
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-![CI Status](https://github.com/linguify/linguify/workflows/Linguify%20CI/badge.svg)
-![Languages: 4](https://img.shields.io/badge/Languages-4-green.svg)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
-![Contributors Welcome](https://img.shields.io/badge/contributors-welcome-orange.svg)
+[![Backend CI Status](https://github.com/linguify/linguify/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/linguify/linguify/actions/workflows/backend-ci.yml)
+[![Deploy Status](https://github.com/linguify/linguify/workflows/Deploy%20Linguify/badge.svg)](https://github.com/linguify/linguify/actions/workflows/deploy.yml)
+[![Languages: 4](https://img.shields.io/badge/Languages-4-green.svg)](https://github.com/linguify/linguify)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/linguify/linguify/blob/main/CONTRIBUTING.md)
+[![Contributors Welcome](https://img.shields.io/badge/contributors-welcome-orange.svg)](https://github.com/linguify/linguify/discussions)
 
 ## Vision
 
