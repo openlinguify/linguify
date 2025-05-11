@@ -7,7 +7,6 @@ from rest_framework import authentication, exceptions
 from django.contrib.auth import get_user_model
 import logging
 import time
-from jwt.algorithms import RSAAlgorithm
 from django.core.cache import cache
 from uuid import uuid4
 
@@ -115,7 +114,7 @@ class Auth0Authentication(authentication.BaseAuthentication):
                 # Verify token with more parameters and clock skew tolerance
                 payload = jwt.decode(
                     token,
-                    RSAAlgorithm.from_jwk(json.dumps(rsa_key)),
+                    jwt.api_jwk.PyJWK(rsa_key).key,
                     algorithms=['RS256'],
                     audience=settings.AUTH0_AUDIENCE,
                     issuer=f'https://{settings.AUTH0_DOMAIN}/',
@@ -167,7 +166,7 @@ class Auth0Authentication(authentication.BaseAuthentication):
                                 # Remove iat validation and decode again
                                 payload = jwt.decode(
                                     token,
-                                    RSAAlgorithm.from_jwk(json.dumps(rsa_key)),
+                                    jwt.api_jwk.PyJWK(rsa_key).key,
                                     algorithms=['RS256'],
                                     audience=settings.AUTH0_AUDIENCE,
                                     issuer=f'https://{settings.AUTH0_DOMAIN}/',
