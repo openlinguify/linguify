@@ -1,4 +1,6 @@
 // src/types/notes.ts
+import { TagItem } from "../components/TagManager";
+
 export interface Note {
   id: number;
   title: string;
@@ -7,7 +9,7 @@ export interface Note {
   difficulty?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
   category?: number;
   category_name?: string;
-  tags: Tag[];
+  tags?: TagItem[];
   related_words: string[];
   translation?: string;
   pronunciation?: string;
@@ -24,27 +26,23 @@ export interface Note {
   is_due_for_review: boolean;
   time_until_review?: string;
 }
+
 export interface NotebookClientProps {
   searchTerm?: string;
   filter?: string;
 }
+
 export interface NoteEditorProps {
   note?: Note;
   categories: Category[];
   onSave: (note: Partial<Note>) => Promise<void>;
   onDelete?: () => Promise<void>;
 }
+
 export interface CategoryTreeProps {
   categories: Category[];
   selectedCategory?: number;
   onSelect: (categoryId: number) => void;
-}
-
-export interface Tag {
-  id: number;
-  name: string;
-  color: string;
-  notes_count: number;
 }
 
 export interface Category {
@@ -57,10 +55,4 @@ export interface Category {
   subcategories: Category[];
   notes_count: number;
   notes: Note[];
-}
-
-export interface NoteListProps {
-  notes: Note[];
-  onNoteSelect: (note: Note) => void;
-  onCreateNote: () => void;
 }

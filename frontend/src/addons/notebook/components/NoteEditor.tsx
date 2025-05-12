@@ -1,642 +1,441 @@
-// src/components/notes/NoteEditor.tsx
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Loader2, Save, Pin, Archive, Trash2, Clock, Languages, 
-  Volume2, Plus, X, Bookmark, Type
-} from "lucide-react";
-import { Tag, Category } from "@/addons/notebook/types";
-import dynamic from "next/dynamic";
-import { NoteEditorProps } from "@/addons/notebook/types/";
-import useSpeechSynthesis from '@/core/speech/useSpeechSynthesis';
+import { Loader2, Save, Languages, Trash, CheckCircle } from "lucide-react";
+import { Note } from "@/addons/notebook/types";
 import { notebookAPI } from "../api/notebookAPI";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { motion, AnimatePresence } from "framer-motion";
+import TagManager, { TagItem } from "./TagManager";
+import { tagAPI } from "../api/tagAPI";
 
-// Import Editor directly for debugging
-import { Editor as StaticEditor } from "@/components/ui/Editor";
+interface NoteEditorProps {
+  note: Note;
+  onSave: () => void;
+  onCancel: () => void;
+}
 
-const Editor = dynamic(
-  () => import("@/components/ui/Editor").then((mod) => mod.Editor),
-  { ssr: false }
-);
-
-const LANGUAGE_OPTIONS = [
-  { value: 'en', label: 'English' },
-  { value: 'fr', label: 'French' },
-  { value: 'es', label: 'Spanish' },
-  { value: 'de', label: 'German' },
-  { value: 'it', label: 'Italian' },
-  { value: 'pt', label: 'Portuguese' },
-  { value: 'nl', label: 'Dutch' },
-  { value: 'ru', label: 'Russian' },
-  { value: 'zh', label: 'Chinese' },
-  { value: 'ja', label: 'Japanese' },
-  { value: 'ko', label: 'Korean' },
-  { value: 'ar', label: 'Arabic' },
-];
-
-const DIFFICULTY_OPTIONS = [
-  { value: 'BEGINNER', label: 'Beginner' },
-  { value: 'INTERMEDIATE', label: 'Intermediate' },
-  { value: 'ADVANCED', label: 'Advanced' },
-];
-
-export function NoteEditor({
-  note,
-  categories,
-  onSave,
-  onDelete,
-}: NoteEditorProps) {
+export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
+  const { toast } = useToast();
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [currentTab, setCurrentTab] = useState("content");
+  
   // Basic note fields
   const [title, setTitle] = useState(note?.title || "");
   const [content, setContent] = useState(note?.content || "");
-  const [category, setCategory] = useState<number | undefined>(note?.category);
-  const [selectedTags, setSelectedTags] = useState<Tag[]>(note?.tags || []);
-  const [noteType, setNoteType] = useState(note?.note_type || "VOCABULARY");
-  const [priority, setPriority] = useState(note?.priority || "MEDIUM");
-  const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  
-  // Language learning specific fields
-  const [language, setLanguage] = useState(note?.language || "fr");
   const [translation, setTranslation] = useState(note?.translation || "");
-  const [pronunciation, setPronunciation] = useState(note?.pronunciation || "");
-  const [difficulty, setDifficulty] = useState(note?.difficulty || "INTERMEDIATE");
-  const [exampleSentences, setExampleSentences] = useState<string[]>(note?.example_sentences || []);
-  const [relatedWords, setRelatedWords] = useState<string[]>(note?.related_words || []);
-  const [newSentence, setNewSentence] = useState("");
-  const [newRelatedWord, setNewRelatedWord] = useState("");
-
-  // Tab state
-  const [activeTab, setActiveTab] = useState("content");
-
-  // Speech synthesis
-  const { speak, speaking, voices } = useSpeechSynthesis();
-
-  // Available tags
-  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
-  const [newTagName, setNewTagName] = useState("");
-  const [newTagColor, setNewTagColor] = useState("#3B82F6");
-
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const tags = await notebookAPI.getTags();
-        setAvailableTags(tags);
-      } catch (error) {
-        console.error("Failed to fetch tags:", error);
-      }
-    };
-
-    fetchTags();
-  }, []);
-
+  const [language, setLanguage] = useState(note?.language || "fr");
+  
+  // Tags state
+  const [tags, setTags] = useState<TagItem[]>([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
+  const [tagApiAvailable, setTagApiAvailable] = useState(false);
+  const [isLoadingTags, setIsLoadingTags] = useState(false);
+  
+  // Initialize from props when note changes
   useEffect(() => {
     if (note) {
-      setTitle(note.title);
-      setContent(note.content);
-      setCategory(note.category);
-      setSelectedTags(note.tags || []);
-      setNoteType(note.note_type);
-      setPriority(note.priority);
-      
-      // Set language learning fields
-      setLanguage(note.language || "fr");
+      console.log("Loading note into editor:", {
+        id: note.id,
+        title: note.title,
+        content: note.content?.substring(0, 20) + "...",
+        translation: note.translation?.substring(0, 20) + "..."
+      });
+
+      setTitle(note.title || "");
+      setContent(note.content || "");
       setTranslation(note.translation || "");
-      setPronunciation(note.pronunciation || "");
-      setDifficulty(note.difficulty || "INTERMEDIATE");
-      setExampleSentences(note.example_sentences || []);
-      setRelatedWords(note.related_words || []);
-    }
-  }, [note]);
-
-  // Cette fonction vérifie si l'éditeur est vide, même s'il contient des nœuds vides
-  const isEditorEmpty = (editorContent: string) => {
-    // Si le contenu est vide ou null
-    if (!editorContent) return true;
-    
-    // Si le contenu est juste des balises HTML sans texte
-    const div = document.createElement('div');
-    div.innerHTML = editorContent;
-    const textContent = div.textContent?.trim();
-    
-    return !textContent || textContent === '';
-  };
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      // Vérifier si le titre est vide
-      if (!title.trim()) {
-        alert("Le titre ne peut pas être vide");
-        setIsSaving(false);
-        return;
+      setLanguage(note.language || "fr");
+      
+      // If the note has tags, initialize them
+      if (note.tags) {
+        setSelectedTagIds(note.tags.map(tag => tag.id));
       }
-      
-      // Vérifier si l'éditeur a du contenu
-      const editorIsEmpty = isEditorEmpty(content);
-      
-      // Préparer le contenu de manière plus robuste
-      const contentToSave = editorIsEmpty ? "" : content;
-      
-      // Feedback visuel pour l'utilisateur
-      const saveStartTime = Date.now();
-      
-      // Créer l'objet de données à sauvegarder
-      const noteData = {
-        ...(note || {}),
-        id: note?.id, // Make sure we keep the ID for updating
+    }
+  }, [note.id, note.title, note.content, note.translation, note.language, note.tags]); 
+  
+  // Check if tag API is available and load tags
+  useEffect(() => {
+    const checkTagsApi = async () => {
+      try {
+        const isAvailable = await tagAPI.checkTagsFeatureAvailable();
+        setTagApiAvailable(isAvailable);
+        
+        if (isAvailable) {
+          setIsLoadingTags(true);
+          const fetchedTags = await tagAPI.getTags();
+          setTags(fetchedTags);
+        }
+      } catch (error) {
+        console.warn("Error checking tags API:", error);
+        setTagApiAvailable(false);
+      } finally {
+        setIsLoadingTags(false);
+      }
+    };
+    
+    checkTagsApi();
+  }, []);
+
+  // Handle save
+  const handleSave = async () => {
+    if (!title.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Le titre ne peut pas être vide",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsSaving(true);
+    
+    try {
+      const updatedNote = {
+        ...note,
         title: title.trim(),
-        content: contentToSave,
-        category,
-        tags: selectedTags || [],
-        note_type: noteType || "VOCABULARY",
-        priority: priority || "MEDIUM",
-        language: language || "fr",
-        translation: translation || "",
-        pronunciation: pronunciation || "",
-        difficulty: difficulty || "INTERMEDIATE",
-        example_sentences: exampleSentences || [],
-        related_words: relatedWords || []
+        content: content,
+        translation: translation,
+        language: language
       };
       
-      // Sauvegarder la note
-      await onSave(noteData);
+      console.log("Saving note:", {
+        id: updatedNote.id,
+        title: updatedNote.title,
+        contentLength: updatedNote.content?.length || 0,
+        translationLength: updatedNote.translation?.length || 0
+      });
       
-      // Assurer un minimum de temps pour le feedback visuel (au moins 500ms)
-      const elapsedTime = Date.now() - saveStartTime;
-      if (elapsedTime < 500) {
-        await new Promise(resolve => setTimeout(resolve, 500 - elapsedTime));
+      // Save the note
+      await notebookAPI.updateNote(note.id, updatedNote);
+      
+      // If tag API is available, update tags
+      if (tagApiAvailable) {
+        // Get current tags of the note
+        const currentTagIds = note.tags ? note.tags.map(tag => tag.id) : [];
+        
+        // Tags to add
+        const tagsToAdd = selectedTagIds.filter(id => !currentTagIds.includes(id));
+        
+        // Tags to remove
+        const tagsToRemove = currentTagIds.filter(id => !selectedTagIds.includes(id));
+        
+        // Add new tags
+        for (const tagId of tagsToAdd) {
+          await tagAPI.addTagToNote(note.id, tagId);
+        }
+        
+        // Remove tags
+        for (const tagId of tagsToRemove) {
+          await tagAPI.removeTagFromNote(note.id, tagId);
+        }
       }
       
+      // Montrer l'animation de succès
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2000);
+      
+      toast({
+        title: "Succès",
+        description: "Note enregistrée avec succès"
+      });
+      
+      // Notify parent
+      onSave();
     } catch (error) {
-      console.error("Save error:", error);
-      alert("Une erreur est survenue lors de la sauvegarde. Veuillez réessayer.");
+      console.error("Error saving note:", error);
+      
+      toast({
+        title: "Erreur",
+        description: "Impossible d'enregistrer la note",
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
   };
 
+  // Handle delete
   const handleDelete = async () => {
-    if (
-      !onDelete ||
-      !window.confirm("Are you sure you want to delete this note?")
-    ) {
-      return;
-    }
     setIsDeleting(true);
-    try {
-      await onDelete();
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  const handleAddSentence = () => {
-    if (newSentence.trim()) {
-      setExampleSentences([...exampleSentences, newSentence.trim()]);
-      setNewSentence("");
-    }
-  };
-
-  const handleRemoveSentence = (index: number) => {
-    setExampleSentences(
-      exampleSentences.filter((_, i) => i !== index)
-    );
-  };
-
-  const handleAddRelatedWord = () => {
-    if (newRelatedWord.trim()) {
-      setRelatedWords([...relatedWords, newRelatedWord.trim()]);
-      setNewRelatedWord("");
-    }
-  };
-
-  const handleRemoveRelatedWord = (index: number) => {
-    setRelatedWords(
-      relatedWords.filter((_, i) => i !== index)
-    );
-  };
-
-  const handleSpeak = (text: string) => {
-    const langVoice = voices.find(v => v.lang.startsWith(language));
-    speak(text, langVoice);
-  };
-
-  const handleToggleTag = (tag: Tag) => {
-    const isSelected = selectedTags.some(t => t.id === tag.id);
-    if (isSelected) {
-      setSelectedTags(selectedTags.filter(t => t.id !== tag.id));
-    } else {
-      setSelectedTags([...selectedTags, tag]);
-    }
-  };
-
-  const handleCreateTag = async () => {
-    if (!newTagName.trim()) return;
     
     try {
-      const newTag = await notebookAPI.createTag({
-        name: newTagName,
-        color: newTagColor
+      await notebookAPI.deleteNote(note.id);
+      
+      toast({
+        title: "Succès",
+        description: "Note supprimée avec succès"
       });
-      setAvailableTags([...availableTags, newTag]);
-      setSelectedTags([...selectedTags, newTag]);
-      setNewTagName("");
+      
+      // Notify parent and close editor
+      onSave();
+      onCancel();
     } catch (error) {
-      console.error("Failed to create tag:", error);
+      console.error("Error deleting note:", error);
+      
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer la note",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
-
+  
+  // Handle adding a new tag
+  const handleAddTag = async (name: string, color?: string): Promise<TagItem | undefined> => {
+    try {
+      const newTag = await tagAPI.createTag(name, color);
+      setTags(prevTags => [...prevTags, newTag]);
+      return newTag;
+    } catch (error) {
+      console.error("Error adding tag:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de créer le tag",
+        variant: "destructive"
+      });
+      return undefined;
+    }
+  };
+  
+  // Handle removing a tag
+  const handleRemoveTag = (tagId: number) => {
+    setSelectedTagIds(prev => prev.filter(id => id !== tagId));
+  };
+  
+  // Handle selecting a tag
+  const handleSelectTag = (tagId: number) => {
+    setSelectedTagIds(prev => 
+      prev.includes(tagId)
+        ? prev.filter(id => id !== tagId)
+        : [...prev, tagId]
+    );
+  };
+  
+  const LANGUAGE_OPTIONS = [
+    { value: 'en', label: 'English' },
+    { value: 'fr', label: 'French' },
+    { value: 'es', label: 'Spanish' },
+    { value: 'de', label: 'German' },
+    { value: 'it', label: 'Italian' },
+    { value: 'pt', label: 'Portuguese' }
+  ];
+  
   return (
-    <div className="flex flex-col h-full">
-      {/* Toolbar */}
-      <div className="border-b p-4 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Note title"
-            className="text-lg font-medium w-72"
-          />
-
-          <Select 
-            value={language} 
-            onValueChange={setLanguage}
-          >
-            <SelectTrigger className="w-36">
-              <Languages className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Language" />
-            </SelectTrigger>
-            <SelectContent>
+    <motion.div
+      className="h-full flex flex-col overflow-hidden"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md px-8 py-6 flex-1 flex flex-col overflow-hidden max-h-full">
+        <motion.div 
+          className="flex justify-between items-center mb-6"
+          initial={{ y: -10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+        >
+          <div className="flex-1">
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Titre de la note"
+              className="text-lg font-medium search-animation"
+            />
+          </div>
+          
+          <div className="flex items-center gap-2 ml-2">
+            <select 
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="border rounded-md p-2 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
               {LANGUAGE_OPTIONS.map(option => (
-                <SelectItem key={option.value} value={option.value}>
+                <option key={option.value} value={option.value}>
                   {option.label}
-                </SelectItem>
+                </option>
               ))}
-            </SelectContent>
-          </Select>
-
-          <Select 
-            value={category?.toString() || "none"} 
-            onValueChange={(value) => setCategory(value !== "none" ? Number(value) : undefined)}
+            </select>
+            
+            <Badge variant="outline" className="gap-1 bg-gray-100 dark:bg-gray-800">
+              <Languages className="h-3 w-3" />
+              {language.toUpperCase()}
+            </Badge>
+          </div>
+        </motion.div>
+        
+        {/* Tags section */}
+        {tagApiAvailable && (
+          <motion.div 
+            className="mb-4"
+            initial={{ y: -5, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.15 }}
           >
-            <SelectTrigger className="w-40">
-              <Bookmark className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No category</SelectItem>
-              {categories.map((cat) => (
-                <SelectItem key={cat.id} value={cat.id.toString()}>
-                  {cat.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select 
-            value={difficulty} 
-            onValueChange={setDifficulty}
-          >
-            <SelectTrigger className="w-40">
-              <Type className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Difficulty" />
-            </SelectTrigger>
-            <SelectContent>
-              {DIFFICULTY_OPTIONS.map(option => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {note && (
-            <>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onSave({ ...note, is_pinned: !note.is_pinned })}
-              >
-                <Pin
-                  className={`h-4 w-4 ${note.is_pinned ? "text-blue-500" : ""}`}
-                />
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() =>
-                  onSave({ ...note, is_archived: !note.is_archived })
-                }
-              >
-                <Archive
-                  className={`h-4 w-4 ${
-                    note.is_archived ? "text-gray-500" : ""
-                  }`}
-                />
-              </Button>
-
-              {note.is_due_for_review && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() =>
-                    onSave({
-                      ...note,
-                      last_reviewed_at: new Date().toISOString(),
-                      review_count: note.review_count + 1
-                    })
-                  }
-                >
-                  <Clock className="h-4 w-4 text-orange-500" />
-                </Button>
-              )}
-            </>
-          )}
-
-          <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+            {isLoadingTags ? (
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                <Loader2 className="animate-spin h-4 w-4" />
+                Chargement des tags...
+              </div>
             ) : (
-              <Save className="h-4 w-4 mr-2" />
+              <TagManager
+                tags={tags}
+                selectedTags={selectedTagIds}
+                availableTags={tags}
+                onAddTag={handleAddTag}
+                onRemoveTag={handleRemoveTag}
+                onSelectTag={handleSelectTag}
+              />
             )}
-            Save
-          </Button>
-
-          {note && onDelete && (
+          </motion.div>
+        )}
+        
+        <Tabs 
+          defaultValue="content" 
+          className="flex-1 flex flex-col overflow-hidden"
+          value={currentTab}
+          onValueChange={setCurrentTab}
+        >
+          <TabsList className="mb-5">
+            <TabsTrigger value="content">Contenu</TabsTrigger>
+            <TabsTrigger value="translation">Traduction</TabsTrigger>
+          </TabsList>
+          
+          <AnimatePresence mode="wait">
+            {currentTab === "content" && (
+              <motion.div 
+                key="content-tab"
+                className="flex-1 overflow-auto"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <TabsContent value="content" className="flex-1 overflow-auto h-full min-h-[300px]">
+                  <Textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder="Contenu de la note..."
+                    className="h-full w-full resize-none search-animation notebook-scrollable-area max-h-[60vh]"
+                  />
+                </TabsContent>
+              </motion.div>
+            )}
+            
+            {currentTab === "translation" && (
+              <motion.div 
+                key="translation-tab"
+                className="flex-1 overflow-auto"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <TabsContent value="translation" className="flex-1 overflow-auto h-full min-h-[300px]">
+                  <Textarea
+                    value={translation}
+                    onChange={(e) => setTranslation(e.target.value)}
+                    placeholder="Traduction..."
+                    className="h-full w-full resize-none search-animation notebook-scrollable-area max-h-[60vh]"
+                  />
+                </TabsContent>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Tabs>
+        
+        <motion.div 
+          className="flex justify-between mt-6 pt-6 border-t border-gray-100 dark:border-gray-700"
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
-              variant="destructive"
+              variant="outline" 
+              onClick={() => setShowDeleteConfirm(true)}
+              className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:border-red-900 dark:hover:bg-red-900/20"
+            >
+              <Trash className="h-4 w-4 mr-2" />
+              Supprimer
+            </Button>
+          </motion.div>
+          
+          <div className="flex gap-2">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button variant="outline" onClick={onCancel}>
+                Annuler
+              </Button>
+            </motion.div>
+            
+            <motion.div 
+              whileHover={{ scale: 1.05 }} 
+              whileTap={{ scale: 0.95 }}
+              className={saveSuccess ? "save-success" : ""}
+            >
+              <Button 
+                onClick={handleSave} 
+                disabled={isSaving}
+                className="bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 text-white"
+              >
+                {isSaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : saveSuccess ? (
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-200" />
+                ) : (
+                  <Save className="h-4 w-4 mr-2" />
+                )}
+                {saveSuccess ? "Sauvegardé" : "Enregistrer"}
+              </Button>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+      
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent className="animate-slide-in-right">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer cette note ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action est irréversible. La note "{title}" sera définitivement supprimée.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
               onClick={handleDelete}
+              className="bg-red-500 text-white hover:bg-red-600"
               disabled={isDeleting}
             >
               {isDeleting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Trash2 className="h-4 w-4" />
-              )}
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-        <TabsList className="mx-4 mt-2">
-          <TabsTrigger value="content">Content</TabsTrigger>
-          <TabsTrigger value="language">Language Learning</TabsTrigger>
-          <TabsTrigger value="examples">Examples</TabsTrigger>
-          <TabsTrigger value="tags">Tags</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="content" className="flex-1 overflow-auto p-4">
-          <Editor
-            value={content}
-            onChange={setContent}
-            className="min-h-[500px]"
-          />
-        </TabsContent>
-
-        <TabsContent value="language" className="p-4 space-y-4">
-          {/* Language learning features */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Translation</label>
-              <div className="flex items-center">
-                <Textarea
-                  value={translation}
-                  onChange={(e) => setTranslation(e.target.value)}
-                  placeholder="Translation in your native language"
-                  className="flex-1"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Pronunciation</label>
-              <div className="flex items-center gap-2">
-                <Input
-                  value={pronunciation}
-                  onChange={(e) => setPronunciation(e.target.value)}
-                  placeholder="Pronunciation guide"
-                  className="flex-1"
-                />
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => handleSpeak(title)}
-                  disabled={speaking}
-                >
-                  <Volume2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-sm font-medium">Related Words</label>
-              <div className="flex items-center gap-2">
-                <Input
-                  value={newRelatedWord}
-                  onChange={(e) => setNewRelatedWord(e.target.value)}
-                  placeholder="Add related word"
-                  className="flex-1"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleAddRelatedWord();
-                    }
-                  }}
-                />
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleAddRelatedWord}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {relatedWords.map((word, index) => (
-                  <div 
-                    key={index}
-                    className="bg-gray-100 px-3 py-1 rounded-full flex items-center gap-1"
-                  >
-                    <span>{word}</span>
-                    <button
-                      className="text-gray-500 hover:text-gray-700"
-                      onClick={() => handleRemoveRelatedWord(index)}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-                {relatedWords.length === 0 && (
-                  <div className="text-gray-400 text-sm">No related words added</div>
-                )}
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="examples" className="p-4 space-y-4">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Example Sentences</label>
-              <div className="flex items-center gap-2">
-                <Textarea
-                  value={newSentence}
-                  onChange={(e) => setNewSentence(e.target.value)}
-                  placeholder="Add example sentence"
-                  className="flex-1"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && e.ctrlKey) {
-                      handleAddSentence();
-                    }
-                  }}
-                />
-                <div className="flex flex-col gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={handleAddSentence}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                  {newSentence && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => handleSpeak(newSentence)}
-                      disabled={speaking}
-                    >
-                      <Volume2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-              <div className="text-xs text-gray-500">
-                Press Ctrl+Enter to add quickly
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              {exampleSentences.map((sentence, index) => (
-                <div 
-                  key={index}
-                  className="bg-gray-50 p-3 rounded-md flex justify-between items-start"
-                >
-                  <div className="flex-1">{sentence}</div>
-                  <div className="flex items-center gap-1 ml-2">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => handleSpeak(sentence)}
-                      disabled={speaking}
-                    >
-                      <Volume2 className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => handleRemoveSentence(index)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              {exampleSentences.length === 0 && (
-                <div className="text-center py-8 text-gray-400">
-                  No example sentences added yet
-                </div>
-              )}
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="tags" className="p-4 space-y-4">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Create New Tag</label>
-              <div className="flex items-center gap-2">
-                <Input
-                  value={newTagName}
-                  onChange={(e) => setNewTagName(e.target.value)}
-                  placeholder="Tag name"
-                  className="flex-1"
-                />
-                <input
-                  type="color"
-                  value={newTagColor}
-                  onChange={(e) => setNewTagColor(e.target.value)}
-                  className="h-9 w-12 border rounded p-1"
-                />
-                <Button 
-                  variant="outline" 
-                  onClick={handleCreateTag}
-                >
-                  Create Tag
-                </Button>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Select Tags</label>
-              <div className="flex flex-wrap gap-2">
-                {availableTags.map(tag => (
-                  <div
-                    key={tag.id}
-                    onClick={() => handleToggleTag(tag)}
-                    className={`
-                      px-3 py-1 rounded-full cursor-pointer text-sm
-                      ${selectedTags.some(t => t.id === tag.id) 
-                        ? 'bg-blue-100 text-blue-800 border-blue-200 border'
-                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}
-                    `}
-                  >
-                    {tag.name}
-                  </div>
-                ))}
-                {availableTags.length === 0 && (
-                  <div className="text-gray-400 text-sm">No tags available</div>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Selected Tags</label>
-              <div className="flex flex-wrap gap-2">
-                {selectedTags.map(tag => (
-                  <div
-                    key={tag.id}
-                    className="px-3 py-1 rounded-full flex items-center gap-1"
-                    style={{ 
-                      backgroundColor: `${tag.color}20`,
-                      color: tag.color 
-                    }}
-                  >
-                    <span>{tag.name}</span>
-                    <button
-                      className="hover:text-red-500"
-                      onClick={() => handleToggleTag(tag)}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-                {selectedTags.length === 0 && (
-                  <div className="text-gray-400 text-sm">No tags selected</div>
-                )}
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </motion.div>
   );
 }

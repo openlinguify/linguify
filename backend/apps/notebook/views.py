@@ -103,7 +103,7 @@ class NoteCategoryViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 class NoteViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = {
         'category': ['exact', 'isnull'],
