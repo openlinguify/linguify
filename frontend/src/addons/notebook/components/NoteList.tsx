@@ -1,192 +1,152 @@
-// src/components/notes/NoteList.tsx
-import React from 'react';
-import { Card } from "@/components/ui/card";
+import React from "react";
 import { Button } from "@/components/ui/button";
-import { 
-  Plus, 
-  Bookmark, Clock, Languages, 
-  BookOpenText, Volume2
-} from 'lucide-react';
-import { NoteListProps } from '@/addons/notebook/types/';
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Plus, FileText, Clock, Calendar } from "lucide-react";
+import { Note } from "@/addons/notebook/types";
+import { formatDistanceToNow, format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { useMediaQueryHook } from "./NotebookMain";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Map for note types to icons and colors
-const NOTE_TYPE_CONFIG = {
-  VOCABULARY: { 
-    icon: Languages, 
-    color: 'text-emerald-500',
-    bgColor: 'bg-emerald-50 dark:bg-emerald-900/20' 
-  },
-  GRAMMAR: { 
-    icon: BookOpenText, 
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-50 dark:bg-blue-900/20'
-  },
-  EXPRESSION: { 
-    icon: Volume2, 
-    color: 'text-purple-500',
-    bgColor: 'bg-purple-50 dark:bg-purple-900/20'
-  },
-  CULTURE: { 
-    icon: Bookmark, 
-    color: 'text-amber-500',
-    bgColor: 'bg-amber-50 dark:bg-amber-900/20'
-  },
-  NOTE: { 
-    icon: BookOpenText, 
-    color: 'text-gray-500',
-    bgColor: 'bg-gray-50 dark:bg-gray-700/50' 
-  },
-};
+interface NoteListProps {
+  notes: Note[];
+  onSelectNote: (note: Note) => void;
+  onCreateNote: () => void;
+  selectedNoteId?: number;
+  filter: string;
+  onFilterChange: (filter: string) => void;
+}
 
-export function NoteList({ notes, onNoteSelect, onCreateNote }: NoteListProps) {
-  // Format date in relative time
-  const formatRelativeTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    
-    if (diffInSeconds < 60) {
-      return 'just now';
-    } else if (diffInSeconds < 3600) {
-      const minutes = Math.floor(diffInSeconds / 60);
-      return `${minutes}m ago`;
-    } else if (diffInSeconds < 86400) {
-      const hours = Math.floor(diffInSeconds / 3600);
-      return `${hours}h ago`;
-    } else if (diffInSeconds < 604800) { // 7 days
-      const days = Math.floor(diffInSeconds / 86400);
-      return `${days}d ago`;
-    } else {
-      return date.toLocaleDateString();
-    }
-  };
+export function NoteList({
+  notes,
+  onSelectNote,
+  onCreateNote,
+  selectedNoteId,
+}: NoteListProps) {
+  // Responsive state
+  const { isMobile } = useMediaQueryHook();
 
-  return (
-    <div className="w-full flex flex-col">
-      {/* Empty State */}
-      {notes.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 px-4">
-          <div className="p-4 rounded-full bg-indigo-50 dark:bg-indigo-900/20 mb-4">
-            <BookOpenText className="h-8 w-8 text-indigo-500 dark:text-indigo-400" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No notes yet</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-4">
-            Start by creating your first language note
-          </p>
-          <Button
-            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+  // Si aucune note
+  if (notes.length === 0) {
+    return (
+      <motion.div 
+        className="flex flex-col items-center justify-center h-full p-6 space-y-4"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div 
+          className="rounded-full bg-gray-100 dark:bg-gray-800 p-4"
+          animate={{ 
+            scale: [1, 1.05, 1],
+            rotate: [0, 2, 0, -2, 0] 
+          }}
+          transition={{ 
+            duration: 2, 
+            ease: "easeInOut", 
+            repeat: Infinity,
+            repeatDelay: 1
+          }}
+        >
+          <FileText className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+        </motion.div>
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          Vous n'avez pas encore de notes.
+        </p>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Button 
             onClick={onCreateNote}
+            className="bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 text-white floating-button"
           >
             <Plus className="h-4 w-4 mr-2" />
-            New Note
+            Créer une note
           </Button>
-        </div>
-      ) : (
-        <div className="space-y-3 p-2">
-          {notes.map((note) => {
-            const noteConfig = NOTE_TYPE_CONFIG[note.note_type as keyof typeof NOTE_TYPE_CONFIG] || 
-                               NOTE_TYPE_CONFIG.NOTE;
-            const NoteIcon = noteConfig.icon;
-            
-            return (
+        </motion.div>
+      </motion.div>
+    );
+  }
+
+  return (
+    <div className="p-6 space-y-4 notebook-scrollable-area">
+      <AnimatePresence>
+        {notes.map((note, index) => {
+          const isSelected = note.id === selectedNoteId;
+          
+          // Calculer le temps écoulé depuis la dernière mise à jour
+          const timeAgo = formatDistanceToNow(new Date(note.updated_at), {
+            addSuffix: true,
+            locale: fr
+          });
+          
+          // Format date pour affichage dans le tooltip
+          const formattedDate = format(new Date(note.updated_at), 'PPP', { locale: fr });
+          
+          return (
+            <motion.div
+              key={note.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ 
+                duration: 0.2, 
+                delay: index * 0.03,
+                ease: "easeOut"
+              }}
+              className="selection-highlight mb-3"
+              whileHover={{ x: 2, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+            >
               <Card
-                key={note.id}
-                className={`p-4 cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-gray-100 dark:border-gray-700 hover:shadow-md 
-                  ${note.is_pinned ? 'border-l-4 border-l-indigo-500' : ''}
-                  ${note.is_archived ? 'opacity-60' : ''}`}
-                onClick={() => onNoteSelect(note)}
+                onClick={() => onSelectNote(note)}
+                className={`p-4 cursor-pointer transition-all ${
+                  isSelected 
+                    ? "border-2 border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20" 
+                    : "border border-gray-200 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-700"
+                }`}
               >
-                <div className="flex items-start gap-3">
-                  <div className={`p-2 rounded-full ${noteConfig.bgColor} flex-shrink-0`}>
-                    <NoteIcon className={`h-4 w-4 ${noteConfig.color}`} />
+                <div className="flex items-start space-x-2">
+                  <div className="flex-shrink-0 mt-1">
+                    <FileText className={`h-4 w-4 ${isSelected ? "text-indigo-500" : "text-gray-400 dark:text-gray-500"}`} />
                   </div>
-                  
                   <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-medium line-clamp-1 text-gray-900 dark:text-gray-100">{note.title}</h3>
-                      <div className="flex items-center space-x-1 ml-2">
-                        {note.is_pinned && (
-                          <div className="w-2 h-2 rounded-full bg-indigo-500" title="Pinned" />
-                        )}
-                        {note.is_due_for_review && (
-                          <div className="w-2 h-2 rounded-full bg-amber-500" title="Due for Review" />
-                        )}
-                      </div>
-                    </div>
-                    
-                    {note.translation && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1 italic mt-1">
-                        {note.translation}
-                      </p>
-                    )}
-                    
-                    <div className="flex flex-wrap items-center gap-x-3 mt-2 text-xs">
+                    <h3 className={`font-medium truncate ${isSelected ? "text-indigo-700 dark:text-indigo-300" : "dark:text-white"}`}>
+                      {note.title}
+                    </h3>
+                    <div className="flex items-center mt-2 space-x-2 flex-wrap">
                       {note.language && (
-                        <span className="text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                          <Languages className="h-3 w-3" />
+                        <Badge variant="outline" className="text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
                           {note.language.toUpperCase()}
-                        </span>
+                        </Badge>
                       )}
-                      
-                      {note.category_name && (
-                        <span className="text-gray-500 dark:text-gray-400 truncate">
-                          {note.category_name}
-                        </span>
-                      )}
-                      
-                      <span className="text-gray-400 dark:text-gray-500 ml-auto">
-                        {formatRelativeTime(note.updated_at)}
-                      </span>
-                    </div>
-                    
-                    {/* Tags */}
-                    {note.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {note.tags.slice(0, 3).map(tag => (
-                          <span
-                            key={tag.id}
-                            className="px-1.5 py-0.5 rounded-full text-xs"
-                            style={{ 
-                              backgroundColor: `${tag.color}20`, 
-                              color: tag.color 
-                            }}
-                          >
-                            {tag.name}
-                          </span>
-                        ))}
-                        {note.tags.length > 3 && (
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            +{note.tags.length - 3} more
-                          </span>
-                        )}
+                      <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 truncate" title={formattedDate}>
+                        <Clock className="h-3 w-3 mr-1 inline-flex" />
+                        {timeAgo}
                       </div>
+                    </div>
+                    {note.content && (
+                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                        {note.content}
+                      </p>
                     )}
                   </div>
                 </div>
+                
+                {/* Montrer des indicateurs supplémentaires uniquement sur tablet/desktop */}
+                {!isMobile && note.translation && note.translation.length > 0 && (
+                  <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 italic line-clamp-1">
+                      {note.translation}
+                    </p>
+                  </div>
+                )}
               </Card>
-            )
-          })}
-          
-          {/* Create Note Button */}
-          <div className="pt-2 pb-4">
-            <Button
-              variant="outline"
-              className="w-full border border-dashed border-gray-300 dark:border-gray-600 hover:border-indigo-500 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all hover:shadow-md"
-              onClick={onCreateNote}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add New Note
-            </Button>
-          </div>
-          
-          {/* Pagination/Stats footer */}
-          {notes.length > 0 && (
-            <div className="text-xs text-gray-500 text-center py-2 border-t">
-              {notes.length} note{notes.length !== 1 ? 's' : ''}
-            </div>
-          )}
-        </div>
-      )}
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
     </div>
   );
 }

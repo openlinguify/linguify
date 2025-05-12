@@ -13,6 +13,11 @@ class EnhancedCache {
   private cache: Map<string, { data: any, timestamp: number }>;
   private prefetchQueue: Set<string>;
   private ttl: number = 10 * 60 * 1000; // 10 minutes in milliseconds
+  private maxSize: number = 100; // Maximum number of items to keep in cache
+  private hits: number = 0;
+  private misses: number = 0;
+  private prefetchSuccesses: number = 0;
+  private prefetchFailures: number = 0;
 
   private constructor() {
     this.cache = new Map();
@@ -20,6 +25,11 @@ class EnhancedCache {
 
     // Clean expired cache entries every minute
     setInterval(() => this.cleanExpiredEntries(), 60 * 1000);
+
+    // Log cache stats every 5 minutes in development
+    if (process.env.NODE_ENV === 'development') {
+      setInterval(() => this.logCacheStats(), 5 * 60 * 1000);
+    }
   }
 
   public static getInstance(): EnhancedCache {
@@ -31,24 +41,52 @@ class EnhancedCache {
     return EnhancedCache.instance;
   }
 
-  public get(key: string): any {
+  public get(key: string, customTTL?: number): any {
     const entry = this.cache.get(key);
-    if (!entry) return null;
-
-    // Check if entry has expired
-    if (Date.now() - entry.timestamp > this.ttl) {
-      this.cache.delete(key);
+    if (!entry) {
+      this.misses++;
       return null;
     }
 
-    return entry.data;
+    // Check if entry has expired
+    const ttlToUse = customTTL || this.ttl;
+    if (Date.now() - entry.timestamp > ttlToUse) {
+      this.cache.delete(key);
+      this.misses++;
+      return null;
+    }
+
+    this.hits++;
+    // Return a deep copy to avoid mutation issues
+    return JSON.parse(JSON.stringify(entry.data));
   }
 
-  public set(key: string, data: any): void {
-    this.cache.set(key, { data, timestamp: Date.now() });
+  public set(key: string, data: any, priority: boolean = false): void {
+    // If cache is at capacity and this is not a priority item, enforce limits
+    if (this.cache.size >= this.maxSize && !priority) {
+      this.evictOldest();
+    }
+
+    // Store a deep copy to avoid shared references
+    this.cache.set(key, {
+      data: JSON.parse(JSON.stringify(data)),
+      timestamp: Date.now()
+    });
   }
 
-  public prefetch(key: string, fetcher: () => Promise<any>): void {
+  public has(key: string): boolean {
+    return this.cache.has(key);
+  }
+
+  public invalidate(pattern: string): void {
+    for (const key of this.cache.keys()) {
+      if (key.includes(pattern)) {
+        this.cache.delete(key);
+      }
+    }
+  }
+
+  public prefetch(key: string, fetcher: () => Promise<any>, priority: boolean = false): void {
     // Don't prefetch if already in progress or in cache
     if (this.prefetchQueue.has(key) || this.get(key)) return;
 
@@ -58,24 +96,64 @@ class EnhancedCache {
     // Execute prefetch in the background
     fetcher()
       .then(data => {
-        this.set(key, data);
+        this.set(key, data, priority);
         console.log(`Prefetched data for: ${key}`);
+        this.prefetchSuccesses++;
       })
       .catch(err => {
         console.error(`Failed to prefetch data for: ${key}`, err);
+        this.prefetchFailures++;
       })
       .finally(() => {
         this.prefetchQueue.delete(key);
       });
   }
 
+  public clear(): void {
+    this.cache.clear();
+    this.prefetchQueue.clear();
+  }
+
+  private evictOldest(): void {
+    // Find the oldest item
+    let oldestKey: string | null = null;
+    let oldestTime = Date.now();
+
+    for (const [key, entry] of this.cache.entries()) {
+      if (entry.timestamp < oldestTime) {
+        oldestTime = entry.timestamp;
+        oldestKey = key;
+      }
+    }
+
+    // Remove the oldest entry
+    if (oldestKey) {
+      this.cache.delete(oldestKey);
+    }
+  }
+
   private cleanExpiredEntries(): void {
     const now = Date.now();
+    let expiredCount = 0;
     this.cache.forEach((entry, key) => {
       if (now - entry.timestamp > this.ttl) {
         this.cache.delete(key);
+        expiredCount++;
       }
     });
+
+    if (expiredCount > 0 && process.env.NODE_ENV === 'development') {
+      console.log(`Cache cleanup: removed ${expiredCount} expired entries`);
+    }
+  }
+
+  private logCacheStats(): void {
+    console.log('==== Cache Statistics ====');
+    console.log(`Cache size: ${this.cache.size} items`);
+    console.log(`Cache hits: ${this.hits}, misses: ${this.misses}`);
+    console.log(`Hit ratio: ${this.hits + this.misses > 0 ? Math.round((this.hits / (this.hits + this.misses)) * 100) : 0}%`);
+    console.log(`Prefetch success: ${this.prefetchSuccesses}, failures: ${this.prefetchFailures}`);
+    console.log('========================');
   }
 }
 
@@ -125,13 +203,24 @@ const adaptTheoryContent = (data: any): TheoryData => {
 
 
 const courseAPI = {
-  getUnits: async (level?: string, targetLanguage?: string) => {
+  getUnits: async (level?: string, targetLanguage?: string, signal?: AbortSignal) => {
     try {
+      // Generate cache key based on parameters
+      const lang = targetLanguage || getUserTargetLanguage();
+      const cacheKey = `units_${level || 'all'}_${lang}`;
+
+      // Check cache first
+      const cachedData = FastCache.get(cacheKey);
+      if (cachedData) {
+        console.log(`Using cached units for language: ${lang}, level: ${level || 'all'}`);
+
+        // Return cached data
+        return cachedData;
+      }
+
+      // Prepare request parameters
       const params: Record<string, string> = {};
       if (level) params.level = level;
-
-      // Utiliser la langue spécifiée ou récupérer depuis localStorage
-      const lang = targetLanguage || getUserTargetLanguage();
       params.target_language = lang;
 
       console.log('Fetching units with language:', lang);
@@ -139,20 +228,48 @@ const courseAPI = {
         params,
         headers: {
           'Accept-Language': lang
-        }
+        },
+        signal
       });
+
+      // Cache the results (mark as priority since this is critical data)
+      FastCache.set(cacheKey, response.data, true);
+
+      // When we get units, prefetch the first unit's lessons in the background
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        const firstUnit = response.data[0];
+        if (firstUnit && firstUnit.id) {
+          setTimeout(() => {
+            const lessonsCacheKey = `lessons_${firstUnit.id}_${lang}`;
+            if (!FastCache.has(lessonsCacheKey)) {
+              FastCache.prefetch(lessonsCacheKey, () =>
+                courseAPI.getLessons(firstUnit.id, lang),
+                true // Mark as priority
+              );
+            }
+          }, 200);
+        }
+      }
+
       return response.data;
     } catch (err: any) {
+      // Don't log errors for aborted requests
+      if (err.name === 'AbortError') {
+        return [];
+      }
+
       console.error('Failed to fetch units:', {
         status: err.response?.status,
         data: err.response?.data,
         message: err.message
       });
+
+      // Throw an error for non-aborted requests
       throw new Error(`Failed to fetch units: ${err.message}`);
     }
   },
 
-  getLessons: async (unitId: number | string, targetLanguage?: string) => {
+  getLessons: async (unitId: number | string, targetLanguage?: string, signal?: AbortSignal) => {
     try {
       // Validate unit ID to prevent NaN being sent to the API
       const parsedUnitId = Number(unitId);
@@ -169,7 +286,7 @@ const courseAPI = {
       // Check if data is already in the enhanced cache
       const cachedData = FastCache.get(cacheKey);
       if (cachedData) {
-        console.log(`Using fast-cached lessons for unit ${parsedUnitId} with language ${lang}`);
+        console.log(`Using cached lessons for unit ${parsedUnitId} with language ${lang}`);
 
         // When lessons are retrieved from cache, prefetch content lessons for each lesson
         // This helps make the transition to lesson view faster
@@ -178,9 +295,13 @@ const courseAPI = {
           if (firstLesson && firstLesson.id) {
             // Prefetch content lessons for the first lesson in the background
             const contentLessonsCacheKey = `content_lessons_${firstLesson.id}_${lang}`;
-            FastCache.prefetch(contentLessonsCacheKey, () =>
-              courseAPI.getContentLessons(firstLesson.id, lang)
-            );
+
+            // Only prefetch if not already in cache
+            if (!FastCache.has(contentLessonsCacheKey)) {
+              FastCache.prefetch(contentLessonsCacheKey, () =>
+                courseAPI.getContentLessons(firstLesson.id, lang)
+              );
+            }
           }
         }
 
@@ -198,13 +319,14 @@ const courseAPI = {
         params,
         headers: {
           'Accept-Language': lang
-        }
+        },
+        signal
       });
 
-      // Cache the data for future requests in both caches
+      // Cache the data for future requests
       if (response.data && Array.isArray(response.data)) {
-        FastCache.set(cacheKey, response.data);
-        Cache.set(cacheKey, response.data); // Keep old cache updated for backward compatibility
+        // Store in enhanced cache (mark as priority)
+        FastCache.set(cacheKey, response.data, true);
 
         // Prefetch content lessons for the first lesson in the result
         if (response.data.length > 0) {
@@ -213,16 +335,25 @@ const courseAPI = {
             // Schedule prefetch in the background after a small delay to prioritize current request
             setTimeout(() => {
               const contentLessonsCacheKey = `content_lessons_${firstLesson.id}_${lang}`;
-              FastCache.prefetch(contentLessonsCacheKey, () =>
-                courseAPI.getContentLessons(firstLesson.id, lang)
-              );
-            }, 300);
+
+              // Only prefetch if not already in cache
+              if (!FastCache.has(contentLessonsCacheKey)) {
+                FastCache.prefetch(contentLessonsCacheKey, () =>
+                  courseAPI.getContentLessons(firstLesson.id, lang)
+                );
+              }
+            }, 200);
           }
         }
       }
 
       return response.data;
     } catch (err: any) {
+      // Don't log errors for aborted requests
+      if (err.name === 'AbortError') {
+        return [];
+      }
+
       console.error('Failed to fetch lessons:', err);
       return []; // Return empty array on error to prevent cascade failures
     }
@@ -331,7 +462,7 @@ const courseAPI = {
     }
   },
 
-  getContentLessons: async (lessonId: number | string, targetLanguage?: string) => {
+  getContentLessons: async (lessonId: number | string, targetLanguage?: string, signal?: AbortSignal) => {
     try {
       // Validate lesson ID
       const parsedLessonId = Number(lessonId);
@@ -345,53 +476,95 @@ const courseAPI = {
       const lang = targetLanguage || getUserTargetLanguage();
       const cacheKey = `content_lessons_${parsedLessonId}_${lang}`;
 
-      // Try to get from enhanced cache first
-      const cachedData = FastCache.get(cacheKey);
+      // Try to get from enhanced cache first with longer TTL (15 minutes)
+      const cachedData = FastCache.get(cacheKey, 15 * 60 * 1000);
       if (cachedData) {
-        console.log(`Using fast-cached content lessons for lesson ${parsedLessonId}`);
+        console.log(`Using cached content lessons for lesson ${parsedLessonId}`);
+
+        // If we have cached data, schedule prefetching of first item's content in background
+        if (Array.isArray(cachedData) && cachedData.length > 0) {
+          const firstContentLesson = cachedData[0];
+          if (firstContentLesson && firstContentLesson.id && firstContentLesson.content_type) {
+            // Schedule background prefetch
+            setTimeout(() => {
+              const contentType = firstContentLesson.content_type.toLowerCase();
+              // Only prefetch if not already in cache
+              if (contentType === 'theory') {
+                const theoryKey = `theory_${firstContentLesson.id}_${lang}`;
+                if (!FastCache.has(theoryKey)) {
+                  FastCache.prefetch(theoryKey, () =>
+                    courseAPI.getTheoryContent(firstContentLesson.id, lang)
+                  );
+                }
+              } else if (contentType === 'vocabulary') {
+                const vocabKey = `vocabulary_${firstContentLesson.id}_${lang}`;
+                if (!FastCache.has(vocabKey)) {
+                  FastCache.prefetch(vocabKey, () =>
+                    courseAPI.getVocabularyContent(firstContentLesson.id, lang)
+                  );
+                }
+              }
+            }, 100);
+          }
+        }
+
         return cachedData;
       }
 
+      // Prepare request parameters
       const params: Record<string, string> = {
-        lesson: parsedLessonId.toString()
+        lesson: parsedLessonId.toString(),
+        target_language: lang
       };
-      params.target_language = lang;
 
+      // Make API request
       console.log(`Fetching content lessons for lesson ${parsedLessonId} with language: ${lang}`);
       const response = await apiClient.get(`/api/v1/course/content-lesson/`, {
         params,
         headers: {
           'Accept-Language': lang
-        }
+        },
+        signal
       });
 
-      // Store in cache
-      if (response.data) {
-        FastCache.set(cacheKey, response.data);
+      // Store in cache (mark as priority)
+      if (response.data && Array.isArray(response.data)) {
+        FastCache.set(cacheKey, response.data, true);
 
         // Prefetch the first content item's specific data if available
-        if (Array.isArray(response.data) && response.data.length > 0) {
+        if (response.data.length > 0) {
           const firstContentLesson = response.data[0];
           if (firstContentLesson && firstContentLesson.id && firstContentLesson.content_type) {
-            // Based on content type, prefetch appropriate data
+            // Based on content type, prefetch appropriate data with a small delay
             setTimeout(() => {
               const contentType = firstContentLesson.content_type.toLowerCase();
               if (contentType === 'theory') {
-                FastCache.prefetch(`theory_${firstContentLesson.id}_${lang}`, () =>
-                  courseAPI.getTheoryContent(firstContentLesson.id, lang)
-                );
+                const theoryKey = `theory_${firstContentLesson.id}_${lang}`;
+                if (!FastCache.has(theoryKey)) {
+                  FastCache.prefetch(theoryKey, () =>
+                    courseAPI.getTheoryContent(firstContentLesson.id, lang)
+                  );
+                }
               } else if (contentType === 'vocabulary') {
-                FastCache.prefetch(`vocabulary_${firstContentLesson.id}_${lang}`, () =>
-                  courseAPI.getVocabularyContent(firstContentLesson.id, lang)
-                );
+                const vocabKey = `vocabulary_${firstContentLesson.id}_${lang}`;
+                if (!FastCache.has(vocabKey)) {
+                  FastCache.prefetch(vocabKey, () =>
+                    courseAPI.getVocabularyContent(firstContentLesson.id, lang)
+                  );
+                }
               }
-            }, 300);
+            }, 200);
           }
         }
       }
 
       return response.data;
     } catch (err: any) {
+      // Don't log errors for aborted requests
+      if (err.name === 'AbortError') {
+        return [];
+      }
+
       console.error('Failed to fetch content lessons:', {
         status: err.response?.status,
         data: err.response?.data,

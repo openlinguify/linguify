@@ -1,0 +1,305 @@
+/* Animations pour le Notebook */
+
+/* Fix for scrolling issues */
+.notebook-scroll-container {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  max-height: 100vh;
+}
+
+.notebook-content-area {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.notebook-scrollable-area {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 100%;
+}
+
+/* Empêcher le défilement global */
+body.notebook-open {
+  overflow: hidden;
+}
+
+
+/* Animation de fondu pour les entrées dans la liste */
+.note-item-appear {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.note-item-appear-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease-in-out, transform 300ms ease-out;
+}
+
+/* Animation pour le déplacement de la sidebar */
+.sidebar-slide-enter {
+  transform: translateX(-100%);
+}
+
+.sidebar-slide-enter-active {
+  transform: translateX(0);
+  transition: transform 300ms ease-out;
+}
+
+.sidebar-slide-exit {
+  transform: translateX(0);
+}
+
+.sidebar-slide-exit-active {
+  transform: translateX(-100%);
+  transition: transform 300ms ease-in;
+}
+
+/* Animation pour la zone d'édition */
+.editor-fade-enter {
+  opacity: 0;
+}
+
+.editor-fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.editor-fade-exit {
+  opacity: 1;
+}
+
+.editor-fade-exit-active {
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+}
+
+/* Animation du bouton de création */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(124, 58, 237, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+  }
+}
+
+.create-button-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Animation lors du chargement des notes */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer-effect {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
+  background-size: 1000px 100%;
+}
+
+.dark .shimmer-effect {
+  background: linear-gradient(to right, #222 8%, #333 18%, #222 33%);
+}
+
+/* Animations pour les transitions entre modes */
+.slide-up-enter {
+  transform: translateY(20px);
+  opacity: 0;
+}
+
+.slide-up-enter-active {
+  transform: translateY(0);
+  opacity: 1;
+  transition: opacity 400ms, transform 400ms;
+}
+
+.slide-up-exit {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.slide-up-exit-active {
+  transform: translateY(20px);
+  opacity: 0;
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Animation badge pour les notifications */
+@keyframes badge-pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.5);
+  }
+  
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(124, 58, 237, 0);
+  }
+  
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+  }
+}
+
+.badge-pulse {
+  animation: badge-pulse 2s infinite;
+}
+
+/* Transition entre les onglets */
+.tab-transition-enter {
+  opacity: 0;
+  transform: translateY(5px);
+}
+
+.tab-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 250ms, transform 250ms;
+}
+
+.tab-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tab-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: opacity 200ms, transform 200ms;
+}
+
+/* Animation de fond pour l'état sauvegarde réussie */
+@keyframes success-wave {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 20px rgba(16, 185, 129, 0);
+  }
+}
+
+.save-success {
+  animation: success-wave 1.5s ease-out;
+}
+
+/* Animation pour la liste vide */
+@keyframes fade-in-bounce {
+  0% { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  70% { 
+    opacity: 1;
+    transform: translateY(-5px);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.empty-state-animation {
+  animation: fade-in-bounce 0.5s ease-out forwards;
+}
+
+/* Utilities */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Bouton flottant avec animation */
+.floating-button {
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.2);
+}
+
+.floating-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(120, 60, 220, 0.4);
+}
+
+/* Animation du chargement de la page */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* Animation de la barre de recherche */
+.search-animation {
+  transition: all 0.3s ease;
+}
+
+.search-animation:focus-within {
+  transform: scale(1.01);
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.3);
+}
+
+/* Animation pour les sélections */
+.selection-highlight {
+  transition: all 0.2s ease;
+}
+
+.selection-highlight:hover {
+  transform: translateX(2px);
+}
