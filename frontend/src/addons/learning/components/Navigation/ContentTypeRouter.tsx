@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-// src/addons/learning/components/LessonContent/ContentTypeRouter.tsx
+// src/addons/learning/components/Navigation/ContentTypeRouter.tsx
 
 import React, { useEffect, useState } from 'react';
 import TheoryContent from "../Theory/TheoryContent";
@@ -16,7 +16,7 @@ import { ContentTypeRouterProps } from "@/addons/learning/types";
 import lastAccessedLessonService from "@/addons/progress/api/lastAccessedLessonService";
 import courseAPI from "@/addons/learning/api/courseAPI";
 import progressAPI from "@/addons/progress/api/progressAPI";
-import { ContentTypeWrapper } from "../shared/ContentTypeWrapper";
+import LessonProgressIndicator from "./LessonProgressIndicator";
 
 /**
  * Composant qui route vers le bon composant d'exercice en fonction du type de contenu
@@ -263,72 +263,73 @@ export default function ContentTypeRouter({
     totalSteps
   };
 
-  // Create the wrapped component with our progress indicator
+  // Create the content component with direct access to the progress indicator
   const renderContent = () => {
-    let contentComponent;
+    // For props that need to include the progress indicator
+    const propsWithProgressIndicator = {
+      ...commonProps,
+      progressIndicator: {
+        currentStep,
+        totalSteps,
+        contentType: normalizedType,
+        lessonId: contentId,
+        unitId,
+        lessonTitle: unitTitle || `${normalizedType.charAt(0).toUpperCase() + normalizedType.slice(1)} ${contentId}`
+      }
+    };
 
     // Route to the correct component based on content type
     switch (normalizedType) {
       case 'theory':
-        contentComponent = <TheoryContent {...commonProps} />;
-        break;
+        return <TheoryContent {...propsWithProgressIndicator} />;
 
       case 'vocabulary':
       case 'vocabularylist':
-        contentComponent = <VocabularyLesson {...commonProps} />;
-        break;
+        return <VocabularyLesson {...propsWithProgressIndicator} />;
 
       case 'multiple choice':
-        contentComponent = <MultipleChoiceQuestion {...commonProps} />;
-        break;
+        return <MultipleChoiceQuestion {...propsWithProgressIndicator} />;
 
       case 'numbers':
-        contentComponent = <NumberComponent {...commonProps} />;
-        break;
+        return <NumberComponent {...propsWithProgressIndicator} />;
 
       case 'numbers_game':
-        contentComponent = <NumbersGame {...commonProps} />;
-        break;
+        return <NumbersGame {...propsWithProgressIndicator} />;
 
       case 'reordering':
-        contentComponent = <ReorderingContent {...commonProps} />;
-        break;
+        return <ReorderingContent {...propsWithProgressIndicator} />;
 
       case 'fill_blank':
-        contentComponent = <FillBlankExercise {...commonProps} />;
-        break;
+        return <FillBlankExercise {...propsWithProgressIndicator} />;
 
       case 'matching':
-        contentComponent = <MatchingExercise {...commonProps} />;
-        break;
+        return <MatchingExercise {...propsWithProgressIndicator} />;
 
       case 'speaking':
-        contentComponent = <SpeakingPractice {...commonProps} />;
-        break;
+        return <SpeakingPractice {...propsWithProgressIndicator} />;
 
       default:
         return (
-          <div className="p-6 text-center">
-            <p className="text-red-500">
-              Type de contenu non pris en charge: {contentType}
-            </p>
+          <div className="flex flex-col min-h-screen">
+            <div className="sticky top-16 z-30 w-full">
+              <LessonProgressIndicator
+                currentStep={1}
+                totalSteps={1}
+                contentType={normalizedType}
+                lessonId={contentId}
+                unitId={unitId}
+                lessonTitle={`Contenu: ${contentType}`}
+                showBackButton={true}
+              />
+            </div>
+            <div className="container mx-auto pt-8 text-center">
+              <p className="text-red-500">
+                Type de contenu non pris en charge: {contentType}
+              </p>
+            </div>
           </div>
         );
     }
-
-    // Wrap the content with our progress indicator
-    return (
-      <ContentTypeWrapper
-        lessonId={contentId}
-        contentType={normalizedType}
-        currentStep={currentStep}
-        totalSteps={totalSteps}
-        unitId={unitId}
-        language={language}
-      >
-        {contentComponent}
-      </ContentTypeWrapper>
-    );
   };
 
   return renderContent();

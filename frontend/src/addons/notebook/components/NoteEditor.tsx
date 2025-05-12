@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Save, Languages, Trash, CheckCircle, AlertCircle } from "lucide-react";
@@ -19,11 +18,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
-import TagManager, { TagItem } from "./TagManager";
+import TagEditor, { TagItem } from "./TagEditor";
 import { tagAPI } from "../api/tagAPI";
 import { useErrorHandler, ErrorType, ErrorResponse } from "../utils/errorHandling";
 import ErrorDisplay from "./ErrorDisplay";
 import LoadingIndicator from "./LoadingIndicator";
+import MarkdownEditor from "./MarkdownEditor";
+import AIAssistant from "./AIAssistant";
+import ShareNoteDialog from "./ShareNoteDialog";
+import "./markdown-styles.css";
 
 interface NoteEditorProps {
   note: Note;
@@ -398,6 +401,40 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
               <Languages className="h-3 w-3" />
               {language.toUpperCase()}
             </Badge>
+
+            <ShareNoteDialog
+              note={note}
+              onUpdateSharing={onSave}
+            />
+
+            <AIAssistant
+              noteContent={currentTab === "content" ? content : translation}
+              noteLanguage={language}
+              onApplyTranslation={(text) => setTranslation(text)}
+              onAddExampleSentence={(sentence) => {
+                setContent(prevContent => {
+                  if (prevContent.trim()) {
+                    return prevContent + '\n\n' + sentence;
+                  }
+                  return sentence;
+                });
+              }}
+              onApplyCorrection={(correctedText) => {
+                if (currentTab === "content") {
+                  setContent(correctedText);
+                } else {
+                  setTranslation(correctedText);
+                }
+              }}
+              onUpdatePronunciation={(phonetic) => {
+                setContent(prevContent => {
+                  if (prevContent.trim()) {
+                    return prevContent + '\n\n**Pronunciation:** ' + phonetic;
+                  }
+                  return '**Pronunciation:** ' + phonetic;
+                });
+              }}
+            />
           </div>
         </motion.div>
 
@@ -419,13 +456,30 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                 className="compact"
               />
             ) : (
-              <TagManager
-                tags={tags}
+              <TagEditor
+                allTags={tags}
                 selectedTags={selectedTagIds}
-                availableTags={tags}
                 onAddTag={handleAddTag}
                 onRemoveTag={handleRemoveTag}
                 onSelectTag={handleSelectTag}
+                onDeleteTag={async (tagId) => {
+                  try {
+                    await tagAPI.deleteTag(tagId);
+                    // Remove this tag from the selected tags if it's selected
+                    if (selectedTagIds.includes(tagId)) {
+                      handleRemoveTag(tagId);
+                    }
+                    // Remove from the tags list
+                    setTags(prevTags => prevTags.filter(tag => tag.id !== tagId));
+                  } catch (error) {
+                    console.error("Error deleting tag:", error);
+                    toast({
+                      title: "Error",
+                      description: "Failed to delete tag",
+                      variant: "destructive"
+                    });
+                  }
+                }}
               />
             )}
           </motion.div>
@@ -453,11 +507,13 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                 transition={{ duration: 0.2 }}
               >
                 <TabsContent value="content" className="flex-1 overflow-auto h-full min-h-[300px]">
-                  <Textarea
+                  <MarkdownEditor
                     value={content}
-                    onChange={(e) => setContent(e.target.value)}
+                    onChange={setContent}
                     placeholder="Contenu de la note..."
-                    className="h-full w-full resize-none search-animation notebook-scrollable-area max-h-[60vh]"
+                    minHeight="300px"
+                    maxHeight="60vh"
+                    language={language}
                   />
                 </TabsContent>
               </motion.div>
@@ -473,11 +529,14 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                 transition={{ duration: 0.2 }}
               >
                 <TabsContent value="translation" className="flex-1 overflow-auto h-full min-h-[300px]">
-                  <Textarea
+                  <MarkdownEditor
                     value={translation}
-                    onChange={(e) => setTranslation(e.target.value)}
+                    onChange={setTranslation}
                     placeholder="Traduction..."
-                    className="h-full w-full resize-none search-animation notebook-scrollable-area max-h-[60vh]"
+                    minHeight="300px"
+                    maxHeight="60vh"
+                    language={language}
+                    isTranslation={true}
                   />
                 </TabsContent>
               </motion.div>

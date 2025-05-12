@@ -3,13 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Volume2, CheckCircle, X } from "lucide-react";
+import { AlertCircle, Volume2, CheckCircle, X, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 import apiClient from "@/core/api/apiClient";
 import { Exercise, FillBlankExerciseProps } from '@/addons/learning/types';
+import ExerciseNavBar from "../Navigation/ExerciseNavBar";
 
 const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({ 
   lessonId,
@@ -241,6 +242,9 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
 
   return (
     <div className="w-full space-y-6">
+      {/* Utilisation du composant réutilisable */}
+      <ExerciseNavBar unitId={unitId} />
+
       {/* Progress bar */}
       <div className="mb-4">
         <Progress

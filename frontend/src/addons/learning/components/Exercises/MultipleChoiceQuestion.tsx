@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Info } from "lucide-react";
+import { AlertCircle, Info, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { GradientCard } from "@/components/ui/gradient-card";
@@ -12,6 +12,7 @@ import { Question, MultipleChoiceProps } from "@/addons/learning/types";
 import LessonCompletionModal from "../shared/LessonCompletionModal";
 import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 import { getUserNativeLanguage, getUserTargetLanguage } from "@/core/utils/languageUtils";
+import ExerciseNavBar from "../Navigation/ExerciseNavBar";
 
 
 
@@ -346,6 +347,9 @@ const MultipleChoice = ({
 
   return (
     <div className="w-full space-y-6">
+      {/* Utilisation du composant réutilisable */}
+      <ExerciseNavBar unitId={unitId} />
+
       {/* Completion Modal */}
       <LessonCompletionModal
         show={showCompletionModal}
