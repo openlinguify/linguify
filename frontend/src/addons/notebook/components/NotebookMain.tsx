@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { SearchFilters, SearchFiltersState, applyFilters } from "./SearchFilters";
+import { ErrorType, ErrorResponse } from "../utils/errorHandling";
+import ErrorDisplay from "./ErrorDisplay";
+import LoadingIndicator from "./LoadingIndicator";
 
 interface CreateNoteFormProps {
   onSubmit: (title: string, language: string) => void;
@@ -159,32 +162,63 @@ export default function NotebookMain() {
     try {
       setIsLoading(true);
       setLoadError(null);
+
+      // Appliquer les bonnes pratiques pour la gestion des erreurs
       const notesData = await notebookAPI.getNotes();
-      
-      console.log(`Loaded ${notesData.length} notes from API`);
+
+      // Vérifier que les données sont valides
+      if (!Array.isArray(notesData)) {
+        throw new Error("Format de données invalide");
+      }
+
       setNotes(notesData);
-      
+
       // Apply filters to the new data
       const filtered = applyFilters(notesData, searchFilters);
       setFilteredNotes(filtered);
-      
-      // Extract unique languages
-      const languages = [...new Set(notesData.filter(n => n.language).map(n => n.language))];
+
+      // Extract unique languages (en filtrant les valeurs vides ou nulles)
+      const languages = [...new Set(
+        notesData
+          .filter(n => n.language && n.language.trim() !== "")
+          .map(n => n.language)
+      )];
       setAvailableLanguages(languages as string[]);
-      
+
       // If we have a selected note, reload it
       if (selectedNote) {
         const updatedNote = notesData.find(n => n.id === selectedNote.id);
         if (updatedNote) {
           setSelectedNote(updatedNote);
+        } else {
+          // Si la note sélectionnée n'est plus présente (supprimée par une autre session)
+          setSelectedNote(null);
         }
       }
     } catch (error) {
+      // Journaliser l'erreur pour le débogage
       console.error("Failed to load notes:", error);
-      setLoadError("Impossible de charger les notes. Veuillez réessayer.");
+
+      // Définir un message d'erreur contextuel
+      let errorMessage = "Impossible de charger les notes. Veuillez réessayer.";
+
+      if (error instanceof Error) {
+        // Personnaliser le message en fonction du type d'erreur
+        if (error.message.includes("network") || error.message.includes("connexion")) {
+          errorMessage = "Impossible de charger les notes: problème de connexion au serveur.";
+        } else if (error.message.includes("authentification") || error.message.includes("unauthorized")) {
+          errorMessage = "Authentification requise pour accéder à vos notes.";
+        } else if (error.message.includes("format") || error.message.includes("invalide")) {
+          errorMessage = "Format de données invalide reçu du serveur.";
+        }
+      }
+
+      setLoadError(errorMessage);
+
+      // Afficher une notification pour informer l'utilisateur
       toast({
-        title: "Erreur",
-        description: "Impossible de charger les notes",
+        title: "Erreur de chargement",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -195,30 +229,69 @@ export default function NotebookMain() {
   // Handle selecting a note
   const handleSelectNote = async (note: Note) => {
     try {
-      // First set the note to show something immediately
+      // Vérifier que la note est valide
+      if (!note || !note.id) {
+        toast({
+          title: "Erreur",
+          description: "Cette note est invalide ou a été supprimée",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // First set the note to show something immediately (pour une meilleure UX)
       setSelectedNote(note);
-      
+
       // Sur mobile, masquer la sidebar après avoir sélectionné une note
       if (isMobile) {
         setSidebarVisible(false);
       }
-      
-      // Then load the full note details
-      const fullNote = await notebookAPI.getNote(note.id);
-      
-      console.log("Loaded full note:", {
-        id: fullNote.id,
-        title: fullNote.title,
-        contentLength: fullNote.content?.length || 0,
-        translationLength: fullNote.translation?.length || 0
-      });
-      
-      setSelectedNote(fullNote);
+
+      // Indiquer visuellement que la note complète est en cours de chargement
+      // (L'idéal serait d'ajouter un indicateur de chargement dans le composant NoteEditor)
+
+      // Then load the full note details with error handling
+      try {
+        const fullNote = await notebookAPI.getNote(note.id);
+
+        // Vérifier que la note n'a pas disparu entre temps
+        if (!fullNote) {
+          throw new Error("La note n'existe plus");
+        }
+
+        // Mettre à jour la note avec tous ses détails
+        setSelectedNote(fullNote);
+      } catch (error) {
+        // En cas d'erreur de chargement des détails, on garde la note partielle
+        // mais on informe l'utilisateur
+        console.error("Error loading note details:", error);
+
+        // Déterminer un message approprié
+        let errorMessage = "Impossible de charger les détails de la note";
+
+        if (error instanceof Error) {
+          if (error.message.includes("existe plus") || error.message.includes("not found")) {
+            errorMessage = "Cette note n'existe plus ou a été supprimée";
+          } else if (error.message.includes("réseau") || error.message.includes("network")) {
+            errorMessage = "Problème de connexion lors du chargement des détails";
+          }
+        }
+
+        toast({
+          title: "Attention",
+          description: errorMessage,
+          variant: "destructive"
+        });
+      }
     } catch (error) {
-      console.error("Error loading note details:", error);
+      // Erreur générale (ne devrait pas arriver mais on gère quand même)
+      console.error("Unexpected error in handleSelectNote:", error);
+
+      setSelectedNote(null);
+
       toast({
         title: "Erreur",
-        description: "Impossible de charger les détails de la note",
+        description: "Une erreur inattendue s'est produite",
         variant: "destructive"
       });
     }
@@ -226,37 +299,75 @@ export default function NotebookMain() {
   
   // Handle creating a new note
   const handleCreateNote = async (title: string, language: string) => {
+    // Validation préliminaire des données
+    if (!title || title.trim() === '') {
+      toast({
+        title: "Validation",
+        description: "Le titre ne peut pas être vide",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
-      const newNote = await notebookAPI.createNote({
-        title,
-        language,
+      // Préparer les données de la nouvelle note
+      const noteData = {
+        title: title.trim(),
+        language: language || 'fr', // Valeur par défaut si language est vide
         content: "",
         translation: "",
         example_sentences: [],
         related_words: []
-      });
-      
-      console.log("Created new note:", newNote);
-      
+      };
+
+      // Créer la note
+      const newNote = await notebookAPI.createNote(noteData);
+
+      // Vérifier que la note a bien été créée
+      if (!newNote || !newNote.id) {
+        throw new Error("La note n'a pas pu être créée correctement");
+      }
+
+      // Notification de succès
       toast({
         title: "Succès",
         description: "Note créée avec succès"
       });
-      
-      // Reload notes and select the new one
+
+      // Recharger toutes les notes pour être sûr d'avoir la liste à jour
       await loadNotes();
+
+      // Sélectionner la nouvelle note
       setSelectedNote(newNote);
+
+      // Fermer le formulaire de création
       setIsCreating(false);
-      
+
       // Sur mobile, masquer la sidebar après avoir créé une note
       if (isMobile) {
         setSidebarVisible(false);
       }
     } catch (error) {
+      // Journaliser l'erreur
       console.error("Error creating note:", error);
+
+      // Déterminer un message approprié
+      let errorMessage = "Impossible de créer la note";
+
+      if (error instanceof Error) {
+        if (error.message.includes("validation") || error.message.includes("titre")) {
+          errorMessage = "Le titre de la note est invalide";
+        } else if (error.message.includes("réseau") || error.message.includes("network")) {
+          errorMessage = "Problème de connexion lors de la création de la note";
+        } else if (error.message.includes("authentification") || error.message.includes("unauthorized")) {
+          errorMessage = "Vous devez être connecté pour créer une note";
+        }
+      }
+
+      // Afficher la notification d'erreur
       toast({
         title: "Erreur",
-        description: "Impossible de créer la note",
+        description: errorMessage,
         variant: "destructive"
       });
     }
@@ -305,16 +416,35 @@ export default function NotebookMain() {
   if (isLoading && notes.length === 0) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
-          <p className="text-lg text-gray-600 dark:text-gray-300">Chargement des notes...</p>
-        </div>
+        <LoadingIndicator
+          message="Chargement des notes..."
+          size="large"
+          fullHeight
+        />
       </div>
     );
   }
   
   // Render error state
   if (loadError) {
+    const errorObject: ErrorResponse = {
+      type: ErrorType.UNKNOWN, // Par défaut
+      message: loadError,
+      retry: true
+    };
+
+    // Déterminer le type d'erreur en fonction du message
+    if (loadError.includes("connexion") || loadError.includes("réseau")) {
+      errorObject.type = ErrorType.NETWORK;
+    } else if (loadError.includes("authentification") || loadError.includes("connecté")) {
+      errorObject.type = ErrorType.AUTHENTICATION;
+    } else if (loadError.includes("format") || loadError.includes("invalide")) {
+      errorObject.type = ErrorType.VALIDATION;
+      errorObject.retry = false;
+    } else if (loadError.includes("serveur")) {
+      errorObject.type = ErrorType.SERVER;
+    }
+
     return (
       <div className="h-full flex flex-col">
         <div className="p-4 bg-white dark:bg-gray-800 shadow-lg z-10 sticky top-0 left-0 right-0">
@@ -332,19 +462,12 @@ export default function NotebookMain() {
             </Button>
           </div>
         </div>
-        
+
         <div className="flex-1 overflow-auto p-4">
-          <Card className="border-2 border-dashed border-red-100 dark:border-red-800">
-            <CardContent className="p-8 flex flex-col items-center justify-center space-y-4">
-              <p className="text-center text-red-600 dark:text-red-400">{loadError}</p>
-              <Button
-                onClick={loadNotes}
-                className="mt-4"
-              >
-                <RefreshCcw className="mr-2 h-4 w-4" /> Réessayer
-              </Button>
-            </CardContent>
-          </Card>
+          <ErrorDisplay
+            error={errorObject}
+            onRetry={loadNotes}
+          />
         </div>
       </div>
     );
