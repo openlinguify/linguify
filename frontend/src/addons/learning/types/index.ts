@@ -124,6 +124,15 @@
     unitId?: string;
     language?: 'en' | 'fr' | 'es' | 'nl';
     onComplete?: () => void;
+    progressIndicator?: {
+      currentStep: number;
+      totalSteps: number;
+      contentType: string;
+      lessonId?: string | number;
+      unitId?: string | number;
+      lessonTitle?: string;
+      isCompleted?: boolean;
+    };
   }
 
   export interface Question {
@@ -447,6 +456,10 @@
     lessonTitle?: string;
     contentType?: string;
     showStepNumbers?: boolean;
+    lessonId?: number | string;
+    unitId?: number | string;
+    isCompleted?: boolean;
+    showBackButton?: boolean;
     className?: string;
   }
 

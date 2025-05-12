@@ -12,6 +12,7 @@ import { SearchFilters, SearchFiltersState, applyFilters } from "./SearchFilters
 import { ErrorType, ErrorResponse } from "../utils/errorHandling";
 import ErrorDisplay from "./ErrorDisplay";
 import LoadingIndicator from "./LoadingIndicator";
+import ReviewReminder from "./ReviewReminder";
 
 interface CreateNoteFormProps {
   onSubmit: (title: string, language: string) => void;
@@ -518,6 +519,18 @@ export default function NotebookMain() {
             )}
             
             {/* Bouton refresh */}
+            <ReviewReminder
+              onReviewNote={(noteId) => {
+                // Find the note in our list and select it
+                const noteToSelect = notes.find(n => n.id === noteId);
+                if (noteToSelect) {
+                  handleSelectNote(noteToSelect);
+                }
+                // Refresh notes to update review status
+                loadNotes();
+              }}
+            />
+
             <Button
               variant="outline"
               onClick={loadNotes}
@@ -526,7 +539,7 @@ export default function NotebookMain() {
             >
               <RefreshCcw className="h-4 w-4" />
             </Button>
-            
+
             {/* Bouton nouvelle note */}
             <Button
               onClick={() => setIsCreating(true)}

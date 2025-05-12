@@ -1,39 +1,48 @@
-"use client";
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+'use client';
+
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import {
   AlertCircle,
-  ChevronLeft,
-  ChevronRight,
-  RotateCcw,
   Volume2,
   Sparkles,
   CheckCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GradientText } from "@/components/ui/gradient-text";
 import { GradientCard } from "@/components/ui/gradient-card";
-import { commonStyles } from "@/styles/gradient_style";
 import { motion, AnimatePresence } from "framer-motion";
 import batchProgressAPI from '@/addons/progress/api/batchProgressAPI';
-import { VocabularyItem, VocabularyLessonProps } from "@/addons/learning/types";
 import useSpeechSynthesis from '@/core/speech/useSpeechSynthesis';
 import courseAPI from "@/addons/learning/api/courseAPI";
-import ExerciseNavBar from "../Navigation/ExerciseNavBar";
 
-// Type for tracking which element is being read
+// Importation des nouveaux composants et styles
+import ExerciseNavBar from "../Navigation/ExerciseNavBar";
+import ExerciseProgress from "./ExerciseProgress";
+import ExerciseNavigation from "./ExerciseNavigation";
+import { 
+  exerciseContainer,
+  exerciseCard, 
+  exerciseHeading, 
+  exerciseContentBox,
+  ExerciseWrapper,
+  ExerciseSectionWrapper
+} from "./ExerciseStyles";
+
+import { VocabularyItem, VocabularyLessonProps } from "@/addons/learning/types";
+
+// Type pour suivre quel élément est en train d'être lu
 type SpeakingElement = 'word' | 'example' | null;
 
-// Progress milestone percentages for API updates
+// Pourcentages d'étapes pour les mises à jour de progression de l'API
 const PROGRESS_MILESTONES = [1, 25, 50, 75, 100];
 
-const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: VocabularyLessonProps) => {
+const VocabularyLessonExample = ({ lessonId, unitId, onComplete }: VocabularyLessonProps) => {
   const router = useRouter();
-
-  // Main state
+  
+  // États principaux
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -49,10 +58,10 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
   const [selectedTab, setSelectedTab] = useState("definition");
   const [speakingElement, setSpeakingElement] = useState<SpeakingElement>(null);
   
-  // Use the speech synthesis hook
+  // Utilisation du hook de synthèse vocale
   const { speak, stop, isSpeaking } = useSpeechSynthesis(userSettings.target_language);
   
-  // Refs for tracking component lifecycle
+  // Références pour suivre le cycle de vie du composant
   const dataLoadedRef = useRef(false);
   const progressInitializedRef = useRef(false);
   const startTimeRef = useRef(Date.now());
@@ -60,18 +69,18 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
   const mountedRef = useRef(true);
   const celebrationTimerRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Calculate current progress percentage
+  // Calcul du pourcentage de progression
   const progressPercentage = useMemo(() => {
     if (!vocabulary.length) return 0;
     return Math.round(((currentIndex + 1) / vocabulary.length) * 100);
   }, [currentIndex, vocabulary.length]);
   
-  // Memoize current word to prevent unnecessary re-renders
+  // Mémorisation du mot actuel pour éviter les re-rendus inutiles
   const currentWord = useMemo(() => 
     vocabulary[currentIndex] || null
   , [vocabulary, currentIndex]);
   
-  // Helper function to get user settings from localStorage - centralized
+  // Fonction pour obtenir les préférences utilisateur depuis localStorage
   const getUserSettings = useCallback(() => {
     try {
       const userSettingsStr = localStorage.getItem('userSettings');
@@ -88,14 +97,13 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
     }
   }, []);
   
-  // Function to update progress in API using batch API - wrapped in useCallback to prevent recreation
+  // Fonction pour mettre à jour la progression dans l'API avec batch API
   const updateProgressInAPI = useCallback(async (completionPercentage: number) => {
     if (!lessonId || !mountedRef.current) return;
     
     try {
       const contentLessonId = parseInt(lessonId);
       
-      // Use batch progress API instead of individual calls
       await batchProgressAPI.trackContentProgress(
         contentLessonId,
         completionPercentage,
@@ -104,14 +112,13 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
         completionPercentage >= 100
       );
       
-      // If we also have the unit ID, update the parent lesson progress
+      // Si nous avons également l'ID de l'unité, mettre à jour la progression de la leçon parent
       if (unitId && completionPercentage >= 100 && !lessonCompleted) {
-        // Update parent lesson progress too with batch API
         await batchProgressAPI.trackLessonProgress(
           parseInt(unitId),
-          100, // 100% progress
+          100, // 100% de progression
           timeSpent,
-          true, // Mark as completed
+          true, // Marquer comme terminé
           contentLessonId
         );
         
@@ -120,7 +127,7 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
         }
       }
       
-      // If completed and we have a completion callback
+      // Si terminé et si nous avons un callback onComplete
       if (completionPercentage >= 100 && onComplete && !lessonCompleted && mountedRef.current) {
         setLessonCompleted(true);
       }
@@ -129,36 +136,33 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
     }
   }, [lessonId, unitId, timeSpent, onComplete, lessonCompleted]);
 
-  // Track lesson mount/unmount status and ensure progress is saved
+  // Suivi du montage/démontage de la leçon et sauvegarde de la progression
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       
-      // Flush any pending progress updates before unmounting
+      // Vider toute mise à jour de progression en attente avant le démontage
       batchProgressAPI.flushQueue().catch(err => 
         console.error("Error flushing progress queue on unmount:", err)
       );
     };
   }, []);
 
-  // Track time spent on this lesson - fixed with refs
+  // Suivi du temps passé sur cette leçon
   useEffect(() => {
-    // Clear any existing interval
     if (timeIntervalRef.current) {
       clearInterval(timeIntervalRef.current);
     }
     
     startTimeRef.current = Date.now();
     
-    // Update time spent every 30 seconds to reduce API calls
     timeIntervalRef.current = setInterval(() => {
       if (mountedRef.current) {
         setTimeSpent(Math.floor((Date.now() - startTimeRef.current) / 1000));
       }
     }, 30000);
     
-    // Clean up interval on unmount
     return () => {
       if (timeIntervalRef.current) {
         clearInterval(timeIntervalRef.current);
@@ -169,66 +173,59 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
     };
   }, []);
 
-  // Load user preferences on startup
+  // Chargement des préférences utilisateur au démarrage
   useEffect(() => {
     const settings = getUserSettings();
     setUserSettings(settings);
   }, [getUserSettings]);
 
-  // Reset speaking when changing words
+  // Réinitialisation de la parole lors du changement de mots
   useEffect(() => {
-    // Stop any ongoing speech when changing words
     stop();
     setSpeakingElement(null);
   }, [currentIndex, stop]);
 
-  // Update speaking element state when isSpeaking changes
+  // Mise à jour de l'état de l'élément de parole lorsque isSpeaking change
   useEffect(() => {
     if (!isSpeaking && mountedRef.current) {
       setSpeakingElement(null);
     }
   }, [isSpeaking]);
 
-  // Function to dynamically get content in the specified language
+  // Fonction pour obtenir dynamiquement le contenu dans la langue spécifiée
   const getWordInLanguage = useCallback((word: VocabularyItem | null, field: string, language: string) => {
     if (!word) return '';
     
-    // Convert to lowercase to match "_en", "_fr", etc. format
     const lang = language.toLowerCase();
     const fieldName = `${field}_${lang}`;
     
-    // If the field exists in the word object, return it, otherwise return the English version
     return word[fieldName as keyof VocabularyItem] || word[`${field}_en` as keyof VocabularyItem] || '';
   }, []);
 
-  // Function to get content in native language
+  // Fonction pour obtenir le contenu dans la langue maternelle
   const getWordInNativeLanguage = useCallback((word: VocabularyItem | null, field: string) => {
     return getWordInLanguage(word, field, userSettings.native_language);
   }, [getWordInLanguage, userSettings.native_language]);
 
-  // Function to get content in target language
+  // Fonction pour obtenir le contenu dans la langue cible
   const getWordInTargetLanguage = useCallback((word: VocabularyItem | null, field: string) => {
     return getWordInLanguage(word, field, userSettings.target_language);
   }, [getWordInLanguage, userSettings.target_language]);
 
-  // Effect to update progress based on current position
+  // Effet pour mettre à jour la progression en fonction de la position actuelle
   useEffect(() => {
     if (vocabulary.length > 0 && currentIndex >= 0) {
-      // Only update progress in API at significant milestones to reduce API calls
       if (PROGRESS_MILESTONES.includes(progressPercentage)) {
         updateProgressInAPI(progressPercentage);
       }
       
-      // Check if we've reached the last word and show celebration
+      // Vérifier si nous avons atteint le dernier mot et afficher la célébration
       if (currentIndex === vocabulary.length - 1 && !lessonCompleted && mountedRef.current) {
-        // Use a promise-based approach for more reliable audio
         const playSuccessSound = async () => {
           try {
-            // Pre-load the audio
             const audio = new Audio("/success1.mp3");
             audio.volume = 0.3;
             
-            // Wait for audio to load with timeout
             const loadPromise = new Promise<void>((resolve) => {
               audio.oncanplaythrough = () => resolve();
               audio.onerror = () => {
@@ -237,15 +234,12 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
               };
             });
             
-            // Set a timeout in case loading hangs
             const timeoutPromise = new Promise<void>((resolve) => {
               setTimeout(() => resolve(), 2000);
             });
             
-            // Race the promises to handle either case
             await Promise.race([loadPromise, timeoutPromise]);
             
-            // Play the audio - wrapped in try/catch
             if (mountedRef.current) {
               await audio.play().catch(err => console.error("Error playing sound:", err));
             }
@@ -254,7 +248,6 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
           }
         };
         
-        // Only play sound and show celebration if component is still mounted
         if (mountedRef.current) {
           playSuccessSound();
           setShowCelebration(true);
@@ -272,66 +265,7 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
     }
   }, [currentIndex, vocabulary.length, progressPercentage, updateProgressInAPI, lessonCompleted]);
 
-  // Fetch vocabulary data with pagination
-  useEffect(() => {
-    // Only fetch if we don't have the data or lessonId
-    if (!lessonId) return;
-    
-    const fetchVocabulary = async () => {
-      if (!mountedRef.current) return;
-      
-      console.log("Fetching vocabulary for lesson:", lessonId);
-      setLoading(true);
-      setError(null);
-      
-      try {
-        // Get user settings
-        const settings = getUserSettings();
-        const targetLanguage = settings.target_language || 'EN';
-        
-        // Use the courseAPI for better error handling and consistency
-        const data = await courseAPI.getVocabularyContent(
-          lessonId,
-          targetLanguage.toLowerCase(),
-          1,  // First page
-          200 // Maximum page size to get all vocabulary at once
-        );
-        
-        if (mountedRef.current) {
-          if (data.results && data.results.length > 0) {
-            setVocabulary(data.results);
-            dataLoadedRef.current = true;
-            
-            // Initialize progress to 1% just once
-            if (!progressInitializedRef.current) {
-              updateProgressInAPI(1);
-              progressInitializedRef.current = true;
-            }
-            
-            // Log metadata for debugging
-            if (data.meta) {
-              console.log(`Loaded ${data.results.length} of ${data.meta.total_count} vocabulary items`);
-            }
-          } else {
-            setError("No vocabulary items found for this lesson");
-          }
-        }
-      } catch (err) {
-        if (mountedRef.current) {
-          console.error("Fetch error:", err);
-          setError(`Failed to load vocabulary content: ${err instanceof Error ? err.message : 'Unknown error'}`);
-        }
-      } finally {
-        if (mountedRef.current) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchVocabulary();
-  }, [lessonId, getUserSettings, updateProgressInAPI]);
-
-  // Navigation handlers
+  // Gestionnaires de navigation
   const handleNext = useCallback(() => {
     if (currentIndex < vocabulary.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
@@ -348,12 +282,12 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
     setCurrentIndex(0);
   }, []);
   
-  // Handle tab selection
+  // Gestion de la sélection d'onglet
   const handleTabChange = useCallback((value: string) => {
     setSelectedTab(value);
   }, []);
   
-  // Handle lesson completion
+  // Gestion de la complétion de la leçon
   const handleComplete = useCallback(() => {
     updateProgressInAPI(100);
     setShowCompletionMessage(false);
@@ -363,51 +297,51 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
     }
   }, [updateProgressInAPI, onComplete]);
   
-  // Handle speech button clicks with element tracking
+  // Gestion des clics sur les boutons de parole avec suivi d'élément
   const handleSpeakClick = useCallback((text: string, elementType: SpeakingElement) => {
-    // If already speaking
     if (isSpeaking) {
-      // Stop speech
       stop();
       setSpeakingElement(null);
       return;
     }
     
-    // Otherwise start speaking and record the element being read
     speak(text);
     setSpeakingElement(elementType);
   }, [isSpeaking, speak, stop]);
 
-  // Loading state
+  // État de chargement
   if (loading) {
     return (
-      <div className={commonStyles.container}>
+      <ExerciseWrapper>
         <div className="flex items-center justify-center h-96">
-          <div className="animate-pulse">Loading vocabulary...</div>
+          <div className="animate-pulse flex flex-col items-center">
+            <div className="h-10 w-10 rounded-full border-t-2 border-b-2 border-brand-purple animate-spin mb-4"></div>
+            <p className="text-brand-purple font-medium">Chargement du vocabulaire...</p>
+          </div>
         </div>
-      </div>
+      </ExerciseWrapper>
     );
   }
 
-  // Error state
+  // État d'erreur
   if (error || !vocabulary.length) {
     return (
-      <div className={commonStyles.container}>
+      <ExerciseWrapper>
         <Alert variant={error ? "destructive" : "default"}>
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            {error || "No vocabulary items found for this lesson."}
+            {error || "Aucun élément de vocabulaire trouvé pour cette leçon."}
           </AlertDescription>
         </Alert>
-      </div>
+      </ExerciseWrapper>
     );
   }
 
-  // Return the component JSX
+  // Rendu du composant JSX
   return (
-    <div className="w-full h-[calc(100vh-9rem)] flex flex-col">
+    <ExerciseWrapper className="min-h-[calc(100vh-9rem)]">
       <GradientCard className="flex-1 flex flex-col relative overflow-hidden">
-        {/* Celebration Overlay */}
+        {/* Overlay de célébration */}
         <AnimatePresence>
           {showCelebration && (
             <motion.div
@@ -431,7 +365,7 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
                 className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 p-6 rounded-lg shadow-xl text-white text-2xl font-bold z-50 flex items-center gap-3"
               >
                 <Sparkles className="h-6 w-6" />
-                Lesson Complete!
+                Leçon Terminée !
                 <Sparkles className="h-6 w-6" />
               </motion.div>
             </motion.div>
@@ -450,14 +384,13 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -20, opacity: 0 }}
-                className="bg-white p-8 rounded-lg shadow-xl z-50 text-center space-y-4 max-w-md"
+                className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl z-50 text-center space-y-4 max-w-md"
               >
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
-                  🎉 Vocabulary Mastered! 🎉
+                <h3 className={exerciseHeading()}>
+                  🎉 Vocabulaire Maîtrisé ! 🎉
                 </h3>
-                <p className="text-gray-600">
-                  Great work! You've completed all the vocabulary in this
-                  lesson.
+                <p className="text-gray-600 dark:text-gray-300">
+                  Excellent travail ! Vous avez complété tout le vocabulaire de cette leçon.
                 </p>
                 <div className="pt-2 flex justify-center space-x-4">
                   <Button
@@ -465,13 +398,13 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
                     onClick={() => setShowCompletionMessage(false)}
                     className="border-brand-purple text-brand-purple hover:bg-brand-purple/10"
                   >
-                    Keep Reviewing
+                    Continuer la révision
                   </Button>
                   <Button
                     onClick={handleComplete}
                     className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white border-none"
                   >
-                    Complete Lesson
+                    Terminer la leçon
                   </Button>
                 </div>
               </motion.div>
@@ -479,29 +412,24 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
           )}
         </AnimatePresence>
 
-        {/* Main content area with Back button */}
+        {/* Zone principale avec bouton de retour */}
         <div className="flex flex-col h-full relative z-10">
-          {/* Utilisation du composant réutilisable */}
+          {/* Barre de navigation */}
           <ExerciseNavBar unitId={unitId} />
 
-          {/* Content area with padding */}
-          <div className="p-4 flex-1 flex flex-col">
-            {/* Progress Section */}
-            <div className="mb-4">
-              <Progress
-                value={progressPercentage}
-                className="h-2"
-              />
-              <p className="text-xs text-muted-foreground mt-1 text-center">
-                Word {currentIndex + 1} of {vocabulary.length}
-              </p>
-            </div>
+          {/* Zone de contenu avec padding */}
+          <ExerciseSectionWrapper className="flex-1 flex flex-col">
+            {/* Section de progression */}
+            <ExerciseProgress 
+              currentStep={currentIndex + 1}
+              totalSteps={vocabulary.length}
+              className="mb-4"
+            />
 
-            {/* Main Content - flexbox with flex-1 to take available space */}
+            {/* Contenu principal */}
             <div className="flex-1 flex flex-col justify-between overflow-auto">
-              {/* Word Card - more compact */}
-              <div className="py-3">
-                <div className={commonStyles.gradientBackground} />
+              {/* Carte de mot - plus compacte */}
+              <div className={exerciseContentBox()}>
                 <div className="relative p-4 text-center">
                   <div className="text-sm font-medium text-brand-purple mb-1">
                     {getWordInTargetLanguage(currentWord, 'word_type')}
@@ -524,49 +452,41 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
                         <span className="animate-pulse">
                           <Volume2 className="h-4 w-4 mr-1" />
                         </span>
-                        Speaking...
+                        Lecture en cours...
                       </>
                     ) : (
                       <>
                         <Volume2 className="h-4 w-4 mr-1" />
-                        Listen
+                        Écouter
                       </>
                     )}
                   </Button>
                 </div>
               </div>
 
-              {/* Example Section - more compact */}
+              {/* Section d'exemple */}
               {currentWord && getWordInTargetLanguage(currentWord, 'example_sentence') && (
-                <div className={`${commonStyles.exampleBox} flex flex-col items-center text-center p-3 relative my-2`}>
-                  <div className="w-full flex items-center justify-center gap-2 mb-1">
-                    <h3 className="font-semibold text-brand-purple text-sm">Example:</h3>
+                <div className="my-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                  <div className="w-full flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-brand-purple">Exemple :</h3>
                     
-                    {/* Button with explicit z-index and styling */}
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleSpeakClick(String(getWordInTargetLanguage(currentWord, 'example_sentence')), 'example')}
-                      className={`z-20 inline-flex items-center justify-center rounded-md text-sm font-medium
-                        transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring 
-                        focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 
-                        ${speakingElement === 'example' ? 'bg-brand-purple/20' : 'hover:bg-brand-purple/10'} 
-                        p-1.5 cursor-pointer`}
-                      style={{ pointerEvents: 'auto' }}
-                      type="button"
+                      className={speakingElement === 'example' ? 'bg-brand-purple/10' : 'hover:bg-brand-purple/10'}
                     >
                       {speakingElement === 'example' ? (
-                        <div className="flex items-center">
-                          <span className="animate-pulse mr-1">
-                            <Volume2 className="h-3 w-3" />
-                          </span>
-                          <span className="text-xs">Speaking...</span>
-                        </div>
+                        <span className="animate-pulse">
+                          <Volume2 className="h-4 w-4" />
+                        </span>
                       ) : (
-                        <Volume2 className="h-3 w-3" />
+                        <Volume2 className="h-4 w-4" />
                       )}
-                    </button>
+                    </Button>
                   </div>
                   
-                  <p className="text-base mb-1">
+                  <p className="text-base mb-1 font-medium">
                     {getWordInTargetLanguage(currentWord, 'example_sentence')}
                   </p>
                   <p className="text-sm text-muted-foreground">
@@ -575,23 +495,17 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
                 </div>
               )}
 
-              {/* Tabs Section - more compact */}
+              {/* Section d'onglets */}
               <Tabs value={selectedTab} onValueChange={handleTabChange} className="relative z-10 mt-auto">
-                <TabsList className={commonStyles.tabsList}>
-                  <TabsTrigger value="definition" className={commonStyles.tabsTrigger}>
-                    Definition
-                  </TabsTrigger>
-                  <TabsTrigger value="synonyms" className={commonStyles.tabsTrigger}>
-                    Synonyms
-                  </TabsTrigger>
-                  <TabsTrigger value="antonyms" className={commonStyles.tabsTrigger}>
-                    Antonyms
-                  </TabsTrigger>
+                <TabsList className="w-full grid grid-cols-3 mb-2">
+                  <TabsTrigger value="definition">Définition</TabsTrigger>
+                  <TabsTrigger value="synonyms">Synonymes</TabsTrigger>
+                  <TabsTrigger value="antonyms">Antonymes</TabsTrigger>
                 </TabsList>
 
-                <div className="p-3 bg-gray-50/50 dark:bg-gray-800/50 rounded-lg mt-2">
+                <div className="p-4 bg-gray-50/50 dark:bg-gray-800/50 rounded-lg mt-2 min-h-[100px]">
                   <TabsContent value="definition" className="m-0">
-                    <p className="text-base mb-1">
+                    <p className="text-base mb-1 font-medium">
                       {getWordInTargetLanguage(currentWord, 'definition')}
                     </p>
                     <p className="text-sm text-muted-foreground">
@@ -600,82 +514,42 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
                   </TabsContent>
 
                   <TabsContent value="synonyms" className="m-0">
-                    <p className="text-base mb-1">
-                      {getWordInTargetLanguage(currentWord, 'synonymous') || "No synonyms available"}
+                    <p className="text-base mb-1 font-medium">
+                      {getWordInTargetLanguage(currentWord, 'synonymous') || "Aucun synonyme disponible"}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {getWordInNativeLanguage(currentWord, 'synonymous') || "No synonyms available"}
+                      {getWordInNativeLanguage(currentWord, 'synonymous') || "Aucun synonyme disponible"}
                     </p>
                   </TabsContent>
 
                   <TabsContent value="antonyms" className="m-0">
-                    <p className="text-base mb-1">
-                      {getWordInTargetLanguage(currentWord, 'antonymous') || "No antonyms available"}
+                    <p className="text-base mb-1 font-medium">
+                      {getWordInTargetLanguage(currentWord, 'antonymous') || "Aucun antonyme disponible"}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {getWordInNativeLanguage(currentWord, 'antonymous') || "No antonyms available"}
+                      {getWordInNativeLanguage(currentWord, 'antonymous') || "Aucun antonyme disponible"}
                     </p>
                   </TabsContent>
                 </div>
               </Tabs>
             </div>
 
-            {/* Navigation - fixed at bottom */}
-            <div className="flex justify-between mt-4 relative z-10">
-              <Button
-                onClick={handlePrevious}
-                disabled={currentIndex === 0}
-                variant="outline"
-                className="flex items-center gap-2 border-brand-purple/20 hover:bg-brand-purple/10"
-                type="button"
-                size="sm"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Previous
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={handleReset}
-                className="px-2"
-                title="Reset to first word"
-                type="button"
-                size="sm"
-              >
-                <RotateCcw className="h-4 w-4" />
-              </Button>
-
-              <Button
-                onClick={handleNext}
-                disabled={currentIndex === vocabulary.length - 1}
-                className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white hover:opacity-90"
-                type="button"
-                size="sm"
-              >
-                Next
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+            {/* Navigation - en utilisant le nouveau composant */}
+            <ExerciseNavigation 
+              onPrevious={handlePrevious}
+              onNext={handleNext}
+              onReset={handleReset}
+              disablePrevious={currentIndex === 0}
+              disableNext={currentIndex === vocabulary.length - 1}
+              showComplete={currentIndex === vocabulary.length - 1 && !lessonCompleted}
+              onComplete={handleComplete}
+              className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800"
+            />
+          </ExerciseSectionWrapper>
         </div>
-        
-        {/* Fixed completion button */}
-        {currentIndex === vocabulary.length - 1 && !lessonCompleted && (
-          <div className="absolute bottom-4 right-4 z-20">
-            <Button 
-              className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 hover:from-purple-700 hover:to-blue-700"
-              onClick={handleComplete}
-              type="button"
-              size="sm"
-            >
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Mark as Complete
-            </Button>
-          </div>
-        )}
       </GradientCard>
-    </div>
+    </ExerciseWrapper>
   );
 };
 
-export default VocabularyLesson;
+export default VocabularyLessonExample;

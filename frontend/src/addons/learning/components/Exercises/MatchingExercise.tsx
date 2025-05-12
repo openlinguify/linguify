@@ -18,12 +18,14 @@ import {
   XCircle,
   RotateCcw,
   ChevronRight,
+  ChevronLeft,
   ArrowRight,
   AlertTriangle
 } from "lucide-react";
 import courseAPI from "@/addons/learning/api/courseAPI";
 import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 import { MatchingAnswers, MatchingExerciseProps } from "@/addons/learning/types";
+import ExerciseNavBar from "../Navigation/ExerciseNavBar";
 
 const MatchingExercise: React.FC<MatchingExerciseProps> = ({
   lessonId,
@@ -222,6 +224,9 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
 
   return (
     <div className="w-full space-y-6">
+      {/* Utilisation du composant réutilisable */}
+      <ExerciseNavBar unitId={unitId} />
+
       {/* Progress bar */}
       <div className="w-full">
         <Progress

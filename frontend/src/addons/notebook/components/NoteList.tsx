@@ -8,6 +8,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useMediaQueryHook } from "./NotebookMain";
 import { motion, AnimatePresence } from "framer-motion";
+import MarkdownPreview from "./MarkdownPreview";
 
 interface NoteListProps {
   notes: Note[];
@@ -127,9 +128,13 @@ export function NoteList({
                       </div>
                     </div>
                     {note.content && (
-                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                        {note.content}
-                      </p>
+                      <div className="mt-1 text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                        <MarkdownPreview
+                          content={note.content}
+                          truncate={true}
+                          maxLength={200}
+                        />
+                      </div>
                     )}
                   </div>
                 </div>
@@ -137,9 +142,14 @@ export function NoteList({
                 {/* Montrer des indicateurs supplémentaires uniquement sur tablet/desktop */}
                 {!isMobile && note.translation && note.translation.length > 0 && (
                   <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 italic line-clamp-1">
-                      {note.translation}
-                    </p>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 italic line-clamp-1">
+                      <MarkdownPreview
+                        content={note.translation}
+                        truncate={true}
+                        maxLength={100}
+                        className="text-xs italic"
+                      />
+                    </div>
                   </div>
                 )}
               </Card>

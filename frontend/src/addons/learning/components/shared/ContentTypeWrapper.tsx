@@ -101,21 +101,23 @@ export function ContentTypeWrapper({
   }, [numericLessonId]);
 
   return (
-    <div className="relative pt-16">
-      {/* Progress Indicator - fixed at top */}
-      <LessonProgressIndicator
-        currentStep={currentStep || 1}
-        totalSteps={totalSteps || 1}
-        lessonId={numericLessonId}
-        lessonTitle={lessonTitle}
-        unitId={numericUnitId}
-        contentType={contentType}
-        isCompleted={isCompleted}
-        showBackButton={true}
-      />
+    <div className="relative flex flex-col min-h-screen">
+      {/* Progress Indicator - sticky below header */}
+      <div className="sticky top-16 z-30 w-full">
+        <LessonProgressIndicator
+          currentStep={currentStep || 1}
+          totalSteps={totalSteps || 1}
+          lessonId={numericLessonId}
+          lessonTitle={lessonTitle}
+          unitId={numericUnitId}
+          contentType={contentType}
+          isCompleted={isCompleted}
+          showBackButton={true}
+        />
+      </div>
 
-      {/* Content */}
-      <div className="container mx-auto pt-4 pb-16">
+      {/* Content - with padding to prevent overlap */}
+      <div className="container mx-auto pt-4 pb-16 flex-1">
         {children}
       </div>
     </div>
