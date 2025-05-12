@@ -4,10 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Save, Languages, Trash, CheckCircle } from "lucide-react";
+import { Loader2, Save, Languages, Trash, CheckCircle, AlertCircle } from "lucide-react";
 import { Note } from "@/addons/notebook/types";
 import { notebookAPI } from "../api/notebookAPI";
-import { 
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -21,6 +21,9 @@ import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import TagManager, { TagItem } from "./TagManager";
 import { tagAPI } from "../api/tagAPI";
+import { useErrorHandler, ErrorType, ErrorResponse } from "../utils/errorHandling";
+import ErrorDisplay from "./ErrorDisplay";
+import LoadingIndicator from "./LoadingIndicator";
 
 interface NoteEditorProps {
   note: Note;
@@ -30,82 +33,138 @@ interface NoteEditorProps {
 
 export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
   const { toast } = useToast();
+  const { handleError } = useErrorHandler();
+
+  // États d'UI
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [currentTab, setCurrentTab] = useState("content");
-  
+
+  // États d'erreur
+  const [error, setError] = useState<ErrorResponse | null>(null);
+
   // Basic note fields
   const [title, setTitle] = useState(note?.title || "");
   const [content, setContent] = useState(note?.content || "");
   const [translation, setTranslation] = useState(note?.translation || "");
   const [language, setLanguage] = useState(note?.language || "fr");
-  
+
   // Tags state
   const [tags, setTags] = useState<TagItem[]>([]);
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
   const [tagApiAvailable, setTagApiAvailable] = useState(false);
   const [isLoadingTags, setIsLoadingTags] = useState(false);
-  
+  const [tagError, setTagError] = useState<ErrorResponse | null>(null);
+
   // Initialize from props when note changes
   useEffect(() => {
-    if (note) {
-      console.log("Loading note into editor:", {
-        id: note.id,
-        title: note.title,
-        content: note.content?.substring(0, 20) + "...",
-        translation: note.translation?.substring(0, 20) + "..."
-      });
+    if (!note || !note.id) return;
 
-      setTitle(note.title || "");
-      setContent(note.content || "");
-      setTranslation(note.translation || "");
-      setLanguage(note.language || "fr");
-      
-      // If the note has tags, initialize them
-      if (note.tags) {
-        setSelectedTagIds(note.tags.map(tag => tag.id));
-      }
+    // Réinitialiser les erreurs
+    setError(null);
+
+    setTitle(note.title || "");
+    setContent(note.content || "");
+    setTranslation(note.translation || "");
+    setLanguage(note.language || "fr");
+
+    // If the note has tags, initialize them
+    if (note.tags) {
+      setSelectedTagIds(note.tags.map(tag => tag.id));
+    } else {
+      setSelectedTagIds([]);
     }
-  }, [note.id, note.title, note.content, note.translation, note.language, note.tags]); 
-  
+  }, [note.id]);
+
   // Check if tag API is available and load tags
   useEffect(() => {
+    // Flag to track if the component is mounted
+    let isMounted = true;
+
     const checkTagsApi = async () => {
+      // Prevent multiple calls
+      if (isLoadingTags) return;
+
       try {
+        setTagError(null);
+        setIsLoadingTags(true);
+
+        // First check if the API is available (caching the result)
         const isAvailable = await tagAPI.checkTagsFeatureAvailable();
+
+        // Check if component is still mounted before updating state
+        if (!isMounted) return;
+
         setTagApiAvailable(isAvailable);
-        
+
         if (isAvailable) {
-          setIsLoadingTags(true);
+          // Fetch tags only if API is available
           const fetchedTags = await tagAPI.getTags();
+
+          // Check if component is still mounted
+          if (!isMounted) return;
+
           setTags(fetchedTags);
         }
       } catch (error) {
-        console.warn("Error checking tags API:", error);
+        // Check if component is still mounted
+        if (!isMounted) return;
+
+        const parsedError = handleError(error, "Erreur de chargement des tags");
+        setTagError(parsedError);
         setTagApiAvailable(false);
       } finally {
-        setIsLoadingTags(false);
+        // Check if component is still mounted
+        if (isMounted) {
+          setIsLoadingTags(false);
+        }
       }
     };
-    
-    checkTagsApi();
-  }, []);
 
-  // Handle save
-  const handleSave = async () => {
+    // Execute the check only once
+    checkTagsApi();
+
+    // Cleanup function to prevent state updates after unmount
+    return () => {
+      isMounted = false;
+    };
+  }, [handleError, isLoadingTags]);
+
+  // Validation des données avant enregistrement
+  const validateNote = (): boolean => {
+    // Validation du titre
     if (!title.trim()) {
+      const validationError: ErrorResponse = {
+        type: ErrorType.VALIDATION,
+        message: "Le titre ne peut pas être vide",
+        retry: false
+      };
+      setError(validationError);
+
       toast({
-        title: "Erreur",
+        title: "Données invalides",
         description: "Le titre ne peut pas être vide",
         variant: "destructive"
       });
-      return;
+
+      return false;
     }
-    
+
+    // Réinitialiser les erreurs si tout est valide
+    setError(null);
+    return true;
+  };
+
+  // Handle save
+  const handleSave = async () => {
+    // Validation des données
+    if (!validateNote()) return;
+
     setIsSaving(true);
-    
+    setError(null);
+
     try {
       const updatedNote = {
         ...note,
@@ -114,58 +173,59 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
         translation: translation,
         language: language
       };
-      
-      console.log("Saving note:", {
-        id: updatedNote.id,
-        title: updatedNote.title,
-        contentLength: updatedNote.content?.length || 0,
-        translationLength: updatedNote.translation?.length || 0
-      });
-      
+
       // Save the note
       await notebookAPI.updateNote(note.id, updatedNote);
-      
+
       // If tag API is available, update tags
       if (tagApiAvailable) {
-        // Get current tags of the note
-        const currentTagIds = note.tags ? note.tags.map(tag => tag.id) : [];
-        
-        // Tags to add
-        const tagsToAdd = selectedTagIds.filter(id => !currentTagIds.includes(id));
-        
-        // Tags to remove
-        const tagsToRemove = currentTagIds.filter(id => !selectedTagIds.includes(id));
-        
-        // Add new tags
-        for (const tagId of tagsToAdd) {
-          await tagAPI.addTagToNote(note.id, tagId);
-        }
-        
-        // Remove tags
-        for (const tagId of tagsToRemove) {
-          await tagAPI.removeTagFromNote(note.id, tagId);
+        try {
+          // Get current tags of the note
+          const currentTagIds = note.tags ? note.tags.map(tag => tag.id) : [];
+
+          // Tags to add
+          const tagsToAdd = selectedTagIds.filter(id => !currentTagIds.includes(id));
+
+          // Tags to remove
+          const tagsToRemove = currentTagIds.filter(id => !selectedTagIds.includes(id));
+
+          // Traitement par lots pour éviter les problèmes de concurrence
+          const tagsPromises = [
+            // Ajout de tags
+            ...tagsToAdd.map(tagId => tagAPI.addTagToNote(note.id, tagId)),
+
+            // Suppression de tags
+            ...tagsToRemove.map(tagId => tagAPI.removeTagFromNote(note.id, tagId))
+          ];
+
+          // Attendre toutes les opérations de tags
+          await Promise.all(tagsPromises);
+        } catch (tagError) {
+          // Si l'erreur vient des tags, on continue quand même
+          // mais on affiche un avertissement
+          console.warn("Erreur lors de la mise à jour des tags:", tagError);
+          toast({
+            title: "Avertissement",
+            description: "La note a été enregistrée mais certains tags n'ont pas pu être mis à jour",
+            variant: "default"
+          });
         }
       }
-      
+
       // Montrer l'animation de succès
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2000);
-      
+
       toast({
         title: "Succès",
         description: "Note enregistrée avec succès"
       });
-      
+
       // Notify parent
       onSave();
     } catch (error) {
-      console.error("Error saving note:", error);
-      
-      toast({
-        title: "Erreur",
-        description: "Impossible d'enregistrer la note",
-        variant: "destructive"
-      });
+      const parsedError = handleError(error, "Erreur d'enregistrement");
+      setError(parsedError);
     } finally {
       setIsSaving(false);
     }
@@ -174,63 +234,65 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
   // Handle delete
   const handleDelete = async () => {
     setIsDeleting(true);
-    
+    setError(null);
+
     try {
       await notebookAPI.deleteNote(note.id);
-      
+
       toast({
         title: "Succès",
         description: "Note supprimée avec succès"
       });
-      
+
       // Notify parent and close editor
       onSave();
       onCancel();
     } catch (error) {
-      console.error("Error deleting note:", error);
-      
-      toast({
-        title: "Erreur",
-        description: "Impossible de supprimer la note",
-        variant: "destructive"
-      });
+      const parsedError = handleError(error, "Erreur de suppression");
+      setError(parsedError);
+
+      // Fermer la boîte de dialogue mais garder l'éditeur ouvert
+      setShowDeleteConfirm(false);
     } finally {
       setIsDeleting(false);
-      setShowDeleteConfirm(false);
     }
   };
-  
+
   // Handle adding a new tag
   const handleAddTag = async (name: string, color?: string): Promise<TagItem | undefined> => {
     try {
-      const newTag = await tagAPI.createTag(name, color);
+      setTagError(null);
+
+      // Validation
+      if (!name.trim()) {
+        const error = new Error("Le nom du tag ne peut pas être vide");
+        handleError(error, "Validation du tag");
+        return undefined;
+      }
+
+      const newTag = await tagAPI.createTag(name.trim(), color);
       setTags(prevTags => [...prevTags, newTag]);
       return newTag;
     } catch (error) {
-      console.error("Error adding tag:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de créer le tag",
-        variant: "destructive"
-      });
+      handleError(error, "Erreur de création de tag");
       return undefined;
     }
   };
-  
+
   // Handle removing a tag
   const handleRemoveTag = (tagId: number) => {
     setSelectedTagIds(prev => prev.filter(id => id !== tagId));
   };
-  
+
   // Handle selecting a tag
   const handleSelectTag = (tagId: number) => {
-    setSelectedTagIds(prev => 
+    setSelectedTagIds(prev =>
       prev.includes(tagId)
         ? prev.filter(id => id !== tagId)
         : [...prev, tagId]
     );
   };
-  
+
   const LANGUAGE_OPTIONS = [
     { value: 'en', label: 'English' },
     { value: 'fr', label: 'French' },
@@ -239,7 +301,35 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
     { value: 'it', label: 'Italian' },
     { value: 'pt', label: 'Portuguese' }
   ];
-  
+
+  // Réessayer le chargement des tags
+  const retryLoadTags = () => {
+    setTagError(null);
+    setTagApiAvailable(false);
+    setIsLoadingTags(true);
+
+    tagAPI.checkTagsFeatureAvailable()
+      .then(isAvailable => {
+        setTagApiAvailable(isAvailable);
+        if (isAvailable) {
+          return tagAPI.getTags();
+        }
+        return [];
+      })
+      .then(fetchedTags => {
+        if (fetchedTags.length > 0) {
+          setTags(fetchedTags);
+        }
+        setIsLoadingTags(false);
+      })
+      .catch(error => {
+        const parsedError = handleError(error, "Erreur de chargement des tags");
+        setTagError(parsedError);
+        setTagApiAvailable(false);
+        setIsLoadingTags(false);
+      });
+  };
+
   return (
     <motion.div
       className="h-full flex flex-col overflow-hidden"
@@ -248,8 +338,28 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
     >
+      {/* Afficher les erreurs d'API en haut */}
+      <AnimatePresence mode="wait">
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="mb-4"
+          >
+            <ErrorDisplay
+              error={error}
+              onDismiss={() => setError(null)}
+              onRetry={error.type === ErrorType.NETWORK ? handleSave : undefined}
+              className="compact"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md px-8 py-6 flex-1 flex flex-col overflow-hidden max-h-full">
-        <motion.div 
+        <motion.div
           className="flex justify-between items-center mb-6"
           initial={{ y: -10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -260,12 +370,19 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Titre de la note"
-              className="text-lg font-medium search-animation"
+              className={`text-lg font-medium search-animation ${!title.trim() ? 'border-red-300 focus:border-red-500 dark:border-red-800' : ''}`}
+              aria-invalid={!title.trim()}
             />
+            {!title.trim() && (
+              <p className="text-xs text-red-500 mt-1 flex items-center">
+                <AlertCircle className="h-3 w-3 mr-1" />
+                Le titre est requis
+              </p>
+            )}
           </div>
-          
+
           <div className="flex items-center gap-2 ml-2">
-            <select 
+            <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
               className="border rounded-md p-2 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -276,27 +393,31 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                 </option>
               ))}
             </select>
-            
+
             <Badge variant="outline" className="gap-1 bg-gray-100 dark:bg-gray-800">
               <Languages className="h-3 w-3" />
               {language.toUpperCase()}
             </Badge>
           </div>
         </motion.div>
-        
+
         {/* Tags section */}
         {tagApiAvailable && (
-          <motion.div 
+          <motion.div
             className="mb-4"
             initial={{ y: -5, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.15 }}
           >
             {isLoadingTags ? (
-              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <Loader2 className="animate-spin h-4 w-4" />
-                Chargement des tags...
-              </div>
+              <LoadingIndicator message="Chargement des tags..." size="small" inline />
+            ) : tagError ? (
+              <ErrorDisplay
+                error={tagError}
+                onDismiss={() => setTagError(null)}
+                onRetry={retryLoadTags}
+                className="compact"
+              />
             ) : (
               <TagManager
                 tags={tags}
@@ -309,9 +430,9 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             )}
           </motion.div>
         )}
-        
-        <Tabs 
-          defaultValue="content" 
+
+        <Tabs
+          defaultValue="content"
           className="flex-1 flex flex-col overflow-hidden"
           value={currentTab}
           onValueChange={setCurrentTab}
@@ -320,10 +441,10 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             <TabsTrigger value="content">Contenu</TabsTrigger>
             <TabsTrigger value="translation">Traduction</TabsTrigger>
           </TabsList>
-          
+
           <AnimatePresence mode="wait">
             {currentTab === "content" && (
-              <motion.div 
+              <motion.div
                 key="content-tab"
                 className="flex-1 overflow-auto"
                 initial={{ opacity: 0, x: 10 }}
@@ -341,9 +462,9 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                 </TabsContent>
               </motion.div>
             )}
-            
+
             {currentTab === "translation" && (
-              <motion.div 
+              <motion.div
                 key="translation-tab"
                 className="flex-1 overflow-auto"
                 initial={{ opacity: 0, x: -10 }}
@@ -363,8 +484,8 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             )}
           </AnimatePresence>
         </Tabs>
-        
-        <motion.div 
+
+        <motion.div
           className="flex justify-between mt-6 pt-6 border-t border-gray-100 dark:border-gray-700"
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -372,30 +493,39 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
         >
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
-              variant="outline" 
+              variant="outline"
               onClick={() => setShowDeleteConfirm(true)}
+              disabled={isDeleting}
               className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:border-red-900 dark:hover:bg-red-900/20"
             >
-              <Trash className="h-4 w-4 mr-2" />
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <Trash className="h-4 w-4 mr-2" />
+              )}
               Supprimer
             </Button>
           </motion.div>
-          
+
           <div className="flex gap-2">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button variant="outline" onClick={onCancel}>
+              <Button
+                variant="outline"
+                onClick={onCancel}
+                disabled={isSaving || isDeleting}
+              >
                 Annuler
               </Button>
             </motion.div>
-            
-            <motion.div 
-              whileHover={{ scale: 1.05 }} 
+
+            <motion.div
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className={saveSuccess ? "save-success" : ""}
             >
-              <Button 
-                onClick={handleSave} 
-                disabled={isSaving}
+              <Button
+                onClick={handleSave}
+                disabled={isSaving || !title.trim()}
                 className="bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 text-white"
               >
                 {isSaving ? (
@@ -411,7 +541,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
           </div>
         </motion.div>
       </div>
-      
+
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent className="animate-slide-in-right">
@@ -422,7 +552,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-red-500 text-white hover:bg-red-600"
