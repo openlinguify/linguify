@@ -2,19 +2,24 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Info, ChevronLeft } from "lucide-react";
+import { AlertCircle, Info, CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { GradientCard } from "@/components/ui/gradient-card";
-import { GradientText } from "@/components/ui/gradient-text";
-import { commonStyles } from "@/styles/gradient_style";
+import { Badge } from "@/components/ui/badge";
 import { Question, MultipleChoiceProps } from "@/addons/learning/types";
 import LessonCompletionModal from "../shared/LessonCompletionModal";
 import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 import { getUserNativeLanguage, getUserTargetLanguage } from "@/core/utils/languageUtils";
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ExerciseWrapper, 
+  exerciseHeading, 
+  exerciseContentBox,
+  feedbackMessage,
+  ExerciseSectionWrapper
+} from "./ExerciseStyles";
+import ExerciseProgress from "./ExerciseProgress";
+import ExerciseNavigation from "./ExerciseNavigation";
 import ExerciseNavBar from "../Navigation/ExerciseNavBar";
-
-
 
 const MultipleChoice = ({ 
   lessonId, 
@@ -35,7 +40,30 @@ const MultipleChoice = ({
   const [timeSpent, setTimeSpent] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [nativeLanguage, setNativeLanguage] = useState('en');
+  const [windowHeight, setWindowHeight] = useState<number>(0);
+  const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
 
+  // Track window height for responsive sizing - initialize immediately
+  useEffect(() => {
+    const updateHeight = () => {
+      setWindowHeight(window.innerHeight);
+    };
+    
+    // Set initial height immediately without waiting for first render
+    if (typeof window !== 'undefined') {
+      setWindowHeight(window.innerHeight);
+    }
+    
+    window.addEventListener('resize', updateHeight);
+    
+    // Force a re-calculation after a short delay to handle any initial rendering issues
+    const timeout = setTimeout(updateHeight, 100);
+    
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      clearTimeout(timeout);
+    };
+  }, []);
 
   // Refs for tracking
   const startTimeRef = React.useRef(Date.now());
@@ -50,7 +78,7 @@ const MultipleChoice = ({
     };
   }, []);
 
-  // Track time spent
+  // Track time spent - reduced interval to avoid unnecessary re-renders
   useEffect(() => {
     // Clear any existing interval
     if (timeIntervalRef.current) {
@@ -111,43 +139,16 @@ const MultipleChoice = ({
         if (unitId && data.length > 0) {
           try {
             const contentLessonId = parseInt(lessonId);
-            const parentLessonId = unitId ? parseInt(unitId) : 0;
-
-            console.log(`Initializing progress for contentLessonId=${contentLessonId}, parentLessonId=${parentLessonId}`);
-
-            // Fix parameter order - contentLessonId, lessonId (parent), completion%, timeSpent, xpEarned, complete
+            
+            // Initialize progress
             await lessonCompletionService.updateContentProgress(
               contentLessonId,
-              parentLessonId, // Pass the parent lesson ID correctly
               1, // 1% to start
-              0, // timeSpent
-              0, // xpEarned
-              false // not marked as complete yet
+              0,
+              0,
+              false
             );
             
-            // Create a basic direct tracking of lesson access for notification purposes
-            // This ensures we track this specific access independently of progress updates
-            try {
-              // Store a basic record directly in localStorage with normalized content type
-              const lessonData = {
-                id: contentLessonId,
-                title: `Multiple Choice Quiz`,
-                contentType: "multiple choice", // Using exact normalized format
-                lastAccessed: new Date().toISOString(),
-                unitId: unitId ? parseInt(unitId) : undefined,
-                completionPercentage: 1,
-                // Add routing specific information
-                language: targetLang,
-                parentLessonId: unitId ? parseInt(unitId) : undefined,
-                contentId: contentLessonId,
-                routeType: 'content'
-              };
-              
-              localStorage.setItem('last_accessed_lesson', JSON.stringify(lessonData));
-              console.log(`MultipleChoice: Direct tracking of lesson access:`, lessonData);
-            } catch (trackErr) {
-              console.error("Error directly tracking multiple choice access:", trackErr);
-            }
           } catch (err) {
             console.error("Error initializing quiz progress:", err);
           }
@@ -171,15 +172,9 @@ const MultipleChoice = ({
 
     try {
       const contentLessonId = parseInt(lessonId);
-      const parentLessonId = unitId ? parseInt(unitId) : 0;
-
-      console.log(`Updating progress: contentId=${contentLessonId}, parentId=${parentLessonId}, percent=${completionPercentage}`);
-
-      // Fix parameter order according to the function signature:
-      // updateContentProgress(contentLessonId, lessonId, completionPercentage, timeSpent, xpEarned, complete)
+      
       await lessonCompletionService.updateContentProgress(
         contentLessonId,
-        parentLessonId,
         completionPercentage,
         timeSpent,
         Math.round(completionPercentage / 10), // XP gained proportional to progress
@@ -224,6 +219,7 @@ const MultipleChoice = ({
     if (!currentQuestion) return;
 
     const isCorrect = answer === currentQuestion.correct_answer;
+    setCorrectAnswer(currentQuestion.correct_answer);
 
     if (isCorrect) {
       setScore(prev => prev + 1);
@@ -244,6 +240,7 @@ const MultipleChoice = ({
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(prev => prev + 1);
       setSelectedAnswer(null);
+      setCorrectAnswer(null);
       setShowHint(false);
     } else {
       // Quiz is complete, show completion modal
@@ -253,8 +250,6 @@ const MultipleChoice = ({
 
   // Handle quiz completion
   const handleFinishQuiz = useCallback(() => {
-    console.log("handleFinishQuiz called - showing completion modal");
-
     // Play success sound (optional)
     try {
       const audio = new Audio("/success1.mp3");
@@ -270,18 +265,16 @@ const MultipleChoice = ({
 
   // Handle keep reviewing (try again)
   const handleTryAgain = useCallback(() => {
-    console.log("handleTryAgain called - resetting quiz");
     setShowCompletionModal(false);
     setCurrentIndex(0);
     setScore(0);
     setSelectedAnswer(null);
+    setCorrectAnswer(null);
     setShowHint(false);
   }, []);
 
   // Handle back to lessons
   const handleBackToLessons = useCallback(() => {
-    console.log("handleBackToLessons called - completing quiz");
-
     // Update progress to 100%
     updateProgressInAPI(100).then(() => {
       // Close the modal
@@ -289,7 +282,6 @@ const MultipleChoice = ({
 
       // If a function onComplete has been provided, call it to trigger navigation
       if (onComplete) {
-        console.log("Calling onComplete callback to return to lesson summary");
         onComplete();
       }
     }).catch(error => {
@@ -300,43 +292,46 @@ const MultipleChoice = ({
     });
   }, [updateProgressInAPI, onComplete]);
 
+  // Calculate dynamic height based on window - make it compact for content
+  const mainContentHeight = windowHeight ? `calc(${windowHeight}px - 20rem)` : '50vh';
+
   // Loading state
   if (loading) {
     return (
-      <div className="w-full space-y-6">
-        <div className="flex flex-col items-center justify-center h-96 gap-4">
+      <ExerciseWrapper className="max-w-4xl mx-auto">
+        <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-brand-purple"></div>
           <p className="text-brand-purple animate-pulse font-medium">Loading questions...</p>
         </div>
-      </div>
+      </ExerciseWrapper>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <div className="w-full space-y-6">
+      <ExerciseWrapper className="max-w-4xl mx-auto">
         <Alert variant="destructive" className="border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 shadow-sm">
           <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
           <AlertDescription className="text-red-700 dark:text-red-300 font-medium">
             {error || "No questions found for this lesson."}
           </AlertDescription>
         </Alert>
-      </div>
+      </ExerciseWrapper>
     );
   }
 
   // No questions available
   if (!questions.length) {
     return (
-      <div className="w-full space-y-6">
+      <ExerciseWrapper className="max-w-4xl mx-auto">
         <Alert className="border-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 shadow-sm">
           <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
           <AlertDescription className="text-amber-700 dark:text-amber-300 font-medium">
             No questions available for this lesson.
           </AlertDescription>
         </Alert>
-      </div>
+      </ExerciseWrapper>
     );
   }
 
@@ -344,12 +339,12 @@ const MultipleChoice = ({
   if (!currentQuestion) return null;
 
   const progressPercentage = ((currentIndex + 1) / questions.length) * 100;
+  const isCorrect = selectedAnswer === currentQuestion.correct_answer;
 
   return (
-    <div className="w-full space-y-6">
-      {/* Utilisation du composant réutilisable */}
+    <ExerciseWrapper className="flex flex-col h-full overflow-hidden max-w-4xl mx-auto">
       <ExerciseNavBar unitId={unitId} />
-
+      
       {/* Completion Modal */}
       <LessonCompletionModal
         show={showCompletionModal}
@@ -365,106 +360,195 @@ const MultipleChoice = ({
         }
         type="quiz"
       />
-
-      <GradientCard className="h-full relative overflow-hidden shadow-lg">
-        <div className="p-6 flex flex-col gap-4 h-full relative z-10">
-          {/* Progress Section */}
-          <div>
-            <Progress
-              value={progressPercentage}
-              className="h-2 bg-gray-100 dark:bg-gray-700"
-              style={{
-                '--progress-background': 'linear-gradient(to right, var(--brand-purple), var(--brand-gold))'
-              } as React.CSSProperties}
-            />
-            <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-2">
-              <span>Question {currentIndex + 1} of {questions.length}</span>
-              <div className="flex items-center gap-2">
-                <span>Score: <span className="font-medium text-brand-purple">{score}</span>/{currentIndex}</span>
-                <span className="px-2 py-0.5 bg-brand-purple/10 dark:bg-brand-purple/20 text-brand-purple rounded-full font-medium">
-                  {answerStreak} 🔥
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Question */}
-          <div className={commonStyles.contentBox}>
-            <div className={commonStyles.gradientBackground} />
-            <div className="relative p-8 text-center">
-              <GradientText className="text-2xl font-bold">
-                {currentQuestion.question}
-              </GradientText>
-            </div>
-          </div>
-
-          {/* Answers in Grid with centered last item when count is odd */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {currentQuestion.answers.map((answer, index) => (
-              <Button
-                key={index}
-                onClick={() => handleAnswerSelect(answer)}
-                disabled={!!selectedAnswer}
-                className={`
-                  w-full h-full p-4 justify-center transition-all
-                  ${selectedAnswer
-                    ? answer === currentQuestion.correct_answer
-                      ? "bg-green-500 dark:bg-green-600 text-white hover:bg-green-600 dark:hover:bg-green-700"
-                      : answer === selectedAnswer
-                        ? "bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-700"
-                        : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
-                    : "bg-white dark:bg-gray-800 border-2 border-brand-purple/30 dark:border-brand-purple/20 hover:bg-brand-purple/10 dark:hover:bg-brand-purple/20 text-left"
-                  } ${
-                    /* Center the last item if the count is odd and it's the last item */
-                    currentQuestion.answers.length % 2 !== 0 &&
-                    index === currentQuestion.answers.length - 1
-                    ? "sm:col-span-2 sm:max-w-md sm:mx-auto"
-                    : ""
-                  }
-                  shadow-sm rounded-lg font-medium
-                `}
+      
+      <ExerciseSectionWrapper className="flex-1 flex flex-col overflow-hidden">
+        {/* Exercise Header - more compact */}
+        <div className="mb-2">
+          <div className="flex justify-between items-center">
+            <h2 className={exerciseHeading() + " text-lg md:text-xl"}>
+              Multiple Choice Question
+            </h2>
+            
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="text-xs">
+                {currentIndex + 1} / {questions.length}
+              </Badge>
+              
+              <Badge 
+                className="bg-brand-purple/10 text-brand-purple text-xs"
+                variant="outline"
               >
-                <span className="mr-3 font-semibold">{String.fromCharCode(65 + index)}.</span>
-                {answer}
-              </Button>
+                Score: {score}/{currentIndex}
+              </Badge>
+              
+              {answerStreak > 0 && (
+                <Badge className="bg-amber-500 text-white text-xs">
+                  {answerStreak} 🔥
+                </Badge>
+              )}
+            </div>
+          </div>
+          
+          {/* Progress Tracking */}
+          <ExerciseProgress 
+            currentStep={currentIndex + 1}
+            totalSteps={questions.length}
+            score={score}
+            showScore={true}
+            streak={answerStreak}
+            showStreak={answerStreak > 0}
+            showPercentage={false}
+            className="mt-2"
+          />
+        </div>
+        
+        {/* Main Content Area with dynamic height */}
+        <div 
+          className="flex-1 overflow-auto flex flex-col gap-3"
+          style={{ height: mainContentHeight, maxHeight: mainContentHeight }}
+        >
+          {/* Question */}
+          <div className={exerciseContentBox() + " text-center flex-grow-0"}>
+            <p className="text-base sm:text-lg font-medium">
+              {currentQuestion.question}
+            </p>
+          </div>
+
+          {/* Answers in Grid - compact layout */}
+          <div className="flex-grow-0 grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {currentQuestion.answers.map((answer, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ 
+                  opacity: 1, 
+                  y: 0 
+                }}
+                transition={{ 
+                  duration: 0.15,
+                  delay: index * 0.05
+                }}
+                className={
+                  currentQuestion.answers.length % 2 !== 0 &&
+                  index === currentQuestion.answers.length - 1
+                  ? "sm:col-span-2 sm:max-w-md sm:mx-auto"
+                  : ""
+                }
+              >
+                <Button
+                  variant="outline"
+                  className={`
+                    w-full transition-all duration-200 border text-sm py-2 h-auto justify-start
+                    ${selectedAnswer
+                      ? answer === currentQuestion.correct_answer
+                        ? "border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                        : answer === selectedAnswer
+                          ? "border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
+                          : "bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
+                      : "border-brand-purple/30 hover:border-brand-purple"
+                    }
+                  `}
+                  onClick={() => handleAnswerSelect(answer)}
+                  disabled={selectedAnswer !== null}
+                >
+                  <span className="mr-2 font-semibold">{String.fromCharCode(65 + index)}.</span>
+                  <span className="flex-grow text-left">{answer}</span>
+                  
+                  {selectedAnswer && answer === currentQuestion.correct_answer && (
+                    <CheckCircle className="ml-2 h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                  )}
+                  
+                  {selectedAnswer === answer && answer !== currentQuestion.correct_answer && (
+                    <X className="ml-2 h-4 w-4 text-red-600 dark:text-red-400 flex-shrink-0" />
+                  )}
+                </Button>
+              </motion.div>
             ))}
           </div>
 
-          {/* Hint Section */}
-          {currentQuestion.hint && (
-            <div className="mt-4">
-              <Button
-                variant="ghost"
-                onClick={() => setShowHint(!showHint)}
-                className="text-brand-purple hover:bg-brand-purple/10"
+          {/* Feedback section */}
+          <AnimatePresence>
+            {selectedAnswer && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="flex-grow-0 overflow-hidden"
               >
-                <Info className="h-4 w-4 mr-2" />
-                {showHint ? 'Hide Hint' : 'Show Hint'}
-              </Button>
-              {showHint && (
-                <Alert className="mt-2 bg-brand-purple/5 dark:bg-brand-purple/10 border border-brand-purple/20 dark:border-brand-purple/30">
-                  <AlertDescription className="text-brand-purple dark:text-brand-purple-light">
-                    {currentQuestion.hint}
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
-          )}
+                <div className={feedbackMessage(isCorrect)}>
+                  {isCorrect ? (
+                    <CheckCircle className="h-4 w-4 flex-shrink-0" />
+                  ) : (
+                    <X className="h-4 w-4 flex-shrink-0" />
+                  )}
+                  
+                  <div>
+                    <p className="font-medium text-sm">
+                      {isCorrect ? 'Correct!' : 'Incorrect'}
+                    </p>
+                    {!isCorrect && correctAnswer && (
+                      <p className="text-xs mt-0.5">
+                        The correct answer is: <span className="font-medium">{correctAnswer}</span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {/* Navigation */}
-          <div className="flex justify-end mt-auto pt-4">
+          {/* Hint Section */}
+          <div className="flex-grow-0">
+            {currentQuestion.hint && (
+              <div className="mt-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowHint(!showHint)}
+                  className="text-brand-purple hover:bg-brand-purple/10 h-8 text-xs"
+                >
+                  <Info className="h-3 w-3 mr-1" />
+                  {showHint ? 'Hide Hint' : 'Show Hint'}
+                </Button>
+                <AnimatePresence>
+                  {showHint && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <Alert className="mt-1 bg-brand-purple/5 dark:bg-brand-purple/10 border border-brand-purple/20 text-xs">
+                        <AlertDescription className="text-brand-purple dark:text-brand-purple-light">
+                          {currentQuestion.hint}
+                        </AlertDescription>
+                      </Alert>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+          </div>
+          
+          {/* Spacer to push navigation to bottom when content is short */}
+          <div className="flex-grow"></div>
+        </div>
+
+        {/* Navigation buttons - fixed at bottom */}
+        <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex justify-end">
             {selectedAnswer && (
               <Button
                 onClick={handleNext}
-                className="bg-gradient-to-r from-brand-purple to-brand-gold text-white hover:opacity-90 shadow-md"
+                className="bg-gradient-to-r from-brand-purple to-brand-gold text-white hover:opacity-90 text-xs h-8 px-3"
               >
                 {currentIndex === questions.length - 1 ? 'Complete Quiz' : 'Next Question'}
               </Button>
             )}
           </div>
         </div>
-      </GradientCard>
-    </div>
+      </ExerciseSectionWrapper>
+    </ExerciseWrapper>
   );
 };
 

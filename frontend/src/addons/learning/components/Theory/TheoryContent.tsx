@@ -300,13 +300,45 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  // Track window height for responsive sizing
+  const [windowHeight, setWindowHeight] = useState<number | undefined>(
+    typeof window !== 'undefined' ? window.innerHeight : undefined
+  );
+
+  // Set up window height tracking
+  useEffect(() => {
+    const updateHeight = () => {
+      setWindowHeight(window.innerHeight);
+    };
+
+    // Set initial height immediately without waiting for first render
+    if (typeof window !== 'undefined') {
+      setWindowHeight(window.innerHeight);
+    }
+
+    window.addEventListener('resize', updateHeight);
+
+    // Force a re-calculation after a short delay to handle any initial rendering issues
+    const timeout = setTimeout(updateHeight, 100);
+
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  // Calculate dynamic content height
+  const mainContentHeight = windowHeight ? `calc(${windowHeight}px - 15rem)` : '60vh';
+
   // Loading state
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full" />
-          <p className="text-gray-500">Loading content...</p>
+      <div className="flex-1 flex flex-col h-full overflow-hidden max-w-4xl mx-auto">
+        <div className="flex items-center justify-center h-60">
+          <div className="flex flex-col items-center gap-3">
+            <div className="animate-spin h-7 w-7 border-3 border-indigo-600 border-t-transparent rounded-full" />
+            <p className="text-gray-500 text-sm">Loading content...</p>
+          </div>
         </div>
       </div>
     );
@@ -315,10 +347,12 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
   // Error state
   if (error || !theory) {
     return (
-      <Alert variant="destructive" className="max-w-3xl mx-auto my-8">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>{error || "Failed to load theory content"}</AlertDescription>
-      </Alert>
+      <div className="flex-1 flex flex-col h-full overflow-hidden max-w-4xl mx-auto">
+        <Alert variant="destructive" className="mx-auto my-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error || "Failed to load theory content"}</AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
@@ -326,44 +360,46 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
   const availableSections = getAvailableSections();
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4">
-      {/* Back button */}
-      <div className="mb-4">
-        <Button
-          variant="ghost"
-          onClick={handleBack}
-          className="text-gray-500 hover:text-gray-700 px-2 py-1"
-          size="sm"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Lesson
-        </Button>
-      </div>
+    <div className="flex-1 flex flex-col h-full overflow-hidden max-w-4xl mx-auto">
+      <div className="flex flex-col h-full overflow-hidden">
+        {/* Header with back button and badges */}
+        <div className="px-4 py-2 flex justify-between items-center border-b border-gray-100">
+          <Button
+            variant="ghost"
+            onClick={handleBack}
+            className="text-gray-500 hover:text-gray-700 px-2 py-1"
+            size="sm"
+          >
+            <ArrowLeft className="h-3 w-3 mr-1" />
+            <span className="text-xs">Back</span>
+          </Button>
 
-      {/* Language badge */}
-      <div className="mb-5">
-        <Badge className="bg-indigo-100 text-indigo-800 font-medium uppercase">
-          {language}
-        </Badge>
-        <Badge className="ml-2 bg-gray-100 text-gray-600 font-medium">
-          theory
-        </Badge>
-      </div>
+          <div className="flex gap-1">
+            <Badge className="bg-indigo-100 text-indigo-800 font-medium uppercase text-xs">
+              {language}
+            </Badge>
+            <Badge className="bg-gray-100 text-gray-600 font-medium text-xs">
+              theory
+            </Badge>
+          </div>
+        </div>
 
-      <motion.div
-        initial="hidden"
-        animate={shouldAnimate ? "visible" : "hidden"}
-        variants={contentVariants}
-        className="mb-10"
-      >
-        <Card className="overflow-hidden border border-gray-100 shadow-sm">
-          <div className="p-6 space-y-6">
-            {/* Header with title and progress */}
-            <div className="space-y-4">
+        {/* Content container with dynamic height */}
+        <div className="flex-1 flex flex-col overflow-hidden"
+             style={{ height: mainContentHeight, maxHeight: mainContentHeight }}>
+
+          {/* Header with title and progress */}
+          <motion.div
+            initial="hidden"
+            animate={shouldAnimate ? "visible" : "hidden"}
+            variants={contentVariants}
+            className="px-4 py-3"
+          >
+            <div className="mb-3">
               <div className="flex justify-between items-start">
                 <div>
                   <div className="flex items-center">
-                    <h1 className="text-3xl font-bold text-gray-800">
+                    <h1 className="text-xl font-bold text-gray-800">
                       {theory?.content_lesson.title[language] || "Theory Content"}
                     </h1>
                     <button
@@ -371,16 +407,16 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                       className="ml-2 text-indigo-600 hover:text-indigo-800 focus:outline-none"
                       aria-label="Listen to pronunciation"
                     >
-                      <Volume2 className="h-5 w-5" />
+                      <Volume2 className="h-4 w-4" />
                     </button>
                   </div>
-                  <div className="flex items-center gap-3 mt-2">
-                    <div className="flex items-center text-gray-500 text-sm">
-                      <Clock className="h-4 w-4 mr-1" />
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center text-gray-500 text-xs">
+                      <Clock className="h-3 w-3 mr-1" />
                       {formatTime(studyTime)}
                     </div>
-                    <div className="flex items-center text-gray-500 text-sm">
-                      <CheckCircle className="h-4 w-4 mr-1" />
+                    <div className="flex items-center text-gray-500 text-xs">
+                      <CheckCircle className="h-3 w-3 mr-1" />
                       {readSections.length}/{availableSections.length} sections
                     </div>
                     {xpEarned > 0 && (
@@ -390,7 +426,7 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                     )}
                   </div>
                 </div>
-                <div className="w-48">
+                <div className="w-36">
                   <Progress
                     value={progress}
                     className="h-2"
@@ -400,274 +436,289 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                   />
                 </div>
               </div>
-              <p className="text-gray-600">
+              <p className="text-xs text-gray-600 mt-1">
                 {theory?.content_lesson.instruction[language] || "Learn the theory by reading through all sections."}
               </p>
             </div>
+          </motion.div>
 
-            {/* Section tabs */}
-            <Tabs defaultValue="content" value={currentTab} onValueChange={(value) => {
-              setCurrentTab(value);
-              markAsRead(value);
-            }}>
-              <TabsList className="w-full grid grid-cols-4 bg-gray-50 rounded-lg p-1">
-                <TabsTrigger value="content" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
-                  <div className="flex items-center">
-                    <FileText className="h-4 w-4 mr-2" />
-                    <span>Content</span>
-                    {readSections.includes('content') && (
-                      <CheckCircle className="h-3 w-3 ml-2 text-green-500" />
-                    )}
-                  </div>
-                </TabsTrigger>
+          {/* Main scrollable content */}
+          <div className="flex-1 overflow-auto px-4 py-2">
+            <motion.div
+              initial="hidden"
+              animate={shouldAnimate ? "visible" : "hidden"}
+              variants={contentVariants}
+            >
+              <Card className="overflow-hidden border border-gray-100 shadow-sm">
+                <div className="p-4 space-y-4">
+                  {/* Section tabs */}
+                  <Tabs defaultValue="content" value={currentTab} onValueChange={(value) => {
+                    setCurrentTab(value);
+                    markAsRead(value);
+                  }}>
+                    <TabsList className="w-full grid grid-cols-4 bg-gray-50 rounded-lg p-1">
+                      <TabsTrigger value="content" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-xs py-1">
+                        <div className="flex items-center">
+                          <FileText className="h-3 w-3 mr-1" />
+                          <span>Content</span>
+                          {readSections.includes('content') && (
+                            <CheckCircle className="h-2 w-2 ml-1 text-green-500" />
+                          )}
+                        </div>
+                      </TabsTrigger>
 
-                <TabsTrigger value="formula" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
-                  <div className="flex items-center">
-                    <Code className="h-4 w-4 mr-2" />
-                    <span>Formula</span>
-                    {readSections.includes('formula') && (
-                      <CheckCircle className="h-3 w-3 ml-2 text-green-500" />
-                    )}
-                  </div>
-                </TabsTrigger>
+                      <TabsTrigger value="formula" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-xs py-1">
+                        <div className="flex items-center">
+                          <Code className="h-3 w-3 mr-1" />
+                          <span>Formula</span>
+                          {readSections.includes('formula') && (
+                            <CheckCircle className="h-2 w-2 ml-1 text-green-500" />
+                          )}
+                        </div>
+                      </TabsTrigger>
 
-                <TabsTrigger value="examples" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
-                  <div className="flex items-center">
-                    <BookOpen className="h-4 w-4 mr-2" />
-                    <span>Examples</span>
-                    {readSections.includes('examples') && (
-                      <CheckCircle className="h-3 w-3 ml-2 text-green-500" />
-                    )}
-                  </div>
-                </TabsTrigger>
+                      <TabsTrigger value="examples" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-xs py-1">
+                        <div className="flex items-center">
+                          <BookOpen className="h-3 w-3 mr-1" />
+                          <span>Examples</span>
+                          {readSections.includes('examples') && (
+                            <CheckCircle className="h-2 w-2 ml-1 text-green-500" />
+                          )}
+                        </div>
+                      </TabsTrigger>
 
-                <TabsTrigger value="exceptions" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
-                  <div className="flex items-center">
-                    <AlertTriangle className="h-4 w-4 mr-2" />
-                    <span>Exceptions</span>
-                    {readSections.includes('exceptions') && (
-                      <CheckCircle className="h-3 w-3 ml-2 text-green-500" />
-                    )}
-                  </div>
-                </TabsTrigger>
-              </TabsList>
+                      <TabsTrigger value="exceptions" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-xs py-1">
+                        <div className="flex items-center">
+                          <AlertTriangle className="h-3 w-3 mr-1" />
+                          <span>Exceptions</span>
+                          {readSections.includes('exceptions') && (
+                            <CheckCircle className="h-2 w-2 ml-1 text-green-500" />
+                          )}
+                        </div>
+                      </TabsTrigger>
+                    </TabsList>
 
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentTab}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  variants={tabVariants}
-                  className="mt-4"
-                >
-                  <TabsContent value="content" className="focus:outline-none mt-0">
-                    <div className="bg-white rounded-lg overflow-hidden">
-                      {/* Title */}
-                      <div className="border-b border-gray-100 p-4 flex justify-between items-center">
-                        <h2 className="text-lg font-semibold text-gray-800">
-                          Règle grammaticale : {theory?.content_lesson.title[language]}
-                        </h2>
-                        <button
-                          onClick={() => speak(getLanguageContent('content'))}
-                          className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
-                          aria-label="Listen to content"
-                        >
-                          <Volume2 className="h-4 w-4" />
-                        </button>
-                      </div>
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentTab}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        variants={tabVariants}
+                        className="mt-3"
+                      >
+                        <TabsContent value="content" className="focus:outline-none mt-0">
+                          <div className="bg-white rounded-lg overflow-hidden">
+                            {/* Title */}
+                            <div className="border-b border-gray-100 p-3 flex justify-between items-center">
+                              <h2 className="text-sm font-semibold text-gray-800">
+                                Règle grammaticale : {theory?.content_lesson.title[language]}
+                              </h2>
+                              <button
+                                onClick={() => speak(getLanguageContent('content'))}
+                                className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
+                                aria-label="Listen to content"
+                              >
+                                <Volume2 className="h-3 w-3" />
+                              </button>
+                            </div>
 
-                      {/* Content */}
-                      <div className="p-6">
-                        {getLanguageContent('content') ? (
-                          <div className="space-y-4">
-                            {getLanguageContent('content')
-                              .split(/\r?\n/) // Handle both \r\n and \n line breaks
-                              .filter(line => line.trim() !== '')
-                              .map((line: string, index: number) => (
-                                <p key={index} className="text-gray-700">{line}</p>
-                              ))}
+                            {/* Content */}
+                            <div className="p-3">
+                              {getLanguageContent('content') ? (
+                                <div className="space-y-2">
+                                  {getLanguageContent('content')
+                                    .split(/\r?\n/) // Handle both \r\n and \n line breaks
+                                    .filter(line => line.trim() !== '')
+                                    .map((line: string, index: number) => (
+                                      <p key={index} className="text-sm text-gray-700">{line}</p>
+                                    ))}
+                                </div>
+                              ) : (
+                                <p className="text-xs text-gray-500 italic">No content available</p>
+                              )}
+                            </div>
+
+                            {/* Explanation */}
+                            <div className="bg-gray-50 p-3 mt-2 rounded-lg">
+                              <h3 className="text-sm font-semibold mb-2">Explanation</h3>
+                              {getLanguageContent('explanation') ? (
+                                <div className="space-y-2">
+                                  {getLanguageContent('explanation')
+                                    .split(/\r?\n/) // Handle both \r\n and \n line breaks
+                                    .filter(line => line.trim() !== '')
+                                    .map((line: string, index: number) => (
+                                      <p key={index} className="text-xs text-gray-700">{line}</p>
+                                    ))}
+                                </div>
+                              ) : (
+                                <p className="text-xs text-gray-500 italic">No explanation available</p>
+                              )}
+                            </div>
                           </div>
-                        ) : (
-                          <p className="text-gray-500 italic">No content available</p>
-                        )}
-                      </div>
+                        </TabsContent>
 
-                      {/* Explanation */}
-                      <div className="bg-gray-50 p-6 mt-4 rounded-lg">
-                        <h3 className="text-lg font-semibold mb-3">Explanation</h3>
-                        {getLanguageContent('explanation') ? (
-                          <div className="space-y-3">
-                            {getLanguageContent('explanation')
-                              .split(/\r?\n/) // Handle both \r\n and \n line breaks
-                              .filter(line => line.trim() !== '')
-                              .map((line: string, index: number) => (
-                                <p key={index} className="text-gray-700">{line}</p>
-                              ))}
+                        <TabsContent value="formula" className="focus:outline-none mt-0">
+                          <div className="bg-white rounded-lg overflow-hidden">
+                            {/* Title */}
+                            <div className="border-b border-gray-100 p-3 flex justify-between items-center">
+                              <h2 className="text-sm font-semibold text-gray-800">Formula</h2>
+                              <button
+                                onClick={() => speak(getLanguageContent('formula'))}
+                                className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
+                                aria-label="Listen to formula"
+                              >
+                                <Volume2 className="h-3 w-3" />
+                              </button>
+                            </div>
+
+                            {/* Content */}
+                            <div className="p-3">
+                              {getLanguageContent('formula') ? (
+                                <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-100">
+                                  {getLanguageContent('formula')
+                                    .split(/\r?\n/) // Handle both \r\n and \n line breaks
+                                    .filter(line => line.trim() !== '')
+                                    .map((line: string, index: number) => (
+                                      <p key={index} className="text-sm text-gray-800 mb-1">{line}</p>
+                                    ))}
+                                </div>
+                              ) : (
+                                <Alert className="p-2">
+                                  <AlertCircle className="h-3 w-3" />
+                                  <AlertDescription className="text-xs">No formula available for this topic.</AlertDescription>
+                                </Alert>
+                              )}
+                            </div>
                           </div>
-                        ) : (
-                          <p className="text-gray-500 italic">No explanation available</p>
-                        )}
-                      </div>
-                    </div>
-                  </TabsContent>
+                        </TabsContent>
 
-                  <TabsContent value="formula" className="focus:outline-none mt-0">
-                    <div className="bg-white rounded-lg overflow-hidden">
-                      {/* Title */}
-                      <div className="border-b border-gray-100 p-4 flex justify-between items-center">
-                        <h2 className="text-lg font-semibold text-gray-800">Formula</h2>
-                        <button
-                          onClick={() => speak(getLanguageContent('formula'))}
-                          className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
-                          aria-label="Listen to formula"
-                        >
-                          <Volume2 className="h-4 w-4" />
-                        </button>
-                      </div>
+                        <TabsContent value="examples" className="focus:outline-none mt-0">
+                          <div className="bg-white rounded-lg overflow-hidden">
+                            {/* Title */}
+                            <div className="border-b border-gray-100 p-3 flex justify-between items-center">
+                              <h2 className="text-sm font-semibold text-gray-800">Examples</h2>
+                              <button
+                                onClick={() => speak(getLanguageContent('example'))}
+                                className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
+                                aria-label="Listen to examples"
+                              >
+                                <Volume2 className="h-3 w-3" />
+                              </button>
+                            </div>
 
-                      {/* Content */}
-                      <div className="p-6">
-                        {getLanguageContent('formula') ? (
-                          <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100">
-                            {getLanguageContent('formula')
-                              .split(/\r?\n/) // Handle both \r\n and \n line breaks
-                              .filter(line => line.trim() !== '')
-                              .map((line: string, index: number) => (
-                                <p key={index} className="text-gray-800 mb-2">{line}</p>
-                              ))}
+                            {/* Content */}
+                            <div className="p-3">
+                              {getLanguageContent('example') ? (
+                                <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                                  {getLanguageContent('example')
+                                    .split(/\r?\n/) // Handle both \r\n and \n line breaks
+                                    .filter(line => line.trim() !== '')
+                                    .map((line: string, index: number) => (
+                                      <p key={index} className="text-sm text-gray-800 mb-1">{line}</p>
+                                    ))}
+                                </div>
+                              ) : (
+                                <Alert className="p-2">
+                                  <AlertCircle className="h-3 w-3" />
+                                  <AlertDescription className="text-xs">No examples available for this topic.</AlertDescription>
+                                </Alert>
+                              )}
+                            </div>
                           </div>
-                        ) : (
-                          <Alert>
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertDescription>No formula available for this topic.</AlertDescription>
-                          </Alert>
-                        )}
-                      </div>
-                    </div>
-                  </TabsContent>
+                        </TabsContent>
 
-                  <TabsContent value="examples" className="focus:outline-none mt-0">
-                    <div className="bg-white rounded-lg overflow-hidden">
-                      {/* Title */}
-                      <div className="border-b border-gray-100 p-4 flex justify-between items-center">
-                        <h2 className="text-lg font-semibold text-gray-800">Examples</h2>
-                        <button
-                          onClick={() => speak(getLanguageContent('example'))}
-                          className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
-                          aria-label="Listen to examples"
-                        >
-                          <Volume2 className="h-4 w-4" />
-                        </button>
-                      </div>
+                        <TabsContent value="exceptions" className="focus:outline-none mt-0">
+                          <div className="bg-white rounded-lg overflow-hidden">
+                            {/* Title */}
+                            <div className="border-b border-gray-100 p-3 flex justify-between items-center">
+                              <h2 className="text-sm font-semibold text-gray-800">Exceptions</h2>
+                              <button
+                                onClick={() => speak(getLanguageContent('exception'))}
+                                className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
+                                aria-label="Listen to exceptions"
+                              >
+                                <Volume2 className="h-3 w-3" />
+                              </button>
+                            </div>
 
-                      {/* Content */}
-                      <div className="p-6">
-                        {getLanguageContent('example') ? (
-                          <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                            {getLanguageContent('example')
-                              .split(/\r?\n/) // Handle both \r\n and \n line breaks
-                              .filter(line => line.trim() !== '')
-                              .map((line: string, index: number) => (
-                                <p key={index} className="text-gray-800 mb-2">{line}</p>
-                              ))}
+                            {/* Content */}
+                            <div className="p-3">
+                              {getLanguageContent('exception') ? (
+                                <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
+                                  {getLanguageContent('exception')
+                                    .split(/\r?\n/) // Handle both \r\n and \n line breaks
+                                    .filter(line => line.trim() !== '')
+                                    .map((line: string, index: number) => (
+                                      <p key={index} className="text-sm text-gray-800 mb-1">{line}</p>
+                                    ))}
+                                </div>
+                              ) : (
+                                <Alert className="p-2">
+                                  <AlertCircle className="h-3 w-3" />
+                                  <AlertDescription className="text-xs">No exceptions noted for this topic.</AlertDescription>
+                                </Alert>
+                              )}
+                            </div>
                           </div>
-                        ) : (
-                          <Alert>
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertDescription>No examples available for this topic.</AlertDescription>
-                          </Alert>
-                        )}
-                      </div>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="exceptions" className="focus:outline-none mt-0">
-                    <div className="bg-white rounded-lg overflow-hidden">
-                      {/* Title */}
-                      <div className="border-b border-gray-100 p-4 flex justify-between items-center">
-                        <h2 className="text-lg font-semibold text-gray-800">Exceptions</h2>
-                        <button
-                          onClick={() => speak(getLanguageContent('exception'))}
-                          className="text-indigo-600 hover:text-indigo-800 focus:outline-none"
-                          aria-label="Listen to exceptions"
-                        >
-                          <Volume2 className="h-4 w-4" />
-                        </button>
-                      </div>
-
-                      {/* Content */}
-                      <div className="p-6">
-                        {getLanguageContent('exception') ? (
-                          <div className="p-4 bg-amber-50 rounded-lg border border-amber-100">
-                            {getLanguageContent('exception')
-                              .split(/\r?\n/) // Handle both \r\n and \n line breaks
-                              .filter(line => line.trim() !== '')
-                              .map((line: string, index: number) => (
-                                <p key={index} className="text-gray-800 mb-2">{line}</p>
-                              ))}
-                          </div>
-                        ) : (
-                          <Alert>
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertDescription>No exceptions noted for this topic.</AlertDescription>
-                          </Alert>
-                        )}
-                      </div>
-                    </div>
-                  </TabsContent>
-                </motion.div>
-              </AnimatePresence>
-            </Tabs>
-
-            {/* Navigation and status */}
-            <div className="flex justify-between items-center mt-8 border-t pt-4">
-              <Button
-                variant="outline"
-                className="text-gray-500"
-                onClick={handleBack}
-              >
-                Previous
-              </Button>
-
-              <div className="flex items-center">
-                {progress === 100 ? (
-                  <div className="flex items-center text-green-600">
-                    <CheckCircle className="h-5 w-5 mr-2" />
-                    <span className="font-medium">Completed</span>
-                  </div>
-                ) : (
-                  <div className="text-gray-500">
-                    {readSections.length}/{availableSections.length} sections
-                  </div>
-                )}
-              </div>
-
-              <Button
-                className={`font-medium ${isCompleted
-                  ? 'bg-green-500 hover:bg-green-600'
-                  : 'bg-indigo-600 hover:bg-indigo-700'}`}
-                disabled={progress === 100}
-                onClick={() => handleComplete(xpEarned + 5)}
-              >
-                {isCompleted ? (
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                ) : (
-                  <ChevronRight className="h-4 w-4 mr-2" />
-                )}
-                {isCompleted ? "Completed" : "Complete"}
-              </Button>
-            </div>
+                        </TabsContent>
+                      </motion.div>
+                    </AnimatePresence>
+                  </Tabs>
+                </div>
+              </Card>
+            </motion.div>
           </div>
-        </Card>
-      </motion.div>
+
+          {/* Navigation and status - fixed at bottom */}
+          <div className="flex justify-between items-center pt-2 pb-1 px-4 border-t border-gray-100 dark:border-gray-800">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-gray-500"
+              onClick={handleBack}
+            >
+              <span className="text-xs">Previous</span>
+            </Button>
+
+            <div className="flex items-center">
+              {progress === 100 ? (
+                <div className="flex items-center text-green-600">
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  <span className="font-medium text-xs">Completed</span>
+                </div>
+              ) : (
+                <div className="text-gray-500 text-xs">
+                  {readSections.length}/{availableSections.length} sections
+                </div>
+              )}
+            </div>
+
+            <Button
+              size="sm"
+              className={`font-medium ${isCompleted
+                ? 'bg-green-500 hover:bg-green-600'
+                : 'bg-indigo-600 hover:bg-indigo-700'}`}
+              disabled={progress === 100}
+              onClick={() => handleComplete(xpEarned + 5)}
+            >
+              {isCompleted ? (
+                <CheckCircle className="h-3 w-3 mr-1" />
+              ) : (
+                <ChevronRight className="h-3 w-3 mr-1" />
+              )}
+              <span className="text-xs">{isCompleted ? "Completed" : "Complete"}</span>
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Confetti effect */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative w-full h-full">
-              {Array.from({ length: 50 }).map((_, i) => (
+              {Array.from({ length: 40 }).map((_, i) => (
                 <div
                   key={i}
                   className="absolute animate-confetti"
@@ -675,8 +726,8 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
                     left: `${Math.random() * 100}%`,
                     top: `-5%`,
                     backgroundColor: `hsl(${Math.random() * 360}, 100%, 50%)`,
-                    width: `${Math.random() * 10 + 5}px`,
-                    height: `${Math.random() * 10 + 5}px`,
+                    width: `${Math.random() * 8 + 4}px`,
+                    height: `${Math.random() * 8 + 4}px`,
                     transform: `rotate(${Math.random() * 360}deg)`,
                     animationDelay: `${Math.random() * 0.5}s`,
                     animationDuration: `${Math.random() * 3 + 2}s`
