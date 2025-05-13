@@ -527,7 +527,7 @@ class ContentLesson(models.Model):
 '''
   
 class VocabularyList(models.Model):
-
+    id = models.AutoField(primary_key=True)
     content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='vocabulary_lists', default=1)
     word_en = models.CharField(max_length=100, blank=False, null=False)
     word_fr = models.CharField(max_length=100, blank=False, null=False)
@@ -607,6 +607,91 @@ class VocabularyList(models.Model):
             'nl': self.antonymous_nl,
         }
         return switch.get(target_language, self.antonymous_en)
+    
+    # Nouvelles méthodes pour l'association avec les exercices de matching
+    def associate_with_matching_exercise(self, exercise):
+        """
+        Associe ce mot de vocabulaire avec un exercice de matching spécifié.
+        
+        Args:
+            exercise: Instance de MatchingExercise avec laquelle associer ce mot
+        
+        Returns:
+            bool: True si l'association a réussi, False sinon
+        """
+        if not exercise.id:
+            return False
+        
+        exercise.vocabulary_words.add(self)
+        return True
+    
+    @classmethod
+    def associate_batch_with_matching(cls, vocabulary_items, exercise):
+        """
+        Associe un lot de mots de vocabulaire avec un exercice de matching.
+        
+        Args:
+            vocabulary_items: QuerySet ou liste d'instances VocabularyList
+            exercise: Instance de MatchingExercise cible
+            
+        Returns:
+            int: Nombre de mots effectivement associés
+        """
+        if not exercise.id:
+            return 0
+        
+        # Limiter au nombre de paires configuré dans l'exercice si nécessaire
+        if hasattr(vocabulary_items, 'count') and vocabulary_items.count() > exercise.pairs_count:
+            vocabulary_items = vocabulary_items[:exercise.pairs_count]
+        elif len(vocabulary_items) > exercise.pairs_count:
+            vocabulary_items = vocabulary_items[:exercise.pairs_count]
+        
+        # Mémoriser le compte initial
+        initial_count = exercise.vocabulary_words.count()
+        
+        # Ajouter tous les éléments de vocabulaire
+        exercise.vocabulary_words.add(*vocabulary_items)
+        
+        # Retourner le nombre d'éléments ajoutés
+        return exercise.vocabulary_words.count() - initial_count
+    
+    @classmethod
+    def find_vocabulary_for_matching(cls, content_lesson=None, parent_lesson=None, limit=None):
+        """
+        Recherche le vocabulaire disponible pour un exercice de matching.
+        Recherche d'abord dans la leçon de contenu spécifiée, puis dans le parent.
+        
+        Args:
+            content_lesson: Leçon de contenu spécifique (optionnel)
+            parent_lesson: Leçon parente (optionnel)
+            limit: Nombre maximum d'éléments à retourner (optionnel)
+            
+        Returns:
+            QuerySet: Vocabulaire trouvé
+        """
+        if content_lesson:
+            # D'abord chercher dans la leçon de contenu spécifiée
+            vocab_items = cls.objects.filter(content_lesson=content_lesson)
+            if vocab_items.exists():
+                return vocab_items[:limit] if limit else vocab_items
+        
+        if parent_lesson:
+            # Ensuite chercher dans toutes les leçons de type vocabulaire du parent
+            vocab_lessons = ContentLesson.objects.filter(
+                lesson=parent_lesson,
+                content_type__iexact='vocabulary'
+            )
+            
+            all_vocab = cls.objects.none()
+            for vocab_lesson in vocab_lessons:
+                lesson_vocab = cls.objects.filter(content_lesson=vocab_lesson)
+                all_vocab = all_vocab | lesson_vocab
+            
+            if all_vocab.exists():
+                return all_vocab[:limit] if limit else all_vocab
+        
+        # Par défaut, retourner un QuerySet vide
+        return cls.objects.none()
     
 class MultipleChoiceQuestion(models.Model):
     content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='multiple_choices', default=1)
@@ -696,6 +781,9 @@ class MatchingExercise(models.Model):
     indépendamment de leur identifiant. Cela assure une expérience utilisateur cohérente
     tout en réduisant la complexité de gestion des données.
     """
+    # Utilisation d'un AutoField explicite pour garantir que Django gère correctement la séquence
+    id = models.AutoField(primary_key=True)
+    
     # Relation avec la leçon
     content_lesson = models.ForeignKey(
         ContentLesson, 
@@ -996,6 +1084,99 @@ class MatchingExercise(models.Model):
             exercise.vocabulary_words.add(vocab)
         
         return exercise
+    
+    # Nouvelles méthodes pour faciliter la synchronisation
+    def clear_vocabulary(self):
+        """
+        Supprime toutes les associations de vocabulaire existantes.
+        
+        Returns:
+            int: Le nombre d'éléments qui ont été supprimés
+        """
+        count = self.vocabulary_words.count()
+        self.vocabulary_words.clear()
+        return count
+    
+    def auto_associate_vocabulary(self, force_update=False):
+        """
+        Associe automatiquement le vocabulaire disponible à cet exercice.
+        
+        Args:
+            force_update (bool): Si True, supprime les associations existantes avant d'ajouter les nouvelles
+            
+        Returns:
+            int: Le nombre de mots de vocabulaire associés
+        """
+        # Vérifier s'il y a déjà des associations
+        initial_count = self.vocabulary_words.count()
+        
+        # Si des associations existent et force_update est False, ne rien faire
+        if initial_count > 0 and not force_update:
+            return 0
+        
+        # Supprimer les associations existantes si force_update est True
+        if initial_count > 0 and force_update:
+            self.vocabulary_words.clear()
+        
+        # Récupérer le vocabulaire disponible
+        parent_lesson = self.content_lesson.lesson if self.content_lesson else None
+        vocabulary_items = VocabularyList.find_vocabulary_for_matching(
+            content_lesson=self.content_lesson,
+            parent_lesson=parent_lesson,
+            limit=self.pairs_count
+        )
+        
+        # Vérifier si on a trouvé du vocabulaire
+        if not vocabulary_items.exists():
+            return 0
+        
+        # Ajouter le vocabulaire trouvé
+        for vocab in vocabulary_items:
+            self.vocabulary_words.add(vocab)
+        
+        # Retourner le nombre d'éléments ajoutés
+        return self.vocabulary_words.count() - (0 if force_update else initial_count)
+    
+    @classmethod
+    def auto_associate_all(cls, content_lesson_id=None, force_update=False):
+        """
+        Associe automatiquement le vocabulaire à tous les exercices de matching ou à ceux d'une leçon spécifique.
+        
+        Args:
+            content_lesson_id (int): ID d'une leçon spécifique à traiter (optionnel)
+            force_update (bool): Si True, remplace les associations existantes
+            
+        Returns:
+            tuple: (exercises_count, exercises_updated, words_added) - Statistiques sur l'opération
+        """
+        # Préparer la requête pour sélectionner les exercices
+        query = cls.objects
+        if content_lesson_id:
+            query = query.filter(content_lesson_id=content_lesson_id)
+            
+        exercises = query.all()
+        exercises_count = exercises.count()
+        
+        # Variables pour les statistiques
+        exercises_updated = 0
+        words_added = 0
+        
+        # Traiter chaque exercice
+        for exercise in exercises:
+            # Vérifier s'il a déjà des associations et si on doit les remplacer
+            initial_count = exercise.vocabulary_words.count()
+            
+            if initial_count > 0 and not force_update:
+                continue
+                
+            # Associer automatiquement le vocabulaire
+            words_added_to_exercise = exercise.auto_associate_vocabulary(force_update)
+            
+            if words_added_to_exercise > 0:
+                exercises_updated += 1
+                words_added += words_added_to_exercise
+        
+        return exercises_count, exercises_updated, words_added
 
 class SpeakingExercise(models.Model):
     content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='speaking_exercises')

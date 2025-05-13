@@ -928,12 +928,24 @@ const courseAPI = {
 
       console.log(`Creating matching exercise for content lesson ${parsedContentLessonId}`);
 
+      // Prepare request body with validated values
+      const requestBody: any = {
+        content_lesson_id: parsedContentLessonId
+      };
+      
+      // Only add optional parameters if they are defined
+      if (vocabularyIds && Array.isArray(vocabularyIds) && vocabularyIds.length > 0) {
+        requestBody.vocabulary_ids = vocabularyIds;
+      }
+      
+      if (pairsCount && !isNaN(Number(pairsCount))) {
+        requestBody.pairs_count = Number(pairsCount);
+      }
+      
+      console.log('Creating matching exercise with request body:', requestBody);
+
       // URL correcte avec /auto-create/ à la fin
-      const response = await apiClient.post('/api/v1/course/matching/auto-create/', {
-        content_lesson_id: parsedContentLessonId,
-        vocabulary_ids: vocabularyIds,
-        pairs_count: pairsCount
-      });
+      const response = await apiClient.post('/api/v1/course/matching/auto-create/', requestBody);
 
       return response.data;
     } catch (err: any) {
