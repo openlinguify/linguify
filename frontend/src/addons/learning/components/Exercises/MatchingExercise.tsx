@@ -93,28 +93,42 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
         // Otherwise, try to create one automatically
         else {
           console.log("No matching exercises found, attempting to create one");
-          const createdExercise = await courseAPI.createMatchingExercise(lessonId);
+          
+          // First, check if the lesson contains vocabulary words
+          const vocabData = await courseAPI.getVocabularyContent(lessonId, language);
 
-          if (createdExercise) {
-            setExercise(createdExercise);
-          } else {
-            // Check if the lesson contains vocabulary words
-            const vocabData = await courseAPI.getVocabularyContent(lessonId, language);
+          if (vocabData && vocabData.results && vocabData.results.length > 0) {
+            // Collect vocabulary IDs
+            const vocabIds = vocabData.results.map((item: any) => item.id);
+            console.log(`Found ${vocabIds.length} vocabulary words, using first 8 for matching exercise`);
+            
+            // Try to create with specific IDs and a reasonable number of pairs
+            const newExercise = await courseAPI.createMatchingExercise(
+              lessonId,
+              vocabIds.slice(0, 8), // Limit to 8 words maximum
+              Math.min(vocabIds.length, 8) // Use up to 8 pairs
+            );
 
-            if (vocabData && vocabData.results && vocabData.results.length > 0) {
-              // Collect vocabulary IDs
-              const vocabIds = vocabData.results.map((item: any) => item.id);
-              // Try to create with specific IDs
-              const newExercise = await courseAPI.createMatchingExercise(
-                lessonId,
-                vocabIds.slice(0, 8) // Limit to 8 words maximum
-              );
-
-              if (newExercise) {
-                setExercise(newExercise);
+            if (newExercise) {
+              console.log("Successfully created matching exercise with vocabulary:", newExercise);
+              setExercise(newExercise);
+            } else {
+              // Try one more time with just the lesson ID
+              console.log("Trying simplified matching exercise creation");
+              const simpleExercise = await courseAPI.createMatchingExercise(lessonId);
+              
+              if (simpleExercise) {
+                setExercise(simpleExercise);
               } else {
                 setError("Unable to create a matching exercise. No vocabulary available.");
               }
+            }
+          } else {
+            // Try with just the lesson ID as a last resort
+            const createdExercise = await courseAPI.createMatchingExercise(lessonId);
+            
+            if (createdExercise) {
+              setExercise(createdExercise);
             } else {
               setError("Unable to create a matching exercise. This lesson doesn't contain vocabulary.");
             }
