@@ -12,8 +12,8 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { Number, NumberProps } from "@/addons/learning/types";
-
-
+import { ExerciseWrapper, ExerciseSectionWrapper } from "./ExerciseStyles";
+import ExerciseNavBar from "../Navigation/ExerciseNavBar";
 
 const NumbersGridView = ({ lessonId, language = 'en' }: NumberProps) => {
     const [numbers, setNumbers] = useState<Number[]>([]);
@@ -21,6 +21,34 @@ const NumbersGridView = ({ lessonId, language = 'en' }: NumberProps) => {
     const [error, setError] = useState<string | null>(null);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [searchQuery, setSearchQuery] = useState('');
+    const [windowHeight, setWindowHeight] = useState<number | undefined>(
+        typeof window !== 'undefined' ? window.innerHeight : undefined
+    );
+
+    // Track window height for responsive sizing
+    useEffect(() => {
+        const updateHeight = () => {
+            setWindowHeight(window.innerHeight);
+        };
+
+        // Set initial height immediately without waiting for first render
+        if (typeof window !== 'undefined') {
+            setWindowHeight(window.innerHeight);
+        }
+
+        window.addEventListener('resize', updateHeight);
+
+        // Force a re-calculation after a short delay to handle any initial rendering issues
+        const timeout = setTimeout(updateHeight, 100);
+
+        return () => {
+            window.removeEventListener('resize', updateHeight);
+            clearTimeout(timeout);
+        };
+    }, []);
+
+    // Calculate dynamic content height
+    const mainContentHeight = windowHeight ? `calc(${windowHeight}px - 18rem)` : '60vh';
 
     useEffect(() => {
         const fetchNumbers = async () => {
@@ -67,7 +95,7 @@ const NumbersGridView = ({ lessonId, language = 'en' }: NumberProps) => {
                 { method: 'POST' }
             );
             const data = await response.json();
-            
+
             setNumbers(numbers.map(num =>
                 num.id === id ? { ...num, is_reviewed: data.is_reviewed } : num
             ));
@@ -76,7 +104,7 @@ const NumbersGridView = ({ lessonId, language = 'en' }: NumberProps) => {
         }
     };
 
-    const filteredNumbers = numbers.filter(num => 
+    const filteredNumbers = numbers.filter(num =>
         num.number.toLowerCase().includes(searchQuery.toLowerCase()) ||
         num[`number_${language}`].toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -88,39 +116,44 @@ const NumbersGridView = ({ lessonId, language = 'en' }: NumberProps) => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-64">
-                <span className="loading loading-spinner loading-lg"/>
-            </div>
+            <ExerciseWrapper className="flex flex-col h-full overflow-hidden max-w-4xl mx-auto">
+                <div className="flex items-center justify-center h-60">
+                    <span className="animate-pulse">Loading numbers...</span>
+                </div>
+            </ExerciseWrapper>
         );
     }
 
     if (error) {
         return (
-            <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-            </Alert>
+            <ExerciseWrapper className="flex flex-col h-full overflow-hidden max-w-4xl mx-auto">
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            </ExerciseWrapper>
         );
     }
 
     const NumberCard = ({ number }: { number: Number }) => (
         <Card
-            className={`p-4 transition-all ${
+            className={`p-3 transition-all ${
                 number.is_reviewed ? 'bg-green-50' : ''
             }`}
         >
             <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-start">
-                    <span className="text-2xl font-bold">{number.number}</span>
+                    <span className="text-xl font-bold">{number.number}</span>
                     <Button
                         size="icon"
                         variant="ghost"
+                        className="p-1"
                         onClick={() => speak(number.number)}
                     >
-                        <Volume2 className="h-4 w-4" />
+                        <Volume2 className="h-3 w-3" />
                     </Button>
                 </div>
-                <div className="text-muted-foreground text-sm">
+                <div className="text-muted-foreground text-xs">
                     {number[`number_${language}`]}
                 </div>
                 <Button
@@ -131,11 +164,11 @@ const NumbersGridView = ({ lessonId, language = 'en' }: NumberProps) => {
                 >
                     {number.is_reviewed ? (
                         <>
-                            <Check className="w-4 h-4 mr-2" />
-                            Known
+                            <Check className="w-3 h-3 mr-1" />
+                            <span className="text-xs">Known</span>
                         </>
                     ) : (
-                        "Mark as Known"
+                        <span className="text-xs">Mark as Known</span>
                     )}
                 </Button>
             </div>
@@ -143,91 +176,106 @@ const NumbersGridView = ({ lessonId, language = 'en' }: NumberProps) => {
     );
 
     return (
-        <div className="container mx-auto p-4 max-w-4xl">
-            <div className="mb-6 space-y-4">
-                {/* Header Controls */}
-                <div className="flex justify-between items-center">
-                    <div className="flex gap-2">
-                        <Button
-                            variant={viewMode === 'grid' ? 'default' : 'outline'}
-                            onClick={() => setViewMode('grid')}
-                            size="sm"
-                        >
-                            <Grid2X2 className="h-4 w-4 mr-2" />
-                            Grid
-                        </Button>
-                        <Button
-                            variant={viewMode === 'list' ? 'default' : 'outline'}
-                            onClick={() => setViewMode('list')}
-                            size="sm"
-                        >
-                            <List className="h-4 w-4 mr-2" />
-                            List
-                        </Button>
-                    </div>
-                    <input
-                        type="search"
-                        placeholder="Search numbers..."
-                        className="px-4 py-2 border rounded-lg"
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
+        <ExerciseWrapper className="flex flex-col h-full overflow-hidden max-w-4xl mx-auto">
+            <ExerciseNavBar unitId={lessonId} />
 
-                {/* Stats */}
-                <div className="grid grid-cols-2 gap-4">
-                    <Card className="p-4">
-                        <div className="text-sm text-muted-foreground">Known</div>
-                        <div className="text-2xl font-bold">
-                            {groupedNumbers.reviewed.length}/{numbers.length}
+            <ExerciseSectionWrapper className="flex-1 flex flex-col overflow-hidden relative">
+                {/* Content container with dynamic height */}
+                <div className="flex-1 flex flex-col overflow-hidden"
+                     style={{ height: mainContentHeight, maxHeight: mainContentHeight }}>
+
+                    {/* Header section */}
+                    <div className="mb-3 px-1">
+                        {/* Header Controls */}
+                        <div className="flex justify-between items-center">
+                            <div className="flex gap-1">
+                                <Button
+                                    variant={viewMode === 'grid' ? 'default' : 'outline'}
+                                    onClick={() => setViewMode('grid')}
+                                    size="sm"
+                                    className="h-8"
+                                >
+                                    <Grid2X2 className="h-3 w-3 mr-1" />
+                                    <span className="text-xs">Grid</span>
+                                </Button>
+                                <Button
+                                    variant={viewMode === 'list' ? 'default' : 'outline'}
+                                    onClick={() => setViewMode('list')}
+                                    size="sm"
+                                    className="h-8"
+                                >
+                                    <List className="h-3 w-3 mr-1" />
+                                    <span className="text-xs">List</span>
+                                </Button>
+                            </div>
+                            <input
+                                type="search"
+                                placeholder="Search numbers..."
+                                className="px-3 py-1 text-sm border rounded-md"
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
                         </div>
-                    </Card>
-                    <Card className="p-4">
-                        <div className="text-sm text-muted-foreground">To Learn</div>
-                        <div className="text-2xl font-bold">
-                            {groupedNumbers.unreviewed.length}
+
+                        {/* Stats */}
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                            <Card className="p-2">
+                                <div className="text-xs text-muted-foreground">Known</div>
+                                <div className="text-lg font-bold">
+                                    {groupedNumbers.reviewed.length}/{numbers.length}
+                                </div>
+                            </Card>
+                            <Card className="p-2">
+                                <div className="text-xs text-muted-foreground">To Learn</div>
+                                <div className="text-lg font-bold">
+                                    {groupedNumbers.unreviewed.length}
+                                </div>
+                            </Card>
                         </div>
-                    </Card>
+                    </div>
+
+                    {/* Main scrollable content */}
+                    <div className="flex-1 overflow-auto px-1 py-2">
+                        <Tabs defaultValue="all" className="w-full">
+                            <TabsList className="mb-3">
+                                <TabsTrigger value="all" className="text-xs">All Numbers</TabsTrigger>
+                                <TabsTrigger value="known" className="text-xs">Known</TabsTrigger>
+                                <TabsTrigger value="to-learn" className="text-xs">To Learn</TabsTrigger>
+                            </TabsList>
+
+                            <TabsContent value="all">
+                                <div className={`grid gap-3 ${
+                                    viewMode === 'grid' ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1'
+                                }`}>
+                                    {filteredNumbers.map(number => (
+                                        <NumberCard key={number.id} number={number} />
+                                    ))}
+                                </div>
+                            </TabsContent>
+
+                            <TabsContent value="known">
+                                <div className={`grid gap-3 ${
+                                    viewMode === 'grid' ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1'
+                                }`}>
+                                    {groupedNumbers.reviewed.map(number => (
+                                        <NumberCard key={number.id} number={number} />
+                                    ))}
+                                </div>
+                            </TabsContent>
+
+                            <TabsContent value="to-learn">
+                                <div className={`grid gap-3 ${
+                                    viewMode === 'grid' ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1'
+                                }`}>
+                                    {groupedNumbers.unreviewed.map(number => (
+                                        <NumberCard key={number.id} number={number} />
+                                    ))}
+                                </div>
+                            </TabsContent>
+                        </Tabs>
+                    </div>
                 </div>
-            </div>
-
-            <Tabs defaultValue="all" className="w-full">
-                <TabsList className="mb-4">
-                    <TabsTrigger value="all">All Numbers</TabsTrigger>
-                    <TabsTrigger value="known">Known</TabsTrigger>
-                    <TabsTrigger value="to-learn">To Learn</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="all">
-                    <div className={`grid gap-4 ${
-                        viewMode === 'grid' ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1'
-                    }`}>
-                        {filteredNumbers.map(number => (
-                            <NumberCard key={number.id} number={number} />
-                        ))}
-                    </div>
-                </TabsContent>
-
-                <TabsContent value="known">
-                    <div className={`grid gap-4 ${
-                        viewMode === 'grid' ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1'
-                    }`}>
-                        {groupedNumbers.reviewed.map(number => (
-                            <NumberCard key={number.id} number={number} />
-                        ))}
-                    </div>
-                </TabsContent>
-
-                <TabsContent value="to-learn">
-                    <div className={`grid gap-4 ${
-                        viewMode === 'grid' ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1'
-                    }`}>
-                        {groupedNumbers.unreviewed.map(number => (
-                            <NumberCard key={number.id} number={number} />
-                        ))}
-                    </div>
-                </TabsContent>
-            </Tabs>
-        </div>
+            </ExerciseSectionWrapper>
+        </ExerciseWrapper>
     );
 };
 

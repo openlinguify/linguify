@@ -569,13 +569,45 @@ export default function SpeakingPractice({
     }
   };
 
+  // Track window height for responsive sizing
+  const [windowHeight, setWindowHeight] = useState<number | undefined>(
+    typeof window !== 'undefined' ? window.innerHeight : undefined
+  );
+
+  // Set up window height tracking
+  useEffect(() => {
+    const updateHeight = () => {
+      setWindowHeight(window.innerHeight);
+    };
+
+    // Set initial height immediately without waiting for first render
+    if (typeof window !== 'undefined') {
+      setWindowHeight(window.innerHeight);
+    }
+
+    window.addEventListener('resize', updateHeight);
+
+    // Force a re-calculation after a short delay to handle any initial rendering issues
+    const timeout = setTimeout(updateHeight, 100);
+
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  // Calculate dynamic content height
+  const mainContentHeight = windowHeight ? `calc(${windowHeight}px - 16rem)` : '60vh';
+
   // Loading state
   if (loading) {
     return (
-      <div className="p-8 text-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-purple"></div>
-          <p className="text-brand-purple animate-pulse font-medium">Loading speaking practice...</p>
+      <div className="flex-1 flex flex-col h-full overflow-hidden max-w-4xl mx-auto">
+        <div className="flex items-center justify-center h-60">
+          <div className="flex flex-col items-center gap-3">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-brand-purple"></div>
+            <p className="text-brand-purple animate-pulse font-medium text-sm">Loading speaking practice...</p>
+          </div>
         </div>
       </div>
     );
@@ -584,38 +616,42 @@ export default function SpeakingPractice({
   // Error state
   if (error) {
     return (
-      <Alert variant="destructive" className="border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 shadow-sm">
-        <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
-        <AlertDescription className="text-red-700 dark:text-red-300">
-          {error}
-          {error && (error.includes("No example sentences found") || error.includes("No vocabulary items found")) && (
-            <div className="mt-3 text-sm bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-              <p className="font-medium mb-2">To fix this issue:</p>
-              <ol className="list-decimal pl-5 space-y-1 mt-1">
-                <li>Go to the Vocabulary lesson in this unit</li>
-                <li>Add vocabulary items if none exist</li>
-                <li>Add example sentences to vocabulary items</li>
-                <li>Make sure to include sentences in the target language ({normalizedTargetLanguage.toUpperCase()})</li>
-              </ol>
-              <p className="mt-2 text-brand-purple dark:text-brand-purple-light">
-                <strong>Note:</strong> You can also create a SpeakingExercise model in the admin panel to explicitly link vocabulary items to this speaking practice.
-              </p>
-            </div>
-          )}
-        </AlertDescription>
-      </Alert>
+      <div className="flex-1 flex flex-col h-full overflow-hidden max-w-4xl mx-auto">
+        <Alert variant="destructive" className="border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 shadow-sm mx-4 my-2">
+          <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+          <AlertDescription className="text-red-700 dark:text-red-300 text-sm">
+            {error}
+            {error && (error.includes("No example sentences found") || error.includes("No vocabulary items found")) && (
+              <div className="mt-2 text-xs bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                <p className="font-medium mb-1">To fix this issue:</p>
+                <ol className="list-decimal pl-4 space-y-1 mt-1">
+                  <li>Go to the Vocabulary lesson in this unit</li>
+                  <li>Add vocabulary items if none exist</li>
+                  <li>Add example sentences to vocabulary items</li>
+                  <li>Make sure to include sentences in the target language ({normalizedTargetLanguage.toUpperCase()})</li>
+                </ol>
+                <p className="mt-1 text-brand-purple dark:text-brand-purple-light text-xs">
+                  <strong>Note:</strong> You can also create a SpeakingExercise model in the admin panel to explicitly link vocabulary items to this speaking practice.
+                </p>
+              </div>
+            )}
+          </AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
   // Empty vocabulary state
   if (vocabulary.length === 0) {
     return (
-      <Alert className="border-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 shadow-sm">
-        <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-        <AlertDescription className="text-amber-700 dark:text-amber-300 font-medium">
-          No speaking exercises available for this lesson.
-        </AlertDescription>
-      </Alert>
+      <div className="flex-1 flex flex-col h-full overflow-hidden max-w-4xl mx-auto">
+        <Alert className="border-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 shadow-sm mx-4 my-2">
+          <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+          <AlertDescription className="text-amber-700 dark:text-amber-300 font-medium text-sm">
+            No speaking exercises available for this lesson.
+          </AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
@@ -623,350 +659,364 @@ export default function SpeakingPractice({
   const nativeExampleSentence = currentItem ? getNativeExampleSentence(currentItem) : "";
 
   return (
-    <div className="w-full space-y-6">
-      {/* Progress bar */}
-      <Progress
-        value={progress}
-        className="h-2 bg-gray-100 dark:bg-gray-700"
-        style={{
-          '--progress-background': 'linear-gradient(to right, var(--brand-purple), var(--brand-gold))'
-        } as React.CSSProperties}
-      />
-      <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
-        <span>
-          Example {currentIndex + 1} of {vocabulary.length}
-        </span>
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-brand-purple">{Math.round(progress)}% complete</span>
-          {streak > 1 && (
-            <Badge className="bg-gradient-to-r from-brand-purple to-brand-gold text-white shadow-sm font-medium">
-              {streak} streak! 🔥
-            </Badge>
-          )}
-        </div>
-      </div>
-
-      {/* Celebration animation */}
-      <AnimatePresence>
-        {showCelebration && (
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1, rotate: [0, -5, 5, -5, 0] }}
-            exit={{ scale: 0, opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
-          >
-            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
-            <motion.div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 p-8 rounded-lg shadow-xl text-white text-4xl font-bold">
-              {getSuccessMessage()} 🔥
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Main content card */}
-      <Card className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 backdrop-blur-sm shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span className="bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">Pronunciation Practice</span>
-            <Badge
-              variant="outline"
-              className="bg-brand-purple/10 text-brand-purple border-brand-purple/30 font-medium"
-            >
-              {normalizedTargetLanguage.toUpperCase()}
-            </Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Word information */}
-          <div className="bg-gradient-to-br from-brand-purple/5 to-brand-gold/5 p-5 rounded-lg border border-brand-purple/10 shadow-sm">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex flex-col space-y-4">
-                  {/* Target language word - featured prominently */}
-                  <div className="text-center">
-                    <span className="text-xs text-brand-purple font-medium block mb-1">
-                      Word to practice ({normalizedTargetLanguage.toUpperCase()}):
-                    </span>
-                    <h2 className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
-                      {currentItem?.[`word_${normalizedTargetLanguage}` as keyof VocabularyItem] || currentItem?.word_en}
-                    </h2>
-                  </div>
-
-                  {/* Native language translation - when different from target */}
-                  {normalizedTargetLanguage !== nativeLanguage && (
-                    <div className="text-center">
-                      <span className="text-xs text-brand-gold font-medium block mb-1">
-                        Translation ({nativeLanguage.toUpperCase()}):
-                      </span>
-                      <h3 className="text-lg text-gray-700 dark:text-gray-300 font-medium">
-                        {currentItem?.[`word_${nativeLanguage}` as keyof VocabularyItem]}
-                      </h3>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowWordInfo(!showWordInfo)}
-                className="text-brand-purple hover:bg-brand-purple/10"
-              >
-                <Info className="h-4 w-4 mr-1" />
-                {showWordInfo ? "Hide" : "Details"}
-              </Button>
+    <div className="flex-1 flex flex-col h-full overflow-hidden max-w-4xl mx-auto">
+      <div className="flex flex-col h-full overflow-hidden">
+        {/* Header with progress bar */}
+        <div className="px-4 py-2 space-y-2 border-b border-gray-100 dark:border-gray-800">
+          <Progress
+            value={progress}
+            className="h-2 bg-gray-100 dark:bg-gray-700"
+            style={{
+              '--progress-background': 'linear-gradient(to right, var(--brand-purple), var(--brand-gold))'
+            } as React.CSSProperties}
+          />
+          <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
+            <span>
+              Example {currentIndex + 1} of {vocabulary.length}
+            </span>
+            <div className="flex items-center gap-1">
+              <span className="font-medium text-brand-purple text-xs">{Math.round(progress)}% complete</span>
+              {streak > 1 && (
+                <Badge className="bg-gradient-to-r from-brand-purple to-brand-gold text-white shadow-sm font-medium text-xs">
+                  {streak} 🔥
+                </Badge>
+              )}
             </div>
           </div>
+        </div>
 
-          {/* Expandable word details */}
-          <AnimatePresence>
-            {showWordInfo && currentItem && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden"
-              >
-                <Card className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <CardContent className="p-4 space-y-4">
-                    <div>
-                      <h4 className="font-medium text-brand-purple dark:text-brand-purple-light mb-2 flex items-center">
-                        <Bookmark className="h-4 w-4 mr-2 text-brand-purple" />
-                        Definition
-                      </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        {currentItem[`definition_${normalizedTargetLanguage}` as keyof VocabularyItem] ||
-                         currentItem.definition_en ||
-                         "No definition available."}
-                      </p>
+        {/* Celebration animation */}
+        <AnimatePresence>
+          {showCelebration && (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1, rotate: [0, -5, 5, -5, 0] }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
+            >
+              <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
+              <motion.div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 p-6 rounded-lg shadow-xl text-white text-2xl font-bold">
+                {getSuccessMessage()} 🔥
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Content container with dynamic height */}
+        <div className="flex-1 flex flex-col overflow-hidden"
+             style={{ height: mainContentHeight, maxHeight: mainContentHeight }}>
+
+          {/* Main scrollable content */}
+          <div className="flex-1 overflow-auto px-3 py-2">
+            <Card className="overflow-hidden border border-gray-100 shadow-sm bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 backdrop-blur-sm">
+              <CardHeader className="p-3 border-b border-gray-100 dark:border-gray-800">
+                <CardTitle className="flex items-center justify-between text-base">
+                  <span className="bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">Pronunciation Practice</span>
+                  <Badge
+                    variant="outline"
+                    className="bg-brand-purple/10 text-brand-purple border-brand-purple/30 font-medium text-xs"
+                  >
+                    {normalizedTargetLanguage.toUpperCase()}
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-3 space-y-4">
+                {/* Word information */}
+                <div className="bg-gradient-to-br from-brand-purple/5 to-brand-gold/5 p-3 rounded-lg border border-brand-purple/10 shadow-sm">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex flex-col space-y-2">
+                        {/* Target language word - featured prominently */}
+                        <div className="text-center">
+                          <span className="text-xs text-brand-purple font-medium block mb-1">
+                            Word to practice ({normalizedTargetLanguage.toUpperCase()}):
+                          </span>
+                          <h2 className="text-xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
+                            {currentItem?.[`word_${normalizedTargetLanguage}` as keyof VocabularyItem] || currentItem?.word_en}
+                          </h2>
+                        </div>
+
+                        {/* Native language translation - when different from target */}
+                        {normalizedTargetLanguage !== nativeLanguage && (
+                          <div className="text-center">
+                            <span className="text-xs text-brand-gold font-medium block mb-1">
+                              Translation ({nativeLanguage.toUpperCase()}):
+                            </span>
+                            <h3 className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                              {currentItem?.[`word_${nativeLanguage}` as keyof VocabularyItem]}
+                            </h3>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
-                    {currentItem.word_type_en && (
-                      <div>
-                        <h4 className="font-medium text-brand-purple dark:text-brand-purple-light mb-1">
-                          Type
-                        </h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          {currentItem[`word_type_${normalizedTargetLanguage}` as keyof VocabularyItem] ||
-                           currentItem.word_type_en}
-                        </p>
-                      </div>
-                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowWordInfo(!showWordInfo)}
+                      className="text-brand-purple hover:bg-brand-purple/10 p-1 h-8"
+                    >
+                      <Info className="h-3 w-3 mr-1" />
+                      <span className="text-xs">{showWordInfo ? "Hide" : "Info"}</span>
+                    </Button>
+                  </div>
+                </div>
 
-                    {(currentItem.synonymous_en || currentItem[`synonymous_${normalizedTargetLanguage}` as keyof VocabularyItem]) && (
-                      <div>
-                        <h4 className="font-medium text-brand-purple dark:text-brand-purple-light mb-1">
-                          Synonyms
-                        </h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          {currentItem[`synonymous_${normalizedTargetLanguage}` as keyof VocabularyItem] ||
-                           currentItem.synonymous_en}
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                {/* Expandable word details */}
+                <AnimatePresence>
+                  {showWordInfo && currentItem && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <Card className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <CardContent className="p-3 space-y-3 text-xs">
+                          <div>
+                            <h4 className="font-medium text-brand-purple dark:text-brand-purple-light mb-1 flex items-center">
+                              <Bookmark className="h-3 w-3 mr-1 text-brand-purple" />
+                              Definition
+                            </h4>
+                            <p className="text-gray-600 dark:text-gray-300">
+                              {currentItem[`definition_${normalizedTargetLanguage}` as keyof VocabularyItem] ||
+                               currentItem.definition_en ||
+                               "No definition available."}
+                            </p>
+                          </div>
 
-          {/* Language-specific pronunciation tips */}
-          {getLanguageTips() && (
-            <div className="bg-gradient-to-r from-brand-purple/5 to-brand-gold/5 p-4 rounded-lg text-sm text-brand-purple dark:text-brand-purple-light border border-brand-purple/10 shadow-sm">
-              <Lightbulb className="h-4 w-4 inline mr-2 text-brand-gold" />
-              {getLanguageTips()}
-            </div>
-          )}
+                          {currentItem.word_type_en && (
+                            <div>
+                              <h4 className="font-medium text-brand-purple dark:text-brand-purple-light mb-1">
+                                Type
+                              </h4>
+                              <p className="text-gray-600 dark:text-gray-300">
+                                {currentItem[`word_type_${normalizedTargetLanguage}` as keyof VocabularyItem] ||
+                                 currentItem.word_type_en}
+                              </p>
+                            </div>
+                          )}
 
-          {/* Example sentence section */}
-          <div className="bg-gradient-to-br from-brand-purple/5 to-brand-gold/5 p-5 rounded-lg border border-brand-purple/10 shadow-sm">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="font-medium text-brand-purple dark:text-brand-purple-light flex items-center">
-                <Lightbulb className="h-4 w-4 mr-2 text-brand-gold" />
-                Repeat this sentence:
-              </h3>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={playExampleAudio}
-                disabled={isSpeaking || loadingVoice}
-                className="border-brand-purple/30 text-brand-purple hover:bg-brand-purple/10"
-              >
-                <Volume2
-                  className={`h-4 w-4 mr-2 ${isSpeaking || loadingVoice ? "animate-pulse" : ""}`}
-                />
-                {isSpeaking
-                  ? "Playing..."
-                  : loadingVoice
-                    ? "Loading..."
-                    : "Listen"}
-              </Button>
-            </div>
+                          {(currentItem.synonymous_en || currentItem[`synonymous_${normalizedTargetLanguage}` as keyof VocabularyItem]) && (
+                            <div>
+                              <h4 className="font-medium text-brand-purple dark:text-brand-purple-light mb-1">
+                                Synonyms
+                              </h4>
+                              <p className="text-gray-600 dark:text-gray-300">
+                                {currentItem[`synonymous_${normalizedTargetLanguage}` as keyof VocabularyItem] ||
+                                 currentItem.synonymous_en}
+                              </p>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-            {/* Target language sentence */}
-            {exampleSentence ? (
-              <div className="space-y-3">
-                <p className="text-xl text-center font-medium p-5 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
-                  {exampleSentence}
-                </p>
-
-                {/* Native language translation */}
-                {nativeExampleSentence && (
-                  <div className="text-sm text-center text-gray-600 dark:text-gray-400 p-3 border-t border-gray-100 dark:border-gray-700">
-                    <span className="font-medium text-brand-gold">{nativeLanguage.toUpperCase()}:</span>{" "}
-                    {nativeExampleSentence}
+                {/* Language-specific pronunciation tips */}
+                {getLanguageTips() && (
+                  <div className="bg-gradient-to-r from-brand-purple/5 to-brand-gold/5 p-2 rounded-lg text-xs text-brand-purple dark:text-brand-purple-light border border-brand-purple/10 shadow-sm">
+                    <Lightbulb className="h-3 w-3 inline mr-1 text-brand-gold" />
+                    {getLanguageTips()}
                   </div>
                 )}
-              </div>
-            ) : (
-              <p className="text-center text-gray-500 dark:text-gray-400">
-                No example sentence available for this word.
-              </p>
-            )}
+
+                {/* Example sentence section */}
+                <div className="bg-gradient-to-br from-brand-purple/5 to-brand-gold/5 p-3 rounded-lg border border-brand-purple/10 shadow-sm">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-medium text-brand-purple dark:text-brand-purple-light flex items-center text-sm">
+                      <Lightbulb className="h-3 w-3 mr-1 text-brand-gold" />
+                      Repeat this sentence:
+                    </h3>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={playExampleAudio}
+                      disabled={isSpeaking || loadingVoice}
+                      className="border-brand-purple/30 text-brand-purple hover:bg-brand-purple/10 h-7 py-0"
+                    >
+                      <Volume2
+                        className={`h-3 w-3 mr-1 ${isSpeaking || loadingVoice ? "animate-pulse" : ""}`}
+                      />
+                      <span className="text-xs">
+                        {isSpeaking
+                          ? "Playing..."
+                          : loadingVoice
+                            ? "Loading..."
+                            : "Listen"}
+                      </span>
+                    </Button>
+                  </div>
+
+                  {/* Target language sentence */}
+                  {exampleSentence ? (
+                    <div className="space-y-2">
+                      <p className="text-lg text-center font-medium p-3 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
+                        {exampleSentence}
+                      </p>
+
+                      {/* Native language translation */}
+                      {nativeExampleSentence && (
+                        <div className="text-xs text-center text-gray-600 dark:text-gray-400 p-2 border-t border-gray-100 dark:border-gray-700">
+                          <span className="font-medium text-brand-gold">{nativeLanguage.toUpperCase()}:</span>{" "}
+                          {nativeExampleSentence}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-center text-gray-500 dark:text-gray-400 text-xs">
+                      No example sentence available for this word.
+                    </p>
+                  )}
+                </div>
+
+                {/* Speech recording controls */}
+                <div className="flex flex-col items-center gap-2">
+                  <Button
+                    size="md"
+                    onClick={toggleRecording}
+                    disabled={isSpeaking || loadingVoice}
+                    className={`rounded-full w-12 h-12 shadow-md ${isRecording
+                      ? "bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700"
+                      : "bg-gradient-to-r from-brand-purple to-brand-gold text-white hover:opacity-90"
+                      }`}
+                  >
+                    {isRecording ? (
+                      <MicOff className="h-5 w-5" />
+                    ) : (
+                      <Mic className="h-5 w-5" />
+                    )}
+                  </Button>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                    {isRecording
+                      ? "Listening... Speak now"
+                      : "Click to start speaking"}
+                  </p>
+                </div>
+
+                {/* Speech recognition error */}
+                {recognitionError && (
+                  <Alert variant="destructive" className="border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 shadow-sm p-2">
+                    <AlertCircle className="h-3 w-3 text-red-600 dark:text-red-400" />
+                    <AlertDescription className="text-red-700 dark:text-red-300 text-xs">{recognitionError}</AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Transcript display */}
+                {transcript && (
+                  <div className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+                    <h3 className="font-medium mb-1 text-brand-purple text-xs">Your speech:</h3>
+                    <p className="text-gray-800 dark:text-gray-200 text-sm">{transcript}</p>
+                  </div>
+                )}
+
+                {/* Pronunciation feedback */}
+                {feedback && (
+                  <div
+                    className={`p-3 rounded-lg ${feedback.score >= 0.7
+                      ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
+                      : "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+                      } shadow-sm`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="font-medium text-gray-800 dark:text-gray-200 text-xs">Pronunciation feedback:</h3>
+                      {feedback.score >= 0.7 ? (
+                        <CheckCircle className="h-3 w-3 text-green-600 dark:text-green-400" />
+                      ) : (
+                        <XCircle className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Accuracy:</span>
+                        <Progress
+                          value={feedback.score * 100}
+                          className="h-1.5 w-full max-w-md bg-gray-100 dark:bg-gray-700"
+                          style={
+                            {
+                              "--progress-background":
+                                feedback.score >= 0.7
+                                  ? "linear-gradient(to right, var(--brand-purple), var(--brand-gold))"
+                                  : "linear-gradient(to right, rgb(251, 146, 60), rgb(251, 191, 36))",
+                            } as React.CSSProperties
+                          }
+                        />
+                        <span className="text-xs font-medium">
+                          {Math.round(feedback.score * 100)}%
+                        </span>
+                      </div>
+
+                      {/* Mistakes list */}
+                      {feedback.mistakes && feedback.mistakes.length > 0 && (
+                        <div className="bg-white dark:bg-gray-800/50 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
+                          <span className="text-xs font-medium block mb-1 text-brand-purple">
+                            Areas to improve:
+                          </span>
+                          <ul className="text-xs list-disc pl-4 space-y-1 text-gray-700 dark:text-gray-300">
+                            {feedback.mistakes.map((mistake, i) => (
+                              <li key={i}>{mistake}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Suggestions */}
+                      {feedback.suggestions && (
+                        <div className="text-xs bg-brand-purple/5 dark:bg-brand-purple/10 p-2 rounded-lg border border-brand-purple/20">
+                          <span className="font-medium text-brand-purple">Tip:</span>{" "}
+                          <span className="text-gray-700 dark:text-gray-300">{feedback.suggestions}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Stats panel */}
+                <Card className="bg-gradient-to-br from-brand-purple/5 to-brand-gold/5 border border-brand-purple/10 shadow-sm">
+                  <CardContent className="p-2">
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Time spent</p>
+                        <p className="text-sm font-semibold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
+                          {Math.floor(timeSpent / 60)}:
+                          {(timeSpent % 60).toString().padStart(2, "0")}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Success rate</p>
+                        <p className="text-sm font-semibold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
+                          {successfulAttempts}/{vocabulary.length}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Streak</p>
+                        <p className="text-sm font-semibold text-brand-purple">
+                          {streak} {streak > 0 && "🔥"}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Speech recording controls */}
-          <div className="flex flex-col items-center gap-4">
-           <Button
-             size="lg"
-             onClick={toggleRecording}
-             disabled={isSpeaking || loadingVoice}
-             className={`rounded-full w-16 h-16 shadow-md ${isRecording
-               ? "bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700"
-               : "bg-gradient-to-r from-brand-purple to-brand-gold text-white hover:opacity-90"
-               }`}
-           >
-             {isRecording ? (
-               <MicOff className="h-6 w-6" />
-             ) : (
-               <Mic className="h-6 w-6" />
-             )}
-           </Button>
-           <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-             {isRecording
-               ? "Listening... Speak now"
-               : "Click to start speaking"}
-           </p>
-         </div>
-
-         {/* Speech recognition error */}
-         {recognitionError && (
-           <Alert variant="destructive" className="border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 shadow-sm">
-             <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
-             <AlertDescription className="text-red-700 dark:text-red-300">{recognitionError}</AlertDescription>
-           </Alert>
-         )}
-
-         {/* Transcript display */}
-         {transcript && (
-           <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-             <h3 className="font-medium mb-2 text-brand-purple">Your speech:</h3>
-             <p className="text-lg text-gray-800 dark:text-gray-200">{transcript}</p>
-           </div>
-         )}
-
-         {/* Pronunciation feedback */}
-         {feedback && (
-           <div
-             className={`p-4 rounded-lg ${feedback.score >= 0.7
-               ? "bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800"
-               : "bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800"
-               } shadow-sm`}
-           >
-             <div className="flex items-center gap-2 mb-3">
-               <h3 className="font-medium text-gray-800 dark:text-gray-200">Pronunciation feedback:</h3>
-               {feedback.score >= 0.7 ? (
-                 <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-               ) : (
-                 <XCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-               )}
-             </div>
-             <div className="space-y-3">
-               <div className="flex items-center gap-2">
-                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Accuracy:</span>
-                 <Progress
-                   value={feedback.score * 100}
-                   className="h-2 w-full max-w-md bg-gray-100 dark:bg-gray-700"
-                   style={
-                     {
-                       "--progress-background":
-                         feedback.score >= 0.7
-                           ? "linear-gradient(to right, var(--brand-purple), var(--brand-gold))"
-                           : "linear-gradient(to right, rgb(251, 146, 60), rgb(251, 191, 36))",
-                     } as React.CSSProperties
-                   }
-                 />
-                 <span className="text-sm font-medium">
-                   {Math.round(feedback.score * 100)}%
-                 </span>
-               </div>
-
-               {/* Mistakes list */}
-               {feedback.mistakes && feedback.mistakes.length > 0 && (
-                 <div className="bg-white dark:bg-gray-800/50 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
-                   <span className="text-sm font-medium block mb-2 text-brand-purple">
-                     Areas to improve:
-                   </span>
-                   <ul className="text-sm list-disc pl-5 space-y-1 text-gray-700 dark:text-gray-300">
-                     {feedback.mistakes.map((mistake, i) => (
-                       <li key={i}>{mistake}</li>
-                     ))}
-                   </ul>
-                 </div>
-               )}
-
-               {/* Suggestions */}
-               {feedback.suggestions && (
-                 <div className="text-sm bg-brand-purple/5 dark:bg-brand-purple/10 p-3 rounded-lg border border-brand-purple/20">
-                   <span className="font-medium text-brand-purple">Tip:</span>{" "}
-                   <span className="text-gray-700 dark:text-gray-300">{feedback.suggestions}</span>
-                 </div>
-               )}
-             </div>
-           </div>
-         )}
-
-         {/* Navigation button */}
-         <div className="flex justify-end">
-           <Button
-             onClick={handleNext}
-             disabled={!feedback || feedback.score < 0.6}
-             className="bg-gradient-to-r from-brand-purple to-brand-gold text-white hover:opacity-90 shadow-md"
-           >
-             {currentIndex === vocabulary.length - 1
-               ? "Complete"
-               : "Next sentence"}
-           </Button>
-         </div>
-       </CardContent>
-     </Card>
-
-     {/* Stats panel */}
-     <Card className="bg-gradient-to-br from-brand-purple/5 to-brand-gold/5 border border-brand-purple/10 shadow-sm">
-       <CardContent className="p-4">
-         <div className="grid grid-cols-3 gap-4 text-center">
-           <div>
-             <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Time spent</p>
-             <p className="text-xl font-semibold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
-               {Math.floor(timeSpent / 60)}:
-               {(timeSpent % 60).toString().padStart(2, "0")}
-             </p>
-           </div>
-           <div>
-             <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Success rate</p>
-             <p className="text-xl font-semibold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
-               {successfulAttempts}/{vocabulary.length}
-             </p>
-           </div>
-           <div>
-             <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Current streak</p>
-             <p className="text-xl font-semibold text-brand-purple">
-               {streak} {streak > 0 && "🔥"}
-             </p>
-           </div>
-         </div>
-       </CardContent>
-     </Card>
-   </div>
- );
+          {/* Navigation - fixed at bottom */}
+          <div className="flex justify-end pt-2 pb-1 px-4 border-t border-gray-100 dark:border-gray-800">
+            <Button
+              size="sm"
+              onClick={handleNext}
+              disabled={!feedback || feedback.score < 0.6}
+              className="bg-gradient-to-r from-brand-purple to-brand-gold text-white hover:opacity-90"
+            >
+              <span className="text-xs">
+                {currentIndex === vocabulary.length - 1 ? "Complete" : "Next sentence"}
+              </span>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

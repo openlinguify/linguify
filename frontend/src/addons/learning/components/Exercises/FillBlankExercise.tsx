@@ -1,15 +1,24 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Volume2, CheckCircle, X, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 import apiClient from "@/core/api/apiClient";
 import { Exercise, FillBlankExerciseProps } from '@/addons/learning/types';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ExerciseWrapper, 
+  exerciseHeading, 
+  exerciseContentBox,
+  feedbackMessage,
+  ExerciseSectionWrapper
+} from "./ExerciseStyles";
+import ExerciseProgress from "./ExerciseProgress";
+import ExerciseNavigation from "./ExerciseNavigation";
 import ExerciseNavBar from "../Navigation/ExerciseNavBar";
 
 const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({ 
@@ -31,6 +40,29 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
   const [timeSpent, setTimeSpent] = useState(0);
   const [exerciseCompleted, setExerciseCompleted] = useState(false);
   const [apiError, setApiError] = useState(false);
+  const [windowHeight, setWindowHeight] = useState<number>(0);
+
+  // Track window height for responsive sizing - initialize immediately
+  useEffect(() => {
+    const updateHeight = () => {
+      setWindowHeight(window.innerHeight);
+    };
+    
+    // Set initial height immediately without waiting for first render
+    if (typeof window !== 'undefined') {
+      setWindowHeight(window.innerHeight);
+    }
+    
+    window.addEventListener('resize', updateHeight);
+    
+    // Force a re-calculation after a short delay to handle any initial rendering issues
+    const timeout = setTimeout(updateHeight, 100);
+    
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      clearTimeout(timeout);
+    };
+  }, []);
 
   // Initialize target language
   useEffect(() => {
@@ -42,11 +74,11 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
     }
   }, [language]);
 
-  // Track time spent
+  // Track time spent - reduced interval to avoid unnecessary re-renders
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeSpent(Math.floor((Date.now() - startTime) / 1000));
-    }, 1000);
+    }, 10000); // Update every 10 seconds instead of every second
     
     return () => clearInterval(timer);
   }, [startTime]);
@@ -72,9 +104,6 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
             }
           }
         );
-
-        // For debugging - understand the actual structure
-        console.log('API response data:', response.data);
         
         // Handle both array or paginated results
         const exercisesArray = Array.isArray(response.data) ? response.data : (response.data.results || []);
@@ -88,7 +117,6 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
           if (unitId) {
             lessonCompletionService.updateContentProgress(
               parseInt(lessonId),
-              unitId ? parseInt(unitId) : 0, // unitId as second parameter
               1, // 1% progress to start
               0,
               0,
@@ -126,9 +154,9 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
     const parts = sentence.split('___');
 
     return (
-      <div className="text-lg">
+      <div className="text-base sm:text-lg">
         {parts[0]}
-        <span className={`px-3 py-1 mx-1 rounded-md font-medium ${
+        <span className={`px-2 py-1 mx-1 rounded-md font-medium ${
           selectedOption
             ? (isAnswerCorrect
                 ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-300 dark:border-green-800'
@@ -197,37 +225,55 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
     }
   };
 
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
+      setSelectedAnswer(null);
+      setIsAnswerCorrect(null);
+      setShowFeedback(false);
+    }
+  };
+
+  // Calculate dynamic height based on window - make it compact for content
+  const mainContentHeight = windowHeight ? `calc(${windowHeight}px - 20rem)` : '50vh';
+
   // Loading state
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-brand-purple"></div>
-        <p className="text-brand-purple animate-pulse font-medium">Loading exercise...</p>
-      </div>
+      <ExerciseWrapper className="max-w-4xl mx-auto">
+        <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-brand-purple"></div>
+          <p className="text-brand-purple animate-pulse font-medium">Loading exercise...</p>
+        </div>
+      </ExerciseWrapper>
     );
   }
 
   // API Error state
   if (apiError) {
     return (
-      <Alert variant="destructive" className="mb-6 border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 shadow-sm">
-        <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
-        <AlertDescription className="text-red-700 dark:text-red-300 font-medium">
-          There was a problem connecting to the exercise service. Please try again later.
-        </AlertDescription>
-      </Alert>
+      <ExerciseWrapper className="max-w-4xl mx-auto">
+        <Alert variant="destructive" className="border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 shadow-sm">
+          <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+          <AlertDescription className="text-red-700 dark:text-red-300 font-medium">
+            There was a problem connecting to the exercise service. Please try again later.
+          </AlertDescription>
+        </Alert>
+      </ExerciseWrapper>
     );
   }
 
   // No exercises available
   if (exercises.length === 0) {
     return (
-      <Alert className="border-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 shadow-sm">
-        <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-        <AlertDescription className="text-amber-700 dark:text-amber-300 font-medium">
-          No fill in the blank exercises available for this lesson.
-        </AlertDescription>
-      </Alert>
+      <ExerciseWrapper className="max-w-4xl mx-auto">
+        <Alert className="border-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 shadow-sm">
+          <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+          <AlertDescription className="text-amber-700 dark:text-amber-300 font-medium">
+            No fill in the blank exercises available for this lesson.
+          </AlertDescription>
+        </Alert>
+      </ExerciseWrapper>
     );
   }
 
@@ -241,142 +287,172 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
   const correctAnswer = currentExercise.correct_answer || '';
 
   return (
-    <div className="w-full space-y-6">
-      {/* Utilisation du composant réutilisable */}
+    <ExerciseWrapper className="flex flex-col h-full overflow-hidden max-w-4xl mx-auto">
       <ExerciseNavBar unitId={unitId} />
-
-      {/* Progress bar */}
-      <div className="mb-4">
-        <Progress
-          value={progress}
-          className="h-2 bg-gray-100 dark:bg-gray-700"
-          style={{
-            '--progress-background': 'linear-gradient(to right, var(--brand-purple), var(--brand-gold))'
-          } as React.CSSProperties}
-        />
-        <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-2">
-          <span>Exercise {currentIndex + 1} of {exercises.length}</span>
-          <span className="font-medium text-brand-purple">{Math.round(progress)}% complete</span>
-        </div>
-      </div>
-
-      {/* Main exercise card */}
-      <Card className="p-6 bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 backdrop-blur-sm shadow-lg">
-        <div className="space-y-6">
-          {/* Instruction */}
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">{instruction}</h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-brand-purple hover:bg-brand-purple/10"
-              onClick={() => {
-                const utterance = new SpeechSynthesisUtterance(instruction);
-                utterance.lang = targetLanguage === 'fr' ? 'fr-FR' :
-                                  targetLanguage === 'es' ? 'es-ES' :
-                                  targetLanguage === 'nl' ? 'nl-NL' : 'en-US';
-                window.speechSynthesis.speak(utterance);
-              }}
-            >
-              <Volume2 className="h-4 w-4" />
-            </Button>
+      
+      <ExerciseSectionWrapper className="flex-1 flex flex-col overflow-hidden">
+        {/* Exercise Header - more compact */}
+        <div className="mb-2">
+          <div className="flex justify-between items-center">
+            <h2 className={exerciseHeading() + " text-lg md:text-xl"}>
+              {instruction}
+            </h2>
+            
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-brand-purple hover:bg-brand-purple/10 h-8 w-8 p-0"
+                onClick={() => {
+                  const utterance = new SpeechSynthesisUtterance(instruction);
+                  utterance.lang = targetLanguage === 'fr' ? 'fr-FR' :
+                                    targetLanguage === 'es' ? 'es-ES' :
+                                    targetLanguage === 'nl' ? 'nl-NL' : 'en-US';
+                  window.speechSynthesis.speak(utterance);
+                }}
+              >
+                <Volume2 className="h-4 w-4" />
+              </Button>
+              
+              <Badge variant="outline" className="text-xs">
+                {currentIndex + 1} / {exercises.length}
+              </Badge>
+            </div>
           </div>
-
+          
+          {/* Progress Tracking */}
+          <ExerciseProgress 
+            currentStep={currentIndex + 1}
+            totalSteps={exercises.length}
+            score={isAnswerCorrect === true ? 100 : isAnswerCorrect === false ? 0 : undefined}
+            showScore={showFeedback}
+            showPercentage={false}
+            className="mt-2"
+          />
+        </div>
+        
+        {/* Main Content Area with dynamic height */}
+        <div 
+          className="flex-1 overflow-auto flex flex-col gap-3"
+          style={{ height: mainContentHeight, maxHeight: mainContentHeight }}
+        >
           {/* Sentence with blank */}
-          <div className="bg-gradient-to-br from-brand-purple/5 to-brand-gold/5 p-6 rounded-lg text-center border border-brand-purple/10 shadow-sm">
+          <div className={exerciseContentBox() + " text-center flex-grow-0"}>
             {formatSentenceWithBlank(sentence, selectedAnswer)}
           </div>
 
-          {/* Options */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Options Grid - compact layout */}
+          <div className="flex-grow-0 grid grid-cols-1 sm:grid-cols-2 gap-2">
             {options.map((option, index) => (
-              <Button
+              <motion.div
                 key={index}
-                variant="outline"
-                className={`
-                  transition-all duration-200 border-2 hover:bg-brand-purple/5
-                  ${selectedAnswer === option
-                    ? isAnswerCorrect
-                      ? "border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
-                      : "border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
-                    : selectedAnswer && option === correctAnswer
-                    ? "border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300" // Show correct answer if user was wrong
-                    : "border-brand-purple/30 hover:border-brand-purple"
-                  }
-                `}
-                onClick={() => handleSelectAnswer(option)}
-                disabled={selectedAnswer !== null}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ 
+                  opacity: 1, 
+                  y: 0 
+                }}
+                transition={{ 
+                  duration: 0.15,
+                  delay: index * 0.05
+                }}
               >
-                {option}
-                {selectedAnswer && option === correctAnswer && (
-                  <CheckCircle className="ml-2 h-4 w-4 text-green-600 dark:text-green-400" />
-                )}
-                {selectedAnswer === option && !isAnswerCorrect && (
-                  <X className="ml-2 h-4 w-4 text-red-600 dark:text-red-400" />
-                )}
-              </Button>
+                <Button
+                  variant="outline"
+                  className={`
+                    w-full transition-all duration-200 border text-sm py-2 h-auto
+                    ${selectedAnswer === option
+                      ? isAnswerCorrect
+                        ? "border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                        : "border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
+                      : selectedAnswer && option === correctAnswer
+                      ? "border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300" // Show correct answer if user was wrong
+                      : "border-brand-purple/30 hover:border-brand-purple"
+                    }
+                  `}
+                  onClick={() => handleSelectAnswer(option)}
+                  disabled={selectedAnswer !== null}
+                >
+                  <span className="flex-grow text-left">{option}</span>
+                  {selectedAnswer && option === correctAnswer && (
+                    <CheckCircle className="ml-2 h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                  )}
+                  {selectedAnswer === option && !isAnswerCorrect && (
+                    <X className="ml-2 h-4 w-4 text-red-600 dark:text-red-400 flex-shrink-0" />
+                  )}
+                </Button>
+              </motion.div>
             ))}
           </div>
 
           {/* Feedback section */}
-          {showFeedback && (
-            <div className={`p-4 rounded-lg mt-4 border ${
-              isAnswerCorrect
-                ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
-            }`}>
-              <h3 className={`font-medium ${
-                isAnswerCorrect
-                  ? 'text-green-700 dark:text-green-300'
-                  : 'text-red-700 dark:text-red-300'
-              }`}>
-                {isAnswerCorrect ? 'Correct!' : 'Incorrect'}
-              </h3>
-
-              {!isAnswerCorrect && (
-                <p className="text-gray-700 dark:text-gray-300 mt-1">
-                  The correct answer is: <span className="font-medium">{correctAnswer}</span>
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Navigation buttons */}
-          <div className="flex justify-between mt-6">
-            <Button
-              variant="outline"
-              className="border-brand-purple text-brand-purple hover:bg-brand-purple/10"
-              disabled={currentIndex === 0}
-              onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
-            >
-              Previous
-            </Button>
-
-            <Button
-              variant={showFeedback ? "default" : "outline"}
-              disabled={!showFeedback && !exerciseCompleted}
-              onClick={handleNextExercise}
-              className={showFeedback
-                ? "bg-gradient-to-r from-brand-purple to-brand-gold text-white hover:opacity-90"
-                : "border-brand-purple/30 text-brand-purple hover:bg-brand-purple/10"
-              }
-            >
-              {currentIndex === exercises.length - 1 ? 'Complete' : 'Next'}
-            </Button>
-          </div>
+          <AnimatePresence>
+            {showFeedback && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="flex-grow-0 overflow-hidden"
+              >
+                <div className={feedbackMessage(isAnswerCorrect || false)}>
+                  {isAnswerCorrect ? (
+                    <CheckCircle className="h-4 w-4 flex-shrink-0" />
+                  ) : (
+                    <X className="h-4 w-4 flex-shrink-0" />
+                  )}
+                  
+                  <div>
+                    <p className="font-medium text-sm">
+                      {isAnswerCorrect ? 'Correct!' : 'Incorrect'}
+                    </p>
+                    {!isAnswerCorrect && (
+                      <p className="text-xs mt-0.5">
+                        The correct answer is: <span className="font-medium">{correctAnswer}</span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
+          {/* Spacer to push navigation to bottom when content is short */}
+          <div className="flex-grow"></div>
         </div>
-      </Card>
 
-      {/* Completion message */}
-      {exerciseCompleted && (
-        <Alert className="bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 shadow-sm">
-          <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-          <AlertDescription className="text-green-700 dark:text-green-300 font-medium">
-            Congratulations! You've completed all the exercises.
-          </AlertDescription>
-        </Alert>
-      )}
-    </div>
+        {/* Navigation buttons - fixed at bottom */}
+        <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+          <ExerciseNavigation
+            onPrevious={handlePrevious}
+            onNext={showFeedback ? handleNextExercise : undefined}
+            disablePrevious={currentIndex === 0}
+            disableNext={!showFeedback}
+            previousLabel="Previous"
+            nextLabel={currentIndex === exercises.length - 1 ? 'Complete' : 'Next'}
+            showNext={true}
+            showReset={false}
+          />
+        </div>
+        
+        {/* Completion message */}
+        <AnimatePresence>
+          {exerciseCompleted && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="mt-2 overflow-hidden"
+            >
+              <Alert className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 shadow-sm">
+                <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <AlertDescription className="text-green-700 dark:text-green-300 text-sm font-medium">
+                  Congratulations! You've completed all the exercises.
+                </AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </ExerciseSectionWrapper>
+    </ExerciseWrapper>
   );
 };
 

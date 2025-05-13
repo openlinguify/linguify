@@ -11,9 +11,8 @@ import { cva } from 'class-variance-authority';
 // Styles pour les conteneurs d'exercice
 export const exerciseContainer = cva([
   "w-full",
-  "max-w-4xl", 
   "mx-auto",
-  "space-y-6",
+  "space-y-4",
   "bg-white dark:bg-gray-900",
   "rounded-xl",
   "shadow-sm dark:shadow-none",
@@ -138,8 +137,9 @@ export const feedbackMessage = (isCorrect: boolean) => {
 
 // Wrapper de composant pour appliquer des styles cohérents aux exercices
 export function ExerciseWrapper({ children, className = "" }: { children: React.ReactNode, className?: string }) {
+  const baseClasses = exerciseContainer();
   return (
-    <div className={exerciseContainer() + " " + className}>
+    <div className={baseClasses + " " + className}>
       {children}
     </div>
   );
