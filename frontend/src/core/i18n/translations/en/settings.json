@@ -1,0 +1,138 @@
+{
+  "settings": "Settings",
+  "saveChanges": "Save Changes",
+  "saving": "Saving...",
+  "cancel": "Cancel",
+  "tabs": {
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "language": "Language",
+    "appearance": "Appearance",
+    "learning": "Learning",
+    "security": "Security",
+    "privacy": "Privacy",
+    "billing": "Billing",
+    "dangerZone": "Danger Zone"
+  },
+  "profileInfo": {
+    "personalInfo": "Personal Info",
+    "languages": "Languages",
+    "learningGoals": "Learning Goals",
+    "preferences": "Preferences",
+    "editProfile": "Edit Profile",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "username": "Username",
+    "email": "Email",
+    "gender": "Gender",
+    "birthday": "Birthday",
+    "bio": "Bio",
+    "notSpecified": "Not specified"
+  },
+  "languageSettings": {
+    "title": "Language Settings",
+    "description": "Manage your language learning preferences",
+    "nativeLanguage": "Native Language",
+    "targetLanguage": "Target Language",
+    "languageLevel": "Language Level",
+    "learningObjectives": "Learning Objectives"
+  },
+  "appearance": {
+    "title": "Appearance Settings",
+    "description": "Customize the look and feel of the application",
+    "theme": "Theme",
+    "interfaceLanguage": "Interface Language"
+  },
+  "learning": {
+    "title": "Learning Settings",
+    "description": "Customize your learning experience",
+    "dailyGoal": "Daily Goal (minutes)",
+    "speakingExercises": "Speaking Exercises",
+    "listeningExercises": "Listening Exercises",
+    "readingExercises": "Reading Exercises",
+    "writingExercises": "Writing Exercises",
+    "includeDescription": "Include {exerciseType} exercises in your lessons"
+  },
+  "security": {
+    "title": "Security Settings",
+    "description": "Manage your account security",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "twoFactor": "Two-Factor Authentication",
+    "twoFactorDescription": "Add an extra layer of security to your account",
+    "setup2FA": "Setup 2FA",
+    "connectedAccounts": "Connected Accounts",
+    "connectedAccountsDescription": "Manage your connected accounts and services",
+    "connect": "Connect"
+  },
+  "privacy": {
+    "title": "Privacy Settings",
+    "description": "Manage your privacy preferences",
+    "publicProfile": "Public Profile",
+    "publicProfileDescription": "Make your profile visible to other users",
+    "shareProgress": "Share Progress",
+    "shareProgressDescription": "Allow others to see your learning progress",
+    "shareActivity": "Share Activity",
+    "shareActivityDescription": "Allow others to see your recent activity",
+    "dataPrivacy": "Data & Privacy",
+    "dataPrivacyDescription": "Manage your data and privacy options",
+    "downloadData": "Download My Data",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
+  },
+  "billing": {
+    "title": "Billing Settings",
+    "description": "Manage your subscription and payment methods",
+    "currentPlan": "Current Plan",
+    "freePlan": "Free Plan",
+    "premiumPlan": "Premium Plan",
+    "upgradeToPremium": "Upgrade to access premium features",
+    "manageSubscription": "Manage Subscription",
+    "upgrade": "Upgrade",
+    "paymentMethod": "Payment Method",
+    "billingHistory": "Billing History",
+    "noHistory": "No billing history available on the free plan",
+    "viewAllInvoices": "View All Invoices"
+  },
+  "dangerZone": {
+    "title": "Danger Zone",
+    "description": "Irreversible and destructive actions",
+    "exportAndReset": "Export and Reset Data",
+    "exportBeforeDeleting": "Download your data before resetting or deleting your account",
+    "exportAllData": "Export All Data",
+    "resetOnboarding": "Reset Onboarding",
+    "resetProgressButton": "Reset Learning Progress",
+    "resetProgressDescription": "This will reset all your progress in the Learning app (courses and lessons)",
+    "deleteAccountButton": "Delete Account",
+    "deleteAccountDescription": "Once you delete your account, there is no going back. This action cannot be undone.",
+    "deleting": "Deleting...",
+    "deleteAccount": {
+      "title": "Delete Your Account",
+      "choose": "Choose a deletion option",
+      "temporaryDeletion": "Deactivate My Account (30-day recovery)",
+      "temporaryDescription": "Your account will be deactivated immediately and scheduled for permanent deletion after 30 days. You can recover your account by logging in during this period.",
+      "permanentDeletion": "Delete My Account Permanently",
+      "permanentDescription": "Your account will be permanently deleted immediately. All your data will be removed and this action cannot be undone.",
+      "confirmPrompt": "To confirm permanent deletion, please type",
+      "confirmPromptSuffix": "below:",
+      "confirmError": "Please type 'delete' to confirm",
+      "deactivateAccount": "Deactivate My Account",
+      "deletePermanently": "Delete Permanently"
+    },
+    "resetProgress": {
+      "title": "Reset Learning Progress",
+      "description": "This will reset all your learning progress including completed courses, lessons, exercises, and statistics. Your account information, profile, and settings will be preserved.",
+      "warning": "Warning: This action cannot be undone!",
+      "confirmPrompt": "To confirm resetting your progress, please type 'reset' below:",
+      "resetting": "Resetting progress...",
+      "confirmReset": "Reset Progress"
+    }
+  },
+  "alerts": {
+    "profileUpdated": "Profile updated successfully!",
+    "settingsSaved": "Settings saved successfully!",
+    "updateFailed": "Failed to update profile. Please try again."
+  }
+}
