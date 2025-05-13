@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from '@/core/i18n/useTranslations';
 
 interface ResetProgressDialogProps {
   onConfirmReset: () => Promise<void>;
@@ -23,6 +24,7 @@ export function ResetProgressDialog({
   onConfirmReset,
   isResetting,
 }: ResetProgressDialogProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const isConfirmValid = confirmText.toLowerCase() === "reset";
@@ -37,25 +39,24 @@ export function ResetProgressDialog({
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <Button variant="outline" className="text-red-500">
-          Réinitialiser la progression
+          {typeof t('dangerZone.resetProgressButton') === 'string' ? t('dangerZone.resetProgressButton') : 'Reset Learning Progress'}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Réinitialiser toute la progression ?</AlertDialogTitle>
+          <AlertDialogTitle>{t('dangerZone.resetProgress.title')}</AlertDialogTitle>
           <AlertDialogDescription className="space-y-4">
-            Cette action va réinitialiser votre progression d'apprentissage pour la langue que vous étudiez actuellement,
-            y compris les leçons complétées, scores, et statistiques associées. C'est comme si vous recommenciez à zéro avec cette langue.
+            {t('dangerZone.resetProgress.description')}
             
             <span className="block font-semibold">
-              Cette action est irréversible. Toutes vos données de progression pour cette langue seront définitivement supprimées.
+              {typeof t('dangerZone.resetProgress.warning') === 'string' ? t('dangerZone.resetProgress.warning') : 'Warning: This action cannot be undone!'}
             </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         
         <div className="py-3">
           <h4 className="text-sm font-medium mb-2">
-            Pour confirmer, veuillez écrire "reset" ci-dessous :
+            {typeof t('dangerZone.resetProgress.confirmPrompt') === 'string' ? t('dangerZone.resetProgress.confirmPrompt') : 'Type "reset" to confirm:'}
           </h4>
           <Input
             value={confirmText}
@@ -65,7 +66,7 @@ export function ResetProgressDialog({
           />
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isResetting}>Annuler</AlertDialogCancel>
+          <AlertDialogCancel disabled={isResetting}>{t('cancel')}</AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault();
@@ -77,10 +78,10 @@ export function ResetProgressDialog({
             {isResetting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Réinitialisation...
+                {typeof t('dangerZone.resetProgress.resetting') === 'string' ? t('dangerZone.resetProgress.resetting') : 'Resetting progress...'}
               </>
             ) : (
-              "Réinitialiser définitivement"
+              typeof t('dangerZone.resetProgress.confirmReset') === 'string' ? t('dangerZone.resetProgress.confirmReset') : 'Reset Progress'
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

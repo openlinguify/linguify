@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db import transaction
 import csv, io, json
 
 from .widgets import AdminJSONFormField
@@ -25,6 +26,8 @@ from .models import (
     FillBlankExercise,
     SpeakingExercise
 )
+
+from django.forms.widgets import CheckboxSelectMultiple
 
 class LessonInline(admin.TabularInline):
     model = Lesson
@@ -94,6 +97,101 @@ class LessonAdminForm(forms.ModelForm):
             self.add_error('professional_field', 'Ce champ est obligatoire pour les leçons professionnelles.')
         
         return cleaned_data
+
+# Formulaire de création rapide d'exercice de matching
+class QuickMatchingExerciseForm(forms.Form):
+    lesson = forms.ModelChoiceField(
+        queryset=Lesson.objects.all().order_by('unit__level', 'unit__order', 'order'),
+        label="Lesson",
+        help_text="Sélectionnez la leçon pour cet exercice"
+    )
+    
+    title_en = forms.CharField(
+        max_length=255,
+        label="Titre (EN)",
+        initial="Matching Exercise"
+    )
+    
+    title_fr = forms.CharField(
+        max_length=255,
+        label="Titre (FR)",
+        initial="Exercice d'association"
+    )
+    
+    title_es = forms.CharField(
+        max_length=255,
+        label="Titre (ES)",
+        initial="Ejercicio de emparejamiento"
+    )
+    
+    title_nl = forms.CharField(
+        max_length=255,
+        label="Titre (NL)",
+        initial="Matching oefening"
+    )
+    
+    instruction_en = forms.CharField(
+        max_length=255,
+        initial="Match the words with their translations",
+        label="Instruction (EN)"
+    )
+    
+    instruction_fr = forms.CharField(
+        max_length=255,
+        initial="Associez les mots à leurs traductions",
+        label="Instruction (FR)"
+    )
+    
+    instruction_es = forms.CharField(
+        max_length=255,
+        initial="Relaciona las palabras con sus traducciones",
+        label="Instruction (ES)"
+    )
+    
+    instruction_nl = forms.CharField(
+        max_length=255,
+        initial="Koppel de woorden aan hun vertalingen",
+        label="Instruction (NL)"
+    )
+    
+    estimated_duration = forms.IntegerField(
+        min_value=1,
+        initial=5,
+        label="Durée estimée (minutes)"
+    )
+    
+    content_type = forms.CharField(
+        widget=forms.HiddenInput(),
+        initial="matching"
+    )
+    
+    # Configuration de l'exercice
+    difficulty = forms.ChoiceField(
+        choices=[("easy", "Easy"), ("medium", "Medium"), ("hard", "Hard")],
+        initial="medium",
+        label="Difficulté"
+    )
+    
+    pairs_count = forms.IntegerField(
+        min_value=4,
+        max_value=20,
+        initial=8,
+        label="Nombre de paires",
+        help_text="Nombre maximal de paires mot-traduction à afficher"
+    )
+    
+    # Champ pour sélectionner du vocabulaire existant
+    use_vocabulary = forms.BooleanField(
+        required=False,
+        initial=True,
+        label="Utiliser du vocabulaire existant",
+        help_text="Associe automatiquement du vocabulaire de la leçon"
+    )
+    
+    def clean(self):
+        # Validation personnalisée si nécessaire
+        return super().clean()
+
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
@@ -328,6 +426,102 @@ class LessonAdmin(admin.ModelAdmin):
         css = {
             'all': ('css/lesson_admin.css',)
         }
+    
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('<path:object_id>/create-matching/',
+                 self.admin_site.admin_view(self.create_matching_view),
+                 name='course_lesson_create_matching'),
+        ]
+        return custom_urls + urls
+    
+    def create_matching_view(self, request, object_id):
+        """Vue pour créer rapidement un exercice de matching associé à une leçon"""
+        # Récupérer la leçon
+        lesson = get_object_or_404(Lesson, pk=object_id)
+        
+        # Contexte initial
+        context = {
+            **self.admin_site.each_context(request),
+            'opts': self.model._meta,
+            'title': f'Créer un exercice de matching pour {lesson.title_en}',
+            'lesson': lesson,
+            'form': None,
+            'has_vocab': VocabularyList.objects.filter(
+                content_lesson__lesson=lesson
+            ).exists(),
+            'vocab_count': VocabularyList.objects.filter(
+                content_lesson__lesson=lesson
+            ).count(),
+        }
+        
+        if request.method == 'POST':
+            form = QuickMatchingExerciseForm(request.POST)
+            context['form'] = form
+            
+            if form.is_valid():
+                try:
+                    with transaction.atomic():
+                        # 1. Créer le ContentLesson
+                        content_lesson = ContentLesson.objects.create(
+                            lesson=lesson,
+                            content_type=form.cleaned_data['content_type'],
+                            title_en=form.cleaned_data['title_en'],
+                            title_fr=form.cleaned_data['title_fr'],
+                            title_es=form.cleaned_data['title_es'],
+                            title_nl=form.cleaned_data['title_nl'],
+                            instruction_en=form.cleaned_data['instruction_en'],
+                            instruction_fr=form.cleaned_data['instruction_fr'],
+                            instruction_es=form.cleaned_data['instruction_es'],
+                            instruction_nl=form.cleaned_data['instruction_nl'],
+                            estimated_duration=form.cleaned_data['estimated_duration'],
+                            order=ContentLesson.objects.filter(lesson=lesson).count() + 1
+                        )
+                        
+                        # 2. Créer le MatchingExercise
+                        exercise = MatchingExercise.objects.create(
+                            content_lesson=content_lesson,
+                            difficulty=form.cleaned_data['difficulty'],
+                            title_en=form.cleaned_data['title_en'],
+                            title_fr=form.cleaned_data['title_fr'],
+                            title_es=form.cleaned_data['title_es'],
+                            title_nl=form.cleaned_data['title_nl'],
+                            pairs_count=form.cleaned_data['pairs_count'],
+                            order=1  # Premier exercice pour ce ContentLesson
+                        )
+                        
+                        # 3. Associer automatiquement le vocabulaire si demandé
+                        if form.cleaned_data['use_vocabulary']:
+                            # Trouver le vocabulaire disponible
+                            vocabulary_items = VocabularyList.objects.filter(
+                                content_lesson__lesson=lesson
+                            )[:form.cleaned_data['pairs_count']]
+                            
+                            if vocabulary_items.exists():
+                                # Ajouter le vocabulaire trouvé à l'exercice
+                                for vocab in vocabulary_items:
+                                    exercise.vocabulary_words.add(vocab)
+                    
+                    # Afficher un message de succès
+                    messages.success(
+                        request,
+                        f"L'exercice '{form.cleaned_data['title_en']}' a été créé avec succès."
+                    )
+                    
+                    # Rediriger vers la page d'édition du MatchingExercise
+                    return redirect('admin:course_matchingexercise_change', exercise.id)
+                    
+                except Exception as e:
+                    messages.error(request, f"Erreur lors de la création: {str(e)}")
+        else:
+            # Formulaire initial avec leçon pré-sélectionnée
+            form = QuickMatchingExerciseForm(initial={
+                'lesson': lesson,
+            })
+            context['form'] = form
+        
+        return TemplateResponse(request, 'admin/course/create_matching_exercise.html', context)
 
 class VocabularyInline(admin.TabularInline):
     model = SpeakingExercise.vocabulary_items.through
@@ -812,6 +1006,14 @@ class NumbersAdmin(admin.ModelAdmin):
 @admin.register(MatchingExercise)
 class MatchingExerciseAdmin(admin.ModelAdmin):
     """Interface d'administration pour les exercices d'association."""
+    
+    change_list_template = 'admin/course/matchingexercise/change_list.html'
+    
+    def changelist_view(self, request, extra_context=None):
+        # Ajouter le url pour la création rapide
+        extra_context = extra_context or {}
+        extra_context['quick_create_url'] = reverse('admin:matchingexercise_quick_create')
+        return super().changelist_view(request, extra_context=extra_context)
     
     # Affichage dans la liste
     list_display = ('id', 'get_content_lesson_title', 'difficulty', 'pairs_count', 'order', 'created_at')
@@ -1650,11 +1852,100 @@ class FillBlankExerciseAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
+            path('quick-create/', self.admin_site.admin_view(self.quick_create_view), name='matchingexercise_quick_create'),
             path('import-csv/', self.admin_site.admin_view(self.import_csv_view), name='fillblankexercise_import_csv'),
             path('export-template/', self.admin_site.admin_view(self.export_template_view), name='fillblankexercise_export_template'),
             path('bulk-create/', self.admin_site.admin_view(self.bulk_create_view), name='fillblankexercise_bulk_create'),
             path('preview/<int:pk>/', self.admin_site.admin_view(self.preview_view), name='fillblankexercise_preview'),
         ]
+        return custom_urls + urls
+        
+    def quick_create_view(self, request):
+        """Vue pour créer rapidement un exercice de matching avec tous les éléments"""
+        context = {
+            **self.admin_site.each_context(request),
+            'opts': self.model._meta,
+            'title': 'Création rapide d\'exercice de matching',
+            'form': None,
+        }
+        
+        if request.method == 'POST':
+            form = QuickMatchingExerciseForm(request.POST)
+            context['form'] = form
+            
+            if form.is_valid():
+                try:
+                    with transaction.atomic():
+                        lesson = form.cleaned_data['lesson']
+                        
+                        # 1. Créer le ContentLesson
+                        content_lesson = ContentLesson.objects.create(
+                            lesson=lesson,
+                            content_type=form.cleaned_data['content_type'],
+                            title_en=form.cleaned_data['title_en'],
+                            title_fr=form.cleaned_data['title_fr'],
+                            title_es=form.cleaned_data['title_es'],
+                            title_nl=form.cleaned_data['title_nl'],
+                            instruction_en=form.cleaned_data['instruction_en'],
+                            instruction_fr=form.cleaned_data['instruction_fr'],
+                            instruction_es=form.cleaned_data['instruction_es'],
+                            instruction_nl=form.cleaned_data['instruction_nl'],
+                            estimated_duration=form.cleaned_data['estimated_duration'],
+                            order=ContentLesson.objects.filter(lesson=lesson).count() + 1
+                        )
+                        
+                        # 2. Créer le MatchingExercise
+                        exercise = MatchingExercise.objects.create(
+                            content_lesson=content_lesson,
+                            difficulty=form.cleaned_data['difficulty'],
+                            title_en=form.cleaned_data['title_en'],
+                            title_fr=form.cleaned_data['title_fr'],
+                            title_es=form.cleaned_data['title_es'],
+                            title_nl=form.cleaned_data['title_nl'],
+                            pairs_count=form.cleaned_data['pairs_count'],
+                            order=1  # Premier exercice pour ce ContentLesson
+                        )
+                        
+                        # 3. Associer automatiquement le vocabulaire si demandé
+                        if form.cleaned_data['use_vocabulary']:
+                            # Trouver le vocabulaire disponible
+                            vocabulary_items = VocabularyList.objects.filter(
+                                content_lesson__lesson=lesson
+                            )[:form.cleaned_data['pairs_count']]
+                            
+                            if vocabulary_items.exists():
+                                # Ajouter le vocabulaire trouvé à l'exercice
+                                for vocab in vocabulary_items:
+                                    exercise.vocabulary_words.add(vocab)
+                    
+                    # Afficher un message de succès
+                    messages.success(
+                        request,
+                        f"L'exercice '{form.cleaned_data['title_en']}' a été créé avec succès."
+                    )
+                    
+                    # Rediriger vers la page d'édition du MatchingExercise
+                    return redirect('admin:course_matchingexercise_change', exercise.id)
+                    
+                except Exception as e:
+                    messages.error(request, f"Erreur lors de la création: {str(e)}")
+        else:
+            form = QuickMatchingExerciseForm()
+            context['form'] = form
+            
+            # Ajouter une liste des leçons qui contiennent du vocabulaire
+            lessons_with_vocab = Lesson.objects.filter(
+                content_lessons__vocabulary_lists__isnull=False
+            ).distinct().order_by('unit__level', 'unit__order', 'order')
+            
+            context['lessons_with_vocab'] = lessons_with_vocab
+            context['vocab_counts'] = {
+                lesson.id: VocabularyList.objects.filter(
+                    content_lesson__lesson=lesson
+                ).count() for lesson in lessons_with_vocab
+            }
+        
+        return TemplateResponse(request, 'admin/course/matchingexercise/quick_create.html', context)
         return custom_urls + urls
     
     def import_csv_view(self, request):

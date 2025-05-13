@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader2, Clock, AlertTriangle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslation } from '@/core/i18n/useTranslations';
 
 interface DeleteAccountDialogProps {
   onConfirmTemporary: () => Promise<void>;
@@ -30,6 +31,7 @@ export function DeleteAccountDialog({
   onConfirmPermanent, 
   isDeleting 
 }: DeleteAccountDialogProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const [error, setError] = useState('');
@@ -38,7 +40,7 @@ export function DeleteAccountDialog({
   const handleConfirmDelete = async () => {
     // Confirm text validation only for permanent deletion
     if (deletionType === 'permanent' && confirmText.toLowerCase() !== 'delete') {
-      setError('Please type "delete" to confirm permanent deletion');
+      setError(typeof t('dangerZone.deleteAccount.confirmError') === 'string' ? t('dangerZone.deleteAccount.confirmError') : 'Please type "delete" to confirm');
       return;
     }
     
@@ -69,18 +71,18 @@ export function DeleteAccountDialog({
           {isDeleting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Deleting...
+              {typeof t('dangerZone.deleting') === 'string' ? t('dangerZone.deleting') : 'Deleting...'}
             </>
           ) : (
-            <>Delete Account</>
+            <>{typeof t('dangerZone.deleteAccountButton') === 'string' ? t('dangerZone.deleteAccountButton') : 'Delete Account'}</>
           )}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="max-w-[500px]">
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Your Account</AlertDialogTitle>
+          <AlertDialogTitle>{typeof t('dangerZone.deleteAccount.title') === 'string' ? t('dangerZone.deleteAccount.title') : 'Delete Your Account'}</AlertDialogTitle>
           <AlertDialogDescription>
-            Choose how you want to delete your account:
+            {typeof t('dangerZone.deleteAccount.choose') === 'string' ? t('dangerZone.deleteAccount.choose') : 'Choose a deletion option'}
           </AlertDialogDescription>
         </AlertDialogHeader>
         
@@ -91,14 +93,13 @@ export function DeleteAccountDialog({
                 <RadioGroupItem value="temporary" id="option-temporary" />
                 <div className="grid gap-1.5 leading-none">
                   <Label htmlFor="option-temporary" className="font-medium text-base">
-                    Temporary Deletion (30 days)
+                    {typeof t('dangerZone.deleteAccount.temporaryDeletion') === 'string' ? t('dangerZone.deleteAccount.temporaryDeletion') : 'Deactivate My Account (30-day recovery)'}
                   </Label>
                   <Card className="mt-2">
                     <CardContent className="p-3 flex gap-3 items-center">
                       <Clock className="h-5 w-5 text-amber-500 flex-shrink-0" />
                       <p className="text-sm text-muted-foreground">
-                        Your account will be deactivated immediately but your data will be kept for 30 days. 
-                        You can restore your account during this period.
+                        {typeof t('dangerZone.deleteAccount.temporaryDescription') === 'string' ? t('dangerZone.deleteAccount.temporaryDescription') : 'Your account will be deactivated immediately and scheduled for permanent deletion after 30 days. You can recover your account by logging in during this period.'}
                       </p>
                     </CardContent>
                   </Card>
@@ -109,14 +110,13 @@ export function DeleteAccountDialog({
                 <RadioGroupItem value="permanent" id="option-permanent" />
                 <div className="grid gap-1.5 leading-none">
                   <Label htmlFor="option-permanent" className="font-medium text-base">
-                    Permanent Deletion (Immediate)
+                    {typeof t('dangerZone.deleteAccount.permanentDeletion') === 'string' ? t('dangerZone.deleteAccount.permanentDeletion') : 'Delete My Account Permanently'}
                   </Label>
                   <Card className="mt-2">
                     <CardContent className="p-3 flex gap-3 items-center">
                       <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
                       <p className="text-sm text-muted-foreground">
-                        Your account and all associated data will be permanently deleted immediately. 
-                        This action cannot be undone.
+                        {typeof t('dangerZone.deleteAccount.permanentDescription') === 'string' ? t('dangerZone.deleteAccount.permanentDescription') : 'Your account will be permanently deleted immediately. All your data will be removed and this action cannot be undone.'}
                       </p>
                     </CardContent>
                   </Card>
@@ -128,7 +128,7 @@ export function DeleteAccountDialog({
           {deletionType === 'permanent' && (
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">
-                To confirm permanent deletion, please type <span className="font-semibold">delete</span> below:
+                {typeof t('dangerZone.deleteAccount.confirmPrompt') === 'string' ? t('dangerZone.deleteAccount.confirmPrompt') : 'To confirm permanent deletion, please type'} <span className="font-semibold">delete</span> {typeof t('dangerZone.deleteAccount.confirmPromptSuffix') === 'string' ? t('dangerZone.deleteAccount.confirmPromptSuffix') : 'below:'}
               </p>
               <Input
                 value={confirmText}
@@ -143,7 +143,7 @@ export function DeleteAccountDialog({
         </div>
         
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
           <AlertDialogAction 
             onClick={handleConfirmDelete} 
             className={deletionType === 'permanent' 
@@ -153,10 +153,13 @@ export function DeleteAccountDialog({
             {isDeleting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Deleting...
+                {typeof t('dangerZone.deleting') === 'string' ? t('dangerZone.deleting') : 'Deleting...'}
               </>
             ) : (
-              <>{deletionType === 'temporary' ? 'Deactivate Account' : 'Delete Permanently'}</>
+              <>{deletionType === 'temporary' ? 
+                (typeof t('dangerZone.deleteAccount.deactivateAccount') === 'string' ? t('dangerZone.deleteAccount.deactivateAccount') : 'Deactivate My Account') : 
+                (typeof t('dangerZone.deleteAccount.deletePermanently') === 'string' ? t('dangerZone.deleteAccount.deletePermanently') : 'Delete Permanently')
+              }</>
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

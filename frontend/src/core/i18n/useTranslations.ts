@@ -17,6 +17,7 @@ const translationModules = {
       const onboardingTerms = await import('./translations/en/onboarding_terms.json');
       const languages = await import('./translations/en/languages.json');
       const notifications = await import('./translations/en/notifications.json');
+      const settings = await import('./translations/en/settings.json').catch(() => ({ default: {} }));
 
       // Note: dashboard, terms, onboarding, and languages are nested objects
       return {
@@ -25,6 +26,7 @@ const translationModules = {
         ...footer.default,
         ...sidebar.default,
         ...notifications.default,
+        ...settings.default,
         dashboard: dashboard.default,
         terms: terms.default.en,
         onboarding: {
@@ -51,6 +53,7 @@ const translationModules = {
       const onboardingTerms = await import('./translations/fr/onboarding_terms.json');
       const languages = await import('./translations/fr/languages.json');
       const notifications = await import('./translations/fr/notifications.json');
+      const settings = await import('./translations/fr/settings.json').catch(() => ({ default: {} }));
 
       return {
         ...common.default,
@@ -58,6 +61,7 @@ const translationModules = {
         ...footer.default,
         ...sidebar.default,
         ...notifications.default,
+        ...settings.default,
         dashboard: dashboard.default,
         terms: terms.default.fr,
         onboarding: {
@@ -73,11 +77,13 @@ const translationModules = {
       const enTerms = await import('./translations/en/terms.json').catch(() => ({ default: { en: {} } }));
       const enOnboarding = await import('./translations/en/onboarding.json').catch(() => ({ default: {} }));
       const enLanguages = await import('./translations/en/languages.json').catch(() => ({ default: {} }));
+      const enSettings = await import('./translations/en/settings.json').catch(() => ({ default: {} }));
       return {
         dashboard: enDashboard.default || {},
         terms: enTerms.default.en || {},
         onboarding: enOnboarding.default || {},
-        languages: enLanguages.default || {}
+        languages: enLanguages.default || {},
+        ...enSettings.default || {}
       };
     }
   },
@@ -93,6 +99,7 @@ const translationModules = {
       const onboardingTerms = await import('./translations/es/onboarding_terms.json');
       const languages = await import('./translations/es/languages.json');
       const notifications = await import('./translations/es/notifications.json');
+      const settings = await import('./translations/es/settings.json').catch(() => ({ default: {} }));
 
       return {
         ...common.default,
@@ -100,6 +107,7 @@ const translationModules = {
         ...footer.default,
         ...sidebar.default,
         ...notifications.default,
+        ...settings.default,
         dashboard: dashboard.default,
         terms: terms.default.es,
         onboarding: {
@@ -115,11 +123,13 @@ const translationModules = {
       const enTerms = await import('./translations/en/terms.json').catch(() => ({ default: { en: {} } }));
       const enOnboarding = await import('./translations/en/onboarding.json').catch(() => ({ default: {} }));
       const enLanguages = await import('./translations/en/languages.json').catch(() => ({ default: {} }));
+      const enSettings = await import('./translations/en/settings.json').catch(() => ({ default: {} }));
       return {
         dashboard: enDashboard.default || {},
         terms: enTerms.default.en || {},
         onboarding: enOnboarding.default || {},
-        languages: enLanguages.default || {}
+        languages: enLanguages.default || {},
+        ...enSettings.default || {}
       };
     }
   },
@@ -135,6 +145,7 @@ const translationModules = {
       const onboardingTerms = await import('./translations/nl/onboarding_terms.json');
       const languages = await import('./translations/nl/languages.json');
       const notifications = await import('./translations/nl/notifications.json');
+      const settings = await import('./translations/nl/settings.json').catch(() => ({ default: {} }));
 
       return {
         ...common.default,
@@ -142,6 +153,7 @@ const translationModules = {
         ...footer.default,
         ...sidebar.default,
         ...notifications.default,
+        ...settings.default,
         dashboard: dashboard.default,
         terms: terms.default.nl,
         onboarding: {
@@ -157,11 +169,13 @@ const translationModules = {
       const enTerms = await import('./translations/en/terms.json').catch(() => ({ default: { en: {} } }));
       const enOnboarding = await import('./translations/en/onboarding.json').catch(() => ({ default: {} }));
       const enLanguages = await import('./translations/en/languages.json').catch(() => ({ default: {} }));
+      const enSettings = await import('./translations/en/settings.json').catch(() => ({ default: {} }));
       return {
         dashboard: enDashboard.default || {},
         terms: enTerms.default.en || {},
         onboarding: enOnboarding.default || {},
-        languages: enLanguages.default || {}
+        languages: enLanguages.default || {},
+        ...enSettings.default || {}
       };
     }
   }
@@ -251,6 +265,13 @@ export function useTranslation() {
         if (isMounted) {
           setTranslations(module);
           console.log('Translations loaded:', Object.keys(module).length, 'entries');
+        
+        // Debug dangerZone translations specifically
+        if (module.dangerZone) {
+          console.log('DangerZone translations found:', Object.keys(module.dangerZone).length, 'entries');
+        } else {
+          console.warn('No dangerZone translations found for locale:', locale);
+        }
         }
       } catch (error) {
         console.error('Translation load error:', error);
@@ -335,7 +356,8 @@ export function useTranslation() {
 
     // Support for array and object values
     if (Array.isArray(value) || typeof value === 'object') {
-      return value;
+      console.warn(`Unexpected object/array value for translation key: ${key}`, value);
+      return fallback || key;
     }
 
     if (process.env.NODE_ENV === 'development') {

@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { useAuthContext } from "@/core/auth/AuthProvider";
 import { useLanguageSync } from "@/core/i18n/useLanguageSync";
+import { useTranslation } from "@/core/i18n/useTranslations";
 import { triggerLanguageTransition } from "@/core/i18n/LanguageTransition";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteAccountDialog } from "./DeleteAccountDialog";
@@ -57,6 +58,7 @@ export default function SettingsPage() {
   const { user, isAuthenticated, isLoading, logout } = useAuthContext();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
 
   // Active le système de synchronisation des langues entre les composants
   useLanguageSync();
@@ -342,7 +344,7 @@ export default function SettingsPage() {
       setAlert({
         show: true,
         type: 'success',
-        message: 'Profile updated successfully!'
+        message: t('alerts.profileUpdated')
       });
 
       setIsEditing(false);
@@ -357,7 +359,7 @@ export default function SettingsPage() {
       setAlert({
         show: true,
         type: 'error',
-        message: 'Failed to update profile. Please try again.'
+        message: t('alerts.updateFailed')
       });
     } finally {
       setIsSaving(false);
@@ -393,7 +395,7 @@ export default function SettingsPage() {
       setAlert({
         show: true,
         type: 'success',
-        message: 'Settings saved successfully!'
+        message: t('alerts.settingsSaved')
       });
 
       // Theme is managed by next-themes
@@ -433,7 +435,7 @@ export default function SettingsPage() {
       setAlert({
         show: true,
         type: 'error',
-        message: 'Failed to save settings. Please try again.'
+        message: t('alerts.updateFailed')
       });
     } finally {
       setIsSaving(false);
@@ -692,11 +694,11 @@ export default function SettingsPage() {
   return (
     <div className="w-full space-y-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Settings</h1>
+        <h1 className="text-2xl font-bold">{t('settings')}</h1>
         <div className="flex gap-2">
           {isEditing && (
             <Button variant="outline" onClick={handleCancelEdit}>
-              Cancel
+              {t('cancel')}
             </Button>
           )}
           <Button 
@@ -706,12 +708,12 @@ export default function SettingsPage() {
             {isSaving ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                {t('saving')}
               </>
             ) : (
               <>
                 <Save className="mr-2 h-4 w-4" />
-                Save Changes
+                {t('saveChanges')}
               </>
             )}
           </Button>
@@ -741,7 +743,7 @@ export default function SettingsPage() {
                   }}
                 >
                   <User className="mr-2 h-4 w-4" />
-                  Profile
+                  {t('tabs.profile')}
                 </Button>
                 <Button 
                   variant={activeTab === "notifications" ? "default" : "ghost"} 
@@ -749,7 +751,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab("notifications")}
                 >
                   <Bell className="mr-2 h-4 w-4" />
-                  Notifications
+                  {t('tabs.notifications')}
                 </Button>
                 <Button 
                   variant={activeTab === "language" ? "default" : "ghost"} 
@@ -757,7 +759,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab("language")}
                 >
                   <Languages className="mr-2 h-4 w-4" />
-                  Language
+                  {t('tabs.language')}
                 </Button>
                 <Button 
                   variant={activeTab === "appearance" ? "default" : "ghost"} 
@@ -765,7 +767,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab("appearance")}
                 >
                   <Palette className="mr-2 h-4 w-4" />
-                  Appearance
+                  {t('tabs.appearance')}
                 </Button>
                 <Button 
                   variant={activeTab === "learning" ? "default" : "ghost"} 
@@ -773,7 +775,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab("learning")}
                 >
                   <BookOpen className="mr-2 h-4 w-4" />
-                  Learning
+                  {t('tabs.learning')}
                 </Button>
                 <Button 
                   variant={activeTab === "security" ? "default" : "ghost"} 
@@ -781,7 +783,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab("security")}
                 >
                   <Lock className="mr-2 h-4 w-4" />
-                  Security
+                  {t('tabs.security')}
                 </Button>
                 <Button 
                   variant={activeTab === "privacy" ? "default" : "ghost"} 
@@ -789,7 +791,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab("privacy")}
                 >
                   <Shield className="mr-2 h-4 w-4" />
-                  Privacy
+                  {t('tabs.privacy')}
                 </Button>
                 <Button 
                   variant={activeTab === "billing" ? "default" : "ghost"} 
@@ -797,7 +799,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab("billing")}
                 >
                   <CreditCard className="mr-2 h-4 w-4" />
-                  Billing
+                  {t('tabs.billing')}
                 </Button>
                 <Button 
                   variant={activeTab === "danger" ? "default" : "ghost"} 
@@ -805,7 +807,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab("danger")}
                 >
                   <AlertCircle className="mr-2 h-4 w-4" />
-                  Danger Zone
+                  {t('tabs.dangerZone')}
                 </Button>
               </div>
             </CardContent>
@@ -865,7 +867,7 @@ export default function SettingsPage() {
                       <div className="flex items-start space-x-3">
                         <User className="h-5 w-5 text-gray-500 mt-0.5" />
                         <div>
-                          <p className="text-sm font-medium">Username</p>
+                          <p className="text-sm font-medium">{t('profileInfo.username')}</p>
                           <p className="text-gray-600">{formData.username}</p>
                         </div>
                       </div>
@@ -873,7 +875,7 @@ export default function SettingsPage() {
                       <div className="flex items-start space-x-3">
                         <Mail className="h-5 w-5 text-gray-500 mt-0.5" />
                         <div>
-                          <p className="text-sm font-medium">Email</p>
+                          <p className="text-sm font-medium">{t('profileInfo.email')}</p>
                           <p className="text-gray-600">{formData.email}</p>
                         </div>
                       </div>
@@ -881,9 +883,9 @@ export default function SettingsPage() {
                       <div className="flex items-start space-x-3">
                         <Calendar className="h-5 w-5 text-gray-500 mt-0.5" />
                         <div>
-                          <p className="text-sm font-medium">Birthday</p>
+                          <p className="text-sm font-medium">{t('profileInfo.birthday')}</p>
                           <p className="text-gray-600">
-                            {formData.birthday ? new Date(formData.birthday).toLocaleDateString() : 'Not specified'}
+                            {formData.birthday ? new Date(formData.birthday).toLocaleDateString() : t('profileInfo.notSpecified')}
                           </p>
                         </div>
                       </div>
@@ -891,9 +893,9 @@ export default function SettingsPage() {
                       <div className="flex items-start space-x-3">
                         <MapPin className="h-5 w-5 text-gray-500 mt-0.5" />
                         <div>
-                          <p className="text-sm font-medium">Native Language</p>
+                          <p className="text-sm font-medium">{t('languageSettings.nativeLanguage')}</p>
                           <p className="text-gray-600">
-                            {LANGUAGE_OPTIONS.find(opt => opt.value === formData.native_language)?.label || 'Not specified'}
+                            {LANGUAGE_OPTIONS.find(opt => opt.value === formData.native_language)?.label || t('profileInfo.notSpecified')}
                           </p>
                         </div>
                       </div>
@@ -901,10 +903,10 @@ export default function SettingsPage() {
                       <div className="flex items-start space-x-3">
                         <BookOpen className="h-5 w-5 text-gray-500 mt-0.5" />
                         <div>
-                          <p className="text-sm font-medium">Learning</p>
+                          <p className="text-sm font-medium">{t('tabs.learning')}</p>
                           <p className="text-gray-600">
-                            {LANGUAGE_OPTIONS.find(opt => opt.value === formData.target_language)?.label || 'Not specified'} -
-                            {LEVEL_OPTIONS.find(opt => opt.value === formData.language_level)?.label || 'Not specified'}
+                            {LANGUAGE_OPTIONS.find(opt => opt.value === formData.target_language)?.label || t('profileInfo.notSpecified')} -
+                            {LEVEL_OPTIONS.find(opt => opt.value === formData.language_level)?.label || t('profileInfo.notSpecified')}
                           </p>
                         </div>
                       </div>
@@ -916,7 +918,7 @@ export default function SettingsPage() {
                         className="w-full"
                         onClick={() => setIsEditing(true)}
                       >
-                        Edit Profile
+                        {t('profileInfo.editProfile')}
                       </Button>
                     </div>
                   </CardContent>
@@ -928,40 +930,40 @@ export default function SettingsPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle>
-                      {isEditing ? "Edit Your Profile" : "Profile Information"}
+                      {isEditing ? t('profileInfo.editProfile') : t('profileInfo.personalInfo')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Tabs defaultValue={activeProfileTab} onValueChange={setActiveProfileTab}>
                       <TabsList className="grid grid-cols-4 mb-6">
-                        <TabsTrigger value="personal">Personal Info</TabsTrigger>
-                        <TabsTrigger value="languages">Languages</TabsTrigger>
-                        <TabsTrigger value="learning">Learning Goals</TabsTrigger>
-                        <TabsTrigger value="preferences">Preferences</TabsTrigger>
+                        <TabsTrigger value="personal">{t('profileInfo.personalInfo')}</TabsTrigger>
+                        <TabsTrigger value="languages">{t('profileInfo.languages')}</TabsTrigger>
+                        <TabsTrigger value="learning">{t('profileInfo.learningGoals')}</TabsTrigger>
+                        <TabsTrigger value="preferences">{t('profileInfo.preferences')}</TabsTrigger>
                       </TabsList>
 
                       <TabsContent value="personal" className="space-y-6">
                         {!isEditing ? (
                           // View Mode
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <InfoItem label="First Name" value={formData.first_name || 'Not specified'} />
-                            <InfoItem label="Last Name" value={formData.last_name || 'Not specified'} />
-                            <InfoItem label="Username" value={formData.username} />
-                            <InfoItem label="Email" value={formData.email} />
+                            <InfoItem label={t('profileInfo.firstName')} value={formData.first_name || t('profileInfo.notSpecified')} />
+                            <InfoItem label={t('profileInfo.lastName')} value={formData.last_name || t('profileInfo.notSpecified')} />
+                            <InfoItem label={t('profileInfo.username')} value={formData.username} />
+                            <InfoItem label={t('profileInfo.email')} value={formData.email} />
                             <InfoItem
-                              label="Gender"
+                              label={t('profileInfo.gender')}
                               value={formData.gender
-                                ? GENDER_OPTIONS.find(opt => opt.value === formData.gender)?.label || 'Not specified'
-                                : 'Not specified'
+                                ? GENDER_OPTIONS.find(opt => opt.value === formData.gender)?.label || t('profileInfo.notSpecified')
+                                : t('profileInfo.notSpecified')
                               }
                             />
                             <InfoItem
-                              label="Birthday"
-                              value={formData.birthday ? new Date(formData.birthday).toLocaleDateString() : 'Not specified'}
+                              label={t('profileInfo.birthday')}
+                              value={formData.birthday ? new Date(formData.birthday).toLocaleDateString() : t('profileInfo.notSpecified')}
                             />
 
                             <div className="col-span-full">
-                              <h3 className="text-sm font-medium mb-2">Bio</h3>
+                              <h3 className="text-sm font-medium mb-2">{t('profileInfo.bio')}</h3>
                               <p className="text-gray-600">{formData.bio || 'No bio provided yet.'}</p>
                             </div>
                           </div>
@@ -969,7 +971,7 @@ export default function SettingsPage() {
                           // Edit Mode
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                              <Label htmlFor="first_name">First Name</Label>
+                              <Label htmlFor="first_name">{t('profileInfo.firstName')}</Label>
                               <Input
                                 id="first_name"
                                 name="first_name"
@@ -979,7 +981,7 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label htmlFor="last_name">Last Name</Label>
+                              <Label htmlFor="last_name">{t('profileInfo.lastName')}</Label>
                               <Input
                                 id="last_name"
                                 name="last_name"
@@ -989,7 +991,7 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label htmlFor="username">Username</Label>
+                              <Label htmlFor="username">{t('profileInfo.username')}</Label>
                               <Input
                                 id="username"
                                 name="username"
@@ -999,7 +1001,7 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label htmlFor="email">Email (Read-only)</Label>
+                              <Label htmlFor="email">{t('profileInfo.email')} ({t('profileInfo.notSpecified')})</Label>
                               <Input
                                 id="email"
                                 name="email"
@@ -1010,16 +1012,16 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label htmlFor="gender">Gender</Label>
+                              <Label htmlFor="gender">{t('profileInfo.gender')}</Label>
                               <Select
                                 value={formData.gender || 'not-specified'}
                                 onValueChange={(value) => handleSelectChange('gender', value)}
                               >
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select gender" />
+                                  <SelectValue placeholder={t('profileInfo.notSpecified')} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="not-specified">Not specified</SelectItem>
+                                  <SelectItem value="not-specified">{t('profileInfo.notSpecified')}</SelectItem>
                                   {GENDER_OPTIONS.map(option => (
                                     <SelectItem key={option.value} value={option.value}>
                                       {option.label}
@@ -1030,7 +1032,7 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label htmlFor="birthday">Birthday</Label>
+                              <Label htmlFor="birthday">{t('profileInfo.birthday')}</Label>
                               <Input
                                 id="birthday"
                                 name="birthday"
@@ -1041,7 +1043,7 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="col-span-full space-y-2">
-                              <Label htmlFor="bio">Bio</Label>
+                              <Label htmlFor="bio">{t('profileInfo.bio')}</Label>
                               <Textarea
                                 id="bio"
                                 name="bio"
@@ -1060,29 +1062,29 @@ export default function SettingsPage() {
                           // View Mode
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <InfoItem
-                              label="Native Language"
-                              value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.native_language)?.label || 'Not specified'}
+                              label={t('languageSettings.nativeLanguage')}
+                              value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.native_language)?.label || t('profileInfo.notSpecified')}
                             />
                             <InfoItem
-                              label="Target Language"
-                              value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.target_language)?.label || 'Not specified'}
+                              label={t('languageSettings.targetLanguage')}
+                              value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.target_language)?.label || t('profileInfo.notSpecified')}
                             />
                             <InfoItem
-                              label="Language Level"
-                              value={LEVEL_OPTIONS.find(opt => opt.value === formData.language_level)?.label || 'Not specified'}
+                              label={t('languageSettings.languageLevel')}
+                              value={LEVEL_OPTIONS.find(opt => opt.value === formData.language_level)?.label || t('profileInfo.notSpecified')}
                             />
                           </div>
                         ) : (
                           // Edit Mode
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                              <Label htmlFor="native_language">Native Language</Label>
+                              <Label htmlFor="native_language">{t('languageSettings.nativeLanguage')}</Label>
                               <Select
                                 value={formData.native_language}
                                 onValueChange={(value) => handleSelectChange('native_language', value)}
                               >
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select language" />
+                                  <SelectValue placeholder={t('languageSettings.nativeLanguage')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {LANGUAGE_OPTIONS.map(option => (
@@ -1095,13 +1097,13 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label htmlFor="target_language">Target Language</Label>
+                              <Label htmlFor="target_language">{t('languageSettings.targetLanguage')}</Label>
                               <Select
                                 value={formData.target_language}
                                 onValueChange={(value) => handleSelectChange('target_language', value)}
                               >
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select language" />
+                                  <SelectValue placeholder={t('languageSettings.targetLanguage')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {LANGUAGE_OPTIONS.map(option => (
@@ -1118,13 +1120,13 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label htmlFor="language_level">Language Level</Label>
+                              <Label htmlFor="language_level">{t('languageSettings.languageLevel')}</Label>
                               <Select
                                 value={formData.language_level}
                                 onValueChange={(value) => handleSelectChange('language_level', value)}
                               >
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select level" />
+                                  <SelectValue placeholder={t('languageSettings.languageLevel')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {LEVEL_OPTIONS.map(option => (
@@ -1144,8 +1146,8 @@ export default function SettingsPage() {
                           // View Mode
                           <div className="grid grid-cols-1 gap-6">
                             <InfoItem
-                              label="Learning Objectives"
-                              value={OBJECTIVES_OPTIONS.find(opt => opt.value === formData.objectives)?.label || 'Not specified'}
+                              label={t('languageSettings.learningObjectives')}
+                              value={OBJECTIVES_OPTIONS.find(opt => opt.value === formData.objectives)?.label || t('profileInfo.notSpecified')}
                             />
 
                             {user.is_coach && (
@@ -1159,13 +1161,13 @@ export default function SettingsPage() {
                           // Edit Mode
                           <div className="grid grid-cols-1 gap-6">
                             <div className="space-y-2">
-                              <Label htmlFor="objectives">Learning Objectives</Label>
+                              <Label htmlFor="objectives">{t('languageSettings.learningObjectives')}</Label>
                               <Select
                                 value={formData.objectives}
                                 onValueChange={(value) => handleSelectChange('objectives', value)}
                               >
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select objectives" />
+                                  <SelectValue placeholder={t('languageSettings.learningObjectives')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {OBJECTIVES_OPTIONS.map(option => (
@@ -1185,11 +1187,11 @@ export default function SettingsPage() {
                           // View Mode
                           <div className="grid grid-cols-1 gap-6">
                             <InfoItem
-                              label="Interface Language"
+                              label={t('appearance.interfaceLanguage')}
                               value={INTERFACE_LANGUAGE_OPTIONS.find(opt => opt.value === formData.interface_language)?.label || 'English'}
                             />
                             <InfoItem
-                              label="Theme"
+                              label={t('appearance.theme')}
                               value={THEME_OPTIONS.find(opt => opt.value === theme)?.label || 'System'}
                             />
                           </div>
@@ -1197,13 +1199,13 @@ export default function SettingsPage() {
                           // Edit Mode
                           <div className="grid grid-cols-1 gap-6">
                             <div className="space-y-2">
-                              <Label htmlFor="interface_language">Interface Language</Label>
+                              <Label htmlFor="interface_language">{t('appearance.interfaceLanguage')}</Label>
                               <Select
                                 value={formData.interface_language}
                                 onValueChange={(value) => handleSelectChange('interface_language', value)}
                               >
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select language" />
+                                  <SelectValue placeholder={t('appearance.interfaceLanguage')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {INTERFACE_LANGUAGE_OPTIONS.map(option => (
@@ -1216,13 +1218,13 @@ export default function SettingsPage() {
                             </div>
                             
                             <div className="space-y-2">
-                              <Label htmlFor="theme">Theme</Label>
+                              <Label htmlFor="theme">{t('appearance.theme')}</Label>
                               <Select
                                 value={theme || 'system'}
                                 onValueChange={(value) => setTheme(value)}
                               >
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select theme" />
+                                  <SelectValue placeholder={t('appearance.theme')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {THEME_OPTIONS.map(option => (
@@ -1250,21 +1252,21 @@ export default function SettingsPage() {
           {activeTab === "language" && (
             <Card>
               <CardHeader>
-                <CardTitle>Language Settings</CardTitle>
+                <CardTitle>{t('languageSettings.title')}</CardTitle>
                 <CardDescription>
-                  Manage your language learning preferences
+                  {t('languageSettings.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="native_language">Native Language</Label>
+                    <Label htmlFor="native_language">{t('languageSettings.nativeLanguage')}</Label>
                     <Select 
                       value={settings.native_language}
                       onValueChange={(value) => setSettings({...settings, native_language: value})}
                     >
                       <SelectTrigger id="native_language">
-                        <SelectValue placeholder="Select language" />
+                        <SelectValue placeholder={t('languageSettings.nativeLanguage')} />
                       </SelectTrigger>
                       <SelectContent>
                         {LANGUAGE_OPTIONS.map((option) => (
@@ -1277,13 +1279,13 @@ export default function SettingsPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="target_language">Target Language</Label>
+                    <Label htmlFor="target_language">{t('languageSettings.targetLanguage')}</Label>
                     <Select 
                       value={settings.target_language}
                       onValueChange={(value) => setSettings({...settings, target_language: value})}
                     >
                       <SelectTrigger id="target_language">
-                        <SelectValue placeholder="Select language" />
+                        <SelectValue placeholder={t('languageSettings.targetLanguage')} />
                       </SelectTrigger>
                       <SelectContent>
                         {LANGUAGE_OPTIONS.map((option) => (
@@ -1300,13 +1302,13 @@ export default function SettingsPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="language_level">Language Level</Label>
+                    <Label htmlFor="language_level">{t('languageSettings.languageLevel')}</Label>
                     <Select 
                       value={settings.language_level}
                       onValueChange={(value) => setSettings({...settings, language_level: value})}
                     >
                       <SelectTrigger id="language_level">
-                        <SelectValue placeholder="Select level" />
+                        <SelectValue placeholder={t('languageSettings.languageLevel')} />
                       </SelectTrigger>
                       <SelectContent>
                         {LEVEL_OPTIONS.map((option) => (
@@ -1319,13 +1321,13 @@ export default function SettingsPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="objectives">Learning Objectives</Label>
+                    <Label htmlFor="objectives">{t('languageSettings.learningObjectives')}</Label>
                     <Select 
                       value={settings.objectives}
                       onValueChange={(value) => setSettings({...settings, objectives: value})}
                     >
                       <SelectTrigger id="objectives">
-                        <SelectValue placeholder="Select objectives" />
+                        <SelectValue placeholder={t('languageSettings.learningObjectives')} />
                       </SelectTrigger>
                       <SelectContent>
                         {OBJECTIVES_OPTIONS.map((option) => (
@@ -1344,21 +1346,21 @@ export default function SettingsPage() {
           {activeTab === "appearance" && (
             <Card>
               <CardHeader>
-                <CardTitle>Appearance Settings</CardTitle>
+                <CardTitle>{t('appearance.title')}</CardTitle>
                 <CardDescription>
-                  Customize the look and feel of the application
+                  {t('appearance.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="theme">Theme</Label>
+                    <Label htmlFor="theme">{t('appearance.theme')}</Label>
                     <Select 
                       value={theme || 'system'}
                       onValueChange={(value) => setTheme(value)}
                     >
                       <SelectTrigger id="theme" className="w-[200px]">
-                        <SelectValue placeholder="Select theme" />
+                        <SelectValue placeholder={t('appearance.theme')} />
                       </SelectTrigger>
                       <SelectContent>
                         {THEME_OPTIONS.map((option) => (
@@ -1371,13 +1373,13 @@ export default function SettingsPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="interface_language">Interface Language</Label>
+                    <Label htmlFor="interface_language">{t('appearance.interfaceLanguage')}</Label>
                     <Select 
                       value={settings.interface_language}
                       onValueChange={(value) => setSettings({...settings, interface_language: value})}
                     >
                       <SelectTrigger id="interface_language" className="w-[200px]">
-                        <SelectValue placeholder="Select language" />
+                        <SelectValue placeholder={t('appearance.interfaceLanguage')} />
                       </SelectTrigger>
                       <SelectContent>
                         {INTERFACE_LANGUAGE_OPTIONS.map((option) => (
@@ -1396,15 +1398,15 @@ export default function SettingsPage() {
           {activeTab === "learning" && (
             <Card>
               <CardHeader>
-                <CardTitle>Learning Settings</CardTitle>
+                <CardTitle>{t('learning.title')}</CardTitle>
                 <CardDescription>
-                  Customize your learning experience
+                  {t('learning.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <Label htmlFor="daily_goal">Daily Goal (minutes)</Label>
+                    <Label htmlFor="daily_goal">{t('learning.dailyGoal')}</Label>
                     <span className="text-sm text-muted-foreground">{settings.daily_goal} minutes</span>
                   </div>
                   <Slider 
@@ -1419,9 +1421,9 @@ export default function SettingsPage() {
                 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="speaking_exercises">Speaking Exercises</Label>
+                    <Label htmlFor="speaking_exercises">{t('learning.speakingExercises')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      Include speaking exercises in your lessons
+                      {t('learning.includeDescription', { exerciseType: t('learning.speakingExercises').toLowerCase() })}
                     </p>
                   </div>
                   <Switch
@@ -1433,9 +1435,9 @@ export default function SettingsPage() {
                 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="listening_exercises">Listening Exercises</Label>
+                    <Label htmlFor="listening_exercises">{t('learning.listeningExercises')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      Include listening exercises in your lessons
+                      {t('learning.includeDescription', { exerciseType: t('learning.listeningExercises').toLowerCase() })}
                     </p>
                   </div>
                   <Switch
@@ -1447,9 +1449,9 @@ export default function SettingsPage() {
                 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="reading_exercises">Reading Exercises</Label>
+                    <Label htmlFor="reading_exercises">{t('learning.readingExercises')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      Include reading exercises in your lessons
+                      {t('learning.includeDescription', { exerciseType: t('learning.readingExercises').toLowerCase() })}
                     </p>
                   </div>
                   <Switch
@@ -1461,9 +1463,9 @@ export default function SettingsPage() {
                 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="writing_exercises">Writing Exercises</Label>
+                    <Label htmlFor="writing_exercises">{t('learning.writingExercises')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      Include writing exercises in your lessons
+                      {t('learning.includeDescription', { exerciseType: t('learning.writingExercises').toLowerCase() })}
                     </p>
                   </div>
                   <Switch
@@ -1479,17 +1481,17 @@ export default function SettingsPage() {
           {activeTab === "security" && (
             <Card>
               <CardHeader>
-                <CardTitle>Security Settings</CardTitle>
+                <CardTitle>{t('security.title')}</CardTitle>
                 <CardDescription>
-                  Manage your account security
+                  {t('security.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Change Password</h3>
+                  <h3 className="text-lg font-medium">{t('security.changePassword')}</h3>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="old_password">Current Password</Label>
+                    <Label htmlFor="old_password">{t('security.currentPassword')}</Label>
                     <Input 
                       id="old_password" 
                       type="password" 
@@ -1499,7 +1501,7 @@ export default function SettingsPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="new_password">New Password</Label>
+                    <Label htmlFor="new_password">{t('security.newPassword')}</Label>
                     <Input 
                       id="new_password" 
                       type="password" 
@@ -1509,7 +1511,7 @@ export default function SettingsPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="confirm_password">Confirm Password</Label>
+                    <Label htmlFor="confirm_password">{t('security.confirmPassword')}</Label>
                     <Input 
                       id="confirm_password" 
                       type="password" 
@@ -1529,26 +1531,26 @@ export default function SettingsPage() {
                     {isSaving ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Changing...
+                        {t('saving')}
                       </>
                     ) : (
-                      <>Change Password</>
+                      <>{t('security.changePassword')}</>
                     )}
                   </Button>
                 </div>
                 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Two-Factor Authentication</h3>
+                  <h3 className="text-lg font-medium">{t('security.twoFactor')}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Add an extra layer of security to your account
+                    {t('security.twoFactorDescription')}
                   </p>
-                  <Button variant="outline">Setup 2FA</Button>
+                  <Button variant="outline">{t('security.setup2FA')}</Button>
                 </div>
                 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Connected Accounts</h3>
+                  <h3 className="text-lg font-medium">{t('security.connectedAccounts')}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Manage your connected accounts and services
+                    {t('security.connectedAccountsDescription')}
                   </p>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -1564,7 +1566,7 @@ export default function SettingsPage() {
                         </p>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm">Connect</Button>
+                    <Button variant="ghost" size="sm">{t('security.connect')}</Button>
                   </div>
                 </div>
               </CardContent>
@@ -1574,17 +1576,17 @@ export default function SettingsPage() {
           {activeTab === "privacy" && (
             <Card>
               <CardHeader>
-                <CardTitle>Privacy Settings</CardTitle>
+                <CardTitle>{t('privacy.title')}</CardTitle>
                 <CardDescription>
-                  Manage your privacy preferences
+                  {t('privacy.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="public_profile">Public Profile</Label>
+                    <Label htmlFor="public_profile">{t('privacy.publicProfile')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      Make your profile visible to other users
+                      {t('privacy.publicProfileDescription')}
                     </p>
                   </div>
                   <Switch
@@ -1596,9 +1598,9 @@ export default function SettingsPage() {
                 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="share_progress">Share Progress</Label>
+                    <Label htmlFor="share_progress">{t('privacy.shareProgress')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      Allow others to see your learning progress
+                      {t('privacy.shareProgressDescription')}
                     </p>
                   </div>
                   <Switch
@@ -1610,9 +1612,9 @@ export default function SettingsPage() {
                 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="share_activity">Share Activity</Label>
+                    <Label htmlFor="share_activity">{t('privacy.shareActivity')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      Allow others to see your recent activity
+                      {t('privacy.shareActivityDescription')}
                     </p>
                   </div>
                   <Switch
@@ -1623,19 +1625,19 @@ export default function SettingsPage() {
                 </div>
                 
                 <div className="pt-4">
-                  <h3 className="text-lg font-medium mb-2">Data & Privacy</h3>
+                  <h3 className="text-lg font-medium mb-2">{t('privacy.dataPrivacy')}</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Manage your data and privacy options
+                    {t('privacy.dataPrivacyDescription')}
                   </p>
                   <div className="space-y-2">
                     <Button variant="outline" className="w-full justify-start">
-                      Download My Data
+                      {t('privacy.downloadData')}
                     </Button>
                     <Button variant="outline" className="w-full justify-start">
-                      Privacy Policy
+                      {t('privacy.privacyPolicy')}
                     </Button>
                     <Button variant="outline" className="w-full justify-start">
-                      Terms of Service
+                      {t('privacy.termsOfService')}
                     </Button>
                   </div>
                 </div>
@@ -1646,32 +1648,32 @@ export default function SettingsPage() {
           {activeTab === "billing" && (
             <Card>
               <CardHeader>
-                <CardTitle>Billing Settings</CardTitle>
+                <CardTitle>{t('billing.title')}</CardTitle>
                 <CardDescription>
-                  Manage your subscription and payment methods
+                  {t('billing.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="pb-4 border-b">
-                  <h3 className="text-lg font-medium mb-2">Current Plan</h3>
+                  <h3 className="text-lg font-medium mb-2">{t('billing.currentPlan')}</h3>
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="font-medium">{user.is_subscribed ? 'Premium Plan' : 'Free Plan'}</p>
+                      <p className="font-medium">{user.is_subscribed ? t('billing.premiumPlan') : t('billing.freePlan')}</p>
                       <p className="text-sm text-muted-foreground">
                         {user.is_subscribed 
                           ? 'Your subscription renews on the 1st of each month' 
-                          : 'Upgrade to access premium features'}
+                          : t('billing.upgradeToPremium')}
                       </p>
                     </div>
                     <Button variant={user.is_subscribed ? "outline" : "default"}>
-                      {user.is_subscribed ? 'Manage Subscription' : 'Upgrade'}
+                      {user.is_subscribed ? t('billing.manageSubscription') : t('billing.upgrade')}
                     </Button>
                   </div>
                 </div>
                 
                 {user.is_subscribed && (
                   <div className="pb-4 border-b">
-                    <h3 className="text-lg font-medium mb-2">Payment Method</h3>
+                    <h3 className="text-lg font-medium mb-2">{t('billing.paymentMethod')}</h3>
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
                         <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded-md">
@@ -1682,34 +1684,34 @@ export default function SettingsPage() {
                           <p className="text-sm text-muted-foreground">Expires 04/24</p>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">Update</Button>
+                      <Button variant="outline" size="sm">{t('billing.upgrade')}</Button>
                     </div>
                   </div>
                 )}
                 
                 <div className="pt-4">
-                  <h3 className="text-lg font-medium mb-2">Billing History</h3>
+                  <h3 className="text-lg font-medium mb-2">{t('billing.billingHistory')}</h3>
                   {user.is_subscribed ? (
                     <div className="space-y-4">
                       <div className="flex justify-between items-center py-2">
                         <div>
                           <p className="font-medium">Mar 1, 2025</p>
-                          <p className="text-sm text-muted-foreground">Premium Plan</p>
+                          <p className="text-sm text-muted-foreground">{t('billing.premiumPlan')}</p>
                         </div>
                         <p className="font-medium">$9.99</p>
                       </div>
                       <div className="flex justify-between items-center py-2">
                         <div>
                           <p className="font-medium">Feb 1, 2025</p>
-                          <p className="text-sm text-muted-foreground">Premium Plan</p>
+                          <p className="text-sm text-muted-foreground">{t('billing.premiumPlan')}</p>
                         </div>
                         <p className="font-medium">$9.99</p>
                       </div>
-                      <Button variant="outline" className="w-full mt-4">View All Invoices</Button>
+                      <Button variant="outline" className="w-full mt-4">{t('billing.viewAllInvoices')}</Button>
                     </div>
                   ) : (
                     <p className="text-sm text-muted-foreground">
-                      No billing history available on the free plan
+                      {t('billing.noHistory')}
                     </p>
                   )}
                 </div>
@@ -1720,19 +1722,19 @@ export default function SettingsPage() {
           {activeTab === "danger" && (
             <Card className="border-red-200">
               <CardHeader>
-                <CardTitle className="text-red-500">Danger Zone</CardTitle>
+                <CardTitle className="text-red-500">{t('dangerZone.title')}</CardTitle>
                 <CardDescription>
-                  Irreversible and destructive actions
+                  {t('dangerZone.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="pb-4 border-b">
-                  <h3 className="text-lg font-medium mb-2">Export and Reset Data</h3>
+                  <h3 className="text-lg font-medium mb-2">{t('dangerZone.exportAndReset')}</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Download your data before resetting or deleting your account
+                    {t('dangerZone.exportBeforeDeleting')}
                   </p>
                   <div className="flex gap-2">
-                    <Button variant="outline">Export All Data</Button>
+                    <Button variant="outline">{t('dangerZone.exportAllData')}</Button>
                     <Button
                       variant="destructive"
                       onClick={() => {
@@ -1746,15 +1748,15 @@ export default function SettingsPage() {
                         }, 1500);
                       }}
                     >
-                      Reset Onboarding
+                      {t('dangerZone.resetOnboarding')}
                     </Button>
                   </div>
                 </div>
                 
                 <div className="pb-4 border-b">
-                  <h3 className="text-lg font-medium mb-2">Reset Learning Progress</h3>
+                  <h3 className="text-lg font-medium mb-2">{typeof t('dangerZone.resetProgressButton') === 'string' ? t('dangerZone.resetProgressButton') : 'Reset Learning Progress'}</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    This will reset all your progress in the Learning app (courses and lessons)
+                    {t('dangerZone.resetProgressDescription')}
                   </p>
                   <ResetProgressDialog 
                     onConfirmReset={handleResetProgress}
@@ -1763,9 +1765,9 @@ export default function SettingsPage() {
                 </div>
                 
                 <div>
-                  <h3 className="text-lg font-medium mb-2">Delete Account</h3>
+                  <h3 className="text-lg font-medium mb-2">{typeof t('dangerZone.deleteAccountButton') === 'string' ? t('dangerZone.deleteAccountButton') : 'Delete Account'}</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Once you delete your account, there is no going back. This action cannot be undone.
+                    {t('dangerZone.deleteAccountDescription')}
                   </p>
                   <DeleteAccountDialog
                     onConfirmTemporary={handleDeleteAccountTemporary}
