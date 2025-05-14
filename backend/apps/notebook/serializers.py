@@ -105,6 +105,7 @@ class NoteListSerializer(serializers.ModelSerializer):
         ]
 
     def get_is_due_for_review(self, obj):
+        # Utiliser la propriété needs_review qui fait le calcul sur place
         return obj.needs_review
 
 class NoteSerializer(serializers.ModelSerializer):
@@ -154,23 +155,15 @@ class NoteSerializer(serializers.ModelSerializer):
         return obj.sharednote_set.exists()
 
     def get_is_due_for_review(self, obj):
+        # Utiliser la propriété needs_review qui fait le calcul sur place
         return obj.needs_review
 
     def get_time_until_review(self, obj):
         if not obj.last_reviewed_at:
             return "Due now"
         
-        from datetime import timedelta
-        intervals = {
-            0: timedelta(days=1),
-            1: timedelta(days=3),
-            2: timedelta(days=7),
-            3: timedelta(days=14),
-            4: timedelta(days=30),
-            5: timedelta(days=60)
-        }
-        review_level = min(obj.review_count, 5)
-        next_review = obj.last_reviewed_at + intervals[review_level]
+        # Utiliser la méthode _calculate_next_review_date pour cohérence
+        next_review = obj._calculate_next_review_date(obj.last_reviewed_at)
         
         if next_review <= timezone.now():
             return "Due now"

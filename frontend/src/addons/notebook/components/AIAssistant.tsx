@@ -161,17 +161,37 @@ const AIAssistant: React.FC<AIAssistantProps> = ({
   
   // Check if AI features are available
   useEffect(() => {
+    let isMounted = true;
+    
     const checkAvailability = async () => {
       try {
+        // If the component is unmounted before the async operation completes,
+        // we shouldn't update the state
         const available = await aiHelperAPI.checkAvailability();
-        setIsAvailable(available);
+        if (isMounted) {
+          console.log('AI service availability check result:', available);
+          setIsAvailable(available);
+        }
       } catch (error) {
-        console.error('Error checking AI availability:', error);
-        setIsAvailable(false);
+        if (isMounted) {
+          console.error('Error checking AI availability:', error);
+          // Even if there's an error checking availability, we'll default to false
+          // but not crash the component
+          setIsAvailable(false);
+        }
       }
     };
     
-    checkAvailability();
+    // Start with a small delay to prevent rapid API calls during component mounting/unmounting cycles
+    const timeoutId = setTimeout(() => {
+      checkAvailability();
+    }, 100);
+    
+    // Return cleanup function to prevent memory leaks and state updates after unmount
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+    };
   }, []);
   
   // Clear active feature state when the dialog is closed

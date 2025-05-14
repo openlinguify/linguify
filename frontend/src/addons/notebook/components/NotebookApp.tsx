@@ -1,15 +1,27 @@
-import React, { useEffect } from 'react';
-import NotebookMain from './NotebookMain';
+import React, { Suspense, lazy, useEffect } from 'react';
 import './animations.css'; // Importer les styles d'animation
-import { motion } from 'framer-motion'; // Utiliser framer-motion pour des animations fluides
+
+// Lazy load les composants lourds pour améliorer les performances
+const NotebookMain = lazy(() => import('./NotebookMain'));
+
+// Composant de fallback pendant le chargement
+const NotebookLoadingFallback = () => (
+  <div className="h-full w-full bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+    <div className="text-center">
+      <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-500 border-r-transparent"></div>
+      <p className="mt-4 text-gray-500 dark:text-gray-400">Chargement du carnet...</p>
+    </div>
+  </div>
+);
 
 /**
  * Composant d'application principal pour le carnet de notes
  * Ce composant s'intègre dans le layout existant avec le header
+ * Utilise Suspense/lazy pour le chargement différé des composants
  */
 const NotebookApp = () => {
   // Appliquer l'effet pour verrouiller le défilement
-  React.useEffect(() => {
+  useEffect(() => {
     // Désactiver le défilement du corps
     document.body.style.overflow = 'hidden';
 
@@ -18,39 +30,15 @@ const NotebookApp = () => {
       document.body.style.overflow = '';
     };
   }, []);
-  // Variantes d'animation pour l'ensemble de l'application
-  const pageVariants = {
-    initial: { opacity: 0, y: 20 },
-    animate: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        duration: 0.4,
-        ease: "easeOut",
-        when: "beforeChildren",
-        staggerChildren: 0.1
-      }
-    },
-    exit: { 
-      opacity: 0,
-      y: -20,
-      transition: { 
-        duration: 0.3,
-        ease: "easeIn" 
-      }
-    }
-  };
 
   return (
-    <motion.div
-      className="h-full w-full bg-gray-50 dark:bg-gray-900 overflow-hidden p-0 m-0"
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      variants={pageVariants}
+    <div
+      className="h-full w-full bg-gray-50 dark:bg-gray-900 overflow-hidden p-0 m-0 animate-fade-in"
     >
-      <NotebookMain />
-    </motion.div>
+      <Suspense fallback={<NotebookLoadingFallback />}>
+        <NotebookMain />
+      </Suspense>
+    </div>
   );
 };
 

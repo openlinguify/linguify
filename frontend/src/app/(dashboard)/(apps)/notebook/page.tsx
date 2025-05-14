@@ -44,9 +44,14 @@ function NotebookSkeleton() {
   );
 }
 
-// Lazy load the actual notebook component
+// Lazy load the actual notebook component with improved code splitting
 const NotebookApp = dynamic(
-  () => import('@/addons/notebook/components/NotebookApp'),
+  () => import('@/addons/notebook/components/NotebookApp').then(mod => {
+    // Précharger d'autres composants critiques en parallèle pour améliorer l'expérience utilisateur
+    import('@/addons/notebook/components/NoteList');
+    import('@/addons/notebook/components/SearchFilters');
+    return mod;
+  }),
   {
     loading: () => <NotebookSkeleton />,
     ssr: false
@@ -77,10 +82,22 @@ export default function NotebookPage() {
   const [isPreloading, setIsPreloading] = useState(true);
 
   useEffect(() => {
-    // Simplified loading - just a short delay for the animation
+    // Précharger les modules lourds en arrière-plan pendant le loading initial
+    const prefetchPromises = [
+      import('@/addons/notebook/components/NoteEditor'),
+      import('@/addons/notebook/components/NotebookMain')
+    ];
+    
+    // Timer pour l'animation avec temps minimum de chargement pour la fluidité de l'UX
     const timer = setTimeout(() => {
-      setIsPreloading(false);
-    }, 1000);
+      // Vérifier que tous les préchargements sont terminés
+      Promise.all(prefetchPromises).then(() => {
+        setIsPreloading(false);
+      }).catch(() => {
+        // En cas d'erreur de préchargement, continuer quand même
+        setIsPreloading(false);
+      });
+    }, 800); // Réduit légèrement le délai d'animation
 
     // Ajouter la classe pour empêcher le défilement global
     document.body.classList.add('notebook-open');

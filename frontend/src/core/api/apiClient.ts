@@ -54,7 +54,21 @@ export function createAuthenticatedApiClient(baseURL: string): AxiosInstance {
       return response;
     },
     async (error: AxiosError) => {
+      // Créer un objet d'erreur enrichi
+      const enhancedError: any = error;
+      
       if (error.response) {
+        // Rendre les détails de l'erreur plus accessibles
+        enhancedError.status = error.response.status;
+        enhancedError.statusText = error.response.statusText;
+        enhancedError.data = error.response.data;
+        
+        // Log détaillé pour le débogage
+        console.error(
+          `[API] Error ${error.response.status}: ${error.response.statusText}`,
+          error.response.data
+        );
+        
         // Erreur d'authentification (401)
         if (error.response.status === 401) {
           console.warn('[API] Authentication error (401)');
@@ -75,9 +89,60 @@ export function createAuthenticatedApiClient(baseURL: string): AxiosInstance {
           console.warn('[API] Authorization error (403)');
           // Vous pourriez rediriger vers une page "Accès refusé" ici
         }
+        
+        // Erreur Not Found (404)
+        else if (error.response.status === 404) {
+          console.warn('[API] Resource not found (404):', error.config?.url);
+          
+          // For HEAD requests, this might be an intentional check for existence
+          // So we add a flag that this was a 404 to allow special handling
+          if (error.config?.method?.toLowerCase() === 'head') {
+            enhancedError.isResourceCheckFailure = true;
+            enhancedError.userMessage = 'Resource not available';
+          }
+        }
+        
+        // Erreur du serveur (5xx)
+        else if (error.response.status >= 500) {
+          console.error('[API] Server error:', error.response.status, error.config?.url);
+        }
+        
+        // Formater un message d'erreur convivial en fonction des données renvoyées
+        try {
+          const data = error.response.data;
+          
+          if (typeof data === 'string') {
+            enhancedError.userMessage = data;
+          } else if (data && typeof data === 'object') {
+            if (data.detail) {
+              enhancedError.userMessage = data.detail;
+            } else if (data.message) {
+              enhancedError.userMessage = data.message;
+            } else if (data.error) {
+              enhancedError.userMessage = data.error;
+            } else {
+              // Essayer de construire un message à partir des erreurs de validation
+              const messages = [];
+              for (const [key, value] of Object.entries(data)) {
+                if (Array.isArray(value)) {
+                  messages.push(`${key}: ${value.join(', ')}`);
+                } else {
+                  messages.push(`${key}: ${value}`);
+                }
+              }
+              
+              if (messages.length > 0) {
+                enhancedError.userMessage = messages.join('\n');
+              }
+            }
+          }
+        } catch (e) {
+          console.error('[API] Error parsing error response:', e);
+        }
       } else if (error.request) {
         // La requête a été faite mais pas de réponse (problème réseau)
         console.error('[API] No response received:', error.request);
+        enhancedError.userMessage = "Impossible de se connecter au serveur. Vérifiez votre connexion internet.";
         
         // Afficher un message plus convivial (optionnel)
         if (typeof window !== 'undefined') {
@@ -90,9 +155,10 @@ export function createAuthenticatedApiClient(baseURL: string): AxiosInstance {
       } else {
         // Erreur lors de la configuration de la requête
         console.error('[API] Request error:', error.message);
+        enhancedError.userMessage = `Erreur lors de la requête: ${error.message}`;
       }
       
-      return Promise.reject(error);
+      return Promise.reject(enhancedError);
     }
   );
 

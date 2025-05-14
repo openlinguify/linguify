@@ -416,11 +416,26 @@ const ShareNoteDialog: React.FC<ShareNoteDialogProps> = ({
         </p>
       </div>
       
-      <div className="flex items-center space-x-2">
+      {/* Feature not available notification */}
+      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md p-3 mb-4">
+        <div className="flex items-start">
+          <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5 mr-2 flex-shrink-0" />
+          <div>
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+              Link sharing coming soon
+            </p>
+            <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">
+              This feature is currently under development and will be available in a future update.
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex items-center space-x-2 opacity-60">
         <Checkbox 
           id="link-sharing" 
           checked={linkSharing.enabled}
-          disabled={linkSharing.isLoading}
+          disabled={true}
           onCheckedChange={() => handleToggleLinkSharing()}
         />
         <label

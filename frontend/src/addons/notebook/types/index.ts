@@ -27,6 +27,19 @@ export interface Note {
   time_until_review?: string;
 }
 
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
+export interface CursorPaginatedResponse<T> {
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
 export interface NotebookClientProps {
   searchTerm?: string;
   filter?: string;
