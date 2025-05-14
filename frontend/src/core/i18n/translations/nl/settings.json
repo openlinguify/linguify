@@ -1,5 +1,24 @@
 {
-  "settings": "Instellingen",
+  "settingsTitle": "Instellingen",
+  "notifications_obsolete": {
+    "title": "Meldingsinstellingen",
+    "description": "Beheer hoe en wanneer je meldingen ontvangt",
+    "main_title": "Meldingen",
+    "main_description": "Configureer je meldingsvoorkeuren",
+    "channels": "Kanalen",
+    "preferences": "Voorkeuren",
+    "push": "Push",
+    "advanced": "Geavanceerd",
+    "channels_title": "Meldingskanalen",
+    "channels_description": "Kies hoe je meldingen wilt ontvangen",
+    "email": "E-mailmeldingen",
+    "email_description": "Ontvang meldingen via e-mail",
+    "in_app": "In-app meldingen",
+    "in_app_description": "Ontvang meldingen binnen de applicatie",
+    "browser_push": "Browser pushmeldingen",
+    "browser_push_description": "Ontvang pushmeldingen op je apparaat",
+    "configure": "Configureren"
+  },
   "saveChanges": "Wijzigingen opslaan",
   "saving": "Opslaan...",
   "cancel": "Annuleren",
@@ -15,6 +34,7 @@
     "dangerZone": "Gevarenzone"
   },
   "profileInfo": {
+    "subtitle": "Beheer je persoonlijke informatie en voorkeuren",
     "personalInfo": "Persoonlijke informatie",
     "languages": "Talen",
     "learningGoals": "Leerdoelen",
@@ -52,6 +72,41 @@
     "readingExercises": "Leesoefeningen",
     "writingExercises": "Schrijfoefeningen",
     "includeDescription": "Neem {exerciseType} oefeningen op in je lessen"
+  },
+  "settings": {
+    "notifications": {
+      "title": "",
+      "description": "",
+      "channels": "Kanalen",
+      "preferences": "Voorkeuren",
+      "push": "Push",
+      "advanced": "Geavanceerd",
+      "channels_title": "Meldingskanalen",
+      "channels_description": "Kies hoe je meldingen wilt ontvangen",
+      "email": "E-mail",
+      "email_description": "Ontvang meldingen via e-mail",
+      "configure": "Configureren",
+      "in_app": "In de app",
+      "in_app_description": "Ontvang meldingen binnen de applicatie",
+      "browser_push": "Browser (push)",
+      "browser_push_description": "Ontvang pushmeldingen op je apparaat",
+      "advanced_title": "Geavanceerde instellingen",
+      "advanced_description": "Geavanceerde opties voor meldingsbeheer",
+      "preferences_title": "Meldingsvoorkeuren",
+      "preferences_description": "Pas aan welke soorten meldingen je ontvangt",
+      "quiet_hours_title": "Stille uren",
+      "quiet_hours_description": "Geen meldingen ontvangen tijdens bepaalde uren",
+      "quiet_hours_coming_soon": "De functie stille uren komt binnenkort beschikbaar",
+      "data_retention": "Gegevensbewaring",
+      "data_retention_description": "Beheer hoe lang meldingen worden bewaard",
+      "clean_notifications": "Oude meldingen opschonen",
+      "export": "Meldingen exporteren",
+      "export_description": "Exporteer je meldingsgeschiedenis naar een bestand",
+      "export_data": "Gegevens exporteren",
+      "push_settings_title": "Pushmelding-instellingen",
+      "push_settings_description": "Configureer browser pushmelding-instellingen",
+      "push_settings_coming_soon": "Geavanceerde pushmelding-opties komen binnenkort"
+    }
   },
   "security": {
     "title": "Beveiligingsinstellingen",
@@ -94,7 +149,8 @@
     "paymentMethod": "Betalingsmethode",
     "billingHistory": "Factureringsgeschiedenis",
     "noHistory": "Geen factureringsgeschiedenis beschikbaar op het gratis abonnement",
-    "viewAllInvoices": "Alle facturen bekijken"
+    "viewAllInvoices": "Alle facturen bekijken",
+    "edit": "Bewerken"
   },
   "dangerZone": {
     "title": "Gevarenzone",
@@ -140,10 +196,17 @@
     "description": "Beheer hoe en wanneer je meldingen ontvangt",
     "main_title": "Meldingen",
     "main_description": "Configureer je meldingsvoorkeuren",
+    "subtitle": "Configureer hoe je meldingen wilt ontvangen",
     "channels": "Kanalen",
     "preferences": "Voorkeuren",
-    "push": "Push",
+    "push": {
+      "title": "Pushmeldingen",
+      "description": "Beheer pushmeldingsinstellingen",
+      "enable": "Pushmeldingen inschakelen",
+      "not_receiving_notifications": "Ontvang je geen meldingen?"
+    },
     "advanced": "Geavanceerd",
+    "manage_subscriptions": "Abonnementen beheren",
     "channels_title": "Meldingskanalen",
     "channels_description": "Kies hoe je meldingen wilt ontvangen",
     "email": "E-mailmeldingen",

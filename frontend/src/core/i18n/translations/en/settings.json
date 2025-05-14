@@ -1,5 +1,5 @@
 {
-  "settings": "Settings",
+  "settingsTitle": "Settings",
   "saveChanges": "Save Changes",
   "saving": "Saving...",
   "cancel": "Cancel",
@@ -15,6 +15,7 @@
     "dangerZone": "Danger Zone"
   },
   "profileInfo": {
+    "subtitle": "Manage your personal information and preferences",
     "personalInfo": "Personal Info",
     "languages": "Languages",
     "learningGoals": "Learning Goals",
@@ -94,7 +95,8 @@
     "paymentMethod": "Payment Method",
     "billingHistory": "Billing History",
     "noHistory": "No billing history available on the free plan",
-    "viewAllInvoices": "View All Invoices"
+    "viewAllInvoices": "View All Invoices",
+    "edit": "Edit"
   },
   "dangerZone": {
     "title": "Danger Zone",
@@ -134,5 +136,53 @@
     "profileUpdated": "Profile updated successfully!",
     "settingsSaved": "Settings saved successfully!",
     "updateFailed": "Failed to update profile. Please try again."
+  },
+  "notifications": {
+    "subtitle": "Configure how you want to be notified",
+    "channels": "Channels",
+    "preferences": "Preferences",
+    "push": {
+      "title": "Push Notifications",
+      "description": "Manage push notification settings",
+      "enable": "Enable push notifications",
+      "not_receiving_notifications": "Not receiving notifications?"
+    },
+    "advanced": "Advanced",
+    "manage_subscriptions": "Manage subscriptions"
+  },
+  "settings": {
+    "notifications": {
+      "title": "",
+      "description": "",
+      "channels": "Channels",
+      "preferences": "Preferences", 
+      "push": "Push",
+      "advanced": "Advanced",
+      "channels_title": "Notification Channels",
+      "channels_description": "Choose which channels you want to receive notifications through",
+      "email": "Email Notifications",
+      "email_description": "Receive important updates and reminders via email",
+      "configure": "Configure",
+      "in_app": "In-App Notifications",
+      "in_app_description": "Receive notifications within the application",
+      "browser_push": "Browser Push Notifications",
+      "browser_push_description": "Receive notifications even when you're not using the app",
+      "advanced_title": "Advanced Settings",
+      "advanced_description": "Advanced options for notification management",
+      "preferences_title": "Notification Preferences",
+      "preferences_description": "Customize the types of notifications you receive",
+      "quiet_hours_title": "Quiet Hours",
+      "quiet_hours_description": "Don't receive notifications during certain hours",
+      "quiet_hours_coming_soon": "Quiet hours feature will be available soon",
+      "data_retention": "Data Retention",
+      "data_retention_description": "Manage how long notifications are kept",
+      "clean_notifications": "Clean old notifications",
+      "export": "Export notifications",
+      "export_description": "Export your notification history to a file",
+      "export_data": "Export data",
+      "push_settings_title": "Push Notification Settings",
+      "push_settings_description": "Configure browser push notification settings",
+      "push_settings_coming_soon": "Advanced push notification options coming soon"
+    }
   }
 }
