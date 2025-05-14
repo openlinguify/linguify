@@ -1,17 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { NoteList } from "./NoteList";
-import { NoteEditor } from "./NoteEditor";
+import React, { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Note } from "../types";
 import { notebookAPI } from "../api/notebookAPI";
 import { Plus, RefreshCcw, Menu, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { SearchFilters, SearchFiltersState, applyFilters } from "./SearchFilters";
+import { SearchFiltersState, applyFilters } from "./SearchFilters";
 import { ErrorType, ErrorResponse } from "../utils/errorHandling";
-import ErrorDisplay from "./ErrorDisplay";
 import LoadingIndicator from "./LoadingIndicator";
-import ReviewReminder from "./ReviewReminder";
+
+// Lazy load des composants lourds pour améliorer les performances initiales
+const NoteList = lazy(() => import("./NoteList").then(mod => ({ default: mod.NoteList })));
+const NoteEditor = lazy(() => import("./NoteEditor").then(mod => ({ default: mod.NoteEditor })));
+const SearchFilters = lazy(() => import("./SearchFilters").then(mod => ({ default: mod.SearchFilters })));
+const ErrorDisplay = lazy(() => import("./ErrorDisplay"));
+const ReviewReminder = lazy(() => import("./ReviewReminder"));
+
+// Fallback pendant le chargement des composants
+const ComponentLoadingFallback = () => (
+  <div className="flex items-center justify-center p-12">
+    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-indigo-500 border-r-transparent"></div>
+  </div>
+);
 
 interface CreateNoteFormProps {
   onSubmit: (title: string, language: string) => void;
@@ -157,29 +167,62 @@ export default function NotebookMain() {
     setAvailableLanguages(languages as string[]);
   }, [notes, searchFilters]);
   
-  // Load notes from API
-  const loadNotes = async () => {
+  // États pour la pagination
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [hasMoreNotes, setHasMoreNotes] = useState<boolean>(true);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+  const [totalNoteCount, setTotalNoteCount] = useState<number>(0);
+
+  // Load notes from API with pagination
+  const loadNotes = useCallback(async (resetPage = true) => {
     try {
-      setIsLoading(true);
-      setLoadError(null);
+      // Si on reset la page, on recharge depuis le début
+      if (resetPage) {
+        setIsLoading(true);
+        setLoadError(null);
+        setCurrentPage(1);
+        setNotes([]);
+      } else {
+        setIsLoadingMore(true);
+      }
 
       // Appliquer les bonnes pratiques pour la gestion des erreurs
-      const notesData = await notebookAPI.getNotes();
+      const { 
+        notes: newNotes, 
+        nextPage, 
+        totalCount 
+      } = await notebookAPI.getNotes(
+        resetPage ? 1 : currentPage
+      );
 
       // Vérifier que les données sont valides
-      if (!Array.isArray(notesData)) {
+      if (!Array.isArray(newNotes)) {
         throw new Error("Format de données invalide");
       }
 
-      setNotes(notesData);
+      // Mise à jour des états de pagination
+      setHasMoreNotes(!!nextPage);
+      setTotalNoteCount(totalCount);
+      
+      if (nextPage) {
+        setCurrentPage(nextPage);
+      }
+
+      // Si on reset, on remplace toutes les notes, sinon on ajoute à la liste existante
+      const updatedNotes = resetPage ? newNotes : [...notes, ...newNotes];
+      setNotes(updatedNotes);
 
       // Apply filters to the new data
-      const filtered = applyFilters(notesData, searchFilters);
+      const filtered = applyFilters(updatedNotes, searchFilters);
       setFilteredNotes(filtered);
+      
+      // Reset loading states
+      setCurrentLoadingNoteId(null);
+      setIsLoadingNoteDetails(false);
 
       // Extract unique languages (en filtrant les valeurs vides ou nulles)
       const languages = [...new Set(
-        notesData
+        updatedNotes
           .filter(n => n.language && n.language.trim() !== "")
           .map(n => n.language)
       )];
@@ -187,12 +230,26 @@ export default function NotebookMain() {
 
       // If we have a selected note, reload it
       if (selectedNote) {
-        const updatedNote = notesData.find(n => n.id === selectedNote.id);
+        // Trouver la note mise à jour dans les résultats
+        const updatedNote = updatedNotes.find(n => n.id === selectedNote.id);
         if (updatedNote) {
-          setSelectedNote(updatedNote);
+          // Charger les détails complets de la note pour s'assurer d'avoir toutes les informations
+          try {
+            const fullNoteDetails = await notebookAPI.getNote(selectedNote.id);
+            // Préserver les modifications locales non sauvegardées
+            setSelectedNote(fullNoteDetails);
+          } catch (noteError) {
+            // En cas d'erreur dans le rechargement, utiliser au moins la version mise à jour partielle
+            console.warn("Error reloading full note details, using partial data:", noteError);
+            setSelectedNote(updatedNote);
+          }
         } else {
-          // Si la note sélectionnée n'est plus présente (supprimée par une autre session)
-          setSelectedNote(null);
+          // Si la note sélectionnée n'est plus présente et qu'on a rechargé depuis le début
+          // (elle a peut-être été supprimée par une autre session)
+          if (resetPage) {
+            setSelectedNote(null);
+          }
+          // Sinon, on la garde car elle pourrait être dans une autre page
         }
       }
     } catch (error) {
@@ -223,11 +280,23 @@ export default function NotebookMain() {
       });
     } finally {
       setIsLoading(false);
+      setIsLoadingMore(false);
     }
-  };
+  }, [currentPage, notes, selectedNote]);
   
-  // Handle selecting a note
-  const handleSelectNote = async (note: Note) => {
+  // Fonction pour charger plus de notes quand l'utilisateur atteint la fin de la liste
+  const loadMoreNotes = useCallback(() => {
+    if (!isLoadingMore && hasMoreNotes) {
+      loadNotes(false);
+    }
+  }, [hasMoreNotes, isLoadingMore, loadNotes]);
+  
+  // État pour suivre le chargement d'une note
+  const [isLoadingNoteDetails, setIsLoadingNoteDetails] = useState(false);
+  const [currentLoadingNoteId, setCurrentLoadingNoteId] = useState<number | null>(null);
+
+  // Handle selecting a note - approche simplifiée
+  const handleSelectNote = useCallback(async (note: Note) => {
     try {
       // Vérifier que la note est valide
       if (!note || !note.id) {
@@ -239,36 +308,41 @@ export default function NotebookMain() {
         return;
       }
 
-      // First set the note to show something immediately (pour une meilleure UX)
-      setSelectedNote(note);
-
       // Sur mobile, masquer la sidebar après avoir sélectionné une note
       if (isMobile) {
         setSidebarVisible(false);
       }
 
-      // Indiquer visuellement que la note complète est en cours de chargement
-      // (L'idéal serait d'ajouter un indicateur de chargement dans le composant NoteEditor)
-
-      // Then load the full note details with error handling
+      // Directement charger la note complète sans afficher d'état intermédiaire
       try {
-        const fullNote = await notebookAPI.getNote(note.id);
+        // Set loading state
+        setCurrentLoadingNoteId(note.id);
+        setIsLoadingNoteDetails(true);
 
-        // Vérifier que la note n'a pas disparu entre temps
+        // Sélectionner la note directement depuis l'API
+        const fullNote = await notebookAPI.getNote(note.id);
+        
+        // Vérifier que la note n'a pas disparu 
         if (!fullNote) {
           throw new Error("La note n'existe plus");
         }
-
-        // Mettre à jour la note avec tous ses détails
+        
+        // Mettre à jour la note sélectionnée avec les détails complets
         setSelectedNote(fullNote);
+        setIsLoadingNoteDetails(false);
+        setCurrentLoadingNoteId(null);
       } catch (error) {
-        // En cas d'erreur de chargement des détails, on garde la note partielle
-        // mais on informe l'utilisateur
+        // En cas d'erreur, utiliser la note partielle de la liste
         console.error("Error loading note details:", error);
-
+        
+        // Sélectionner la note partielle au lieu de rien
+        setSelectedNote(note);
+        setIsLoadingNoteDetails(false);
+        setCurrentLoadingNoteId(null);
+        
         // Déterminer un message approprié
-        let errorMessage = "Impossible de charger les détails de la note";
-
+        let errorMessage = "Impossible de charger tous les détails de la note";
+        
         if (error instanceof Error) {
           if (error.message.includes("existe plus") || error.message.includes("not found")) {
             errorMessage = "Cette note n'existe plus ou a été supprimée";
@@ -278,15 +352,14 @@ export default function NotebookMain() {
         }
 
         toast({
-          title: "Attention",
+          title: "Note partiellement chargée",
           description: errorMessage,
-          variant: "destructive"
+          variant: "default"
         });
       }
     } catch (error) {
       // Erreur générale (ne devrait pas arriver mais on gère quand même)
       console.error("Unexpected error in handleSelectNote:", error);
-
       setSelectedNote(null);
 
       toast({
@@ -295,10 +368,10 @@ export default function NotebookMain() {
         variant: "destructive"
       });
     }
-  };
+  }, [isMobile, toast]);
   
   // Handle creating a new note
-  const handleCreateNote = async (title: string, language: string) => {
+  const handleCreateNote = useCallback(async (title: string, language: string) => {
     // Validation préliminaire des données
     if (!title || title.trim() === '') {
       toast({
@@ -371,24 +444,24 @@ export default function NotebookMain() {
         variant: "destructive"
       });
     }
-  };
+  }, [isMobile, loadNotes, toast]);
   
   // Revenir à la liste des notes (pour mobile)
-  const handleBackToList = () => {
+  const handleBackToList = useCallback(() => {
     if (isMobile) {
       setSidebarVisible(true);
     }
-  };
+  }, [isMobile]);
   
   // Annuler l'édition d'une note
-  const handleCancelEdit = () => {
+  const handleCancelEdit = useCallback(() => {
     setSelectedNote(null);
     
     // Sur mobile, revenir à la liste
     if (isMobile) {
       setSidebarVisible(true);
     }
-  };
+  }, [isMobile]);
   
   // Render create form
   if (isCreating) {
@@ -457,10 +530,12 @@ export default function NotebookMain() {
         </div>
 
         <div className="flex-1 overflow-auto p-4">
-          <ErrorDisplay
-            error={errorObject}
-            onRetry={loadNotes}
-          />
+          <Suspense fallback={<ComponentLoadingFallback />}>
+            <ErrorDisplay
+              error={errorObject}
+              onRetry={loadNotes}
+            />
+          </Suspense>
         </div>
       </div>
     );
@@ -511,17 +586,19 @@ export default function NotebookMain() {
             )}
             
             {/* Bouton refresh */}
-            <ReviewReminder
-              onReviewNote={(noteId) => {
-                // Find the note in our list and select it
-                const noteToSelect = notes.find(n => n.id === noteId);
-                if (noteToSelect) {
-                  handleSelectNote(noteToSelect);
-                }
-                // Refresh notes to update review status
-                loadNotes();
-              }}
-            />
+            <Suspense fallback={<ComponentLoadingFallback />}>
+              <ReviewReminder
+                onReviewNote={(noteId) => {
+                  // Find the note in our list and select it
+                  const noteToSelect = notes.find(n => n.id === noteId);
+                  if (noteToSelect) {
+                    handleSelectNote(noteToSelect);
+                  }
+                  // Refresh notes to update review status
+                  loadNotes();
+                }}
+              />
+            </Suspense>
 
             <Button
               variant="outline"
@@ -546,13 +623,15 @@ export default function NotebookMain() {
         {/* Afficher les filtres de recherche uniquement si la sidebar est visible ou sur desktop */}
         {(sidebarVisible || !isMobile) && (
           <div className="mt-4">
-            <SearchFilters 
-              filters={searchFilters}
-              onFiltersChange={setSearchFilters}
-              availableLanguages={availableLanguages}
-              totalNotes={notes.length}
-              filteredCount={filteredNotes.length}
-            />
+            <Suspense fallback={<ComponentLoadingFallback />}>
+              <SearchFilters 
+                filters={searchFilters}
+                onFiltersChange={setSearchFilters}
+                availableLanguages={availableLanguages}
+                totalNotes={notes.length}
+                filteredCount={filteredNotes.length}
+              />
+            </Suspense>
           </div>
         )}
       </div>
@@ -563,14 +642,20 @@ export default function NotebookMain() {
           {/* Sidebar - masquée sur mobile en mode édition */}
           {(sidebarVisible || !isMobile) && (
             <div className={`${isMobile ? 'w-full' : isTablet ? 'w-80' : 'w-96'} border-r border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 ease-in-out`}>
-              <NoteList
-                notes={filteredNotes}
-                onSelectNote={handleSelectNote}
-                onCreateNote={() => setIsCreating(true)}
-                selectedNoteId={selectedNote?.id}
-                filter={searchFilters.query}
-                onFilterChange={(filter) => setSearchFilters(prev => ({ ...prev, query: filter }))}
-              />
+              <Suspense fallback={<ComponentLoadingFallback />}>
+                <NoteList
+                  notes={filteredNotes}
+                  onSelectNote={handleSelectNote}
+                  onCreateNote={() => setIsCreating(true)}
+                  selectedNoteId={selectedNote?.id}
+                  loadingNoteId={currentLoadingNoteId}
+                  filter={searchFilters.query}
+                  onFilterChange={(filter) => setSearchFilters(prev => ({ ...prev, query: filter }))}
+                  hasMore={hasMoreNotes}
+                  isLoadingMore={isLoadingMore}
+                  onLoadMore={loadMoreNotes}
+                />
+              </Suspense>
             </div>
           )}
           
@@ -578,11 +663,14 @@ export default function NotebookMain() {
           {(!isMobile || !sidebarVisible) && (
             <div className={`${isMobile ? 'w-full' : 'flex-1'} overflow-hidden transition-all duration-300 ease-in-out`}>
               {selectedNote ? (
-                <NoteEditor
-                  note={selectedNote}
-                  onSave={loadNotes}
-                  onCancel={handleCancelEdit}
-                />
+                <Suspense fallback={<ComponentLoadingFallback />}>
+                  <NoteEditor
+                    note={selectedNote}
+                    onSave={loadNotes}
+                    onCancel={handleCancelEdit}
+                    isLoading={isLoadingNoteDetails}
+                  />
+                </Suspense>
               ) : (
                 <div className="h-full flex items-center justify-center p-4">
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center max-w-md">

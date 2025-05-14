@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
@@ -19,10 +19,45 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
   truncate = false,
   maxLength = 150,
 }) => {
-  // If truncate is true, limit content length
-  const displayContent = truncate && content.length > maxLength
-    ? content.substring(0, maxLength) + '...'
-    : content;
+  // Utiliser useMemo pour éviter de tronquer et traiter le contenu à chaque rendu
+  const displayContent = useMemo(() => {
+    if (!content) return '';
+    
+    return truncate && content.length > maxLength
+      ? content.substring(0, maxLength) + '...'
+      : content;
+  }, [content, truncate, maxLength]);
+
+  // Mémoriser les composants pour éviter de les recréer à chaque rendu
+  const markdownComponents = useMemo(() => ({
+    // Override rendering for certain components when truncated
+    h1: truncate ? ({ node, ...props }) => <span className="font-bold text-base" {...props} /> : undefined,
+    h2: truncate ? ({ node, ...props }) => <span className="font-bold text-base" {...props} /> : undefined,
+    h3: truncate ? ({ node, ...props }) => <span className="font-semibold" {...props} /> : undefined,
+    pre: truncate
+      ? ({ node, ...props }) => <span className="bg-gray-100 dark:bg-gray-800 px-1 rounded" {...props} />
+      : undefined,
+    code: ({ node, inline, className, children, ...props }) => {
+      if (truncate) {
+        return <span className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">{children}</span>;
+      }
+
+      const match = /language-(\w+)/.exec(className || '');
+      const language = match ? match[1] : '';
+
+      return !inline && language ? (
+        <CodeBlock
+          language={language}
+          value={String(children).replace(/\n$/, '')}
+        />
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    },
+    img: truncate ? ({ node, ...props }) => <span className="text-blue-500">[Image]</span> : undefined,
+  }), [truncate]);
 
   if (!content) {
     return null;
@@ -34,35 +69,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
         rehypePlugins={[rehypeSanitize]}
         remarkPlugins={[remarkGfm]}
         className="text-sm"
-        components={{
-          // Override rendering for certain components when truncated
-          h1: truncate ? ({ node, ...props }) => <span className="font-bold text-base" {...props} /> : undefined,
-          h2: truncate ? ({ node, ...props }) => <span className="font-bold text-base" {...props} /> : undefined,
-          h3: truncate ? ({ node, ...props }) => <span className="font-semibold" {...props} /> : undefined,
-          pre: truncate
-            ? ({ node, ...props }) => <span className="bg-gray-100 dark:bg-gray-800 px-1 rounded" {...props} />
-            : undefined,
-          code: ({ node, inline, className, children, ...props }) => {
-            if (truncate) {
-              return <span className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">{children}</span>;
-            }
-
-            const match = /language-(\w+)/.exec(className || '');
-            const language = match ? match[1] : '';
-
-            return !inline && language ? (
-              <CodeBlock
-                language={language}
-                value={String(children).replace(/\n$/, '')}
-              />
-            ) : (
-              <code className={className} {...props}>
-                {children}
-              </code>
-            );
-          },
-          img: truncate ? ({ node, ...props }) => <span className="text-blue-500">[Image]</span> : undefined,
-        }}
+        components={markdownComponents}
       >
         {displayContent}
       </ReactMarkdown>
@@ -70,4 +77,5 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
   );
 };
 
-export default MarkdownPreview;
+// Mémoriser le composant entier pour éviter les re-rendus inutiles quand les props ne changent pas
+export default React.memo(MarkdownPreview);

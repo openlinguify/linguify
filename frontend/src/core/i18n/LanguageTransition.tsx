@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 // Constantes pour l'événement de changement de langue
@@ -16,6 +16,111 @@ export enum TransitionType {
   LEARNING = 'learning',
   PRIVACY = 'privacy'
 }
+
+// Structure de données pour les textes de transition
+// Extraits pour faciliter la maintenance et performance
+const transitionTexts = {
+  title: {
+    en: {
+      [TransitionType.LANGUAGE]: 'Changing language...',
+      [TransitionType.PROFILE]: 'Updating profile...',
+      [TransitionType.SETTINGS]: 'Saving settings...',
+      [TransitionType.NOTIFICATION]: 'Updating notifications...',
+      [TransitionType.APPEARANCE]: 'Updating appearance...',
+      [TransitionType.LEARNING]: 'Updating learning preferences...',
+      [TransitionType.PRIVACY]: 'Updating privacy settings...',
+      default: 'Saving changes...'
+    },
+    fr: {
+      [TransitionType.LANGUAGE]: 'Changement de langue...',
+      [TransitionType.PROFILE]: 'Mise à jour du profil...',
+      [TransitionType.SETTINGS]: 'Enregistrement des paramètres...',
+      [TransitionType.NOTIFICATION]: 'Mise à jour des notifications...',
+      [TransitionType.APPEARANCE]: 'Mise à jour de l\'apparence...',
+      [TransitionType.LEARNING]: 'Mise à jour des préférences d\'apprentissage...',
+      [TransitionType.PRIVACY]: 'Mise à jour des paramètres de confidentialité...',
+      default: 'Enregistrement des modifications...'
+    },
+    es: {
+      [TransitionType.LANGUAGE]: 'Cambiando idioma...',
+      [TransitionType.PROFILE]: 'Actualizando perfil...',
+      [TransitionType.SETTINGS]: 'Guardando configuración...',
+      [TransitionType.NOTIFICATION]: 'Actualizando notificaciones...',
+      [TransitionType.APPEARANCE]: 'Actualizando apariencia...',
+      [TransitionType.LEARNING]: 'Actualizando preferencias de aprendizaje...',
+      [TransitionType.PRIVACY]: 'Actualizando configuración de privacidad...',
+      default: 'Guardando cambios...'
+    },
+    nl: {
+      [TransitionType.LANGUAGE]: 'Taal wijzigen...',
+      [TransitionType.PROFILE]: 'Profiel bijwerken...',
+      [TransitionType.SETTINGS]: 'Instellingen opslaan...',
+      [TransitionType.NOTIFICATION]: 'Meldingen bijwerken...',
+      [TransitionType.APPEARANCE]: 'Uiterlijk bijwerken...',
+      [TransitionType.LEARNING]: 'Leervoorkeuren bijwerken...',
+      [TransitionType.PRIVACY]: 'Privacy-instellingen bijwerken...',
+      default: 'Wijzigingen opslaan...'
+    }
+  },
+  description: {
+    en: {
+      [TransitionType.LANGUAGE]: 'Please wait while we update the interface.',
+      [TransitionType.PROFILE]: 'Please wait while we update your profile information.',
+      [TransitionType.SETTINGS]: 'Please wait while we apply your new settings.',
+      [TransitionType.NOTIFICATION]: 'Please wait while we update your notification preferences.',
+      [TransitionType.APPEARANCE]: 'Please wait while we apply your appearance preferences.',
+      [TransitionType.LEARNING]: 'Please wait while we update your learning preferences.',
+      [TransitionType.PRIVACY]: 'Please wait while we update your privacy settings.',
+      default: 'Please wait while we save your changes.'
+    },
+    fr: {
+      [TransitionType.LANGUAGE]: 'Veuillez patienter pendant que nous mettons à jour l\'interface.',
+      [TransitionType.PROFILE]: 'Veuillez patienter pendant que nous mettons à jour vos informations de profil.',
+      [TransitionType.SETTINGS]: 'Veuillez patienter pendant que nous appliquons vos nouveaux paramètres.',
+      [TransitionType.NOTIFICATION]: 'Veuillez patienter pendant que nous mettons à jour vos préférences de notification.',
+      [TransitionType.APPEARANCE]: 'Veuillez patienter pendant que nous appliquons vos préférences d\'apparence.',
+      [TransitionType.LEARNING]: 'Veuillez patienter pendant que nous mettons à jour vos préférences d\'apprentissage.',
+      [TransitionType.PRIVACY]: 'Veuillez patienter pendant que nous mettons à jour vos paramètres de confidentialité.',
+      default: 'Veuillez patienter pendant que nous enregistrons vos modifications.'
+    },
+    es: {
+      [TransitionType.LANGUAGE]: 'Por favor espere mientras actualizamos la interfaz.',
+      [TransitionType.PROFILE]: 'Por favor espere mientras actualizamos su información de perfil.',
+      [TransitionType.SETTINGS]: 'Por favor espere mientras aplicamos su nueva configuración.',
+      [TransitionType.NOTIFICATION]: 'Por favor espere mientras actualizamos sus preferencias de notificación.',
+      [TransitionType.APPEARANCE]: 'Por favor espere mientras aplicamos sus preferencias de apariencia.',
+      [TransitionType.LEARNING]: 'Por favor espere mientras actualizamos sus preferencias de aprendizaje.',
+      [TransitionType.PRIVACY]: 'Por favor espere mientras actualizamos su configuración de privacidad.',
+      default: 'Por favor espere mientras guardamos sus cambios.'
+    },
+    nl: {
+      [TransitionType.LANGUAGE]: 'Een ogenblik geduld terwijl we de interface bijwerken.',
+      [TransitionType.PROFILE]: 'Een ogenblik geduld terwijl we uw profielinformatie bijwerken.',
+      [TransitionType.SETTINGS]: 'Een ogenblik geduld terwijl we uw nieuwe instellingen toepassen.',
+      [TransitionType.NOTIFICATION]: 'Een ogenblik geduld terwijl we uw meldingsvoorkeuren bijwerken.',
+      [TransitionType.APPEARANCE]: 'Een ogenblik geduld terwijl we uw uiterlijke voorkeuren toepassen.',
+      [TransitionType.LEARNING]: 'Een ogenblik geduld terwijl we uw leervoorkeuren bijwerken.',
+      [TransitionType.PRIVACY]: 'Een ogenblik geduld terwijl we uw privacy-instellingen bijwerken.',
+      default: 'Een ogenblik geduld terwijl we uw wijzigingen opslaan.'
+    }
+  }
+};
+
+// Optimisée pour la performance - aucun recalcul des textes à chaque rendu
+const getTransitionText = (
+  section: 'title' | 'description',
+  locale: string,
+  type: TransitionType
+): string => {
+  // Fallback à l'anglais si la langue n'est pas supportée
+  const supportedLocale = ['en', 'fr', 'es', 'nl'].includes(locale) ? locale : 'en';
+  
+  // Récupérer les textes pour cette langue
+  const textsForLocale = transitionTexts[section][supportedLocale as keyof typeof transitionTexts.title];
+  
+  // Retourner le texte spécifique ou la valeur par défaut
+  return textsForLocale[type] || textsForLocale.default;
+};
 
 interface LanguageTransitionState {
   active: boolean;
@@ -33,6 +138,16 @@ export function LanguageTransition() {
     locale: null,
     type: TransitionType.LANGUAGE
   });
+  
+  // Référence au nœud de portail pour éviter les recréations
+  const portalRef = useRef<HTMLDivElement | null>(null);
+  
+  // Créer le nœud de portail une seule fois
+  if (!portalRef.current && typeof document !== 'undefined') {
+    portalRef.current = document.createElement('div');
+    portalRef.current.id = 'language-transition-portal';
+    document.body.appendChild(portalRef.current);
+  }
 
   useEffect(() => {
     // Fonction qui gère l'événement de transition
@@ -53,117 +168,22 @@ export function LanguageTransition() {
     // Nettoyer
     return () => {
       window.removeEventListener(LANGUAGE_TRANSITION_EVENT, handleTransition);
+      
+      // Nettoyer le nœud de portail lors du démontage du composant
+      if (portalRef.current && document.body.contains(portalRef.current)) {
+        document.body.removeChild(portalRef.current);
+      }
     };
   }, []);
 
   // Ne rien afficher si inactif
-  if (!state.active) {
+  if (!state.active || !portalRef.current) {
     return null;
   }
 
-  // Titre basé sur le type de transition et la langue
-  const getTitle = (type: TransitionType, locale: string) => {
-    if (locale === 'en') {
-      switch (type) {
-        case TransitionType.LANGUAGE: return 'Changing language...';
-        case TransitionType.PROFILE: return 'Updating profile...';
-        case TransitionType.SETTINGS: return 'Saving settings...';
-        case TransitionType.NOTIFICATION: return 'Updating notifications...';
-        case TransitionType.APPEARANCE: return 'Updating appearance...';
-        case TransitionType.LEARNING: return 'Updating learning preferences...';
-        case TransitionType.PRIVACY: return 'Updating privacy settings...';
-        default: return 'Saving changes...';
-      }
-    } else if (locale === 'fr') {
-      switch (type) {
-        case TransitionType.LANGUAGE: return 'Changement de langue...';
-        case TransitionType.PROFILE: return 'Mise à jour du profil...';
-        case TransitionType.SETTINGS: return 'Enregistrement des paramètres...';
-        case TransitionType.NOTIFICATION: return 'Mise à jour des notifications...';
-        case TransitionType.APPEARANCE: return 'Mise à jour de l\'apparence...';
-        case TransitionType.LEARNING: return 'Mise à jour des préférences d\'apprentissage...';
-        case TransitionType.PRIVACY: return 'Mise à jour des paramètres de confidentialité...';
-        default: return 'Enregistrement des modifications...';
-      }
-    } else if (locale === 'es') {
-      switch (type) {
-        case TransitionType.LANGUAGE: return 'Cambiando idioma...';
-        case TransitionType.PROFILE: return 'Actualizando perfil...';
-        case TransitionType.SETTINGS: return 'Guardando configuración...';
-        case TransitionType.NOTIFICATION: return 'Actualizando notificaciones...';
-        case TransitionType.APPEARANCE: return 'Actualizando apariencia...';
-        case TransitionType.LEARNING: return 'Actualizando preferencias de aprendizaje...';
-        case TransitionType.PRIVACY: return 'Actualizando configuración de privacidad...';
-        default: return 'Guardando cambios...';
-      }
-    } else if (locale === 'nl') {
-      switch (type) {
-        case TransitionType.LANGUAGE: return 'Taal wijzigen...';
-        case TransitionType.PROFILE: return 'Profiel bijwerken...';
-        case TransitionType.SETTINGS: return 'Instellingen opslaan...';
-        case TransitionType.NOTIFICATION: return 'Meldingen bijwerken...';
-        case TransitionType.APPEARANCE: return 'Uiterlijk bijwerken...';
-        case TransitionType.LEARNING: return 'Leervoorkeuren bijwerken...';
-        case TransitionType.PRIVACY: return 'Privacy-instellingen bijwerken...';
-        default: return 'Wijzigingen opslaan...';
-      }
-    }
-    return 'Saving changes...';
-  };
-
-  // Description basée sur le type de transition et la langue
-  const getDescription = (type: TransitionType, locale: string) => {
-    if (locale === 'en') {
-      switch (type) {
-        case TransitionType.LANGUAGE: return 'Please wait while we update the interface.';
-        case TransitionType.PROFILE: return 'Please wait while we update your profile information.';
-        case TransitionType.SETTINGS: return 'Please wait while we apply your new settings.';
-        case TransitionType.NOTIFICATION: return 'Please wait while we update your notification preferences.';
-        case TransitionType.APPEARANCE: return 'Please wait while we apply your appearance preferences.';
-        case TransitionType.LEARNING: return 'Please wait while we update your learning preferences.';
-        case TransitionType.PRIVACY: return 'Please wait while we update your privacy settings.';
-        default: return 'Please wait while we save your changes.';
-      }
-    } else if (locale === 'fr') {
-      switch (type) {
-        case TransitionType.LANGUAGE: return 'Veuillez patienter pendant que nous mettons à jour l\'interface.';
-        case TransitionType.PROFILE: return 'Veuillez patienter pendant que nous mettons à jour vos informations de profil.';
-        case TransitionType.SETTINGS: return 'Veuillez patienter pendant que nous appliquons vos nouveaux paramètres.';
-        case TransitionType.NOTIFICATION: return 'Veuillez patienter pendant que nous mettons à jour vos préférences de notification.';
-        case TransitionType.APPEARANCE: return 'Veuillez patienter pendant que nous appliquons vos préférences d\'apparence.';
-        case TransitionType.LEARNING: return 'Veuillez patienter pendant que nous mettons à jour vos préférences d\'apprentissage.';
-        case TransitionType.PRIVACY: return 'Veuillez patienter pendant que nous mettons à jour vos paramètres de confidentialité.';
-        default: return 'Veuillez patienter pendant que nous enregistrons vos modifications.';
-      }
-    } else if (locale === 'es') {
-      switch (type) {
-        case TransitionType.LANGUAGE: return 'Por favor espere mientras actualizamos la interfaz.';
-        case TransitionType.PROFILE: return 'Por favor espere mientras actualizamos su información de perfil.';
-        case TransitionType.SETTINGS: return 'Por favor espere mientras aplicamos su nueva configuración.';
-        case TransitionType.NOTIFICATION: return 'Por favor espere mientras actualizamos sus preferencias de notificación.';
-        case TransitionType.APPEARANCE: return 'Por favor espere mientras aplicamos sus preferencias de apariencia.';
-        case TransitionType.LEARNING: return 'Por favor espere mientras actualizamos sus preferencias de aprendizaje.';
-        case TransitionType.PRIVACY: return 'Por favor espere mientras actualizamos su configuración de privacidad.';
-        default: return 'Por favor espere mientras guardamos sus cambios.';
-      }
-    } else if (locale === 'nl') {
-      switch (type) {
-        case TransitionType.LANGUAGE: return 'Een ogenblik geduld terwijl we de interface bijwerken.';
-        case TransitionType.PROFILE: return 'Een ogenblik geduld terwijl we uw profielinformatie bijwerken.';
-        case TransitionType.SETTINGS: return 'Een ogenblik geduld terwijl we uw nieuwe instellingen toepassen.';
-        case TransitionType.NOTIFICATION: return 'Een ogenblik geduld terwijl we uw meldingsvoorkeuren bijwerken.';
-        case TransitionType.APPEARANCE: return 'Een ogenblik geduld terwijl we uw uiterlijke voorkeuren toepassen.';
-        case TransitionType.LEARNING: return 'Een ogenblik geduld terwijl we uw leervoorkeuren bijwerken.';
-        case TransitionType.PRIVACY: return 'Een ogenblik geduld terwijl we uw privacy-instellingen bijwerken.';
-        default: return 'Een ogenblik geduld terwijl we uw wijzigingen opslaan.';
-      }
-    }
-    return 'Please wait while we save your changes.';
-  };
-
-  // Titre et description basés sur le type et la langue
-  const title = getTitle(state.type, state.locale || 'en');
-  const description = getDescription(state.type, state.locale || 'en');
+  // Calculer les textes une seule fois par rendu avec les valeurs actuelles
+  const title = getTransitionText('title', state.locale || 'en', state.type);
+  const description = getTransitionText('description', state.locale || 'en', state.type);
 
   // Portail pour monter au niveau le plus haut du DOM
   return createPortal(
@@ -178,16 +198,31 @@ export function LanguageTransition() {
         </p>
       </div>
     </div>,
-    document.body
+    portalRef.current
   );
 }
 
+// Fonction utilitaire pour déclencher la transition visuelle
+// Memoizée pour éviter des déclenchements trop fréquents
+let lastTransitionTime = 0;
+const DEBOUNCE_TIME = 300; // ms
+
 /**
- * Fonction utilitaire pour déclencher la transition visuelle
+ * Fonction utilitaire pour déclencher la transition visuelle avec protection debounce
  * @param locale Code de langue ('en', 'fr', etc.)
  * @param type Type de transition (optionnel, défaut: TransitionType.LANGUAGE)
  */
 export function triggerLanguageTransition(locale: string, type: TransitionType = TransitionType.LANGUAGE) {
+  const now = Date.now();
+  
+  // Protection contre les déclenchements trop rapprochés
+  if (now - lastTransitionTime < DEBOUNCE_TIME) {
+    console.log('Debounced language transition');
+    return;
+  }
+  
+  lastTransitionTime = now;
+  
   const event = new CustomEvent(LANGUAGE_TRANSITION_EVENT, {
     detail: { locale, type }
   });

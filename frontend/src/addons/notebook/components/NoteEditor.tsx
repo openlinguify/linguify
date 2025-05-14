@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Save, Languages, Trash, CheckCircle, AlertCircle } from "lucide-react";
+import { Loader2, Save, Languages, Trash, CheckCircle, AlertCircle, RefreshCcw } from "lucide-react";
 import { Note } from "@/addons/notebook/types";
 import { notebookAPI } from "../api/notebookAPI";
 import {
@@ -32,9 +32,10 @@ interface NoteEditorProps {
   note: Note;
   onSave: () => void;
   onCancel: () => void;
+  isLoading?: boolean; // Adding isLoading prop for parent-controlled loading state
 }
 
-export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
+export function NoteEditor({ note, onSave, onCancel, isLoading = false }: NoteEditorProps) {
   const { toast } = useToast();
   const { handleError } = useErrorHandler();
 
@@ -61,17 +62,21 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
   const [isLoadingTags, setIsLoadingTags] = useState(false);
   const [tagError, setTagError] = useState<ErrorResponse | null>(null);
 
-  // Initialize from props when note changes
+  // État pour gérer l'affichage de l'indicateur de chargement
+  const [isNoteLoading, setIsNoteLoading] = useState(false);
+
+  // Initialize from props when note changes - version ultra simplifiée
   useEffect(() => {
     if (!note || !note.id) return;
 
-    // Réinitialiser les erreurs
-    setError(null);
-
+    // Mise à jour des champs avec les données disponibles, simples et directs
     setTitle(note.title || "");
     setContent(note.content || "");
     setTranslation(note.translation || "");
     setLanguage(note.language || "fr");
+    
+    // Réinitialiser l'erreur
+    setError(null);
 
     // If the note has tags, initialize them
     if (note.tags) {
@@ -79,7 +84,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
     } else {
       setSelectedTagIds([]);
     }
-  }, [note.id]);
+  }, [note]);
 
   // Check if tag API is available and load tags
   useEffect(() => {
@@ -333,6 +338,48 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
       });
   };
 
+  // Fonction pour recharger les détails complets de la note
+  const reloadNote = () => {
+    if (!note || !note.id) return;
+
+    // Réinitialiser l'état d'erreur
+    setError(null);
+    
+    // Indiquer que la note est en cours de chargement
+    setIsNoteLoading(true);
+    
+    // Tenter de recharger la note
+    notebookAPI.getNote(note.id)
+      .then(fullNote => {
+        // Mettre à jour toutes les données de la note
+        setTitle(fullNote.title || "");
+        setContent(fullNote.content || "");
+        setTranslation(fullNote.translation || "");
+        setLanguage(fullNote.language || "fr");
+        
+        // Si la note a des tags, les initialiser
+        if (fullNote.tags) {
+          setSelectedTagIds(fullNote.tags.map(tag => tag.id));
+        } else {
+          setSelectedTagIds([]);
+        }
+        
+        // Toast de succès
+        toast({
+          title: "Succès",
+          description: "La note a été rechargée avec succès",
+        });
+      })
+      .catch(error => {
+        // Configurer l'erreur pour l'afficher
+        const parsedError = handleError(error, "Impossible de recharger la note");
+        setError(parsedError);
+      })
+      .finally(() => {
+        setIsNoteLoading(false);
+      });
+  };
+
   return (
     <motion.div
       className="h-full flex flex-col overflow-hidden"
@@ -341,6 +388,12 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
     >
+      {/* Loading indicator overlay */}
+      {(isNoteLoading || isLoading) && (
+        <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/50 flex items-center justify-center z-50">
+          <LoadingIndicator message="Chargement de la note..." size="large" />
+        </div>
+      )}
       {/* Afficher les erreurs d'API en haut */}
       <AnimatePresence mode="wait">
         {error && (
@@ -354,7 +407,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             <ErrorDisplay
               error={error}
               onDismiss={() => setError(null)}
-              onRetry={error.type === ErrorType.NETWORK ? handleSave : undefined}
+              onRetry={error.type === ErrorType.LOADING ? reloadNote : handleSave}
               className="compact"
             />
           </motion.div>
@@ -498,50 +551,51 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
 
           <AnimatePresence mode="wait">
             {currentTab === "content" && (
-              <motion.div
-                key="content-tab"
-                className="flex-1 overflow-auto"
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.2 }}
-              >
-                <TabsContent value="content" className="flex-1 overflow-auto h-full min-h-[300px]">
-                  <MarkdownEditor
-                    value={content}
-                    onChange={setContent}
-                    placeholder="Contenu de la note..."
-                    minHeight="300px"
-                    maxHeight="60vh"
-                    language={language}
-                  />
-                </TabsContent>
-              </motion.div>
-            )}
+                <motion.div
+                  key="content-tab"
+                  className="flex-1 overflow-auto"
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <TabsContent value="content" className="flex-1 overflow-auto h-full min-h-[300px]">
+                    <MarkdownEditor
+                      value={content}
+                      onChange={setContent}
+                      placeholder="Contenu de la note..."
+                      minHeight="300px"
+                      maxHeight="60vh"
+                      language={language}
+                    />
+                  </TabsContent>
+                </motion.div>
+              )}
 
-            {currentTab === "translation" && (
-              <motion.div
-                key="translation-tab"
-                className="flex-1 overflow-auto"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                transition={{ duration: 0.2 }}
-              >
-                <TabsContent value="translation" className="flex-1 overflow-auto h-full min-h-[300px]">
-                  <MarkdownEditor
-                    value={translation}
-                    onChange={setTranslation}
-                    placeholder="Traduction..."
-                    minHeight="300px"
-                    maxHeight="60vh"
-                    language={language}
-                    isTranslation={true}
-                  />
-                </TabsContent>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              {currentTab === "translation" && (
+                <motion.div
+                  key="translation-tab"
+                  className="flex-1 overflow-auto"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <TabsContent value="translation" className="flex-1 overflow-auto h-full min-h-[300px]">
+                    <MarkdownEditor
+                      value={translation}
+                      onChange={setTranslation}
+                      placeholder="Traduction..."
+                      minHeight="300px"
+                      maxHeight="60vh"
+                      language={language}
+                      isTranslation={true}
+                    />
+                  </TabsContent>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
         </Tabs>
 
         <motion.div

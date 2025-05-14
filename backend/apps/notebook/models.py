@@ -89,6 +89,11 @@ class Note(models.Model):
         indexes = [
             models.Index(fields=['user', 'category']),
             models.Index(fields=['-updated_at']),
+            models.Index(fields=['user', 'is_archived']),
+            models.Index(fields=['user', 'is_pinned']),
+            models.Index(fields=['user', 'last_reviewed_at']),
+            models.Index(fields=['user', 'note_type']),
+            models.Index(fields=['language']),
         ]
 
     def __str__(self):
@@ -96,19 +101,18 @@ class Note(models.Model):
     
     def mark_reviewed(self):
         from django.utils import timezone
-        self.last_reviewed_at = timezone.now()
+        now = timezone.now()
+        self.last_reviewed_at = now
         self.review_count += 1
         self.save()
-
-    @property
-    def needs_review(self):
-        """Détermine si la note doit être révisée basé sur la dernière révision"""
-        if not self.last_reviewed_at:
-            return True
-        
+    
+    def _calculate_next_review_date(self, from_date=None):
         from django.utils import timezone
         from datetime import timedelta
         
+        if from_date is None:
+            from_date = timezone.now()
+            
         # Intervalle de révision basé sur le nombre de révisions
         intervals = {
             0: timedelta(days=1),
@@ -120,7 +124,21 @@ class Note(models.Model):
         }
         
         review_level = min(self.review_count, 5)
-        return timezone.now() > (self.last_reviewed_at + intervals[review_level])
+        return from_date + intervals[review_level]
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    @property
+    def needs_review(self):
+        """Détermine si la note doit être révisée basé sur la dernière révision"""
+        from django.utils import timezone
+        
+        if not self.last_reviewed_at:
+            return True
+            
+        next_review = self._calculate_next_review_date(self.last_reviewed_at)
+        return timezone.now() >= next_review
     
 class SharedNote(models.Model):
     """Modèle pour le partage de notes entre utilisateurs"""

@@ -11,6 +11,7 @@ export enum ErrorType {
   PERMISSION = 'permission',
   VALIDATION = 'validation',
   SERVER = 'server',
+  LOADING = 'loading',  // Added for note loading errors
   UNKNOWN = 'unknown'
 }
 
@@ -26,6 +27,18 @@ export interface ErrorResponse {
 }
 
 /**
+ * Maps HTTP status codes to error types
+ */
+const mapStatusToErrorType = (status: number): ErrorType => {
+  if (status === 401) return ErrorType.AUTHENTICATION;
+  if (status === 403) return ErrorType.PERMISSION;
+  if (status === 404) return ErrorType.NOT_FOUND;
+  if (status >= 400 && status < 500) return ErrorType.VALIDATION;
+  if (status >= 500) return ErrorType.SERVER;
+  return ErrorType.UNKNOWN;
+};
+
+/**
  * Parse API error response to get structured information
  */
 export const parseError = (error: any): ErrorResponse => {
@@ -38,6 +51,17 @@ export const parseError = (error: any): ErrorResponse => {
 
   // No error provided
   if (!error) return defaultError;
+
+  // Handle case where we have a userMessage from our enhanced apiClient error handler
+  if (error.userMessage) {
+    return {
+      type: error.status ? mapStatusToErrorType(error.status) : ErrorType.UNKNOWN,
+      status: error.status,
+      message: error.userMessage,
+      details: error.data || error,
+      retry: error.status ? error.status < 500 && error.status !== 404 : false
+    };
+  }
 
   // Network error (axios specific)
   if (error.isAxiosError && !error.response) {
