@@ -4,9 +4,8 @@ import { NoteEditor } from "./NoteEditor";
 import { useToast } from "@/components/ui/use-toast";
 import { Note } from "../types";
 import { notebookAPI } from "../api/notebookAPI";
-import { Loader2, Plus, RefreshCcw, Menu, ChevronLeft } from "lucide-react";
+import { Plus, RefreshCcw, Menu, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { SearchFilters, SearchFiltersState, applyFilters } from "./SearchFilters";
 import { ErrorType, ErrorResponse } from "../utils/errorHandling";
@@ -395,11 +394,6 @@ export default function NotebookMain() {
   if (isCreating) {
     return (
       <div className="h-full flex flex-col">
-        <div className="p-4 bg-white dark:bg-gray-800 shadow-lg z-10 sticky top-0 left-0 right-0">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold text-transparent bg-clip-text">
-            Carnet de Notes
-          </h1>
-        </div>
         
         <div className="flex-1 overflow-auto p-4">
           <div className="max-w-2xl mx-auto">
@@ -450,9 +444,7 @@ export default function NotebookMain() {
       <div className="h-full flex flex-col">
         <div className="p-4 bg-white dark:bg-gray-800 shadow-lg z-10 sticky top-0 left-0 right-0">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold text-transparent bg-clip-text">
-              Carnet de Notes
-            </h1>
+
             <Button
               variant="outline"
               onClick={loadNotes}

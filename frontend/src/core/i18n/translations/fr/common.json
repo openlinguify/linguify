@@ -599,5 +599,12 @@
     "minimal": {
       "ariaLabel": "Consulter les nouvelles conditions d'utilisation"
     }
+  },
+  "common": {
+    "save": "Enregistrer",
+    "save_changes": "Enregistrer les modifications",
+    "cancel": "Annuler",
+    "saving": "Enregistrement...",
+    "coming_soon": "Prochainement"
   }
 }

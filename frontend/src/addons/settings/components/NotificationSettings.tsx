@@ -29,6 +29,49 @@ import {
   CardTitle 
 } from '@/components/ui/card';
 
+// Helper component for toggles
+interface SettingsToggleProps {
+  id: string;
+  label: string;
+  description?: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+  disabled?: boolean;
+  icon?: React.ReactNode;
+}
+
+function SettingsToggle({ 
+  id, 
+  label, 
+  description, 
+  checked, 
+  onCheckedChange, 
+  disabled = false,
+  icon
+}: SettingsToggleProps) {
+  return (
+    <div className="flex items-center justify-between">
+      <div className="space-y-0.5">
+        <Label htmlFor={id} className={`flex items-center gap-2 ${description ? '' : 'text-base'}`}>
+          {icon && icon}
+          {label}
+        </Label>
+        {description && (
+          <p className="text-sm text-muted-foreground">
+            {description}
+          </p>
+        )}
+      </div>
+      <Switch
+        id={id}
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+        disabled={disabled}
+      />
+    </div>
+  );
+}
+
 export default function NotificationSettings() {
   const { t } = useTranslation();
   const { settings, updateSetting } = useUserSettings();
@@ -100,7 +143,7 @@ export default function NotificationSettings() {
   
   // Render settings
   return (
-    <div className="space-y-6">
+    <div className="h-full w-full bg-gray-50 dark:bg-gray-900 overflow-hidden p-0 m-0 space-y-6">
       {/* Permission alert */}
       {!hasNotificationPermission && (
         <NotificationPermission variant="alert" />
@@ -108,7 +151,7 @@ export default function NotificationSettings() {
       
       {/* Main notification toggles */}
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3 bg-muted/30">
           <CardTitle>
             <div className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
@@ -120,46 +163,30 @@ export default function NotificationSettings() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="email_notifications" className="flex items-center gap-2">
-                <MessageCircle className="h-4 w-4" />
-                {t('settings.notifications.email')}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('settings.notifications.email_description')}
-              </p>
-            </div>
-            <Switch
-              id="email_notifications"
-              checked={localSettings.email_notifications}
-              onCheckedChange={(checked) => handleToggleChange('email_notifications', checked)}
-            />
-          </div>
+          <SettingsToggle
+            id="email_notifications"
+            label={t('settings.notifications.email')}
+            description={t('settings.notifications.email_description')}
+            checked={localSettings.email_notifications}
+            onCheckedChange={(checked) => handleToggleChange('email_notifications', checked)}
+            icon={<MessageCircle className="h-4 w-4" />}
+          />
           
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="push_notifications" className="flex items-center gap-2">
-                <Bell className="h-4 w-4" />
-                {t('settings.notifications.push')}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('settings.notifications.push_description')}
-              </p>
-            </div>
-            <Switch
-              id="push_notifications"
-              checked={localSettings.push_notifications}
-              onCheckedChange={(checked) => handleToggleChange('push_notifications', checked)}
-              disabled={!hasNotificationPermission}
-            />
-          </div>
+          <SettingsToggle
+            id="push_notifications"
+            label={t('settings.notifications.push')}
+            description={t('settings.notifications.push_description')}
+            checked={localSettings.push_notifications}
+            onCheckedChange={(checked) => handleToggleChange('push_notifications', checked)}
+            disabled={!hasNotificationPermission}
+            icon={<Bell className="h-4 w-4" />}
+          />
         </CardContent>
       </Card>
       
       {/* Notification types */}
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3 bg-muted/30">
           <CardTitle>
             <div className="flex items-center gap-2">
               <Settings className="h-5 w-5" />
@@ -171,79 +198,47 @@ export default function NotificationSettings() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="lesson_notifications" className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4" />
-                {t('settings.notifications.lessons')}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('settings.notifications.lessons_description')}
-              </p>
-            </div>
-            <Switch
-              id="lesson_notifications"
-              checked={localSettings.lesson_notifications}
-              onCheckedChange={(checked) => handleToggleChange('lesson_notifications', checked)}
-            />
-          </div>
+          <SettingsToggle
+            id="lesson_notifications"
+            label={t('settings.notifications.lessons')}
+            description={t('settings.notifications.lessons_description')}
+            checked={localSettings.lesson_notifications}
+            onCheckedChange={(checked) => handleToggleChange('lesson_notifications', checked)}
+            icon={<BookOpen className="h-4 w-4" />}
+          />
           
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="flashcard_notifications" className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4" />
-                {t('settings.notifications.flashcards')}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('settings.notifications.flashcards_description')}
-              </p>
-            </div>
-            <Switch
-              id="flashcard_notifications"
-              checked={localSettings.flashcard_notifications}
-              onCheckedChange={(checked) => handleToggleChange('flashcard_notifications', checked)}
-            />
-          </div>
+          <SettingsToggle
+            id="flashcard_notifications"
+            label={t('settings.notifications.flashcards')}
+            description={t('settings.notifications.flashcards_description')}
+            checked={localSettings.flashcard_notifications}
+            onCheckedChange={(checked) => handleToggleChange('flashcard_notifications', checked)}
+            icon={<CheckCircle className="h-4 w-4" />}
+          />
           
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="achievement_notifications" className="flex items-center gap-2">
-                <Trophy className="h-4 w-4" />
-                {t('settings.notifications.achievements')}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('settings.notifications.achievements_description')}
-              </p>
-            </div>
-            <Switch
-              id="achievement_notifications"
-              checked={localSettings.achievement_notifications}
-              onCheckedChange={(checked) => handleToggleChange('achievement_notifications', checked)}
-            />
-          </div>
+          <SettingsToggle
+            id="achievement_notifications"
+            label={t('settings.notifications.achievements')}
+            description={t('settings.notifications.achievements_description')}
+            checked={localSettings.achievement_notifications}
+            onCheckedChange={(checked) => handleToggleChange('achievement_notifications', checked)}
+            icon={<Trophy className="h-4 w-4" />}
+          />
           
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="system_notifications" className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4" />
-                {t('settings.notifications.system')}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('settings.notifications.system_description')}
-              </p>
-            </div>
-            <Switch
-              id="system_notifications"
-              checked={localSettings.system_notifications}
-              onCheckedChange={(checked) => handleToggleChange('system_notifications', checked)}
-            />
-          </div>
+          <SettingsToggle
+            id="system_notifications"
+            label={t('settings.notifications.system')}
+            description={t('settings.notifications.system_description')}
+            checked={localSettings.system_notifications}
+            onCheckedChange={(checked) => handleToggleChange('system_notifications', checked)}
+            icon={<AlertTriangle className="h-4 w-4" />}
+          />
         </CardContent>
       </Card>
       
       {/* Reminder settings */}
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3 bg-muted/30">
           <CardTitle>
             <div className="flex items-center gap-2">
               <Clock className="h-5 w-5" />
@@ -255,39 +250,23 @@ export default function NotificationSettings() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="weekday_reminders" className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                {t('settings.notifications.weekdays')}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('settings.notifications.weekdays_description')}
-              </p>
-            </div>
-            <Switch
-              id="weekday_reminders"
-              checked={localSettings.weekday_reminders}
-              onCheckedChange={(checked) => handleToggleChange('weekday_reminders', checked)}
-            />
-          </div>
+          <SettingsToggle
+            id="weekday_reminders"
+            label={t('settings.notifications.weekdays')}
+            description={t('settings.notifications.weekdays_description')}
+            checked={localSettings.weekday_reminders}
+            onCheckedChange={(checked) => handleToggleChange('weekday_reminders', checked)}
+            icon={<Calendar className="h-4 w-4" />}
+          />
           
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="weekend_reminders" className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                {t('settings.notifications.weekends')}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('settings.notifications.weekends_description')}
-              </p>
-            </div>
-            <Switch
-              id="weekend_reminders"
-              checked={localSettings.weekend_reminders}
-              onCheckedChange={(checked) => handleToggleChange('weekend_reminders', checked)}
-            />
-          </div>
+          <SettingsToggle
+            id="weekend_reminders"
+            label={t('settings.notifications.weekends')}
+            description={t('settings.notifications.weekends_description')}
+            checked={localSettings.weekend_reminders}
+            onCheckedChange={(checked) => handleToggleChange('weekend_reminders', checked)}
+            icon={<Calendar className="h-4 w-4" />}
+          />
           
           <div className="space-y-2">
             <Label htmlFor="reminder_time" className="flex items-center gap-2">
@@ -310,7 +289,7 @@ export default function NotificationSettings() {
       
       {/* Advanced settings */}
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3 bg-muted/30">
           <CardTitle>
             <div className="flex items-center gap-2">
               <Settings className="h-5 w-5" />

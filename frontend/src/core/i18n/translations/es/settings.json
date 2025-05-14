@@ -19,7 +19,7 @@
     "browser_push_description": "Recibe notificaciones push en tu dispositivo",
     "configure": "Configurar"
   },
-  "saveChanges": "Guardar cambios",
+  "saveChanges": "Guardar",
   "saving": "Guardando...",
   "cancel": "Cancelar",
   "tabs": {
