@@ -70,6 +70,14 @@ export const LANGUAGE_OPTIONS = [
     reading_exercises: boolean;
     writing_exercises: boolean;
     
+    // Notification settings
+    notification_sound: string;
+    notification_retention_days: number;
+    achievement_notifications: boolean;
+    lesson_notifications: boolean;
+    flashcard_notifications: boolean;
+    system_notifications: boolean;
+    
     // Language settings
     native_language: string;
     target_language: string;
@@ -129,6 +137,13 @@ export const LANGUAGE_OPTIONS = [
     listening_exercises: true,
     reading_exercises: true,
     writing_exercises: true,
+    
+    notification_sound: 'default',
+    notification_retention_days: 30,
+    achievement_notifications: true,
+    lesson_notifications: true,
+    flashcard_notifications: true,
+    system_notifications: true,
     
     native_language: 'EN',
     target_language: 'FR',

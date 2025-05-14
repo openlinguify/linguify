@@ -6,7 +6,6 @@ import {
   Bell, 
   Calendar, 
   Clock, 
-  Eye, 
   MessageCircle, 
   Settings, 
   AlertTriangle,
@@ -17,9 +16,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { useUserSettings } from '@/core/context/UserSettingsContext';
 import { NotificationPermission } from '@/components/notifications';
 import { useNotifications } from '@/core/context/NotificationContext';
@@ -28,15 +25,13 @@ import {
   Card, 
   CardContent, 
   CardDescription, 
-  CardFooter, 
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function NotificationSettings() {
   const { t } = useTranslation();
-  const { settings, updateSetting, updateSettings } = useUserSettings();
+  const { settings, updateSetting } = useUserSettings();
   const { hasNotificationPermission } = useNotifications();
   
   // Local state for form

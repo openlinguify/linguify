@@ -25,9 +25,6 @@ import {
   Loader2,
   Save,
   Camera,
-  Calendar,
-  MapPin,
-  Mail,
   BookOpen,
   Palette
 } from "lucide-react";
@@ -279,7 +276,7 @@ export default function SettingsPage() {
       setAlert({ show: false, type: 'success', message: '' });
 
       // Save both profile and interface language
-      const response = await apiClient.patch('/api/auth/profile/', {
+      await apiClient.patch('/api/auth/profile/', {
         username: formData.username,
         first_name: formData.first_name,
         last_name: formData.last_name,
@@ -692,18 +689,19 @@ export default function SettingsPage() {
   const fullName = `${formData.first_name || ''} ${formData.last_name || ''}`.trim() || formData.username;
 
   return (
-    <div className="w-full space-y-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{t('settings')}</h1>
-        <div className="flex gap-2">
+    <div className="w-full min-h-[calc(100vh-80px)] flex flex-col py-4 px-2 md:px-4">
+      <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-4 mb-6 px-2 md:px-4">
+        
+        <div className="flex gap-2 w-full md:w-auto ml-auto">
           {isEditing && (
-            <Button variant="outline" onClick={handleCancelEdit}>
+            <Button variant="outline" onClick={handleCancelEdit} className="w-full md:w-auto">
               {t('cancel')}
             </Button>
           )}
           <Button 
             onClick={activeTab === 'profile' ? saveProfile : saveSettings}
             disabled={isSaving}
+            className="w-full md:w-auto"
           >
             {isSaving ? (
               <>
@@ -721,19 +719,57 @@ export default function SettingsPage() {
       </div>
 
       {alert.show && (
-        <Alert className={`mb-6 ${alert.type === 'error' ? 'bg-destructive/15' : 'bg-green-100'}`}>
+        <Alert className={`mx-4 mb-4 ${alert.type === 'error' ? 'border-destructive bg-destructive/10' : 'border-green-500 bg-green-50 dark:bg-green-900/20'}`}>
           <AlertDescription>
             {alert.message}
           </AlertDescription>
         </Alert>
       )}
 
-      <div className="grid grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-6 gap-4 lg:gap-6 flex-1 overflow-hidden">
         {/* Left sidebar */}
-        <div className="col-span-1">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-2">
+        <div className="md:col-span-1 lg:col-span-1 space-y-6">
+          <div className="bg-card rounded-lg shadow-sm border overflow-hidden h-full sticky top-4">
+            <div className="p-4 lg:p-6 flex flex-col items-center">
+              <div className="relative mb-4">
+                <div
+                  className="h-24 w-24 rounded-full overflow-hidden border-4 border-background cursor-pointer transition-all hover:opacity-90"
+                  onClick={handleProfilePictureClick}
+                >
+                  {user.picture ? (
+                    <img
+                      src={user.picture}
+                      alt={fullName}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center">
+                      <span className="text-3xl font-bold text-white">
+                        {fullName.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                </div>
+                {isUploading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
+                    <Loader2 className="h-8 w-8 animate-spin text-white" />
+                  </div>
+                )}
+                <div className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-1.5 rounded-full cursor-pointer hover:bg-primary/90 transition-colors">
+                  <Camera className="h-3.5 w-3.5" />
+                </div>
+              </div>
+              <h2 className="text-xl font-bold">{fullName}</h2>
+              <p className="text-sm text-muted-foreground mb-4">{formData.email}</p>
+              
+              <div className="w-full space-y-1">
                 <Button 
                   variant={activeTab === "profile" ? "default" : "ghost"} 
                   className="w-full justify-start" 
@@ -810,455 +846,395 @@ export default function SettingsPage() {
                   {t('tabs.dangerZone')}
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
-        {/* Main content */}
-        <div className="col-span-3">
+        {/* Main content area */}
+        <div className="md:col-span-5 lg:col-span-5 space-y-6 max-h-[calc(100vh-100px)] overflow-y-auto pr-2">
           {/* Profile Section */}
           {activeTab === "profile" && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Left Column - Profile Summary */}
-              <div className="md:col-span-1">
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex flex-col items-center mb-6">
-                      <div className="relative">
-                        <div
-                          className="h-32 w-32 rounded-full overflow-hidden border-4 border-purple-100 cursor-pointer"
-                          onClick={handleProfilePictureClick}
-                        >
-                          {user.picture ? (
-                            <img
-                              src={user.picture}
-                              alt={fullName}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <div className="h-full w-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center">
-                              <span className="text-3xl font-bold text-white">
-                                {fullName.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                          )}
-                          <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleFileChange}
+            <Card className="shadow-sm">
+              <CardHeader className="pb-3 bg-muted/30">
+                <CardTitle>{t('tabs.profile')}</CardTitle>
+                <CardDescription>
+                  {t('profileInfo.subtitle')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                <Tabs defaultValue={activeProfileTab} onValueChange={setActiveProfileTab} className="mt-2">
+                  <TabsList className="grid grid-cols-4 mb-6">
+                    <TabsTrigger value="personal">{t('profileInfo.personalInfo')}</TabsTrigger>
+                    <TabsTrigger value="languages">{t('profileInfo.languages')}</TabsTrigger>
+                    <TabsTrigger value="learning">{t('profileInfo.learningGoals')}</TabsTrigger>
+                    <TabsTrigger value="preferences">{t('profileInfo.preferences')}</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="personal" className="space-y-6">
+                    {!isEditing ? (
+                      // View Mode
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <InfoItem label={t('profileInfo.firstName')} value={formData.first_name || t('profileInfo.notSpecified')} />
+                        <InfoItem label={t('profileInfo.lastName')} value={formData.last_name || t('profileInfo.notSpecified')} />
+                        <InfoItem label={t('profileInfo.username')} value={formData.username} />
+                        <InfoItem label={t('profileInfo.email')} value={formData.email} />
+                        <InfoItem
+                          label={t('profileInfo.gender')}
+                          value={formData.gender
+                            ? GENDER_OPTIONS.find(opt => opt.value === formData.gender)?.label || t('profileInfo.notSpecified')
+                            : t('profileInfo.notSpecified')
+                          }
+                        />
+                        <InfoItem
+                          label={t('profileInfo.birthday')}
+                          value={formData.birthday ? new Date(formData.birthday).toLocaleDateString() : t('profileInfo.notSpecified')}
+                        />
+
+                        <div className="col-span-full">
+                          <h3 className="text-sm font-medium mb-2">{t('profileInfo.bio')}</h3>
+                          <p className="text-muted-foreground">{formData.bio || 'No bio provided yet.'}</p>
+                        </div>
+                        
+                        <div className="col-span-full">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setIsEditing(true)}
+                            className="mt-4"
+                          >
+                            {t('profileInfo.editProfile')}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      // Edit Mode
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="first_name">{t('profileInfo.firstName')}</Label>
+                          <Input
+                            id="first_name"
+                            name="first_name"
+                            value={formData.first_name || ''}
+                            onChange={handleInputChange}
                           />
                         </div>
-                        {isUploading && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
-                            <Loader2 className="h-10 w-10 animate-spin text-white" />
-                          </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="last_name">{t('profileInfo.lastName')}</Label>
+                          <Input
+                            id="last_name"
+                            name="last_name"
+                            value={formData.last_name || ''}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="username">{t('profileInfo.username')}</Label>
+                          <Input
+                            id="username"
+                            name="username"
+                            value={formData.username}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="email">{t('profileInfo.email')} ({t('profileInfo.notEditable')})</Label>
+                          <Input
+                            id="email"
+                            name="email"
+                            value={formData.email}
+                            disabled
+                            className="bg-muted"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="gender">{t('profileInfo.gender')}</Label>
+                          <Select
+                            value={formData.gender || 'not-specified'}
+                            onValueChange={(value) => handleSelectChange('gender', value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('profileInfo.notSpecified')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="not-specified">{t('profileInfo.notSpecified')}</SelectItem>
+                              {GENDER_OPTIONS.map(option => (
+                                <SelectItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="birthday">{t('profileInfo.birthday')}</Label>
+                          <Input
+                            id="birthday"
+                            name="birthday"
+                            type="date"
+                            value={formData.birthday || ''}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+
+                        <div className="col-span-full space-y-2">
+                          <Label htmlFor="bio">{t('profileInfo.bio')}</Label>
+                          <Textarea
+                            id="bio"
+                            name="bio"
+                            placeholder="Tell us about yourself..."
+                            value={formData.bio || ''}
+                            onChange={handleInputChange}
+                            rows={4}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="languages" className="space-y-6">
+                    {!isEditing ? (
+                      // View Mode
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <InfoItem
+                          label={t('languageSettings.nativeLanguage')}
+                          value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.native_language)?.label || t('profileInfo.notSpecified')}
+                        />
+                        <InfoItem
+                          label={t('languageSettings.targetLanguage')}
+                          value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.target_language)?.label || t('profileInfo.notSpecified')}
+                        />
+                        <InfoItem
+                          label={t('languageSettings.languageLevel')}
+                          value={LEVEL_OPTIONS.find(opt => opt.value === formData.language_level)?.label || t('profileInfo.notSpecified')}
+                        />
+                        
+                        <div className="col-span-full">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setIsEditing(true)}
+                            className="mt-4"
+                          >
+                            {t('profileInfo.editProfile')}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      // Edit Mode
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="native_language">{t('languageSettings.nativeLanguage')}</Label>
+                          <Select
+                            value={formData.native_language}
+                            onValueChange={(value) => handleSelectChange('native_language', value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('languageSettings.nativeLanguage')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {LANGUAGE_OPTIONS.map(option => (
+                                <SelectItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="target_language">{t('languageSettings.targetLanguage')}</Label>
+                          <Select
+                            value={formData.target_language}
+                            onValueChange={(value) => handleSelectChange('target_language', value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('languageSettings.targetLanguage')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {LANGUAGE_OPTIONS.map(option => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                  disabled={option.value === formData.native_language}
+                                >
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="language_level">{t('languageSettings.languageLevel')}</Label>
+                          <Select
+                            value={formData.language_level}
+                            onValueChange={(value) => handleSelectChange('language_level', value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('languageSettings.languageLevel')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {LEVEL_OPTIONS.map(option => (
+                                <SelectItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="learning" className="space-y-6">
+                    {!isEditing ? (
+                      // View Mode
+                      <div className="grid grid-cols-1 gap-6">
+                        <InfoItem
+                          label={t('languageSettings.learningObjectives')}
+                          value={OBJECTIVES_OPTIONS.find(opt => opt.value === formData.objectives)?.label || t('profileInfo.notSpecified')}
+                        />
+
+                        {user.is_coach && (
+                          <InfoItem
+                            label="Coach Status"
+                            value="You are registered as a language coach"
+                          />
                         )}
-                        <div className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full cursor-pointer hover:bg-primary/80 transition-colors">
-                          <Camera className="h-4 w-4" />
+                        
+                        <div className="col-span-full">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setIsEditing(true)}
+                            className="mt-4"
+                          >
+                            {t('profileInfo.editProfile')}
+                          </Button>
                         </div>
                       </div>
-                      <h2 className="text-xl font-semibold mt-4">{fullName}</h2>
-                      <p className="text-sm text-gray-500">{formData.email}</p>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex items-start space-x-3">
-                        <User className="h-5 w-5 text-gray-500 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-medium">{t('profileInfo.username')}</p>
-                          <p className="text-gray-600">{formData.username}</p>
+                    ) : (
+                      // Edit Mode
+                      <div className="grid grid-cols-1 gap-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="objectives">{t('languageSettings.learningObjectives')}</Label>
+                          <Select
+                            value={formData.objectives}
+                            onValueChange={(value) => handleSelectChange('objectives', value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('languageSettings.learningObjectives')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {OBJECTIVES_OPTIONS.map(option => (
+                                <SelectItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
-
-                      <div className="flex items-start space-x-3">
-                        <Mail className="h-5 w-5 text-gray-500 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-medium">{t('profileInfo.email')}</p>
-                          <p className="text-gray-600">{formData.email}</p>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="preferences" className="space-y-6">
+                    {!isEditing ? (
+                      // View Mode
+                      <div className="grid grid-cols-1 gap-6">
+                        <InfoItem
+                          label={t('appearance.interfaceLanguage')}
+                          value={INTERFACE_LANGUAGE_OPTIONS.find(opt => opt.value === formData.interface_language)?.label || 'English'}
+                        />
+                        <InfoItem
+                          label={t('appearance.theme')}
+                          value={THEME_OPTIONS.find(opt => opt.value === theme)?.label || 'System'}
+                        />
+                        
+                        <div className="col-span-full">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setIsEditing(true)}
+                            className="mt-4"
+                          >
+                            {t('profileInfo.editProfile')}
+                          </Button>
                         </div>
                       </div>
-
-                      <div className="flex items-start space-x-3">
-                        <Calendar className="h-5 w-5 text-gray-500 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-medium">{t('profileInfo.birthday')}</p>
-                          <p className="text-gray-600">
-                            {formData.birthday ? new Date(formData.birthday).toLocaleDateString() : t('profileInfo.notSpecified')}
-                          </p>
+                    ) : (
+                      // Edit Mode
+                      <div className="grid grid-cols-1 gap-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="interface_language">{t('appearance.interfaceLanguage')}</Label>
+                          <Select
+                            value={formData.interface_language}
+                            onValueChange={(value) => handleSelectChange('interface_language', value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('appearance.interfaceLanguage')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {INTERFACE_LANGUAGE_OPTIONS.map(option => (
+                                <SelectItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="theme">{t('appearance.theme')}</Label>
+                          <Select
+                            value={theme || 'system'}
+                            onValueChange={(value) => setTheme(value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('appearance.theme')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {THEME_OPTIONS.map(option => (
+                                <SelectItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
-
-                      <div className="flex items-start space-x-3">
-                        <MapPin className="h-5 w-5 text-gray-500 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-medium">{t('languageSettings.nativeLanguage')}</p>
-                          <p className="text-gray-600">
-                            {LANGUAGE_OPTIONS.find(opt => opt.value === formData.native_language)?.label || t('profileInfo.notSpecified')}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start space-x-3">
-                        <BookOpen className="h-5 w-5 text-gray-500 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-medium">{t('tabs.learning')}</p>
-                          <p className="text-gray-600">
-                            {LANGUAGE_OPTIONS.find(opt => opt.value === formData.target_language)?.label || t('profileInfo.notSpecified')} -
-                            {LEVEL_OPTIONS.find(opt => opt.value === formData.language_level)?.label || t('profileInfo.notSpecified')}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-6">
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        onClick={() => setIsEditing(true)}
-                      >
-                        {t('profileInfo.editProfile')}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Right Column - Profile Details / Edit Form */}
-              <div className="md:col-span-2">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>
-                      {isEditing ? t('profileInfo.editProfile') : t('profileInfo.personalInfo')}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Tabs defaultValue={activeProfileTab} onValueChange={setActiveProfileTab}>
-                      <TabsList className="grid grid-cols-4 mb-6">
-                        <TabsTrigger value="personal">{t('profileInfo.personalInfo')}</TabsTrigger>
-                        <TabsTrigger value="languages">{t('profileInfo.languages')}</TabsTrigger>
-                        <TabsTrigger value="learning">{t('profileInfo.learningGoals')}</TabsTrigger>
-                        <TabsTrigger value="preferences">{t('profileInfo.preferences')}</TabsTrigger>
-                      </TabsList>
-
-                      <TabsContent value="personal" className="space-y-6">
-                        {!isEditing ? (
-                          // View Mode
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <InfoItem label={t('profileInfo.firstName')} value={formData.first_name || t('profileInfo.notSpecified')} />
-                            <InfoItem label={t('profileInfo.lastName')} value={formData.last_name || t('profileInfo.notSpecified')} />
-                            <InfoItem label={t('profileInfo.username')} value={formData.username} />
-                            <InfoItem label={t('profileInfo.email')} value={formData.email} />
-                            <InfoItem
-                              label={t('profileInfo.gender')}
-                              value={formData.gender
-                                ? GENDER_OPTIONS.find(opt => opt.value === formData.gender)?.label || t('profileInfo.notSpecified')
-                                : t('profileInfo.notSpecified')
-                              }
-                            />
-                            <InfoItem
-                              label={t('profileInfo.birthday')}
-                              value={formData.birthday ? new Date(formData.birthday).toLocaleDateString() : t('profileInfo.notSpecified')}
-                            />
-
-                            <div className="col-span-full">
-                              <h3 className="text-sm font-medium mb-2">{t('profileInfo.bio')}</h3>
-                              <p className="text-gray-600">{formData.bio || 'No bio provided yet.'}</p>
-                            </div>
-                          </div>
-                        ) : (
-                          // Edit Mode
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                              <Label htmlFor="first_name">{t('profileInfo.firstName')}</Label>
-                              <Input
-                                id="first_name"
-                                name="first_name"
-                                value={formData.first_name || ''}
-                                onChange={handleInputChange}
-                              />
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label htmlFor="last_name">{t('profileInfo.lastName')}</Label>
-                              <Input
-                                id="last_name"
-                                name="last_name"
-                                value={formData.last_name || ''}
-                                onChange={handleInputChange}
-                              />
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label htmlFor="username">{t('profileInfo.username')}</Label>
-                              <Input
-                                id="username"
-                                name="username"
-                                value={formData.username}
-                                onChange={handleInputChange}
-                              />
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label htmlFor="email">{t('profileInfo.email')} ({t('profileInfo.notSpecified')})</Label>
-                              <Input
-                                id="email"
-                                name="email"
-                                value={formData.email}
-                                disabled
-                                className="bg-gray-50"
-                              />
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label htmlFor="gender">{t('profileInfo.gender')}</Label>
-                              <Select
-                                value={formData.gender || 'not-specified'}
-                                onValueChange={(value) => handleSelectChange('gender', value)}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder={t('profileInfo.notSpecified')} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="not-specified">{t('profileInfo.notSpecified')}</SelectItem>
-                                  {GENDER_OPTIONS.map(option => (
-                                    <SelectItem key={option.value} value={option.value}>
-                                      {option.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label htmlFor="birthday">{t('profileInfo.birthday')}</Label>
-                              <Input
-                                id="birthday"
-                                name="birthday"
-                                type="date"
-                                value={formData.birthday || ''}
-                                onChange={handleInputChange}
-                              />
-                            </div>
-
-                            <div className="col-span-full space-y-2">
-                              <Label htmlFor="bio">{t('profileInfo.bio')}</Label>
-                              <Textarea
-                                id="bio"
-                                name="bio"
-                                placeholder="Tell us about yourself..."
-                                value={formData.bio || ''}
-                                onChange={handleInputChange}
-                                rows={4}
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </TabsContent>
-
-                      <TabsContent value="languages" className="space-y-6">
-                        {!isEditing ? (
-                          // View Mode
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <InfoItem
-                              label={t('languageSettings.nativeLanguage')}
-                              value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.native_language)?.label || t('profileInfo.notSpecified')}
-                            />
-                            <InfoItem
-                              label={t('languageSettings.targetLanguage')}
-                              value={LANGUAGE_OPTIONS.find(opt => opt.value === formData.target_language)?.label || t('profileInfo.notSpecified')}
-                            />
-                            <InfoItem
-                              label={t('languageSettings.languageLevel')}
-                              value={LEVEL_OPTIONS.find(opt => opt.value === formData.language_level)?.label || t('profileInfo.notSpecified')}
-                            />
-                          </div>
-                        ) : (
-                          // Edit Mode
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                              <Label htmlFor="native_language">{t('languageSettings.nativeLanguage')}</Label>
-                              <Select
-                                value={formData.native_language}
-                                onValueChange={(value) => handleSelectChange('native_language', value)}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder={t('languageSettings.nativeLanguage')} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {LANGUAGE_OPTIONS.map(option => (
-                                    <SelectItem key={option.value} value={option.value}>
-                                      {option.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label htmlFor="target_language">{t('languageSettings.targetLanguage')}</Label>
-                              <Select
-                                value={formData.target_language}
-                                onValueChange={(value) => handleSelectChange('target_language', value)}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder={t('languageSettings.targetLanguage')} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {LANGUAGE_OPTIONS.map(option => (
-                                    <SelectItem
-                                      key={option.value}
-                                      value={option.value}
-                                      disabled={option.value === formData.native_language}
-                                    >
-                                      {option.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label htmlFor="language_level">{t('languageSettings.languageLevel')}</Label>
-                              <Select
-                                value={formData.language_level}
-                                onValueChange={(value) => handleSelectChange('language_level', value)}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder={t('languageSettings.languageLevel')} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {LEVEL_OPTIONS.map(option => (
-                                    <SelectItem key={option.value} value={option.value}>
-                                      {option.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        )}
-                      </TabsContent>
-
-                      <TabsContent value="learning" className="space-y-6">
-                        {!isEditing ? (
-                          // View Mode
-                          <div className="grid grid-cols-1 gap-6">
-                            <InfoItem
-                              label={t('languageSettings.learningObjectives')}
-                              value={OBJECTIVES_OPTIONS.find(opt => opt.value === formData.objectives)?.label || t('profileInfo.notSpecified')}
-                            />
-
-                            {user.is_coach && (
-                              <InfoItem
-                                label="Coach Status"
-                                value="You are registered as a language coach"
-                              />
-                            )}
-                          </div>
-                        ) : (
-                          // Edit Mode
-                          <div className="grid grid-cols-1 gap-6">
-                            <div className="space-y-2">
-                              <Label htmlFor="objectives">{t('languageSettings.learningObjectives')}</Label>
-                              <Select
-                                value={formData.objectives}
-                                onValueChange={(value) => handleSelectChange('objectives', value)}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder={t('languageSettings.learningObjectives')} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {OBJECTIVES_OPTIONS.map(option => (
-                                    <SelectItem key={option.value} value={option.value}>
-                                      {option.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        )}
-                      </TabsContent>
-                      
-                      <TabsContent value="preferences" className="space-y-6">
-                        {!isEditing ? (
-                          // View Mode
-                          <div className="grid grid-cols-1 gap-6">
-                            <InfoItem
-                              label={t('appearance.interfaceLanguage')}
-                              value={INTERFACE_LANGUAGE_OPTIONS.find(opt => opt.value === formData.interface_language)?.label || 'English'}
-                            />
-                            <InfoItem
-                              label={t('appearance.theme')}
-                              value={THEME_OPTIONS.find(opt => opt.value === theme)?.label || 'System'}
-                            />
-                          </div>
-                        ) : (
-                          // Edit Mode
-                          <div className="grid grid-cols-1 gap-6">
-                            <div className="space-y-2">
-                              <Label htmlFor="interface_language">{t('appearance.interfaceLanguage')}</Label>
-                              <Select
-                                value={formData.interface_language}
-                                onValueChange={(value) => handleSelectChange('interface_language', value)}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder={t('appearance.interfaceLanguage')} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {INTERFACE_LANGUAGE_OPTIONS.map(option => (
-                                    <SelectItem key={option.value} value={option.value}>
-                                      {option.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <Label htmlFor="theme">{t('appearance.theme')}</Label>
-                              <Select
-                                value={theme || 'system'}
-                                onValueChange={(value) => setTheme(value)}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder={t('appearance.theme')} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {THEME_OPTIONS.map(option => (
-                                    <SelectItem key={option.value} value={option.value}>
-                                      {option.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        )}
-                      </TabsContent>
-                    </Tabs>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
           )}
 
           {activeTab === "notifications" && (
-            <NotificationSettingsPanel defaultTab={new URL(window.location.href).searchParams.get('tab') || 'channels'} />
+            <Card className="shadow-sm">
+              <CardHeader className="pb-3 bg-muted/30">
+                <CardTitle>{t('tabs.notifications')}</CardTitle>
+                <CardDescription>
+                  {t('notifications.subtitle')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <NotificationSettingsPanel defaultTab={new URL(window.location.href).searchParams.get('tab') || 'channels'} />
+              </CardContent>
+            </Card>
           )}
 
           {activeTab === "language" && (
-            <Card>
-              <CardHeader>
+            <Card className="shadow-sm">
+              <CardHeader className="pb-3 bg-muted/30">
                 <CardTitle>{t('languageSettings.title')}</CardTitle>
                 <CardDescription>
                   {t('languageSettings.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="native_language">{t('languageSettings.nativeLanguage')}</Label>
                     <Select 
@@ -1344,22 +1320,22 @@ export default function SettingsPage() {
           )}
 
           {activeTab === "appearance" && (
-            <Card>
-              <CardHeader>
+            <Card className="shadow-sm">
+              <CardHeader className="pb-3 bg-muted/30">
                 <CardTitle>{t('appearance.title')}</CardTitle>
                 <CardDescription>
                   {t('appearance.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="theme">{t('appearance.theme')}</Label>
                     <Select 
                       value={theme || 'system'}
                       onValueChange={(value) => setTheme(value)}
                     >
-                      <SelectTrigger id="theme" className="w-[200px]">
+                      <SelectTrigger id="theme">
                         <SelectValue placeholder={t('appearance.theme')} />
                       </SelectTrigger>
                       <SelectContent>
@@ -1378,7 +1354,7 @@ export default function SettingsPage() {
                       value={settings.interface_language}
                       onValueChange={(value) => setSettings({...settings, interface_language: value})}
                     >
-                      <SelectTrigger id="interface_language" className="w-[200px]">
+                      <SelectTrigger id="interface_language">
                         <SelectValue placeholder={t('appearance.interfaceLanguage')} />
                       </SelectTrigger>
                       <SelectContent>
@@ -1396,91 +1372,98 @@ export default function SettingsPage() {
           )}
 
           {activeTab === "learning" && (
-            <Card>
-              <CardHeader>
+            <Card className="shadow-sm">
+              <CardHeader className="pb-3 bg-muted/30">
                 <CardTitle>{t('learning.title')}</CardTitle>
                 <CardDescription>
                   {t('learning.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label htmlFor="daily_goal">{t('learning.dailyGoal')}</Label>
-                    <span className="text-sm text-muted-foreground">{settings.daily_goal} minutes</span>
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <Label htmlFor="daily_goal">{t('learning.dailyGoal')}</Label>
+                      <span className="text-sm text-muted-foreground">{settings.daily_goal} minutes</span>
+                    </div>
+                    <Slider 
+                      id="daily_goal" 
+                      min={5} 
+                      max={60} 
+                      step={5} 
+                      value={[settings.daily_goal]} 
+                      onValueChange={(value: number[]) => setSettings({...settings, daily_goal: value[0]})} 
+                      className="w-full"
+                    />
                   </div>
-                  <Slider 
-                    id="daily_goal" 
-                    min={5} 
-                    max={60} 
-                    step={5} 
-                    value={[settings.daily_goal]} 
-                    onValueChange={(value: number[]) => setSettings({...settings, daily_goal: value[0]})} 
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="speaking_exercises">{t('learning.speakingExercises')}</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t('learning.includeDescription', { exerciseType: t('learning.speakingExercises').toLowerCase() })}
-                    </p>
+                  
+                  <div className="rounded-lg border p-4 space-y-4">
+                    <h3 className="font-medium text-sm">{t('learning.exercisePreferences')}</h3>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="speaking_exercises">{t('learning.speakingExercises')}</Label>
+                        <p className="text-sm text-muted-foreground">
+                          {t('learning.includeDescription', { exerciseType: t('learning.speakingExercises').toLowerCase() })}
+                        </p>
+                      </div>
+                      <Switch
+                        id="speaking_exercises"
+                        checked={settings.speaking_exercises}
+                        onCheckedChange={(value) => setSettings({...settings, speaking_exercises: value})}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="listening_exercises">{t('learning.listeningExercises')}</Label>
+                        <p className="text-sm text-muted-foreground">
+                          {t('learning.includeDescription', { exerciseType: t('learning.listeningExercises').toLowerCase() })}
+                        </p>
+                      </div>
+                      <Switch
+                        id="listening_exercises"
+                        checked={settings.listening_exercises}
+                        onCheckedChange={(value) => setSettings({...settings, listening_exercises: value})}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="reading_exercises">{t('learning.readingExercises')}</Label>
+                        <p className="text-sm text-muted-foreground">
+                          {t('learning.includeDescription', { exerciseType: t('learning.readingExercises').toLowerCase() })}
+                        </p>
+                      </div>
+                      <Switch
+                        id="reading_exercises"
+                        checked={settings.reading_exercises}
+                        onCheckedChange={(value) => setSettings({...settings, reading_exercises: value})}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="writing_exercises">{t('learning.writingExercises')}</Label>
+                        <p className="text-sm text-muted-foreground">
+                          {t('learning.includeDescription', { exerciseType: t('learning.writingExercises').toLowerCase() })}
+                        </p>
+                      </div>
+                      <Switch
+                        id="writing_exercises"
+                        checked={settings.writing_exercises}
+                        onCheckedChange={(value) => setSettings({...settings, writing_exercises: value})}
+                      />
+                    </div>
                   </div>
-                  <Switch
-                    id="speaking_exercises"
-                    checked={settings.speaking_exercises}
-                    onCheckedChange={(value) => setSettings({...settings, speaking_exercises: value})}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="listening_exercises">{t('learning.listeningExercises')}</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t('learning.includeDescription', { exerciseType: t('learning.listeningExercises').toLowerCase() })}
-                    </p>
-                  </div>
-                  <Switch
-                    id="listening_exercises"
-                    checked={settings.listening_exercises}
-                    onCheckedChange={(value) => setSettings({...settings, listening_exercises: value})}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="reading_exercises">{t('learning.readingExercises')}</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t('learning.includeDescription', { exerciseType: t('learning.readingExercises').toLowerCase() })}
-                    </p>
-                  </div>
-                  <Switch
-                    id="reading_exercises"
-                    checked={settings.reading_exercises}
-                    onCheckedChange={(value) => setSettings({...settings, reading_exercises: value})}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="writing_exercises">{t('learning.writingExercises')}</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t('learning.includeDescription', { exerciseType: t('learning.writingExercises').toLowerCase() })}
-                    </p>
-                  </div>
-                  <Switch
-                    id="writing_exercises"
-                    checked={settings.writing_exercises}
-                    onCheckedChange={(value) => setSettings({...settings, writing_exercises: value})}
-                  />
                 </div>
               </CardContent>
             </Card>
           )}
 
           {activeTab === "security" && (
-            <Card>
-              <CardHeader>
+            <Card className="shadow-sm">
+              <CardHeader className="pb-3 bg-muted/30">
                 <CardTitle>{t('security.title')}</CardTitle>
                 <CardDescription>
                   {t('security.description')}
@@ -1490,38 +1473,42 @@ export default function SettingsPage() {
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">{t('security.changePassword')}</h3>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="old_password">{t('security.currentPassword')}</Label>
-                    <Input 
-                      id="old_password" 
-                      type="password" 
-                      value={oldPassword}
-                      onChange={(e) => setOldPassword(e.target.value)}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="new_password">{t('security.newPassword')}</Label>
-                    <Input 
-                      id="new_password" 
-                      type="password" 
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm_password">{t('security.confirmPassword')}</Label>
-                    <Input 
-                      id="confirm_password" 
-                      type="password" 
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="old_password">{t('security.currentPassword')}</Label>
+                      <Input 
+                        id="old_password" 
+                        type="password" 
+                        value={oldPassword}
+                        onChange={(e) => setOldPassword(e.target.value)}
+                      />
+                    </div>
+                    
+                    <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="new_password">{t('security.newPassword')}</Label>
+                        <Input 
+                          id="new_password" 
+                          type="password" 
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="confirm_password">{t('security.confirmPassword')}</Label>
+                        <Input 
+                          id="confirm_password" 
+                          type="password" 
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                      </div>
+                    </div>
                   </div>
                   
                   {passwordError && (
-                    <p className="text-sm text-red-500">{passwordError}</p>
+                    <p className="text-sm text-destructive">{passwordError}</p>
                   )}
                   
                   <Button 
@@ -1539,7 +1526,7 @@ export default function SettingsPage() {
                   </Button>
                 </div>
                 
-                <div className="space-y-4">
+                <div className="border-t pt-6 mt-4 space-y-4">
                   <h3 className="text-lg font-medium">{t('security.twoFactor')}</h3>
                   <p className="text-sm text-muted-foreground">
                     {t('security.twoFactorDescription')}
@@ -1547,26 +1534,29 @@ export default function SettingsPage() {
                   <Button variant="outline">{t('security.setup2FA')}</Button>
                 </div>
                 
-                <div className="space-y-4">
+                <div className="border-t pt-6 mt-4 space-y-4">
                   <h3 className="text-lg font-medium">{t('security.connectedAccounts')}</h3>
                   <p className="text-sm text-muted-foreground">
                     {t('security.connectedAccountsDescription')}
                   </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded-md">
-                        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12 0C5.372 0 0 5.373 0 12C0 17.302 3.438 21.8 8.207 23.387C8.806 23.498 9 23.126 9 22.81V20.576C5.662 21.302 4.967 19.16 4.967 19.16C4.421 17.773 3.634 17.404 3.634 17.404C2.545 16.66 3.717 16.675 3.717 16.675C4.922 16.759 5.556 17.912 5.556 17.912C6.626 19.746 8.363 19.216 9.048 18.909C9.155 18.134 9.466 17.604 9.81 17.305C7.145 17 4.343 15.971 4.343 11.374C4.343 10.063 4.812 8.993 5.579 8.153C5.455 7.85 5.044 6.629 5.696 4.977C5.696 4.977 6.704 4.655 8.997 6.207C9.954 5.941 10.98 5.808 12 5.803C13.02 5.808 14.047 5.941 15.006 6.207C17.297 4.655 18.303 4.977 18.303 4.977C18.956 6.63 18.545 7.851 18.421 8.153C19.191 8.993 19.656 10.064 19.656 11.374C19.656 15.983 16.849 16.998 14.177 17.295C14.607 17.667 15 18.397 15 19.517V22.81C15 23.129 15.192 23.504 15.801 23.386C20.566 21.797 24 17.3 24 12C24 5.373 18.627 0 12 0Z" fill="currentColor"/>
-                        </svg>
+                  
+                  <div className="bg-card rounded-md border p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-muted p-2 rounded-md">
+                          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 0C5.372 0 0 5.373 0 12C0 17.302 3.438 21.8 8.207 23.387C8.806 23.498 9 23.126 9 22.81V20.576C5.662 21.302 4.967 19.16 4.967 19.16C4.421 17.773 3.634 17.404 3.634 17.404C2.545 16.66 3.717 16.675 3.717 16.675C4.922 16.759 5.556 17.912 5.556 17.912C6.626 19.746 8.363 19.216 9.048 18.909C9.155 18.134 9.466 17.604 9.81 17.305C7.145 17 4.343 15.971 4.343 11.374C4.343 10.063 4.812 8.993 5.579 8.153C5.455 7.85 5.044 6.629 5.696 4.977C5.696 4.977 6.704 4.655 8.997 6.207C9.954 5.941 10.98 5.808 12 5.803C13.02 5.808 14.047 5.941 15.006 6.207C17.297 4.655 18.303 4.977 18.303 4.977C18.956 6.63 18.545 7.851 18.421 8.153C19.191 8.993 19.656 10.064 19.656 11.374C19.656 15.983 16.849 16.998 14.177 17.295C14.607 17.667 15 18.397 15 19.517V22.81C15 23.129 15.192 23.504 15.801 23.386C20.566 21.797 24 17.3 24 12C24 5.373 18.627 0 12 0Z" fill="currentColor"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="font-medium">GitHub</p>
+                          <p className="text-sm text-muted-foreground">
+                            Connect to sync your progress with GitHub
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">GitHub</p>
-                        <p className="text-sm text-muted-foreground">
-                          Connect to sync your progress with GitHub
-                        </p>
-                      </div>
+                      <Button variant="outline" size="sm">{t('security.connect')}</Button>
                     </div>
-                    <Button variant="ghost" size="sm">{t('security.connect')}</Button>
                   </div>
                 </div>
               </CardContent>
@@ -1574,57 +1564,59 @@ export default function SettingsPage() {
           )}
 
           {activeTab === "privacy" && (
-            <Card>
-              <CardHeader>
+            <Card className="shadow-sm">
+              <CardHeader className="pb-3 bg-muted/30">
                 <CardTitle>{t('privacy.title')}</CardTitle>
                 <CardDescription>
                   {t('privacy.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="public_profile">{t('privacy.publicProfile')}</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t('privacy.publicProfileDescription')}
-                    </p>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="public_profile" className="text-base">{t('privacy.publicProfile')}</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {t('privacy.publicProfileDescription')}
+                      </p>
+                    </div>
+                    <Switch
+                      id="public_profile"
+                      checked={settings.public_profile}
+                      onCheckedChange={(value) => setSettings({...settings, public_profile: value})}
+                    />
                   </div>
-                  <Switch
-                    id="public_profile"
-                    checked={settings.public_profile}
-                    onCheckedChange={(value) => setSettings({...settings, public_profile: value})}
-                  />
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="share_progress" className="text-base">{t('privacy.shareProgress')}</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {t('privacy.shareProgressDescription')}
+                      </p>
+                    </div>
+                    <Switch
+                      id="share_progress"
+                      checked={settings.share_progress}
+                      onCheckedChange={(value) => setSettings({...settings, share_progress: value})}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="share_activity" className="text-base">{t('privacy.shareActivity')}</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {t('privacy.shareActivityDescription')}
+                      </p>
+                    </div>
+                    <Switch
+                      id="share_activity"
+                      checked={settings.share_activity}
+                      onCheckedChange={(value) => setSettings({...settings, share_activity: value})}
+                    />
+                  </div>
                 </div>
                 
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="share_progress">{t('privacy.shareProgress')}</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t('privacy.shareProgressDescription')}
-                    </p>
-                  </div>
-                  <Switch
-                    id="share_progress"
-                    checked={settings.share_progress}
-                    onCheckedChange={(value) => setSettings({...settings, share_progress: value})}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="share_activity">{t('privacy.shareActivity')}</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t('privacy.shareActivityDescription')}
-                    </p>
-                  </div>
-                  <Switch
-                    id="share_activity"
-                    checked={settings.share_activity}
-                    onCheckedChange={(value) => setSettings({...settings, share_activity: value})}
-                  />
-                </div>
-                
-                <div className="pt-4">
+                <div className="border-t pt-6 mt-4">
                   <h3 className="text-lg font-medium mb-2">{t('privacy.dataPrivacy')}</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     {t('privacy.dataPrivacyDescription')}
@@ -1646,16 +1638,16 @@ export default function SettingsPage() {
           )}
 
           {activeTab === "billing" && (
-            <Card>
-              <CardHeader>
+            <Card className="shadow-sm">
+              <CardHeader className="pb-3 bg-muted/30">
                 <CardTitle>{t('billing.title')}</CardTitle>
                 <CardDescription>
                   {t('billing.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="pb-4 border-b">
-                  <h3 className="text-lg font-medium mb-2">{t('billing.currentPlan')}</h3>
+                <div className="bg-background rounded-lg border shadow-xs p-5 space-y-4">
+                  <h3 className="text-lg font-medium">{t('billing.currentPlan')}</h3>
                   <div className="flex justify-between items-center">
                     <div>
                       <p className="font-medium">{user.is_subscribed ? t('billing.premiumPlan') : t('billing.freePlan')}</p>
@@ -1672,11 +1664,11 @@ export default function SettingsPage() {
                 </div>
                 
                 {user.is_subscribed && (
-                  <div className="pb-4 border-b">
-                    <h3 className="text-lg font-medium mb-2">{t('billing.paymentMethod')}</h3>
+                  <div className="bg-background rounded-lg border shadow-xs p-5 space-y-4">
+                    <h3 className="text-lg font-medium">{t('billing.paymentMethod')}</h3>
                     <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded-md">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-muted p-2 rounded-md">
                           <CreditCard className="h-5 w-5" />
                         </div>
                         <div>
@@ -1684,23 +1676,23 @@ export default function SettingsPage() {
                           <p className="text-sm text-muted-foreground">Expires 04/24</p>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">{t('billing.upgrade')}</Button>
+                      <Button variant="outline" size="sm">{t('billing.edit')}</Button>
                     </div>
                   </div>
                 )}
                 
-                <div className="pt-4">
-                  <h3 className="text-lg font-medium mb-2">{t('billing.billingHistory')}</h3>
+                <div className="bg-background rounded-lg border shadow-xs p-5 space-y-4">
+                  <h3 className="text-lg font-medium">{t('billing.billingHistory')}</h3>
                   {user.is_subscribed ? (
                     <div className="space-y-4">
-                      <div className="flex justify-between items-center py-2">
+                      <div className="flex justify-between items-center py-2 border-b">
                         <div>
                           <p className="font-medium">Mar 1, 2025</p>
                           <p className="text-sm text-muted-foreground">{t('billing.premiumPlan')}</p>
                         </div>
                         <p className="font-medium">$9.99</p>
                       </div>
-                      <div className="flex justify-between items-center py-2">
+                      <div className="flex justify-between items-center py-2 border-b">
                         <div>
                           <p className="font-medium">Feb 1, 2025</p>
                           <p className="text-sm text-muted-foreground">{t('billing.premiumPlan')}</p>
@@ -1720,20 +1712,20 @@ export default function SettingsPage() {
           )}
 
           {activeTab === "danger" && (
-            <Card className="border-red-200">
-              <CardHeader>
-                <CardTitle className="text-red-500">{t('dangerZone.title')}</CardTitle>
+            <Card className="border-destructive shadow-sm">
+              <CardHeader className="pb-3 bg-destructive/5">
+                <CardTitle className="text-destructive">{t('dangerZone.title')}</CardTitle>
                 <CardDescription>
                   {t('dangerZone.description')}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="pb-4 border-b">
-                  <h3 className="text-lg font-medium mb-2">{t('dangerZone.exportAndReset')}</h3>
+              <CardContent className="p-6 space-y-6">
+                <div className="bg-background rounded-lg border shadow-xs p-5 space-y-4">
+                  <h3 className="text-lg font-medium">{t('dangerZone.exportAndReset')}</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     {t('dangerZone.exportBeforeDeleting')}
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-3">
                     <Button variant="outline">{t('dangerZone.exportAllData')}</Button>
                     <Button
                       variant="destructive"
@@ -1753,8 +1745,8 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 
-                <div className="pb-4 border-b">
-                  <h3 className="text-lg font-medium mb-2">{typeof t('dangerZone.resetProgressButton') === 'string' ? t('dangerZone.resetProgressButton') : 'Reset Learning Progress'}</h3>
+                <div className="bg-background rounded-lg border shadow-xs p-5 space-y-4">
+                  <h3 className="text-lg font-medium">{typeof t('dangerZone.resetProgressButton') === 'string' ? t('dangerZone.resetProgressButton') : 'Reset Learning Progress'}</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     {t('dangerZone.resetProgressDescription')}
                   </p>
@@ -1764,8 +1756,8 @@ export default function SettingsPage() {
                   />
                 </div>
                 
-                <div>
-                  <h3 className="text-lg font-medium mb-2">{typeof t('dangerZone.deleteAccountButton') === 'string' ? t('dangerZone.deleteAccountButton') : 'Delete Account'}</h3>
+                <div className="bg-card rounded-lg border border-destructive/30 p-4 space-y-4">
+                  <h3 className="text-lg font-medium text-destructive">{typeof t('dangerZone.deleteAccountButton') === 'string' ? t('dangerZone.deleteAccountButton') : 'Delete Account'}</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     {t('dangerZone.deleteAccountDescription')}
                   </p>
@@ -1789,7 +1781,7 @@ function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <h3 className="text-sm font-medium mb-1">{label}</h3>
-      <p className="text-gray-600">{value}</p>
+      <p className="text-muted-foreground">{value}</p>
     </div>
   );
 }

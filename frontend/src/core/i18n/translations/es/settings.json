@@ -1,5 +1,24 @@
 {
-  "settings": "Configuración",
+  "settingsTitle": "Configuración",
+  "notifications_obsolete": {
+    "title": "Configuración de notificaciones",
+    "description": "Administra cómo y cuándo recibes notificaciones",
+    "main_title": "Notificaciones",
+    "main_description": "Configura tus preferencias de notificación",
+    "channels": "Canales",
+    "preferences": "Preferencias",
+    "push": "Push",
+    "advanced": "Avanzado",
+    "channels_title": "Canales de notificación",
+    "channels_description": "Elige cómo deseas recibir notificaciones",
+    "email": "Notificaciones por correo electrónico",
+    "email_description": "Recibe notificaciones por correo electrónico",
+    "in_app": "Notificaciones en la aplicación",
+    "in_app_description": "Recibe notificaciones dentro de la aplicación",
+    "browser_push": "Notificaciones push del navegador",
+    "browser_push_description": "Recibe notificaciones push en tu dispositivo",
+    "configure": "Configurar"
+  },
   "saveChanges": "Guardar cambios",
   "saving": "Guardando...",
   "cancel": "Cancelar",
@@ -15,6 +34,7 @@
     "dangerZone": "Zona de peligro"
   },
   "profileInfo": {
+    "subtitle": "Administra tu información personal y preferencias",
     "personalInfo": "Información personal",
     "languages": "Idiomas",
     "learningGoals": "Objetivos de aprendizaje",
@@ -52,6 +72,41 @@
     "readingExercises": "Ejercicios de lectura",
     "writingExercises": "Ejercicios de escritura",
     "includeDescription": "Incluir ejercicios de {exerciseType} en tus lecciones"
+  },
+  "settings": {
+    "notifications": {
+      "title": "",
+      "description": "",
+      "channels": "Canales",
+      "preferences": "Preferencias",
+      "push": "Push",
+      "advanced": "Avanzado",
+      "channels_title": "Canales de notificación",
+      "channels_description": "Elige cómo deseas recibir notificaciones",
+      "email": "Correo electrónico",
+      "email_description": "Recibe notificaciones por correo electrónico",
+      "configure": "Configurar",
+      "in_app": "En la aplicación",
+      "in_app_description": "Recibe notificaciones dentro de la aplicación",
+      "browser_push": "Navegador (push)",
+      "browser_push_description": "Recibe notificaciones push en tu dispositivo",
+      "advanced_title": "Configuración avanzada",
+      "advanced_description": "Opciones avanzadas para la gestión de notificaciones",
+      "preferences_title": "Preferencias de notificación",
+      "preferences_description": "Personaliza los tipos de notificaciones que recibes",
+      "quiet_hours_title": "Horas silenciosas",
+      "quiet_hours_description": "No recibir notificaciones durante ciertas horas",
+      "quiet_hours_coming_soon": "La función de horas silenciosas estará disponible próximamente",
+      "data_retention": "Retención de datos",
+      "data_retention_description": "Administra cuánto tiempo se guardan las notificaciones",
+      "clean_notifications": "Limpiar notificaciones antiguas",
+      "export": "Exportar notificaciones",
+      "export_description": "Exporta tu historial de notificaciones a un archivo",
+      "export_data": "Exportar datos",
+      "push_settings_title": "Configuración de notificaciones push",
+      "push_settings_description": "Configura los ajustes de notificaciones push del navegador",
+      "push_settings_coming_soon": "Opciones avanzadas de notificaciones push próximamente"
+    }
   },
   "security": {
     "title": "Configuración de seguridad",
@@ -94,7 +149,8 @@
     "paymentMethod": "Método de pago",
     "billingHistory": "Historial de facturación",
     "noHistory": "No hay historial de facturación disponible en el plan gratuito",
-    "viewAllInvoices": "Ver todas las facturas"
+    "viewAllInvoices": "Ver todas las facturas",
+    "edit": "Editar"
   },
   "dangerZone": {
     "title": "Zona de peligro",
@@ -140,10 +196,17 @@
     "description": "Administra cómo y cuándo recibes notificaciones",
     "main_title": "Notificaciones",
     "main_description": "Configura tus preferencias de notificación",
+    "subtitle": "Configura cómo quieres ser notificado",
     "channels": "Canales",
     "preferences": "Preferencias",
-    "push": "Push",
+    "push": {
+      "title": "Notificaciones push",
+      "description": "Administra las configuraciones de notificaciones push",
+      "enable": "Activar notificaciones push",
+      "not_receiving_notifications": "¿No recibes notificaciones?"
+    },
     "advanced": "Avanzado",
+    "manage_subscriptions": "Administrar suscripciones",
     "channels_title": "Canales de notificación",
     "channels_description": "Elige cómo deseas recibir notificaciones",
     "email": "Notificaciones por correo electrónico",

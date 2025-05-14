@@ -1,5 +1,5 @@
 {
-  "settings": "Paramètres",
+  "settingsTitle": "Paramètres",
   "saveChanges": "Enregistrer les modifications",
   "saving": "Enregistrement...",
   "cancel": "Annuler",
@@ -15,6 +15,7 @@
     "dangerZone": "Zone de danger"
   },
   "profileInfo": {
+    "subtitle": "Gérez vos informations personnelles et vos préférences",
     "personalInfo": "Informations personnelles",
     "languages": "Langues",
     "learningGoals": "Objectifs d'apprentissage",
@@ -94,7 +95,8 @@
     "paymentMethod": "Méthode de paiement",
     "billingHistory": "Historique de facturation",
     "noHistory": "Aucun historique de facturation disponible sur le forfait gratuit",
-    "viewAllInvoices": "Voir toutes les factures"
+    "viewAllInvoices": "Voir toutes les factures",
+    "edit": "Modifier"
   },
   "dangerZone": {
     "title": "Zone de danger",
@@ -136,6 +138,51 @@
     "updateFailed": "Échec de la mise à jour du profil. Veuillez réessayer."
   },
   "notifications": {
+    "subtitle": "Configurez la façon dont vous souhaitez être notifié",
+    "push": {
+      "title": "Notifications push",
+      "description": "Paramètres des notifications push",
+      "enable": "Activer les notifications push",
+      "not_receiving_notifications": "Vous ne recevez pas de notifications ?"
+    },
+    "manage_subscriptions": "Gérer les abonnements"
+  },
+  "settings": {
+    "notifications": {
+      "title": "",
+      "description": "",
+      "channels": "Canaux",
+      "preferences": "Préférences", 
+      "push": "Push",
+      "advanced": "Avancé",
+      "channels_title": "Canaux de notification",
+      "channels_description": "Choisissez les canaux par lesquels vous souhaitez recevoir des notifications",
+      "email": "Notifications par e-mail",
+      "email_description": "Recevez des mises à jour importantes et des rappels par e-mail",
+      "configure": "Configurer",
+      "in_app": "Notifications dans l'application",
+      "in_app_description": "Recevez des notifications au sein de l'application",
+      "browser_push": "Notifications push du navigateur",
+      "browser_push_description": "Recevez des notifications même lorsque vous n'utilisez pas l'application",
+      "advanced_title": "Paramètres avancés",
+      "advanced_description": "Options avancées pour la gestion des notifications",
+      "data_retention": "Conservation des données",
+      "data_retention_description": "Gérez combien de temps les notifications sont conservées",
+      "clean_notifications": "Nettoyer les anciennes notifications",
+      "export": "Exporter les notifications",
+      "export_description": "Exportez votre historique de notifications dans un fichier",
+      "export_data": "Exporter les données",
+      "preferences_title": "Préférences de notification",
+      "preferences_description": "Personnalisez les types de notifications que vous recevez",
+      "quiet_hours_title": "Heures silencieuses",
+      "quiet_hours_description": "Ne pas recevoir de notifications pendant certaines heures",
+      "quiet_hours_coming_soon": "La fonctionnalité d'heures silencieuses sera bientôt disponible",
+      "push_settings_title": "Paramètres des notifications push",
+      "push_settings_description": "Configurer les paramètres des notifications push du navigateur",
+      "push_settings_coming_soon": "Options de notification push avancées à venir"
+    }
+  },
+  "notifications_obsolete": {
     "title": "Paramètres de notification",
     "description": "Gérez comment et quand vous recevez des notifications",
     "main_title": "Notifications",
