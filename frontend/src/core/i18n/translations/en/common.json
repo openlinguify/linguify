@@ -592,5 +592,12 @@
     "minimal": {
       "ariaLabel": "Review new Terms and Conditions"
     }
+  },
+  "common": {
+    "save": "Save",
+    "save_changes": "Save Changes",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "coming_soon": "Coming Soon"
   }
 }

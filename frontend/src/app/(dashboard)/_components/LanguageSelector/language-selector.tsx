@@ -11,7 +11,7 @@ import {
 import { useTranslation } from "@/core/i18n/useTranslations";
 import { useToast } from "@/components/ui/use-toast";
 import { useUserSettings } from "@/core/context/UserSettingsContext";
-import { triggerLanguageTransition } from "@/core/i18n/LanguageTransition";
+import { triggerLanguageTransition, TransitionType } from "@/core/i18n/LanguageTransition";
 
 // Event name constant - must match the one in useTranslations.ts
 const LANGUAGE_CHANGE_EVENT = 'app:language:changed';
@@ -103,7 +103,7 @@ export function LanguageSelector({ className = "" }: LanguageSelectorProps) {
       });
 
       // Déclencher la transition visuelle avant de recharger
-      triggerLanguageTransition(value);
+      triggerLanguageTransition(value, TransitionType.LANGUAGE);
 
       // Force a hard reload for immediate effect
       setTimeout(() => {
