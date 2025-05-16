@@ -1,10 +1,11 @@
-import React, { useRef, useCallback, useEffect } from "react";
+import React, { useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, FileText, Clock, Calendar } from "lucide-react";
+import { Plus, FileText, Clock } from "lucide-react";
 import { Note } from "@/addons/notebook/types";
-import { formatDistanceToNow, format } from "date-fns";
+import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
+import { format } from "date-fns/format";
 import { fr } from "date-fns/locale";
 import { useMediaQueryHook } from "./NotebookMain";
 import MarkdownPreview from "./MarkdownPreview";
@@ -73,7 +74,7 @@ export function NoteList({
   });
 
   // Memoiser le rendu d'une note pour éviter les re-renders inutiles
-  const renderNoteCard = useCallback((note: Note, index: number, isSelected: boolean) => {
+  const renderNoteCard = useCallback((note: Note, _: number, isSelected: boolean) => {
     // Calculer le temps écoulé depuis la dernière mise à jour
     const timeAgo = formatDistanceToNow(new Date(note.updated_at), {
       addSuffix: true,
@@ -81,7 +82,7 @@ export function NoteList({
     });
     
     // Format date pour affichage dans le tooltip
-    const formattedDate = format(new Date(note.updated_at), 'PPP', { locale: fr });
+    const formattedDate = format(new Date(note.updated_at), 'PPP');
     
     // Utiliser une div standard avec des classes de transition CSS
     // au lieu des animations framer-motion pour optimiser les performances
@@ -182,7 +183,7 @@ export function NoteList({
           
           return (
             <div
-              key={virtualRow.key}
+              key={virtualRow.key.toString()}
               style={{
                 position: 'absolute',
                 top: 0,
@@ -192,7 +193,7 @@ export function NoteList({
                 paddingBottom: '8px' // Équivalent de mb-2
               }}
             >
-              {renderNoteCard(note, virtualRow.index, isSelected)}
+              {renderNoteCard(note, 0, isSelected)}
             </div>
           );
         })}

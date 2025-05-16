@@ -188,8 +188,7 @@ export default function NotebookMain() {
       // Appliquer les bonnes pratiques pour la gestion des erreurs
       const { 
         notes: newNotes, 
-        nextPage, 
-        totalCount 
+        nextPage
       } = await notebookAPI.getNotes(
         resetPage ? 1 : currentPage
       );

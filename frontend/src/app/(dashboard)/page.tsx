@@ -17,49 +17,63 @@ const MENU_ITEMS = [
     fallbackTitle: "Learning",
     icon: BookOpen,
     href: "/learning",
-    color: "bg-blue-50 text-blue-500 dark:bg-blue-900/20 dark:text-blue-400"
+    bgColor: "bg-blue-600 dark:bg-blue-700",
+    hoverColor: "hover:bg-blue-700 dark:hover:bg-blue-800",
+    iconColor: "text-white"
   },
   {
     titleKey: "dashboard.flashcardsCard.title",
     fallbackTitle: "Flashcards",
     icon: Brain,
     href: "/flashcard",
-    color: "bg-purple-50 text-purple-500 dark:bg-purple-900/20 dark:text-purple-400"
+    bgColor: "bg-purple-600 dark:bg-purple-700",
+    hoverColor: "hover:bg-purple-700 dark:hover:bg-purple-800",
+    iconColor: "text-white"
   },
   {
     titleKey: "dashboard.notesCard.title",
     fallbackTitle: "Notes",
     icon: NotebookPen,
     href: "/notebook",
-    color: "bg-amber-50 text-amber-500 dark:bg-amber-900/20 dark:text-amber-400"
+    bgColor: "bg-amber-600 dark:bg-amber-700",
+    hoverColor: "hover:bg-amber-700 dark:hover:bg-amber-800",
+    iconColor: "text-white"
   },
   {
     titleKey: "dashboard.conversationAICard.title",
     fallbackTitle: "Conversation AI",
     icon: MessageCircle,
     href: "/language_ai",
-    color: "bg-pink-50 text-pink-500 dark:bg-pink-900/20 dark:text-pink-400"
+    bgColor: "bg-pink-600 dark:bg-pink-700",
+    hoverColor: "hover:bg-pink-700 dark:hover:bg-pink-800",
+    iconColor: "text-white"
   },
   {
     titleKey: "dashboard.progressCard.title",
     fallbackTitle: "Progress",
     icon: BarChart,
     href: "/progress",
-    color: "bg-green-50 text-green-500 dark:bg-green-900/20 dark:text-green-400"
+    bgColor: "bg-green-600 dark:bg-green-700",
+    hoverColor: "hover:bg-green-700 dark:hover:bg-green-800",
+    iconColor: "text-white"
   },
   {
     titleKey: "dashboard.helpCard.title",
     fallbackTitle: "Help",
     icon: HandHelping,
     href: "/help",
-    color: "bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400"
+    bgColor: "bg-red-600 dark:bg-red-700",
+    hoverColor: "hover:bg-red-700 dark:hover:bg-red-800",
+    iconColor: "text-white"
   },
   {
     titleKey: "dashboard.settingsCard.title",
     fallbackTitle: "Settings",
     icon: Settings,
     href: "/settings",
-    color: "bg-gray-50 text-gray-500 dark:bg-gray-800/40 dark:text-gray-400"
+    bgColor: "bg-gray-600 dark:bg-gray-700",
+    hoverColor: "hover:bg-gray-700 dark:hover:bg-gray-800",
+    iconColor: "text-white"
   }
 ];
 
@@ -113,7 +127,9 @@ function AppMenu({
     fallbackTitle: string;
     icon: React.ElementType;
     href: string;
-    color: string;
+    bgColor: string;
+    hoverColor: string;
+    iconColor: string;
   }>;
   t: (key: string, options?: any, fallback?: string) => string
 }) {
@@ -151,8 +167,8 @@ function AppMenu({
           onMouseEnter={() => prefetchDataForApp(item.href)}
         >
           <div className="flex flex-col items-center group">
-            <div className="w-full max-w-[100px] aspect-square bg-gradient-to-r from-indigo-800 via-purple-550 to-pink-400 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-2 transition-all duration-300 hover:bg-purple-200 dark:hover:bg-gray-600 group-hover:transform group-hover:scale-105">
-              <item.icon className="w-16 h-16 text-white" />
+            <div className={`w-full max-w-[100px] aspect-square ${item.bgColor} ${item.hoverColor} rounded-xl flex items-center justify-center mb-2 transition-all duration-300 group-hover:transform group-hover:scale-105 shadow-lg hover:shadow-xl`}>
+              <item.icon className={`w-14 h-14 ${item.iconColor}`} />
             </div>
             <span className="
               text-center
@@ -161,7 +177,6 @@ function AppMenu({
               tracking-tight
               text-[#374151]
               dark:text-white
-              group-hover:text-[#944189]
               transition-all duration-300">
               {t(item.titleKey, {}, item.fallbackTitle)}
             </span>
