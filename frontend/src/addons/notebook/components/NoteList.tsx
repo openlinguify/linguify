@@ -68,7 +68,7 @@ export function NoteList({
   const rowVirtualizer = useVirtualizer({
     count: notes.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: useCallback(() => 160, []), // Hauteur estimée d'une carte de note (peut être ajustée)
+    estimateSize: useCallback(() => 80, []), // Hauteur estimée d'une carte de note (peut être ajustée)
     overscan: 5, // Nombre d'éléments supplémentaires à rendre au-dessus et en-dessous de la vue visible
   });
 
@@ -88,11 +88,11 @@ export function NoteList({
     return (
       <div
         key={note.id}
-        className="opacity-100 note-item-appear-active selection-highlight mb-3 transition-transform duration-200 ease-out hover:translate-x-1 performance-optimized"
+        className="opacity-100 note-item-appear-active selection-highlight mb-2 transition-transform duration-200 ease-out hover:translate-x-1 performance-optimized"
       >
         <Card
           onClick={() => onSelectNote(note)}
-          className={`p-4 cursor-pointer transition-all ${
+          className={`p-3 cursor-pointer transition-all ${
             isSelected 
               ? "border-2 border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20" 
               : "border border-gray-200 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-700"
@@ -106,7 +106,7 @@ export function NoteList({
               <h3 className={`font-medium truncate ${isSelected ? "text-indigo-700 dark:text-indigo-300" : "dark:text-white"}`}>
                 {note.title}
               </h3>
-              <div className="flex items-center mt-2 space-x-2 flex-wrap">
+              <div className="flex items-center mt-1 space-x-2 flex-wrap">
                 {note.language && (
                   <Badge variant="outline" className="text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
                     {note.language.toUpperCase()}
@@ -131,7 +131,7 @@ export function NoteList({
           
           {/* Montrer des indicateurs supplémentaires uniquement sur tablet/desktop */}
           {!isMobile && note.translation && note.translation.length > 0 && (
-            <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+            <div className="mt-1 pt-1 border-t border-gray-100 dark:border-gray-800">
               <div className="text-xs text-gray-500 dark:text-gray-400 italic line-clamp-1">
                 <MarkdownPreview
                   content={note.translation}
@@ -163,7 +163,7 @@ export function NoteList({
   return (
     <div 
       ref={parentRef} 
-      className="p-6 space-y-4 notebook-scrollable-area overflow-auto h-full" 
+      className="p-4 space-y-2 notebook-scrollable-area overflow-auto h-full" 
       style={{ height: '100%', overflowY: 'auto' }}
       onScroll={handleScroll}
     >
@@ -189,7 +189,7 @@ export function NoteList({
                 left: 0,
                 width: '100%',
                 transform: `translateY(${virtualRow.start}px)`,
-                paddingBottom: '12px' // Équivalent de mb-3
+                paddingBottom: '8px' // Équivalent de mb-2
               }}
             >
               {renderNoteCard(note, virtualRow.index, isSelected)}
