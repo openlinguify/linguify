@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Note } from "../types";
 import { notebookAPI } from "../api/notebookAPI";
-import { Plus, RefreshCcw, Menu, ChevronLeft } from "lucide-react";
+import { Plus, RefreshCcw, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { SearchFiltersState, applyFilters } from "./SearchFilters";
@@ -171,7 +171,6 @@ export default function NotebookMain() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [hasMoreNotes, setHasMoreNotes] = useState<boolean>(true);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
-  const [totalNoteCount, setTotalNoteCount] = useState<number>(0);
 
   // Load notes from API with pagination
   const loadNotes = useCallback(async (resetPage = true) => {
@@ -202,7 +201,6 @@ export default function NotebookMain() {
 
       // Mise à jour des états de pagination
       setHasMoreNotes(!!nextPage);
-      setTotalNoteCount(totalCount);
       
       if (nextPage) {
         setCurrentPage(nextPage);
@@ -217,7 +215,6 @@ export default function NotebookMain() {
       setFilteredNotes(filtered);
       
       // Reset loading states
-      setCurrentLoadingNoteId(null);
       setIsLoadingNoteDetails(false);
 
       // Extract unique languages (en filtrant les valeurs vides ou nulles)
@@ -293,7 +290,6 @@ export default function NotebookMain() {
   
   // État pour suivre le chargement d'une note
   const [isLoadingNoteDetails, setIsLoadingNoteDetails] = useState(false);
-  const [currentLoadingNoteId, setCurrentLoadingNoteId] = useState<number | null>(null);
 
   // Handle selecting a note - approche simplifiée
   const handleSelectNote = useCallback(async (note: Note) => {
@@ -316,7 +312,6 @@ export default function NotebookMain() {
       // Directement charger la note complète sans afficher d'état intermédiaire
       try {
         // Set loading state
-        setCurrentLoadingNoteId(note.id);
         setIsLoadingNoteDetails(true);
 
         // Sélectionner la note directement depuis l'API
@@ -330,7 +325,6 @@ export default function NotebookMain() {
         // Mettre à jour la note sélectionnée avec les détails complets
         setSelectedNote(fullNote);
         setIsLoadingNoteDetails(false);
-        setCurrentLoadingNoteId(null);
       } catch (error) {
         // En cas d'erreur, utiliser la note partielle de la liste
         console.error("Error loading note details:", error);
@@ -338,7 +332,6 @@ export default function NotebookMain() {
         // Sélectionner la note partielle au lieu de rien
         setSelectedNote(note);
         setIsLoadingNoteDetails(false);
-        setCurrentLoadingNoteId(null);
         
         // Déterminer un message approprié
         let errorMessage = "Impossible de charger tous les détails de la note";
@@ -446,12 +439,6 @@ export default function NotebookMain() {
     }
   }, [isMobile, loadNotes, toast]);
   
-  // Revenir à la liste des notes (pour mobile)
-  const handleBackToList = useCallback(() => {
-    if (isMobile) {
-      setSidebarVisible(true);
-    }
-  }, [isMobile]);
   
   // Annuler l'édition d'une note
   const handleCancelEdit = useCallback(() => {
@@ -520,7 +507,7 @@ export default function NotebookMain() {
 
             <Button
               variant="outline"
-              onClick={loadNotes}
+              onClick={() => loadNotes()}
               className="bg-white dark:bg-gray-800"
             >
               <RefreshCcw className="h-4 w-4 mr-2" />
@@ -580,7 +567,7 @@ export default function NotebookMain() {
 
             <Button
               variant="outline"
-              onClick={loadNotes}
+              onClick={() => loadNotes()}
               disabled={isLoading}
               className="bg-white dark:bg-gray-800"
             >
@@ -626,7 +613,6 @@ export default function NotebookMain() {
                   onSelectNote={handleSelectNote}
                   onCreateNote={() => setIsCreating(true)}
                   selectedNoteId={selectedNote?.id}
-                  loadingNoteId={currentLoadingNoteId}
                   filter={searchFilters.query}
                   onFilterChange={(filter) => setSearchFilters(prev => ({ ...prev, query: filter }))}
                   hasMore={hasMoreNotes}
