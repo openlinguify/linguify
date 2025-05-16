@@ -1123,6 +1123,115 @@ class TestRecapViewSet(TargetLanguageMixin, viewsets.ModelViewSet):
         context['target_language'] = self.get_target_language()
         return context
     
+    @action(detail=False, methods=['get'])
+    def for_content_lesson(self, request):
+        """
+        Get the appropriate TestRecap for a given ContentLesson.
+        
+        This endpoint implements the logic to find the correct TestRecap
+        for any ContentLesson, handling various relationships and fallback mechanisms.
+        
+        Query Parameters:
+        - content_lesson_id: ID of the ContentLesson to find a TestRecap for
+        """
+        content_lesson_id = request.query_params.get('content_lesson_id')
+        
+        if not content_lesson_id:
+            return Response({"error": "content_lesson_id parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            # Try to find the ContentLesson
+            content_lesson = ContentLesson.objects.get(id=content_lesson_id)
+            
+            # Log the content lesson info for debugging
+            logger.info(f"Looking for TestRecap for ContentLesson ID {content_lesson_id}: {content_lesson.title_en}")
+            
+            # APPROACH 1: If it's a TestRecap type content itself
+            if content_lesson.content_type == 'Test Recap':
+                logger.info(f"ContentLesson {content_lesson_id} is a Test Recap type")
+                
+                # 1A: If it has a title, try to match by title
+                if content_lesson.title_en and content_lesson.title_en.startswith('Test Recap: '):
+                    lesson_name = content_lesson.title_en.replace('Test Recap: ', '').strip()
+                    logger.info(f"Extracted lesson name: '{lesson_name}' from title")
+                    
+                    # Try to find a test recap with matching title
+                    test_recap = TestRecap.objects.filter(title__icontains=lesson_name).first()
+                    if test_recap:
+                        logger.info(f"Found TestRecap ID {test_recap.id} by title match")
+                        serializer = self.get_serializer(test_recap)
+                        return Response(serializer.data)
+                
+                # 1B: If it has a parent lesson, find TestRecap for that lesson
+                if content_lesson.lesson:
+                    logger.info(f"ContentLesson has parent lesson ID: {content_lesson.lesson.id}")
+                    test_recap = TestRecap.objects.filter(lesson=content_lesson.lesson).first()
+                    if test_recap:
+                        logger.info(f"Found TestRecap ID {test_recap.id} via parent lesson")
+                        serializer = self.get_serializer(test_recap)
+                        return Response(serializer.data)
+            
+            # APPROACH 2: For any ContentLesson, try to find TestRecap through parent lesson
+            if content_lesson.lesson:
+                logger.info(f"Using parent lesson ID {content_lesson.lesson.id} to find TestRecap")
+                test_recap = TestRecap.objects.filter(lesson=content_lesson.lesson).first()
+                if test_recap:
+                    logger.info(f"Found TestRecap ID {test_recap.id} via parent lesson relationship")
+                    serializer = self.get_serializer(test_recap)
+                    return Response(serializer.data)
+                
+                # Try to find by lesson title
+                if content_lesson.lesson.title_en:
+                    logger.info(f"Looking for TestRecap with title containing '{content_lesson.lesson.title_en}'")
+                    test_recap = TestRecap.objects.filter(title__icontains=content_lesson.lesson.title_en).first()
+                    if test_recap:
+                        logger.info(f"Found TestRecap ID {test_recap.id} via lesson title match")
+                        serializer = self.get_serializer(test_recap)
+                        return Response(serializer.data)
+            
+            # APPROACH 3: Try to find TestRecap for content lessons in the same lesson
+            if content_lesson.lesson:
+                logger.info(f"Looking for TestRecap through sibling content lessons")
+                related_content_lessons = ContentLesson.objects.filter(
+                    lesson=content_lesson.lesson,
+                    content_type='Test Recap'
+                )
+                
+                for related in related_content_lessons:
+                    if related.title_en and related.title_en.startswith('Test Recap: '):
+                        lesson_name = related.title_en.replace('Test Recap: ', '').strip()
+                        test_recap = TestRecap.objects.filter(title__icontains=lesson_name).first()
+                        if test_recap:
+                            logger.info(f"Found TestRecap ID {test_recap.id} via sibling content lesson's title")
+                            serializer = self.get_serializer(test_recap)
+                            return Response(serializer.data)
+            
+            # APPROACH 4: Last resort - return any TestRecap in the same unit rather than no content
+            if content_lesson.lesson and content_lesson.lesson.unit:
+                logger.info(f"Last resort: Looking for any TestRecap in unit {content_lesson.lesson.unit.id}")
+                unit_lessons = Lesson.objects.filter(unit=content_lesson.lesson.unit)
+                test_recap = TestRecap.objects.filter(lesson__in=unit_lessons).first()
+                if test_recap:
+                    logger.info(f"Found TestRecap ID {test_recap.id} in the same unit as a last resort")
+                    serializer = self.get_serializer(test_recap)
+                    return Response(serializer.data)
+            
+            # If all else fails, return any TestRecap
+            logger.info("Final fallback: Returning first available TestRecap")
+            test_recap = TestRecap.objects.first()
+            if test_recap:
+                logger.info(f"Last resort: Using first available TestRecap ID {test_recap.id}")
+                serializer = self.get_serializer(test_recap)
+                return Response(serializer.data)
+                
+            return Response({"error": "No TestRecap found for this ContentLesson"}, status=status.HTTP_404_NOT_FOUND)
+            
+        except ContentLesson.DoesNotExist:
+            return Response({"error": f"ContentLesson with id {content_lesson_id} not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Error finding TestRecap for ContentLesson {content_lesson_id}: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
     @action(detail=True, methods=['get'])
     def questions(self, request, pk=None):
         """

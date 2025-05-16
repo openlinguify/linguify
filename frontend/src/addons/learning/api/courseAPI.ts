@@ -994,6 +994,8 @@ const courseAPI = {
   },
 
   // Get the TestRecap ID associated with a ContentLesson
+  // This method uses the testRecapAPI.getTestRecapForContentLesson method under the hood
+  // to prevent duplication of logic
   getTestRecapIdFromContentLesson: async (contentLessonId: number | string) => {
     try {
       const parsedContentLessonId = Number(contentLessonId);
@@ -1004,188 +1006,30 @@ const courseAPI = {
       
       console.log(`Finding TestRecap ID for content lesson ${parsedContentLessonId}`);
       
-      /*
-       * APPROACH 1: Check if this is a Test Recap content directly
-       * 
-       * If the content lesson itself is a TestRecap type, we can:
-       * 1. Get the content lesson details including its title and parent lesson ID
-       * 2. Use the parent lesson ID to find the associated test recap
-       * 3. Alternatively, analyze the title to extract the lesson name
-       */
-      
-      // First try getting the content lesson directly
-      try {
-        console.log(`Trying to get content lesson ${parsedContentLessonId} details directly`);
-        const contentLessonResponse = await apiClient.get(`/api/v1/course/content-lesson/${parsedContentLessonId}/`);
-        
-        if (contentLessonResponse.data) {
-          const contentLesson = contentLessonResponse.data;
-          console.log(`Found content lesson:`, contentLesson);
-          
-          // If it's a TestRecap type content lesson
-          if (contentLesson.content_type === 'Test Recap') {
-            console.log(`Content lesson ${parsedContentLessonId} is a TestRecap type`);
-            
-            // APPROACH 1A: If we have a parent lesson, use that to find the test recap
-            if (contentLesson.lesson) {
-              const parentLessonId = contentLesson.lesson;
-              console.log(`Found parent lesson ID: ${parentLessonId} for content lesson ${parsedContentLessonId}`);
-              
-              // Query for test recaps based on the parent lesson ID
-              const testRecapsResponse = await apiClient.get(`/api/v1/course/test-recap/?lesson_id=${parentLessonId}`);
-              
-              if (testRecapsResponse.data && Array.isArray(testRecapsResponse.data) && testRecapsResponse.data.length > 0) {
-                const testRecapId = testRecapsResponse.data[0].id;
-                console.log(`Found test recap ID: ${testRecapId} associated with lesson ${parentLessonId}`);
-                return testRecapId;
-              }
-            }
-            
-            // APPROACH 1B: If we have a title, we might be able to match it with existing test recaps
-            if (contentLesson.title_en) {
-              const title = contentLesson.title_en;
-              console.log(`Using content lesson title: "${title}" to find TestRecap`);
-              
-              // Extract lesson name from title
-              if (title.startsWith('Test Recap: ')) {
-                const lessonName = title.replace('Test Recap: ', '').trim();
-                console.log(`Extracted lesson name: "${lessonName}" from title`);
-                
-                // Get all test recaps and try to find a match by title
-                const allTestRecapsResponse = await apiClient.get('/api/v1/course/test-recap/');
-                
-                if (allTestRecapsResponse.data && Array.isArray(allTestRecapsResponse.data)) {
-                  // Find a test recap with a matching title
-                  const matchingTestRecap = allTestRecapsResponse.data.find((testRecap: any) => {
-                    // Try various ways to match the title
-                    const testRecapTitle = testRecap.title || '';
-                    return (
-                      testRecapTitle.includes(lessonName) || 
-                      testRecap.lesson?.title?.includes(lessonName) ||
-                      (testRecapTitle.startsWith('Test Recap: ') && 
-                       testRecapTitle.replace('Test Recap: ', '').trim() === lessonName)
-                    );
-                  });
-                  
-                  if (matchingTestRecap) {
-                    console.log(`Found matching test recap by title: ${matchingTestRecap.id}`);
-                    return matchingTestRecap.id;
-                  }
-                }
-              }
-            }
-          }
-          
-          /*
-           * APPROACH 2: Check if this content lesson has a parent lesson
-           * 
-           * Every content lesson is associated with a parent lesson
-           * We can use this parent lesson to find the associated test recap
-           */
-          
-          // If the content lesson has a parent lesson, try to find a test recap for it
-          if (contentLesson.lesson) {
-            const parentLessonId = contentLesson.lesson;
-            console.log(`Using parent lesson ID: ${parentLessonId} to find TestRecap`);
-            
-            // Try to get the parent lesson details to get its title
-            const parentLessonResponse = await apiClient.get(`/api/v1/course/lesson/${parentLessonId}/`);
-            
-            if (parentLessonResponse.data) {
-              const parentLesson = parentLessonResponse.data;
-              console.log(`Found parent lesson:`, parentLesson);
-              
-              // Try to match based on the parent lesson's title
-              const parentTitle = parentLesson.title_en || '';
-              console.log(`Parent lesson title: "${parentTitle}"`);
-              
-              // Get all test recaps and try to find a matching one
-              const allTestRecapsResponse = await apiClient.get('/api/v1/course/test-recap/');
-              
-              if (allTestRecapsResponse.data && Array.isArray(allTestRecapsResponse.data)) {
-                // Find a test recap associated with this lesson
-                const matchingTestRecap = allTestRecapsResponse.data.find((testRecap: any) => {
-                  return testRecap.lesson?.id === parentLessonId || 
-                         testRecap.title?.includes(parentTitle);
-                });
-                
-                if (matchingTestRecap) {
-                  console.log(`Found matching test recap by parent lesson: ${matchingTestRecap.id}`);
-                  return matchingTestRecap.id;
-                }
-              }
-              
-              // Try to get test recaps directly by lesson ID
-              const testRecapsResponse = await apiClient.get(`/api/v1/course/test-recap/?lesson_id=${parentLessonId}`);
-              
-              if (testRecapsResponse.data && Array.isArray(testRecapsResponse.data) && testRecapsResponse.data.length > 0) {
-                const testRecapId = testRecapsResponse.data[0].id;
-                console.log(`Found test recap ID: ${testRecapId} for parent lesson ${parentLessonId}`);
-                return testRecapId;
-              }
-            }
-          }
-        }
-      } catch (err) {
-        console.log(`Error getting content lesson details: ${err}`);
-      }
-      
-      /*
-       * APPROACH 3: Use the URL parameters 
-       * 
-       * For new content lessons that don't have hardcoded mappings yet,
-       * utilize any additional context we can glean from the request:
-       * - Check URL parameters for parentLessonId, unitId, etc.
-       */
-      
-      // Try getting parent lesson ID from URL parameters
-      if (typeof window !== 'undefined') {
-        const urlParams = new URLSearchParams(window.location.search);
-        const parentLessonIdFromUrl = urlParams.get('parentLessonId');
-        
-        if (parentLessonIdFromUrl) {
-          console.log(`Found parentLessonId=${parentLessonIdFromUrl} in URL parameters`);
-          
-          try {
-            // Try to find test recaps by parent lesson ID from URL
-            const testRecapsResponse = await apiClient.get(`/api/v1/course/test-recap/?lesson_id=${parentLessonIdFromUrl}`);
-            
-            if (testRecapsResponse.data && Array.isArray(testRecapsResponse.data) && testRecapsResponse.data.length > 0) {
-              const testRecapId = testRecapsResponse.data[0].id;
-              console.log(`Found test recap ID: ${testRecapId} using parentLessonId=${parentLessonIdFromUrl} from URL`);
-              return testRecapId;
-            }
-          } catch (err) {
-            console.log(`Error finding test recap by parentLessonId from URL: ${err}`);
-          }
-        }
-      }
-      
-      /*
-       * APPROACH 4: Fallback to heuristic matching
-       * 
-       * As a last resort, try looking through all test recaps
-       * and use loose matching to find the most likely candidate
-       */
+      // Import the testRecapAPI dynamically to avoid circular imports
+      const testRecapAPI = (await import('@/addons/learning/api/testRecapAPI')).default;
       
       try {
-        console.log(`Fallback: Trying to find any matching test recap for content lesson ${parsedContentLessonId}`);
-        const allTestRecapsResponse = await apiClient.get('/api/v1/course/test-recap/');
+        // Use the testRecapAPI method to get the TestRecap
+        const response = await testRecapAPI.getTestRecapForContentLesson(parsedContentLessonId);
         
-        if (allTestRecapsResponse.data && Array.isArray(allTestRecapsResponse.data) && allTestRecapsResponse.data.length > 0) {
-          // If we have any test recaps, just use the first one as a last resort
-          // This is better than showing a demo recap
-          const firstTestRecap = allTestRecapsResponse.data[0];
-          console.log(`Last resort: Using first available test recap ID: ${firstTestRecap.id}`);
-          return firstTestRecap.id;
+        if (response && response.data && response.data.id) {
+          console.log(`Found test recap ID: ${response.data.id}`);
+          return response.data.id;
+        } else {
+          console.log(`API returned response without test recap ID:`, response.data);
         }
-      } catch (err) {
-        console.log(`Error in fallback approach: ${err}`);
+      } catch (err: any) {
+        // If we get a 404, it means no test recap could be found for this content lesson
+        if (err.response && err.response.status === 404) {
+          console.log(`No test recap could be found for content lesson ${parsedContentLessonId}`);
+        } else {
+          console.error(`Error getting test recap for content lesson ${parsedContentLessonId}:`, err);
+        }
       }
       
-      // If all attempts failed, return null to trigger demo content
-      console.error(`All approaches failed to find a suitable test recap for content lesson ${parsedContentLessonId}`);
-      console.error(`This will cause the UI to show demo content instead`);
+      // If the API call failed, return null to trigger demo content
+      console.log(`No suitable test recap found for content lesson ${parsedContentLessonId}, using demo content`);
       return null;
     } catch (err) {
       console.error(`Failed to find test recap ID for content lesson ${contentLessonId}:`, err);
