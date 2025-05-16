@@ -25,6 +25,19 @@ export interface TestRecapQuestion {
   id: string;
   question_type: QuestionType;
   order: number;
+  points?: number;
+  is_demo?: boolean;
+  question?: string;
+  options?: string[];
+  correct_answer?: string;
+  sentence?: string;
+  target_words?: string[];
+  native_words?: string[];
+  correct_pairs?: Record<string, string>;
+  word?: string;
+  definition?: string;
+  example_sentence?: string;
+  question_data?: Record<string, any>;
 }
 
 export interface TestRecapResult {
@@ -41,7 +54,7 @@ export interface TestRecapResult {
 /**
  * Creates a demo TestRecap object for use when real data is not available
  */
-export const createDemoTestRecap = (id: string | number, language: string = 'en'): TestRecap => {
+export const createDemoTestRecap = (id: string | number, _language: string = 'en'): TestRecap => {
   return {
     id: id.toString(),
     title: "Demo Test Recap",
@@ -345,6 +358,17 @@ const testRecapAPI = {
       return response;
     } catch (error: any) {
       console.warn(`Error fetching TestRecaps for lesson ${lessonId}:`, error?.status || error?.message);
+      throw error;
+    }
+  },
+  
+  // Get TestRecap for a content lesson
+  getTestRecapForContentLesson: async (contentLessonId: string | number): Promise<any> => {
+    try {
+      const response = await apiClient.get(`/api/v1/course/test-recap/for_content_lesson/?content_lesson_id=${contentLessonId}`);
+      return response;
+    } catch (error: any) {
+      console.warn(`Error fetching TestRecap for content lesson ${contentLessonId}:`, error?.status || error?.message);
       throw error;
     }
   }

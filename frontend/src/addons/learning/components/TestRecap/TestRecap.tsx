@@ -64,17 +64,18 @@ const TestRecap: React.FC<TestRecapProps> = ({
         setLoading(true);
         console.log(`Attempting to load TestRecap for lessonId: ${lessonId}, language: ${language}`);
         
-        // First check if this is a content lesson ID and try to find the associated TestRecap ID
+        // First check if this is a content lesson ID and try to find the associated TestRecap ID using the backend's logic
         let testRecapId = null;
         try {
-          console.log("Checking if this is a content lesson and finding associated TestRecap ID...");
+          console.log("Finding associated TestRecap ID using backend endpoint...");
           testRecapId = await courseAPI.getTestRecapIdFromContentLesson(lessonId);
           
-          if (testRecapId === 'NO_PARENT_LESSON') {
-            // Special handling for content lessons with no parent lesson - create a mock test recap
-            console.log(`Content lesson ${lessonId} has no parent lesson - creating a mock test recap`);
+          if (testRecapId) {
+            console.log(`Found TestRecap ID ${testRecapId} for content lesson ${lessonId}`);
+          } else {
+            console.log(`No TestRecap found for content lesson ${lessonId} - using demo content`);
             
-            // Import the demo test functions
+            // If no TestRecap found, create a mock/demo test recap
             const testRecapAPI = (await import('@/addons/learning/api/testRecapAPI'));
             const mockTestId = `mock_${lessonId}`;
             
@@ -84,13 +85,8 @@ const TestRecap: React.FC<TestRecapProps> = ({
             setTimeStarted(new Date());
             setLoading(false);
             
-            console.log('Created mock test recap for orphaned content lesson');
+            console.log('Created demo test recap for lesson with no real test recap');
             return;
-          } else if (testRecapId) {
-            console.log(`Found TestRecap ID ${testRecapId} for content lesson ${lessonId}`);
-          } else {
-            console.log(`No TestRecap found for content lesson ${lessonId}`);
-            throw new Error(`Test recap not found for content lesson ${lessonId}`);
           }
         } catch (lookupErr) {
           console.error("Error finding associated TestRecap ID:", lookupErr);
@@ -180,9 +176,7 @@ const TestRecap: React.FC<TestRecapProps> = ({
       let testRecapId;
       try {
         testRecapId = await courseAPI.getTestRecapIdFromContentLesson(lessonId);
-        if (testRecapId === 'NO_PARENT_LESSON') {
-          throw new Error("Content lesson has no parent lesson");
-        } else if (!testRecapId) {
+        if (!testRecapId) {
           throw new Error("No TestRecap found for this lesson");
         }
       } catch (error) {
