@@ -1,4 +1,4 @@
-# Carnet de Notes Linguify - Version Simplifiée
+# Carnet de Notes Linguify
 
 ## Présentation
 

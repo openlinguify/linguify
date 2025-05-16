@@ -548,28 +548,6 @@ export default function NotebookMain() {
       <div className="px-6 py-4 bg-white dark:bg-gray-800 shadow-lg z-10 sticky top-0 left-0 right-0 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            {/* Bouton retour pour mobile quand on affiche une note */}
-            {isMobile && selectedNote && !sidebarVisible && (
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={handleBackToList}
-                className="mr-2"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-            )}
-            
-            {/* Afficher le titre d'une note spécifique sur mobile */}
-            {isMobile && selectedNote && !sidebarVisible ? (
-              <h2 className="text-lg font-medium truncate max-w-[200px] dark:text-white">
-                {selectedNote.title}
-              </h2>
-            ) : (
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold text-transparent bg-clip-text">
-                Carnet de Notes
-              </h1>
-            )}
           </div>
           
           <div className="flex gap-2">
