@@ -991,8 +991,375 @@ const courseAPI = {
       console.error('Failed to fetch speaking exercise vocabulary:', err);
       return { results: [] };
     }
-  }
+  },
 
+  // Get the TestRecap ID associated with a ContentLesson
+  getTestRecapIdFromContentLesson: async (contentLessonId: number | string) => {
+    try {
+      const parsedContentLessonId = Number(contentLessonId);
+      if (isNaN(parsedContentLessonId)) {
+        console.error(`Invalid content lesson ID: ${contentLessonId}`);
+        return null;
+      }
+      
+      /*
+       * Content Lesson to TestRecap mapping based on admin data
+       * 
+       * From admin panel data, we've observed the following pattern:
+       * - Content lessons with type "Test Recap" have specific IDs 
+       *   that directly match their TestRecap counterparts
+       * - These content lessons appear as the last content lesson in each lesson
+       *   (often with order=99)
+       * 
+       * This means:
+       * 1. Content lesson 58 (Test Recap: Greeting) -> TestRecap ID 46
+       * 2. Content lesson 59 (Test Recap: How are you ?) -> TestRecap ID 45
+       * 3. Content lesson 66 (Test Recap: Alphabet and Spelling) -> TestRecap ID 38
+       * ... and so on
+       */
+      
+      // Content Lesson ID to TestRecap ID mapping based on admin panel data
+      const knownMappings: Record<number, number> = {
+        // Unit 1 lessons
+        58: 46, // Greeting
+        59: 45, // How are you?
+        66: 38, // Alphabet and Spelling
+        
+        // Unit 2 lessons
+        60: 44, // Colors
+        
+        // Unit 3 lessons
+        75: 54, // Numbers
+        63: 39, // Family Members
+        
+        // Unit 4 lessons
+        69: 48, // To have
+        
+        // Unit 5 lessons
+        71: 50, // Present Simple
+        70: 49, // Possessive determiners
+        
+        // Unit 6 lessons
+        73: 52, // The definite articles
+        77: 56, // Plurals
+        
+        // Unit 11 lessons
+        76: 55, // Present continuous
+        
+        // Unit 14 lessons
+        62: 40, // Conjunction
+        
+        // Unit 17 lessons
+        67: 43, // City & Countryside
+        
+        // Unit 21 lessons
+        74: 53, // Past Simple
+        
+        // Unit 28 lessons
+        65: 37, // Transport
+        
+        // Unit 42 lessons
+        72: 51, // Passive Voice
+        
+        // Unit 71 lessons
+        64: 41, // Space & Astronomy
+        
+        // Unit 83 lessons
+        68: 47, // Ought to
+        
+        // Unit 86 lessons
+        61: 42, // Swear Words and Slang
+      };
+      
+      // Auto-generator function for future content lessons and test recaps
+      const getTestRecapIdFromTitle = (contentLessonTitle: string): number | null => {
+        // Only proceed if the title starts with "Test Recap:"
+        if (!contentLessonTitle || !contentLessonTitle.startsWith('Test Recap: ')) {
+          return null;
+        }
+        
+        // Extract the lesson name from the title (e.g., "Test Recap: Greeting" -> "Greeting")
+        const lessonName = contentLessonTitle.replace('Test Recap: ', '').trim();
+        
+        // Dictionary mapping lesson names to TestRecap IDs based on the admin panel data
+        const lessonToTestRecapMap: Record<string, number> = {
+          'Greeting': 46,
+          'How are you ?': 45,
+          'Alphabet and Spelling': 38,
+          'Colors': 44,
+          'Numbers': 54,
+          'Family Members': 39,
+          'To have': 48,
+          'Present Simple': 50,
+          'Possessive determiners': 49,
+          'The definite articles': 52,
+          'Plurals': 56,
+          'Present continuous': 55,
+          'Conjunction': 40,
+          'City & Countryside': 43,
+          'Past Simple': 53,
+          'Transport': 37,
+          'Passive Voice': 51,
+          'Space & Astronomy': 41,
+          'Ought to': 47,
+          'Swear Words and Slang': 42
+        };
+        
+        return lessonToTestRecapMap[lessonName] || null;
+      };
+      
+      // Get test recap ID from known mappings (direct ID to ID mapping)
+      if (knownMappings[parsedContentLessonId]) {
+        console.log(`Using direct content lesson mapping: Content lesson ${parsedContentLessonId} is associated with TestRecap ID ${knownMappings[parsedContentLessonId]}`);
+        return knownMappings[parsedContentLessonId];
+      }
+      
+      // If not found in direct mapping, try to get content lesson details
+      try {
+        // Try the direct retrieve endpoint first to get the content lesson title
+        console.log(`Trying to get content lesson ${parsedContentLessonId} details to determine TestRecap ID by title`);
+        const directResponse = await apiClient.get(`/api/v1/course/content-lesson/${parsedContentLessonId}/`);
+        
+        if (directResponse.data && directResponse.data.title_en) {
+          const contentLessonTitle = directResponse.data.title_en;
+          console.log(`Found content lesson title: "${contentLessonTitle}"`);
+          
+          // Try to get TestRecap ID from the title
+          const testRecapIdFromTitle = getTestRecapIdFromTitle(contentLessonTitle);
+          if (testRecapIdFromTitle) {
+            console.log(`Found TestRecap ID ${testRecapIdFromTitle} from content lesson title "${contentLessonTitle}"`);
+            return testRecapIdFromTitle;
+          }
+        }
+      } catch (err) {
+        console.log(`Failed to get content lesson details by direct endpoint: ${err}`);
+      }
+      
+      // First get the content lesson details to find the parent lesson ID
+      console.log(`Finding lesson ID for content lesson ${parsedContentLessonId}`);
+      
+      // Try the direct retrieve endpoint first
+      try {
+        const directResponse = await apiClient.get(`/api/v1/course/content-lesson/${parsedContentLessonId}/`);
+        console.log("Direct content lesson response:", directResponse.data);
+        
+        if (directResponse.data && directResponse.data.lesson) {
+          const parentLessonId = directResponse.data.lesson;
+          console.log(`Found parent lesson ID (direct): ${parentLessonId} for content lesson ${parsedContentLessonId}`);
+          
+          // Now get the TestRecap for this lesson
+          console.log(`Looking for test recap with lesson ID ${parentLessonId}`);
+          const testRecapsResponse = await apiClient.get(`/api/v1/course/test-recap/?lesson_id=${parentLessonId}`);
+          console.log("Test recap response:", testRecapsResponse.data);
+          
+          if (testRecapsResponse.data && Array.isArray(testRecapsResponse.data) && testRecapsResponse.data.length > 0) {
+            const testRecapId = testRecapsResponse.data[0].id;
+            console.log(`Found test recap ID: ${testRecapId} for lesson ${parentLessonId}`);
+            return testRecapId;
+          }
+          
+          console.warn(`No test recap found for lesson ${parentLessonId}, but will try fallback methods`);
+          // Continue with fallback methods instead of returning null immediately
+        }
+      } catch(directErr) {
+        console.log("Direct retrieval failed, falling back to list with filter:", directErr);
+      }
+      
+      // Fall back to the list with filter approach
+      try {
+        const response = await apiClient.get(`/api/v1/course/content-lesson/?id=${parsedContentLessonId}`);
+        console.log(`Content lesson list response for ID ${parsedContentLessonId}:`, response.data);
+        
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+          const contentLesson = response.data[0];
+          console.log(`Found content lesson:`, contentLesson);
+          
+          const parentLessonId = contentLesson.lesson;
+          console.log(`Found parent lesson ID: ${parentLessonId} for content lesson ${parsedContentLessonId}`);
+          
+          if (!parentLessonId) {
+            console.error(`Content lesson ${parsedContentLessonId} has no parent lesson`);
+            
+            // Before giving up, try to find a test recap directly associated with this content lesson ID
+            // This is a fallback for cases where the content lesson might have a direct association
+            try {
+              console.log(`Attempting to find a test recap directly associated with content lesson ${parsedContentLessonId}`);
+              const directTestRecapResponse = await apiClient.get(`/api/v1/course/test-recap/?content_lesson_id=${parsedContentLessonId}`);
+              
+              if (directTestRecapResponse.data && Array.isArray(directTestRecapResponse.data) && directTestRecapResponse.data.length > 0) {
+                const testRecapId = directTestRecapResponse.data[0].id;
+                console.log(`Found directly associated test recap ID: ${testRecapId} for content lesson ${parsedContentLessonId}`);
+                return testRecapId;
+              }
+            } catch (directTestRecapErr) {
+              console.log("Direct test recap association lookup failed:", directTestRecapErr);
+            }
+            
+            // Return a special value to indicate this specific error condition
+            return 'NO_PARENT_LESSON'; 
+          }
+          
+          // Now get the TestRecap for this lesson
+          console.log(`Looking for test recap with lesson ID ${parentLessonId}`);
+          const testRecapsResponse = await apiClient.get(`/api/v1/course/test-recap/?lesson_id=${parentLessonId}`);
+          console.log("Test recap response:", testRecapsResponse.data);
+          
+          if (testRecapsResponse.data && Array.isArray(testRecapsResponse.data) && testRecapsResponse.data.length > 0) {
+            const testRecapId = testRecapsResponse.data[0].id;
+            console.log(`Found test recap ID: ${testRecapId} for lesson ${parentLessonId}`);
+            return testRecapId;
+          }
+          
+          console.error(`No test recap found for lesson ${parentLessonId}`);
+        } else {
+          console.error(`No content lesson found with ID ${parsedContentLessonId}`);
+        }
+      } catch (listErr) {
+        console.log("List approach failed:", listErr);
+      }
+      
+      // If we got here, we couldn't find a test recap - try one last approach
+      // Try listing all test recaps and checking if any match our content lesson
+      try {
+        console.log(`Last resort: Checking all test recaps for content lesson ${parsedContentLessonId}`);
+        const allTestRecapsResponse = await apiClient.get(`/api/v1/course/test-recap/`);
+        
+        if (allTestRecapsResponse.data && Array.isArray(allTestRecapsResponse.data)) {
+          // Look for any test recap that might be related to this content lesson
+          for (const testRecap of allTestRecapsResponse.data) {
+            if (testRecap.related_content_lessons && 
+                Array.isArray(testRecap.related_content_lessons) && 
+                testRecap.related_content_lessons.includes(parsedContentLessonId)) {
+              console.log(`Found test recap ID ${testRecap.id} with related content lesson ${parsedContentLessonId}`);
+              return testRecap.id;
+            }
+          }
+        }
+      } catch (allTestRecapsErr) {
+        console.log("All test recaps lookup failed:", allTestRecapsErr);
+      }
+      
+      // If all attempts failed, return null
+      console.error(`All attempts to find test recap for content lesson ${parsedContentLessonId} failed`);
+      return null;
+    } catch (err) {
+      console.error(`Failed to find test recap ID for content lesson ${contentLessonId}:`, err);
+      return null;
+    }
+  },
+
+  // Test Recap Methods
+  getTestRecaps: async (lessonId?: number | string, targetLanguage?: string) => {
+    try {
+      const params: Record<string, string> = {};
+      
+      // Add lessonId parameter if provided
+      if (lessonId) {
+        const parsedLessonId = Number(lessonId);
+        if (!isNaN(parsedLessonId)) {
+          params.lesson_id = parsedLessonId.toString();
+        }
+      }
+      
+      // Use the specified language or get from user settings
+      const lang = targetLanguage || getUserTargetLanguage();
+      params.target_language = lang;
+      
+      console.log(`Fetching test recaps${lessonId ? ` for lesson ${lessonId}` : ''} with language: ${lang}`);
+      const response = await apiClient.get('/api/v1/course/test-recap/', {
+        params,
+        headers: {
+          'Accept-Language': lang
+        }
+      });
+      
+      return response.data;
+    } catch (err: any) {
+      console.error('Failed to fetch test recaps:', err);
+      return [];
+    }
+  },
+  
+  getTestRecap: async (testId: number | string, targetLanguage?: string) => {
+    try {
+      const parsedTestId = Number(testId);
+      if (isNaN(parsedTestId)) {
+        console.error(`Invalid test recap ID provided: ${testId}`);
+        return null;
+      }
+      
+      // Use the specified language or get from user settings
+      const lang = targetLanguage || getUserTargetLanguage();
+      
+      console.log(`Fetching test recap ${parsedTestId} with language: ${lang}`);
+      const response = await apiClient.get(`/api/v1/course/test-recap/${parsedTestId}/`, {
+        params: { language: lang },
+        headers: {
+          'Accept-Language': lang
+        }
+      });
+      
+      return response.data;
+    } catch (err: any) {
+      console.error(`Failed to fetch test recap #${testId}:`, err);
+      return null;
+    }
+  },
+  
+  getTestRecapQuestions: async (testId: number | string, targetLanguage?: string) => {
+    try {
+      const parsedTestId = Number(testId);
+      if (isNaN(parsedTestId)) {
+        console.error(`Invalid test recap ID provided: ${testId}`);
+        return [];
+      }
+      
+      // Use the specified language or get from user settings
+      const lang = targetLanguage || getUserTargetLanguage();
+      
+      console.log(`Fetching questions for test recap ${parsedTestId} with language: ${lang}`);
+      const response = await apiClient.get(`/api/v1/course/test-recap/${parsedTestId}/questions/`, {
+        params: { language: lang },
+        headers: {
+          'Accept-Language': lang
+        }
+      });
+      
+      return response.data;
+    } catch (err: any) {
+      console.error(`Failed to fetch test recap questions for test #${testId}:`, err);
+      return [];
+    }
+  },
+  
+  submitTestRecapAnswers: async (testId: number | string, answers: Record<string, any>, timeTaken: number, targetLanguage?: string, isDemo?: boolean) => {
+    try {
+      const parsedTestId = Number(testId);
+      if (isNaN(parsedTestId)) {
+        console.error(`Invalid test recap ID provided: ${testId}`);
+        throw new Error('Invalid test ID');
+      }
+      
+      // Use the specified language or get from user settings
+      const lang = targetLanguage || getUserTargetLanguage();
+      
+      console.log(`Submitting answers for test recap ${parsedTestId} with language: ${lang}${isDemo ? ' (DEMO MODE)' : ''}`);
+      const response = await apiClient.post(`/api/v1/course/test-recap/${parsedTestId}/submit/`, {
+        answers,
+        time_taken: timeTaken,
+        is_demo: isDemo || false
+      }, {
+        headers: {
+          'Accept-Language': lang
+        }
+      });
+      
+      return response.data;
+    } catch (err: any) {
+      console.error(`Failed to submit test recap answers for test #${testId}:`, err);
+      throw err;
+    }
+  }
 };
 
 export default courseAPI;

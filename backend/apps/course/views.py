@@ -30,7 +30,10 @@ from .models import (
     MatchingExercise,
     ExerciseGrammarReordering,
     FillBlankExercise,
-    SpeakingExercise
+    SpeakingExercise,
+    TestRecap,
+    TestRecapQuestion,
+    TestRecapResult
 )
 from .serializers import (
     TargetLanguageMixin,
@@ -45,7 +48,12 @@ from .serializers import (
     TheoryContentSerializer,
     ExerciseGrammarReorderingSerializer,
     FillBlankExerciseSerializer,
-    SpeakingExerciseSerializer
+    SpeakingExerciseSerializer,
+    TestRecapSerializer,
+    TestRecapDetailSerializer,
+    TestRecapQuestionSerializer,
+    TestRecapResultSerializer,
+    CreateTestRecapResultSerializer
 )
 from .filters import LessonFilter, VocabularyListFilter
 from apps.authentication.models import User
@@ -117,12 +125,23 @@ class ContentLessonViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         lesson_id = self.request.query_params.get('lesson')
+        content_id = self.request.query_params.get('id')
         queryset = ContentLesson.objects.all().order_by('order')
+        
+        # Handle id filtering if provided
+        if content_id:
+            try:
+                return queryset.filter(id=content_id).order_by('order')
+            except ValueError:
+                raise ValidationError({"error": "Invalid content lesson ID"})
+                
+        # Handle lesson filtering if provided
         if lesson_id:
             try:
                 return queryset.filter(lesson_id=lesson_id).order_by('order')
             except ValueError:
                 raise ValidationError({"error": "Invalid lesson ID"})
+                
         return queryset.order_by('order')
     
     def get_serializer_context(self):
@@ -1067,3 +1086,130 @@ class SpeakingExerciseViewSet(viewsets.ModelViewSet):
                 return user_language.lower()
                 
         return 'en'
+    
+    
+class TestRecapViewSet(TargetLanguageMixin, viewsets.ModelViewSet):
+    """
+    API endpoint for Test Recap functionality.
+    Provides CRUD operations for test recaps and related functionality.
+    """
+    permission_classes = [AllowAny]  # Change to [IsAuthenticated] in production
+    
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return TestRecapDetailSerializer
+        elif self.action == 'submit':
+            return CreateTestRecapResultSerializer
+        elif self.action == 'questions':
+            return TestRecapQuestionSerializer
+        return TestRecapSerializer
+        
+    def get_queryset(self):
+        queryset = TestRecap.objects.all()
+        
+        # Filter by lesson ID if provided
+        lesson_id = self.request.query_params.get('lesson_id')
+        if lesson_id:
+            queryset = queryset.filter(lesson_id=lesson_id)
+            
+        # Only show active tests by default
+        if not self.request.query_params.get('show_inactive'):
+            queryset = queryset.filter(is_active=True)
+            
+        return queryset
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['target_language'] = self.get_target_language()
+        return context
+    
+    @action(detail=True, methods=['get'])
+    def questions(self, request, pk=None):
+        """
+        Get all questions for a specific test recap.
+        """
+        test_recap = self.get_object()
+        questions = test_recap.questions.all().order_by('order')
+        
+        context = self.get_serializer_context()
+        
+        serializer = self.get_serializer(
+            questions, 
+            many=True, 
+            context=context
+        )
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def submit(self, request, pk=None):
+        """Submit answers for a test and get results."""
+        test_recap = self.get_object()
+        
+        # Regular submission flow
+        serializer = self.get_serializer(
+            data=request.data,
+            context={
+                'request': request,
+                'test_recap': test_recap,
+                'target_language': self.get_target_language()
+            }
+        )
+        
+        if serializer.is_valid():
+            # Add test_recap to validated data
+            serializer.validated_data['test_recap'] = test_recap
+            result = serializer.save()
+            
+            # Return the result
+            result_serializer = TestRecapResultSerializer(result)
+            return Response(result_serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=True, methods=['get'])
+    def results(self, request, pk=None):
+        """Get all results for a specific test recap."""
+        test_recap = self.get_object()
+        
+        # Only allow authenticated users to see results
+        if not request.user.is_authenticated:
+            return Response(
+                {"error": "Authentication required to view results"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+            
+        # Get results for this user and test
+        results = TestRecapResult.objects.filter(
+            test_recap=test_recap,
+            user=request.user
+        ).order_by('-completed_at')
+        
+        serializer = TestRecapResultSerializer(results, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'])
+    def latest_result(self, request, pk=None):
+        """Get the most recent result for this test and user."""
+        test_recap = self.get_object()
+        
+        # Only allow authenticated users to see results
+        if not request.user.is_authenticated:
+            return Response(
+                {"error": "Authentication required to view results"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+            
+        # Get the most recent result
+        try:
+            result = TestRecapResult.objects.filter(
+                test_recap=test_recap,
+                user=request.user
+            ).latest('completed_at')
+            
+            serializer = TestRecapResultSerializer(result)
+            return Response(serializer.data)
+        except TestRecapResult.DoesNotExist:
+            return Response(
+                {"message": "No results found for this test"},
+                status=status.HTTP_404_NOT_FOUND
+            )

@@ -7,6 +7,7 @@ export * from './LessonContent';
 export * from './Navigation';
 export * from './Theory'; 
 export * from './Units';
+export * from './TestRecap';
 
 // Export main view component
 export { default as LearningView } from './Navigation/LearnView';
