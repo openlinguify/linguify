@@ -12,6 +12,7 @@ import ReorderingContent from "../Exercises/ReorderingContent";
 import FillBlankExercise from "../Exercises/FillBlankExercise";
 import MatchingExercise from "../Exercises/MatchingExercise";
 import SpeakingPractice from "../Speaking/SpeakingPractice";
+import TestRecap from "../TestRecap";
 import { ContentTypeRouterProps } from "@/addons/learning/types";
 import lastAccessedLessonService from "@/addons/progress/api/lastAccessedLessonService";
 import courseAPI from "@/addons/learning/api/courseAPI";
@@ -123,6 +124,55 @@ export default function ContentTypeRouter({
               // For fill blank, get exercises count
               const fillBlankData = await courseAPI.getFillBlankExercises(contentId, language);
               setTotalSteps(fillBlankData?.length || 5);
+              break;
+            case 'test_recap':
+            case 'testrecap':
+              // For test recap, set total steps to the number of questions plus 2 (intro and results)
+              try {
+                // First check if this is a content lesson ID and get the real TestRecap ID
+                const testRecapId = await courseAPI.getTestRecapIdFromContentLesson(contentId);
+                
+                if (testRecapId === 'NO_PARENT_LESSON') {
+                  // Special handling for content lessons with no parent lesson
+                  console.log(`Content lesson ${contentId} has no parent lesson - using default steps`);
+                  setTotalSteps(5);
+                } else if (testRecapId) {
+                  console.log(`Found TestRecap ID: ${testRecapId} for content lesson: ${contentId}`);
+                  
+                  // Check if the TestRecap exists
+                  const testRecapAPI = (await import('@/addons/learning/api/testRecapAPI')).default;
+                  const exists = await testRecapAPI.checkExists(testRecapId);
+                  
+                  if (exists) {
+                    // TestRecap exists, get the questions to set total steps
+                    try {
+                      const questionsResponse = await testRecapAPI.getQuestions(testRecapId, language);
+                      const questions = questionsResponse?.data || [];
+                      
+                      if (Array.isArray(questions) && questions.length > 0) {
+                        setTotalSteps(questions.length + 2); // Questions + intro + results
+                        console.log(`Set total steps to ${questions.length + 2} for TestRecap ID: ${testRecapId}`);
+                      } else {
+                        // No questions found, set a default
+                        setTotalSteps(5); // Default if no questions found
+                        console.log(`No questions found for TestRecap ${testRecapId}, using default total steps: 5`);
+                      }
+                    } catch (error) {
+                      console.error("Error fetching questions:", error);
+                      setTotalSteps(5); // Default on error
+                    }
+                  } else {
+                    console.log(`TestRecap ${testRecapId} does not exist, using default total steps`);
+                    setTotalSteps(5);
+                  }
+                } else {
+                  console.log(`No TestRecap found for content lesson: ${contentId}, using default total steps`);
+                  setTotalSteps(5);
+                }
+              } catch (err) {
+                console.error('Error in TestRecap handling:', err);
+                setTotalSteps(5); // Default on error
+              }
               break;
             default:
               setTotalSteps(5); // Default value if we can't determine
@@ -307,6 +357,10 @@ export default function ContentTypeRouter({
 
       case 'speaking':
         return <SpeakingPractice {...propsWithProgressIndicator} />;
+        
+      case 'test_recap':
+      case 'testrecap':
+        return <TestRecap {...propsWithProgressIndicator} />;
 
       default:
         return (

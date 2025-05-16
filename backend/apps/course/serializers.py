@@ -12,11 +12,13 @@ from .models import (
     TheoryContent, 
     ExerciseGrammarReordering,
     FillBlankExercise,
-    SpeakingExercise
+    SpeakingExercise,
+    TestRecap,
+    TestRecapQuestion,
+    TestRecapResult
 )
 import logging
 logger = logging.getLogger(__name__)
-
 
 class TargetLanguageMixin:
     """
@@ -543,3 +545,154 @@ class FillBlankExerciseSerializer(serializers.ModelSerializer):
         return 'en'
     
 
+"""
+Serializers for Test Recap functionality in the Linguify course app.
+These serializers handle the TestRecap, TestRecapQuestion, and TestRecapResult models.
+"""
+
+class TestRecapQuestionSerializer(serializers.ModelSerializer):
+    """Serializer for test recap questions with question-specific data."""
+    question_data = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = TestRecapQuestion
+        fields = [
+            'id', 
+            'test_recap', 
+            'question_type',
+            'order',
+            'points',
+            'question_data'
+        ]
+    
+    def get_question_data(self, obj):
+        """
+        Get question content based on the question type.
+        
+        By default, use real data where possible and only use demo data if the
+        'is_demo' parameter is explicitly set to True in the context.
+        """
+        target_language = self.context.get('target_language', 'en')
+        # Force real data by default, unless explicitly set to use demo data
+        force_real_data = not self.context.get('is_demo', False)
+        return obj.get_question_data(language_code=target_language, force_real_data=force_real_data)
+
+
+class TestRecapSerializer(serializers.ModelSerializer):
+    """Serializer for test recaps with localized titles and descriptions."""
+    title = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+    questions = TestRecapQuestionSerializer(many=True, read_only=True)
+    total_points = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = TestRecap
+        fields = [
+            'id',
+            'lesson',
+            'title',
+            'description',
+            'passing_score',
+            'time_limit',
+            'is_active',
+            'created_at',
+            'updated_at',
+            'questions',
+            'total_points'
+        ]
+    
+    def get_title(self, obj):
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f'title_{native_language}', obj.title_en)
+    
+    def get_description(self, obj):
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f'description_{native_language}', obj.description_en)
+    
+    def get_total_points(self, obj):
+        return obj.total_points()
+
+
+class TestRecapDetailSerializer(TestRecapSerializer):
+    """Detailed serializer for a specific test recap, including questions."""
+    questions_count = serializers.SerializerMethodField()
+    
+    class Meta(TestRecapSerializer.Meta):
+        fields = TestRecapSerializer.Meta.fields + ['questions_count']
+    
+    def get_questions_count(self, obj):
+        return obj.questions.count()
+
+
+class TestRecapResultSerializer(serializers.ModelSerializer):
+    """Serializer for test recap results."""
+    username = serializers.SerializerMethodField()
+    test_title = serializers.SerializerMethodField()
+    correct_questions = serializers.SerializerMethodField()
+    total_questions = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = TestRecapResult
+        fields = [
+            'id',
+            'user',
+            'username',
+            'test_recap',
+            'test_title',
+            'score',
+            'passed',
+            'time_spent',
+            'completed_at',
+            'correct_questions',
+            'total_questions',
+            'detailed_results'
+        ]
+    
+    def get_username(self, obj):
+        return obj.user.username
+    
+    def get_test_title(self, obj):
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj.test_recap, f'title_{native_language}', obj.test_recap.title_en)
+    
+    def get_correct_questions(self, obj):
+        return obj.correct_questions
+    
+    def get_total_questions(self, obj):
+        return obj.total_questions
+
+
+class CreateTestRecapResultSerializer(serializers.ModelSerializer):
+    """Serializer for creating test recap results."""
+    
+    class Meta:
+        model = TestRecapResult
+        fields = [
+            'test_recap',
+            'score',
+            'time_spent',
+            'detailed_results'
+        ]
+    
+    def create(self, validated_data):
+        # Get the user from the request context
+        user = self.context['request'].user
+        
+        # Check if user has already completed this test
+        test_recap = validated_data['test_recap']
+        score = validated_data['score']
+        
+        # Automatically calculate if user passed based on passing_score
+        passed = score >= (test_recap.passing_score * 100)
+        
+        # Create the result
+        result = TestRecapResult.objects.create(
+            user=user,
+            test_recap=test_recap,
+            score=score,
+            passed=passed,
+            time_spent=validated_data['time_spent'],
+            detailed_results=validated_data.get('detailed_results', {})
+        )
+        
+        return result

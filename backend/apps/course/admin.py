@@ -1,10 +1,9 @@
 # course/admin.py
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.utils.html import format_html, mark_safe
 from django import forms
 from django.urls import path, reverse
 from django.shortcuts import redirect, render, get_object_or_404
-from django.contrib import messages
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.core.serializers.json import DjangoJSONEncoder
@@ -24,7 +23,10 @@ from .models import (
     MatchingExercise,
     ExerciseGrammarReordering,
     FillBlankExercise,
-    SpeakingExercise
+    SpeakingExercise,
+    TestRecap,
+    TestRecapQuestion,
+    TestRecapResult
 )
 
 from django.forms.widgets import CheckboxSelectMultiple
@@ -2279,3 +2281,423 @@ class FillBlankExerciseAdmin(admin.ModelAdmin):
             'all': ('css/json_prettify.css',)
         }
         js = ('js/json_prettify.js',)
+
+
+
+
+
+"""
+Admin interfaces for Test Recap functionality in the Linguify course app.
+Will be merged into the main admin.py file after review.
+"""
+class TestRecapQuestionInline(admin.TabularInline):
+    """Inline editor for test recap questions."""
+    model = TestRecapQuestion
+    extra = 0
+    fields = ('question_type', 'order', 'points', 'content_id_field', 'get_question_preview')
+    readonly_fields = ('get_question_preview', 'content_id_field')
+    
+    
+    def get_question_preview(self, obj):
+        """Show a preview of the question based on its type."""
+        if not obj.pk:
+            return "-"
+            
+        question = obj.get_question_content()
+        if not question:
+            return format_html('<span style="color:red">Missing content</span>')
+        
+        if obj.question_type == 'multiple_choice':
+            return format_html('<strong>Q:</strong> {} <br/><strong>A:</strong> {}', 
+                               question.question_en[:50], 
+                               question.correct_answer_en)
+        
+        elif obj.question_type == 'fill_blank':
+            return format_html('<strong>Sentence:</strong> {}', 
+                               question.sentences.get('en', '')[:50])
+        
+        elif obj.question_type == 'matching':
+            return format_html('<strong>Matching:</strong> {} pairs', 
+                               question.vocabulary_words.count())
+        
+        elif obj.question_type == 'reordering':
+            return format_html('<strong>Sentence:</strong> {}', 
+                               question.sentence_en[:50])
+        
+        elif obj.question_type == 'speaking':
+            vocab_count = question.vocabulary_items.count()
+            return format_html('<strong>Speaking:</strong> {} vocabulary items', 
+                               vocab_count)
+        
+        elif obj.question_type == 'vocabulary':
+            return format_html('<strong>Word:</strong> {} - {}', 
+                               question.word_en,
+                               question.definition_en[:30])
+        
+        return "Unknown question type"
+    
+    get_question_preview.short_description = 'Preview'
+    
+    def content_id_field(self, obj):
+        """Display the appropriate content ID field based on question type."""
+        if not obj or not obj.pk:
+            return "-"
+            
+        field_map = {
+            'multiple_choice': obj.multiple_choice_id,
+            'fill_blank': obj.fill_blank_id,
+            'matching': obj.matching_id,
+            'reordering': obj.reordering_id,
+            'speaking': obj.speaking_id,
+            'vocabulary': obj.vocabulary_id,
+        }
+        
+        return field_map.get(obj.question_type, "-")
+    
+    content_id_field.short_description = 'Content ID'
+
+
+@admin.register(TestRecap)
+class TestRecapAdmin(admin.ModelAdmin):
+    """Admin interface for test recap management."""
+    list_display = ('id', 'get_title', 'get_lesson', 'passing_score', 'time_limit', 
+                    'is_active', 'questions_count', 'created_at', 'has_content_lesson')
+    list_filter = ('is_active', 'lesson__unit__level', 'lesson__unit')
+    search_fields = ('title', 'title_en', 'title_fr', 'lesson__title_en')
+    inlines = [TestRecapQuestionInline]
+    actions = ['generate_test_questions', 'duplicate_test', 'ensure_content_lessons']
+    
+    def save_model(self, request, obj, form, change):
+        """Override save to ensure content lesson exists."""
+        super().save_model(request, obj, form, change)
+        
+        # Don't proceed if no lesson assigned
+        if not obj.lesson:
+            return
+            
+        # Check if content lesson already exists
+        content_lesson = ContentLesson.objects.filter(
+            lesson=obj.lesson,
+            content_type='test_recap'
+        ).first()
+        
+        # Create one if it doesn't exist
+        if not content_lesson:
+            ContentLesson.objects.create(
+                lesson=obj.lesson,
+                content_type='test_recap',
+                title_en=f"Test Recap: {obj.lesson.title_en}",
+                title_fr=f"Test Récapitulatif: {obj.lesson.title_fr}",
+                title_es=f"Test de Repaso: {obj.lesson.title_es}",
+                title_nl=f"Test Overzicht: {obj.lesson.title_nl}",
+                instruction_en="This test covers all topics from this lesson. Complete all sections to review your understanding.",
+                instruction_fr="Ce test couvre tous les sujets de cette leçon. Complétez toutes les sections pour revoir votre compréhension.",
+                instruction_es="Esta prueba abarca todos los temas de esta lección. Complete todas las secciones para revisar su comprensión.",
+                instruction_nl="Deze test behandelt alle onderwerpen van deze les. Voltooi alle secties om je begrip te herzien.",
+                estimated_duration=30,
+                order=99  # High order so it appears at the end
+            )
+            
+            # Add a message to inform the admin
+            messages.success(request, "A Content Lesson of type 'test_recap' was automatically created.")
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('lesson', 'is_active', 'passing_score', 'time_limit')
+        }),
+        ('Titles', {
+            'fields': ('title', 'title_en', 'title_fr', 'title_es', 'title_nl')
+        }),
+        ('Legacy Fields', {
+            'fields': ('question',),
+            'classes': ('collapse',),
+        }),
+        ('Descriptions', {
+            'fields': ('description_en', 'description_fr', 'description_es', 'description_nl')
+        }),
+    )
+    
+    def get_title(self, obj):
+        """Display title in multiple languages."""
+        return format_html(
+            "<strong>{}</strong><br/>"
+            "<small style='color:#666'>{} | {} | {}</small>",
+            obj.title_en, 
+            obj.title_fr, 
+            obj.title_es, 
+            obj.title_nl
+        )
+    
+    get_title.short_description = 'Title'
+    
+    def get_lesson(self, obj):
+        """Display lesson with its unit and level."""
+        if not obj.lesson or not obj.lesson.unit:
+            return "-"
+        
+        return format_html(
+            "[{}] {} <br/><small>Unit: {}</small>",
+            obj.lesson.unit.level,
+            obj.lesson.title_en,
+            obj.lesson.unit.title_en
+        )
+    
+    get_lesson.short_description = 'Lesson'
+    
+    def questions_count(self, obj):
+        """Display number of questions with visual indicator."""
+        count = obj.questions.count()
+        if count == 0:
+            color = 'red'
+        elif count < 5:
+            color = 'orange'
+        else:
+            color = 'green'
+            
+        return format_html(
+            '<span style="color:white; background-color:{0}; padding:3px 8px; '
+            'border-radius:10px; font-weight:bold">{1}</span>',
+            color, count
+        )
+    
+    questions_count.short_description = 'Questions'
+    
+    def generate_test_questions(self, request, queryset):
+        """Generate questions for selected test recaps."""
+        from .models import generate_test_recap
+        
+        updated = 0
+        for test in queryset:
+            # Clear existing questions
+            test.questions.all().delete()
+            
+            # Generate new questions
+            generate_test_recap(test.lesson)
+            updated += 1
+            
+        self.message_user(
+            request,
+            f"Questions generated for {updated} test(s)."
+        )
+    
+    generate_test_questions.short_description = "Generate questions for selected tests"
+    
+    def has_content_lesson(self, obj):
+        """Check if this test recap has a corresponding content lesson."""
+        if not obj.lesson:
+            return False
+            
+        content_lesson = ContentLesson.objects.filter(
+            lesson=obj.lesson,
+            content_type='test_recap'
+        ).exists()
+        
+        return format_html(
+            '<span style="color: {};">{}</span>',
+            'green' if content_lesson else 'red',
+            '✓' if content_lesson else '✗'
+        )
+    
+    has_content_lesson.short_description = 'In Content'
+    
+    def ensure_content_lessons(self, request, queryset):
+        """Ensure all selected test recaps have corresponding content lessons."""
+        created = 0
+        for test in queryset:
+            if not test.lesson:
+                continue
+                
+            # Check if content lesson already exists
+            content_lesson = ContentLesson.objects.filter(
+                lesson=test.lesson,
+                content_type='test_recap'
+            ).first()
+            
+            # Create one if it doesn't exist
+            if not content_lesson:
+                ContentLesson.objects.create(
+                    lesson=test.lesson,
+                    content_type='test_recap',
+                    title_en=f"Test Recap: {test.lesson.title_en}",
+                    title_fr=f"Test Récapitulatif: {test.lesson.title_fr}",
+                    title_es=f"Test de Repaso: {test.lesson.title_es}",
+                    title_nl=f"Test Overzicht: {test.lesson.title_nl}",
+                    instruction_en="This test covers all topics from this lesson. Complete all sections to review your understanding.",
+                    instruction_fr="Ce test couvre tous les sujets de cette leçon. Complétez toutes les sections pour revoir votre compréhension.",
+                    instruction_es="Esta prueba abarca todos los temas de esta lección. Complete todas las secciones para revisar su comprensión.",
+                    instruction_nl="Deze test behandelt alle onderwerpen van deze les. Voltooi alle secties om je begrip te herzien.",
+                    estimated_duration=30,
+                    order=99  # High order so it appears at the end
+                )
+                created += 1
+        
+        if created:
+            self.message_user(
+                request,
+                f"Created {created} content lesson(s) for test recap(s)."
+            )
+        else:
+            self.message_user(
+                request,
+                "All selected test recaps already have content lessons."
+            )
+    
+    ensure_content_lessons.short_description = "Create content lessons for selected tests"
+    
+    def duplicate_test(self, request, queryset):
+        """Duplicate selected test recaps."""
+        duplicated = 0
+        
+        for test in queryset:
+            with transaction.atomic():
+                # Create new test recap
+                new_title_en = f"Copy of {test.title_en}"
+                new_test = TestRecap.objects.create(
+                    lesson=test.lesson,
+                    title=new_title_en,  # Set main title field
+                    title_en=new_title_en,
+                    title_fr=f"Copie de {test.title_fr}",
+                    title_es=f"Copia de {test.title_es}",
+                    title_nl=f"Kopie van {test.title_nl}",
+                    question=new_title_en,  # Legacy field required by the database
+                    description_en=test.description_en,
+                    description_fr=test.description_fr,
+                    description_es=test.description_es,
+                    description_nl=test.description_nl,
+                    passing_score=test.passing_score,
+                    time_limit=test.time_limit,
+                    is_active=False  # Default to inactive for safety
+                )
+                
+                # Create ContentLesson of type test_recap for this TestRecap
+                content_lesson = ContentLesson.objects.filter(
+                    lesson=test.lesson,
+                    content_type='test_recap'
+                ).first()
+                
+                # Only create if none exists yet
+                if not content_lesson:
+                    ContentLesson.objects.create(
+                        lesson=test.lesson,
+                        content_type='test_recap',
+                        title_en=f"Test Recap: {test.lesson.title_en}",
+                        title_fr=f"Test Récapitulatif: {test.lesson.title_fr}",
+                        title_es=f"Test de Repaso: {test.lesson.title_es}",
+                        title_nl=f"Test Overzicht: {test.lesson.title_nl}",
+                        instruction_en="This test covers all topics from this lesson. Complete all sections to review your understanding.",
+                        instruction_fr="Ce test couvre tous les sujets de cette leçon. Complétez toutes les sections pour revoir votre compréhension.",
+                        instruction_es="Esta prueba abarca todos los temas de esta lección. Complete todas las secciones para revisar su comprensión.",
+                        instruction_nl="Deze test behandelt alle onderwerpen van deze les. Voltooi alle secties om je begrip te herzien.",
+                        estimated_duration=30,
+                        order=99  # High order so it appears at the end
+                    )
+                
+                # Duplicate questions
+                for question in test.questions.all():
+                    TestRecapQuestion.objects.create(
+                        test_recap=new_test,
+                        question_type=question.question_type,
+                        multiple_choice_id=question.multiple_choice_id,
+                        fill_blank_id=question.fill_blank_id,
+                        matching_id=question.matching_id,
+                        reordering_id=question.reordering_id,
+                        speaking_id=question.speaking_id,
+                        vocabulary_id=question.vocabulary_id,
+                        order=question.order,
+                        points=question.points
+                    )
+                
+                duplicated += 1
+        
+        self.message_user(
+            request,
+            f"Successfully duplicated {duplicated} test(s). New tests are inactive by default."
+        )
+    
+    duplicate_test.short_description = "Duplicate selected tests"
+
+
+@admin.register(TestRecapResult)
+class TestRecapResultAdmin(admin.ModelAdmin):
+    """Admin interface for test recap results."""
+    list_display = ('id', 'get_user', 'get_test', 'score', 'passed', 
+                    'time_spent_formatted', 'completed_at')
+    list_filter = ('passed', 'test_recap__lesson__unit__level', 
+                   'test_recap__lesson__unit', 'completed_at')
+    search_fields = ('user__username', 'user__email', 'test_recap__title_en')
+    readonly_fields = ('user', 'test_recap', 'score', 'passed', 'time_spent', 
+                       'completed_at', 'detailed_results', 'get_detailed_results_table')
+    
+    fieldsets = (
+        ('Result Information', {
+            'fields': ('user', 'test_recap', 'score', 'passed', 'time_spent', 'completed_at')
+        }),
+        ('Detailed Results', {
+            'fields': ('get_detailed_results_table',),
+            'classes': ('collapse',),
+        }),
+    )
+    
+    def get_user(self, obj):
+        """Display user with email."""
+        return format_html(
+            "{}<br/><small>{}</small>",
+            obj.user.username,
+            obj.user.email
+        )
+    
+    get_user.short_description = 'User'
+    
+    def get_test(self, obj):
+        """Display test recap with lesson."""
+        return format_html(
+            "{}<br/><small>Lesson: {}</small>",
+            obj.test_recap.title_en,
+            obj.test_recap.lesson.title_en if obj.test_recap.lesson else "N/A"
+        )
+    
+    get_test.short_description = 'Test'
+    
+    def time_spent_formatted(self, obj):
+        """Format time spent in minutes and seconds."""
+        minutes = obj.time_spent // 60
+        seconds = obj.time_spent % 60
+        return f"{minutes}m {seconds}s"
+    
+    time_spent_formatted.short_description = 'Time Spent'
+    
+    def get_detailed_results_table(self, obj):
+        """Format detailed results as an HTML table."""
+        if not obj.detailed_results:
+            return "No detailed results available"
+        
+        html = ["<table style='width:100%; border-collapse:collapse;'>",
+                "<tr><th style='border:1px solid #ddd; padding:8px;'>Question</th>",
+                "<th style='border:1px solid #ddd; padding:8px;'>Correct</th>",
+                "<th style='border:1px solid #ddd; padding:8px;'>Time Spent</th>",
+                "<th style='border:1px solid #ddd; padding:8px;'>User Answer</th></tr>"]
+        
+        for question_id, result in obj.detailed_results.items():
+            question = TestRecapQuestion.objects.filter(id=question_id).first()
+            question_text = f"Q{question.order}" if question else question_id
+            
+            is_correct = result.get('correct', False)
+            color = "green" if is_correct else "red"
+            correct_text = "✓" if is_correct else "✗"
+            
+            time_spent = result.get('time_spent', 0)
+            time_text = f"{time_spent}s"
+            
+            answer = result.get('answer', 'N/A')
+            
+            html.append(f"<tr>")
+            html.append(f"<td style='border:1px solid #ddd; padding:8px;'>{question_text}</td>")
+            html.append(f"<td style='border:1px solid #ddd; padding:8px; color:{color};'>{correct_text}</td>")
+            html.append(f"<td style='border:1px solid #ddd; padding:8px;'>{time_text}</td>")
+            html.append(f"<td style='border:1px solid #ddd; padding:8px;'>{answer}</td>")
+            html.append(f"</tr>")
+        
+        html.append("</table>")
+        return format_html("".join(html))
+    
+    get_detailed_results_table.short_description = 'Detailed Results'

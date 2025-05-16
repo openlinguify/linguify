@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext as _
 from apps.authentication.models import User
 from typing import Optional
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 import logging
 
@@ -460,6 +462,7 @@ class ContentLesson(models.Model):
         ('fill_blank', 'Fill in the blanks'),
         ('True or False', 'True or False'),
         ('Test', 'Test'),
+        ('test_recap', 'Test Recap'),
     ]
         
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='content_lessons')
@@ -1515,6 +1518,573 @@ class FillBlankExercise(models.Model):
         answer = self.correct_answers.get(language_code, self.correct_answers.get('en', ""))
         return sentence.replace('___', answer)
 
+"""
+Models for Test Recap functionality in the Linguify course app.
+Will be merged into the main models.py file after review.
+"""
+class TestRecap(models.Model):
+    """
+    Model for the test recap of the lesson.
+    This test combines various exercise types from the lesson for review
+    and is unlocked after all lesson content is completed.
+    """
+    lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE, related_name='recap_tests', null=True)
+    # Main title field for database compatibility
+    title = models.CharField(max_length=255, blank=False, null=False)
+    # Language-specific title fields
+    title_en = models.CharField(max_length=255, blank=False, null=False)
+    title_fr = models.CharField(max_length=255, blank=False, null=False)
+    title_es = models.CharField(max_length=255, blank=False, null=False)
+    title_nl = models.CharField(max_length=255, blank=False, null=False)
+    # Required field for database compatibility - legacy field
+    question = models.CharField(max_length=255, blank=False, null=False, default="Test")
+    description_en = models.TextField(blank=True, null=True)
+    description_fr = models.TextField(blank=True, null=True)
+    description_es = models.TextField(blank=True, null=True)
+    description_nl = models.TextField(blank=True, null=True)
+    passing_score = models.FloatField(default=0.7, blank=False, null=False,
+                                     help_text="Minimum score to pass (0.0-1.0)")
+    time_limit = models.PositiveIntegerField(default=600, help_text="Time limit in seconds (0 = no limit)")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    class Meta:
+        verbose_name = "Test Recap"
+        verbose_name_plural = "Test Recaps"
+        ordering = ['lesson', 'id']
+    def __str__(self):
+      title = self.title_en or self.title or "TestRecap"
+      lesson_title = self.lesson.title_en if self.lesson else "No Lesson"
+      return f"{title} - {lesson_title}"
+    def save(self, *args, **kwargs):
+        """Override save to sync title field with title_en."""
+        if self.title_en and not self.title:
+            self.title = self.title_en
+        elif not self.title_en and self.title:
+            self.title_en = self.title
+        super().save(*args, **kwargs)
+    
+    def get_title(self, target_language='en'):
+        """Returns the title in the specified language."""
+        field_name = f'title_{target_language}'
+        return getattr(self, field_name, self.title_en)
+    
+    def get_description(self, target_language='en'):
+        """Returns the description in the specified language."""
+        field_name = f'description_{target_language}'
+        return getattr(self, field_name, self.description_en)
+    
+    def total_points(self):
+        """Calculate the total points available in this test."""
+        return self.questions.aggregate(
+            total=models.Sum('points')
+        )['total'] or 0
+
+
+class TestRecapQuestion(models.Model):
+    """
+    Model linking various exercise types to a test recap.
+    Allows creation of mixed exercise tests that pull from all lesson content.
+    """
+    QUESTION_TYPE_CHOICES = [
+        ('multiple_choice', 'Multiple Choice'),
+        ('fill_blank', 'Fill in the Blank'),
+        ('matching', 'Matching'),
+        ('reordering', 'Reordering'),
+        ('speaking', 'Speaking'),
+        ('vocabulary', 'Vocabulary'),
+    ]
+    
+    test_recap = models.ForeignKey(TestRecap, on_delete=models.CASCADE, related_name='questions')
+    question_type = models.CharField(max_length=50, choices=QUESTION_TYPE_CHOICES)
+    
+    # Content IDs - only one should be filled based on question_type
+    multiple_choice_id = models.IntegerField(null=True, blank=True)
+    fill_blank_id = models.IntegerField(null=True, blank=True)
+    matching_id = models.IntegerField(null=True, blank=True)
+    reordering_id = models.IntegerField(null=True, blank=True)
+    speaking_id = models.IntegerField(null=True, blank=True)
+    vocabulary_id = models.IntegerField(null=True, blank=True)
+    
+    order = models.PositiveIntegerField(default=1, help_text="Order in which this question appears in the test")
+    points = models.PositiveIntegerField(default=1, help_text="Points awarded for correctly answering this question")
+    
+    class Meta:
+        ordering = ['test_recap', 'order']
+        verbose_name = "Test Recap Question"
+        verbose_name_plural = "Test Recap Questions"
+    
+    def __str__(self):
+        return f"Question {self.order} ({self.question_type}) - {self.test_recap}"
+    
+    def get_question_content(self):
+        """Returns the actual exercise object based on question_type"""
+        try:
+            if self.question_type == 'multiple_choice' and self.multiple_choice_id:
+                return MultipleChoiceQuestion.objects.get(id=self.multiple_choice_id)
+            elif self.question_type == 'fill_blank' and self.fill_blank_id:
+                return FillBlankExercise.objects.get(id=self.fill_blank_id)
+            elif self.question_type == 'matching' and self.matching_id:
+                return MatchingExercise.objects.get(id=self.matching_id)
+            elif self.question_type == 'reordering' and self.reordering_id:
+                return ExerciseGrammarReordering.objects.get(id=self.reordering_id)
+            elif self.question_type == 'speaking' and self.speaking_id:
+                return SpeakingExercise.objects.get(id=self.speaking_id)
+            elif self.question_type == 'vocabulary' and self.vocabulary_id:
+                return VocabularyList.objects.get(id=self.vocabulary_id)
+            return None
+        except Exception as e:
+            logger.error(f"Error retrieving question content: {str(e)}")
+            return None
+    
+    def get_question_data(self, language_code='en', force_real_data=True):
+        """
+        Returns formatted question data suitable for the frontend
+        based on the question type
+        
+        Args:
+            language_code: The language to use for content
+            force_real_data: If True, will not return demo data even if question is missing
+                            (useful when generating test recaps from real data)
+        """
+        question = self.get_question_content()
+        # If no question is found and we're forcing real data, log warning and return empty result
+        if not question:
+            if force_real_data:
+                logger.warning(f"Question content not found for {self.question_type} ID {self.id} and force_real_data=True")
+                base_data = {
+                    'id': self.id,
+                    'order': self.order,
+                    'points': self.points,
+                    'question_type': self.question_type,
+                    'error': 'Question content not found',
+                }
+                return base_data
+            else:
+                # Return demo data when not forcing real data
+                base_data = {
+                    'id': self.id,
+                    'order': self.order,
+                    'points': self.points,
+                    'question_type': self.question_type,
+                    'is_demo': True  # Flag to indicate this is demo data
+                }
+                
+                # Generate demo data based on question type
+                if self.question_type == 'multiple_choice':
+                    return {
+                        **base_data,
+                        'question': f"Sample multiple choice question #{self.id} for testing",
+                        'options': [
+                            "Correct answer", 
+                            "Wrong answer 1", 
+                            "Wrong answer 2", 
+                            "Wrong answer 3"
+                        ],
+                        'correct_answer': "Correct answer",
+                    }
+                elif self.question_type == 'fill_blank':
+                    return {
+                        **base_data,
+                        'sentence': f"This is a sample _____ for testing fill in the blank questions.",
+                        'options': ["sentence", "example", "text", "question"],
+                        'correct_answer': "sentence",
+                    }
+                elif self.question_type == 'matching':
+                    return {
+                        **base_data,
+                        'target_words': ["apple", "banana", "orange", "grape"],
+                        'native_words': ["pomme", "banane", "orange", "raisin"],
+                        'correct_pairs': {
+                            "apple": "pomme",
+                            "banana": "banane",
+                            "orange": "orange",
+                            "grape": "raisin",
+                        },
+                    }
+                elif self.question_type == 'vocabulary':
+                    return {
+                        **base_data,
+                        'word': "example",
+                        'definition': "a thing characteristic of its kind or illustrating a general rule",
+                        'example_sentence': "This is an example of a vocabulary question",
+                        'options': ["example", "sample", "instance", "case"],
+                        'correct_answer': "example",
+                    }
+                elif self.question_type == 'reordering':
+                    return {
+                        **base_data,
+                        'sentence': "This is a sample sentence for testing.",
+                        'words': ["This", "is", "a", "sample", "sentence", "for", "testing"],
+                        'correct_order': [0, 1, 2, 3, 4, 5, 6],
+                    }
+                elif self.question_type == 'speaking':
+                    return {
+                        **base_data,
+                        'prompt': "Read the following sentence aloud",
+                        'target_text': "This is a sample sentence for speaking practice",
+                        'difficulty': "medium",
+                    }
+                else:
+                    return base_data
+            
+        # If we have a real question, continue with normal processing
+            
+        base_data = {
+            'id': self.id,
+            'order': self.order,
+            'points': self.points,
+            'question_type': self.question_type,
+        }
+        
+        if self.question_type == 'multiple_choice':
+            # Construct field names based on language code
+            question_field = f'question_{language_code}'
+            correct_answer_field = f'correct_answer_{language_code}'
+            fake_answer1_field = f'fake_answer1_{language_code}'
+            fake_answer2_field = f'fake_answer2_{language_code}'
+            fake_answer3_field = f'fake_answer3_{language_code}'
+            
+            # Get values with fallback to English
+            question_text = getattr(question, question_field, getattr(question, 'question_en', ''))
+            correct_answer = getattr(question, correct_answer_field, getattr(question, 'correct_answer_en', ''))
+            fake_answer1 = getattr(question, fake_answer1_field, getattr(question, 'fake_answer1_en', ''))
+            fake_answer2 = getattr(question, fake_answer2_field, getattr(question, 'fake_answer2_en', ''))
+            fake_answer3 = getattr(question, fake_answer3_field, getattr(question, 'fake_answer3_en', ''))
+            
+            # Combine all options and shuffle them
+            import random
+            options = [correct_answer, fake_answer1, fake_answer2, fake_answer3]
+            random.shuffle(options)
+            
+            return {
+                **base_data,
+                'question': question_text,
+                'options': options,
+                'correct_answer': correct_answer,
+            }
+        elif self.question_type == 'fill_blank':
+            # FillBlankExercise has sentences, answer_options and correct_answers as JSON fields
+            try:
+                sentence = question.sentences.get(language_code, question.sentences.get('en', ''))
+                options = question.answer_options.get(language_code, question.answer_options.get('en', []))
+                correct_answer = question.correct_answers.get(language_code, question.correct_answers.get('en', ''))
+                hint = question.hints.get(language_code, '') if hasattr(question, 'hints') and question.hints else ''
+                
+                return {
+                    **base_data,
+                    'sentence': sentence,
+                    'options': options,
+                    'correct_answer': correct_answer,
+                    'hint': hint,
+                }
+            except (AttributeError, KeyError) as e:
+                logger.error(f"Error processing fill_blank question {self.id}: {str(e)}")
+                return base_data
+        elif self.question_type == 'matching':
+            try:
+                # Getting native and target languages for a more realistic matching exercise
+                native_language = language_code  # Default to same language (fallback)
+                target_language = 'fr' if language_code == 'en' else 'en'  # Basic language pairing
+                
+                # Use the existing method if it exists, otherwise handle manually
+                if hasattr(question, 'get_exercise_data') and callable(getattr(question, 'get_exercise_data')):
+                    matching_data = question.get_exercise_data(
+                        native_language=native_language,
+                        target_language=target_language
+                    )
+                    return {
+                        **base_data,
+                        'target_words': matching_data.get('target_words', []),
+                        'native_words': matching_data.get('native_words', []),
+                        'correct_pairs': matching_data.get('correct_pairs', {}),
+                    }
+                else:
+                    # Manual processing using vocabulary_words relationship
+                    vocabulary_words = question.vocabulary_words.all()[:question.pairs_count] if hasattr(question, 'vocabulary_words') else []
+                    
+                    target_words = []
+                    native_words = []
+                    correct_pairs = {}
+                    
+                    for vocab in vocabulary_words:
+                        target_word = getattr(vocab, f'word_{target_language}', '')
+                        native_word = getattr(vocab, f'word_{native_language}', '')
+                        
+                        if target_word and native_word:
+                            target_words.append(target_word)
+                            native_words.append(native_word)
+                            correct_pairs[target_word] = native_word
+                    
+                    # Shuffle native words for the frontend
+                    import random
+                    shuffled_native = native_words.copy()
+                    random.shuffle(shuffled_native)
+                    
+                    return {
+                        **base_data,
+                        'target_words': target_words,
+                        'native_words': shuffled_native,
+                        'correct_pairs': correct_pairs,
+                    }
+            except Exception as e:
+                logger.error(f"Error processing matching question {self.id}: {str(e)}")
+                return base_data
+        elif self.question_type == 'reordering':
+            try:
+                # Get sentence in requested language
+                sentence_field = f'sentence_{language_code}'
+                sentence = getattr(question, sentence_field, getattr(question, 'sentence_en', ''))
+                
+                # Split the sentence to get words for reordering
+                words = sentence.split()
+                
+                return {
+                    **base_data,
+                    'sentence': sentence, 
+                    'words': words,
+                    'hint': getattr(question, 'hint', ''),
+                    'explanation': getattr(question, 'explanation', ''),
+                }
+            except Exception as e:
+                logger.error(f"Error processing reordering question {self.id}: {str(e)}")
+                return base_data
+                
+        elif self.question_type == 'speaking':
+            try:
+                if hasattr(question, 'vocabulary_items') and hasattr(question.vocabulary_items, 'all'):
+                    vocabulary_items = question.vocabulary_items.all()[:5]  # Limit to 5 items
+                    
+                    return {
+                        **base_data,
+                        'vocabulary_items': [
+                            {
+                                'word': getattr(item, f'word_{language_code}', getattr(item, 'word_en', '')),
+                                'definition': getattr(item, f'definition_{language_code}', getattr(item, 'definition_en', '')),
+                                'example': getattr(item, f'example_sentence_{language_code}', getattr(item, 'example_sentence_en', '')),
+                            }
+                            for item in vocabulary_items
+                        ],
+                        'exercise_type': 'vocabulary_speaking',
+                    }
+                else:
+                    # Fallback for speaking exercises without vocabulary items
+                    return {
+                        **base_data,
+                        'prompt': f"Speaking exercise {self.id}",
+                        'target_text': f"Please practice speaking in the target language",
+                        'exercise_type': 'general_speaking',
+                    }
+            except Exception as e:
+                logger.error(f"Error processing speaking question {self.id}: {str(e)}")
+                return base_data
+                
+        elif self.question_type == 'vocabulary':
+            try:
+                # Get basic vocabulary fields
+                word = getattr(question, f'word_{language_code}', getattr(question, 'word_en', ''))
+                definition = getattr(question, f'definition_{language_code}', getattr(question, 'definition_en', ''))
+                example = getattr(question, f'example_sentence_{language_code}', getattr(question, 'example_sentence_en', ''))
+                
+                # Get translations in other languages for context
+                other_languages = ['en', 'fr', 'es', 'nl']
+                other_languages.remove(language_code)
+                
+                translations = {}
+                for lang in other_languages:
+                    translations[lang] = getattr(question, f'word_{lang}', '')
+                
+                return {
+                    **base_data,
+                    'word': word,
+                    'definition': definition,
+                    'example': example,
+                    'translations': translations,
+                    'word_type': getattr(question, f'word_type_{language_code}', getattr(question, 'word_type_en', '')),
+                }
+            except Exception as e:
+                logger.error(f"Error processing vocabulary question {self.id}: {str(e)}")
+                return base_data
+        
+        return base_data
+
+
+class TestRecapResult(models.Model):
+    """
+    Model to track user performance on test recaps.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='test_results')
+    test_recap = models.ForeignKey(TestRecap, on_delete=models.CASCADE, related_name='user_results')
+    score = models.FloatField(help_text="Score as percentage (0-100)")
+    passed = models.BooleanField(default=False)
+    time_spent = models.PositiveIntegerField(help_text="Time spent in seconds")
+    completed_at = models.DateTimeField(auto_now_add=True)
+    
+    # JSON field to store detailed results per question
+    detailed_results = models.JSONField(
+        default=dict, 
+        blank=True,
+        help_text="Format: {question_id: {correct: bool, time_spent: seconds, answer: user's answer}}"
+    )
+    
+    class Meta:
+        ordering = ['-completed_at']
+        unique_together = ['user', 'test_recap', 'completed_at']
+        verbose_name = "Test Recap Result"
+        verbose_name_plural = "Test Recap Results"
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.test_recap} - {self.score}%"
+    
+    @property
+    def correct_questions(self):
+        """Returns the number of correctly answered questions"""
+        return sum(1 for result in self.detailed_results.values() if result.get('correct', False))
+    
+    @property
+    def total_questions(self):
+        """Returns the total number of questions answered"""
+        return len(self.detailed_results)
+    
+    @property
+    def accuracy(self):
+        """Returns the accuracy as a decimal (0.0-1.0)"""
+        if self.total_questions == 0:
+            return 0
+        return self.correct_questions / self.total_questions
+
+
+def generate_test_recap(lesson):
+    """
+    Generate a balanced TestRecap for a lesson,
+    pulling from all content lessons.
+    """
+    # Create TestRecap instance
+    title_en = f"Recap Test: {lesson.title_en}"
+    test_recap = TestRecap.objects.create(
+        lesson=lesson,
+        title=title_en,  # Set main title field
+        title_en=title_en,
+        title_fr=f"Test récapitulatif: {lesson.title_fr}",
+        title_es=f"Prueba de repaso: {lesson.title_es}",
+        title_nl=f"Herhalingstest: {lesson.title_nl}",
+        question=title_en,  # Legacy field required by the database
+        passing_score=0.7,  # 70% to pass
+        time_limit=600,     # 10 minutes
+    )
+    
+    # Collect all content by type
+    content_lessons = lesson.content_lessons.all()
+    
+    multiple_choice_qs = MultipleChoiceQuestion.objects.filter(
+        content_lesson__in=content_lessons
+    )
+    
+    fill_blank_exercises = FillBlankExercise.objects.filter(
+        content_lesson__in=content_lessons
+    )
+    
+    matching_exercises = MatchingExercise.objects.filter(
+        content_lesson__in=content_lessons
+    )
+    
+    reordering_exercises = ExerciseGrammarReordering.objects.filter(
+        content_lesson__in=content_lessons
+    )
+    
+    speaking_exercises = SpeakingExercise.objects.filter(
+        content_lesson__in=content_lessons
+    )
+    
+    vocabulary_items = VocabularyList.objects.filter(
+        content_lesson__in=content_lessons
+    )
+    
+    # Create a balanced mix (max 10 questions)
+    total_questions = 0
+    question_order = 1
+    
+    # Add multiple choice questions (30%)
+    mc_count = min(3, multiple_choice_qs.count())
+    for mc in multiple_choice_qs.order_by('?')[:mc_count]:
+        TestRecapQuestion.objects.create(
+            test_recap=test_recap,
+            question_type='multiple_choice',
+            multiple_choice_id=mc.id,
+            order=question_order,
+            points=1
+        )
+        question_order += 1
+        total_questions += 1
+    
+    # Add fill-in-the-blank exercises (20%)
+    fb_count = min(2, fill_blank_exercises.count())
+    for fb in fill_blank_exercises.order_by('?')[:fb_count]:
+        TestRecapQuestion.objects.create(
+            test_recap=test_recap,
+            question_type='fill_blank',
+            fill_blank_id=fb.id,
+            order=question_order,
+            points=2  # Slightly more difficult
+        )
+        question_order += 1
+        total_questions += 1
+    
+    # Add matching exercises (20%)
+    match_count = min(2, matching_exercises.count())
+    for match in matching_exercises.order_by('?')[:match_count]:
+        TestRecapQuestion.objects.create(
+            test_recap=test_recap,
+            question_type='matching',
+            matching_id=match.id,
+            order=question_order,
+            points=2
+        )
+        question_order += 1
+        total_questions += 1
+    
+    # Add reordering exercises (10%)
+    reorder_count = min(1, reordering_exercises.count())
+    for reorder in reordering_exercises.order_by('?')[:reorder_count]:
+        TestRecapQuestion.objects.create(
+            test_recap=test_recap,
+            question_type='reordering',
+            reordering_id=reorder.id,
+            order=question_order,
+            points=2
+        )
+        question_order += 1
+        total_questions += 1
+        
+    # Add speaking exercises (10%)
+    speaking_count = min(1, speaking_exercises.count())
+    for speaking in speaking_exercises.order_by('?')[:speaking_count]:
+        TestRecapQuestion.objects.create(
+            test_recap=test_recap,
+            question_type='speaking',
+            speaking_id=speaking.id,
+            order=question_order,
+            points=2
+        )
+        question_order += 1
+        total_questions += 1
+        
+    # Add vocabulary exercises (10%)
+    vocab_count = min(1, vocabulary_items.count())
+    for vocab in vocabulary_items.order_by('?')[:vocab_count]:
+        TestRecapQuestion.objects.create(
+            test_recap=test_recap,
+            question_type='vocabulary',
+            vocabulary_id=vocab.id,
+            order=question_order,
+            points=1
+        )
+        question_order += 1
+        total_questions += 1
+    
+    return test_recap
+
 ''' Others models for the content of the lesson of Linguify
 '''
 
@@ -1547,28 +2117,3 @@ class Writing(models.Model):
 
     def __str__(self):
         return self.title
-
-class TestRecap(models.Model):            
-    content_lesson = models.ForeignKey(ContentLesson, on_delete=models.CASCADE, related_name='test_recap', null=True)
-    title = models.CharField(max_length=100, blank=False, null=False)
-
-    question = models.TextField(blank=False, null=False)
-    correct_answer = models.CharField(max_length=100, blank=False, null=False)
-    incorrect_answers = models.TextField(blank=False, null=False, help_text="Separate the answers with a comma.")
-    passing_score = models.FloatField(default=0.8, blank=False, null=False)
-
-    def __str__(self):
-        return self.title
-
-class TestRecapExercise(models.Model):
-    test_recap = models.ForeignKey(TestRecap, on_delete=models.CASCADE)
-    order = models.PositiveIntegerField(blank=False, null=False, default=1)
-
-class TestRecapAttempt(models.Model):
-    test_recap = models.ForeignKey(TestRecap, on_delete=models.CASCADE)
-    score = models.FloatField(blank=False, null=False)
-    attempt_date = models.DateTimeField(auto_now_add=True)
-    test_recap_passed = models.BooleanField(blank=False, null=False)
-
-    def __str__(self):
-        return f"{self.test_recap.title} - {self.score}"
