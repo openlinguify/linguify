@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import courseAPI from '@/addons/learning/api/courseAPI';
 import progressAPI from '@/addons/progress/api/progressAPI';
-import { ContentTypeRouter } from '../Navigation/ContentTypeRouter';
+import { ContentTypeRouter } from './ContentTypeRouter';
 import { getUserTargetLanguage } from '@/core/utils/languageUtils';
 import { useTranslation } from '@/core/i18n/useTranslations';
 import LessonProgressIndicator from './LessonProgressIndicator';

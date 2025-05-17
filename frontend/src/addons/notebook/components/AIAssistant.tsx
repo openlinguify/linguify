@@ -12,7 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import {
   Bot,
-  BookTranslation,
+  Book,
   Languages,
   Mic,
   Volume2,
@@ -371,7 +371,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({
       <FeatureCard
         title="Translation"
         description={`Translate from ${LANGUAGE_NAMES[noteLanguage] || noteLanguage} to your native language`}
-        icon={BookTranslation}
+        icon={Book}
         onClick={() => {
           setActiveTab('translate');
           handleTranslate();
@@ -483,7 +483,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({
             {isTranslating ? (
               <Loader2 className="h-4 w-4 animate-spin mr-1" />
             ) : (
-              <BookTranslation className="h-4 w-4 mr-1" />
+              <Book className="h-4 w-4 mr-1" />
             )}
             Translate
           </Button>

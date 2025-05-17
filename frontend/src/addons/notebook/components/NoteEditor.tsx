@@ -595,7 +595,6 @@ export function NoteEditor({ note, onSave, onCancel, isLoading = false }: NoteEd
                 </motion.div>
               )}
             </AnimatePresence>
-          )}
         </Tabs>
 
         <motion.div

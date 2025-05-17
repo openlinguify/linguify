@@ -8,7 +8,24 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "dev:all": "concurrently \"cd ../backend && python manage.py runserver\" \"npm run dev\""
+    "dev:all": "concurrently \"cd ../backend && python manage.py runserver\" \"npm run dev\"",
+    "analyze": "next build",
+    "analyze:env": "cross-env ANALYZE=true next build",
+    "analyze:windows": "powershell -ExecutionPolicy Bypass -File scripts/analyze-windows.ps1",
+    "analyze:simple": "scripts\\build-analyze.bat",
+    "analyze:win": "powershell -ExecutionPolicy Bypass -File scripts/analyze-windows-simple.ps1",
+    "analyze:build": "powershell -ExecutionPolicy Bypass -File scripts/analyze-build.ps1",
+    "build:simple": "powershell -ExecutionPolicy Bypass -File scripts/simple-build.ps1",
+    "build:test": "powershell -ExecutionPolicy Bypass -File scripts/test-build.ps1",
+    "check:build": "powershell -ExecutionPolicy Bypass -File scripts/check-build.ps1",
+    "clean:win": "powershell -ExecutionPolicy Bypass -File scripts/clean-windows.ps1",
+    "dev:turbo": "next dev --turbo",
+    "dev-tools": "node scripts/dev-tools.js",
+    "perf:check": "lighthouse http://localhost:3000 --view",
+    "clean": "rm -rf .next node_modules",
+    "type-check": "tsc --noEmit",
+    "debug:webpack": "node scripts/debug-webpack.js",
+    "fix:webpack": "rm -rf .next && npm run dev"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
@@ -63,7 +80,7 @@
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.469.0",
-    "next": "^15.2.5",
+    "next": "^15.3.2",
     "next-auth": "^4.24.11",
     "next-i18next": "^15.4.2",
     "next-themes": "^0.4.4",
@@ -110,10 +127,12 @@
     "@types/react-router-dom": "^5.3.3",
     "autoprefixer": "^10.4.21",
     "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
     "eslint": "^9",
     "eslint-config-next": "15.1.2",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5"
+    "typescript": "^5",
+    "webpack-bundle-analyzer": "^4.10.2"
   }
 }

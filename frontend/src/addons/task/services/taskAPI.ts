@@ -1,5 +1,5 @@
 // src/services/taskAPI.ts
-import api from './api';
+import api from '@/core/api/apiClient';
 
 export interface Task {
   id: number;
