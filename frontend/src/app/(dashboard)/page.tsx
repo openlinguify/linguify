@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, BarChart, Brain, NotebookPen, Settings, User, HandHelping, MessageCircle } from "lucide-react";
@@ -77,8 +77,8 @@ const MENU_ITEMS = [
   }
 ];
 
-// User profile component to split out rendering logic
-function UserProfileCard({
+// User profile component to split out rendering logic - memoized for performance
+const UserProfileCard = memo(({
   user,
   targetLanguageName,
   languageLevel,
@@ -88,7 +88,7 @@ function UserProfileCard({
   targetLanguageName: string;
   languageLevel: string;
   t: (key: string, options?: any, fallback?: string) => string
-}) {
+}) => {
   return (
     <Card className="w-full dark:bg-transparent">
       <CardContent className="p-4">
@@ -115,10 +115,12 @@ function UserProfileCard({
       </CardContent>
     </Card>
   );
-}
+});
 
-// Menu items component
-function AppMenu({
+UserProfileCard.displayName = 'UserProfileCard';
+
+// Menu items component - memoized for performance
+const AppMenu = memo(({
   menuItems,
   t
 }: {
@@ -132,29 +134,30 @@ function AppMenu({
     iconColor: string;
   }>;
   t: (key: string, options?: any, fallback?: string) => string
-}) {
+}) => {
   // Prefetch data for the most common apps when hovering over the menu items
-  const prefetchDataForApp = (href: string) => {
-    // Only prefetch data for certain apps where that makes sense
-    if (href === "/learning") {
-      // Dynamically import and trigger prefetch
-      import('@/addons/learning/api/courseAPI').then(module => {
-        const courseAPI = module.default;
-        courseAPI.getUnits(); // Prefetch units data
-      }).catch(err => {
-        console.error("Error prefetching learning data:", err);
-      });
-    }
-    else if (href === "/notebook") {
-      import('@/addons/notebook/api/notebookAPI').then(module => {
-        const notebookAPI = module.notebookAPI;
-        // Prefetch first page of notes
-        notebookAPI.getNotes();
-      }).catch(err => {
-        console.error("Error prefetching notebook data:", err);
-      });
-    }
-  };
+  const prefetchDataForApp = useCallback((href: string) => {
+    // Temporarily disable dynamic imports to fix webpack error
+    console.log(`Hover on ${href} - prefetch disabled temporarily`);
+    
+    // TODO: Re-enable after fixing webpack issue
+    // if (href === "/learning") {
+    //   import('@/addons/learning/api/courseAPI').then(module => {
+    //     const courseAPI = module.default;
+    //     courseAPI.getUnits();
+    //   }).catch(err => {
+    //     console.error("Error prefetching learning data:", err);
+    //   });
+    // }
+    // else if (href === "/notebook") {
+    //   import('@/addons/notebook/api/notebookAPI').then(module => {
+    //     const notebookAPI = module.notebookAPI;
+    //     notebookAPI.getNotes();
+    //   }).catch(err => {
+    //     console.error("Error prefetching notebook data:", err);
+    //   });
+    // }
+  }, []);
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8 justify-items-center w-full max-w-7xl">
@@ -185,7 +188,9 @@ function AppMenu({
       ))}
     </div>
   );
-}
+});
+
+AppMenu.displayName = 'AppMenu';
 
 // Main dashboard component
 export default function DashboardHome() {

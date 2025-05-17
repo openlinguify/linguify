@@ -30,7 +30,8 @@ import {
   AlertDialogTitle,
 } from "@components/ui/alert-dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/core/auth/AuthProvider";
+import { taskAPI } from "../services/taskAPI";
 
 interface Task {
   id: number;
@@ -41,7 +42,7 @@ interface Task {
 }
 
 const TaskManager = () => {
-  const { getAccessToken } = useAuth();
+  const { getAccessToken } = useAuthContext();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState("");
   const [editingTask, setEditingTask] = useState<Task | null>(null);

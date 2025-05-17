@@ -1,30 +1,54 @@
-// src/services/axiosAuthInterceptor.ts
+// Unified API Client with authentication and performance optimizations
 import axios, { AxiosRequestConfig, AxiosError, AxiosInstance } from 'axios';
 import authService from '../auth/authService';
 
+// Cache implementation for GET requests
+const cache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+// Pending requests tracker for deduplication
+const pendingRequests = new Map<string, Promise<any>>();
+
+// Generate unique request key for caching and deduplication
+const generateRequestKey = (config: AxiosRequestConfig): string => {
+  const { method, url, params, data } = config;
+  return `${method}-${url}-${JSON.stringify(params || {})}-${JSON.stringify(data || {})}`;
+};
+
+// Check if cached data is still valid
+const isCacheValid = (timestamp: number): boolean => {
+  return Date.now() - timestamp < CACHE_DURATION;
+};
+
 /**
- * Crée une instance Axios configurée avec des intercepteurs d'authentification
+ * Creates an API client with authentication, caching, and performance optimizations
  */
-export function createAuthenticatedApiClient(baseURL: string): AxiosInstance {
-  // Créer une instance avec la configuration de base
+export function createAuthenticatedApiClient(
+  baseURL: string,
+  options?: {
+    timeout?: number;
+    enableCache?: boolean;
+  }
+): AxiosInstance {
+  const { timeout = 8000, enableCache = true } = options || {};
+
   const apiClient = axios.create({
     baseURL,
-    timeout: 15000,
+    timeout,
     headers: {
       'Content-Type': 'application/json',
     },
-    withCredentials: true // Pour envoyer les cookies
+    withCredentials: true,
   });
 
-  // Intercepteur pour les requêtes - ajoute le token à chaque requête
+  // Request interceptor - Add auth token and handle caching
   apiClient.interceptors.request.use(
     async (config: AxiosRequestConfig) => {
       try {
-        // Récupérer le token
+        // Add auth token
         const token = authService.getAuthToken();
         
         if (token) {
-          // S'assurer que config.headers existe
           config.headers = config.headers || {};
           config.headers.Authorization = `Bearer ${token}`;
           
@@ -34,7 +58,34 @@ export function createAuthenticatedApiClient(baseURL: string): AxiosInstance {
         } else {
           console.warn(`[API] Request ${config.method?.toUpperCase()} ${config.url} without token`);
         }
-        
+
+        // Cache logic for GET requests
+        if (enableCache && config.method === 'get' && config.cache !== false) {
+          const requestKey = generateRequestKey(config);
+          const cachedData = cache.get(requestKey);
+          
+          if (cachedData && isCacheValid(cachedData.timestamp)) {
+            // Return cached data
+            return Promise.reject({
+              isAxiosError: false,
+              isCached: true,
+              data: cachedData.data,
+              config,
+            });
+          }
+
+          // Check for pending identical request
+          const pendingRequest = pendingRequests.get(requestKey);
+          if (pendingRequest) {
+            return Promise.reject({
+              isAxiosError: false,
+              isPending: true,
+              promise: pendingRequest,
+              config,
+            });
+          }
+        }
+
         return config;
       } catch (error) {
         console.error('[API] Error in request interceptor:', error);
@@ -47,67 +98,99 @@ export function createAuthenticatedApiClient(baseURL: string): AxiosInstance {
     }
   );
 
-  // Intercepteur pour les réponses - gère les erreurs d'authentification
+  // Response interceptor - Handle caching and error processing
   apiClient.interceptors.response.use(
     (response) => {
-      // Réponse réussie, la transmettre
+      // Cache successful GET responses
+      if (enableCache && response.config.method === 'get' && response.config.cache !== false) {
+        const requestKey = generateRequestKey(response.config);
+        cache.set(requestKey, {
+          data: response.data,
+          timestamp: Date.now(),
+        });
+        pendingRequests.delete(requestKey);
+      }
+
       return response;
     },
-    async (error: AxiosError) => {
-      // Créer un objet d'erreur enrichi
+    async (error: any) => {
+      // Handle cached response
+      if (!error.isAxiosError && error.isCached) {
+        return { data: error.data, status: 200, config: error.config };
+      }
+
+      // Handle pending request
+      if (!error.isAxiosError && error.isPending) {
+        try {
+          const response = await error.promise;
+          return response;
+        } catch (pendingError) {
+          throw pendingError;
+        }
+      }
+
+      // Create enhanced error object
       const enhancedError: any = error;
       
       if (error.response) {
-        // Rendre les détails de l'erreur plus accessibles
+        const requestKey = generateRequestKey(error.config);
+        pendingRequests.delete(requestKey);
+
+        // Enhanced error properties
         enhancedError.status = error.response.status;
         enhancedError.statusText = error.response.statusText;
         enhancedError.data = error.response.data;
         
-        // Log détaillé pour le débogage
+        // Log error details
         console.error(
           `[API] Error ${error.response.status}: ${error.response.statusText}`,
           error.response.data
         );
         
-        // Erreur d'authentification (401)
+        // Handle 401 Unauthorized
         if (error.response.status === 401) {
           console.warn('[API] Authentication error (401)');
           
-          // Effacer les données d'authentification
-          authService.clearAuthData();
-          
-          // Rediriger vers la page de connexion si dans le navigateur
-          if (typeof window !== 'undefined') {
-            // Mémoriser la page actuelle pour y revenir après connexion
-            const returnTo = window.location.pathname;
-            window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
+          // Try to refresh token
+          try {
+            const newToken = await authService.refreshToken();
+            if (newToken && error.config) {
+              error.config.headers = error.config.headers || {};
+              error.config.headers.Authorization = `Bearer ${newToken}`;
+              return apiClient.request(error.config);
+            }
+          } catch (refreshError) {
+            // Clear auth data and redirect to login
+            authService.clearAuthData();
+            
+            if (typeof window !== 'undefined') {
+              const returnTo = window.location.pathname;
+              window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
+            }
           }
         }
         
-        // Erreur d'autorisation (403)
+        // Handle 403 Forbidden
         else if (error.response.status === 403) {
           console.warn('[API] Authorization error (403)');
-          // Vous pourriez rediriger vers une page "Accès refusé" ici
         }
         
-        // Erreur Not Found (404)
+        // Handle 404 Not Found
         else if (error.response.status === 404) {
           console.warn('[API] Resource not found (404):', error.config?.url);
           
-          // For HEAD requests, this might be an intentional check for existence
-          // So we add a flag that this was a 404 to allow special handling
           if (error.config?.method?.toLowerCase() === 'head') {
             enhancedError.isResourceCheckFailure = true;
             enhancedError.userMessage = 'Resource not available';
           }
         }
         
-        // Erreur du serveur (5xx)
+        // Handle server errors (5xx)
         else if (error.response.status >= 500) {
           console.error('[API] Server error:', error.response.status, error.config?.url);
         }
         
-        // Formater un message d'erreur convivial en fonction des données renvoyées
+        // Parse error message
         try {
           const data = error.response.data;
           
@@ -121,7 +204,7 @@ export function createAuthenticatedApiClient(baseURL: string): AxiosInstance {
             } else if (data.error) {
               enhancedError.userMessage = data.error;
             } else {
-              // Essayer de construire un message à partir des erreurs de validation
+              // Build message from validation errors
               const messages = [];
               for (const [key, value] of Object.entries(data)) {
                 if (Array.isArray(value)) {
@@ -140,20 +223,19 @@ export function createAuthenticatedApiClient(baseURL: string): AxiosInstance {
           console.error('[API] Error parsing error response:', e);
         }
       } else if (error.request) {
-        // La requête a été faite mais pas de réponse (problème réseau)
+        // Request made but no response received
         console.error('[API] No response received:', error.request);
         enhancedError.userMessage = "Impossible de se connecter au serveur. Vérifiez votre connexion internet.";
         
-        // Afficher un message plus convivial (optionnel)
+        // Dispatch network error event
         if (typeof window !== 'undefined') {
-          // Créer un événement personnalisé pour les erreurs réseau
           const networkErrorEvent = new CustomEvent('api:networkError', { 
             detail: { url: error.config?.url, method: error.config?.method }
           });
           window.dispatchEvent(networkErrorEvent);
         }
       } else {
-        // Erreur lors de la configuration de la requête
+        // Error setting up the request
         console.error('[API] Request error:', error.message);
         enhancedError.userMessage = `Erreur lors de la requête: ${error.message}`;
       }
@@ -165,8 +247,28 @@ export function createAuthenticatedApiClient(baseURL: string): AxiosInstance {
   return apiClient;
 }
 
-// Crée et exporte une instance par défaut
+// Create different instances for different use cases
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-const apiClient = createAuthenticatedApiClient(API_BASE_URL);
 
+// Standard API client with caching (default)
+export const apiClient = createAuthenticatedApiClient(API_BASE_URL);
+
+// Long-running operations client (no caching, longer timeout)
+export const longRunningApiClient = createAuthenticatedApiClient(API_BASE_URL, {
+  timeout: 30000, // 30s for file uploads, AI operations
+  enableCache: false,
+});
+
+// Real-time client (no caching, short timeout)
+export const realtimeApiClient = createAuthenticatedApiClient(API_BASE_URL, {
+  timeout: 3000, // 3s for real-time updates
+  enableCache: false,
+});
+
+// Cache management utilities
+export const clearCache = () => cache.clear();
+export const clearCacheForKey = (key: string) => cache.delete(key);
+export const getCacheSize = () => cache.size;
+
+// Export default client
 export default apiClient;
