@@ -34,7 +34,8 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
   onComplete
 }) => {
   // States
-  const [exercise, setExercise] = useState<any>(null);
+  const [exercises, setExercises] = useState<any[]>([]);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [matches, setMatches] = useState<MatchingAnswers>({});
@@ -44,6 +45,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const [exerciseCompleted, setExerciseCompleted] = useState<boolean>(false);
   const [windowHeight, setWindowHeight] = useState<number>(0);
+  const [allExercisesCompleted, setAllExercisesCompleted] = useState<boolean>(false);
 
   // Track window height for responsive sizing - initialize immediately
   useEffect(() => {
@@ -78,60 +80,60 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
 
   // Load exercise data
   useEffect(() => {
-    const loadExercise = async () => {
+    const loadExercises = async () => {
       setLoading(true);
       setError(null);
 
       try {
         console.log(`Loading matching exercises for content lesson: ${lessonId}`);
-        const exercises = await courseAPI.getMatchingExercises(lessonId, language);
+        const loadedExercises = await courseAPI.getMatchingExercises(lessonId, language);
 
-        // If exercises exist, use the first one
-        if (exercises && exercises.length > 0) {
-          setExercise(exercises[0]);
+        // If exercises exist, use all of them
+        if (loadedExercises && loadedExercises.length > 0) {
+          setExercises(loadedExercises);
+          // Sort exercises by order to ensure proper sequence
+          loadedExercises.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+          console.log(`Loaded ${loadedExercises.length} matching exercises`);
         }
-        // Otherwise, try to create one automatically
+        // Otherwise, try to create exercises automatically
         else {
-          console.log("No matching exercises found, attempting to create one");
+          console.log("No matching exercises found, attempting to create them");
           
           // First, check if the lesson contains vocabulary words
           const vocabData = await courseAPI.getVocabularyContent(lessonId, language);
 
           if (vocabData && vocabData.results && vocabData.results.length > 0) {
-            // Collect vocabulary IDs
-            const vocabIds = vocabData.results.map((item: any) => item.id);
-            console.log(`Found ${vocabIds.length} vocabulary words, using first 8 for matching exercise`);
+            const vocabItems = vocabData.results;
+            const totalVocab = vocabItems.length;
+            console.log(`Found ${totalVocab} vocabulary words`);
             
-            // Try to create with specific IDs and a reasonable number of pairs
-            const newExercise = await courseAPI.createMatchingExercise(
-              lessonId,
-              vocabIds.slice(0, 8), // Limit to 8 words maximum
-              Math.min(vocabIds.length, 8) // Use up to 8 pairs
-            );
-
-            if (newExercise) {
-              console.log("Successfully created matching exercise with vocabulary:", newExercise);
-              setExercise(newExercise);
-            } else {
-              // Try one more time with just the lesson ID
-              console.log("Trying simplified matching exercise creation");
-              const simpleExercise = await courseAPI.createMatchingExercise(lessonId);
+            // Create multiple exercises based on vocabulary count
+            const exercisesCreated = [];
+            const pairsPerExercise = 5; // Optimal for learning
+            
+            for (let i = 0; i < totalVocab; i += pairsPerExercise) {
+              const vocabSlice = vocabItems.slice(i, i + pairsPerExercise);
+              const vocabIds = vocabSlice.map((item: any) => item.id);
               
-              if (simpleExercise) {
-                setExercise(simpleExercise);
-              } else {
-                setError("Unable to create a matching exercise. No vocabulary available.");
+              const newExercise = await courseAPI.createMatchingExercise(
+                lessonId,
+                vocabIds,
+                vocabIds.length
+              );
+
+              if (newExercise) {
+                exercisesCreated.push(newExercise);
+                console.log(`Created exercise ${exercisesCreated.length} with ${vocabIds.length} pairs`);
               }
             }
-          } else {
-            // Try with just the lesson ID as a last resort
-            const createdExercise = await courseAPI.createMatchingExercise(lessonId);
             
-            if (createdExercise) {
-              setExercise(createdExercise);
+            if (exercisesCreated.length > 0) {
+              setExercises(exercisesCreated);
             } else {
-              setError("Unable to create a matching exercise. This lesson doesn't contain vocabulary.");
+              setError("Unable to create matching exercises. No vocabulary available.");
             }
+          } else {
+            setError("Unable to create matching exercises. This lesson doesn't contain vocabulary.");
           }
         }
 
@@ -146,14 +148,14 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
           ).catch(err => console.error('Error updating initial progress:', err));
         }
       } catch (err) {
-        console.error("Error loading or creating matching exercise:", err);
-        setError("An error occurred while loading or creating the exercise");
+        console.error("Error loading or creating matching exercises:", err);
+        setError("An error occurred while loading or creating the exercises");
       } finally {
         setLoading(false);
       }
     };
 
-    loadExercise();
+    loadExercises();
   }, [lessonId, language]);
 
   // Handle word selection
@@ -191,41 +193,49 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
     });
   };
 
-  // Check answers
+  // Check answers for current exercise
   const checkAnswers = async () => {
-    if (!exercise) return;
+    const currentExercise = exercises[currentExerciseIndex];
+    if (!currentExercise) return;
 
     try {
-      const result = await courseAPI.checkMatchingAnswers(exercise.id, matches);
+      const result = await courseAPI.checkMatchingAnswers(currentExercise.id, matches);
       setResult(result);
 
       // Check if score is sufficient to consider the exercise as successful
       const isSuccessful = result.is_successful === true;
       setExerciseCompleted(isSuccessful);
 
+      // Calculate overall progress based on completed exercises
+      const completedExercises = currentExerciseIndex + (isSuccessful ? 1 : 0);
+      const progressPercentage = (completedExercises / exercises.length) * 100;
+
       // Update progress in database
       await lessonCompletionService.updateContentProgress(
         parseInt(lessonId),
-        isSuccessful ? 100 : Math.round(result.score), // 100% if successful, otherwise current score
+        Math.round(progressPercentage),
         timeSpent,
         Math.round(result.score / 10), // XP based on score
-        isSuccessful // Use boolean value
+        progressPercentage === 100 // Completed when all exercises are done
       );
 
       // Update parent lesson if unitId is provided
-      if (unitId) {
+      if (unitId && progressPercentage === 100) {
         await lessonCompletionService.updateLessonProgress(
           parseInt(unitId),
-          isSuccessful ? 100 : Math.round(result.score), // Use same logic as content progress
+          100,
           timeSpent,
-          isSuccessful,
+          true,
           parseInt(lessonId)
         );
       }
 
-      // Notify that exercise is completed only if successful
-      if (isSuccessful && onComplete) {
-        onComplete();
+      // Check if all exercises are completed
+      if (isSuccessful && currentExerciseIndex === exercises.length - 1) {
+        setAllExercisesCompleted(true);
+        if (onComplete) {
+          onComplete();
+        }
       }
 
     } catch (err) {
@@ -234,7 +244,18 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
     }
   };
 
-  // Reset exercise
+  // Move to next exercise
+  const nextExercise = () => {
+    if (currentExerciseIndex < exercises.length - 1) {
+      setCurrentExerciseIndex(currentExerciseIndex + 1);
+      setMatches({});
+      setSelectedWord(null);
+      setResult(null);
+      setExerciseCompleted(false);
+    }
+  };
+
+  // Reset current exercise
   const resetExercise = () => {
     setMatches({});
     setSelectedWord(null);
@@ -257,22 +278,27 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
     );
   }
 
-  // Error state
-  if (error || !exercise || !exercise.exercise_data) {
+  // Error state or no exercises
+  if (error || exercises.length === 0) {
     return (
       <ExerciseWrapper className="max-w-4xl mx-auto">
         <Alert variant="destructive" className="border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 shadow-sm">
           <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
           <AlertDescription className="text-red-700 dark:text-red-300 font-medium">
-            {error || "Unable to load matching exercise"}
+            {error || "Unable to load matching exercises"}
           </AlertDescription>
         </Alert>
       </ExerciseWrapper>
     );
   }
 
-  // Exercise data
-  const { target_words = [], native_words = [] } = exercise.exercise_data;
+  // Current exercise data
+  const currentExercise = exercises[currentExerciseIndex];
+  if (!currentExercise || !currentExercise.exercise_data) {
+    return null;
+  }
+  
+  const { target_words = [], native_words = [] } = currentExercise.exercise_data;
 
   // Calculate completion percentage
   const completionPercentage = Object.keys(matches).length / target_words.length * 100;
@@ -289,11 +315,12 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
         <div className="mb-2">
           <div className="flex justify-between items-center">
             <h2 className={exerciseHeading() + " text-lg md:text-xl"}>
-              {exercise.exercise_data.title || "Match words with their translations"}
+              {currentExercise.exercise_data.title || "Match words with their translations"}
             </h2>
 
-            <div className="text-sm font-medium">
-              {Object.keys(matches).length}/{target_words.length} matched
+            <div className="text-sm font-medium flex items-center gap-4">
+              <span>Exercise {currentExerciseIndex + 1} of {exercises.length}</span>
+              <span>{Object.keys(matches).length}/{target_words.length} matched</span>
             </div>
           </div>
 
@@ -306,6 +333,24 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
             showPercentage={false}
             className="mt-2"
           />
+          
+          {/* Overall Progress */}
+          {exercises.length > 1 && (
+            <div className="mt-2 flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+              <span>Overall Progress</span>
+              <div className="flex items-center gap-2">
+                <div className="w-32 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-brand-purple to-brand-gold transition-all duration-300"
+                    style={{ width: `${((currentExerciseIndex + (exerciseCompleted ? 1 : 0)) / exercises.length) * 100}%` }}
+                  />
+                </div>
+                <span className="font-medium">
+                  {currentExerciseIndex + (exerciseCompleted ? 1 : 0)}/{exercises.length} completed
+                </span>
+              </div>
+            </div>
+          )}
         </div>
         
         {/* Selected Word Indicator - more compact */}
@@ -327,7 +372,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
           {/* Target Language Words Column - more compact */}
           <div className="space-y-1 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
             <h3 className="font-semibold text-brand-purple text-sm mb-1">
-              {exercise.exercise_data.target_language?.toUpperCase() || language.toUpperCase()}
+              {currentExercise.exercise_data.target_language?.toUpperCase() || language.toUpperCase()}
             </h3>
 
             <div className="space-y-1">
@@ -416,7 +461,7 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
           {/* Native Language Translations Column - more compact */}
           <div className="space-y-1 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
             <h3 className="font-semibold text-brand-gold text-sm mb-1">
-              {exercise.exercise_data.native_language?.toUpperCase() || "EN"}
+              {currentExercise.exercise_data.native_language?.toUpperCase() || "EN"}
             </h3>
 
             <div className="space-y-1">
@@ -509,27 +554,29 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
               </Button>
             ) : (
               result.is_successful ? (
-                <Button
-                  onClick={() => {
-                    lessonCompletionService.updateContentProgress(
-                      parseInt(lessonId),
-                      100,
-                      timeSpent,
-                      Math.round(result.score / 10),
-                      true
-                    ).then(() => {
+                currentExerciseIndex < exercises.length - 1 ? (
+                  // Next exercise button
+                  <Button
+                    onClick={nextExercise}
+                    className="bg-gradient-to-r from-brand-purple to-brand-gold text-white hover:opacity-90 text-xs h-8 px-2"
+                    size="sm"
+                  >
+                    <ArrowRight className="h-3 w-3 mr-1" />
+                    Next ({currentExerciseIndex + 2}/{exercises.length})
+                  </Button>
+                ) : (
+                  // Complete button for last exercise
+                  <Button
+                    onClick={() => {
                       if (onComplete) onComplete();
-                    }).catch(err => {
-                      console.error("Error updating final progress:", err);
-                      if (onComplete) onComplete();
-                    });
-                  }}
-                  className="bg-gradient-to-r from-green-600 to-teal-500 text-white hover:opacity-90 text-xs h-8 px-2"
-                  size="sm"
-                >
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  Complete
-                </Button>
+                    }}
+                    className="bg-gradient-to-r from-green-600 to-teal-500 text-white hover:opacity-90 text-xs h-8 px-2"
+                    size="sm"
+                  >
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Complete
+                  </Button>
+                )
               ) : (
                 <Button
                   onClick={resetExercise}
