@@ -519,7 +519,7 @@ class ContentLesson(models.Model):
     def save(self, *args, **kwargs):
         """Override save to ensure content type is lowercase and validate duration"""
         self.content_type = self.content_type.lower()
-        if self.estimated_duration < 1:
+        if self.estimated_duration is None or self.estimated_duration < 1:
             self.estimated_duration = 1
         super().save(*args, **kwargs)
 
@@ -682,8 +682,8 @@ class VocabularyList(models.Model):
             # Ensuite chercher dans toutes les leçons de type vocabulaire du parent
             vocab_lessons = ContentLesson.objects.filter(
                 lesson=parent_lesson,
-                content_type__iexact='vocabulary'
-            )
+                content_type__icontains='vocabularylist'  # Changé pour correspondre au format de content_type
+            ).order_by('order')  # Ajouter l'ordre pour prioriser les premières leçons
             
             all_vocab = cls.objects.none()
             for vocab_lesson in vocab_lessons:
@@ -691,6 +691,8 @@ class VocabularyList(models.Model):
                 all_vocab = all_vocab | lesson_vocab
             
             if all_vocab.exists():
+                # Ordonner aléatoirement pour varier les exercices
+                all_vocab = all_vocab.order_by('?')
                 return all_vocab[:limit] if limit else all_vocab
         
         # Par défaut, retourner un QuerySet vide
@@ -1530,12 +1532,12 @@ class TestRecap(models.Model):
     """
     lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE, related_name='recap_tests', null=True)
     # Main title field for database compatibility
-    title = models.CharField(max_length=255, blank=False, null=False)
+    title = models.CharField(max_length=255, blank=False, null=False, default="Test Recap")
     # Language-specific title fields
-    title_en = models.CharField(max_length=255, blank=False, null=False)
-    title_fr = models.CharField(max_length=255, blank=False, null=False)
-    title_es = models.CharField(max_length=255, blank=False, null=False)
-    title_nl = models.CharField(max_length=255, blank=False, null=False)
+    title_en = models.CharField(max_length=255, blank=False, null=False, default="Test Recap")
+    title_fr = models.CharField(max_length=255, blank=False, null=False, default="Récapitulatif du test")
+    title_es = models.CharField(max_length=255, blank=False, null=False, default="Resumen del test")
+    title_nl = models.CharField(max_length=255, blank=False, null=False, default="Test samenvatting")
     # Required field for database compatibility - legacy field
     question = models.CharField(max_length=255, blank=False, null=False, default="Test")
     description_en = models.TextField(blank=True, null=True)

@@ -11,6 +11,7 @@ from django.db import transaction
 import csv, io, json
 
 from .widgets import AdminJSONFormField
+from .admin_filters import PairsStatusFilter, PairsCountRangeFilter
 from .models import (
     Unit, 
     Lesson, 
@@ -1018,24 +1019,28 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
         return super().changelist_view(request, extra_context=extra_context)
     
     # Affichage dans la liste
-    list_display = ('id', 'get_content_lesson_title', 'difficulty', 'pairs_count', 'order', 'created_at')
-    list_filter = ('difficulty', 'content_lesson__lesson__unit__level')
+    list_display = ('id', 'get_title_display', 'get_pairs_display', 'get_status_display', 'difficulty', 'pairs_count', 'order')
+    list_filter = ('difficulty', 'content_lesson__lesson__unit__level', PairsStatusFilter, PairsCountRangeFilter, 'pairs_count')
     search_fields = ('title_en', 'title_fr', 'content_lesson__title_en')
+    list_editable = ('pairs_count', 'order')
     
     # Mise en page du formulaire
     fieldsets = (
         ('Informations de base', {
             'fields': ('content_lesson', 'difficulty', 'order')
         }),
-        ('Titres', {
+        ('Titres multilingues', {
             'fields': ('title_en', 'title_fr', 'title_es', 'title_nl'),
-            'description': 'Les titres peuvent être personnalisés pour chaque exercice.'
+            'description': 'Les titres peuvent être personnalisés pour chaque exercice.',
+            'classes': ('collapse',)
         }),
-        ('Configuration', {
-            'fields': ('pairs_count', 'vocabulary_words'),
-            'description': 'Sélectionnez les mots à inclure dans l\'exercice.'
+        ('Configuration des paires', {
+            'fields': ('pairs_count', 'preview_vocabulary_pairs', 'vocabulary_words'),
+            'description': 'Configurez le nombre de paires et sélectionnez le vocabulaire.'
         }),
     )
+    
+    readonly_fields = ('preview_vocabulary_pairs', 'get_pairs_display', 'get_status_display')
     
     # Relations
     filter_horizontal = ('vocabulary_words',)
@@ -1046,13 +1051,94 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
     get_content_lesson_title.short_description = 'Leçon'
     get_content_lesson_title.admin_order_field = 'content_lesson__title_en'
     
+    def get_vocab_count(self, obj):
+        """Affiche le nombre réel de mots de vocabulaire associés."""
+        count = obj.vocabulary_words.count()
+        if count != obj.pairs_count:
+            return format_html('<span style="color: red;">{}</span>', count)
+        return count
+    get_vocab_count.short_description = 'Vocab réel'
+    
+    def get_title_display(self, obj):
+        """Affiche le titre avec la leçon parente pour plus de clarté."""
+        lesson_title = obj.content_lesson.lesson.title_en if obj.content_lesson and obj.content_lesson.lesson else "N/A"
+        return format_html(
+            '<strong>{}</strong><br/><small style="color: #666;">Lesson: {}</small>',
+            obj.title_en or "Sans titre",
+            lesson_title
+        )
+    get_title_display.short_description = 'Titre'
+    
+    def get_pairs_display(self, obj):
+        """Affiche visuellement le nombre de paires configuré vs réel."""
+        actual_count = obj.vocabulary_words.count()
+        configured_count = obj.pairs_count
+        
+        if actual_count == configured_count:
+            color = "green"
+            status = "✓"
+        elif actual_count < configured_count:
+            color = "orange"
+            status = "⚠"
+        else:
+            color = "blue"
+            status = "↑"
+            
+        return format_html(
+            '<div style="text-align: center;">'
+            '<span style="font-size: 20px; color: {};">{}</span><br/>'
+            '<strong>{}/{}</strong><br/>'
+            '<small>Réel/Configuré</small>'
+            '</div>',
+            color, status, actual_count, configured_count
+        )
+    get_pairs_display.short_description = 'Paires'
+    get_pairs_display.admin_order_field = 'pairs_count'
+    
+    def get_status_display(self, obj):
+        """Affiche le statut visuel de l'exercice."""
+        actual_count = obj.vocabulary_words.count()
+        configured_count = obj.pairs_count
+        
+        if actual_count == 0:
+            return format_html('<span style="color: red;">❌ Aucune paire</span>')
+        elif actual_count < configured_count:
+            return format_html('<span style="color: orange;">⚠️ Incomplet ({}/{})</span>', actual_count, configured_count)
+        elif actual_count == configured_count:
+            return format_html('<span style="color: green;">✅ Complet</span>')
+        else:
+            return format_html('<span style="color: blue;">↑ Excès ({}/{})</span>', actual_count, configured_count)
+    get_status_display.short_description = 'Statut'
+    
+    def preview_vocabulary_pairs(self, obj):
+        """Prévisualise les paires de vocabulaire dans le formulaire."""
+        vocab_items = obj.vocabulary_words.all()[:5]  # Limite à 5 pour la prévisualisation
+        
+        if not vocab_items:
+            return "Aucune paire configurée"
+        
+        pairs_html = []
+        for item in vocab_items:
+            pairs_html.append(
+                f'<div style="margin: 5px 0; padding: 5px; background: #f0f0f0; border-radius: 3px;">'
+                f'<strong>{item.word_fr}</strong> ↔ <strong>{item.word_en}</strong>'
+                f'</div>'
+            )
+        
+        if obj.vocabulary_words.count() > 5:
+            pairs_html.append(f'<div style="color: #666; font-style: italic;">... et {obj.vocabulary_words.count() - 5} autres paires</div>')
+        
+        return format_html(''.join(pairs_html))
+    preview_vocabulary_pairs.short_description = 'Aperçu des paires'
+    
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         """
         Filtre les mots disponibles en fonction de la leçon sélectionnée,
         pour simplifier la création des exercices.
         """
         if db_field.name == 'vocabulary_words':
-            if request._obj is not None:
+            # Vérifier si request._obj existe (défini dans get_form)
+            if hasattr(request, '_obj') and request._obj is not None:
                 kwargs['queryset'] = VocabularyList.objects.filter(
                     content_lesson=request._obj.content_lesson
                 )
@@ -1080,7 +1166,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
         )
         return super().add_view(request, form_url, extra_context)
     
-    actions = ['associate_vocabulary_from_lesson']
+    actions = ['associate_vocabulary_from_lesson', 'split_large_exercises', 'optimize_pairs_count', 'check_pairs_consistency']
     
     def associate_vocabulary_from_lesson(self, request, queryset):
         """Action to automatically associate all relevant vocabulary with selected matching exercises"""
@@ -1132,6 +1218,95 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
         self.message_user(request, message)
         
     associate_vocabulary_from_lesson.short_description = "Associate vocabulary items from lessons"
+    
+    def split_large_exercises(self, request, queryset):
+        """Divise les exercices avec trop de paires en plusieurs exercices plus petits."""
+        from math import ceil
+        
+        created_count = 0
+        for exercise in queryset:
+            vocab_count = exercise.vocabulary_words.count()
+            if vocab_count > exercise.pairs_count:
+                # Calculer le nombre d'exercices nécessaires
+                num_exercises = ceil(vocab_count / exercise.pairs_count)
+                vocabulary_items = list(exercise.vocabulary_words.all())
+                
+                # Créer des exercices supplémentaires
+                for i in range(1, num_exercises):
+                    new_exercise = MatchingExercise.objects.create(
+                        content_lesson=exercise.content_lesson,
+                        title_en=f"{exercise.title_en} - Part {i+1}",
+                        title_fr=f"{exercise.title_fr} - Partie {i+1}",
+                        title_es=f"{exercise.title_es} - Parte {i+1}",
+                        title_nl=f"{exercise.title_nl} - Deel {i+1}",
+                        pairs_count=exercise.pairs_count,
+                        difficulty=exercise.difficulty,
+                        order=exercise.order + i
+                    )
+                    
+                    # Associer le vocabulaire approprié
+                    start_idx = i * exercise.pairs_count
+                    end_idx = min((i + 1) * exercise.pairs_count, vocab_count)
+                    new_exercise.vocabulary_words.set(vocabulary_items[start_idx:end_idx])
+                    created_count += 1
+                
+                # Mettre à jour l'exercice original
+                exercise.title_en = f"{exercise.title_en} - Part 1"
+                exercise.title_fr = f"{exercise.title_fr} - Partie 1"
+                exercise.title_es = f"{exercise.title_es} - Parte 1"
+                exercise.title_nl = f"{exercise.title_nl} - Deel 1"
+                exercise.vocabulary_words.set(vocabulary_items[:exercise.pairs_count])
+                exercise.save()
+        
+        if created_count:
+            self.message_user(request, f"✅ {created_count} nouveaux exercices créés par division")
+        else:
+            self.message_user(request, "ℹ️ Aucun exercice n'a besoin d'être divisé")
+    
+    split_large_exercises.short_description = "Diviser les exercices avec trop de paires"
+    
+    def optimize_pairs_count(self, request, queryset):
+        """Ajuste automatiquement pairs_count pour correspondre au vocabulaire disponible."""
+        optimized_count = 0
+        
+        for exercise in queryset:
+            vocab_count = exercise.vocabulary_words.count()
+            if vocab_count != exercise.pairs_count and vocab_count > 0:
+                exercise.pairs_count = vocab_count
+                exercise.save()
+                optimized_count += 1
+        
+        if optimized_count:
+            self.message_user(request, f"✅ {optimized_count} exercices optimisés")
+        else:
+            self.message_user(request, "ℹ️ Tous les exercices sont déjà optimisés")
+    
+    optimize_pairs_count.short_description = "Optimiser le nombre de paires"
+    
+    def check_pairs_consistency(self, request, queryset):
+        """Vérifie la cohérence des paires et signale les problèmes."""
+        issues = []
+        
+        for exercise in queryset:
+            vocab_count = exercise.vocabulary_words.count()
+            pairs_count = exercise.pairs_count
+            
+            if vocab_count == 0:
+                issues.append(f"❌ {exercise.title_en}: Aucune paire définie")
+            elif vocab_count < pairs_count:
+                issues.append(f"⚠️ {exercise.title_en}: {vocab_count}/{pairs_count} paires (incomplet)")
+            elif vocab_count > pairs_count:
+                issues.append(f"↑ {exercise.title_en}: {vocab_count}/{pairs_count} paires (excès)")
+            else:
+                issues.append(f"✅ {exercise.title_en}: {vocab_count} paires (correct)")
+        
+        if issues:
+            message = "Rapport de cohérence des paires:<br/>" + "<br/>".join(issues)
+            self.message_user(request, format_html(message))
+        else:
+            self.message_user(request, "✅ Tous les exercices sont cohérents")
+    
+    check_pairs_consistency.short_description = "Vérifier la cohérence des paires"
 
 
 @admin.register(MultipleChoiceQuestion)
