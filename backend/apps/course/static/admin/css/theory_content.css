@@ -1,0 +1,174 @@
+/* Styles pour améliorer l'interface TheoryContent Admin */
+
+/* Erreurs plus visibles */
+.errorlist {
+    background-color: #ffebee;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+    list-style: none;
+}
+
+.errorlist li {
+    color: #c62828;
+    font-weight: bold;
+    padding: 5px 0;
+}
+
+.errornote {
+    background-color: #ffebee;
+    border: 1px solid #ef5350;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.errornote h3 {
+    color: #c62828;
+    margin-top: 0;
+}
+
+/* Champs requis */
+label.required:after {
+    content: " *";
+    color: #ef5350;
+    font-weight: bold;
+}
+
+/* Aide contextuelle */
+.help-text {
+    background-color: #e3f2fd;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+    border-left: 4px solid #2196f3;
+}
+
+/* Templates selector */
+#template-selector {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#apply-template {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#apply-template:hover {
+    background-color: #45a049;
+}
+
+/* Fieldsets améliorés */
+fieldset {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 15px 0;
+    background-color: #fafafa;
+}
+
+fieldset h2 {
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #2196f3;
+    padding-bottom: 5px;
+}
+
+/* Textareas plus grandes */
+textarea {
+    min-height: 100px;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+/* Indicateurs de validation */
+.form-row.errors textarea,
+.form-row.errors input {
+    border: 2px solid #ef5350;
+    background-color: #ffebee;
+}
+
+.form-row.errors label {
+    color: #c62828;
+    font-weight: bold;
+}
+
+/* Bouton de sauvegarde amélioré */
+.submit-row {
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    padding: 15px 0;
+    border-top: 2px solid #ddd;
+    margin-top: 20px;
+}
+
+/* Styles pour les champs readonly */
+.readonly .field-content_lesson {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.readonly .field-content_lesson select,
+.readonly .field-content_lesson input {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.readonly .field-content_lesson .readonly {
+    font-weight: bold;
+    color: #333;
+    background-color: #f0f0f0;
+    padding: 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 5px 0;
+}
+
+/* Améliorer l'affichage du champ content_lesson */
+.field-content_lesson {
+    margin-bottom: 20px;
+}
+
+.field-content_lesson .help {
+    background-color: #e3f2fd;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 5px;
+    color: #0d47a1;
+    border: 1px solid #42a5f5;
+}
+
+/* Description pour les champs readonly */
+.readonly .description {
+    color: #666;
+    font-style: italic;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+/* Améliorer la visibilité du titre de la ContentLesson */
+#id_content_lesson {
+    width: 100%;
+    max-width: 600px;
+    padding: 5px;
+    font-size: 14px;
+}
+
+/* Style spécial pour le select content_lesson en mode édition */
+.change-form .field-content_lesson select {
+    font-weight: bold;
+    color: #0066cc;
+}

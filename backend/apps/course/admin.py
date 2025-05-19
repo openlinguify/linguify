@@ -9,6 +9,8 @@ from django.template.response import TemplateResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
 import csv, io, json
+import logging
+logger = logging.getLogger(__name__)
 
 from .widgets import AdminJSONFormField
 from .admin_filters import PairsStatusFilter, PairsCountRangeFilter
@@ -635,24 +637,113 @@ class TheoryContentAdminForm(forms.ModelForm):
     class Meta:
         model = TheoryContent
         fields = '__all__'
+    
+    class Media:
+        js = ('admin/js/theory_content_helper.js',)
         
     def clean_language_specific_content(self):
         """Validation et formatage automatique du JSON"""
-        data = self.cleaned_data['language_specific_content']
+        data = self.cleaned_data.get('language_specific_content')
         
-        # Vérifier que la structure est correcte
-        required_fields = ['content', 'explanation']
-        
-        for lang, content in data.items():
-            if not isinstance(content, dict):
-                raise forms.ValidationError(f"Le contenu pour la langue '{lang}' doit être un objet JSON.")
+        # Si le mode JSON est activé
+        if self.cleaned_data.get('using_json_format'):
+            # Si pas de données ou null, créer une structure par défaut
+            if not data or data == "null":
+                data = {
+                    "en": {"content": "", "explanation": ""},
+                    "fr": {"content": "", "explanation": ""},
+                    "es": {"content": "", "explanation": ""},
+                    "nl": {"content": "", "explanation": ""}
+                }
             
-            # Vérifier la présence des champs obligatoires
-            for field in required_fields:
-                if field not in content:
-                    raise forms.ValidationError(f"Champ '{field}' manquant pour la langue '{lang}'")
+            # Vérifier que la structure est correcte
+            required_fields = ['content', 'explanation']
+            
+            for lang, content in data.items():
+                if not isinstance(content, dict):
+                    raise forms.ValidationError(f"Le contenu pour la langue '{lang}' doit être un objet JSON.")
+                
+                # Vérifier la présence des champs obligatoires
+                for field in required_fields:
+                    if field not in content:
+                        raise forms.ValidationError(f"Champ '{field}' manquant pour la langue '{lang}'")
         
         return data
+    
+    def clean(self):
+        """Validation globale du formulaire"""
+        cleaned_data = super().clean()
+        
+        # Utiliser encoding UTF-8 pour les print sur Windows
+        import sys
+        original_encoding = sys.stdout.encoding
+        if sys.platform == "win32":
+            sys.stdout.reconfigure(encoding='utf-8')
+        
+        try:
+            print(f"DEBUG: cleaned_data keys: {cleaned_data.keys()}")
+            print(f"DEBUG: using_json_format: {cleaned_data.get('using_json_format')}")
+            for key, value in cleaned_data.items():
+                if isinstance(value, str):
+                    # Éviter l'erreur Unicode en tronquant avant les caractères problématiques
+                    try:
+                        display_value = value[:50] if len(value) > 50 else value
+                        print(f"DEBUG: {key} = {display_value}")
+                    except UnicodeEncodeError:
+                        print(f"DEBUG: {key} = [Unicode content]")
+                else:
+                    print(f"DEBUG: {key} = {value}")
+        finally:
+            if sys.platform == "win32":
+                sys.stdout.reconfigure(encoding=original_encoding)
+        
+        # Vérifier la ContentLesson
+        content_lesson = cleaned_data.get('content_lesson')
+        if content_lesson:
+            # Vérifier si un TheoryContent existe déjà pour cette ContentLesson
+            existing = TheoryContent.objects.filter(content_lesson=content_lesson)
+            if self.instance.pk:
+                existing = existing.exclude(pk=self.instance.pk)
+            
+            if existing.exists():
+                self.add_error(
+                    'content_lesson',
+                    f"Un contenu théorique existe déjà pour cette leçon. "
+                    f"Veuillez sélectionner une autre leçon ou modifier l'existant."
+                )
+        
+        # Si ce n'est pas en mode JSON, valider les champs traditionnels
+        if not cleaned_data.get('using_json_format'):
+            # Champs obligatoires
+            required_fields = {
+                'content_en': 'English content',
+                'content_fr': 'French content',
+                'explication_en': 'English explanation',
+                'explication_fr': 'French explanation'
+            }
+            
+            for field, label in required_fields.items():
+                value = cleaned_data.get(field, '').strip()
+                if len(value) < 3:  # Minimum 3 caractères
+                    self.add_error(field, f"{label} must contain at least 3 characters. Single letters are not acceptable.")
+                
+            # Recommander des valeurs minimum
+            content_fields = ['content_en', 'content_fr', 'content_es', 'content_nl']
+            explanation_fields = ['explication_en', 'explication_fr', 'explication_es', 'explication_nl']
+            
+            for field in content_fields:
+                value = cleaned_data.get(field, '').strip()
+                if value and len(value.split()) < 3:  # Moins de 3 mots
+                    logger.debug(f"Field {field} has less than 3 words: {value}")
+                    self.add_error(field, f"Content should contain at least 3-5 words to describe the topic.")
+            
+            for field in explanation_fields:
+                value = cleaned_data.get(field, '').strip()
+                if value and len(value.split()) < 5:  # Moins de 5 mots
+                    logger.debug(f"Field {field} has less than 5 words: {value}")
+                    self.add_error(field, f"Explanation should contain at least 5 words to properly explain the concept.")
+        
+        return cleaned_data
 
 @admin.register(TheoryContent)
 class TheoryContentAdmin(admin.ModelAdmin):
@@ -661,34 +752,262 @@ class TheoryContentAdmin(admin.ModelAdmin):
     list_filter = ('content_lesson__lesson__unit', 'using_json_format')
     search_fields = ('content_en', 'content_fr', 'content_lesson__title_en', 'language_specific_content')
     actions = ['migrate_to_json_format', 'add_custom_language']
+    change_form_template = 'admin/course/theorycontent/change_form.html'
     
     class Media:
         css = {
-            'all': ('css/codemirror.css', 'css/language_editor.css')
+            'all': ('css/codemirror.css', 'css/language_editor.css', 'admin/css/theory_content.css')
         }
-        js = ('js/codemirror.js', 'js/codemirror-mode-javascript.js', 'js/language_editor.js')
+        js = ('js/codemirror.js', 'js/codemirror-mode-javascript.js', 'js/language_editor.js', 'admin/js/theory_content_helper.js')
+    
+    def response_add(self, request, obj, post_url_continue=None):
+        """Gère les erreurs qui apparaissent après la validation du formulaire"""
+        # Vérifier s'il y a eu une erreur empêchant la sauvegarde
+        if obj is None or obj.pk is None:
+            messages.error(request, "La sauvegarde a échoué. Vérifiez tous les champs obligatoires.")
+            return self.response_post_save_add(request, obj)
+        
+        # Afficher toutes les erreurs possibles
+        if hasattr(self, '_form_errors'):
+            for error in self._form_errors:
+                messages.error(request, error)
+        
+        return super().response_add(request, obj, post_url_continue)
+    
+    def save_model(self, request, obj, form, change):
+        """Surcharge pour vérifier les validations avant sauvegarde"""
+        # Debug toutes les erreurs de formulaire
+        if form.errors:
+            # Désactiver temporairement les print pour éviter les erreurs Unicode
+            try:
+                logger.debug(f"form.errors = {form.errors}")
+                logger.debug(f"form.non_field_errors = {form.non_field_errors()}")
+            except:
+                pass
+            
+            # Collecter toutes les erreurs
+            self._form_errors = []
+            
+            # Erreurs de champs
+            for field, errors in form.errors.items():
+                if field == '__all__':
+                    self._form_errors.extend(errors)
+                else:
+                    field_label = form[field].label if field in form.fields else field
+                    for error in errors:
+                        self._form_errors.append(f"{field_label}: {error}")
+            
+            # Message d'erreur global
+            if self._form_errors:
+                messages.error(
+                    request,
+                    format_html("Erreurs de validation :<br/>{}",
+                               mark_safe("<br/>".join(self._form_errors)))
+                )
+        
+        # Vérifier si un TheoryContent existe déjà pour cette ContentLesson
+        if not change and hasattr(obj, 'content_lesson'):
+            existing = TheoryContent.objects.filter(content_lesson=obj.content_lesson).exists()
+            if existing:
+                messages.error(
+                    request, 
+                    f"Un contenu théorique existe déjà pour la leçon '{obj.content_lesson}'. "
+                    f"Modifiez l'existant au lieu d'en créer un nouveau."
+                )
+                return
+        
+        # Gérer le cas spécial du ContentLesson par défaut (ID=1)
+        if obj.content_lesson_id == 1:
+            try:
+                default_existing = TheoryContent.objects.get(content_lesson_id=1)
+                messages.error(
+                    request,
+                    f"Le ContentLesson par défaut (ID=1) a déjà un TheoryContent (ID={default_existing.id}). "
+                    f"Veuillez choisir un autre ContentLesson."
+                )
+                return
+            except TheoryContent.DoesNotExist:
+                print("DEBUG: No existing TheoryContent for default ContentLesson")
+        
+        # Tentative de sauvegarde
+        try:
+            # Utiliser encoding UTF-8 pour les print sur Windows
+            import sys
+            original_encoding = sys.stdout.encoding if hasattr(sys.stdout, 'encoding') else 'utf-8'
+            try:
+                if sys.platform == "win32":
+                    sys.stdout.reconfigure(encoding='utf-8')
+                
+                print(f"DEBUG: About to save TheoryContent")
+                print(f"DEBUG: content_lesson = {obj.content_lesson}")
+                print(f"DEBUG: content_lesson_id = {obj.content_lesson_id}")
+                
+                # Gérer le contenu avec caractères Unicode
+                content_preview = "None"
+                if obj.content_en:
+                    try:
+                        content_preview = obj.content_en[:50] + "..."
+                    except UnicodeEncodeError:
+                        content_preview = "[Unicode content]"
+                
+                print(f"DEBUG: content_en = {content_preview}")
+                print(f"DEBUG: using_json_format = {obj.using_json_format}")
+            finally:
+                if sys.platform == "win32":
+                    sys.stdout.reconfigure(encoding=original_encoding)
+            
+            # Si mode JSON, gérer le contenu spécifique
+            if obj.using_json_format:
+                # Vérifier que language_specific_content a une valeur
+                if not obj.language_specific_content or obj.language_specific_content == {} or obj.language_specific_content == "null":
+                    # Définir un contenu par défaut
+                    obj.language_specific_content = {
+                        "en": {"content": "Default content", "explanation": "Default explanation"},
+                        "fr": {"content": "Contenu par défaut", "explanation": "Explication par défaut"},
+                        "es": {"content": "Contenido predeterminado", "explanation": "Explicación predeterminada"},
+                        "nl": {"content": "Standaardinhoud", "explanation": "Standaarduitleg"}
+                    }
+                    
+                if not obj.available_languages:
+                    obj.available_languages = ["en", "fr", "es", "nl"]
+                
+                # Définir les champs traditionnels à partir du JSON
+                if isinstance(obj.language_specific_content, dict):
+                    for lang in ["en", "fr", "es", "nl"]:
+                        if lang in obj.language_specific_content:
+                            lang_data = obj.language_specific_content[lang]
+                            if isinstance(lang_data, dict):
+                                if 'content' in lang_data:
+                                    setattr(obj, f'content_{lang}', lang_data['content'] or f"Content {lang}")
+                                if 'explanation' in lang_data:
+                                    setattr(obj, f'explication_{lang}', lang_data['explanation'] or f"Explanation {lang}")
+                                if 'formula' in lang_data:
+                                    setattr(obj, f'formula_{lang}', lang_data.get('formula', ''))
+                                if 'example' in lang_data:
+                                    setattr(obj, f'example_{lang}', lang_data.get('example', ''))
+                                if 'exception' in lang_data:
+                                    setattr(obj, f'exception_{lang}', lang_data.get('exception', ''))
+            else:
+                # Mode traditionnel - vérifier que tous les champs requis sont remplis
+                required_fields = ['content_en', 'content_fr', 'content_es', 'content_nl', 
+                                 'explication_en', 'explication_fr', 'explication_es', 'explication_nl']
+                missing_fields = []
+                for field in required_fields:
+                    value = getattr(obj, field, '')
+                    if not value or value.strip() == '':
+                        missing_fields.append(field)
+                
+                if missing_fields:
+                    messages.error(
+                        request,
+                        f"Les champs suivants sont requis mais vides: {', '.join(missing_fields)}"
+                    )
+                    return
+            
+            # Forcer la sauvegarde
+            obj.save()
+            
+            print(f"DEBUG: TheoryContent saved successfully with id = {obj.id}")
+            messages.success(request, "Le contenu théorique a été créé avec succès!")
+            
+        except Exception as e:
+            messages.error(request, f"Erreur de base de données : {str(e)}")
+            print(f"DEBUG: save_model exception: {e}")
+            import traceback
+            traceback.print_exc()
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """Filtre les ContentLessons disponibles dans le formulaire"""
+        if db_field.name == 'content_lesson':
+            # Récupérer l'objet en cours d'édition (si modification)
+            obj_id = request.resolver_match.kwargs.get('object_id')
+            
+            if obj_id:
+                # En mode édition, inclure le ContentLesson actuel dans la liste
+                current_theory = TheoryContent.objects.filter(pk=obj_id).first()
+                if current_theory:
+                    # Obtenir tous les ContentLessons utilisés SAUF celui de l'objet actuel
+                    used_content_lessons = TheoryContent.objects.exclude(pk=obj_id).values_list('content_lesson_id', flat=True)
+                    kwargs['queryset'] = ContentLesson.objects.exclude(id__in=used_content_lessons)
+                    
+                    # S'assurer que le ContentLesson actuel est inclus
+                    kwargs['queryset'] = kwargs['queryset'] | ContentLesson.objects.filter(id=current_theory.content_lesson_id)
+            else:
+                # En mode création, exclure les ContentLessons déjà utilisés
+                used_content_lessons = TheoryContent.objects.values_list('content_lesson_id', flat=True)
+                kwargs['queryset'] = ContentLesson.objects.exclude(id__in=used_content_lessons)
+            
+            kwargs['queryset'] = kwargs['queryset'].order_by('lesson__unit__order', 'lesson__order', 'order')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         
-        # Initialiser le contenu JSON si c'est un nouvel enregistrement et le format JSON est activé
-        if not obj and request.method == 'POST' and request.POST.get('using_json_format') == 'on':
-            # Structure JSON par défaut avec les champs requis
-            form.base_fields['language_specific_content'].initial = {
-                "en": {"content": "", "explanation": ""},
-                "fr": {"content": "", "explanation": ""},
-                "es": {"content": "", "explanation": ""},
-                "nl": {"content": "", "explanation": ""}
-            }
-            form.base_fields['available_languages'].initial = ["en", "fr", "es", "nl"]
+        if obj:
+            # En mode édition, s'assurer que le ContentLesson actuel est présélectionné
+            if 'content_lesson' in form.base_fields:
+                form.base_fields['content_lesson'].initial = obj.content_lesson
+                form.base_fields['content_lesson'].required = True
+        else:
+            # En mode création
+            if request.method == 'GET':
+                # Afficher les ContentLessons disponibles
+                available_lessons = ContentLesson.objects.exclude(
+                    id__in=TheoryContent.objects.values_list('content_lesson_id', flat=True)
+                )
+                print(f"DEBUG: Available ContentLessons without TheoryContent: {available_lessons.count()}")
+                for lesson in available_lessons[:5]:
+                    print(f"  - {lesson.id}: {lesson.title_en}")
+                
+                # Ne pas utiliser le default=1 pour les nouvelles créations
+                if 'content_lesson' in form.base_fields:
+                    form.base_fields['content_lesson'].initial = None
+                    form.base_fields['content_lesson'].required = True
+                    
+                # Initialiser les valeurs par défaut pour le format JSON
+                if 'language_specific_content' in form.base_fields:
+                    form.base_fields['language_specific_content'].initial = {
+                        "en": {"content": "", "explanation": ""},
+                        "fr": {"content": "", "explanation": ""},
+                        "es": {"content": "", "explanation": ""},
+                        "nl": {"content": "", "explanation": ""}
+                    }
+                
+                if 'available_languages' in form.base_fields:
+                    form.base_fields['available_languages'].initial = ["en", "fr", "es", "nl"]
+            
+            # Initialiser le contenu JSON aussi pour POST
+            if request.method == 'POST':
+                # Si using_json_format est activé mais language_specific_content est vide
+                if request.POST.get('using_json_format') == 'on':
+                    content_value = request.POST.get('language_specific_content', '').strip()
+                    if not content_value or content_value == 'null':
+                        # Forcer une valeur par défaut
+                        form.base_fields['language_specific_content'].initial = {
+                            "en": {"content": "", "explanation": ""},
+                            "fr": {"content": "", "explanation": ""},
+                            "es": {"content": "", "explanation": ""},
+                            "nl": {"content": "", "explanation": ""}
+                        }
         
         return form
     def get_fieldsets(self, request, obj=None):
         """Affiche différents fieldsets selon que l'objet utilise le format JSON ou non"""
-        base_fieldsets = [
-            ('Lesson Reference', {
-                'fields': ('content_lesson',)
-            }),
-        ]
+        # En mode édition, rendre le champ content_lesson en lecture seule
+        if obj:
+            base_fieldsets = [
+                ('Lesson Reference (Read-only)', {
+                    'fields': ('content_lesson',),
+                    'classes': ('readonly',),
+                    'description': 'This field cannot be changed after creation.'
+                }),
+            ]
+        else:
+            base_fieldsets = [
+                ('Lesson Reference', {
+                    'fields': ('content_lesson',)
+                }),
+            ]
         
         # Déterminer si nous utilisons JSON - vérifier à la fois l'objet et les données POST
         using_json_format = False
@@ -749,6 +1068,10 @@ class TheoryContentAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         """Définit les champs en lecture seule selon le format utilisé"""
         readonly_fields = ['content_preview']
+        
+        # En mode édition, rendre content_lesson en lecture seule
+        if obj:
+            readonly_fields.append('content_lesson')
         
         # Vérifier si nous utilisons JSON (en édition ou en création)
         using_json_format = False
@@ -824,6 +1147,10 @@ class TheoryContentAdmin(admin.ModelAdmin):
         
         html = ['<div style="max-height: 400px; overflow-y: auto;">']
         
+        # Vérifier que available_languages n'est pas None
+        if not obj.available_languages:
+            return "No languages available"
+            
         for lang in obj.available_languages:
             lang_data = obj.language_specific_content.get(lang, {})
             
@@ -997,14 +1324,12 @@ class VocabularyListAdmin(admin.ModelAdmin):
         }),
     )
 
-
 @admin.register(Numbers)
 class NumbersAdmin(admin.ModelAdmin):
     list_display = ('id', 'number', 'number_en', 'number_fr', 'is_reviewed', 'content_lesson')
     list_filter = ('is_reviewed', 'content_lesson__lesson__unit')
     search_fields = ('number', 'number_en', 'number_fr')
     list_editable = ('is_reviewed',)
-
 
 @admin.register(MatchingExercise)
 class MatchingExerciseAdmin(admin.ModelAdmin):
@@ -1153,6 +1478,28 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
         """Conserve une référence à l'objet en cours d'édition pour le filtrage."""
         request._obj = obj
         return super().get_form(request, obj, **kwargs)
+    
+    def save_model(self, request, obj, form, change):
+        """Surcharge pour vérifier les validations avant sauvegarde"""
+        if form.errors:
+            # Afficher toutes les erreurs dans un message
+            error_messages = []
+            for field, errors in form.errors.items():
+                if field == '__all__':
+                    error_messages.extend(errors)
+                else:
+                    field_label = form.fields.get(field, {}).label or field
+                    for error in errors:
+                        error_messages.append(f"{field_label}: {error}")
+            
+            if error_messages:
+                messages.error(
+                    request,
+                    format_html("Veuillez corriger les erreurs suivantes :<br/>{}",
+                               mark_safe("<br/>".join(error_messages)))
+                )
+        
+        super().save_model(request, obj, form, change)
     
     def add_view(self, request, form_url='', extra_context=None):
         """
@@ -1308,7 +1655,6 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
     
     check_pairs_consistency.short_description = "Vérifier la cohérence des paires"
 
-
 @admin.register(MultipleChoiceQuestion)
 class MultipleChoiceQuestionAdmin(admin.ModelAdmin):
     list_display = ('id', 'question_en', 'correct_answer_en', 'content_lesson')
@@ -1336,7 +1682,6 @@ class MultipleChoiceQuestionAdmin(admin.ModelAdmin):
         }),
     )
 
-
 @admin.register(ExerciseGrammarReordering)
 class ExerciseGrammarReorderingAdmin(admin.ModelAdmin):
     list_display = ('id', 'sentence_en', 'content_lesson')
@@ -1360,7 +1705,6 @@ class ExerciseVocabularyMultipleChoiceAdmin(admin.ModelAdmin):
     list_display = ('id', 'question', 'correct_answer', 'lesson')
     list_filter = ('lesson__unit',)
     search_fields = ('question', 'correct_answer')
-
 
 class FillBlankExerciseAdminForm(forms.ModelForm):
     """Enhanced custom form for Fill in the Blank exercises admin"""
@@ -2457,10 +2801,6 @@ class FillBlankExerciseAdmin(admin.ModelAdmin):
         }
         js = ('js/json_prettify.js',)
 
-
-
-
-
 """
 Admin interfaces for Test Recap functionality in the Linguify course app.
 Will be merged into the main admin.py file after review.
@@ -2530,7 +2870,6 @@ class TestRecapQuestionInline(admin.TabularInline):
         return field_map.get(obj.question_type, "-")
     
     content_id_field.short_description = 'Content ID'
-
 
 @admin.register(TestRecap)
 class TestRecapAdmin(admin.ModelAdmin):
@@ -2790,7 +3129,6 @@ class TestRecapAdmin(admin.ModelAdmin):
         )
     
     duplicate_test.short_description = "Duplicate selected tests"
-
 
 @admin.register(TestRecapResult)
 class TestRecapResultAdmin(admin.ModelAdmin):
