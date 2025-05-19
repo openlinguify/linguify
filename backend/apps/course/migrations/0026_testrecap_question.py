@@ -1,5 +1,5 @@
 from django.db import migrations, models
-from django.db.utils import ProgrammingError
+from django.db.utils import ProgrammingError, OperationalError
 
 
 def check_question_field_exists(apps, schema_editor):
@@ -8,11 +8,18 @@ def check_question_field_exists(apps, schema_editor):
     cursor = schema_editor.connection.cursor()
     
     try:
-        # First check if the field exists
-        cursor.execute(
-            "SELECT column_name FROM information_schema.columns WHERE table_name = 'course_testrecap' AND column_name = 'question'"
-        )
-        question_exists = bool(cursor.fetchone())
+        # Use database-agnostic approach to check if field exists
+        if schema_editor.connection.vendor == 'sqlite':
+            # SQLite approach
+            cursor.execute("PRAGMA table_info(course_testrecap)")
+            columns = cursor.fetchall()
+            question_exists = any(col[1] == 'question' for col in columns)
+        else:
+            # PostgreSQL/MySQL approach
+            cursor.execute(
+                "SELECT column_name FROM information_schema.columns WHERE table_name = 'course_testrecap' AND column_name = 'question'"
+            )
+            question_exists = bool(cursor.fetchone())
         
         # If field doesn't exist, create it
         if not question_exists:
@@ -22,7 +29,7 @@ def check_question_field_exists(apps, schema_editor):
             cursor.execute(
                 "UPDATE course_testrecap SET question = title_en WHERE question IS NULL"
             )
-    except ProgrammingError:
+    except (ProgrammingError, OperationalError):
         # Table might not exist yet, in which case we'll let the standard migration handle it
         pass
 
