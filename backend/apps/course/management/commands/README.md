@@ -4,10 +4,12 @@ This directory contains Django management commands for the course module. Comman
 
 ## Command Structure
 
-All commands are now grouped into three main files:
+All commands are now grouped into main files:
 - `matching_commands.py` - All matching exercise related commands
 - `testrecap_commands.py` - All test recap related commands  
 - `course_maintenance.py` - Maintenance, diagnostic, and setup commands
+- `create_smart_theory_lesson.py` - Theory content creation with templates
+- `analyze_missing_theory.py` - Find and create missing theory content
 - `speaking_auto_associate.py` - Speaking exercise commands (kept separate as it's simpler)
 
 ## Quick Start
@@ -69,6 +71,39 @@ poetry run python manage.py testrecap_commands show
 
 # Fix schema issues and duplicates
 poetry run python manage.py testrecap_commands fix-schema
+```
+
+#### Theory Content
+```bash
+# Preview what would be created for a lesson
+poetry run python manage.py create_smart_theory_lesson --lesson-id 12 --auto-title --dry-run
+
+# Create theory with automatic title detection
+poetry run python manage.py create_smart_theory_lesson --lesson-id 12 --auto-title
+
+# Use a specific template
+poetry run python manage.py create_smart_theory_lesson --lesson-id 45 --template articles
+
+# List all available templates
+poetry run python manage.py create_smart_theory_lesson --list-templates
+
+# Analyze missing theory content
+poetry run python manage.py analyze_missing_theory
+
+# Analyze specific unit
+poetry run python manage.py analyze_missing_theory --unit 6
+
+# Create all missing theory content
+poetry run python manage.py analyze_missing_theory --create
+
+# Generate detailed theory report
+poetry run python manage.py analyze_missing_theory --report
+
+# Check for duplicate theories
+poetry run python manage.py analyze_missing_theory --check-duplicates
+
+# Preview what would be created
+poetry run python manage.py analyze_missing_theory --create --dry-run
 ```
 
 #### Maintenance
@@ -170,6 +205,67 @@ The `setup` command handles everything in one go:
 
 Each question type is assigned appropriate points (1-2) and ordered sequentially.
 
+### create_smart_theory_lesson
+Creates theory content with intelligent title detection and template selection.
+
+Options:
+- `--lesson-id [ID]` - Lesson ID where to add the theory content (required)
+- `--auto-title` - Automatically detect title from lesson context
+- `--title [TITLE]` - Manual title override
+- `--template [NAME]` - Use specific template (dates, articles, etc.)
+- `--order [N]` - Order in the lesson
+- `--dry-run` - Preview what would be created without creating
+- `--list-templates` - List all available templates
+
+Examples:
+```bash
+# Preview creation with auto-detected title
+poetry run python manage.py create_smart_theory_lesson --lesson-id 12 --auto-title --dry-run
+
+# Create with auto-detected title and template
+poetry run python manage.py create_smart_theory_lesson --lesson-id 12 --auto-title
+
+# Use specific template
+poetry run python manage.py create_smart_theory_lesson --lesson-id 45 --template articles
+
+# Manual title and order
+poetry run python manage.py create_smart_theory_lesson --lesson-id 78 --title "Les Pronoms" --order 3
+
+# See available templates
+poetry run python manage.py create_smart_theory_lesson --list-templates
+```
+
+### analyze_missing_theory
+Finds lessons without theory content and optionally creates it.
+
+Options:
+- `--unit [ID]` - Filter by specific unit
+- `--create` - Create theory for all missing lessons
+- `--dry-run` - Preview what would be created
+- `--report` - Generate detailed report with statistics
+- `--check-duplicates` - Check for duplicate theories
+
+Examples:
+```bash
+# Show all lessons without theory
+poetry run python manage.py analyze_missing_theory
+
+# Check specific unit
+poetry run python manage.py analyze_missing_theory --unit 6
+
+# Create theory for all missing lessons
+poetry run python manage.py analyze_missing_theory --create
+
+# Preview what would be created
+poetry run python manage.py analyze_missing_theory --create --dry-run
+
+# Generate detailed report
+poetry run python manage.py analyze_missing_theory --report
+
+# Check for duplicate theories
+poetry run python manage.py analyze_missing_theory --check-duplicates
+```
+
 ### course_maintenance
 Subcommands:
 - `diagnostic` - Run diagnostic checks
@@ -210,6 +306,8 @@ poetry run python manage.py course_maintenance diagnostic
 # After adding vocabulary to a lesson, setup everything in one command
 poetry run python manage.py matching_commands create --lesson-id 5
 poetry run python manage.py testrecap_commands setup --lesson-id 5
+# Add theory content with auto-detection
+poetry run python manage.py create_smart_theory_lesson --lesson-id 5 --auto-title
 ```
 
 ### Creating Test Recaps
@@ -236,6 +334,49 @@ poetry run python manage.py matching_commands fix --force
 # Fix orphaned content
 poetry run python manage.py course_maintenance fix-orphaned
 ```
+
+### Creating Theory Content
+```bash
+# 1. Check what's missing
+poetry run python manage.py analyze_missing_theory
+
+# 2. Preview creation for specific lesson
+poetry run python manage.py create_smart_theory_lesson --lesson-id 162 --auto-title --dry-run
+
+# 3. Create theory content
+poetry run python manage.py create_smart_theory_lesson --lesson-id 162 --auto-title
+
+# 4. Or create for all missing lessons
+poetry run python manage.py analyze_missing_theory --create
+```
+
+## Theory Content Details
+
+### Available Templates
+The `create_smart_theory_lesson` command includes templates for common topics:
+- `articles` - Definite/indefinite articles (the, a, an, le, la, un, une)
+- `dates` - Dates and calendar vocabulary
+- `time` - Time-related vocabulary
+- `numbers` - Numbers and counting
+- `colors` - Color vocabulary
+- `family` - Family member terms
+- `greetings` - Common greetings
+- `pronouns` - Personal pronouns
+- `verbs` - Verb conjugations
+- `generic` - Default template for other topics
+
+Templates are automatically selected based on lesson title keywords. You can also specify a template manually.
+
+### Title Detection
+The smart title extraction looks for patterns in lesson titles:
+- "Unit X - Topic - Type" → "Topic"
+- "Topic - Type" → "Topic"  
+- Falls back to first part before any delimiter
+
+Examples:
+- "Unit 3 - Articles - Grammar" → "Articles"
+- "Dates and Time - Vocabulary" → "Dates and Time"
+- "Greeting - Vocabulary" → "Greeting"
 
 ## Getting Help
 
@@ -289,7 +430,95 @@ The admin shows "In Content" ✓ when:
 - A ContentLesson exists for the same lesson with `content_type='test_recap'`
 - This is why `setup` and `create` commands now create ContentLesson by default
 
+
+### Theory Content Analysis Scripts
+
+Additional utility scripts for theory content management are now located in `scripts/course/theory/`:
+
+```bash
+# 1. Verify and fix duplicate theories
+python scripts/course/theory/find_duplicate_theories.py
+
+# 2. Intelligent duplicate removal (keeps best version)
+python scripts/course/theory/fix_duplicate_theories_smart.py
+
+# 3. Detailed inspection of duplicates
+python scripts/course/theory/inspect_duplicate_theories.py
+
+# 4. Debug theory creation issues
+python scripts/course/theory/debug_theory_creation.py
+
+# 5. Complete theory content report
+python scripts/course/theory/theory_content_report.py
+
+# 6. Fix theory content_type case issues
+python scripts/course/theory/fix_theory_case.py
+
+# 7. Preview theory creation for specific lessons
+python scripts/course/theory/preview_theory_creation.py --lesson-id 12
+```
+
+### Matching Exercise Scripts
+
+Utility scripts for matching exercises are located in `scripts/course/matching/`:
+
+```bash
+# Debug matching exercises
+python scripts/course/matching/debug_matching_exercises.py
+
+# List matching issues
+python scripts/course/matching/list_matching_issues.py
+
+# Split matching exercises
+python scripts/course/matching/split_matching_exercises.py
+
+# Update matching pairs count
+python scripts/course/matching/update_matching_pairs_count.py
+```
+
+### Quick Diagnostics
+
+```bash
+# Check overall theory coverage
+python manage.py analyze_missing_theory --report
+
+# Find duplicate theories
+python manage.py analyze_missing_theory --check-duplicates
+
+# Debug specific lessons
+python scripts/course/theory/inspect_duplicate_theories.py
+
+# Full system diagnostic
+python scripts/course/theory/theory_content_report.py
+```
+
+## Project Structure
+
+The commands are organized as follows:
+
+```
+backend/apps/course/management/commands/
+├── README.md
+├── analyze_missing_theory.py        # Main theory analysis command
+├── create_smart_theory_lesson.py    # Main theory creation command
+├── matching_commands.py             # Main matching exercises command
+├── testrecap_commands.py           # Main test recap command
+├── course_maintenance.py           # Main maintenance command
+└── speaking_auto_associate.py      # Main speaking exercises command
+
+backend/scripts/course/
+├── theory/                         # Theory-related utility scripts
+│   ├── debug_theory_creation.py
+│   ├── find_duplicate_theories.py
+│   └── ... (other theory utilities)
+├── matching/                       # Matching exercise utilities
+│   ├── debug_matching_exercises.py
+│   ├── list_matching_issues.py
+│   └── ... (other matching utilities)
+└── utilities/                      # General utilities
+    └── remove_default_content_lesson.py
+```
 ---
 
-Last updated: 2025-05-19
-Version: 2.2 (Simplified test recap commands with setup)
+Last updated: 2025-01-07
+Version: 2.3 (Added theory content creation commands)
