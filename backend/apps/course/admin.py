@@ -1,4 +1,5 @@
 # course/admin.py
+from django.core.management import call_command
 from django.contrib import admin, messages
 from django.utils.html import format_html, mark_safe
 from django import forms
@@ -8,8 +9,14 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
+from django.db.models import Count, Q
+from io import StringIO
+import sys
+import os
 import csv, io, json
+import tempfile
 import logging
+import re
 logger = logging.getLogger(__name__)
 
 from .widgets import AdminJSONFormField
@@ -60,20 +67,635 @@ class UnitAdmin(admin.ModelAdmin):
                           f"{count} lessons")
     lesson_count.short_description = 'Lessons'
 
-class ContentLessonInline(admin.TabularInline):
-    model = ContentLesson
-    extra = 0
-    show_change_link = True
-    fields = ('title_en', 'content_type', 'order')
-    ordering = ('order',)
+# Nouvelle classe à ajouter avant ContentLessonAdmin
+class VocabularyCountFilter(admin.SimpleListFilter):
+    title = 'Nombre de mots de vocabulaire'
+    parameter_name = 'vocab_count'
 
+    def lookups(self, request, model_admin):
+        return (
+            ('small', 'Moins de 10 mots'),
+            ('medium', '10-20 mots'),
+            ('large', '21-30 mots'),
+            ('very_large', 'Plus de 30 mots'),
+        )
 
+    def queryset(self, request, queryset):
+        # Ne filtrer pour le type vocabulaire que si un filtre est sélectionné
+        if self.value():
+            # Filtrer uniquement les leçons de vocabulaire
+            queryset = queryset.filter(content_type__icontains='vocabulary')
+            
+            # Annoter avec le compte de vocabulaire
+            queryset = queryset.annotate(vocab_count=Count('vocabulary_lists'))
+            
+            if self.value() == 'small':
+                return queryset.filter(vocab_count__lt=10)
+            if self.value() == 'medium':
+                return queryset.filter(vocab_count__gte=10, vocab_count__lte=20)
+            if self.value() == 'large':
+                return queryset.filter(vocab_count__gt=20, vocab_count__lte=30)
+            if self.value() == 'very_large':
+                return queryset.filter(vocab_count__gt=30)
+        
+        return queryset
+
+# Formulaire pour la configuration de la division de vocabulaire
+class SplitVocabularyForm(forms.Form):
+    parts = forms.IntegerField(
+        label="Nombre de parties", 
+        initial=2,
+        min_value=2,
+        max_value=10,
+        help_text="En combien de parties diviser cette leçon de vocabulaire"
+    )
+    manual_selection = forms.BooleanField(
+        label="Sélection manuelle des mots",
+        help_text="Permet de choisir manuellement quels mots vont dans quelles parties",
+        required=False
+    )
+    target_unit = forms.ModelChoiceField(
+        queryset=Unit.objects.all().order_by('level', 'order'),
+        label="Unité cible globale",
+        help_text="Unité où placer TOUTES les nouvelles leçons. Si non sélectionnée, l'unité actuelle est utilisée.",
+        required=False
+    )
+    target_units = forms.CharField(
+        label="Unités cibles spécifiques",
+        help_text="IDs des unités séparés par des virgules pour assigner des unités différentes aux parties 2, 3, etc. Exemple: \"30,32\" placera la partie 2 dans l'unité 30 et la partie 3 dans l'unité 32. La partie 1 reste toujours dans l'unité d'origine.",
+        required=False
+    )
+    
+    def clean_target_units(self):
+        """Valide que les IDs d'unités spécifiés existent bien dans la base de données"""
+        target_units = self.cleaned_data.get('target_units')
+        
+        if not target_units:
+            return target_units
+            
+        # Vérifier la validité des IDs d'unités
+        unit_ids = []
+        try:
+            for unit_id_str in target_units.split(','):
+                if unit_id_str.strip():
+                    unit_id = int(unit_id_str.strip())
+                    unit_ids.append(unit_id)
+        except ValueError:
+            raise forms.ValidationError("Format invalide. Entrez des IDs d'unités séparés par des virgules (ex: 30,32)")
+            
+        # Vérifier que les unités existent
+        if unit_ids:
+            existing_units = Unit.objects.filter(id__in=unit_ids).values_list('id', flat=True)
+            missing_units = set(unit_ids) - set(existing_units)
+            
+            if missing_units:
+                raise forms.ValidationError(f"Les unités suivantes n'existent pas: {', '.join(map(str, missing_units))}")
+        
+        # Prévenir l'utilisateur si le nombre d'unités cibles ne correspond pas aux nombres de parties
+        parts = self.cleaned_data.get('parts', 0)
+        if parts > 0 and unit_ids:
+            needed_units = parts - 1  # La première partie reste dans l'unité d'origine
+            if len(unit_ids) < needed_units:
+                # C'est un avertissement, pas une erreur bloquante
+                pass  # Les parties sans unité spécifiée utiliseront l'unité par défaut
+            elif len(unit_ids) > needed_units:
+                remaining = len(unit_ids) - needed_units
+                # C'est juste un avertissement, pas une erreur bloquante
+                # messages.warning(self.request, f"{remaining} unités supplémentaires spécifiées ne seront pas utilisées.")
+                pass
+                
+        return target_units
+        
+    def clean(self):
+        """Validation globale du formulaire"""
+        cleaned_data = super().clean()
+        parts = cleaned_data.get('parts', 0)
+        target_units = cleaned_data.get('target_units', '')
+        
+        # Si des unités cibles spécifiques sont définies, vérifier leur cohérence avec le nombre de parties
+        if target_units and parts > 0:
+            unit_count = len([u for u in target_units.split(',') if u.strip()])
+            needed_units = parts - 1  # La première partie reste dans l'unité d'origine
+            
+            if unit_count < needed_units:
+                self.add_warning(f"Vous avez spécifié {unit_count} unités cibles pour {needed_units} parties supplémentaires. " +
+                               f"Les parties sans unité assignée utiliseront l'unité cible globale ou l'unité actuelle.")
+            elif unit_count > needed_units:
+                self.add_warning(f"Vous avez spécifié {unit_count} unités cibles alors que vous n'avez que {needed_units} parties supplémentaires. " +
+                               f"Les {unit_count - needed_units} dernières unités ne seront pas utilisées.")
+        
+        return cleaned_data
+        
+    def add_warning(self, message):
+        """Ajoute un avertissement non bloquant au formulaire"""
+        # Dans un formulaire normal, on ne peut pas facilement afficher des warnings sans bloquer la validation
+        # Cette méthode est un placeholder pour une future amélioration
+        # Pour le moment, on ajoute simplement une note à la description du champ
+        pass
+    thematic = forms.BooleanField(
+        label="Groupement thématique",
+        help_text="Essayer de regrouper les mots par thème/similarité",
+        required=False
+    )
+    create_matching = forms.BooleanField(
+        label="Créer des exercices de matching",
+        help_text="Créer automatiquement des exercices de matching pour les nouvelles leçons",
+        required=False
+    )
+    keep_original = forms.BooleanField(
+        label="Conserver le titre original",
+        help_text="Ne pas renommer la leçon originale (par défaut ajoutera ' 1' au titre)",
+        required=False
+    )
+    dry_run = forms.BooleanField(
+        label="Mode simulation",
+        help_text="Afficher ce qui serait fait sans appliquer les changements",
+        required=False,
+        initial=True
+    )
+
+# Remplacer la classe ContentLessonAdmin existante par celle-ci
 @admin.register(ContentLesson)
 class ContentLessonAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title_en', 'content_type', 'lesson', 'order', 'estimated_duration')
-    list_filter = ('content_type', 'lesson__unit', 'lesson__lesson_type')
+    list_display = ('id', 'title_en', 'content_type', 'lesson', 'order', 'estimated_duration', 'get_vocab_count')
+    list_filter = ('content_type', 'lesson__unit', 'lesson__lesson_type', VocabularyCountFilter)
     search_fields = ('title_en', 'title_fr', 'instruction_en')
     ordering = ('lesson', 'order')
+    actions = ['split_vocabulary_action']
+    
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'split-vocabulary/<int:content_lesson_id>/',
+                self.admin_site.admin_view(self.split_vocabulary_view),
+                name='course_contentlesson_split-vocabulary',
+            ),
+        ]
+        return custom_urls + urls
+    
+    def get_vocab_count(self, obj):
+        """Affiche le nombre de mots de vocabulaire associés."""
+        if 'vocabulary' in obj.content_type.lower():
+            count = obj.vocabulary_lists.count()
+            if count > 20:
+                return format_html('<span style="color: red; font-weight: bold;">{}</span>', count)
+            elif count > 10:
+                return format_html('<span style="color: orange;">{}</span>', count)
+            return count
+        return "-"
+    get_vocab_count.short_description = 'Mots'
+    
+    def split_vocabulary_action(self, request, queryset):
+        """Action pour diviser des leçons de vocabulaire."""
+        # Vérifier qu'une seule leçon est sélectionnée
+        if queryset.count() != 1:
+            self.message_user(request, "Veuillez sélectionner une seule leçon de vocabulaire à diviser.", level=messages.ERROR)
+            return
+        
+        # Vérifier que c'est une leçon de vocabulaire
+        content_lesson = queryset.first()
+        if 'vocabulary' not in content_lesson.content_type.lower():
+            self.message_user(request, f"La leçon '{content_lesson.title_en}' n'est pas une leçon de vocabulaire.", level=messages.ERROR)
+            return
+        
+        # Vérifier qu'il y a suffisamment de mots
+        vocab_count = content_lesson.vocabulary_lists.count()
+        if vocab_count < 10:
+            self.message_user(
+                request, 
+                f"La leçon ne contient que {vocab_count} mots, ce qui est probablement trop peu pour une division.", 
+                level=messages.WARNING
+            )
+        
+        # Rediriger vers le formulaire de configuration
+        return HttpResponseRedirect(
+            reverse('admin:course_contentlesson_split-vocabulary', args=[content_lesson.id])
+        )
+    split_vocabulary_action.short_description = "Diviser leçon de vocabulaire en plusieurs parties"
+    
+    def split_vocabulary_view(self, request, content_lesson_id):
+        """Vue pour configurer et exécuter la division de vocabulaire avec sélection manuelle et prévisualisation."""
+        content_lesson = self.get_object(request, content_lesson_id)
+        if not content_lesson:
+            return self.admin_site.admin_view(self.changelist_view)(request)
+        
+        # Vérifier que c'est une leçon de vocabulaire
+        if 'vocabulary' not in content_lesson.content_type.lower():
+            self.message_user(request, f"La leçon '{content_lesson.title_en}' n'est pas une leçon de vocabulaire.", level=messages.ERROR)
+            return HttpResponseRedirect(reverse('admin:course_contentlesson_changelist'))
+        
+        vocab_count = content_lesson.vocabulary_lists.count()
+        title = f"Diviser la leçon '{content_lesson.title_en}' ({vocab_count} mots)"
+        
+        # 1. Étape initiale : configuration de base
+        if request.method == 'POST' and 'manual_selection_submitted' not in request.POST and 'confirmation_submitted' not in request.POST:
+            form = SplitVocabularyForm(request.POST)
+            if form.is_valid():
+                # Récupérer les paramètres de base
+                parts = form.cleaned_data['parts']
+                target_unit = form.cleaned_data['target_unit']
+                target_units = form.cleaned_data['target_units']
+                thematic = form.cleaned_data['thematic']
+                create_matching = form.cleaned_data['create_matching']
+                keep_original = form.cleaned_data['keep_original']
+                dry_run = form.cleaned_data['dry_run']
+                manual_selection = form.cleaned_data['manual_selection']
+                
+                # Si sélection manuelle demandée, passer à l'étape de sélection manuelle
+                if manual_selection:
+                    # Récupérer tous les mots de vocabulaire
+                    vocabulary_items = list(VocabularyList.objects.filter(content_lesson=content_lesson))
+                    
+                    # Préparer le contexte pour la page de sélection manuelle
+                    context = {
+                        'title': 'Sélection manuelle des mots',
+                        'app_label': self.model._meta.app_label,
+                        'opts': self.model._meta,
+                        'content_lesson': content_lesson,
+                        'vocabulary_items': vocabulary_items,
+                        'parts': parts,
+                        'parts_range': range(1, parts + 1),
+                        'params': {
+                            'parts': parts,
+                            'target_unit': target_unit.id if target_unit else '',
+                            'target_units': target_units,
+                            'thematic': 'on' if thematic else '',
+                            'create_matching': 'on' if create_matching else '',
+                            'keep_original': 'on' if keep_original else '',
+                            'dry_run': 'on' if dry_run else '',
+                            'manual_selection': 'on' if manual_selection else '',
+                        },
+                        'media': self.media,
+                        'is_popup': False,
+                    }
+                    
+                    # Afficher la page de sélection manuelle
+                    return TemplateResponse(
+                        request,
+                        'admin/course/contentlesson/manual_selection_form.html',
+                        context
+                    )
+                else:
+                    # Passer directement à la prévisualisation
+                    return self._handle_preview_request(request, content_lesson, parts, target_unit, target_units, 
+                                                      thematic, create_matching, keep_original, dry_run, manual_selection)
+        
+        # 2. Étape de sélection manuelle
+        elif request.method == 'POST' and 'manual_selection_submitted' in request.POST:
+            # Récupérer les paramètres
+            parts = int(request.POST.get('parts', 2))
+            target_unit_id = request.POST.get('target_unit', '')
+            target_unit = Unit.objects.get(id=target_unit_id) if target_unit_id and target_unit_id.isdigit() else None
+            target_units = request.POST.get('target_units', '')
+            thematic = 'thematic' in request.POST
+            create_matching = 'create_matching' in request.POST
+            keep_original = 'keep_original' in request.POST
+            # Correction: respecter l'option dry_run telle qu'elle était dans le formulaire précédent
+            dry_run = request.POST.get('dry_run') == 'on'
+            manual_selection = True
+            
+            # Si annulation demandée, retourner au formulaire initial
+            if '_cancel' in request.POST:
+                return HttpResponseRedirect(reverse('admin:course_contentlesson_split-vocabulary', args=[content_lesson_id]))
+            
+            # Récupérer les assignations de mots
+            word_assignments = {}
+            for key, value in request.POST.items():
+                if key.startswith('word_') and key != 'word_assignments':
+                    word_id = key.split('_')[1]
+                    word_assignments[word_id] = value
+            
+            # Passer à la prévisualisation
+            return self._handle_preview_request(request, content_lesson, parts, target_unit, target_units, 
+                                              thematic, create_matching, keep_original, dry_run, manual_selection, 
+                                              word_assignments)
+        
+        # 3. Étape de confirmation finale
+        elif request.method == 'POST' and 'confirmation_submitted' in request.POST:
+            # Récupérer les paramètres
+            parts = int(request.POST.get('parts', 2))
+            target_unit_id = request.POST.get('target_unit', '')
+            target_unit = Unit.objects.get(id=target_unit_id) if target_unit_id and target_unit_id.isdigit() else None
+            target_units = request.POST.get('target_units', '')
+            thematic = 'thematic' in request.POST
+            create_matching = 'create_matching' in request.POST
+            keep_original = 'keep_original' in request.POST
+            # Correction: respecter l'option dry_run telle qu'elle était dans le formulaire précédent
+            dry_run = request.POST.get('dry_run') == 'on'
+            manual_selection = 'manual_selection' in request.POST
+            
+            # Récupérer les assignations de mots
+            word_assignments = {}
+            for key, value in request.POST.items():
+                if key.startswith('word_') and key != 'word_assignments':
+                    word_id = key.split('_')[1]
+                    word_assignments[word_id] = value
+            
+            # Exécuter la commande
+            return self._execute_split_command(request, content_lesson_id, parts, target_unit, target_units,
+                                             thematic, create_matching, keep_original, dry_run, manual_selection,
+                                             word_assignments)
+        
+        # Formulaire initial
+        else:
+            # Calculer le nombre optimal de parties
+            optimal_parts = max(2, round(vocab_count / 12))
+            form = SplitVocabularyForm(initial={'parts': optimal_parts})
+        
+            # Préparer le contexte
+            context = {
+                'title': title,
+                'app_label': self.model._meta.app_label,
+                'opts': self.model._meta,
+                'form': form,
+                'content_lesson': content_lesson,
+                'vocab_count': vocab_count,
+                'media': self.media,
+                'is_popup': False,
+            }
+            
+            # Afficher le formulaire initial
+            return TemplateResponse(
+                request,
+                'admin/course/contentlesson/split_vocabulary_form.html',
+                context
+            )
+    
+    def _handle_preview_request(self, request, content_lesson, parts, target_unit, target_units, 
+                               thematic, create_matching, keep_original, dry_run, manual_selection, 
+                               word_assignments=None):
+        """Gère la prévisualisation de la division."""
+        # Récupérer les mots de vocabulaire
+        vocabulary_items = list(VocabularyList.objects.filter(content_lesson=content_lesson))
+        
+        # Préparer la structure de prévisualisation
+        parent_lesson = content_lesson.lesson
+        original_title = parent_lesson.title_en
+        
+        # Analyser le titre pour extraire la base et un éventuel numéro existant
+        base_title, current_number = self._parse_lesson_title(original_title)
+        
+        # Correction : Si pas de numéro, le titre devient toujours "Titre 1" sauf si keep_original
+        # Le premier titre doit toujours avoir le numéro 1 pour correspondre à ce que fait la commande
+        new_title = original_title if keep_original else f"{base_title} 1"
+        
+        # Générer les nouveaux titres
+        new_titles = [new_title]
+        for i in range(2, parts + 1):
+            new_titles.append(f"{base_title} {i}")
+        
+        # Déterminer les unités cibles
+        current_unit = parent_lesson.unit
+        target_units_list = []
+        
+        # Unité par défaut (soit celle spécifiée, soit l'unité actuelle)
+        default_target_unit = target_unit if target_unit else current_unit
+        
+        # La première partie reste dans l'unité actuelle
+        target_units_list.append(current_unit)
+        
+        # Déterminer les unités cibles pour les parties 2+
+        if target_units:
+            unit_ids = [int(unit_id.strip()) for unit_id in target_units.split(',') if unit_id.strip()]
+            for i in range(1, parts):
+                if i-1 < len(unit_ids):
+                    # Utiliser l'unité spécifiée pour cette partie
+                    try:
+                        target_unit_obj = Unit.objects.get(id=unit_ids[i-1])
+                        target_units_list.append(target_unit_obj)
+                    except Unit.DoesNotExist:
+                        # Fallback sur l'unité par défaut
+                        target_units_list.append(default_target_unit)
+                else:
+                    # Pas d'unité spécifiée pour cette partie, utiliser l'unité par défaut
+                    target_units_list.append(default_target_unit)
+        else:
+            # Pas d'unités spécifiques, utiliser l'unité par défaut pour toutes les parties 2+
+            for i in range(1, parts):
+                target_units_list.append(default_target_unit)
+        
+        # Répartir les mots selon la sélection manuelle ou automatiquement
+        word_groups = []
+        
+        if manual_selection and word_assignments:
+            # Initialiser les groupes vides
+            for _ in range(parts):
+                word_groups.append([])
+            
+            # Répartir les mots selon les assignations
+            for word in vocabulary_items:
+                word_id = str(word.id)
+                if word_id in word_assignments:
+                    part = int(word_assignments[word_id])
+                    if 1 <= part <= parts:
+                        word_groups[part-1].append(word)
+                    else:
+                        # Fallback sur la partie 1 si la partie assignée est invalide
+                        word_groups[0].append(word)
+                else:
+                    # Fallback sur la partie 1 si le mot n'a pas d'assignation
+                    word_groups[0].append(word)
+        else:
+            # Division automatique en parties égales
+            words_per_part = len(vocabulary_items) // parts
+            for i in range(parts):
+                start = i * words_per_part
+                end = start + words_per_part if i < parts-1 else len(vocabulary_items)
+                word_groups.append(vocabulary_items[start:end])
+        
+        # Compter les mots dans chaque partie
+        word_counts = [len(group) for group in word_groups]
+        
+        # Créer la structure de prévisualisation
+        preview_structure = []
+        
+        # Regrouper par unité
+        unit_map = {}
+        
+        for i, unit in enumerate(target_units_list):
+            if unit.id not in unit_map:
+                unit_map[unit.id] = {
+                    'unit': unit,
+                    'lessons': []
+                }
+            
+            # Ajouter la leçon dans cette unité
+            is_new = i > 0  # Première partie = leçon originale
+            is_renamed = i == 0 and not keep_original
+            
+            unit_map[unit.id]['lessons'].append({
+                'title': new_titles[i],
+                'is_new': is_new,
+                'is_renamed': is_renamed,
+                'content_lesson_title': content_lesson.title_en,
+                'word_count': word_counts[i],
+                'words': word_groups[i]
+            })
+        
+        # Convertir la map en liste pour le template
+        for unit_id, unit_data in unit_map.items():
+            preview_structure.append(unit_data)
+        
+        # Convertir les objets range en listes pour faciliter l'indexation dans le template
+        parts_range_list = list(range(1, parts + 1))
+        new_parts_indices_list = list(range(1, parts))
+        
+        # Préparer le contexte pour la page de prévisualisation
+        context = {
+            'title': 'Prévisualisation de la division',
+            'app_label': self.model._meta.app_label,
+            'opts': self.model._meta,
+            'content_lesson': content_lesson,
+            'parts': parts,
+            'parts_range': parts_range_list,
+            'new_parts_indices': new_parts_indices_list,
+            'manual_selection': manual_selection,
+            'dry_run': dry_run,
+            'preview_structure': preview_structure,
+            'current_lesson_title': original_title,
+            'new_lesson_titles': new_titles,
+            'target_units': target_units_list,
+            'word_counts': word_counts,
+            'vocabulary_items': vocabulary_items,
+            'word_assignments': word_assignments or {},
+            'create_matching': create_matching,
+            'params': {
+                'parts': parts,
+                'target_unit': target_unit.id if target_unit else '',
+                'target_units': target_units,
+                'thematic': 'on' if thematic else '',
+                'create_matching': 'on' if create_matching else '',
+                'keep_original': 'on' if keep_original else '',
+                'dry_run': 'on' if dry_run else '',
+                'manual_selection': 'on' if manual_selection else '',
+            },
+            'media': self.media,
+            'is_popup': False,
+        }
+        
+        # Afficher la page de prévisualisation
+        return TemplateResponse(
+            request,
+            'admin/course/contentlesson/preview_split_result.html',
+            context
+        )
+    
+    def _execute_split_command(self, request, content_lesson_id, parts, target_unit, target_units,
+                              thematic, create_matching, keep_original, dry_run, manual_selection,
+                              word_assignments=None):
+        """Exécute la commande de division."""
+        # Créer un buffer pour capturer la sortie de la commande
+        stdout_backup = sys.stdout
+        output = StringIO()
+        sys.stdout = output
+        
+        try:
+            # Préparer les arguments de base
+            options = {
+                'lesson_id': content_lesson_id,
+                'parts': parts,
+                'dry_run': dry_run,
+                'thematic': thematic,
+                'create_matching': create_matching,
+                'keep_original': keep_original,
+            }
+            
+            # Ajouter l'unité cible si spécifiée
+            if target_unit:
+                options['target_unit_id'] = target_unit.id
+            
+            # Ajouter les unités cibles spécifiques si spécifiées
+            if target_units:
+                options['target_units'] = target_units
+            
+            # Ajouter les assignations manuelles si spécifiées
+            if manual_selection and word_assignments:
+                # Créer un fichier temporaire pour les assignations
+                with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.json') as temp_file:
+                    # Formater les données
+                    json.dump(word_assignments, temp_file)
+                    temp_file_path = temp_file.name
+                
+                # Ajouter le fichier aux options
+                options['manual_selection'] = True
+                options['word_assignments'] = temp_file_path
+            
+            # Exécuter la commande
+            call_command('split_vocabulary_lesson', **options)
+            
+            # Récupérer la sortie
+            command_output = output.getvalue()
+            
+            # Afficher un message de succès
+            if dry_run:
+                self.message_user(
+                    request, 
+                    f"Simulation de division terminée. Vérifiez les détails ci-dessous.", 
+                    level=messages.SUCCESS
+                )
+            else:
+                self.message_user(
+                    request, 
+                    f"Division terminée avec succès ! La leçon a été divisée en {parts} parties.", 
+                    level=messages.SUCCESS
+                )
+            
+            # Préparer le contexte pour la page de résultat
+            context = {
+                'title': 'Résultat de la division',
+                'app_label': self.model._meta.app_label,
+                'opts': self.model._meta,
+                'original': self.get_object(request, content_lesson_id),
+                'command_output': command_output,
+                'was_dry_run': dry_run,
+                'media': self.media,
+                'is_popup': False,
+            }
+            
+            # Nettoyer les fichiers temporaires
+            if manual_selection and word_assignments and 'word_assignments' in options:
+                try:
+                    os.unlink(options['word_assignments'])
+                except:
+                    pass
+            
+            # Afficher la page de résultat
+            return TemplateResponse(
+                request,
+                'admin/course/contentlesson/split_vocabulary_result.html',
+                context
+            )
+            
+        except Exception as e:
+            self.message_user(
+                request, 
+                f"Erreur lors de la division: {str(e)}", 
+                level=messages.ERROR
+            )
+        finally:
+            sys.stdout = stdout_backup
+            
+            # Nettoyer les fichiers temporaires
+            if manual_selection and word_assignments and 'word_assignments' in locals().get('options', {}):
+                try:
+                    os.unlink(options['word_assignments'])
+                except:
+                    pass
+        
+        return HttpResponseRedirect(reverse('admin:course_contentlesson_changelist'))
+    
+    def _parse_lesson_title(self, title):
+        """Analyse le titre de la leçon pour extraire le nom de base et le numéro éventuel."""
+        # Chercher un numéro à la fin du titre (ex: "Animals 1")
+        match = re.search(r'^(.*?)\s+(\d+)$', title)
+        if match:
+            base_title = match.group(1).strip()
+            number = int(match.group(2))
+            return base_title, number
+        else:
+            # Pas de numéro trouvé
+            return title, None
     
     fieldsets = (
         ('Basic Information', {
@@ -86,8 +708,6 @@ class ContentLessonAdmin(admin.ModelAdmin):
             'fields': ('instruction_en', 'instruction_fr', 'instruction_es', 'instruction_nl')
         }),
     )
-
-
 class LessonAdminForm(forms.ModelForm):
     class Meta:
         model = Lesson
@@ -197,6 +817,13 @@ class QuickMatchingExerciseForm(forms.Form):
         # Validation personnalisée si nécessaire
         return super().clean()
 
+
+class ContentLessonInline(admin.TabularInline):
+    model = ContentLesson
+    extra = 0
+    show_change_link = True
+    fields = ('title_en', 'content_type', 'order', 'estimated_duration')
+    ordering = ('order',)
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
