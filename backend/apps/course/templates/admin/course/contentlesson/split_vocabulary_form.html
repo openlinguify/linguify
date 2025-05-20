@@ -1,0 +1,164 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+  <style>
+    .field-box {
+      margin-bottom: 15px;
+    }
+    .help-text {
+      color: #666;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+    .stats-box {
+      background-color: #f8f8f8;
+      border: 1px solid #ddd;
+      padding: 10px 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    .stats-item {
+      margin-bottom: 8px;
+    }
+    .stats-label {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    .important-note {
+      margin: 20px 0;
+      padding: 10px;
+      background-color: #fff8e1;
+      border-left: 5px solid #ffc107;
+    }
+  </style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; <a href="{% url 'admin:course_contentlesson_changelist' %}">Content Lessons</a>
+&rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <div class="stats-box">
+    <h3>Informations sur la leçon</h3>
+    <div class="stats-item">
+      <span class="stats-label">Titre:</span> {{ content_lesson.title_en }}
+    </div>
+    <div class="stats-item">
+      <span class="stats-label">ID:</span> {{ content_lesson.id }}
+    </div>
+    <div class="stats-item">
+      <span class="stats-label">Type:</span> {{ content_lesson.content_type }}
+    </div>
+    <div class="stats-item">
+      <span class="stats-label">Leçon parente:</span> {{ content_lesson.lesson.title_en }} (ID: {{ content_lesson.lesson.id }})
+    </div>
+    <div class="stats-item">
+      <span class="stats-label">Unité:</span> {{ content_lesson.lesson.unit.level }}-{{ content_lesson.lesson.unit.order }} ({{ content_lesson.lesson.unit.title_en }})
+    </div>
+    <div class="stats-item">
+      <span class="stats-label">Nombre de mots:</span> <strong>{{ vocab_count }}</strong>
+    </div>
+  </div>
+
+  <div class="important-note">
+    <p><strong>Important:</strong> Cette action va diviser la leçon de vocabulaire en plusieurs parties. Si vous choisissez d'exécuter (sans mode simulation), elle va:</p>
+    <ul>
+      <li>Renommer la leçon actuelle en ajoutant un numéro (ex: "Animals" → "Animals 1")</li>
+      <li>Créer de nouvelles leçons pour les autres parties (ex: "Animals 2", "Animals 3")</li>
+      <li>Répartir le vocabulaire entre ces leçons</li>
+    </ul>
+    <p>Commencez par une simulation (mode par défaut) pour voir ce qui sera fait sans appliquer les changements.</p>
+  </div>
+
+  <form action="" method="post">
+    {% csrf_token %}
+    <fieldset class="module aligned">
+      <div class="form-row">
+        {{ form.parts.errors }}
+        <div class="field-box">
+          <label for="{{ form.parts.id_for_label }}">{{ form.parts.label }}:</label>
+          {{ form.parts }}
+          <div class="help-text">{{ form.parts.help_text }}</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        {{ form.target_unit.errors }}
+        <div class="field-box">
+          <label for="{{ form.target_unit.id_for_label }}">{{ form.target_unit.label }}:</label>
+          {{ form.target_unit }}
+          <div class="help-text">{{ form.target_unit.help_text }}</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        {{ form.target_units.errors }}
+        <div class="field-box">
+          <label for="{{ form.target_units.id_for_label }}">{{ form.target_units.label }}:</label>
+          {{ form.target_units }}
+          <div class="help-text">{{ form.target_units.help_text }}</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        {{ form.manual_selection.errors }}
+        <div class="field-box">
+          <label for="{{ form.manual_selection.id_for_label }}">{{ form.manual_selection.label }}:</label>
+          {{ form.manual_selection }}
+          <div class="help-text">{{ form.manual_selection.help_text }}</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        {{ form.thematic.errors }}
+        <div class="field-box">
+          <label for="{{ form.thematic.id_for_label }}">{{ form.thematic.label }}:</label>
+          {{ form.thematic }}
+          <div class="help-text">{{ form.thematic.help_text }}</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        {{ form.create_matching.errors }}
+        <div class="field-box">
+          <label for="{{ form.create_matching.id_for_label }}">{{ form.create_matching.label }}:</label>
+          {{ form.create_matching }}
+          <div class="help-text">{{ form.create_matching.help_text }}</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        {{ form.keep_original.errors }}
+        <div class="field-box">
+          <label for="{{ form.keep_original.id_for_label }}">{{ form.keep_original.label }}:</label>
+          {{ form.keep_original }}
+          <div class="help-text">{{ form.keep_original.help_text }}</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        {{ form.dry_run.errors }}
+        <div class="field-box">
+          <label for="{{ form.dry_run.id_for_label }}">{{ form.dry_run.label }}:</label>
+          {{ form.dry_run }}
+          <div class="help-text">{{ form.dry_run.help_text }}</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="submit-row">
+      <input type="submit" value="Exécuter la division" class="default" name="_save">
+      <a href="{% url 'admin:course_contentlesson_changelist' %}" class="closelink">Annuler</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

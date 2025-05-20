@@ -11,6 +11,7 @@ All commands are now grouped into main files:
 - `create_smart_theory_lesson.py` - Theory content creation with templates
 - `analyze_missing_theory.py` - Find and create missing theory content
 - `speaking_auto_associate.py` - Speaking exercise commands (kept separate as it's simpler)
+- `split_vocabulary_lesson.py` - Split large vocabulary lessons into multiple parts
 
 ## Quick Start
 
@@ -71,6 +72,27 @@ poetry run python manage.py testrecap_commands show
 
 # Fix schema issues and duplicates
 poetry run python manage.py testrecap_commands fix-schema
+```
+
+#### Vocabulary Lesson Splitting (Look at the id of contend lesson)
+```bash
+# Preview splitting a vocabulary lesson into parts
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --dry-run --interactive
+
+# Split with specific number of parts 
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --parts=3 --dry-run
+
+# Split to different target units
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --target-unit-id=15 --dry-run
+
+# Split to multiple different target units
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --parts=3 --target-units=15,22 --dry-run
+
+# Manual selection of words per part
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --parts=3 --interactive --manual-selection
+
+# Complete example with all options 
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --parts=3 --target-units=15,22 --interactive --manual-selection
 ```
 
 #### Theory Content
@@ -148,6 +170,70 @@ poetry run python manage.py matching_commands associate --force --debug
 # Fix associations  
 poetry run python manage.py matching_commands fix --lesson-id 1 --verbose
 ```
+
+### split_vocabulary_lesson
+Splits large vocabulary lessons into multiple parts with intelligent numbering.
+
+Options:
+- `--lesson-id [ID]` - ID of the vocabulary content lesson to split (required)
+- `--parts [N]` - Number of parts to create (if not specified, calculated automatically)
+- `--min-words [N]` - Minimum words required to consider splitting (default: 20)
+- `--optimal-words [N]` - Optimal number of words per sub-lesson (default: 12)
+- `--target-unit-id [ID]` - ID of unit where to place new lessons (default: same as source)
+- `--target-units [IDS]` - Comma-separated list of unit IDs for parts 2,3,etc. (e.g., "15,22")
+- `--interactive` - Interactive mode to validate each decision
+- `--manual-selection` - Enable manual selection of words for each part (requires --interactive)
+- `--thematic` - Try to group by theme/similarity
+- `--keep-original` - Keep the original lesson title unchanged
+- `--create-matching` - Create matching exercises for the new lessons
+- `--reorganize` - Reorganize lesson orders after division
+- `--dry-run` - Simulate execution without applying changes
+- `--export-words [FILE]` - Export the divided words to a CSV file for validation
+- `--import-validation [FILE]` - Import a CSV validation file with word distribution
+- `--auto-optimize` - Calculate optimal number of divisions automatically
+
+Examples:
+```bash
+# Basic usage with interactive mode
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --dry-run --interactive
+
+# Split with specific number of parts
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --parts=3 --dry-run
+
+# Split to different target unit
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --target-unit-id=15 --dry-run
+
+# Split to multiple different target units
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --parts=3 --target-units=15,22 --dry-run
+
+# Manual selection of words per part with interactive mode
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --parts=3 --interactive --manual-selection
+
+# Export words for manual validation
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --export-words=lesson_151_words.csv
+
+# Import validated word distribution
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --import-validation=lesson_151_words.csv
+
+# Create with thematic grouping and matching exercises
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --thematic --create-matching
+```
+
+#### Intelligent Lesson Numbering
+
+The command uses smart numbering for lessons:
+- If splitting "Animals" for the first time, creates "Animals 1" and "Animals 2"
+- If "Animals 1" already exists, creates "Animals 2", "Animals 3", etc.
+- If "Animals 1" and "Animals 3" exist, creates "Animals 2", "Animals 4", etc.
+
+#### Manual Selection Mode
+
+When using `--interactive --manual-selection`:
+- Displays all vocabulary words with indices
+- Allows selection using individual indices (1,3,5) or ranges (1-5)
+- Provides commands to view, cancel, or automatically distribute words
+- Automatically assigns any remaining words to the last part
+- Shows statistics about the distribution balance
 
 ### testrecap_commands
 Subcommands:
@@ -310,6 +396,22 @@ poetry run python manage.py testrecap_commands setup --lesson-id 5
 poetry run python manage.py create_smart_theory_lesson --lesson-id 5 --auto-title
 ```
 
+### Splitting Large Vocabulary Lessons
+```bash
+# 1. Identify large vocabulary lessons to split
+poetry run python manage.py split_vocabulary_lesson --scan-all
+
+# 2. Preview splitting for a specific lesson
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --dry-run --interactive
+
+# 3. Split lesson with manual word selection
+poetry run python manage.py split_vocabulary_lesson --lesson-id=151 --parts=3 --target-units=15,22 --interactive --manual-selection
+
+# 4. Create matching exercises for the new lessons
+poetry run python manage.py matching_commands create --lesson-id=15
+poetry run python manage.py matching_commands create --lesson-id=<new_lesson_id>
+```
+
 ### Creating Test Recaps
 ```bash
 # RECOMMENDED: Complete setup for a lesson
@@ -385,6 +487,7 @@ To see available subcommands and options:
 poetry run python manage.py matching_commands --help
 poetry run python manage.py testrecap_commands --help
 poetry run python manage.py course_maintenance --help
+poetry run python manage.py split_vocabulary_lesson --help
 ```
 
 For specific subcommand help:
@@ -504,7 +607,8 @@ backend/apps/course/management/commands/
 ├── matching_commands.py             # Main matching exercises command
 ├── testrecap_commands.py           # Main test recap command
 ├── course_maintenance.py           # Main maintenance command
-└── speaking_auto_associate.py      # Main speaking exercises command
+├── speaking_auto_associate.py      # Main speaking exercises command
+└── split_vocabulary_lesson.py      # Main vocabulary splitting command
 
 backend/scripts/course/
 ├── theory/                         # Theory-related utility scripts
@@ -520,5 +624,5 @@ backend/scripts/course/
 ```
 ---
 
-Last updated: 2025-01-07
-Version: 2.3 (Added theory content creation commands)
+Last updated: 2025-05-20
+Version: 2.4 (Added vocabulary splitting command)
