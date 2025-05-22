@@ -1,130 +1,38 @@
 // src/addons/learning/components/LearnView.tsx
 import React, { useState, useEffect } from "react";
-// Remove or comment out the unused router import
-// import { useRouter } from "next/navigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { getUserTargetLanguage } from "@/core/utils/languageUtils";
-import courseAPI from "@/addons/learning/api/courseAPI";
-import LearnHeader from "./LearnHeader";
-import { Unit } from "@/addons/learning/types"; 
 import ExpandableUnitLessonView from "./ExpandableUnitLessonView";
+import { useNavigation } from "./LearnLayout";
+
+// Helper function to get full language name
+function getLanguageFullName(languageCode: string): string {
+  const languageMap: Record<string, string> = {
+    'en': 'anglais',
+    'fr': 'français',
+    'es': 'espagnol',
+    'nl': 'néerlandais',
+  };
+  return languageMap[languageCode?.toLowerCase()] || languageCode || '';
+}
 
 export default function LearnView() {
-  // Remove the unused router declaration
-  // const router = useRouter();
+  // Use navigation context from LearnLayout
+  const {
+    levelFilter,
+    contentTypeFilter,
+    viewMode,
+    layout,
+    isCompactView,
+    targetLanguage,
+    searchQuery
+  } = useNavigation();
+  
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [levelFilter, setLevelFilter] = useState<string>("all");
-  const [contentTypeFilter, setContentTypeFilter] = useState<string>("all");
-  const [availableLevels, setAvailableLevels] = useState<string[]>([]);
-  const [layout, setLayout] = useState<"list" | "grid">("list");
-  const [viewMode, setViewMode] = useState<"units" | "lessons" | "hierarchical">("hierarchical"); // Default to hierarchical
-  const [isCompactView, setIsCompactView] = useState<boolean>(false);
-  const [targetLanguage, setTargetLanguage] = useState<string>(getUserTargetLanguage());
-
-  // Load available levels and user preferences
-  useEffect(() => {
-    const loadInitialData = async () => {
-      setIsLoading(true);
-      try {
-        // Get user's target language
-        const userLang = getUserTargetLanguage();
-        setTargetLanguage(userLang);
-        
-        // Load available levels from API with proper typing
-        const unitsData = await courseAPI.getUnits() as Unit[];
-        
-        // Extract level strings and ensure proper typing
-        const levelValues: string[] = unitsData.map(unit => unit.level);
-        
-        // Create a Set to get unique values and convert back to array
-        const levels: string[] = [...new Set(levelValues)];
-        
-        // Sort levels appropriately (A1, A2, B1, etc.)
-        const sortedLevels = levels.sort((a: string, b: string) => {
-          const aLevel = a.charAt(0) + parseInt(a.substring(1));
-          const bLevel = b.charAt(0) + parseInt(b.substring(1));
-          return aLevel.localeCompare(bLevel);
-        });
-        
-        setAvailableLevels(sortedLevels);
-        
-        // Load user preferences from localStorage
-        const savedLayout = localStorage.getItem("units_layout_preference");
-        if (savedLayout === "list" || savedLayout === "grid") {
-          setLayout(savedLayout as "list" | "grid");
-        }
-
-        const savedViewMode = localStorage.getItem("units_view_mode");
-        if (savedViewMode === "units" || savedViewMode === "lessons" || savedViewMode === "hierarchical") {
-          setViewMode(savedViewMode as "units" | "lessons" | "hierarchical");
-        } else {
-          // Set default view mode to hierarchical and save preference
-          localStorage.setItem("units_view_mode", "hierarchical");
-        }
-
-        const savedCompactView = localStorage.getItem("units_compact_view");
-        if (savedCompactView === "true") {
-          setIsCompactView(true);
-        }
-      } catch (err) {
-        console.error("Error loading initial data:", err);
-        setError("Failed to load learning data. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    loadInitialData();
-  }, []);
-
-  // Handle level filter change
-  const handleLevelFilterChange = (value: string) => {
-    setLevelFilter(value);
-  };
-
-  // Handle content type filter change
-  const handleContentTypeChange = (value: string) => {
-    setContentTypeFilter(value);
-    
-    // If specific content type is selected, switch to lessons view mode
-    if (value !== "all" && viewMode === "units") {
-      setViewMode("lessons");
-      localStorage.setItem("units_view_mode", "lessons");
-    }
-  };
-
-  // Handle view mode change
-  const handleViewModeChange = (mode: "units" | "lessons" | "hierarchical") => {
-    setViewMode(mode);
-    localStorage.setItem("units_view_mode", mode);
-    
-    // Si le mode "leçons" est sélectionné, préchargez les données des leçons
-    if (mode === "lessons") {
-      if (contentTypeFilter !== "all") {
-        courseAPI.getLessonsByContentType(contentTypeFilter, levelFilter)
-          .then(response => {
-            console.log(`Preloaded ${response.results?.length || 0} lessons for lessons view`);
-          })
-          .catch(err => {
-            console.error("Error preloading lessons:", err);
-          });
-      }
-    }
-  };
-
-  // Handle layout change
-  const handleLayoutChange = (newLayout: "list" | "grid") => {
-    setLayout(newLayout);
-    localStorage.setItem("units_layout_preference", newLayout);
-  };
-
-  // Handle compact view change
-  const handleCompactViewChange = (value: boolean) => {
-    setIsCompactView(value);
-    localStorage.setItem("units_compact_view", value ? "true" : "false");
-  };
+  
+  // These handlers are now managed by LearnLayout
+  // The state and handlers are accessible through the useNavigation hook
 
   // Loading state
   if (isLoading) {
@@ -147,72 +55,49 @@ export default function LearnView() {
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden">
-      <div className="sticky top-8 z-50 p-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
-        <LearnHeader
-          levelFilter={levelFilter}
-          onLevelFilterChange={handleLevelFilterChange}
-          availableLevels={availableLevels}
-          contentTypeFilter={contentTypeFilter}
-          onContentTypeChange={handleContentTypeChange}
-          viewMode={viewMode === "hierarchical" ? "units" : viewMode} // Map hierarchical to units for UI
-          onViewModeChange={(mode) => {
-            // Add option for hierarchical view
-            if (mode === "units") {
-              // Add dropdown or toggle for hierarchical view
-              handleViewModeChange("hierarchical");
-            } else {
-              handleViewModeChange(mode);
-            }
-          }}
-          layout={layout}
-          onLayoutChange={handleLayoutChange}
-          isCompactView={isCompactView}
-          onCompactViewChange={handleCompactViewChange}
-          targetLanguage={targetLanguage}
-        />
+    <div className="h-full bg-gray-50 dark:bg-gray-900 overflow-y-auto">
+      {/* Main content - the header is already rendered in LearnLayout */}
+      <div className="px-8 py-6 pb-20 max-w-7xl mx-auto">
+        {/* Section title */}
         
-      </div>
-      
-      <div className="flex-1 overflow-auto">
-        <div className="p-6">
+        {/* Content based on view mode */}
+        <div className="space-y-4">
           {/* Mode hiérarchique (par défaut) avec les unités et les leçons groupées */}
           {viewMode === "hierarchical" && (
-            <div className="bg-white dark:bg-transparent rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-800">
-              <ExpandableUnitLessonView
-                levelFilter={levelFilter}
-                isCompactView={isCompactView}
-                layout={layout}
-                showOnlyLessons={false} // Afficher la structure hiérarchique complète
-              />
-            </div>
+            <ExpandableUnitLessonView
+              levelFilter={levelFilter}
+              contentTypeFilter={contentTypeFilter}
+              searchQuery={searchQuery}
+              isCompactView={isCompactView}
+              layout={layout}
+              showOnlyLessons={false} // Afficher la structure hiérarchique complète
+            />
           )}
           
           {/* Mode unités (affiche uniquement les unités) */}
           {viewMode === "units" && (
-            <div className="bg-white dark:bg-transparent rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-800">
-              {/* Code pour l'affichage des unités seules */}
-              <p className="text-center py-4">Mode unités - Utilisez le mode hiérarchique pour voir les unités, leçons et leur contenu.</p>
-            </div>
+            <ExpandableUnitLessonView
+              levelFilter={levelFilter}
+              contentTypeFilter={contentTypeFilter}
+              searchQuery={searchQuery}
+              isCompactView={isCompactView}
+              layout={layout}
+              showOnlyLessons={false} // Afficher les unités
+            />
           )}
           
           {/* Mode leçons (affiche uniquement les leçons sans les titres des unités) */}
           {viewMode === "lessons" && (
-            <div className="bg-white dark:bg-transparent rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-800">
-              {contentTypeFilter !== "all" && (
-                <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
-                  Leçons de type "{contentTypeFilter}"
-                </h2>
-              )}
-              
-              {/* Utiliser le même composant ExpandableUnitLessonView mais avec showOnlyLessons=true */}
+            <>
               <ExpandableUnitLessonView
                 levelFilter={levelFilter}
+                contentTypeFilter={contentTypeFilter}
+                searchQuery={searchQuery}
                 isCompactView={isCompactView}
                 layout={layout}
                 showOnlyLessons={true} // Afficher uniquement les leçons sans les titres d'unités
               />
-            </div>
+            </>
           )}
         </div>
       </div>

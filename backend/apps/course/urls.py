@@ -17,6 +17,7 @@ from .views import (
     LessonsByContentView,
     SpeakingExerciseViewSet,
     TestRecapViewSet,
+    EnhancedCourseSearchView,
 )
 
 app_name = 'course'
@@ -53,6 +54,9 @@ urlpatterns = [
     path('lessons-by-content/', LessonsByContentView.as_view(), name='lessons-by-content'),
     path('speaking-exercise/', SpeakingExerciseViewSet.as_view({'get': 'list'}), name='speaking-exercise-list'),
     path('speaking-exercise/vocabulary/', SpeakingExerciseViewSet.as_view({'get': 'get_vocabulary'}), name='speaking-exercise-vocabulary'),
+    
+    # Enhanced search and filtering API
+    path('search/', EnhancedCourseSearchView.as_view(), name='enhanced-course-search'),
     
     # Include router URLs for TestRecap
     path('', include(router.urls)),

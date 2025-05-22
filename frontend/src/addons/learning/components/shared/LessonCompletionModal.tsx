@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { CheckCircle, Sparkles, Trophy } from 'lucide-react';
 import { LessonCompletionModalProps } from "@/addons/learning/types";
 
@@ -19,7 +19,7 @@ import { LessonCompletionModalProps } from "@/addons/learning/types";
  * @param {string} props.completionMessage - Message de réussite personnalisé
  */
 
-const LessonCompletionModal: React.FC<LessonCompletionModalProps> = ({
+const LessonCompletionModal: React.FC<LessonCompletionModalProps> = React.memo(({
   show,
   onKeepReviewing,
   onComplete,
@@ -50,7 +50,7 @@ const LessonCompletionModal: React.FC<LessonCompletionModalProps> = ({
 
   if (!isAnimating) return null;
 
-  const renderButtons = () => {
+  const renderButtons = useCallback(() => {
     if (type === "quiz") {
       return (
         <div className="flex gap-3 justify-center">
@@ -94,9 +94,9 @@ const LessonCompletionModal: React.FC<LessonCompletionModalProps> = ({
         )}
       </div>
     );
-  };
+  }, [type, onBackToLessons, onTryAgain, onKeepReviewing, onComplete]);
 
-  const getIcon = () => {
+  const getIcon = useCallback(() => {
     switch (type) {
       case 'quiz':
         return <CheckCircle className="w-8 h-8 text-white" />;
@@ -105,7 +105,7 @@ const LessonCompletionModal: React.FC<LessonCompletionModalProps> = ({
       default:
         return <Sparkles className="w-8 h-8 text-white" />;
     }
-  };
+  }, [type]);
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
@@ -140,7 +140,7 @@ const LessonCompletionModal: React.FC<LessonCompletionModalProps> = ({
       </div>
     </div>
   );
-};
+});
 
 // Export as both default and named export
 export default LessonCompletionModal;

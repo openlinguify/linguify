@@ -78,6 +78,25 @@
     };
   }
 
+  export interface CourseSearchResponse {
+    results: Unit[] | Lesson[];
+    metadata: {
+      search_query: string;
+      content_type: string;
+      level: string;
+      view_type: 'units' | 'lessons';
+      target_language: string;
+      total_results: number;
+      available_levels: string[];
+      available_content_types: string[];
+      filters_applied: {
+        has_search: boolean;
+        has_content_filter: boolean;
+        has_level_filter: boolean;
+      };
+    };
+  }
+
   export interface LessonContentProps {
     lessonId: string;
     unitId?: string;
@@ -506,6 +525,8 @@
         availableLevels: string[];
         contentTypeFilter: string;
         onContentTypeChange: (value: string) => void;
+        searchQuery?: string;
+        onSearchChange?: (value: string) => void;
         viewMode: "units" | "lessons" | "hierarchical";
         onViewModeChange: (mode: "units" | "lessons" | "hierarchical") => void;
         layout: "list" | "grid";

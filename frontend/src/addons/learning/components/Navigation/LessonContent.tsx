@@ -168,7 +168,7 @@ const LessonContent: React.FC<LessonContentProps> = ({
   return (
     <div className="flex flex-col min-h-screen">
       {/* Progress indicator at the top */}
-      <div className="sticky top-16 z-30 w-full">
+      <div className="sticky top-28 z-30 w-full">
         <LessonProgressIndicator
           currentStep={currentStep}
           totalSteps={totalSteps}

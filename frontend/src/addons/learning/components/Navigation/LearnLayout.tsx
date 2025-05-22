@@ -17,6 +17,7 @@ interface NavigationContextType {
   isCompactView: boolean;
   availableLevels: string[];
   targetLanguage: string;
+  searchQuery: string;
   
   // Setters
   setLevelFilter: (value: string) => void;
@@ -24,6 +25,7 @@ interface NavigationContextType {
   setViewMode: (mode: "units" | "lessons" | "hierarchical") => void;
   setLayout: (layout: "list" | "grid") => void;
   setIsCompactView: (value: boolean) => void;
+  setSearchQuery: (value: string) => void;
   
   // Navigation helpers
   navigateToLesson: (unitId: number, lessonId: number) => void;
@@ -65,6 +67,7 @@ const LearnLayout: React.FC<LearnLayoutProps> = ({ children }) => {
   const [isCompactView, setIsCompactView] = useState<boolean>(false);
   const [availableLevels, setAvailableLevels] = useState<string[]>([]);
   const [targetLanguage, setTargetLanguage] = useState<string>("en");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   
   // Load preferences from localStorage on initial render
   useEffect(() => {
@@ -170,6 +173,7 @@ const LearnLayout: React.FC<LearnLayoutProps> = ({ children }) => {
     isCompactView,
     availableLevels,
     targetLanguage,
+    searchQuery,
     
     // Setters
     setLevelFilter,
@@ -177,6 +181,7 @@ const LearnLayout: React.FC<LearnLayoutProps> = ({ children }) => {
     setViewMode,
     setLayout,
     setIsCompactView,
+    setSearchQuery,
     
     // Navigation helpers
     navigateToLesson,
@@ -187,24 +192,30 @@ const LearnLayout: React.FC<LearnLayoutProps> = ({ children }) => {
   return (
     <NavigationContext.Provider value={navigationContextValue}>
       <div className="flex flex-col h-full">
+        {/* LearnHeader wrapper that maintains space in document flow */}
         {shouldShowHeader && (
-          <LearnHeader
-            levelFilter={levelFilter}
-            onLevelFilterChange={handleLevelFilterChange}
-            availableLevels={availableLevels}
-            contentTypeFilter={contentTypeFilter}
-            onContentTypeChange={handleContentTypeChange}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            layout={layout}
-            onLayoutChange={setLayout}
-            isCompactView={isCompactView}
-            onCompactViewChange={setIsCompactView}
-            targetLanguage={targetLanguage}
-          />
+          <div className="flex-shrink-0">
+            <LearnHeader
+              levelFilter={levelFilter}
+              onLevelFilterChange={handleLevelFilterChange}
+              availableLevels={availableLevels}
+              contentTypeFilter={contentTypeFilter}
+              onContentTypeChange={handleContentTypeChange}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              layout={layout}
+              onLayoutChange={setLayout}
+              isCompactView={isCompactView}
+              onCompactViewChange={setIsCompactView}
+              targetLanguage={targetLanguage}
+            />
+          </div>
         )}
         
-        <div className="flex-1 overflow-auto">
+        {/* Main content with overflow */}
+        <div className="flex-1 overflow-y-auto">
           {children}
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 
@@ -45,16 +45,26 @@ export function useExerciseProgress({
     error: null
   });
 
+  // Mémoriser les clés localStorage pour éviter le scan répété
+  const progressKeys = useMemo(() => {
+    const keys: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('progress_data_')) {
+        keys.push(key);
+      }
+    }
+    return keys;
+  }, []);
+
   // Detect the list of exercises for the lesson from localStorage
   const detectExercisesFromStorage = useCallback(() => {
     try {
       const targetLang = language || getUserTargetLanguage();
       const exercises: ExerciseInfo[] = [];
       
-      // Scan localStorage for progress entries related to this lesson
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (!key || !key.startsWith('progress_data_')) continue;
+      // Utiliser les clés mémorisées au lieu de scanner tout localStorage
+      for (const key of progressKeys) {
         
         try {
           const progressData = JSON.parse(localStorage.getItem(key) || '{}');
@@ -134,7 +144,7 @@ export function useExerciseProgress({
         error: error instanceof Error ? error.message : 'Unknown error' 
       }));
     }
-  }, [lessonId, language]);
+  }, [lessonId, language, progressKeys]);
 
   // Load exercise progress
   useEffect(() => {
@@ -149,8 +159,8 @@ export function useExerciseProgress({
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Also check periodically for changes
-    const intervalId = setInterval(detectExercisesFromStorage, 10000);
+    // Réduire la fréquence de vérification - toutes les 30 secondes au lieu de 10
+    const intervalId = setInterval(detectExercisesFromStorage, 30000);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);

@@ -1,53 +1,37 @@
 // src/addons/learning/components/Navigation/LearnHeader.tsx
 'use client';
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
-  Filter, LayoutGrid, LayoutList, BookOpen, FileText,
-  Calculator, ArrowRightLeft, PencilLine, Infinity, Layers
+  LayoutGrid, LayoutList,
+  Search, X
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuCheckboxItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { LearnHeaderProps } from "@/addons/learning/types";
 
-
-// Definition of content types with their icons
+// Definition of content types
 const CONTENT_TYPES = [
-  { value: 'all', label: 'All Content Types', icon: <Filter className="h-4 w-4" /> },
-  { value: 'vocabulary', label: 'Vocabulary', icon: <FileText className="h-4 w-4" /> },
-  { value: 'vocabularylist', label: 'Vocabulary List', icon: <FileText className="h-4 w-4" /> },
-  { value: 'theory', label: 'Theory', icon: <BookOpen className="h-4 w-4" /> },
-  { value: 'grammar', label: 'Grammar', icon: <BookOpen className="h-4 w-4" /> },
-  { value: 'numbers', label: 'Numbers', icon: <Calculator className="h-4 w-4" /> },
-  { value: 'multiple_choice', label: 'Multiple Choice', icon: <BookOpen className="h-4 w-4" /> },
-  { value: 'fill_blank', label: 'Fill in Blanks', icon: <PencilLine className="h-4 w-4" /> },
-  { value: 'matching', label: 'Matching', icon: <Infinity className="h-4 w-4" /> },
-  { value: 'reordering', label: 'Reordering', icon: <ArrowRightLeft className="h-4 w-4" /> },
-  { value: 'speaking', label: 'Speaking', icon: <BookOpen className="h-4 w-4" /> }
+  { value: 'all', label: 'Tous les types' },
+  { value: 'vocabulary', label: 'Vocabulary' },
+  { value: 'grammar', label: 'Grammar' },
+  { value: 'culture', label: 'Culture' },
+  { value: 'professional', label: 'Professional' }
 ];
 
-// Get the full name of a language from its code
+
+// Enhanced language information
 function getLanguageFullName(languageCode: string): string {
-  const languageMap: Record<string, string> = {
-    'en': 'English',
-    'fr': 'French',
-    'es': 'Spanish',
-    'nl': 'Dutch',
+  const languageMap: Record<string, { name: string; nativeName: string; flag: string }> = {
+    'en': { name: 'English', nativeName: 'English', flag: '🇬🇧' },
+    'fr': { name: 'French', nativeName: 'Français', flag: '🇫🇷' },
+    'es': { name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
+    'nl': { name: 'Dutch', nativeName: 'Nederlands', flag: '🇳🇱' },
   };
   
-  // Normalize language code to lowercase
   const normalizedCode = languageCode?.toLowerCase() || '';
-  
-  // Return full name or code if not found
-  return languageMap[normalizedCode] || languageCode || '';
+  return languageMap[normalizedCode]?.name || languageCode || '';
 }
 
 export default function LearnHeader({
@@ -56,6 +40,8 @@ export default function LearnHeader({
   availableLevels,
   contentTypeFilter,
   onContentTypeChange,
+  searchQuery = "",
+  onSearchChange,
   viewMode,
   onViewModeChange,
   layout,
@@ -64,171 +50,248 @@ export default function LearnHeader({
   onCompactViewChange,
   targetLanguage
 }: LearnHeaderProps) {
-  // Track selected content types for multi-select
-  const [selectedTypes, setSelectedTypes] = React.useState<string[]>([contentTypeFilter]);
+  // Enhanced state management
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([contentTypeFilter]);
+  const [localSearchQuery, setLocalSearchQuery] = useState<string>(searchQuery);
+  const [showSearch, setShowSearch] = useState<boolean>(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Update selected types when contentTypeFilter changes from parent
-  React.useEffect(() => {
+  useEffect(() => {
     setSelectedTypes([contentTypeFilter]);
   }, [contentTypeFilter]);
   
-  // Handle content type selection
-  const handleContentTypeChange = (value: string) => {
-    // If "all" is selected, clear other selections
-    if (value === "all") {
-      setSelectedTypes(["all"]);
-      onContentTypeChange("all");
-      return;
+  // Sync local search query with parent prop
+  useEffect(() => {
+    setLocalSearchQuery(searchQuery);
+  }, [searchQuery]);
+  
+  // Focus search input when search is shown
+  useEffect(() => {
+    if (showSearch && searchInputRef.current) {
+      searchInputRef.current.focus();
     }
+  }, [showSearch]);
+  
+  // Debounced search functionality with enhanced logic
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (onSearchChange) {
+        onSearchChange(localSearchQuery);
+      }
+      if (localSearchQuery.trim()) {
+        console.log('🔍 Recherche avancée:', {
+          query: localSearchQuery,
+          filters: {
+            level: levelFilter,
+            contentType: contentTypeFilter,
+            viewMode: viewMode
+          }
+        });
+      }
+    }, 300);
+    
+    return () => clearTimeout(timeoutId);
+  }, [localSearchQuery, levelFilter, contentTypeFilter, viewMode, onSearchChange]);
 
-    // If we're currently on "all", and selecting something else, replace with the new selection
-    let newSelection: string[];
-    if (selectedTypes.includes("all")) {
-      newSelection = [value];
-    } else {
-      // Toggle the selection
-      newSelection = selectedTypes.includes(value)
-        ? selectedTypes.filter(type => type !== value) // Remove if already selected
-        : [...selectedTypes, value]; // Add if not selected
-    }
-
-    // If no type is selected, default back to "all"
-    if (newSelection.length === 0) {
-      newSelection = ["all"];
-    }
-
-    setSelectedTypes(newSelection);
-
-    // Currently only support single filter value
-    if (newSelection.length === 1) {
-      onContentTypeChange(newSelection[0]);
-    } else {
-      // For multiple selections, use the first one
-      onContentTypeChange(newSelection[0]);
-    }
+  // Enhanced content type selection logic
+  
+  // Clear all filters
+  const clearAllFilters = () => {
+    setLocalSearchQuery("");
+    if (onSearchChange) onSearchChange("");
+    setShowSearch(false);
+    onLevelFilterChange("all");
+    onContentTypeChange("all");
+    setSelectedTypes(["all"]);
+  };
+  
+  // Get selected type label for display
+  const getSelectedTypeLabel = () => {
+    const selectedType = CONTENT_TYPES.find(t => t.value === contentTypeFilter);
+    return selectedType?.label || 'Type';
+  };
+  
+  // Get active filters count
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    if (levelFilter !== "all") count++;
+    if (contentTypeFilter !== "all") count++;
+    if (localSearchQuery.trim()) count++;
+    return count;
   };
 
   return (
-    <div className="bg-transparent p-4 rounded-lg shadow-sm mb-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        {/* Left: Language and Level */}
-        <div className="flex items-center gap-2">
-          {targetLanguage && (
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-purple-700 dark:text-purple-300">
-                {getLanguageFullName(targetLanguage)}
-              </span>
-              <Badge className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white">
-                {targetLanguage.toUpperCase()}
-              </Badge>
+    <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+      <div className="w-full px-4">
+        {/* Barre d'actions compacte */}
+        <div className="py-1.5 flex items-center justify-between gap-3">
+          {/* Left: Target Language Display */}
+          <div className="flex items-center">
+            {targetLanguage && (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+                <span className="text-xs font-medium text-purple-700 dark:text-purple-300">
+                  {getLanguageFullName(targetLanguage)}
+                </span>
+              </div>
+            )}
+          </div>
+          
+          {/* Center: Filters & Search */}
+          <div className="flex-1 flex items-center justify-center gap-2">
+          
+            {/* Search Bar */}
+            <div className="relative w-48">
+              <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+              <Input
+                value={localSearchQuery}
+                onChange={(e) => setLocalSearchQuery(e.target.value)}
+                placeholder="Rechercher..."
+                className="pl-8 pr-7 py-1 text-xs h-7 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+              />
+              {localSearchQuery && (
+                <button
+                  onClick={() => { setLocalSearchQuery(""); if (onSearchChange) onSearchChange(""); }}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <X size={12} />
+                </button>
+              )}
             </div>
-          )}
-        </div>
-        
-        {/* Center: Filters */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Level filter */}
-          {availableLevels.length > 0 && (
-            <Select value={levelFilter} onValueChange={onLevelFilterChange}>
-              <SelectTrigger className="w-[120px] h-9">
-                <div className="flex items-center gap-1">
-                  <Layers className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                  <SelectValue placeholder="Level" />
-                </div>
+            
+            {/* Level Filter */}
+            {availableLevels.length > 0 && (
+              <Select value={levelFilter} onValueChange={onLevelFilterChange}>
+                <SelectTrigger className="w-28 h-7 text-xs bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                  <SelectValue placeholder="Niveau" />
+                </SelectTrigger>
+                <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                  <SelectItem value="all" className="text-xs hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Tous niveaux
+                  </SelectItem>
+                  {availableLevels.map(level => (
+                    <SelectItem key={level} value={level} className="text-xs hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Niveau {level}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            
+            {/* Content Type Filter */}
+            <Select value={contentTypeFilter} onValueChange={onContentTypeChange}>
+              <SelectTrigger className="w-32 h-7 text-xs bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                <SelectValue placeholder="Type" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Levels</SelectItem>
-                {availableLevels.map(level => (
-                  <SelectItem key={level} value={level}>Level {level}</SelectItem>
+              <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                {CONTENT_TYPES.map((type) => (
+                  <SelectItem 
+                    key={type.value} 
+                    value={type.value}
+                    className="text-xs hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    {type.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          )}
+          </div>
           
-          {/* Content type filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-9">
-                <Filter className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
-                {contentTypeFilter === "all" 
-                  ? "All Content Types"
-                  : CONTENT_TYPES.find(t => t.value === contentTypeFilter)?.label || contentTypeFilter}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuGroup>
-                {CONTENT_TYPES.map((type) => (
-                  <DropdownMenuCheckboxItem
-                    key={type.value}
-                    checked={selectedTypes.includes(type.value)}
-                    onCheckedChange={() => handleContentTypeChange(type.value)}
-                  >
-                    {type.icon}
-                    <span className="ml-2">{type.label}</span>
-                  </DropdownMenuCheckboxItem>
-                ))}
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
-          {/* View mode selector avec boutons bien définis */}
-          <div className="flex gap-0 border rounded-md overflow-hidden">
-            <Button
-              variant={viewMode === "units" || viewMode === "hierarchical" ? "default" : "outline"}
-              size="sm"
-              className={`rounded-none h-9 px-3 ${viewMode === "units" || viewMode === "hierarchical" ? "bg-purple-600 dark:bg-purple-800" : ""}`}
-              onClick={() => onViewModeChange("units")}
-              title="Afficher les unités avec leurs leçons"
-            >
-              <Layers className="h-4 w-4 mr-1" />
-              <span className="text-xs">Unités</span>
-            </Button>
-            <Button
-              variant={viewMode === "lessons" ? "default" : "outline"}
-              size="sm"
-              className={`rounded-none h-9 px-3 ${viewMode === "lessons" ? "bg-purple-600 dark:bg-purple-800" : ""}`}
-              onClick={() => onViewModeChange("lessons")}
-              title="Afficher uniquement les leçons regroupées par niveau"
-            >
-              <BookOpen className="h-4 w-4 mr-1" />
-              <span className="text-xs">Leçons</span>
-            </Button>
+          {/* Right: View Controls */}
+          <div className="flex items-center gap-2">
+            {/* View Mode */}
+            <div className="flex bg-gray-100 dark:bg-gray-800 rounded-md p-0.5">
+              <button
+                onClick={() => onViewModeChange("units")}
+                className={`px-3 py-1 text-xs rounded transition-colors ${
+                  viewMode === "units" || viewMode === "hierarchical"
+                    ? "bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-sm"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                }`}
+              >
+                Unités
+              </button>
+              <button
+                onClick={() => onViewModeChange("lessons")}
+                className={`px-3 py-1 text-xs rounded transition-colors ${
+                  viewMode === "lessons"
+                    ? "bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-sm"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                }`}
+              >
+                Leçons
+              </button>
+            </div>
+            
+            {/* Layout Toggle */}
+            <div className="flex border border-gray-300 dark:border-gray-600 rounded-md overflow-hidden">
+              <button
+                onClick={() => onLayoutChange("list")}
+                className={`p-1.5 transition-colors ${
+                  layout === "list"
+                    ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+                title="Vue liste"
+              >
+                <LayoutList size={14} />
+              </button>
+              <button
+                onClick={() => onLayoutChange("grid")}
+                className={`p-1.5 transition-colors ${
+                  layout === "grid"
+                    ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+                title="Vue grille"
+              >
+                <LayoutGrid size={14} />
+              </button>
+            </div>
+            
+            {/* Compact View */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-gray-600 dark:text-gray-400">Compact</span>
+              <Switch
+                checked={isCompactView}
+                onCheckedChange={onCompactViewChange}
+                className="scale-75 data-[state=checked]:bg-purple-600"
+              />
+            </div>
           </div>
         </div>
         
-        {/* Right: Layout controls */}
-        <div className="flex items-center gap-2">
-          {/* Compact view toggle */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600 dark:text-gray-300">Compact</span>
-            <Switch
-              checked={isCompactView}
-              onCheckedChange={onCompactViewChange}
-            />
+        {/* Active Filters - Compact Display */}
+        {getActiveFiltersCount() > 0 && (
+          <div className="px-4 py-1 bg-purple-50 dark:bg-purple-900/20 border-t border-purple-100 dark:border-purple-800">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-purple-700 dark:text-purple-300 font-medium">Filtres:</span>
+                {localSearchQuery.trim() && (
+                  <Badge variant="secondary" className="text-xs h-5">
+                    {localSearchQuery}
+                  </Badge>
+                )}
+                {levelFilter !== "all" && (
+                  <Badge variant="secondary" className="text-xs h-5">
+                    {levelFilter}
+                  </Badge>
+                )}
+                {contentTypeFilter !== "all" && (
+                  <Badge variant="secondary" className="text-xs h-5">
+                    {getSelectedTypeLabel()}
+                  </Badge>
+                )}
+              </div>
+              <button
+                onClick={clearAllFilters}
+                className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+              >
+                <X size={12} />
+              </button>
+            </div>
           </div>
-          
-          {/* Layout switcher */}
-          <div className="flex border rounded-md overflow-hidden">
-            <Button
-              variant={layout === "list" ? "default" : "ghost"}
-              size="icon"
-              onClick={() => onLayoutChange("list")}
-              className={`rounded-none h-9 w-9 ${layout === "list" ? "bg-purple-600 dark:bg-purple-800" : ""}`}
-              title="Affichage en liste"
-            >
-              <LayoutList className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={layout === "grid" ? "default" : "ghost"}
-              size="icon"
-              onClick={() => onLayoutChange("grid")}
-              className={`rounded-none h-9 w-9 ${layout === "grid" ? "bg-purple-600 dark:bg-purple-800" : ""}`}
-              title="Affichage en grille"
-            >
-              <LayoutGrid className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
