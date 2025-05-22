@@ -625,18 +625,24 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
 
   return (
     <div className="space-y-12 pb-8">
-      {Object.entries(unitsByLevel).map(([level, levelUnits]) => (
+      {Object.entries(unitsByLevel).map(([level, levelUnits]) => {
+        // Calculate total lessons for this level
+        const levelLessonCount = levelUnits.reduce((total, unit) => {
+          return total + (loadedLessons[unit.id]?.length || 0);
+        }, 0);
+        
+        return (
         <div key={level} className="relative">
           {/* Level header */}
-          <div className="flex items-center mb-8 learn-level-gradient p-6 rounded-2xl border border-white/50 dark:border-purple-500/20 learn-card-shadow">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
-              Niveau {level}
-            </h2>
-            <Badge className="ml-6 bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/60 dark:to-indigo-900/60 text-purple-800 dark:text-purple-200 font-semibold px-4 py-2 shadow-sm">
-              {levelUnits.length} unité{levelUnits.length > 1 ? 's' : ''}
-            </Badge>
-            <div className="h-px flex-1 bg-gradient-to-r from-indigo-600/30 via-purple-600/30 to-pink-400/30 ml-6"></div>
-          </div>
+              <div className="flex items-center mb-4 learn-level-gradient px-4 py-2 rounded-xl border border-white/50 dark:border-purple-500/20 learn-card-shadow min-h-0">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
+                  Niveau {level}
+                </h2>
+                <Badge className="ml-4 bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/60 dark:to-indigo-900/60 text-purple-800 dark:text-purple-200 font-semibold px-3 py-1 shadow-sm">
+                  {levelUnits.length} unité{levelUnits.length > 1 ? 's' : ''}
+                </Badge>
+                <div className="h-px flex-1 bg-gradient-to-r from-indigo-600/30 via-purple-600/30 to-pink-400/30 ml-4"></div>
+              </div>
 
           {/* Units - respects layout prop */}
           <div className={layout === "grid" 
@@ -669,7 +675,7 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
                               )}
                             </div>
                             <span className="text-sm text-gray-500 dark:text-gray-400">
-                              {loadedLessons[unit.id]?.length || 0} leçons • {unit.level}
+                              {unit.lesson_count || unit.lessons_count || loadedLessons[unit.id]?.length || 0} leçons • {unit.level}
                             </span>
                           </div>
                           <span className="text-sm text-gray-500 dark:text-gray-400 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full font-medium">
@@ -873,7 +879,8 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
             ))}
           </div>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 });
