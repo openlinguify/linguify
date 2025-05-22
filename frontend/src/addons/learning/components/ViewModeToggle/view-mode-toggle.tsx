@@ -1,5 +1,5 @@
 // src/addons/learning/components/ViewModeToggle/view-mode-toggle.tsx
-import React from 'react';
+import React, { useCallback } from 'react';
 import { BookOpen, Library } from "lucide-react";
 import { Toggle } from "@/components/ui/toggle";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -10,7 +10,7 @@ interface ViewModeToggleProps {
   className?: string;
 }
 
-const ViewModeToggle: React.FC<ViewModeToggleProps> = ({
+const ViewModeToggle: React.FC<ViewModeToggleProps> = React.memo(({
   viewMode,
   onViewModeChange,
   className = ""
@@ -22,7 +22,7 @@ const ViewModeToggle: React.FC<ViewModeToggleProps> = ({
           <TooltipTrigger asChild>
             <Toggle
               pressed={viewMode === "units"}
-              onPressedChange={() => onViewModeChange("units")}
+              onPressedChange={useCallback(() => onViewModeChange("units"), [onViewModeChange])}
               className="data-[state=on]:bg-white/50 dark:data-[state=on]:bg-gray-800/50"
               aria-label="Show units"
             >
@@ -40,7 +40,7 @@ const ViewModeToggle: React.FC<ViewModeToggleProps> = ({
           <TooltipTrigger asChild>
             <Toggle
               pressed={viewMode === "lessons"}
-              onPressedChange={() => onViewModeChange("lessons")}
+              onPressedChange={useCallback(() => onViewModeChange("lessons"), [onViewModeChange])}
               className="data-[state=on]:bg-white/50 dark:data-[state=on]:bg-gray-800/50"
               aria-label="Show lessons"
             >
@@ -54,6 +54,6 @@ const ViewModeToggle: React.FC<ViewModeToggleProps> = ({
       </TooltipProvider>
     </div>
   );
-};
+});
 
 export default ViewModeToggle;

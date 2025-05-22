@@ -6,6 +6,42 @@ import { SearchParams } from '@/addons/flashcard/types/';
 // Configuration de base
 const API_BASE = '/api/v1/revision';
 
+// Request deduplication cache
+const pendingRequests = new Map<string, Promise<any>>();
+const requestCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+// Helper function for request deduplication
+async function getOrFetch<T>(key: string, fetcher: () => Promise<T>): Promise<T> {
+  // Check cache first
+  const cached = requestCache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    return cached.data;
+  }
+
+  // Check if request is already pending
+  const pending = pendingRequests.get(key);
+  if (pending) {
+    return pending;
+  }
+
+  // Create new request
+  const request = fetcher().then(result => {
+    // Cache the result
+    requestCache.set(key, { data: result, timestamp: Date.now() });
+    // Remove from pending
+    pendingRequests.delete(key);
+    return result;
+  }).catch(error => {
+    // Remove from pending on error
+    pendingRequests.delete(key);
+    throw error;
+  });
+
+  pendingRequests.set(key, request);
+  return request;
+}
+
 // Fonctions de journalisation
 const enableDebugLogging = process.env.NODE_ENV === 'development';
 
@@ -29,18 +65,24 @@ export const revisionApi = {
      * @param params Paramètres optionnels pour filtrer les decks
      */
     async getAll(params?: SearchParams): Promise<any[]> {
-      logDebug('Récupération des decks', params);
-      const response = await apiClient.get(`${API_BASE}/decks/`, { params });
-      return response.data;
+      const key = `decks_all_${JSON.stringify(params || {})}`;
+      return getOrFetch(key, async () => {
+        logDebug('Récupération des decks', params);
+        const response = await apiClient.get(`${API_BASE}/decks/`, { params });
+        return response.data;
+      });
     },
 
     /**
      * Récupère un deck par son ID
      */
     async getById(id: number): Promise<any> {
-      logDebug('Récupération du deck par ID', { id });
-      const response = await apiClient.get(`${API_BASE}/decks/${id}/`);
-      return response.data;
+      const key = `deck_${id}`;
+      return getOrFetch(key, async () => {
+        logDebug('Récupération du deck par ID', { id });
+        const response = await apiClient.get(`${API_BASE}/decks/${id}/`);
+        return response.data;
+      });
     },
 
     /**
@@ -225,9 +267,12 @@ export const revisionApi = {
      * Récupère toutes les cartes d'un deck
      */
     async getAll(deckId: number): Promise<any[]> {
-      logDebug('Récupération des cartes du deck', { deckId });
-      const response = await apiClient.get(`${API_BASE}/decks/${deckId}/cards/`);
-      return response.data;
+      const key = `cards_${deckId}`;
+      return getOrFetch(key, async () => {
+        logDebug('Récupération des cartes du deck', { deckId });
+        const response = await apiClient.get(`${API_BASE}/decks/${deckId}/cards/`);
+        return response.data;
+      });
     },
 
     /**

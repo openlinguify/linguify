@@ -1,8 +1,9 @@
 // src/addons/learning/components/ExpandableUnitLessonView.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useNavigationTransition } from '@/app/(dashboard)/(apps)/learning/page';
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
@@ -81,18 +82,22 @@ const getLocalizedContent = (content: any, language: string, field: string, fall
 
 interface ExpandableUnitLessonViewProps {
   levelFilter: string;
+  contentTypeFilter?: string; // Nouveau filtre pour le type de contenu
+  searchQuery?: string; // Nouveau filtre de recherche
   isCompactView?: boolean;
   layout?: "list" | "grid";
   showOnlyLessons?: boolean; // Nouvelle propriété pour contrôler l'affichage
 }
 
-const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
+const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.memo(({
   levelFilter,
+  contentTypeFilter = "all", // Par défaut, afficher tous les types
+  searchQuery = "", // Par défaut, pas de recherche
   isCompactView = false,
   layout = "list",
   showOnlyLessons = false // Par défaut, on montre les unités et les leçons
 }) => {
-  const router = useRouter();
+  const { navigateToExercise } = useNavigationTransition();
   const [units, setUnits] = useState<any[]>([]);
   const [expandedUnitId, setExpandedUnitId] = useState<number | null>(null);
   const [expandedLessonId, setExpandedLessonId] = useState<number | null>(null);
@@ -110,6 +115,16 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
   const [loadingContentMap, setLoadingContentMap] = useState<Record<number, boolean>>({});
   const [allLessons, setAllLessons] = useState<any[]>([]); // Pour stocker toutes les leçons en mode "leçons uniquement"
 
+  // 🎯 Logique intelligente d'affichage : 
+  // - Si on filtre par type de contenu (autre que "all"), on passe automatiquement en mode "lessons"
+  // - Si on a une recherche textuelle, on passe aussi en mode "lessons" 
+  // - Sinon on respecte le paramètre showOnlyLessons
+  const shouldShowLessonsOnly = showOnlyLessons || 
+                                (contentTypeFilter && contentTypeFilter !== 'all') || 
+                                (searchQuery && searchQuery.trim() !== '');
+
+  // ✅ Tout le filtrage est maintenant géré par l'API backend unifiée
+
   // Fetch units on first load
   useEffect(() => {
     const fetchUnits = async () => {
@@ -120,36 +135,30 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
         const userLang = getUserTargetLanguage();
         setTargetLanguage(userLang);
         
-        // Fetch units with language
-        const unitsData = await courseAPI.getUnits(undefined, userLang);
+        console.log(`🔄 Mode d'affichage intelligent: ${shouldShowLessonsOnly ? 'LESSONS ONLY' : 'UNITS + LESSONS'}`);
+        console.log(`📊 Critères: contentTypeFilter="${contentTypeFilter}", searchQuery="${searchQuery}", showOnlyLessons=${showOnlyLessons}`);
         
-        // Filter by level if needed
-        const filteredUnits = levelFilter === 'all' 
-          ? unitsData 
-          : unitsData.filter((unit: any) => unit.level === levelFilter);
-        
-        // Sort by level and order
-        const sortedUnits = filteredUnits.sort((a: any, b: any) => {
-          const levelA = a.level;
-          const levelB = b.level;
-          if (levelA !== levelB) {
-            // Sort by level first (A1, A2, B1, etc.)
-            const levelACode = levelA.charAt(0) + levelA.substring(1);
-            const levelBCode = levelB.charAt(0) + levelB.substring(1);
-            return levelACode.localeCompare(levelBCode);
-          }
-          // Then by order within level
-          return a.order - b.order;
+        // Use the unified search API for all data loading (filtered or not)
+        const searchResponse = await courseAPI.searchCourses({
+          search: searchQuery,
+          contentType: contentTypeFilter,
+          level: levelFilter,
+          viewType: shouldShowLessonsOnly ? 'lessons' : 'units',
+          targetLanguage: userLang
         });
         
-        setUnits(sortedUnits);
+        console.log(`📚 API de recherche retourne:`, searchResponse);
         
-        // Fetch unit progress data
-        await fetchUnitProgress();
-        
-        // If we're in showOnlyLessons mode, we need to load all lessons at once
-        if (showOnlyLessons) {
-          await fetchAllLessons(sortedUnits);
+        if (searchResponse?.results) {
+          if (shouldShowLessonsOnly) {
+            setAllLessons(searchResponse.results);
+            console.log(`📝 ${searchResponse.results.length} leçons chargées en mode filtré`);
+          } else {
+            setUnits(searchResponse.results);
+            console.log(`📚 ${searchResponse.results.length} unités chargées en mode normal`);
+            // Fetch unit progress data
+            await fetchUnitProgress();
+          }
         }
         
         setError(null);
@@ -162,72 +171,9 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
     };
     
     fetchUnits();
-  }, [levelFilter, showOnlyLessons]);
+  }, [levelFilter, contentTypeFilter, searchQuery, showOnlyLessons, shouldShowLessonsOnly]); // Re-fetch when filters change
 
-  // Nouvelle fonction pour charger toutes les leçons en une seule fois
-  const fetchAllLessons = async (units: any[]) => {
-    try {
-      setLoading(true);
-      let allLessonsArray: any[] = [];
-      
-      // Pour chaque unité, charger les leçons
-      for (const unit of units) {
-        try {
-          const lessonsData = await courseAPI.getLessons(unit.id, targetLanguage);
-          
-          if (Array.isArray(lessonsData)) {
-            // Associer l'unité à chaque leçon
-            const lessonsWithUnit = lessonsData.map(lesson => ({
-              ...lesson,
-              unitId: unit.id,
-              unitTitle: unit.title,
-              unitLevel: unit.level
-            }));
-            
-            allLessonsArray = [...allLessonsArray, ...lessonsWithUnit];
-            
-            // Stocker les leçons pour cette unité
-            setLoadedLessons(prev => ({ ...prev, [unit.id]: lessonsData }));
-          }
-        } catch (err) {
-          console.error(`Error loading lessons for unit ${unit.id}:`, err);
-        }
-      }
-      
-      // Trier les leçons par niveau et par ordre
-      allLessonsArray.sort((a, b) => {
-        if (a.unitLevel !== b.unitLevel) {
-          return a.unitLevel.localeCompare(b.unitLevel);
-        }
-        if (a.unitId !== b.unitId) {
-          return a.unitId - b.unitId;
-        }
-        return a.order - b.order;
-      });
-      
-      setAllLessons(allLessonsArray);
-      
-      // Récupérer la progression des leçons
-      await fetchAllLessonProgress();
-      
-    } catch (err) {
-      console.error("Failed to fetch all lessons:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  // Fetch progress for all lessons
-  const fetchAllLessonProgress = async () => {
-    try {
-      // We'll need progress for all units
-      for (const unit of units) {
-        await fetchLessonProgress(unit.id);
-      }
-    } catch (err) {
-      console.error("Error fetching all lesson progress:", err);
-    }
-  };
 
   // Fetch unit progress data
   const fetchUnitProgress = async () => {
@@ -367,9 +313,8 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
     }
   };
 
-  // Handle unit click
-  const handleUnitClick = async (unitId: number) => {
-    // Code unchanged
+  // Handle unit click avec useCallback pour éviter les re-renders
+  const handleUnitClick = useCallback(async (unitId: number) => {
     if (expandedUnitId === unitId) {
       // If unit is already expanded, collapse it
       setExpandedUnitId(null);
@@ -380,10 +325,10 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
       setExpandedLessonId(null);
       await loadLessonsForUnit(unitId);
     }
-  };
+  }, [expandedUnitId]);
 
-  // Handle lesson click
-  const handleLessonClick = async (lessonId: number, _unitId: number) => {
+  // Handle lesson click avec useCallback
+  const handleLessonClick = useCallback(async (lessonId: number, _unitId: number) => {
     if (expandedLessonId === lessonId) {
       // If lesson is already expanded, collapse it
       setExpandedLessonId(null);
@@ -392,10 +337,10 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
       setExpandedLessonId(lessonId);
       await loadContentForLesson(lessonId);
     }
-  };
+  }, [expandedLessonId]);
 
-  // Prefetch data on hover to improve perceived performance
-  const handleLessonHover = (lessonId: number) => {
+  // Prefetch data on hover avec useCallback
+  const handleLessonHover = useCallback((lessonId: number) => {
     // Only prefetch if not already expanded
     if (expandedLessonId !== lessonId) {
       // Direct preloading approach for content lessons
@@ -411,23 +356,53 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
           console.error("Error prefetching content lessons:", err);
         });
     }
-  };
+  }, [expandedLessonId]);
 
-  // Navigate to content
-  const handleContentClick = (unitId: number, lessonId: number, contentId: number, contentType: string) => {
-    // Code unchanged
-    router.push(`/learning/content/${contentType.toLowerCase()}/${contentId}?language=${targetLanguage}&parentLessonId=${lessonId}&unitId=${unitId}`);
-  };
+  // Navigate to content avec useCallback
+  const handleContentClick = useCallback((unitId: number, lessonId: number, contentId: number, contentType: string) => {
+    navigateToExercise(unitId, lessonId, contentId, contentType, targetLanguage);
+  }, [navigateToExercise, targetLanguage]);
 
-  // Loading state
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center p-8 space-y-4">
-        <Loader2 className="h-12 w-12 animate-spin text-purple-600" />
-        <p className="text-purple-600 font-medium">Loading your learning journey...</p>
-      </div>
-    );
-  }
+  // Mémoiser le regroupement des leçons par niveau pour le mode filtré
+  const { lessonsByLevel, sortedLevels } = useMemo(() => {
+    if (!shouldShowLessonsOnly) return { lessonsByLevel: {}, sortedLevels: [] };
+    
+    // Utiliser directement allLessons qui vient déjà filtré du backend
+    const groupedLessons: Record<string, any[]> = {};
+    allLessons.forEach(lesson => {
+      const level = lesson.unit_level || 'Unknown';
+      if (!groupedLessons[level]) {
+        groupedLessons[level] = [];
+      }
+      groupedLessons[level].push(lesson);
+    });
+
+    // Trier les niveaux (A1, A2, B1, B2, etc.)
+    const levelsSorted = Object.keys(groupedLessons).sort((a, b) => {
+      const levelACode = a.charAt(0) + a.substring(1);
+      const levelBCode = b.charAt(0) + b.substring(1);
+      return levelACode.localeCompare(levelBCode);
+    });
+    
+    return { lessonsByLevel: groupedLessons, sortedLevels: levelsSorted };
+  }, [allLessons, shouldShowLessonsOnly]);
+
+  // Mémoiser le regroupement des unités par niveau (toujours appelé)
+  const unitsByLevel = useMemo(() => {
+    const grouped: Record<string, any[]> = {};
+    units.forEach(unit => {
+      if (!grouped[unit.level]) {
+        grouped[unit.level] = [];
+      }
+      grouped[unit.level].push(unit);
+    });
+    return grouped;
+  }, [units]);
+
+  // Loading state - supprimé car géré par le système global
+  // if (loading) {
+  //   return null; // Le chargement global s'en charge
+  // }
 
   // Error state
   if (error) {
@@ -440,35 +415,27 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
   }
 
   // Empty state
-  if (units.length === 0) {
+  if (shouldShowLessonsOnly ? allLessons.length === 0 : units.length === 0) {
     return (
       <div className="p-6 bg-gray-50 dark:bg-transparent rounded-lg border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300">
-        <p className="text-center">No units found matching your criteria.</p>
+        <p className="text-center">
+          {shouldShowLessonsOnly 
+            ? "No lessons found matching your criteria." 
+            : "No units found matching your criteria."}
+        </p>
       </div>
     );
   }
 
-  // Afficher uniquement les leçons sans les titres des unités
-  if (showOnlyLessons) {
-    // Regrouper les leçons par niveau
-    const lessonsByLevel: Record<string, any[]> = {};
-    allLessons.forEach(lesson => {
-      const level = lesson.unitLevel;
-      if (!lessonsByLevel[level]) {
-        lessonsByLevel[level] = [];
-      }
-      lessonsByLevel[level].push(lesson);
-    });
 
-    // Trier les niveaux (A1, A2, B1, B2, etc.)
-    const sortedLevels = Object.keys(lessonsByLevel).sort((a, b) => {
-      const levelACode = a.charAt(0) + a.substring(1);
-      const levelBCode = b.charAt(0) + b.substring(1);
-      return levelACode.localeCompare(levelBCode);
-    });
-
+  // Afficher uniquement les leçons sans les titres des unités (mode LinkedIn Learning)
+  if (shouldShowLessonsOnly) {
+    // Créer un message contextuel pour expliquer le mode d'affichage
+    const isFiltering = (contentTypeFilter && contentTypeFilter !== 'all') || (searchQuery && searchQuery.trim() !== '');
+    
     return (
-      <div className="space-y-12">
+      <div className="space-y-8 pb-8">
+        <div className="space-y-12">
         {sortedLevels.map(level => {
           const levelLessons = lessonsByLevel[level];
           const lessonCount = levelLessons.length;
@@ -476,20 +443,20 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
           return (
             <div key={level} className="relative">
               {/* En-tête du niveau */}
-              <div className="flex items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
+              <div className="flex items-center mb-4 learn-level-gradient px-4 py-2 rounded-xl border border-white/50 dark:border-purple-500/20 learn-card-shadow min-h-0">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
                   Niveau {level}
                 </h2>
-                <Badge className="ml-4 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 font-medium">
-                  {lessonCount} leçons
+                <Badge className="ml-4 bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/60 dark:to-indigo-900/60 text-purple-800 dark:text-purple-200 font-semibold px-3 py-1 shadow-sm">
+                  {lessonCount} leçon{lessonCount > 1 ? 's' : ''}
                 </Badge>
-                <div className="h-px flex-1 bg-gradient-to-r from-indigo-600/20 via-purple-600/20 to-pink-400/20 ml-4"></div>
+                <div className="h-px flex-1 bg-gradient-to-r from-indigo-600/30 via-purple-600/30 to-pink-400/30 ml-4"></div>
               </div>
               
               {/* Liste des leçons pour ce niveau */}
               <div className={layout === "grid" 
-                ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4` 
-                : "space-y-4"
+                ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6` 
+                : "space-y-6"
               }>
                 {levelLessons.map(lesson => {
                   const lessonStatus = lessonProgress[lesson.id]?.status || 'not_started';
@@ -498,10 +465,10 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
                   return (
                     <Card
                       key={lesson.id}
-                      className={`transform hover:shadow-md cursor-pointer bg-white dark:bg-transparent ${
-                        lessonStatus === 'completed' ? 'border-l-4 border-green-500' :
-                        lessonStatus === 'in_progress' ? 'border-l-4 border-amber-500' : ''
-                      }`}
+                      className={`transform transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 cursor-pointer bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-white/60 dark:border-gray-700/60 rounded-xl ${
+                        lessonStatus === 'completed' ? 'border-l-4 border-green-500 shadow-green-500/20' :
+                        lessonStatus === 'in_progress' ? 'border-l-4 border-amber-500 shadow-amber-500/20' : 'hover:border-purple-300/60 dark:hover:border-purple-500/60'
+                      } shadow-lg`}
                       onClick={() => handleLessonClick(lesson.id, lesson.unitId)}
                     >
                       <div className={isCompactView ? "p-3" : "p-6"}>
@@ -618,10 +585,10 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
                                 return (
                                   <div
                                     key={content.id}
-                                    className={`border p-2 rounded-md hover:bg-purple-50 dark:hover:bg-purple-900/20 cursor-pointer flex items-center justify-between
-                                      ${contentStatus === 'completed' ? 'border-green-500 bg-green-50/30 dark:bg-green-900/10' : 
-                                        contentStatus === 'in_progress' ? 'border-amber-500 bg-amber-50/30 dark:bg-amber-900/10' : 
-                                        'border-purple-300 dark:border-purple-700'}`}
+                                    className={`border p-4 rounded-lg hover:bg-purple-50/60 dark:hover:bg-purple-900/30 cursor-pointer flex items-center justify-between transition-all duration-200 backdrop-blur-sm shadow-sm hover:shadow-md
+                                      ${contentStatus === 'completed' ? 'border-green-400 bg-green-50/50 dark:bg-green-900/20 hover:bg-green-50/70' : 
+                                        contentStatus === 'in_progress' ? 'border-amber-400 bg-amber-50/50 dark:bg-amber-900/20 hover:bg-amber-50/70' : 
+                                        'border-purple-200 dark:border-purple-600 bg-white/30 dark:bg-gray-800/30'}`}
                                     onClick={() => handleContentClick(lesson.unitId, lesson.id, content.id, content.content_type)}
                                   >
                                     <div className="flex items-center gap-2">
@@ -635,8 +602,8 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
                                     <ChevronRight className="h-4 w-4 text-purple-400 dark:text-purple-500" />
                                   </div>
                                 );
-                              })}
-                            </div>
+                                  })}
+                                </div>
                           ) : (
                             <div className="p-4 text-center text-gray-500 dark:text-gray-400">
                               No content available for this lesson
@@ -651,86 +618,81 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
             </div>
           );
         })}
+        </div>
       </div>
     );
   }
 
-  // Affichage par défaut (regroupé par unités et niveaux)
-  // Group units by level
-  const unitsByLevel: Record<string, any[]> = {};
-  units.forEach(unit => {
-    if (!unitsByLevel[unit.level]) {
-      unitsByLevel[unit.level] = [];
-    }
-    unitsByLevel[unit.level].push(unit);
-  });
-
   return (
-    <div className="space-y-12">
+    <div className="space-y-12 pb-8">
       {Object.entries(unitsByLevel).map(([level, levelUnits]) => (
         <div key={level} className="relative">
           {/* Level header */}
-          <div className="flex items-center mb-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
+          <div className="flex items-center mb-8 learn-level-gradient p-6 rounded-2xl border border-white/50 dark:border-purple-500/20 learn-card-shadow">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
               Niveau {level}
             </h2>
-            <Badge className="ml-4 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 font-medium">
-              {levelUnits.length} unités
+            <Badge className="ml-6 bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/60 dark:to-indigo-900/60 text-purple-800 dark:text-purple-200 font-semibold px-4 py-2 shadow-sm">
+              {levelUnits.length} unité{levelUnits.length > 1 ? 's' : ''}
             </Badge>
-            <div className="h-px flex-1 bg-gradient-to-r from-indigo-600/20 via-purple-600/20 to-pink-400/20 ml-4"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-indigo-600/30 via-purple-600/30 to-pink-400/30 ml-6"></div>
           </div>
 
           {/* Units - respects layout prop */}
           <div className={layout === "grid" 
-            ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4` 
+            ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6` 
             : "space-y-6"
           }>
             {levelUnits.map((unit) => (
               <div key={unit.id} className="space-y-4">
                 {/* Unit card */}
                 <Card
-                  className="overflow-hidden border-2 border-transparent hover:border-brand-purple/20 transition-all duration-300 cursor-pointer bg-white dark:bg-transparent"
+                  className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-200 dark:border-gray-700 cursor-pointer"
                   onClick={() => handleUnitClick(unit.id)}
                 >
-                  <div className="p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
-                          <BookOpen className="h-6 w-6 text-purple-600 dark:text-purple-300" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold group-hover:text-brand-purple transition-colors text-gray-900 dark:text-white">
-                            {unit.title}
-                          </h3>
-                          {unit.description && (
-                            <p className="text-muted-foreground line-clamp-2 dark:text-gray-300">
-                              {unit.description}
-                            </p>
-                          )}
-                        </div>
+                  <div className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-14 h-14 bg-purple-100 dark:bg-purple-900/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <BookOpen className="text-purple-600 dark:text-purple-400" size={28} />
                       </div>
-                      
-                      <div className="flex items-center gap-3">
-                        {unitProgress[unit.id] > 0 && (
-                          <span className="text-sm text-muted-foreground dark:text-gray-300">
-                            {unitProgress[unit.id]}% complete
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                {unit.title}
+                              </h3>
+                              {expandedUnitId === unit.id ? (
+                                <ChevronDown className="w-5 h-5 text-gray-400" />
+                              ) : (
+                                <ChevronRight className="w-5 h-5 text-gray-400" />
+                              )}
+                            </div>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">
+                              {loadedLessons[unit.id]?.length || 0} leçons • {unit.level}
+                            </span>
+                          </div>
+                          <span className="text-sm text-gray-500 dark:text-gray-400 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full font-medium">
+                            {unitProgress[unit.id] || 0}% complété
                           </span>
+                        </div>
+                        {unit.description ? (
+                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                            {unit.description}
+                          </p>
+                        ) : (
+                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                            Cliquez pour voir les leçons
+                          </p>
                         )}
-                        {expandedUnitId === unit.id ? 
-                          <ChevronDown className="h-5 w-5 text-brand-purple dark:text-purple-300" /> :
-                          <ChevronRight className="h-5 w-5 text-brand-purple dark:text-purple-300" />
-                        }
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
+                          <div 
+                            className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-500 ease-out" 
+                            style={{width: `${unitProgress[unit.id] || 0}%`}}
+                          ></div>
+                        </div>
                       </div>
                     </div>
-
-                    {unitProgress[unit.id] > 0 && (
-                      <div className="w-full">
-                        <Progress 
-                          value={unitProgress[unit.id]} 
-                          className="h-1.5 [&>div]:bg-gradient-to-r [&>div]:from-indigo-600 [&>div]:via-purple-600 [&>div]:to-pink-400"
-                        />
-                      </div>
-                    )}
                   </div>
                 </Card>
 
@@ -885,9 +847,9 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
                                               <span className="text-purple-700 dark:text-purple-300 font-medium text-sm">{title}</span>
                                             </div>
                                             <ChevronRight className="h-4 w-4 text-purple-400 dark:text-purple-500" />
-                                          </div>
-                                        );
-                                      })}
+                                            </div>
+                                          );
+                                        })}
                                     </div>
                                   ) : (
                                     <div className="p-4 text-center text-gray-500 dark:text-gray-400">
@@ -914,6 +876,6 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = ({
       ))}
     </div>
   );
-};
+});
 
 export default ExpandableUnitLessonView;

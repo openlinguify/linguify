@@ -2,7 +2,6 @@
 
 import apiClient from '@/core/api/apiClient';
 import { getUserTargetLanguage, getUserNativeLanguage } from '@/core/utils/languageUtils';
-import { Cache } from "@/core/utils/cacheUtils";
 
 // Helper to extract and export the fastcache singleton separately
 let fastCacheInstance: EnhancedCache | null = null;
@@ -12,6 +11,7 @@ class EnhancedCache {
   private static instance: EnhancedCache;
   private cache: Map<string, { data: any, timestamp: number }>;
   private prefetchQueue: Set<string>;
+  private pendingRequests: Map<string, Promise<any>>; // Pour éviter les appels dupliqués
   private ttl: number = 10 * 60 * 1000; // 10 minutes in milliseconds
   private maxSize: number = 100; // Maximum number of items to keep in cache
   private hits: number = 0;
@@ -22,6 +22,7 @@ class EnhancedCache {
   private constructor() {
     this.cache = new Map();
     this.prefetchQueue = new Set();
+    this.pendingRequests = new Map();
 
     // Clean expired cache entries every minute
     setInterval(() => this.cleanExpiredEntries(), 60 * 1000);
@@ -57,8 +58,8 @@ class EnhancedCache {
     }
 
     this.hits++;
-    // Return a deep copy to avoid mutation issues
-    return JSON.parse(JSON.stringify(entry.data));
+    // Return shallow copy for performance - most data is immutable
+    return Array.isArray(entry.data) ? [...entry.data] : { ...entry.data };
   }
 
   public set(key: string, data: any, priority: boolean = false): void {
@@ -67,9 +68,9 @@ class EnhancedCache {
       this.evictOldest();
     }
 
-    // Store a deep copy to avoid shared references
+    // Store shallow copy for performance - most data is immutable
     this.cache.set(key, {
-      data: JSON.parse(JSON.stringify(data)),
+      data: Array.isArray(data) ? [...data] : { ...data },
       timestamp: Date.now()
     });
   }
@@ -112,6 +113,36 @@ class EnhancedCache {
   public clear(): void {
     this.cache.clear();
     this.prefetchQueue.clear();
+    this.pendingRequests.clear();
+  }
+
+  // Méthode pour gérer les requêtes avec déduplication
+  public async getOrFetch<T>(key: string, fetcher: () => Promise<T>): Promise<T> {
+    // Vérifier le cache d'abord
+    const cachedData = this.get(key);
+    if (cachedData) {
+      return cachedData;
+    }
+
+    // Vérifier si une requête est déjà en cours
+    const pendingRequest = this.pendingRequests.get(key);
+    if (pendingRequest) {
+      console.log(`Request already pending for: ${key}`);
+      return pendingRequest;
+    }
+
+    // Créer une nouvelle requête
+    const promise = fetcher()
+      .then(data => {
+        this.set(key, data);
+        return data;
+      })
+      .finally(() => {
+        this.pendingRequests.delete(key);
+      });
+
+    this.pendingRequests.set(key, promise);
+    return promise;
   }
 
   private evictOldest(): void {
@@ -166,7 +197,7 @@ export function getFastCache(): EnhancedCache | null {
 }
 import {
   MatchingResult,
-  LessonsByContentResponse,
+  CourseSearchResponse,
   TheoryData
 } from "@/addons/learning/types/";
 
@@ -283,53 +314,24 @@ const courseAPI = {
       const lang = targetLanguage || getUserTargetLanguage();
       const cacheKey = `lessons_${parsedUnitId}_${lang}`;
 
-      // Check if data is already in the enhanced cache
-      const cachedData = FastCache.get(cacheKey);
-      if (cachedData) {
-        console.log(`Using cached lessons for unit ${parsedUnitId} with language ${lang}`);
+      // Utiliser getOrFetch pour éviter les appels dupliqués
+      return FastCache.getOrFetch(cacheKey, async () => {
+        const params: Record<string, string> = {
+          unit: parsedUnitId.toString(),
+          target_language: lang
+        };
 
-        // When lessons are retrieved from cache, prefetch content lessons for each lesson
-        // This helps make the transition to lesson view faster
-        if (Array.isArray(cachedData) && cachedData.length > 0) {
-          const firstLesson = cachedData[0];
-          if (firstLesson && firstLesson.id) {
-            // Prefetch content lessons for the first lesson in the background
-            const contentLessonsCacheKey = `content_lessons_${firstLesson.id}_${lang}`;
-
-            // Only prefetch if not already in cache
-            if (!FastCache.has(contentLessonsCacheKey)) {
-              FastCache.prefetch(contentLessonsCacheKey, () =>
-                courseAPI.getContentLessons(firstLesson.id, lang)
-              );
-            }
-          }
-        }
-
-        return cachedData;
-      }
-
-      // If not in cache, continue with API request
-      const params: Record<string, string> = {
-        unit: parsedUnitId.toString(),
-        target_language: lang
-      };
-
-      console.log(`API: Fetching lessons for unit ${parsedUnitId} with language ${lang}`);
-      const response = await apiClient.get('/api/v1/course/lesson/', {
-        params,
-        headers: {
-          'Accept-Language': lang
-        },
-        signal
-      });
-
-      // Cache the data for future requests
-      if (response.data && Array.isArray(response.data)) {
-        // Store in enhanced cache (mark as priority)
-        FastCache.set(cacheKey, response.data, true);
+        console.log(`API: Fetching lessons for unit ${parsedUnitId} with language ${lang}`);
+        const response = await apiClient.get('/api/v1/course/lesson/', {
+          params,
+          headers: {
+            'Accept-Language': lang
+          },
+          signal
+        });
 
         // Prefetch content lessons for the first lesson in the result
-        if (response.data.length > 0) {
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
           const firstLesson = response.data[0];
           if (firstLesson && firstLesson.id) {
             // Schedule prefetch in the background after a small delay to prioritize current request
@@ -345,9 +347,9 @@ const courseAPI = {
             }, 200);
           }
         }
-      }
 
-      return response.data;
+        return response.data || [];
+      });
     } catch (err: any) {
       // Don't log errors for aborted requests
       if (err.name === 'AbortError') {
@@ -359,108 +361,6 @@ const courseAPI = {
     }
   },
 
-  getLessonsByContentType: async (contentType: string, level?: string): Promise<LessonsByContentResponse> => {
-    try {
-      // Modification: accepter une chaîne vide comme valeur valide
-      // mais log pour débogage
-      if (contentType === undefined || contentType === null) {
-        console.warn('Content type undefined or null, using empty string');
-        contentType = '';
-      }
-  
-      // Générer une clé de cache unique pour cette requête
-      const lang = getUserTargetLanguage();
-      const levelParam = level && level !== "all" ? level : "";
-      const cacheKey = `lessons_by_content_${contentType}_${lang}_${levelParam}`;
-      
-      // Ne pas utiliser le cache pour les requêtes "all" ou chaîne vide
-      const isAllContentTypes = contentType === "all" || contentType === "";
-      const cachedData = isAllContentTypes ? null : Cache.get(cacheKey);
-      
-      if (cachedData) {
-        console.log(`Using cached lessons for content type ${contentType} with language ${lang}`);
-        return cachedData as LessonsByContentResponse;
-      }
-  
-      console.log(`API: Fetching lessons with content type '${contentType}' with language ${lang}`);
-  
-      // Préparer les paramètres de requête
-      const params: Record<string, string> = {
-        target_language: lang
-      };
-  
-      // Ajouter content_type uniquement s'il n'est pas vide
-      // Le backend a été modifié pour gérer l'absence de ce paramètre
-      if (contentType && contentType !== "all") {
-        params.content_type = contentType;
-      }
-      
-      // Ajouter le filtre de niveau si spécifié
-      if (level && level !== "all") {
-        params.level = level;
-      }
-  
-      console.log('API request parameters:', params);
-  
-      // Appel API
-      const response = await apiClient.get('/api/v1/course/lessons-by-content/', {
-        params
-      });
-  
-      // Vérifier que la réponse a le format attendu
-      let responseData: LessonsByContentResponse;
-  
-      if (response.data && response.data.results) {
-        // La réponse est déjà au bon format
-        responseData = response.data as LessonsByContentResponse;
-      } else if (Array.isArray(response.data)) {
-        // La réponse est un tableau brut, le formater
-        responseData = {
-          results: response.data,
-          metadata: {
-            content_type: contentType,
-            target_language: lang,
-            available_levels: [],
-            total_count: response.data.length
-          }
-        };
-      } else {
-        // Format de réponse inattendu, créer une structure vide
-        responseData = {
-          results: [],
-          metadata: {
-            content_type: contentType,
-            target_language: lang,
-            available_levels: [],
-            total_count: 0
-          }
-        };
-      }
-  
-      // Mettre les données en cache pour les futures requêtes (sauf pour "all")
-      if (!isAllContentTypes) {
-        Cache.set(cacheKey, responseData);
-      }
-  
-      return responseData;
-    } catch (err: any) {
-      // Capture détaillée de l'erreur
-      const errorMessage = err.message || 'Unknown error';
-      console.error('Failed to fetch lessons by content type:', err);
-  
-      // L'objet de réponse inclut maintenant un champ error valide
-      return {
-        results: [],
-        metadata: {
-          content_type: contentType || '',
-          target_language: getUserTargetLanguage(),
-          available_levels: [],
-          total_count: 0,
-          error: errorMessage
-        }
-      };
-    }
-  },
 
   getContentLessons: async (lessonId: number | string, targetLanguage?: string, signal?: AbortSignal) => {
     try {
@@ -1148,7 +1048,74 @@ const courseAPI = {
       console.error(`Failed to submit test recap answers for test #${testId}:`, err);
       throw err;
     }
-  }
+  },
+
+  // Enhanced unified search API that uses backend filtering
+  searchCourses: async (filters: {
+    search?: string;
+    contentType?: string;
+    level?: string;
+    viewType?: 'units' | 'lessons';
+    targetLanguage?: string;
+  } = {}): Promise<CourseSearchResponse> => {
+    try {
+      // Prepare search parameters
+      const params = new URLSearchParams();
+      
+      if (filters.search) params.append('search', filters.search);
+      if (filters.contentType && filters.contentType !== 'all') {
+        params.append('content_type', filters.contentType);
+      }
+      if (filters.level && filters.level !== 'all') {
+        params.append('level', filters.level);
+      }
+      if (filters.viewType) {
+        params.append('view_type', filters.viewType);
+      }
+      
+      const targetLang = filters.targetLanguage || getUserTargetLanguage();
+      params.append('target_language', targetLang);
+      
+      // Create cache key for this specific search
+      const cacheKey = `search_courses_${params.toString()}`;
+      
+      // Check cache first
+      const cachedData = FastCache.get(cacheKey);
+      if (cachedData) {
+        console.log(`Using cached search results for: ${params.toString()}`);
+        return cachedData;
+      }
+      
+      console.log(`🔍 Backend search API call with params:`, Object.fromEntries(params));
+      
+      // Call the new enhanced search API
+      const response = await apiClient.get(`/api/v1/course/search/?${params.toString()}`);
+      
+      // Cache the results (mark as priority since search results are important)
+      FastCache.set(cacheKey, response.data, true);
+      
+      console.log(`✅ Search results received:`, {
+        totalResults: response.data.metadata?.total_results || response.data.results?.length || 0,
+        viewType: response.data.metadata?.view_type,
+        appliedFilters: response.data.metadata?.filters_applied
+      });
+      
+      return response.data;
+    } catch (err: any) {
+      console.error('Failed to search courses:', {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message,
+        filters
+      });
+      throw err;
+    }
+  },
+
+  // Export the cache instance so other parts of the code can clear it if needed
+  clearCache: () => {
+    FastCache.clear();
+  },
 };
 
 export default courseAPI;

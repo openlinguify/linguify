@@ -17,6 +17,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.db.models import Q, Count, Case, When, IntegerField
+from django.db.models.functions import Lower
 
 
 from .models import (
@@ -924,16 +926,12 @@ class LessonsByContentView(TargetLanguageMixin, generics.ListAPIView):
         # Récupérer le type de contenu depuis les paramètres de requête
         content_type = self.request.query_params.get('content_type')
         
-        # MODIFICATION: Ne pas lever d'exception si content_type est absent
-        # Traiter l'absence comme une demande pour tous les types de contenu
-        if not content_type:
-            # Construire le queryset pour tous les types de contenu
-            queryset = Lesson.objects.all().distinct().select_related('unit')
-        else:
-            # Construire le queryset filtré par type de contenu
-            queryset = Lesson.objects.filter(
-                content_lessons__content_type__iexact=content_type
-            ).distinct().select_related('unit')
+        # Construire le queryset de base
+        queryset = Lesson.objects.all().distinct().select_related('unit')
+        
+        # Filtrer par lesson_type si spécifié
+        if content_type and content_type != "all":
+            queryset = queryset.filter(lesson_type__iexact=content_type)
         
         # Filtrer davantage par niveau si spécifié
         level = self.request.query_params.get('level')
@@ -966,9 +964,8 @@ class LessonsByContentView(TargetLanguageMixin, generics.ListAPIView):
                 return obj.unit.level
                 
             def get_content_count(self, obj):
-                """Renvoie le nombre de contenus du type demandé dans cette leçon"""
-                content_type = self.context.get('request').query_params.get('content_type')
-                return obj.content_lessons.filter(content_type__iexact=content_type).count()
+                """Renvoie le nombre de contenus dans cette leçon"""
+                return obj.content_lessons.count()
         
         return EnhancedLessonSerializer
     
@@ -990,9 +987,12 @@ class LessonsByContentView(TargetLanguageMixin, generics.ListAPIView):
         target_language = self.get_target_language()
         
         # Obtenir les niveaux disponibles pour ce type de contenu
-        available_levels = Lesson.objects.filter(
-            content_lessons__content_type__iexact=content_type
-        ).values_list('unit__level', flat=True).distinct().order_by('unit__level')
+        if content_type and content_type != "all":
+            available_levels = Lesson.objects.filter(
+                lesson_type__iexact=content_type
+            ).values_list('unit__level', flat=True).distinct().order_by('unit__level')
+        else:
+            available_levels = Lesson.objects.values_list('unit__level', flat=True).distinct().order_by('unit__level')
         
         # Ajouter des métadonnées à la réponse
         response.data = {
@@ -1322,3 +1322,228 @@ class TestRecapViewSet(TargetLanguageMixin, viewsets.ModelViewSet):
                 {"message": "No results found for this test"},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+
+class EnhancedCourseSearchView(TargetLanguageMixin, generics.ListAPIView):
+    """
+    API de recherche et filtrage unifiée pour les cours.
+    
+    Paramètres supportés:
+    - search: recherche textuelle sur titre, description, type
+    - content_type: filtre par type de contenu (vocabulary, theory, matching, etc.)
+    - level: filtre par niveau (A1, A2, B1, etc.)
+    - target_language: langue cible (par défaut depuis le profil utilisateur)
+    - view_type: 'units' ou 'lessons' pour le type de vue
+    - limit: nombre de résultats par page (défaut: 20)
+    - offset: décalage pour la pagination
+    """
+    permission_classes = [AllowAny]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    search_fields = ['title_en', 'title_fr', 'title_es', 'title_nl', 'description_en', 'description_fr', 'description_es', 'description_nl']
+    ordering_fields = ['order', 'level', 'created_at']
+    
+    def get_queryset(self):
+        """Construire un queryset optimisé basé sur les paramètres de filtrage"""
+        
+        # Paramètres de requête
+        search_query = self.request.query_params.get('search', '').strip()
+        content_type = self.request.query_params.get('content_type', '').strip()
+        level = self.request.query_params.get('level', '').strip()
+        view_type = self.request.query_params.get('view_type', 'units').strip()
+        target_language = self.get_target_language()
+        
+        if view_type == 'lessons':
+            # Mode leçons : retourner les leçons filtrées
+            queryset = self._get_lessons_queryset(search_query, content_type, level, target_language)
+        else:
+            # Mode unités : retourner les unités filtrées  
+            queryset = self._get_units_queryset(search_query, content_type, level, target_language)
+            
+        return queryset
+    
+    def _get_units_queryset(self, search_query, content_type, level, target_language):
+        """Construire un queryset pour les unités avec filtres appliqués"""
+        
+        queryset = Unit.objects.all().select_related().prefetch_related(
+            'lessons__content_lessons'
+        )
+        
+        # Filtre par niveau
+        if level and level != 'all':
+            queryset = queryset.filter(level=level)
+            
+        # Filtre par recherche textuelle sur les unités
+        if search_query:
+            search_q = Q()
+            for field in ['title_en', 'title_fr', 'title_es', 'title_nl', 'description']:
+                search_q |= Q(**{f'{field}__icontains': search_query})
+            queryset = queryset.filter(search_q)
+        
+        # Si un type de contenu spécifique est demandé, filtrer les unités qui ont ce type
+        if content_type and content_type != 'all':
+            queryset = queryset.filter(
+                lessons__lesson_type__iexact=content_type
+            ).distinct()
+            
+        return queryset.order_by('order')
+    
+    def _get_lessons_queryset(self, search_query, content_type, level, target_language):
+        """Construire un queryset pour les leçons avec filtres appliqués"""
+        
+        queryset = Lesson.objects.all().select_related('unit').prefetch_related(
+            'content_lessons'
+        )
+        
+        # Filtre par niveau (via l'unité)
+        if level and level != 'all':
+            queryset = queryset.filter(unit__level=level)
+            
+        # Filtre par type de contenu (utiliser lesson_type au lieu de content_type)
+        if content_type and content_type != 'all':
+            queryset = queryset.filter(
+                lesson_type__iexact=content_type
+            ).distinct()
+            
+        # Filtre par recherche textuelle sur les leçons
+        if search_query:
+            search_q = Q()
+            # Recherche dans les titres de leçons
+            for field in ['title_en', 'title_fr', 'title_es', 'title_nl']:
+                search_q |= Q(**{f'{field}__icontains': search_query})
+            # Recherche dans les titres d'unités parentes
+            for field in ['title_en', 'title_fr', 'title_es', 'title_nl']:
+                search_q |= Q(**{f'unit__{field}__icontains': search_query})
+            # Recherche dans les types de leçons
+            search_q |= Q(lesson_type__icontains=search_query)
+            
+            queryset = queryset.filter(search_q)
+            
+        return queryset.order_by('unit__order', 'order')
+    
+    def get_serializer_class(self):
+        """Retourner le bon serializer selon le type de vue"""
+        view_type = self.request.query_params.get('view_type', 'units')
+        
+        if view_type == 'lessons':
+            return self._get_enhanced_lesson_serializer()
+        else:
+            return self._get_enhanced_unit_serializer()
+    
+    def _get_enhanced_unit_serializer(self):
+        """Serializer enrichi pour les unités"""
+        class EnhancedUnitSerializer(UnitSerializer):
+            lessons_count = serializers.SerializerMethodField()
+            matching_content_count = serializers.SerializerMethodField()
+            
+            class Meta(UnitSerializer.Meta):
+                fields = UnitSerializer.Meta.fields + ['lessons_count', 'matching_content_count']
+            
+            def get_lessons_count(self, obj):
+                content_type = self.context.get('request').query_params.get('content_type', '')
+                if content_type and content_type != 'all':
+                    return obj.lessons.filter(
+                        content_lessons__content_type__iexact=content_type
+                    ).distinct().count()
+                return obj.lessons.count()
+            
+            def get_matching_content_count(self, obj):
+                content_type = self.context.get('request').query_params.get('content_type', '')
+                if content_type and content_type != 'all':
+                    return obj.lessons.filter(
+                        content_lessons__content_type__iexact=content_type
+                    ).aggregate(
+                        count=Count('content_lessons', filter=Q(content_lessons__content_type__iexact=content_type))
+                    )['count'] or 0
+                return 0
+                
+        return EnhancedUnitSerializer
+    
+    def _get_enhanced_lesson_serializer(self):
+        """Serializer enrichi pour les leçons"""
+        class EnhancedLessonSerializer(LessonSerializer):
+            unit_title = serializers.SerializerMethodField()
+            unit_level = serializers.SerializerMethodField()
+            unit_id = serializers.IntegerField(source='unit.id')
+            matching_content_count = serializers.SerializerMethodField()
+            
+            class Meta(LessonSerializer.Meta):
+                fields = LessonSerializer.Meta.fields + [
+                    'unit_title', 'unit_level', 'unit_id', 'matching_content_count'
+                ]
+            
+            def get_unit_title(self, obj):
+                target_language = self.context.get('target_language', 'en')
+                field_name = f'title_{target_language}'
+                return getattr(obj.unit, field_name, obj.unit.title_en)
+            
+            def get_unit_level(self, obj):
+                return obj.unit.level
+                
+            def get_matching_content_count(self, obj):
+                content_type = self.context.get('request').query_params.get('content_type', '')
+                if content_type and content_type != 'all':
+                    return obj.content_lessons.filter(content_type__iexact=content_type).count()
+                return obj.content_lessons.count()
+                
+        return EnhancedLessonSerializer
+    
+    def get_serializer_context(self):
+        """Ajouter des informations de contexte au serializer"""
+        context = super().get_serializer_context()
+        context['target_language'] = self.get_target_language()
+        return context
+    
+    def list(self, request, *args, **kwargs):
+        """Personnaliser la réponse avec des métadonnées enrichies"""
+        
+        # Exécuter la logique de liste standard
+        response = super().list(request, *args, **kwargs)
+        
+        # Paramètres pour les métadonnées
+        search_query = request.query_params.get('search', '').strip()
+        content_type = request.query_params.get('content_type', '').strip()
+        level = request.query_params.get('level', '').strip()
+        view_type = request.query_params.get('view_type', 'units')
+        target_language = self.get_target_language()
+        
+        # Calculer les métadonnées
+        metadata = {
+            'search_query': search_query,
+            'content_type': content_type,
+            'level': level,
+            'view_type': view_type,
+            'target_language': target_language,
+            'total_results': len(response.data),
+            'available_levels': self._get_available_levels(content_type),
+            'available_content_types': self._get_available_content_types(level),
+            'filters_applied': {
+                'has_search': bool(search_query),
+                'has_content_filter': bool(content_type and content_type != 'all'),
+                'has_level_filter': bool(level and level != 'all'),
+            }
+        }
+        
+        # Restructurer la réponse
+        enhanced_response = {
+            'results': response.data,
+            'metadata': metadata
+        }
+        
+        response.data = enhanced_response
+        return response
+    
+    def _get_available_levels(self, content_type):
+        """Obtenir les niveaux disponibles pour un type de contenu"""
+        if content_type and content_type != 'all':
+            return list(Unit.objects.filter(
+                lessons__content_lessons__content_type__iexact=content_type
+            ).values_list('level', flat=True).distinct().order_by('level'))
+        return list(Unit.objects.values_list('level', flat=True).distinct().order_by('level'))
+    
+    def _get_available_content_types(self, level):
+        """Obtenir les types de contenu disponibles pour un niveau"""
+        queryset = ContentLesson.objects.all()
+        if level and level != 'all':
+            queryset = queryset.filter(lesson__unit__level=level)
+        
+        return list(queryset.values_list('content_type', flat=True).distinct().order_by('content_type'))

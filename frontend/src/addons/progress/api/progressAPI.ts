@@ -14,6 +14,7 @@ import {
  
 // Configurer un cache pour stocker les résultats
 const apiCache = new Map<string, {data: any, timestamp: number}>();
+const pendingRequests = new Map<string, Promise<any>>(); // Déduplication des requêtes
 const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutes
 
 /**
@@ -27,6 +28,36 @@ function withCache<T>(cacheKey: string, data: T, shouldCache: boolean): T {
     });
   }
   return data;
+}
+
+/**
+ * Gère la déduplication des requêtes
+ */
+async function getOrFetch<T>(cacheKey: string, fetcher: () => Promise<T>): Promise<T> {
+  // Vérifier le cache d'abord
+  const cachedData = getFromCache<T>(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
+  // Vérifier si une requête est déjà en cours
+  const pendingRequest = pendingRequests.get(cacheKey);
+  if (pendingRequest) {
+    return pendingRequest;
+  }
+
+  // Créer une nouvelle requête
+  const promise = fetcher()
+    .then(data => {
+      withCache(cacheKey, data, true);
+      return data;
+    })
+    .finally(() => {
+      pendingRequests.delete(cacheKey);
+    });
+
+  pendingRequests.set(cacheKey, promise);
+  return promise;
 }
 
 /**
@@ -250,7 +281,7 @@ export const progressService = {
   },
 
   /**
-   * Récupère la progression des unités
+   * Récupère la progression des unités (avec déduplication)
    */
   getUnitProgress: async (unitId?: number, options: ApiOptions = {}): Promise<UnitProgress[]> => {
     const {
@@ -263,62 +294,56 @@ export const progressService = {
 
     const cacheKey = unitId ? `unit-progress-${unitId}` : 'all-units-progress';
     
-    // Vérifier d'abord le cache
-    if (cacheResults) {
-      const cachedData = getFromCache<UnitProgress[]>(cacheKey);
-      if (cachedData) {
-        console.log(`Progression des unités récupérée depuis le cache${unitId ? ` pour l'unité ${unitId}` : ''}`);
-        return cachedData;
-      }
-    }
+    // Utiliser getOrFetch pour éviter les appels dupliqués
+    return getOrFetch(cacheKey, async () => {
+      // Construire l'URL en fonction des paramètres
+      const url = unitId 
+        ? `/api/v1/progress/units/?unit_id=${unitId}` 
+        : '/api/v1/progress/units/';
 
-    // Construire l'URL en fonction des paramètres
-    const url = unitId 
-      ? `/api/v1/progress/units/?unit_id=${unitId}` 
-      : '/api/v1/progress/units/';
-
-    // Fonction pour effectuer la requête
-    const fetchData = async (retryCount = 0): Promise<UnitProgress[]> => {
-      try {
-        const response = await apiClient.get<UnitProgress[]>(url);
-        return withCache(cacheKey, response.data, cacheResults);
-      } catch (error: unknown) {
-        // Si c'est une erreur réseau et qu'on a encore des essais
-        if (
-          error instanceof Error && 
-          error.message.includes('Network Error') && 
-          retryOnNetworkError && 
-          retryCount < maxRetries
-        ) {
-          console.log(`Tentative de récupération des unités (${retryCount + 1}/${maxRetries})...`);
-          
-          // Attendre que le réseau soit disponible (avec un timeout plus court)
-          const isNetworkAvailable = await waitForNetwork(3000);
-          if (!isNetworkAvailable) {
-            throw error;
+      // Fonction pour effectuer la requête
+      const fetchData = async (retryCount = 0): Promise<UnitProgress[]> => {
+        try {
+          const response = await apiClient.get<UnitProgress[]>(url);
+          return response.data;
+        } catch (error: unknown) {
+          // Si c'est une erreur réseau et qu'on a encore des essais
+          if (
+            error instanceof Error && 
+            error.message.includes('Network Error') && 
+            retryOnNetworkError && 
+            retryCount < maxRetries
+          ) {
+            console.log(`Tentative de récupération des unités (${retryCount + 1}/${maxRetries})...`);
+            
+            // Attendre que le réseau soit disponible (avec un timeout plus court)
+            const isNetworkAvailable = await waitForNetwork(3000);
+            if (!isNetworkAvailable) {
+              throw error;
+            }
+            
+            // Réessayer avec un délai exponentiel
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+            return fetchData(retryCount + 1);
           }
-          
-          // Réessayer avec un délai exponentiel
-          await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
-          return fetchData(retryCount + 1);
+
+          // Gérer l'erreur
+          const result = handleApiError<UnitProgress[]>(
+            error,
+            `Erreur lors de la récupération de la progression des unités${unitId ? ` pour l'unité ${unitId}` : ''}`,
+            {
+              showToast: showErrorToast,
+              fallbackData,
+              retryCallback: () => fetchData(0)
+            }
+          );
+
+          return result.fallbackData as UnitProgress[];
         }
+      };
 
-        // Gérer l'erreur
-        const result = handleApiError<UnitProgress[]>(
-          error,
-          `Erreur lors de la récupération de la progression des unités${unitId ? ` pour l'unité ${unitId}` : ''}`,
-          {
-            showToast: showErrorToast,
-            fallbackData,
-            retryCallback: () => fetchData(0)
-          }
-        );
-
-        return result.fallbackData as UnitProgress[];
-      }
-    };
-
-    return fetchData();
+      return fetchData();
+    });
   },
 
   /**
@@ -388,7 +413,7 @@ export const progressService = {
   },
 
   /**
-   * Récupère la progression des leçons par unité
+   * Récupère la progression des leçons par unité (avec déduplication)
    */
   getLessonProgressByUnit: async (unitId: number, options: ApiOptions = {}): Promise<LessonProgress[]> => {
     const {
@@ -401,56 +426,50 @@ export const progressService = {
 
     const cacheKey = `lesson-progress-unit-${unitId}`;
     
-    // Vérifier d'abord le cache
-    if (cacheResults) {
-      const cachedData = getFromCache<LessonProgress[]>(cacheKey);
-      if (cachedData) {
-        console.log(`Progression des leçons pour l'unité ${unitId} récupérée depuis le cache`);
-        return cachedData;
-      }
-    }
-
-    // Fonction pour effectuer la requête
-    const fetchData = async (retryCount = 0): Promise<LessonProgress[]> => {
-      try {
-        const response = await apiClient.get<LessonProgress[]>(`/api/v1/progress/lessons/by_unit/?unit_id=${unitId}`);
-        return withCache(cacheKey, response.data, cacheResults);
-      } catch (error: unknown) {
-        // Si c'est une erreur réseau et qu'on a encore des essais
-        if (
-          error instanceof Error && 
-          error.message.includes('Network Error') && 
-          retryOnNetworkError && 
-          retryCount < maxRetries
-        ) {
-          console.log(`Tentative de récupération des leçons pour l'unité ${unitId} (${retryCount + 1}/${maxRetries})...`);
-          
-          // Réessayer avec un délai exponentiel après avoir vérifié la connexion
-          const isNetworkAvailable = await waitForNetwork(3000);
-          if (!isNetworkAvailable) {
-            throw error;
+    // Utiliser getOrFetch pour éviter les appels dupliqués
+    return getOrFetch(cacheKey, async () => {
+      // Fonction pour effectuer la requête
+      const fetchData = async (retryCount = 0): Promise<LessonProgress[]> => {
+        try {
+          const response = await apiClient.get<LessonProgress[]>(`/api/v1/progress/lessons/by_unit/?unit_id=${unitId}`);
+          return response.data;
+        } catch (error: unknown) {
+          // Si c'est une erreur réseau et qu'on a encore des essais
+          if (
+            error instanceof Error && 
+            error.message.includes('Network Error') && 
+            retryOnNetworkError && 
+            retryCount < maxRetries
+          ) {
+            console.log(`Tentative de récupération des leçons pour l'unité ${unitId} (${retryCount + 1}/${maxRetries})...`);
+            
+            // Réessayer avec un délai exponentiel après avoir vérifié la connexion
+            const isNetworkAvailable = await waitForNetwork(3000);
+            if (!isNetworkAvailable) {
+              throw error;
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+            return fetchData(retryCount + 1);
           }
-          
-          await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
-          return fetchData(retryCount + 1);
+
+          // Gérer l'erreur
+          const result = handleApiError<LessonProgress[]>(
+            error,
+            `Erreur lors de la récupération des leçons pour l'unité ${unitId}`,
+            {
+              showToast: showErrorToast,
+              fallbackData,
+              retryCallback: () => fetchData(0)
+            }
+          );
+
+          return result.fallbackData as LessonProgress[];
         }
+      };
 
-        // Gérer l'erreur
-        const result = handleApiError<LessonProgress[]>(
-          error,
-          `Erreur lors de la récupération des leçons pour l'unité ${unitId}`,
-          {
-            showToast: showErrorToast,
-            fallbackData,
-            retryCallback: () => fetchData(0)
-          }
-        );
-
-        return result.fallbackData as LessonProgress[];
-      }
-    };
-
-    return fetchData();
+      return fetchData();
+    });
   },
 
   /**

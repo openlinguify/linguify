@@ -66,8 +66,8 @@ export default function LessonProgressIndicator({
   };
 
   return (
-    <div className={`w-full p-1 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-sm border-b transition-all duration-150 ${className}`}>
-      <div className="container max-w-7xl mx-auto">
+    <div className={`fixed top-28 left-0 right-0 z-30 w-full p-1 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-sm border-b border-gray-200 dark:border-gray-700 transition-all duration-150 ${className}`}>
+      <div className="container max-w-7xl mx-auto px-6">
         <div className="flex flex-col space-y-1">
           {/* Lesson title (if provided) */}
           <div className="flex items-center justify-between">

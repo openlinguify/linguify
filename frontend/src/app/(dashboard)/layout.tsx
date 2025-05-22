@@ -103,13 +103,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="h-screen flex flex-col relative overflow-hidden">
       {/* Background with overlay for light mode - Minimal Linguify branded background */}
       <div className="absolute inset-0 bg-[url('/static/background_light/new/linguify-light-minimal.svg')] bg-cover bg-no-repeat bg-fixed dark:hidden"></div>
       {/* Background with overlay for dark mode - Minimal Linguify branded background */}
       <div className="absolute inset-0 bg-[url('/static/background_dark/new/linguify-dark-minimal.svg')] bg-cover bg-no-repeat bg-fixed hidden dark:block"></div>
       {/* Content */}
-      <div className="relative z-10 flex flex-col min-h-screen">
+      <div className="relative z-10 flex flex-col h-full">
         {/* Show terms notification if terms not accepted */}
         {isAuthenticated && !termsAccepted && <TermsNotification variant="banner" locale={locale as 'en' | 'fr' | 'es' | 'nl'} />}
 
@@ -124,8 +124,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         <Header />
         {/* Main Content */}
-        <main className="flex-1 dark:text-white">
-          <div className="pt-2 p-6 w-full">{children}</div>
+        <main className="flex-1 dark:text-white bg-transparent overflow-hidden flex flex-col">
+          {pathname.startsWith('/learning') ? (
+            // Pour les pages learning, utiliser toute la hauteur
+            <div className="flex-1 flex flex-col overflow-hidden">{children}</div>
+          ) : (
+            // Pour les autres pages, padding normal avec scroll
+            <div className="overflow-y-auto">
+              <div className="pt-6 px-8 pb-8 w-full max-w-7xl mx-auto bg-transparent">{children}</div>
+            </div>
+          )}
         </main>
       </div>
     </div>
