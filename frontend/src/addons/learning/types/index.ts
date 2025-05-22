@@ -11,6 +11,8 @@
     description: string;
     level: string;
     order: number;
+    lesson_count?: number;
+    lessons_count?: number;
   }
 
   export interface ExpandableUnitCardProps {
