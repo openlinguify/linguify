@@ -1,21 +1,21 @@
 import React from "react";
 
-import { Button } from "@acme/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@acme/ui/dialog";
-import { Separator } from "@acme/ui/separator";
-import { Switch } from "@acme/ui/switch";
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@acme/ui/tooltip";
+} from "@/components/ui/tooltip";
 
 interface FlashcardsGameSettingsDialogProps {
   open: boolean;

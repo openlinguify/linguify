@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Question, MultipleChoiceProps } from "@/addons/learning/types";
 import LessonCompletionModal from "../shared/LessonCompletionModal";
-import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
+// Progress system removed - lessonCompletionService disabled
 import { getUserNativeLanguage, getUserTargetLanguage } from "@/core/utils/languageUtils";
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -140,14 +140,8 @@ const MultipleChoice = ({
           try {
             const contentLessonId = parseInt(lessonId);
             
-            // Initialize progress
-            await lessonCompletionService.updateContentProgress(
-              contentLessonId,
-              1, // 1% to start
-              0,
-              0,
-              false
-            );
+            // Progress tracking disabled
+            console.log('Multiple choice quiz initialized:', contentLessonId);
             
           } catch (err) {
             console.error("Error initializing quiz progress:", err);
@@ -173,27 +167,16 @@ const MultipleChoice = ({
     try {
       const contentLessonId = parseInt(lessonId);
       
-      await lessonCompletionService.updateContentProgress(
-        contentLessonId,
+      // Progress tracking disabled
+      console.log('Multiple choice progress:', {
+        lessonId: contentLessonId,
         completionPercentage,
         timeSpent,
-        Math.round(completionPercentage / 10), // XP gained proportional to progress
-        completionPercentage >= 100 // mark as completed if 100%
-      );
+        completed: completionPercentage >= 100
+      });
 
-      // If we have the unit ID and this is a completion, update the parent lesson progress too
-      if (unitId && completionPercentage >= 100 && !quizCompleted) {
-        await lessonCompletionService.updateLessonProgress(
-          parseInt(unitId),
-          100,
-          timeSpent,
-          true,
-          contentLessonId
-        );
-
-        if (mountedRef.current) {
-          setQuizCompleted(true);
-        }
+      if (mountedRef.current) {
+        setQuizCompleted(true);
       }
     } catch (error) {
       console.error("Error updating quiz progress:", error);

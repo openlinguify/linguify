@@ -24,7 +24,7 @@ import courseAPI from "@/addons/learning/api/courseAPI";
 import { speechAPI } from "@/core/speech";
 import { useSpeechRecognition } from "@/core/speech";
 import { useSpeechSynthesis } from "@/core/speech";
-import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
+// Progress system removed - lessonCompletionService disabled
 import { SpeakingPracticeProps, VocabularyItem, PronunciationFeedback } from "@/addons/learning/types/";
 
 // Function to get the default target language from localStorage
@@ -497,16 +497,13 @@ export default function SpeakingPractice({
         );
         setProgress(newProgress);
 
-        // Update content progress if unitId is provided
-        if (unitId) {
-          lessonCompletionService.updateContentProgress(
-            parseInt(lessonId),
-            newProgress,
-            timeSpent,
-            Math.round(newProgress / 10),
-            newProgress === 100 ? 1 : 0
-          );
-        }
+        // Progress tracking disabled
+        console.log('Speaking practice progress:', {
+          lessonId,
+          progress: newProgress,
+          timeSpent,
+          completed: newProgress === 100
+        });
       } else {
         // Reset streak on incorrect pronunciation
         setStreak(0);
@@ -556,16 +553,12 @@ export default function SpeakingPractice({
       // Exercise completed
       if (onComplete) onComplete();
 
-      // Update lesson progress if unitId is provided
-      if (unitId) {
-        lessonCompletionService.updateLessonProgress(
-          parseInt(lessonId),
-          100,           // completionPercentage
-          timeSpent,     // timeSpent
-          true,          // complete
-          parseInt(unitId) // contentLessonId
-        );
-      }
+      // Progress tracking disabled
+      console.log('Speaking practice completed:', {
+        lessonId,
+        unitId,
+        timeSpent
+      });
     }
   };
 

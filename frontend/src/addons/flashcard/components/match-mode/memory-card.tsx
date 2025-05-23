@@ -1,25 +1,12 @@
 import React from "react";
 
-import { Card, CardContent } from "@acme/ui/card";
-
-interface MemoryCardProps {
-  index: number;
-  content: string;
-  selectCallback: () => void;
-}
-
-const MemoryCard = ({ index, content, selectCallback }: MemoryCardProps) => {
+// Placeholder component for memory card
+export default function MemoryCard() {
   return (
-    <Card
-      id={`card-${index}`}
-      onClick={selectCallback}
-      className="cursor-pointer border-2"
-    >
-      <CardContent className="flex min-h-[10rem] items-center justify-center p-4">
-        <span className="font-medium">{content}</span>
-      </CardContent>
-    </Card>
+    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border">
+      <p className="text-center text-gray-600 dark:text-gray-400">
+        Memory card placeholder
+      </p>
+    </div>
   );
-};
-
-export default MemoryCard;
+}

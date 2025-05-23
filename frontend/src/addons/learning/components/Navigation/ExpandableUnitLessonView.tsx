@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useNavigationTransition } from '@/app/(dashboard)/(apps)/learning/page';
+import { useNavigationTransition } from '@/addons/learning/hooks/useNavigationTransition';
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
@@ -27,7 +27,6 @@ import {
 
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
 import courseAPI from "@/addons/learning/api/courseAPI";
-import progressAPI from "@/addons/progress/api/progressAPI";
 
 // Helper functions remain unchanged
 const getLessonTypeIcon = (type: string): React.ReactNode => {
@@ -175,22 +174,13 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
 
 
 
-  // Fetch unit progress data
+  // Fetch unit progress data - disabled since progress system removed
   const fetchUnitProgress = async () => {
-    // Code unchanged
+    // Progress system removed - using mock data
     try {
-      const unitProgressData = await progressAPI.getUnitProgress();
-      
-      if (unitProgressData && Array.isArray(unitProgressData)) {
-        // Convert to map for easy access
-        const progressMap: Record<number, number> = {};
-        
-        unitProgressData.forEach(item => {
-          progressMap[item.unit] = item.completion_percentage || 0;
-        });
-        
-        setUnitProgress(progressMap);
-      }
+      // Mock progress data for now
+      const progressMap: Record<number, number> = {};
+      setUnitProgress(progressMap);
     } catch (err) {
       console.error("Failed to fetch unit progress:", err);
     }
@@ -228,26 +218,13 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
     }
   };
 
-  // Fetch lesson progress
+  // Fetch lesson progress - disabled since progress system removed
   const fetchLessonProgress = async (unitId: number) => {
-    // Code unchanged
+    // Progress system removed - using mock data
     try {
-      const lessonsProgressData = await progressAPI.getLessonProgressByUnit(unitId);
-      
-      if (lessonsProgressData && Array.isArray(lessonsProgressData)) {
-        // Convert to map for easy access
-        const progressMap: Record<number, any> = {};
-        
-        lessonsProgressData.forEach(item => {
-          progressMap[item.lesson_details.id] = {
-            completion_percentage: item.completion_percentage || 0,
-            status: item.status || 'not_started'
-          };
-        });
-        
-        // Update lesson progress
-        setLessonProgress(prev => ({ ...prev, ...progressMap }));
-      }
+      // Mock progress data for now
+      const progressMap: Record<number, any> = {};
+      setLessonProgress(prev => ({ ...prev, ...progressMap }));
     } catch (err) {
       console.error(`Error fetching lesson progress for unit ${unitId}:`, err);
     }
@@ -285,29 +262,13 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
     }
   };
 
-  // Fetch content progress
+  // Fetch content progress - disabled since progress system removed
   const fetchContentProgress = async (lessonId: number) => {
-    // Code unchanged
+    // Progress system removed - using mock data
     try {
-      const contentProgressData = await progressAPI.getContentLessonProgress(lessonId);
-
-      if (contentProgressData && Array.isArray(contentProgressData)) {
-        // Convert to map for easy access
-        const progressMap: Record<number, any> = {};
-
-        contentProgressData.forEach(item => {
-          // Add null check to prevent TypeError
-          if (item && item.content_lesson_details && item.content_lesson_details.id) {
-            progressMap[item.content_lesson_details.id] = {
-              completion_percentage: item.completion_percentage || 0,
-              status: item.status || 'not_started'
-            };
-          }
-        });
-
-        // Update content progress
-        setContentProgress(prev => ({ ...prev, ...progressMap }));
-      }
+      // Mock progress data for now
+      const progressMap: Record<number, any> = {};
+      setContentProgress(prev => ({ ...prev, ...progressMap }));
     } catch (err) {
       console.error(`Error fetching content progress for lesson ${lessonId}:`, err);
     }

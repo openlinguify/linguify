@@ -143,8 +143,11 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
       
       // Afficher un message d'erreur plus précis si disponible
       let errorMessage = t('dashboard.flashcards.cloneError');
-      if (error.response?.data?.detail) {
-        errorMessage = error.response.data.detail;
+      if (error && typeof error === 'object' && 'response' in error) {
+        const apiError = error as any;
+        if (apiError.response?.data?.detail) {
+          errorMessage = apiError.response.data.detail;
+        }
       }
       
       toast({

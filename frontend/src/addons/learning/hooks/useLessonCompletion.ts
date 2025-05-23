@@ -1,6 +1,6 @@
 // src/hooks/useLessonCompletion.ts
 import { useState, useCallback, useEffect } from 'react';
-import lessonCompletionService from '@/addons/progress/api/lessonCompletionService';
+// Progress system removed - lessonCompletionService disabled
 import { LessonCompletionState, UseLessonCompletionOptions } from "@/addons/learning/types";
 
 /**
@@ -48,26 +48,15 @@ export function useLessonCompletion({
       // Déterminer la leçon parent (contentLessonId ou unitId)
       const parentLessonId = unitId ? parseInt(unitId) : contentLessonId;
       
-      // Mettre à jour progression du contenu avec tous les paramètres requis
-      await lessonCompletionService.updateContentProgress(
-        contentLessonId,        // contentLessonId
-        parentLessonId,         // lessonId (paramètre manquant auparavant)
-        completionPercentage,   // completionPercentage
-        state.timeSpent,        // timeSpent
-        score || Math.round(completionPercentage / 10), // xpEarned
-        true                    // complete (vrai au lieu de 1)
-      );
-      
-      // Si nous avons l'unitId, mettre à jour aussi la progression de la leçon parent
-      if (unitId) {
-        await lessonCompletionService.updateLessonProgress(
-          parseInt(unitId),
-          completionPercentage,
-          state.timeSpent,
-          true,
-          contentLessonId
-        );
-      }
+      // Progress tracking disabled
+      console.log('Lesson completion would be:', {
+        lessonId: contentLessonId,
+        parentLessonId,
+        completionPercentage,
+        timeSpent: state.timeSpent,
+        score: score || Math.round(completionPercentage / 10),
+        unitId
+      });
       
       setState(prev => ({ ...prev, isCompleted: true }));
       
