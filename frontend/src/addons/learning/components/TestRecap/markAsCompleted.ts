@@ -20,9 +20,7 @@ export const markTestRecapAsCompleted = async (
   onComplete?: () => void
 ): Promise<void> => {
   try {
-    // Import dynamically to avoid SSR issues
-    const { default: lessonCompletionService } = await import('@/addons/progress/api/lessonCompletionService');
-    
+    // Progress system removed - mock completion
     const contentLessonIdStr = lessonId.toString();
     const contentLessonId = parseInt(contentLessonIdStr);
     
@@ -39,35 +37,17 @@ export const markTestRecapAsCompleted = async (
     // Determine the parent lesson ID (contentLessonId or unitId)
     const parentLessonId = unitId ? parseInt(unitId.toString()) : contentLessonId;
     
-    try {
-      // Update content progress with required parameters
-      await lessonCompletionService.updateContentProgress(
-        contentLessonId,        // contentLessonId
-        parentLessonId,         // lessonId
-        completionPercentage,   // completionPercentage
-        timeSpent,              // timeSpent
-        score,                  // xpEarned based on score
-        true                    // complete
-      );
-      
-      // If unitId is provided, update the parent lesson progress too
-      if (unitId) {
-        await lessonCompletionService.updateLessonProgress(
-          parseInt(unitId.toString()),
-          completionPercentage,
-          timeSpent,
-          true,
-          contentLessonId
-        );
-      }
-      
-      console.log(`TestRecap ${lessonId} marked as completed with score ${score}`);
-    } catch (progressError) {
-      // Log but don't rethrow - we still want to call onComplete
-      console.error("Error updating progress:", progressError);
-    }
+    // Progress tracking disabled
+    console.log('TestRecap completion would be:', {
+      lessonId: contentLessonId,
+      parentLessonId,
+      completionPercentage,
+      timeSpent,
+      score,
+      unitId
+    });
     
-    // Call the callback if provided, even if there was an error updating progress
+    // Call the callback if provided
     if (onComplete) {
       onComplete();
     }

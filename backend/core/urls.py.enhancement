@@ -1,4 +1,0 @@
-# Add to your urls.py file:
-
-# Enhanced admin dashboard
-path('admin/stats/', include('enhanced_admin.urls')),

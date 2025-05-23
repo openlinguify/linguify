@@ -14,7 +14,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import courseAPI from "@/addons/learning/api/courseAPI";
-import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
+// Progress system removed - lessonCompletionService disabled
 import { MatchingAnswers, MatchingExerciseProps } from "@/addons/learning/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -137,16 +137,8 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
           }
         }
 
-        // Initialize progress tracking
-        if (parseInt(lessonId)) {
-          lessonCompletionService.updateContentProgress(
-            parseInt(lessonId),
-            1, // 1% to indicate start
-            0,
-            0,
-            0
-          ).catch(err => console.error('Error updating initial progress:', err));
-        }
+        // Progress tracking disabled
+        console.log('Matching exercise initialized:', lessonId);
       } catch (err) {
         console.error("Error loading or creating matching exercises:", err);
         setError("An error occurred while loading or creating the exercises");
@@ -210,25 +202,13 @@ const MatchingExercise: React.FC<MatchingExerciseProps> = ({
       const completedExercises = currentExerciseIndex + (isSuccessful ? 1 : 0);
       const progressPercentage = (completedExercises / exercises.length) * 100;
 
-      // Update progress in database
-      await lessonCompletionService.updateContentProgress(
-        parseInt(lessonId),
-        Math.round(progressPercentage),
-        timeSpent,
-        Math.round(result.score / 10), // XP based on score
-        progressPercentage === 100 // Completed when all exercises are done
-      );
-
-      // Update parent lesson if unitId is provided
-      if (unitId && progressPercentage === 100) {
-        await lessonCompletionService.updateLessonProgress(
-          parseInt(unitId),
-          100,
-          timeSpent,
-          true,
-          parseInt(lessonId)
-        );
-      }
+      // Progress tracking disabled
+      console.log('Matching exercise progress:', {
+        lessonId,
+        progressPercentage: Math.round(progressPercentage),
+        score: result.score,
+        completed: progressPercentage === 100
+      });
 
       // Check if all exercises are completed
       if (isSuccessful && currentExerciseIndex === exercises.length - 1) {

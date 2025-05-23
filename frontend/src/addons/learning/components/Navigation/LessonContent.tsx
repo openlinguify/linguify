@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import courseAPI from '@/addons/learning/api/courseAPI';
-import progressAPI from '@/addons/progress/api/progressAPI';
 import { ContentTypeRouter } from './ContentTypeRouter';
 import { getUserTargetLanguage } from '@/core/utils/languageUtils';
 import { useTranslation } from '@/core/i18n/useTranslations';
@@ -55,24 +54,8 @@ const LessonContent: React.FC<LessonContentProps> = ({
           setContentLessons(sortedContents);
           setTotalSteps(sortedContents.length);
           
-          // Try to figure out which step we're on from progress
-          try {
-            const progress = await progressAPI.getLessonProgress(parseInt(lessonId), { showErrorToast: false });
-            
-            if (progress) {
-              // Find the last incomplete content if any
-              const lastIncomplete = progress.content_lessons.findIndex(item => !item.completed);
-              if (lastIncomplete !== -1) {
-                setCurrentStep(lastIncomplete + 1);
-              } else {
-                // If all completed, show the last one
-                setCurrentStep(contents.length);
-              }
-            }
-          } catch (progressError) {
-            console.warn('Could not fetch progress, showing first content:', progressError);
-            setCurrentStep(1);
-          }
+          // Progress system removed - start from first step
+          setCurrentStep(1);
         } else {
           setError(t('learning.errors.no_content'));
         }

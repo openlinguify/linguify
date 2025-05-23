@@ -3,9 +3,6 @@
 
 import React, { useEffect, useState, createContext, useContext, useCallback, ReactNode } from 'react';
 import dynamic from 'next/dynamic';
-import { Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-
 // ============================================================================
 // SYSTÈME DE CHARGEMENT INTÉGRÉ
 // ============================================================================
@@ -75,27 +72,8 @@ function LoadingProvider({ children }: { children: ReactNode }) {
 }
 
 // ============================================================================
-// HOOK POUR NAVIGATION AVEC CHARGEMENT
+// HOOK POUR NAVIGATION AVEC CHARGEMENT - Moved to separate file
 // ============================================================================
-
-export const useNavigationTransition = () => {
-  const { navigateWithLoading } = useLoading();
-  const router = useRouter();
-
-  const navigateToExercise = useCallback((
-    unitId: number, 
-    lessonId: number, 
-    contentId: number, 
-    contentType: string, 
-    targetLanguage: string
-  ) => {
-    const url = `/learning/content/${contentType.toLowerCase()}/${contentId}?language=${targetLanguage}&parentLessonId=${lessonId}&unitId=${unitId}`;
-    
-    navigateWithLoading(() => router.push(url));
-  }, [navigateWithLoading, router]);
-
-  return { navigateToExercise, navigateWithLoading };
-};
 
 // ============================================================================
 // COMPOSANTS PRINCIPAUX

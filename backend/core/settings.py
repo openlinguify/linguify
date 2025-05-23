@@ -67,7 +67,6 @@ INSTALLED_APPS = [
     'apps.revision',
     'apps.notebook',
     # 'apps.task',
-    'apps.progress',
     'apps.notification',
     #'subscription',
     #'app_manager', # 'app_manager', # TODO: Uncomment when app_manager is ready

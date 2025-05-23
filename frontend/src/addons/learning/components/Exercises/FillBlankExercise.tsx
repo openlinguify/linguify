@@ -6,7 +6,7 @@ import { AlertCircle, Volume2, CheckCircle, X, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
-import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
+// Progress system removed - lessonCompletionService disabled
 import apiClient from "@/core/api/apiClient";
 import { Exercise, FillBlankExerciseProps } from '@/addons/learning/types';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -113,16 +113,8 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
         } else {
           setExercises(exercisesArray);
           
-          // Initialize progress tracking
-          if (unitId) {
-            lessonCompletionService.updateContentProgress(
-              parseInt(lessonId),
-              1, // 1% progress to start
-              0,
-              0,
-              false
-            );
-          }
+          // Progress tracking disabled
+          console.log('Fill blank exercise initialized:', lessonId);
         }
       } catch (err) {
         console.error('Error fetching fill in the blank exercises:', err);
@@ -194,33 +186,17 @@ const FillBlankExercise: React.FC<FillBlankExerciseProps> = ({
     if (currentIndex < exercises.length - 1) {
       setCurrentIndex(prev => prev + 1);
       
-      // Update progress in API
-      if (unitId) {
-        await lessonCompletionService.updateContentProgress(
-          parseInt(lessonId),
-          newProgress,
-          timeSpent,
-          Math.floor(newProgress / 10),
-          0
-        );
-      }
+      // Progress tracking disabled
+      console.log('Fill blank progress would be:', newProgress);
     } else {
       // This was the last exercise
       setExerciseCompleted(true);
       
-      // Mark as complete in the API
-      if (unitId) {
-        await lessonCompletionService.updateContentProgress(
-          parseInt(lessonId),
-          100,
-          timeSpent,
-          10,
-          1
-        );
+      // Progress tracking disabled
+      console.log('Fill blank exercise completed:', lessonId);
         
-        if (onComplete) {
-          onComplete();
-        }
+      if (onComplete) {
+        onComplete();
       }
     }
   };

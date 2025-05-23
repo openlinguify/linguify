@@ -3,7 +3,7 @@
 import React, { useEffect, useState, memo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { BookOpen, BarChart, Brain, NotebookPen, Settings, User, HandHelping, MessageCircle } from "lucide-react";
+import { BookOpen, Brain, NotebookPen, Settings, User, HandHelping, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { useAuthContext } from "@/core/auth/AuthProvider";
 import { useTranslation } from "@/core/i18n/useTranslations";
@@ -46,15 +46,6 @@ const MENU_ITEMS = [
     href: "/language_ai",
     bgColor: "bg-pink-600 dark:bg-pink-700",
     hoverColor: "hover:bg-pink-700 dark:hover:bg-pink-800",
-    iconColor: "text-white"
-  },
-  {
-    titleKey: "dashboard.progressCard.title",
-    fallbackTitle: "Progress",
-    icon: BarChart,
-    href: "/progress",
-    bgColor: "bg-green-600 dark:bg-green-700",
-    hoverColor: "hover:bg-green-700 dark:hover:bg-green-800",
     iconColor: "text-white"
   },
   {

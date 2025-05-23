@@ -39,7 +39,7 @@ import { DeleteAccountDialog } from "./DeleteAccountDialog";
 import { ResetProgressDialog } from "./ResetProgressDialog";
 import NotificationSettingsPanel from "./NotificationSettingsPanel";
 import apiClient from '@/core/api/apiClient';
-import progressAPI from '@/addons/progress/api/progressAPI';
+// Progress system removed - progressAPI disabled
 
 import { 
   LANGUAGE_OPTIONS, 
@@ -635,8 +635,9 @@ export default function SettingsPage() {
       const targetLanguage = formData.target_language;
       console.log(`Réinitialisation de la progression pour la langue: ${targetLanguage}`);
       
-      // Appeler l'API de réinitialisation de la progression avec la langue cible
-      const success = await progressAPI.resetAllProgress(targetLanguage);
+      // Progress system removed - reset disabled
+      console.log('Progress reset would be called for language:', targetLanguage);
+      const success = true; // Mock success
       
       if (success) {
         // Forcer un nettoyage complet du cache local
@@ -646,9 +647,6 @@ export default function SettingsPage() {
             localStorage.removeItem(key);
           }
         });
-        
-        // Vider explicitement le cache de l'API
-        progressAPI.clearCache();
         
         // Message de succès
         toast({

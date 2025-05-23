@@ -5,21 +5,21 @@ import ContentTypeRouter from '../../../../../../../addons/learning/components/N
 import { getUserTargetLanguage } from '../../../../../../../core/utils/languageUtils';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     contentType: string;
     contentId: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     language?: string;
     parentLessonId?: string; 
     unitId?: string;
-  };
+  }>;
 }
 
 export default async function DirectContentPage({ params, searchParams }: PageProps) {
-  // Make all parameters awaitable first by using Promise.resolve
-  const resolvedParams = await Promise.resolve(params);
-  const resolvedSearchParams = await Promise.resolve(searchParams);
+  // Await the promises for params and searchParams
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
   
   const { contentType, contentId } = resolvedParams;
   const decodedContentType = decodeURIComponent(contentType);

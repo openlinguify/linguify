@@ -18,7 +18,7 @@ import { GradientText } from "@/components/ui/gradient-text";
 import { GradientCard } from "@/components/ui/gradient-card";
 import { commonStyles } from "@/styles/gradient_style";
 import { motion, AnimatePresence } from "framer-motion";
-import batchProgressAPI from '@/addons/progress/api/batchProgressAPI';
+// Progress system removed - batchProgressAPI disabled
 import { VocabularyItem, VocabularyLessonProps } from "@/addons/learning/types";
 import useSpeechSynthesis from '@/core/speech/useSpeechSynthesis';
 import courseAPI from "@/addons/learning/api/courseAPI";
@@ -124,30 +124,13 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
     try {
       const contentLessonId = parseInt(lessonId);
 
-      // Use batch progress API instead of individual calls
-      await batchProgressAPI.trackContentProgress(
-        contentLessonId,
+      // Progress tracking disabled
+      console.log('Vocabulary lesson progress:', {
+        lessonId: contentLessonId,
         completionPercentage,
         timeSpent,
-        Math.round(completionPercentage / 10),
-        completionPercentage >= 100
-      );
-
-      // If we also have the unit ID, update the parent lesson progress
-      if (unitId && completionPercentage >= 100 && !lessonCompleted) {
-        // Update parent lesson progress too with batch API
-        await batchProgressAPI.trackLessonProgress(
-          parseInt(unitId),
-          100, // 100% progress
-          timeSpent,
-          true, // Mark as completed
-          contentLessonId
-        );
-
-        if (mountedRef.current) {
-          setLessonCompleted(true);
-        }
-      }
+        completed: completionPercentage >= 100
+      });
 
       // If completed and we have a completion callback
       if (completionPercentage >= 100 && onComplete && !lessonCompleted && mountedRef.current) {
@@ -164,10 +147,8 @@ const VocabularyLesson = ({ lessonId, unitId, onComplete, progressIndicator }: V
     return () => {
       mountedRef.current = false;
 
-      // Flush any pending progress updates before unmounting
-      batchProgressAPI.flushQueue().catch(err =>
-        console.error("Error flushing progress queue on unmount:", err)
-      );
+      // Progress tracking disabled
+      console.log('Vocabulary lesson unmounting');
     };
   }, []);
 

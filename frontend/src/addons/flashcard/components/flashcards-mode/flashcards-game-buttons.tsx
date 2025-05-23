@@ -10,14 +10,14 @@ import {
   X,
 } from "lucide-react";
 
-import { cn } from "@acme/ui";
-import { Button } from "@acme/ui/button";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@acme/ui/tooltip";
+} from "@/components/ui/tooltip";
 
 interface FlashcardButtonsProps {
   cardIndex: number;

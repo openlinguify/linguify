@@ -22,8 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { TheoryData, TheoryContentProps } from "@/addons/learning/types";
 import courseAPI from "@/addons/learning/api/courseAPI";
-import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
-import lastAccessedLessonService from "@/addons/progress/api/lastAccessedLessonService";
+// Progress system removed - services disabled
 import { useRouter } from "next/navigation";
 
 // Animation variants
@@ -121,25 +120,13 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
           const contentLessonId = parseInt(lessonId);
           const now = new Date();
           
-          // Use service method instead of direct localStorage
-          lastAccessedLessonService.trackLesson(
-            // Cast to ContentLessonProgress with extra fields
-            {
-              id: contentLessonId,
-              title: lessonTitle,
-              content_type: "theory",
-              completion_percentage: 1,
-              // Add custom properties
-              language: language,
-              parentLessonId: unitId ? parseInt(unitId) : undefined,
-              contentId: contentLessonId,
-              routeType: "content",
-              lastViewedSection: 'content',
-              timeSpent: 0
-            } as any,
-            unitTitleValue,
-            unitId ? parseInt(unitId) : undefined
-          );
+          // Progress tracking disabled
+          console.log('Theory content accessed:', {
+            lessonId: contentLessonId,
+            title: lessonTitle,
+            language,
+            unitId
+          });
           
           console.log(`TheoryContent: Using tracking service for lesson access`);
         } catch (trackError) {
@@ -228,19 +215,15 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
     }
   }, [readSections, theory, getAvailableSections]);
 
-  // Update progress in backend
+  // Progress tracking disabled
   const updateProgressInBackend = async (newProgress: number, earnedXp: number) => {
-    try {
-      await lessonCompletionService.updateContentProgress(
-        parseInt(lessonId),
-        newProgress,
-        studyTime,
-        earnedXp,
-        newProgress === 100 ? 1 : 0
-      );
-    } catch (err) {
-      console.error('Error updating progress:', err);
-    }
+    console.log('Theory progress would be:', {
+      lessonId,
+      progress: newProgress,
+      studyTime,
+      xp: earnedXp,
+      completed: newProgress === 100
+    });
   };
 
   // Text-to-speech functionality
@@ -268,20 +251,15 @@ export default function TheoryContent({ lessonId, language = 'en', unitId, onCom
 
   // Handle completion
   const handleComplete = async (earnedXp: number) => {
-    try {
-      await lessonCompletionService.updateContentProgress(
-        parseInt(lessonId),
-        100,
-        studyTime,
-        earnedXp + 5, // Bonus XP for completion
-        1
-      );
+    // Progress tracking disabled
+    console.log('Theory content completed:', {
+      lessonId,
+      studyTime,
+      xp: earnedXp + 5
+    });
 
-      if (onComplete) {
-        onComplete();
-      }
-    } catch (err) {
-      console.error('Error marking content as complete:', err);
+    if (onComplete) {
+      onComplete();
     }
   };
 

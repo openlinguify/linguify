@@ -14,9 +14,7 @@ import MatchingExercise from "../Exercises/MatchingExercise";
 import SpeakingPractice from "../Speaking/SpeakingPractice";
 import TestRecap from "../TestRecap";
 import { ContentTypeRouterProps } from "@/addons/learning/types";
-import lastAccessedLessonService from "@/addons/progress/api/lastAccessedLessonService";
 import courseAPI from "@/addons/learning/api/courseAPI";
-import progressAPI from "@/addons/progress/api/progressAPI";
 import LessonProgressIndicator from "./LessonProgressIndicator";
 
 /**
@@ -64,14 +62,9 @@ export default function ContentTypeRouter({
           routeType: 'content' // Always use content route for direct navigation
         };
 
-        // Use the service properly to track the lesson
-        // This ensures it's added to history and follows the same format
+        // Progress tracking system removed
         const parsedUnitId = unitId ? parseInt(unitId) : undefined;
-        lastAccessedLessonService.trackLesson(
-          basicLessonData,
-          normalizedContentType ? `${normalizedContentType} exercise` : undefined,
-          parsedUnitId
-        );
+        console.log('Progress tracking disabled - content accessed:', basicLessonData);
 
         console.log(`Content tracked with service: ${contentType}, ID: ${contentId}, UnitID: ${unitId}, Lang: ${currentLanguage}`);
       } catch (error) {
@@ -187,107 +180,28 @@ export default function ContentTypeRouter({
       fetchContentDetails();
     }
 
-    // Fetch progress data
-    progressAPI.getContentLessonProgress(parseInt(contentId), { showErrorToast: false })
-      .then(contentProgressData => {
-        if (!isMounted) return;
+    // Fetch unit title for display (progress tracking removed)
+    if (unitId && isMounted) {
+      courseAPI.getUnits()
+        .then(units => {
+          if (!isMounted) return;
 
-        const lessonProgress = contentProgressData?.[0] || null;
-        if (!lessonProgress) {
-          console.warn(`No progress data found for content ID: ${contentId}`);
-          return;
-        }
+          // Find the unit with the matching ID
+          const unit = Array.isArray(units) ?
+            units.find(u => u.id === parseInt(unitId)) : null;
 
-        let unitTitleValue = "";
-        let parsedUnitId = unitId ? parseInt(unitId) : undefined;
-
-        // If we have unitId, get the unit info from the units list
-        if (unitId && isMounted) {
-          // Use getUnits and filter for the specific unit since getUnit doesn't exist
-          courseAPI.getUnits()
-            .then(units => {
-              if (!isMounted) return;
-
-              // Find the unit with the matching ID
-              const unit = Array.isArray(units) ?
-                units.find(u => u.id === parseInt(unitId)) : null;
-
-              if (unit) {
-                unitTitleValue = unit.title || "";
-                setUnitTitle(unitTitleValue);
-                console.log(`Found unit title: "${unitTitleValue}" for unit ID: ${unitId}`);
-
-                // Update with more complete info - include routing info
-                const updatedLessonProgress = {
-                  ...lessonProgress,
-                  language,
-                  parentLessonId: parsedUnitId,
-                  contentId: parseInt(contentId),
-                  routeType: 'content'
-                };
-
-                lastAccessedLessonService.trackLesson(
-                  updatedLessonProgress,
-                  unitTitleValue,
-                  parsedUnitId
-                );
-              } else {
-                console.warn(`Unit with ID ${unitId} not found`);
-                // Still track with the unit ID but no title
-                // Include routing info even when unit is not found
-                const updatedLessonProgress = {
-                  ...lessonProgress,
-                  language,
-                  parentLessonId: parsedUnitId,
-                  contentId: parseInt(contentId),
-                  routeType: 'content'
-                };
-
-                lastAccessedLessonService.trackLesson(
-                  updatedLessonProgress,
-                  "",
-                  parsedUnitId
-                );
-              }
-            })
-            .catch(error => {
-              console.error("Error fetching units data:", error);
-              // Still track with the unit ID even if we can't get the title
-              // Include routing info even when there's an error
-              const updatedLessonProgress = {
-                ...lessonProgress,
-                language,
-                parentLessonId: parsedUnitId,
-                contentId: parseInt(contentId),
-                routeType: 'content'
-              };
-
-              lastAccessedLessonService.trackLesson(
-                updatedLessonProgress,
-                "",
-                parsedUnitId
-              );
-            });
-        } else {
-          // Update without unit title
-          // Add routing info here too for consistency
-          const updatedLessonProgress = {
-            ...lessonProgress,
-            language,
-            contentId: parseInt(contentId),
-            routeType: 'content'
-          };
-
-          lastAccessedLessonService.trackLesson(
-            updatedLessonProgress,
-            unitTitleValue,
-            parsedUnitId
-          );
-        }
-      })
-      .catch(error => {
-        console.error("Error fetching lesson progress:", error);
-      });
+          if (unit) {
+            const unitTitleValue = unit.title || "";
+            setUnitTitle(unitTitleValue);
+            console.log(`Found unit title: "${unitTitleValue}" for unit ID: ${unitId}`);
+          } else {
+            console.warn(`Unit with ID ${unitId} not found`);
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching units data:", error);
+        });
+    }
 
     return () => {
       isMounted = false;
@@ -388,3 +302,5 @@ export default function ContentTypeRouter({
 
   return renderContent();
 }
+
+export { ContentTypeRouter };
