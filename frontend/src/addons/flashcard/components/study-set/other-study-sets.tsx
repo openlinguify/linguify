@@ -1,6 +1,19 @@
 import React from "react";
 
-import type { RouterOutputs } from "@acme/api";
+// TODO: Replace with appropriate RouterOutputs type
+type RouterOutputs = {
+  studySet: {
+    byId: {
+      user: {
+        studySets: Array<{
+          id: string;
+          title: string;
+          description?: string;
+        }>;
+      };
+    };
+  };
+};
 
 import StudySetCard from "../shared/study-set-card";
 

@@ -8,7 +8,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 interface SpeakingQuestionData {
   id: string;
   question: string;
-  prompt: string;
+  target_phrase?: string; // The target phrase to speak
+  prompt?: string; // Instructions/prompt for the user
+  vocabulary_items?: any[]; // Associated vocabulary items
   expected_keywords?: string[];
   time_limit?: number; // in seconds
   sample_answer?: string;
@@ -42,6 +44,30 @@ const SpeakingQuestion: React.FC<SpeakingQuestionProps> = ({
   // Media recorder for audio
   const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
   const audioChunksRef = React.useRef<Blob[]>([]);
+
+  // Debug: Log the data being received
+  useEffect(() => {
+    console.log('🔍 SpeakingQuestion received data:', data);
+    console.log('🔍 SpeakingQuestion target_phrase:', data.target_phrase);
+    console.log('🔍 SpeakingQuestion prompt:', data.prompt);
+    console.log('🔍 SpeakingQuestion vocabulary_items:', data.vocabulary_items);
+  }, [data]);
+
+  // Show fallback if no data
+  if (!data.target_phrase && !data.prompt) {
+    return (
+      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+        <p className="text-yellow-700">
+          Aucune question de prononciation trouvée (ID: {data.id})
+        </p>
+        <div className="mt-2 text-sm">
+          <p>Question: {data.question || 'Non fournie'}</p>
+          <p>Target phrase: {data.target_phrase || 'Non fournie'}</p>
+          <p>Prompt: {data.prompt || 'Non fourni'}</p>
+        </div>
+      </div>
+    );
+  }
 
   // Initialize speech recognition
   useEffect(() => {
@@ -200,6 +226,13 @@ const SpeakingQuestion: React.FC<SpeakingQuestionProps> = ({
     });
   };
 
+  // Handle Enter key press
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !isRecording) {
+      handleSubmit();
+    }
+  };
+
   // Format time as MM:SS
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -208,7 +241,7 @@ const SpeakingQuestion: React.FC<SpeakingQuestionProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" onKeyDown={handleKeyDown}>
       <div className="text-lg font-medium mb-2">{data.question}</div>
       
       <Card className="p-4 bg-gray-50 dark:bg-gray-900/50">
@@ -221,7 +254,13 @@ const SpeakingQuestion: React.FC<SpeakingQuestionProps> = ({
               </Badge>
             )}
           </div>
-          <p>{data.prompt}</p>
+          {data.target_phrase && (
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-md">
+              <h4 className="text-sm font-medium mb-1">Target phrase to practice:</h4>
+              <p className="text-lg font-semibold text-blue-700 dark:text-blue-300">{data.target_phrase}</p>
+            </div>
+          )}
+          {data.prompt && <p>{data.prompt}</p>}
           {data.expected_keywords && data.expected_keywords.length > 0 && (
             <div className="mt-2">
               <h4 className="text-sm font-medium mb-1">Try to include these keywords:</h4>

@@ -118,7 +118,7 @@ export default function NotificationSettings() {
       'default': '/sounds/notification-default.mp3',
       'chime': '/sounds/notification-chime.mp3',
       'bell': '/sounds/notification-bell.mp3',
-      'success': '/sounds/notification-success.mp3',
+      'success': '/sounds/success.mp3',
     };
     
     if (value in sounds) {

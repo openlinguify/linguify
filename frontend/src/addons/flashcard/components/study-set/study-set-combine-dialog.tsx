@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoaderIcon, MinusIcon, PlusIcon } from "lucide-react";
 
-import { Button } from "@acme/ui/button";
-import { Card, CardContent } from "@acme/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogClose,
@@ -12,10 +12,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@acme/ui/dialog";
-import { toast } from "@acme/ui/toast";
+} from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast";
 
-import { api } from "~/trpc/react";
+// import { api } from "~/trpc/react";
+import { api } from "../../api/placeholder-api";
 
 interface StudySetCombineCardProps {
   title: string;
@@ -33,7 +34,7 @@ const StudySetCombineCard = ({
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <span>{title}</span>
-          <Button size="icon" variant={selected ? "primary" : "outline"}>
+          <Button size="icon" variant={selected ? "default" : "outline"}>
             {selected ? <MinusIcon size={20} /> : <PlusIcon size={20} />}
           </Button>
         </div>
@@ -62,14 +63,14 @@ const StudySetCombineDialog = ({
   });
   const router = useRouter();
   const { mutate, isPending } = api.studySet.combine.useMutation({
-    async onSuccess(data) {
+    async onSuccess(data: any) {
       router.push(`/study-sets/${data.id}`);
-      toast.success("Successfully combined study sets");
+      toast({ title: "Successfully combined study sets" });
       onOpenChange(false);
       await utils.studySet.invalidate();
     },
     onError() {
-      toast.error("Couldn't combine study sets");
+      toast({ title: "Couldn't combine study sets", variant: "destructive" });
     },
   });
   const [selected, setSelected] = useState<string[]>([]);

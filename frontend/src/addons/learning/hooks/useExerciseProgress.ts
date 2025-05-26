@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { getUserTargetLanguage } from "@/core/utils/languageUtils";
-import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
+// Progress system removed - lessonCompletionService disabled
+// import lessonCompletionService from "@/addons/progress/api/lessonCompletionService";
 
 export interface ExerciseInfo {
   id: string;
@@ -195,15 +196,23 @@ export function useExerciseProgress({
         const contentLessonId = parseInt(exerciseId);
         const completionPercentage = 100;
         
-        await lessonCompletionService.updateContentProgress(
+        // Progress system removed - lessonCompletionService disabled
+        console.log('Exercise completion would be:', {
           contentLessonId,
-          parseInt(lessonId),
+          lessonId: parseInt(lessonId),
           completionPercentage,
-          0, // timeSpent
-          10, // xpEarned
-          true, // complete
-          unitId ? parseInt(unitId) : undefined
-        );
+          unitId: unitId ? parseInt(unitId) : undefined
+        });
+        
+        // await lessonCompletionService.updateContentProgress(
+        //   contentLessonId,
+        //   parseInt(lessonId),
+        //   completionPercentage,
+        //   0, // timeSpent
+        //   10, // xpEarned
+        //   true, // complete
+        //   unitId ? parseInt(unitId) : undefined
+        // );
       } else {
         // Store info in localStorage for future retrieval
         try {
@@ -242,14 +251,21 @@ export function useExerciseProgress({
       
       // Then mark the lesson itself as completed
       if (!checkLocalStorageOnly && unitId) {
-        await lessonCompletionService.updateLessonProgress(
-          parseInt(lessonId),
-          100, // completionPercentage
-          0,   // timeSpent
-          true, // complete
-          undefined, // contentLessonId
-          parseInt(unitId)
-        );
+        // Progress system removed - lessonCompletionService disabled
+        console.log('Lesson completion would be:', {
+          lessonId: parseInt(lessonId),
+          completionPercentage: 100,
+          unitId: parseInt(unitId)
+        });
+        
+        // await lessonCompletionService.updateLessonProgress(
+        //   parseInt(lessonId),
+        //   100, // completionPercentage
+        //   0,   // timeSpent
+        //   true, // complete
+        //   undefined, // contentLessonId
+        //   parseInt(unitId)
+        // );
       } else {
         // Store in localStorage
         try {

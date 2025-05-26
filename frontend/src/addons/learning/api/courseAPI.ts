@@ -645,6 +645,47 @@ const courseAPI = {
     }
   },
 
+  getReorderingExercises: async (contentLessonId: number | string, targetLanguage?: string) => {
+    try {
+      // Validate content lesson ID
+      const parsedContentLessonId = Number(contentLessonId);
+
+      if (isNaN(parsedContentLessonId)) {
+        console.error(`Invalid content lesson ID provided: ${contentLessonId}`);
+        return []; // Return empty array if ID is invalid
+      }
+
+      const params: Record<string, string> = {
+        content_lesson: parsedContentLessonId.toString()
+      };
+
+      // Use the specified language or get from user settings
+      const nativeLanguage = getUserNativeLanguage();
+      const targetLang = targetLanguage || getUserTargetLanguage();
+
+      params.native_language = nativeLanguage;
+      params.target_language = targetLang;
+
+      console.log(`Fetching reordering exercises for content lesson ${parsedContentLessonId} with native language: ${nativeLanguage}, target language: ${targetLang}`);
+
+      const response = await apiClient.get('/api/v1/course/reordering/', {
+        params,
+        headers: {
+          'Accept-Language': targetLang
+        }
+      });
+
+      return response.data;
+    } catch (err: any) {
+      console.error('Failed to fetch reordering exercises:', {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message
+      });
+      return []; // Return empty array on error
+    }
+  },
+
   getMatchingExercises: async (contentLessonId: number | string, targetLanguage?: string) => {
     try {
       // Valider l'ID de la leçon
@@ -923,14 +964,16 @@ const courseAPI = {
         // If we get a 404, it means no test recap could be found for this content lesson
         if (err.response && err.response.status === 404) {
           console.log(`No test recap could be found for content lesson ${parsedContentLessonId}`);
+          return 'NO_CONTENT_AVAILABLE'; // Return a special value to indicate maintenance
         } else {
           console.error(`Error getting test recap for content lesson ${parsedContentLessonId}:`, err);
+          throw err; // Re-throw other errors
         }
       }
       
-      // If the API call failed, return null to trigger demo content
-      console.log(`No suitable test recap found for content lesson ${parsedContentLessonId}, using demo content`);
-      return null;
+      // If the API call succeeded but returned no valid ID, it's also a maintenance case
+      console.log(`No suitable test recap found for content lesson ${parsedContentLessonId}, maintenance required`);
+      return 'NO_CONTENT_AVAILABLE';
     } catch (err) {
       console.error(`Failed to find test recap ID for content lesson ${contentLessonId}:`, err);
       return null;
@@ -1115,6 +1158,65 @@ const courseAPI = {
   // Export the cache instance so other parts of the code can clear it if needed
   clearCache: () => {
     FastCache.clear();
+  },
+
+  // Wrapper methods for exercise wrappers
+  getVocabularyLesson: async (lessonId: number | string) => {
+    try {
+      const response = await courseAPI.getVocabularyContent(lessonId);
+      console.log('Raw vocabulary response:', response);
+      
+      // The API returns { results: [...], count: ..., etc }
+      const vocabularyItems = response?.results || response || [];
+      
+      return {
+        data: {
+          vocabulary_items: vocabularyItems
+        }
+      };
+    } catch (err) {
+      console.error('Error in getVocabularyLesson:', err);
+      return {
+        data: {
+          vocabulary_items: []
+        }
+      };
+    }
+  },
+
+  getSpeakingExercise: async (lessonId: number | string) => {
+    // Use existing method but adapt response
+    try {
+      const response = await courseAPI.getSpeakingExerciseVocabulary(lessonId);
+      console.log('getSpeakingExercise response:', response);
+      
+      // Extract vocabulary items from the response structure
+      let vocabularyItems = [];
+      if (response?.results && Array.isArray(response.results)) {
+        vocabularyItems = response.results;
+      } else if (Array.isArray(response)) {
+        vocabularyItems = response;
+      }
+      
+      console.log('Extracted vocabulary items:', vocabularyItems);
+      
+      return {
+        data: {
+          vocabulary_items: vocabularyItems,
+          title: 'Exercice de Prononciation',
+          instructions: 'Pratiquez la prononciation des mots suivants'
+        }
+      };
+    } catch (err) {
+      console.error('Error in getSpeakingExercise:', err);
+      return {
+        data: {
+          vocabulary_items: [],
+          title: 'Exercice de Prononciation',
+          instructions: 'Pratiquez la prononciation des mots suivants'
+        }
+      };
+    }
   },
 };
 

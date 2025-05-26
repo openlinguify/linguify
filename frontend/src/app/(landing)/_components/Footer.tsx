@@ -151,7 +151,7 @@ export const Footer: React.FC = () => {
     <footer className="bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
       <Container>
         <div className="mx-auto pt-16 pb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12">
             {/* Brand Section */}
             <div className="lg:col-span-2 space-y-8">
               <Logo />
@@ -170,6 +170,9 @@ export const Footer: React.FC = () => {
 
             {/* Navigation Links */}
             <LinkSection title={t.navigation.title} items={t.navigation.items} />
+
+            {/* Support Links */}
+            {t.support && <LinkSection title={t.support.title} items={t.support.items} />}
 
             {/* Legal Links */}
             <LinkSection title={t.legal.title} items={t.legal.items} />

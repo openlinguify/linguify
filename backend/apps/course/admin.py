@@ -1,4 +1,5 @@
-# course/admin.py
+# -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
 from django.core.management import call_command
 from django.contrib import admin, messages
 from django.utils.html import format_html, mark_safe

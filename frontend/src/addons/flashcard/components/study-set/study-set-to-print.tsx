@@ -1,6 +1,15 @@
 import React, { forwardRef } from "react";
 
-import type { RouterOutputs } from "@acme/api";
+// TODO: Replace with appropriate RouterOutputs type
+type RouterOutputs = {
+  studySet: {
+    byId: {
+      flashcards: Array<{ id: string; term: string; definition: string; }>;
+      title: string;
+      description?: string;
+    };
+  };
+};
 
 interface StudySetToPrintProps {
   studySet: RouterOutputs["studySet"]["byId"];

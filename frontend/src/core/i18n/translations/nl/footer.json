@@ -14,6 +14,7 @@
       "title": "Juridisch",
       "items": [
         { "name": "Voorwaarden", "href": "/annexes/terms" },
+        { "name": "Cookiebeleid", "href": "/annexes/cookies" },
         { "name": "Privacy", "href": "/annexes/privacy" },
         { "name": "Juridische kennisgeving", "href": "/annexes/legal" }
       ]
@@ -21,7 +22,7 @@
     "social": {
       "title": "Volg ons",
       "items": [
-        { "name": "LinkedIn", "href": "https://linkedin.com/company/next-corporation" },
+        { "name": "LinkedIn", "href": "https://www.linkedin.com/company/openlinguify/" },
         { "name": "Twitter", "href": "https://twitter.com/next_corporation" },
         { "name": "Instagram", "href": "https://instagram.com/next_corporation" }
       ]
@@ -29,6 +30,26 @@
     "brand": {
       "description": "Linguify is een taallerenplatform gemaakt door Next-Corporation, ontworpen om talen leren toegankelijk, boeiend en effectief te maken voor iedereen. Doe met ons mee om taalbarrières wereldwijd te elimineren.",
       "companyLink": "Een Next-Corporation product"
+    },
+    "language": {
+      "title": "Taal"
+    },
+    "support": {
+      "title": "Ondersteuning",
+      "items": [
+        {
+          "name": "Helpcentrum",
+          "href": "/help"
+        },
+        {
+          "name": "Bug melden",
+          "href": "/contact/bug-signal"
+        },
+        {
+          "name": "Gemeenschap",
+          "href": "/community"
+        }
+      ]
     },
     "copyright": {
       "rights": "© {year} Next-Corporation. Alle rechten voorbehouden.",

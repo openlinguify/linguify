@@ -34,22 +34,6 @@ const LessonCompletionModal: React.FC<LessonCompletionModalProps> = React.memo((
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  useEffect(() => {
-    if (show) {
-      setIsAnimating(true);
-      setTimeout(() => {
-        setIsVisible(true);
-      }, 10);
-    } else {
-      setIsVisible(false);
-      setTimeout(() => {
-        setIsAnimating(false);
-      }, 300);
-    }
-  }, [show]);
-
-  if (!isAnimating) return null;
-
   const renderButtons = useCallback(() => {
     if (type === "quiz") {
       return (
@@ -106,6 +90,34 @@ const LessonCompletionModal: React.FC<LessonCompletionModalProps> = React.memo((
         return <Sparkles className="w-8 h-8 text-white" />;
     }
   }, [type]);
+
+  useEffect(() => {
+    if (show) {
+      setIsAnimating(true);
+      // Play completion sound when modal shows
+      try {
+        const audio = new Audio('/success.mp3');
+        audio.volume = 0.7;
+        audio.play().catch(error => {
+          console.log('Could not play completion sound:', error);
+        });
+      } catch (error) {
+        console.log('Error creating completion audio:', error);
+      }
+      
+      setTimeout(() => {
+        setIsVisible(true);
+      }, 10);
+    } else {
+      setIsVisible(false);
+      setTimeout(() => {
+        setIsAnimating(false);
+      }, 300);
+    }
+  }, [show]);
+
+  // Early return after all hooks are called
+  if (!isAnimating) return null;
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>

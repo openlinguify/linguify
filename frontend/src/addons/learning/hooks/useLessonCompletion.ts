@@ -76,7 +76,7 @@ export function useLessonCompletion({
     // Jouer un son de succès si activé
     if (autoSound) {
       try {
-        const audio = new Audio("/success1.mp3");
+        const audio = new Audio("/success.mp3");
         audio.volume = 0.3;
         audio.play().catch(err => console.error("Error playing sound:", err));
       } catch (e) {
@@ -109,14 +109,15 @@ export function useLessonCompletion({
       // Déterminer la leçon parent (contentLessonId ou unitId)
       const parentLessonId = unitId ? parseInt(unitId) : contentLessonId;
       
-      await lessonCompletionService.updateContentProgress(
-        contentLessonId,                  // contentLessonId
-        parentLessonId,                   // lessonId (paramètre manquant auparavant)
-        percentage,                       // completionPercentage
-        state.timeSpent,                  // timeSpent
-        Math.round(percentage / 10),      // xpEarned
-        percentage >= 100                 // complete (boolean au lieu de 0/1)
-      );
+      // Progress tracking disabled - would call lessonCompletionService.updateContentProgress
+      console.log('Progress update would be:', {
+        contentLessonId,
+        parentLessonId,
+        percentage,
+        timeSpent: state.timeSpent,
+        xpEarned: Math.round(percentage / 10),
+        complete: percentage >= 100
+      });
     } catch (error) {
       console.error("Error updating progress:", error);
     }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useLanguageSync } from '@/core/i18n/useLanguageSync';
 import testRecapAPI, { TestRecap } from '../../api/testRecapAPI';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
   const router = useRouter();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { currentLanguage } = useLanguageSync();
+  const currentLanguage = 'fr'; // Default to French for now
   
   const [testRecap, setTestRecap] = useState<TestRecap | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,15 +42,32 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
         
         // If testRecapId is provided, fetch that specific test recap
         if (testRecapId) {
-          const response = await testRecapAPI.getTestRecap(testRecapId);
+          const response = await testRecapAPI.getTest(testRecapId.toString());
+          
+          // Check if the test recap has valid content
+          if (!response.data || !response.data.questions || response.data.questions.length === 0) {
+            console.log(`TestRecap ${testRecapId} has no valid questions, requiring maintenance`);
+            setError('MAINTENANCE: This test recap is not yet available');
+            return;
+          }
+          
           setTestRecap(response.data);
         } else {
-          // Otherwise, fetch all test recaps for the lesson and use the first one
+          // This fallback should rarely be used now that we have proper wrapper logic
           const response = await testRecapAPI.getTestRecapsForLesson(lessonId);
           if (response.data && response.data.length > 0) {
-            setTestRecap(response.data[0]);
+            const testRecap = response.data[0];
+            
+            // Check if the test recap has valid content
+            if (!testRecap.questions || testRecap.questions.length === 0) {
+              console.log(`TestRecap for lesson ${lessonId} has no valid questions, requiring maintenance`);
+              setError('MAINTENANCE: This test recap is not yet available');
+              return;
+            }
+            
+            setTestRecap(testRecap);
           } else {
-            setError('No test recaps available for this lesson');
+            setError('MAINTENANCE: No test recaps available for this lesson');
           }
         }
       } catch (err) {
@@ -72,7 +89,7 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
         
         // Update time spent on the current question
         setTimePerQuestion(prev => {
-          const questionId = testRecap?.questions[currentQuestionIndex]?.id.toString() || '0';
+          const questionId = testRecap?.questions?.[currentQuestionIndex]?.id.toString() || '0';
           const currentTime = prev[questionId] || 0;
           return {
             ...prev,
@@ -111,7 +128,7 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
     }));
     
     // Go to next question or complete the test
-    if (currentQuestionIndex < (testRecap?.questions.length || 0) - 1) {
+    if (currentQuestionIndex < (testRecap?.questions?.length || 0) - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
       handleSubmitTest();
@@ -152,7 +169,7 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
       setCompleted(true);
       
       // Invalidate any related queries
-      queryClient.invalidateQueries(['userProgress']);
+      queryClient.invalidateQueries({ queryKey: ['userProgress'] });
       
       toast({
         title: 'Test completed',
@@ -178,6 +195,25 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
   }
 
   if (error) {
+    // Check if this is a maintenance error
+    if (error.includes('MAINTENANCE:')) {
+      // Import MaintenanceView dynamically to show proper maintenance message
+      const MaintenanceView = React.lazy(() => 
+        import('../Exercises/shared/MaintenanceView').then(module => ({ 
+          default: module.MaintenanceView 
+        }))
+      );
+      
+      return (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <MaintenanceView 
+            contentTypeName="Test Recap" 
+            onRetry={() => window.location.reload()}
+          />
+        </React.Suspense>
+      );
+    }
+    
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
         <p className="text-destructive mb-4">{error}</p>
@@ -220,7 +256,7 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
         <CardContent className="space-y-4">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Clock size={16} />
-            <span>Time limit: {testRecap.time_limit ? `${Math.floor(testRecap.time_limit / 60)}:${String(testRecap.time_limit % 60).padStart(2, '0')}` : 'No time limit'}</span>
+            <span>Time limit: {testRecap.time_limit ? `${Math.floor(testRecap.time_limit / 60)} minutes` : 'No time limit'}</span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Award size={16} />
@@ -229,7 +265,7 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
           <div className="mt-4 p-4 bg-muted rounded-md">
             <h3 className="font-medium mb-2">Instructions:</h3>
             <ul className="list-disc list-inside space-y-1 text-sm">
-              <li>This test contains {testRecap.questions.length} questions of different types.</li>
+              <li>This test contains {testRecap.questions?.length || 0} questions of different types.</li>
               <li>You can navigate between questions using the navigation buttons.</li>
               <li>Your answers are saved as you move between questions.</li>
               <li>The test will be automatically submitted when time runs out.</li>
@@ -246,17 +282,17 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
   }
 
   // Show current question
-  const currentQuestion = testRecap.questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / testRecap.questions.length) * 100;
+  const currentQuestion = testRecap.questions?.[currentQuestionIndex];
+  const progress = testRecap.questions ? ((currentQuestionIndex + 1) / testRecap.questions.length) * 100 : 0;
   const formattedTime = testRecap.time_limit 
-    ? `${Math.floor((testRecap.time_limit - timeSpent) / 60)}:${String((testRecap.time_limit - timeSpent) % 60).padStart(2, '0')}`
-    : `${Math.floor(timeSpent / 60)}:${String(timeSpent % 60).padStart(2, '0')}`;
+    ? `${Math.floor((testRecap.time_limit - timeSpent) / 60)}:${String((testRecap.time_limit - timeSpent) % 60).padStart(2, '0')} remaining`
+    : `${Math.floor(timeSpent / 60)}:${String(timeSpent % 60).padStart(2, '0')} elapsed`;
 
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-4">
         <div className="text-sm text-muted-foreground">
-          Question {currentQuestionIndex + 1} of {testRecap.questions.length}
+          Question {currentQuestionIndex + 1} of {testRecap.questions?.length || 0}
         </div>
         <div className="flex items-center gap-2">
           <Clock size={16} />
@@ -270,12 +306,18 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
       
       <Card className="shadow-lg">
         <CardContent className="pt-6">
-          <TestRecapQuestion 
-            question={currentQuestion} 
-            language={currentLanguage}
-            onAnswer={(answer) => handleNextQuestion(currentQuestion.id, answer)}
-            savedAnswer={answers[currentQuestion.id]}
-          />
+          {currentQuestion ? (
+            <TestRecapQuestion 
+              question={currentQuestion} 
+              language={currentLanguage}
+              onAnswer={(answer) => handleNextQuestion(Number(currentQuestion.id), answer)}
+              savedAnswer={answers[currentQuestion.id]}
+            />
+          ) : (
+            <div className="text-center p-8">
+              <p className="text-muted-foreground">No question available</p>
+            </div>
+          )}
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button 
@@ -287,7 +329,7 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
           </Button>
           
           <Button onClick={handleSubmitTest}>
-            {currentQuestionIndex === testRecap.questions.length - 1 ? 'Submit' : 'Skip'}
+            {currentQuestionIndex === (testRecap.questions?.length || 0) - 1 ? 'Submit' : 'Skip'}
           </Button>
         </CardFooter>
       </Card>

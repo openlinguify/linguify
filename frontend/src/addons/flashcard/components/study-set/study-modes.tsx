@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { Clock, BookOpen, FlaskConical, Dumbbell, TimerOff, Layers } from "lucide-react";
 
 interface StudyModeProps {

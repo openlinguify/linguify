@@ -2,9 +2,19 @@
 
 import React from "react";
 
-import type { RouterOutputs } from "@acme/api";
+// TODO: Replace with appropriate RouterOutputs type
+type RouterOutputs = {
+  studySet: {
+    byId: {
+      id: string;
+      title: string;
+      description?: string | null;
+    };
+  };
+};
 
-import { api } from "~/trpc/react";
+// import { api } from "~/trpc/react";
+import { api } from "../../api/placeholder-api";
 import StudySetForm from "./study-set-form";
 
 const EditStudySet = ({

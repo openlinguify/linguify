@@ -1,0 +1,93 @@
+{
+  "nl": {
+    "title": "Cookiebeleid",
+    "subtitle": "Hoe we cookies gebruiken op Linguify om je taaleerervaring te verbeteren.",
+    "lastUpdated": "Laatst bijgewerkt: {date}",
+    "sections": [
+      {
+        "title": "Wat is een cookie?",
+        "content": [
+          "Een cookie is een klein gegevensbestand dat op je apparaat wordt opgeslagen wanneer je onze website bezoekt. Cookies helpen ons je te herkennen tijdens volgende bezoeken en je ervaring te personaliseren.",
+          "We gebruiken verschillende soorten cookies om ons taalleerplatform te laten werken en je gebruikerservaring te verbeteren."
+        ]
+      },
+      {
+        "title": "Soorten cookies die we gebruiken",
+        "content": [
+          "We gebruiken de volgende soorten cookies op Linguify:"
+        ],
+        "items": [
+          "**Essentiële cookies**: Nodig voor basisfunctionaliteit van de site (inloggen, beveiliging, taalvoorkeuren)",
+          "**Prestatiecookies**: Helpen ons begrijpen hoe je onze site gebruikt om deze te verbeteren",
+          "**Functionaliteitscookies**: Onthouden je voorkeuren en personaliseren je leerervaring",
+          "**Analytische cookies**: Verzamelen anoniem informatie over je sitegebruik"
+        ]
+      },
+      {
+        "title": "Eerste partij cookies",
+        "content": [
+          "Deze cookies worden direct door Linguify geplaatst en omvatten:"
+        ],
+        "items": [
+          "**linguify_session**: Houdt je inlogsessie bij (verloopt wanneer browser wordt gesloten)",
+          "**linguify_language**: Onthoudt je taalvoorkeur (verloopt na 1 jaar)",
+          "**linguify_theme**: Onthoudt je licht/donker thema keuze (verloopt na 1 jaar)",
+          "**linguify_progress**: Slaat je leervoortgang op (verloopt na 2 jaar)",
+          "**linguify_consent**: Onthoudt je cookievoorkeuren (verloopt na 1 jaar)"
+        ]
+      },
+      {
+        "title": "Derde partij cookies",
+        "content": [
+          "We gebruiken ook diensten van derden die hun eigen cookies kunnen plaatsen:"
+        ],
+        "items": [
+          "**Google Analytics**: Om sitegebruik te analyseren (_ga, _gid cookies)",
+          "**Auth0**: Voor veilig authenticatiebeheer",
+          "**Stripe**: Voor veilige betalingsverwerking (alleen op betaalpagina's)"
+        ]
+      },
+      {
+        "title": "Je cookievoorkeuren beheren",
+        "content": [
+          "Je hebt volledige controle over de cookies die op onze site worden gebruikt:",
+          "• **Essentiële cookies**: Altijd actief omdat ze nodig zijn voor de sitefunctionaliteit",
+          "• **Andere cookies**: Je kunt ze accepteren of weigeren via onze cookiebanner",
+          "• **Browserinstellingen**: Je kunt je browser configureren om cookies te blokkeren of verwijderen"
+        ]
+      },
+      {
+        "title": "Bewaartermijnen",
+        "content": [
+          "De bewaartermijnen voor onze cookies variëren op basis van hun functie:"
+        ],
+        "items": [
+          "**Sessiecookies**: Verwijderd wanneer browser wordt gesloten",
+          "**Voorkeurcookies**: Bewaard gedurende 1 jaar",
+          "**Analytische cookies**: Bewaard gedurende maximaal 2 jaar",
+          "**Voortgangscookies**: Bewaard gedurende 2 jaar om je leerproces te behouden"
+        ]
+      },
+      {
+        "title": "Je rechten",
+        "content": [
+          "In overeenstemming met de AVG heb je het recht om:",
+          "• Te weten welke cookies op je apparaat worden gebruikt",
+          "• Je toestemming op elk moment in te trekken",
+          "• Toegang te krijgen tot gegevens verzameld via cookies",
+          "• Verwijdering van je cookiegegevens aan te vragen"
+        ]
+      }
+    ],
+    "contact": {
+      "title": "Vragen over ons cookiebeleid?",
+      "description": "Als je vragen hebt over ons gebruik van cookies, aarzel dan niet om contact met ons op te nemen.",
+      "buttonText": "Contact opnemen"
+    },
+    "navigation": {
+      "terms": "Servicevoorwaarden",
+      "privacy": "Privacybeleid",
+      "legal": "Juridische kennisgeving"
+    }
+  }
+}

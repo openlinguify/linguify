@@ -1,4 +1,5 @@
-# backend/course/urls.py
+# -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (

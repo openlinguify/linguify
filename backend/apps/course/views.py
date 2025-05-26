@@ -1216,14 +1216,8 @@ class TestRecapViewSet(TargetLanguageMixin, viewsets.ModelViewSet):
                     serializer = self.get_serializer(test_recap)
                     return Response(serializer.data)
             
-            # If all else fails, return any TestRecap
-            logger.info("Final fallback: Returning first available TestRecap")
-            test_recap = TestRecap.objects.first()
-            if test_recap:
-                logger.info(f"Last resort: Using first available TestRecap ID {test_recap.id}")
-                serializer = self.get_serializer(test_recap)
-                return Response(serializer.data)
-                
+            # Don't fallback to random TestRecap - return 404 if no valid content is found
+            logger.info("No appropriate TestRecap found for this ContentLesson")
             return Response({"error": "No TestRecap found for this ContentLesson"}, status=status.HTTP_404_NOT_FOUND)
             
         except ContentLesson.DoesNotExist:

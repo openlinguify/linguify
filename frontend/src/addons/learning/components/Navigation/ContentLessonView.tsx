@@ -6,7 +6,7 @@ import ContentTypeRouter from './ContentTypeRouter';
 import LessonProgress from '@/addons/learning/components/shared/LessonProgress';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { courseAPI } from '@/addons/learning/api/courseAPI';
+import courseAPI from '@/addons/learning/api/courseAPI';
 import { getUserTargetLanguage } from '@/core/utils/languageUtils';
 import { ContentLesson } from '@/addons/learning/types';
 import useExerciseProgress from '@/addons/learning/hooks/useExerciseProgress';
@@ -57,11 +57,8 @@ const ContentLessonView: React.FC<ContentLessonViewProps> = ({ backToLessons }) 
             setActiveTabId(response[0].id.toString());
           }
           
-          // Get lesson title
-          const lessonInfo = await courseAPI.getLessonById(parseInt(lessonId), language);
-          if (lessonInfo) {
-            setLessonTitle(lessonInfo.title);
-          }
+          // Set a default lesson title
+          setLessonTitle(`Lesson ${lessonId}`);
         }
       } catch (error) {
         console.error('Error fetching lesson content:', error);
@@ -114,7 +111,7 @@ const ContentLessonView: React.FC<ContentLessonViewProps> = ({ backToLessons }) 
                     >
                       {typeof content.title === 'string'
                         ? content.title
-                        : content.title[language] || Object.values(content.title)[0]}
+                        : content.title[language as keyof typeof content.title] || Object.values(content.title)[0]}
                     </TabsTrigger>
                   ))}
                 </TabsList>
@@ -125,7 +122,7 @@ const ContentLessonView: React.FC<ContentLessonViewProps> = ({ backToLessons }) 
                       contentType={content.content_type}
                       contentId={content.id.toString()}
                       parentLessonId={lessonId}
-                      language={language}
+                      language={language as 'fr' | 'en' | 'es' | 'nl'}
                       unitId={unitId}
                       onComplete={() => handleExerciseComplete(content.id)}
                     />

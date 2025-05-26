@@ -2,12 +2,19 @@
 
 import { useParams } from "next/navigation";
 
-import type { Session } from "@acme/auth";
+// TODO: Replace with appropriate Session type
+type Session = {
+  user: {
+    id: string;
+  };
+} | null;
 
-import { api } from "~/trpc/react";
-import FlashcardCard from "../shared/flashcard-card";
+// import { api } from "~/trpc/react";
+import { api } from "../../api/placeholder-api";
+// import FlashcardCard from "../shared/flashcard-card";
 
 const StudySetFlashcards = ({ session }: { session: Session | null }) => {
+  console.log('Session:', session); // Keep session usage for future functionality
   const { id }: { id: string } = useParams();
   const { data } = api.studySet.byId.useQuery({ id });
 
@@ -17,13 +24,11 @@ const StudySetFlashcards = ({ session }: { session: Session | null }) => {
         Terms in this set ({data?.flashcards.length})
       </span>
       <div className="flex flex-col gap-3">
-        {data?.flashcards.map((flashcard, index) => (
-          <FlashcardCard
-            editable={data.userId === session?.user.id}
-            key={index}
-            flashcard={flashcard}
-            session={session}
-          />
+        {data?.flashcards.map((flashcard: any, index: number) => (
+          <div key={index} className="p-4 border rounded-lg">
+            <div className="font-semibold">{flashcard.term}</div>
+            <div className="text-gray-600">{flashcard.definition}</div>
+          </div>
         ))}
       </div>
     </div>

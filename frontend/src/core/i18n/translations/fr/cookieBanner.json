@@ -1,0 +1,36 @@
+{
+  "fr": {
+    "title": "Nous respectons votre vie privée",
+    "description": "Nous utilisons des cookies pour améliorer votre expérience de navigation sur notre site. Certains cookies sont nécessaires au bon fonctionnement de notre site web et de nos services. D'autres cookies sont optionnels et aident à personnaliser votre expérience, y compris la publicité et l'analyse. En cliquant sur \"Tout accepter\", vous consentez à notre utilisation des cookies.",
+    "learnMore": "En savoir plus",
+    "buttons": {
+      "acceptAll": "Tout accepter",
+      "essential": "Essentiels uniquement",
+      "customize": "Personnaliser",
+      "savePreferences": "Sauvegarder mes préférences"
+    },
+    "customization": {
+      "title": "Personnaliser les cookies",
+      "description": "Choisissez les types de cookies que vous souhaitez autoriser. Vous pouvez modifier ces paramètres à tout moment.",
+      "required": "Requis"
+    },
+    "categories": {
+      "essential": {
+        "title": "Cookies essentiels",
+        "description": "Nécessaires au fonctionnement de base du site comme la connexion, la sécurité et l'accessibilité. Ne peuvent pas être désactivés."
+      },
+      "functionality": {
+        "title": "Cookies de fonctionnalité",
+        "description": "Permettent de personnaliser votre expérience en retenant vos préférences comme la langue, le thème et les paramètres d'apprentissage."
+      },
+      "analytics": {
+        "title": "Cookies d'analyse",
+        "description": "Nous aident à comprendre comment vous utilisez notre site pour améliorer les fonctionnalités et l'expérience utilisateur."
+      },
+      "performance": {
+        "title": "Cookies de performance",
+        "description": "Optimisent les performances du site en mémorisant vos actions et préférences pour des chargements plus rapides."
+      }
+    }
+  }
+}

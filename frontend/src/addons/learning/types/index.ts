@@ -185,6 +185,9 @@
   export interface NumbersLessonProps {
     lessonId: string;
     language?: 'en' | 'fr' | 'es' | 'nl';
+    unitId?: string;
+    onComplete?: () => void;
+    progressIndicator?: React.ReactNode;
   }
 
   export interface NumberProps {

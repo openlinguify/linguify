@@ -1,0 +1,93 @@
+{
+  "fr": {
+    "title": "Politique des Cookies",
+    "subtitle": "Comment nous utilisons les cookies sur Linguify pour améliorer votre expérience d'apprentissage des langues.",
+    "lastUpdated": "Dernière mise à jour : {date}",
+    "sections": [
+      {
+        "title": "Qu'est-ce qu'un cookie ?",
+        "content": [
+          "Un cookie est un petit fichier de données stocké sur votre appareil lorsque vous visitez notre site web. Les cookies nous aident à vous reconnaître lors de vos visites ultérieures et à personnaliser votre expérience.",
+          "Nous utilisons différents types de cookies pour faire fonctionner notre plateforme d'apprentissage des langues et améliorer votre expérience utilisateur."
+        ]
+      },
+      {
+        "title": "Types de cookies que nous utilisons",
+        "content": [
+          "Nous utilisons les types de cookies suivants sur Linguify :"
+        ],
+        "items": [
+          "**Cookies essentiels** : Nécessaires au fonctionnement de base du site (connexion, sécurité, préférences de langue)",
+          "**Cookies de performance** : Nous aident à comprendre comment vous utilisez notre site pour l'améliorer",
+          "**Cookies de fonctionnalité** : Retiennent vos préférences et personnalisent votre expérience d'apprentissage",
+          "**Cookies d'analyse** : Collectent des informations sur votre utilisation du site de manière anonyme"
+        ]
+      },
+      {
+        "title": "Cookies de première partie",
+        "content": [
+          "Ces cookies sont directement placés par Linguify et incluent :"
+        ],
+        "items": [
+          "**linguify_session** : Maintient votre session de connexion (expire à la fermeture du navigateur)",
+          "**linguify_language** : Retient votre préférence de langue (expire après 1 an)",
+          "**linguify_theme** : Retient votre choix de thème clair/sombre (expire après 1 an)",
+          "**linguify_progress** : Sauvegarde votre progression d'apprentissage (expire après 2 ans)",
+          "**linguify_consent** : Retient vos préférences de cookies (expire après 1 an)"
+        ]
+      },
+      {
+        "title": "Cookies de tiers",
+        "content": [
+          "Nous utilisons également des services tiers qui peuvent placer leurs propres cookies :"
+        ],
+        "items": [
+          "**Google Analytics** : Pour analyser l'utilisation du site (cookies _ga, _gid)",
+          "**Auth0** : Pour la gestion sécurisée de l'authentification",
+          "**Stripe** : Pour le traitement sécurisé des paiements (uniquement sur les pages de paiement)"
+        ]
+      },
+      {
+        "title": "Gestion de vos préférences de cookies",
+        "content": [
+          "Vous avez le contrôle total sur les cookies utilisés sur notre site :",
+          "• **Cookies essentiels** : Toujours actifs car nécessaires au fonctionnement du site",
+          "• **Autres cookies** : Vous pouvez les accepter ou les refuser via notre bannière de cookies",
+          "• **Paramètres du navigateur** : Vous pouvez configurer votre navigateur pour bloquer ou supprimer les cookies"
+        ]
+      },
+      {
+        "title": "Durée de conservation",
+        "content": [
+          "Les durées de conservation de nos cookies varient selon leur fonction :"
+        ],
+        "items": [
+          "**Cookies de session** : Supprimés à la fermeture du navigateur",
+          "**Cookies de préférences** : Conservés pendant 1 an",
+          "**Cookies d'analyse** : Conservés pendant 2 ans maximum",
+          "**Cookies de progression** : Conservés pendant 2 ans pour préserver votre apprentissage"
+        ]
+      },
+      {
+        "title": "Vos droits",
+        "content": [
+          "Conformément au RGPD, vous avez le droit de :",
+          "• Connaître quels cookies sont utilisés sur votre appareil",
+          "• Retirer votre consentement à tout moment",
+          "• Accéder aux données collectées via les cookies",
+          "• Demander la suppression de vos données de cookies"
+        ]
+      }
+    ],
+    "contact": {
+      "title": "Questions sur notre politique des cookies ?",
+      "description": "Si vous avez des questions concernant notre utilisation des cookies, n'hésitez pas à nous contacter.",
+      "buttonText": "Nous contacter"
+    },
+    "navigation": {
+      "terms": "Conditions d'utilisation",
+      "privacy": "Politique de confidentialité",
+      "legal": "Mentions légales"
+    }
+  }
+}

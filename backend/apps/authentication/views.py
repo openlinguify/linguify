@@ -6,7 +6,11 @@ from rest_framework.decorators import api_view, permission_classes, parser_class
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, ProfileUpdateSerializer
+from .serializers import (
+    UserSerializer, ProfileUpdateSerializer, 
+    CookieConsentCreateSerializer, CookieConsentSerializer,
+    CookieConsentLogSerializer, CookieConsentStatsSerializer
+)
 import os
 import datetime
 from PIL import Image
@@ -792,3 +796,389 @@ def debug_profile_endpoint(request):
             'traceback': traceback.format_exc(),
             'success': False
         }, status=500)
+
+
+# ============================================================================
+# Cookie Consent Management Views
+# ============================================================================
+
+from .models import CookieConsent, CookieConsentLog
+from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.db import models
+
+
+@extend_schema(
+    tags=["Cookie Consent"],
+    summary="Create cookie consent",
+    description="Record user's cookie consent preferences",
+    request=CookieConsentCreateSerializer,
+    responses={
+        201: CookieConsentSerializer,
+        400: ErrorResponseSerializer
+    }
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def create_cookie_consent(request):
+    """Create a new cookie consent record"""
+    serializer = CookieConsentCreateSerializer(
+        data=request.data, 
+        context={'request': request}
+    )
+    
+    if serializer.is_valid():
+        try:
+            consent = serializer.save()
+            response_serializer = CookieConsentSerializer(consent)
+            
+            return Response(
+                response_serializer.data, 
+                status=status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            logger.error(f"Error creating cookie consent: {str(e)}")
+            return Response(
+                {'error': 'Failed to create consent record'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    tags=["Cookie Consent"],
+    summary="Get user's cookie consent",
+    description="Retrieve the latest cookie consent for authenticated user or session",
+    responses={
+        200: CookieConsentSerializer,
+        404: ErrorResponseSerializer
+    }
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_cookie_consent(request):
+    """Get the latest cookie consent for user/session"""
+    user = request.user if request.user.is_authenticated else None
+    session_id = request.session.session_key
+    
+    # Get IP address
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip_address = x_forwarded_for.split(',')[0]
+    else:
+        ip_address = request.META.get('REMOTE_ADDR')
+    
+    consent = CookieConsent.objects.get_latest_consent(
+        user=user,
+        session_id=session_id,
+        ip_address=ip_address
+    )
+    
+    if consent and not consent.is_revoked:
+        serializer = CookieConsentSerializer(consent)
+        return Response(serializer.data)
+    
+    return Response(
+        {'error': 'No valid consent found'}, 
+        status=status.HTTP_404_NOT_FOUND
+    )
+
+
+@extend_schema(
+    tags=["Cookie Consent"],
+    summary="Revoke cookie consent",
+    description="Revoke user's cookie consent",
+    request=inline_serializer(
+        name='RevokeConsentRequest',
+        fields={'reason': serializers.CharField(required=False, default='user_request')}
+    ),
+    responses={
+        200: inline_serializer(
+            name='RevokeConsentResponse',
+            fields={'message': serializers.CharField(), 'revoked_at': serializers.DateTimeField()}
+        ),
+        404: ErrorResponseSerializer
+    }
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def revoke_cookie_consent(request):
+    """Revoke the latest cookie consent"""
+    user = request.user if request.user.is_authenticated else None
+    session_id = request.session.session_key
+    
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip_address = x_forwarded_for.split(',')[0]
+    else:
+        ip_address = request.META.get('REMOTE_ADDR')
+    
+    consent = CookieConsent.objects.get_latest_consent(
+        user=user,
+        session_id=session_id,
+        ip_address=ip_address
+    )
+    
+    if consent and not consent.is_revoked:
+        reason = request.data.get('reason', 'user_request')
+        old_values = consent.to_dict()
+        
+        consent.revoke(reason=reason)
+        
+        # Log the revocation
+        CookieConsentLog.objects.create(
+            consent=consent,
+            action='revoked',
+            old_values=old_values,
+            new_values={'is_revoked': True, 'revocation_reason': reason},
+            ip_address=ip_address,
+            user_agent=request.META.get('HTTP_USER_AGENT', '')
+        )
+        
+        return Response({
+            'message': 'Consent revoked successfully',
+            'revoked_at': consent.revoked_at.isoformat()
+        })
+    
+    return Response(
+        {'error': 'No active consent found to revoke'}, 
+        status=status.HTTP_404_NOT_FOUND
+    )
+
+
+@extend_schema(
+    tags=["Cookie Consent - Admin"],
+    summary="Get cookie consent statistics",
+    description="Get statistics about cookie consents (admin only)",
+    parameters=[
+        OpenApiParameter(
+            name='days',
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.QUERY,
+            description='Number of days to analyze (default: 30)',
+            default=30
+        )
+    ],
+    responses={
+        200: CookieConsentStatsSerializer,
+        403: ErrorResponseSerializer
+    }
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_cookie_consent_stats(request):
+    """Get cookie consent statistics - admin only"""
+    if not request.user.is_staff:
+        return Response(
+            {'error': 'Admin access required'}, 
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
+    days = int(request.GET.get('days', 30))
+    stats = CookieConsent.objects.get_analytics_data(days=days)
+    
+    serializer = CookieConsentStatsSerializer(stats)
+    return Response(serializer.data)
+
+
+@extend_schema(
+    tags=["Cookie Consent - Admin"],
+    summary="Get consent logs",
+    description="Get audit logs for cookie consents (admin only)",
+    parameters=[
+        OpenApiParameter(
+            name='consent_id',
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            description='Filter by specific consent ID'
+        ),
+        OpenApiParameter(
+            name='action',
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            description='Filter by action type'
+        ),
+        OpenApiParameter(
+            name='limit',
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.QUERY,
+            description='Number of results to return (default: 100)',
+            default=100
+        )
+    ],
+    responses={
+        200: CookieConsentLogSerializer(many=True),
+        403: ErrorResponseSerializer
+    }
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_cookie_consent_logs(request):
+    """Get cookie consent audit logs - admin only"""
+    if not request.user.is_staff:
+        return Response(
+            {'error': 'Admin access required'}, 
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
+    queryset = CookieConsentLog.objects.all()
+    
+    # Apply filters
+    consent_id = request.GET.get('consent_id')
+    if consent_id:
+        queryset = queryset.filter(consent__id=consent_id)
+    
+    action = request.GET.get('action')
+    if action:
+        queryset = queryset.filter(action=action)
+    
+    # Limit results
+    limit = int(request.GET.get('limit', 100))
+    queryset = queryset[:limit]
+    
+    serializer = CookieConsentLogSerializer(queryset, many=True)
+    return Response(serializer.data)
+
+
+@extend_schema(
+    tags=["Cookie Consent"],
+    summary="Check consent validity",
+    description="Check if current user/session has valid consent for specific cookie category",
+    parameters=[
+        OpenApiParameter(
+            name='category',
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            description='Cookie category to check (analytics, functionality, performance)',
+            required=True,
+            enum=['analytics', 'functionality', 'performance']
+        ),
+        OpenApiParameter(
+            name='version',
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            description='Consent version to check against (default: 1.0)',
+            default='1.0'
+        )
+    ],
+    responses={
+        200: inline_serializer(
+            name='ConsentValidityResponse',
+            fields={
+                'has_consent': serializers.BooleanField(),
+                'category': serializers.CharField(),
+                'version': serializers.CharField(),
+                'consent_date': serializers.DateTimeField(required=False)
+            }
+        ),
+        400: ErrorResponseSerializer
+    }
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def check_consent_validity(request):
+    """Check if user has valid consent for specific category"""
+    category = request.GET.get('category')
+    version = request.GET.get('version', '1.0')
+    
+    if not category or category not in ['analytics', 'functionality', 'performance']:
+        return Response(
+            {'error': 'Invalid category. Must be: analytics, functionality, or performance'}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    user = request.user if request.user.is_authenticated else None
+    session_id = request.session.session_key
+    
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip_address = x_forwarded_for.split(',')[0]
+    else:
+        ip_address = request.META.get('REMOTE_ADDR')
+    
+    consent = CookieConsent.objects.get_latest_consent(
+        user=user,
+        session_id=session_id,
+        ip_address=ip_address
+    )
+    
+    has_consent = False
+    consent_date = None
+    
+    if consent and not consent.is_revoked and consent.version == version:
+        has_consent = getattr(consent, category, False)
+        consent_date = consent.created_at
+    
+    return Response({
+        'has_consent': has_consent,
+        'category': category,
+        'version': version,
+        'consent_date': consent_date.isoformat() if consent_date else None
+    })
+
+
+@extend_schema(
+    tags=["Cookie Consent - Debug"],
+    summary="Debug cookie consent status",
+    description="Get detailed information about current cookie consent for debugging",
+    responses={
+        200: inline_serializer(
+            name='DebugConsentResponse',
+            fields={
+                'local_consent': serializers.CharField(),
+                'backend_consent': CookieConsentSerializer(required=False),
+                'session_info': serializers.DictField(),
+                'headers': serializers.DictField(),
+            }
+        )
+    }
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def debug_cookie_consent(request):
+    """Debug endpoint to check cookie consent status"""
+    
+    # Only allow in DEBUG mode
+    if not settings.DEBUG:
+        return Response({'error': 'Debug endpoint only available in DEBUG mode'}, status=404)
+    
+    user = request.user if request.user.is_authenticated else None
+    session_id = request.session.session_key
+    
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip_address = x_forwarded_for.split(',')[0]
+    else:
+        ip_address = request.META.get('REMOTE_ADDR')
+    
+    # Get backend consent
+    consent = CookieConsent.objects.get_latest_consent(
+        user=user,
+        session_id=session_id,
+        ip_address=ip_address
+    )
+    
+    # Get all consents for this user/session
+    all_consents = CookieConsent.objects.filter(
+        models.Q(user=user) if user else models.Q(session_id=session_id) | models.Q(ip_address=ip_address)
+    ).order_by('-created_at')
+    
+    return Response({
+        'session_info': {
+            'user_id': user.id if user else None,
+            'session_id': session_id,
+            'ip_address': ip_address,
+            'user_agent': request.META.get('HTTP_USER_AGENT', '')[:100] + '...' if len(request.META.get('HTTP_USER_AGENT', '')) > 100 else request.META.get('HTTP_USER_AGENT', '')
+        },
+        'latest_consent': CookieConsentSerializer(consent).data if consent else None,
+        'all_consents_count': all_consents.count(),
+        'all_consents': CookieConsentSerializer(all_consents[:5], many=True).data,  # Only first 5
+        'cookies_in_request': dict(request.COOKIES),
+        'relevant_headers': {
+            'X-Cookie-Consent-Status': request.META.get('HTTP_X_COOKIE_CONSENT_STATUS'),
+            'User-Agent': request.META.get('HTTP_USER_AGENT', '')[:50] + '...' if len(request.META.get('HTTP_USER_AGENT', '')) > 50 else request.META.get('HTTP_USER_AGENT', ''),
+            'Referer': request.META.get('HTTP_REFERER'),
+        }
+    })

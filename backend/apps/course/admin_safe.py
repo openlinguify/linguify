@@ -1,4 +1,5 @@
-# Version alternative sans print pour éviter les problèmes d'encodage
+# -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
 from django.contrib import admin
 from django import forms
 from .models import TheoryContent, ContentLesson
