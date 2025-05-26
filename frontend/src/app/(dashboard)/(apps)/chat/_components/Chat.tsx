@@ -141,7 +141,7 @@ const MessengerChat = () => {
             <div className="divide-y">
               {loading ? (
                 // Loading skeletons
-                Array(5).fill(0).map((_, i) => (
+                (Array(5).fill(0).map((_, i) => (
                   <div key={i} className="p-4 flex items-center gap-3">
                     <Skeleton className="h-12 w-12 rounded-full" />
                     <div className="space-y-2">
@@ -149,7 +149,7 @@ const MessengerChat = () => {
                       <Skeleton className="h-3 w-24" />
                     </div>
                   </div>
-                ))
+                )))
               ) : (
                 filteredConversations.map(conversation => {
                   const otherParticipant = getOtherParticipant(conversation);

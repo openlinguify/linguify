@@ -45,17 +45,15 @@ const BugSignal: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="mb-6">
-        <Link 
-          href="/contact" 
+        <Link
+          href="/contact"
           className="inline-flex items-center text-indigo-600 hover:text-indigo-800"
-        >
+          legacyBehavior>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Contact
         </Link>
       </div>
-      
       <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Signaler un bug</h1>
-      
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8">
         <p className="text-gray-700 dark:text-gray-300 mb-4">
           Found a bug on our website? Please report it to us so we can fix it as soon as possible.

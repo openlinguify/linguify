@@ -171,8 +171,9 @@ export const Navbar = () => {
                 <NavigationMenuList>
                   {navItems.map((item) => (
                     <NavigationMenuItem key={item.href}>
-                      <Link href={item.href} legacyBehavior passHref>
-                        <NavigationMenuLink
+                      <NavigationMenuLink asChild>
+                        <Link 
+                          href={item.href}
                           className={cn(
                             navigationMenuTriggerStyle(),
                             pathname === item.href
@@ -181,8 +182,8 @@ export const Navbar = () => {
                           )}
                         >
                           {item.name}
-                        </NavigationMenuLink>
-                      </Link>
+                        </Link>
+                      </NavigationMenuLink>
                     </NavigationMenuItem>
                   ))}
                 </NavigationMenuList>
@@ -213,14 +214,15 @@ export const Navbar = () => {
                 >
                   {isLoading ? t("auth.signInProgress", "Logging in...") : t("auth.signIn", "Sign In")}
                 </Button>
-                <Link href="/register">
-                  <Button
-                    variant="outline"
-                    className="bg-purple-600 text-white hover:bg-purple-700 dark:bg-purple-800 dark:hover:bg-purple-900"
-                  >
+                <Button
+                  asChild
+                  variant="outline"
+                  className="bg-purple-600 text-white hover:bg-purple-700 dark:bg-purple-800 dark:hover:bg-purple-900"
+                >
+                  <Link href="/register">
                     {t("auth.tryFree", "Try it free")}
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </>
             )}
           </div>
@@ -242,7 +244,6 @@ export const Navbar = () => {
           </div>
         </div>
       </nav>
-
       {/* Mobile menu */}
       {isMenuOpen && (
         <div
@@ -317,13 +318,14 @@ export const Navbar = () => {
                     >
                       {isLoading ? t("auth.signInProgress", "Logging in...") : t("auth.signIn", "Log In")}
                     </Button>
-                    <Link
-                      href="/register"
-                      className="w-full"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <Button className="w-full">{t("auth.register", "Register")}</Button>
-                    </Link>
+                    <Button asChild className="w-full">
+                      <Link
+                        href="/register"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {t("auth.register", "Register")}
+                      </Link>
+                    </Button>
                   </>
                 )}
               </div>

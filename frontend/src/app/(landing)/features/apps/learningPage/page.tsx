@@ -195,27 +195,27 @@ export default function LearningFeature() {
               </p>
 
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Link href="/register">
-                  <Button size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700">
+                <Button asChild size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700">
+                  <Link href="/register">
                     {t("learning.start_button", "Start learning now")}
                     <ChevronRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-                <Link href="/pricing">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="text-white border-white bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all font-medium px-8 flex items-center"
-                  >
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="text-white border-white bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all font-medium px-8 flex items-center"
+                >
+                  <Link href="/pricing">
                     {t("learning.pricing_button", "View pricing")}
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
-
       {/* Learning Paths Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -276,7 +276,6 @@ export default function LearningFeature() {
           </motion.div>
         </div>
       </section>
-
       {/* Benefits Section */}
       <section className="py-20 bg-gradient-to-r from-indigo-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -322,7 +321,6 @@ export default function LearningFeature() {
           </motion.div>
         </div>
       </section>
-
       {/* Demo or Screenshot Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -367,12 +365,12 @@ export default function LearningFeature() {
                 </div>
               </div>
               <div className="mt-8">
-                <Link href="/register">
-                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                  <Link href="/register">
                     {t("learning.try_button", "Try it yourself")}
                     <ChevronRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
             </motion.div>
 
@@ -388,7 +386,6 @@ export default function LearningFeature() {
           </motion.div>
         </div>
       </section>
-
       {/* Call to Action */}
       <section className="py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -404,12 +401,12 @@ export default function LearningFeature() {
             <p className="text-xl text-indigo-100 mb-8 max-w-3xl mx-auto">
               {t("learning.cta_description", "Join thousands of learners already using our platform to master new languages efficiently and enjoyably.")}
             </p>
-            <Link href="/register">
-              <Button size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 font-medium px-8">
+            <Button asChild size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 font-medium px-8">
+              <Link href="/register">
                 {t("learning.cta_button", "Start learning today")}
                 <ChevronRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </motion.div>
         </div>
       </section>

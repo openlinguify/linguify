@@ -281,8 +281,8 @@ class NotificationWebsocketService {
     
     // Check if this was an expected closure
     const isExpectedClosure = event.wasClean && (
-      event.code === 1000 || // Normal closure
-      event.code === 1001    // Going away (page unload)
+      (// Normal closure
+      event.code === 1000 || event.code === 1001)    // Going away (page unload)
     );
     
     // Only attempt to reconnect for unexpected closures

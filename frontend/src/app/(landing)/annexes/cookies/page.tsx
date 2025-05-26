@@ -110,7 +110,7 @@ export default function CookiesPage() {
                   <Link
                     href="/contact"
                     className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                  >
+                    legacyBehavior>
                     {t.contact.buttonText}
                   </Link>
                 </div>
@@ -122,21 +122,21 @@ export default function CookiesPage() {
               <Link
                 href="/annexes/terms"
                 className="text-indigo-600 dark:text-indigo-400 hover:underline"
-              >
+                legacyBehavior>
                 {t.navigation.terms}
               </Link>
               <span className="text-gray-400">•</span>
               <Link
                 href="/annexes/privacy"
                 className="text-indigo-600 dark:text-indigo-400 hover:underline"
-              >
+                legacyBehavior>
                 {t.navigation.privacy}
               </Link>
               <span className="text-gray-400">•</span>
               <Link
                 href="/annexes/legal"
                 className="text-indigo-600 dark:text-indigo-400 hover:underline"
-              >
+                legacyBehavior>
                 {t.navigation.legal}
               </Link>
             </div>

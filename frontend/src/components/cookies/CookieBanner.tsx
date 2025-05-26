@@ -156,14 +156,13 @@ export const CookieBanner: React.FC<CookieBannerProps> = ({ className = '' }) =>
     <>
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" />
-      
       {/* Banner */}
       <div className={`fixed bottom-0 left-0 right-0 z-50 ${className}`}>
         <div className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-2xl">
           <div className="max-w-7xl mx-auto p-6">
             {!showDetails ? (
               /* Simple Banner */
-              <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
+              (<div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
                 <div className="flex items-start gap-3 flex-1">
                   <Cookie className="h-6 w-6 text-indigo-600 flex-shrink-0 mt-1" />
                   <div className="flex-1">
@@ -172,8 +171,8 @@ export const CookieBanner: React.FC<CookieBannerProps> = ({ className = '' }) =>
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
                       {t.description}{' '}
-                      <Link 
-                        href="/annexes/cookies" 
+                      <Link
+                        href="/annexes/cookies"
                         className="text-indigo-600 dark:text-indigo-400 hover:underline"
                       >
                         {t.learnMore}
@@ -181,7 +180,6 @@ export const CookieBanner: React.FC<CookieBannerProps> = ({ className = '' }) =>
                     </p>
                   </div>
                 </div>
-                
                 <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
                   <button
                     onClick={() => setShowDetails(true)}
@@ -202,10 +200,10 @@ export const CookieBanner: React.FC<CookieBannerProps> = ({ className = '' }) =>
                     {t.buttons.acceptAll}
                   </button>
                 </div>
-              </div>
+              </div>)
             ) : (
               /* Detailed Banner */
-              <div className="space-y-6">
+              (<div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Cookie className="h-6 w-6 text-indigo-600" />
@@ -221,11 +219,9 @@ export const CookieBanner: React.FC<CookieBannerProps> = ({ className = '' }) =>
                     <X className="h-5 w-5" />
                   </button>
                 </div>
-
                 <p className="text-gray-600 dark:text-gray-400 text-sm">
                   {t.customization.description}
                 </p>
-
                 <div className="grid gap-4 md:grid-cols-2">
                   {cookieCategories.map((category) => {
                     const Icon = category.icon;
@@ -269,7 +265,6 @@ export const CookieBanner: React.FC<CookieBannerProps> = ({ className = '' }) =>
                     );
                   })}
                 </div>
-
                 <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <button
                     onClick={handleAcceptEssential}
@@ -290,7 +285,7 @@ export const CookieBanner: React.FC<CookieBannerProps> = ({ className = '' }) =>
                     {t.buttons.acceptAll}
                   </button>
                 </div>
-              </div>
+              </div>)
             )}
           </div>
         </div>

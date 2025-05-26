@@ -14,7 +14,7 @@ const CreatedBy = ({
   const { id, image, name } = user;
 
   return (
-    <Link href={`/users/${id}`} className="flex items-center gap-4">
+    <Link href={`/users/${id}`} className="flex items-center gap-4" legacyBehavior>
       <Avatar>
         <AvatarImage src={image ?? undefined} alt="" />
         <AvatarFallback>{name?.at(0)}</AvatarFallback>

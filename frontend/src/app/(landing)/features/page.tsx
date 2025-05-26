@@ -168,10 +168,8 @@ export default function Features() {
           </div>
         </div>
       </section>
-
       {/* New Info Component */}
       <NewInfo variant="default" />
-
       {/* Call to Action */}
       <section className="py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -189,20 +187,23 @@ export default function Features() {
               {t("features.cta.description", "Join thousands of learners who have already transformed their approach to language learning.")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register">
-                <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">
+              <Button asChild size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">
+                <Link href="/register">
                   {t("features.cta.button", "Start your journey")}
                   <ChevronRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/pricing">
-                <Button variant="outline" size="lg">
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link href="/pricing">
                   {t("features.cta.pricing_button", "View pricing")}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
             <div className="mt-6">
-              <Link href="/features" className="text-indigo-600 hover:text-indigo-800 flex items-center justify-center">
+              <Link
+                href="/features"
+                className="text-indigo-600 hover:text-indigo-800 flex items-center justify-center"
+              >
                 <span>{t("features.explore_all_apps", "Explore all our applications")}</span>
                 <ChevronRight className="ml-1 h-4 w-4" />
               </Link>
@@ -210,7 +211,6 @@ export default function Features() {
           </motion.div>
         </div>
       </section>
-
       {/* Language Switcher (desktop only) */}
       <div className="fixed bottom-6 right-6 hidden md:block z-10">
         <LanguageSwitcher

@@ -114,7 +114,6 @@ const FlashcardsPageComponent = () => {
 
   return (
     <>
-
       <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white">
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 py-20 lg:py-32">
@@ -137,12 +136,12 @@ const FlashcardsPageComponent = () => {
                   {t("flashcardsPage.hero.description", "Mémorisez du vocabulaire en un temps record grâce à notre système adaptatif basé sur la répétition espacée. Apprenez plus rapidement, retenez plus longtemps.")}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <Link href="/register">
+                  <Link href="/register" legacyBehavior>
                     <Button size="lg" className="bg-white text-indigo-600 hover:bg-indigo-100">
                       {t("flashcardsPage.hero.cta_button", "Essayer gratuitement")}
                     </Button>
                   </Link>
-                  <Link href="/features">
+                  <Link href="/features" legacyBehavior>
                     <Button variant="outline" size="lg" className="bg-transparent border-white text-white hover:bg-white hover:text-indigo-600">
                       {t("flashcardsPage.hero.learn_more", "En savoir plus")}
                     </Button>
@@ -298,7 +297,7 @@ const FlashcardsPageComponent = () => {
               {t("flashcardsPage.cta.description", "Rejoignez des milliers d'apprenants qui ont transformé leur façon de mémoriser du vocabulaire grâce à nos flashcardsPage intelligentes.")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register">
+              <Link href="/register" legacyBehavior>
                 <Button size="lg" className="bg-white text-indigo-600 hover:bg-indigo-100">
                   {t("flashcardsPage.cta.button", "Commencer gratuitement")}
                 </Button>
@@ -307,7 +306,6 @@ const FlashcardsPageComponent = () => {
           </div>
         </section>
       </div>
-
       {/* Language Switcher (desktop only) */}
       <div className="fixed bottom-6 right-6 hidden md:block z-10">
         <LanguageSwitcher
@@ -316,7 +314,6 @@ const FlashcardsPageComponent = () => {
           className="shadow-md"
         />
       </div>
-
       <style jsx global>{`
         .perspective-1000 {
           perspective: 1000px;

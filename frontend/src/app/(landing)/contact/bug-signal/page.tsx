@@ -62,10 +62,10 @@ export default function BugSignalPage() {
     <div className="bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <Link 
-            href="/contact" 
+          <Link
+            href="/contact"
             className="inline-flex items-center text-indigo-600 hover:text-indigo-800"
-          >
+            legacyBehavior>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour à la page contact
           </Link>
