@@ -27,7 +27,7 @@ const NavItem = ({ href, icon: Icon, label, onClick }: NavItemProps) => (
     href={href}
     className="flex items-center p-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
     onClick={onClick}
-  >
+    legacyBehavior>
     <Icon className="h-4 w-4 mr-3" />
     {label}
   </Link>

@@ -27,7 +27,7 @@ const StudyModeCard = ({
     <Link
       href={`${path}/${studySetId}`}
       className="p-6 border rounded-lg transition-colors hover:border-brand-purple cursor-pointer flex flex-col group"
-    >
+      legacyBehavior>
       <div className="flex justify-between items-center mb-4">
         <div className="text-brand-purple p-2 bg-brand-purple/10 rounded-lg">
           {icon}

@@ -35,10 +35,7 @@ export const Logo: React.FC<LogoProps> = ({
 
   return (
     <div className={className}>
-      <Link
-        href={href}
-        className="flex items-center gap-3 group"
-      >
+      <Link href={href} className="flex items-center gap-3 group" legacyBehavior>
         {/* Logo Image Container */}
         <div 
           className={`relative flex items-center justify-center ${sizes.container} rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-sm overflow-hidden transition-all duration-300 group-hover:shadow-md group-hover:from-indigo-600 group-hover:to-indigo-700`}

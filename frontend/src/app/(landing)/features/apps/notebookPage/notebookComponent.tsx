@@ -137,7 +137,6 @@ const NotebookPageComponent = () => {
 
   return (
     <>
-
       <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white">
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 py-20 lg:py-32">
@@ -159,12 +158,12 @@ const NotebookPageComponent = () => {
                   {t("notebookPage.hero.description", "Capturez, organisez et révisez vos apprentissages linguistiques dans un espace central intelligent. Transformez vos notes en connaissances structurées.")}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <Link href="/register">
+                  <Link href="/register" legacyBehavior>
                     <Button size="lg" className="bg-white text-indigo-600 hover:bg-indigo-100">
                       {t("notebookPage.hero.cta_button", "Essayer gratuitement")}
                     </Button>
                   </Link>
-                  <Link href="/features">
+                  <Link href="/features" legacyBehavior>
                     <Button variant="outline" size="lg" className="bg-transparent border-white text-white hover:bg-white hover:text-indigo-600">
                       {t("notebookPage.hero.learn_more", "En savoir plus")}
                     </Button>
@@ -384,7 +383,7 @@ const NotebookPageComponent = () => {
               {t("notebookPage.cta.description", "Rejoignez des milliers d'utilisateurs qui ont transformé leur prise de notes linguistiques grâce à notre application NotebookPage.")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register">
+              <Link href="/register" legacyBehavior>
                 <Button size="lg" className="bg-white text-indigo-600 hover:bg-indigo-100">
                   {t("notebookPage.cta.button", "Commencer gratuitement")}
                 </Button>
@@ -393,7 +392,6 @@ const NotebookPageComponent = () => {
           </div>
         </section>
       </div>
-
       {/* Language Switcher (desktop only) */}
       <div className="fixed bottom-6 right-6 hidden md:block z-10">
         <LanguageSwitcher

@@ -83,7 +83,7 @@ const translationModules = {
         terms: enTerms.default.en || {},
         onboarding: enOnboarding.default || {},
         languages: enLanguages.default || {},
-        ...enSettings.default || {}
+        ...(enSettings.default || {})
       };
     }
   },
@@ -129,7 +129,7 @@ const translationModules = {
         terms: enTerms.default.en || {},
         onboarding: enOnboarding.default || {},
         languages: enLanguages.default || {},
-        ...enSettings.default || {}
+        ...(enSettings.default || {})
       };
     }
   },
@@ -175,7 +175,7 @@ const translationModules = {
         terms: enTerms.default.en || {},
         onboarding: enOnboarding.default || {},
         languages: enLanguages.default || {},
-        ...enSettings.default || {}
+        ...(enSettings.default || {})
       };
     }
   }

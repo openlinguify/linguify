@@ -164,12 +164,12 @@ const ProgressPageComponent = () => {
                   {t("progressPage.hero.description", "Visualisez vos progrès linguistiques, définissez des objectifs atteignables et restez motivé tout au long de votre parcours d'apprentissage.")}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <Link href="/register">
+                  <Link href="/register" legacyBehavior>
                     <Button size="lg" className="bg-white text-indigo-600 hover:bg-indigo-100">
                       {t("progressPage.hero.cta_button", "Essayer gratuitement")}
                     </Button>
                   </Link>
-                  <Link href="/features">
+                  <Link href="/features" legacyBehavior>
                     <Button variant="outline" size="lg" className="bg-transparent border-white text-white hover:bg-white hover:text-indigo-600">
                       {t("progressPage.hero.learn_more", "En savoir plus")}
                     </Button>
@@ -416,7 +416,7 @@ const ProgressPageComponent = () => {
               {t("progressPage.cta.description", "Rejoignez des milliers d'apprenants qui ont atteint leurs objectifs linguistiques grâce à notre système de suivi de progressPageion.")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register">
+              <Link href="/register" legacyBehavior>
                 <Button size="lg" className="bg-white text-indigo-600 hover:bg-indigo-100">
                   {t("progressPage.cta.button", "Commencer gratuitement")}
                 </Button>
@@ -425,7 +425,6 @@ const ProgressPageComponent = () => {
           </div>
         </section>
       </div>
-
       {/* Language Switcher (desktop only) */}
       <div className="fixed bottom-6 right-6 hidden md:block z-10">
         <LanguageSwitcher

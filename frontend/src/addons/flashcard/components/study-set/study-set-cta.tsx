@@ -29,7 +29,7 @@ const StudySetCTA = ({ session, id, userId }: StudySetCTAProps) => {
       {session?.user.id === userId && (
         <TooltipProvider>
           <Tooltip>
-            <Link href={`/study-sets/${id}/edit`}>
+            <Link href={`/study-sets/${id}/edit`} legacyBehavior>
               <TooltipTrigger asChild>
                 <Button size="icon" variant="outline">
                   <Edit size={16} />

@@ -690,7 +690,6 @@ export default function SettingsPage() {
 
   return (
     <div className="w-full h-full bg-gray-50 dark:bg-gray-900 overflow-hidden flex flex-col py-4 px-2 md:px-4">
-
       {alert.show && (
         <Alert className={`mx-4 mb-4 ${alert.type === 'error' ? 'border-destructive bg-destructive/10' : 'border-green-500 bg-green-50 dark:bg-green-900/20'}`}>
           <AlertDescription>
@@ -698,7 +697,6 @@ export default function SettingsPage() {
           </AlertDescription>
         </Alert>
       )}
-
       <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-6 gap-4 lg:gap-6 flex-1 h-full overflow-hidden">
         {/* Left sidebar */}
         <div className="md:col-span-1 lg:col-span-1 space-y-6">
@@ -855,7 +853,7 @@ export default function SettingsPage() {
                   <TabsContent value="personal" className="space-y-6">
                     {!isEditing ? (
                       // View Mode
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      (<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <InfoItem 
                           label={t('profileInfo.firstName')} 
                           value={formData.first_name || t('profileInfo.notSpecified')} 
@@ -888,7 +886,6 @@ export default function SettingsPage() {
                           value={formData.birthday ? new Date(formData.birthday).toLocaleDateString() : t('profileInfo.notSpecified')}
                           icon={<Calendar className="h-4 w-4" />}
                         />
-
                         <div className="col-span-full">
                           <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
                             <BookOpen className="h-4 w-4" />
@@ -896,7 +893,6 @@ export default function SettingsPage() {
                           </h3>
                           <p className="text-muted-foreground">{formData.bio || 'No bio provided yet.'}</p>
                         </div>
-                        
                         <div className="col-span-full flex gap-2">
                           <Button 
                             variant="outline" 
@@ -922,10 +918,10 @@ export default function SettingsPage() {
                             {t('tabs.appearance')}
                           </Button>
                         </div>
-                      </div>
+                      </div>)
                     ) : (
                       // Edit Mode
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      (<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label htmlFor="first_name">{t('profileInfo.firstName')}</Label>
                           <Input
@@ -935,7 +931,6 @@ export default function SettingsPage() {
                             onChange={handleInputChange}
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label htmlFor="last_name">{t('profileInfo.lastName')}</Label>
                           <Input
@@ -945,7 +940,6 @@ export default function SettingsPage() {
                             onChange={handleInputChange}
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label htmlFor="username">{t('profileInfo.username')}</Label>
                           <Input
@@ -955,7 +949,6 @@ export default function SettingsPage() {
                             onChange={handleInputChange}
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label htmlFor="email">{t('profileInfo.email')} </Label>
                           <Input
@@ -966,7 +959,6 @@ export default function SettingsPage() {
                             className="bg-muted"
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label htmlFor="gender">{t('profileInfo.gender')}</Label>
                           <Select
@@ -986,7 +978,6 @@ export default function SettingsPage() {
                             </SelectContent>
                           </Select>
                         </div>
-
                         <div className="space-y-2">
                           <Label htmlFor="birthday">{t('profileInfo.birthday')}</Label>
                           <Input
@@ -997,7 +988,6 @@ export default function SettingsPage() {
                             onChange={handleInputChange}
                           />
                         </div>
-
                         <div className="col-span-full space-y-2">
                           <Label htmlFor="bio">{t('profileInfo.bio')}</Label>
                           <Textarea
@@ -1009,13 +999,12 @@ export default function SettingsPage() {
                             rows={4}
                           />
                         </div>
-                        
                         <div className="col-span-full flex flex-wrap gap-2">
                           <p className="w-full text-sm text-muted-foreground">
                             {t('profileInfo.otherSettingsNote', {defaultValue: "For language and appearance settings, please use the dedicated tabs in the sidebar."})}
                           </p>
                         </div>
-                      </div>
+                      </div>)
                     )}
                   </TabsContent>
                 </Tabs>

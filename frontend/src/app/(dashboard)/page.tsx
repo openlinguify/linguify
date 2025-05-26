@@ -98,7 +98,8 @@ const UserProfileCard = memo(({
           <Button variant="outline" size="sm" asChild className="font-inter">
             <Link
               href="/settings"
-              className="bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 text-white hover:text-white">
+              className="bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 text-white hover:text-white"
+            >
               {t('dashboard.editProfile.editProfileName', {}, "Edit Profile")}
             </Link>
           </Button>

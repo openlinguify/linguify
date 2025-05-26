@@ -101,7 +101,7 @@ const FlashcardsGameButtons = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link href={`/study-sets/${setId}/flashcards`}>
+                  <Link href={`/study-sets/${setId}/flashcards`} legacyBehavior>
                     <Button variant="outline" size="icon">
                       <Maximize size={18} />
                     </Button>

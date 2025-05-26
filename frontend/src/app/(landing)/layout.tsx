@@ -7,7 +7,7 @@ import { useAuthContext } from "@/core/auth/AuthProvider";
 import { LanguageProvider } from "@/core/i18n/i18nProvider";
 import { Navbar } from "./_components/Navbar";
 import { Footer } from "./_components/Footer";
-import { CookieBanner, CookieTestPanel } from "@/components/cookies";
+import { CookieBanner } from "@/components/cookies";
 
 export default function LandingLayoutClient({
   children,
@@ -32,7 +32,6 @@ export default function LandingLayoutClient({
         <main className="flex-grow">{children}</main>
         <Footer />
         <CookieBanner />
-        {process.env.NODE_ENV === 'development' && <CookieTestPanel />}
       </div>
     </LanguageProvider>
   );

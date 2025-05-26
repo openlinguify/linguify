@@ -256,268 +256,267 @@ const ModernTheoryWrapper: React.FC<TheoryWrapperProps> = ({
             </div>
           </div>
         </div>
-
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="space-y-6"
-        >
-          {/* Title Card */}
-          <Card className="border-green-200">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-green-600 flex items-center justify-center gap-3">
-                {title}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleSpeak(title)}
-                  className="p-2"
-                >
-                  <Volume2 className="w-4 h-4" />
-                </Button>
-              </CardTitle>
-            </CardHeader>
-          </Card>
-
-          {/* Content Card with Tabs */}
-          <Card className="overflow-hidden border border-gray-100 shadow-sm">
-            <div className="p-4 space-y-4">
-              {/* Section tabs */}
-              <Tabs defaultValue="content" value={currentTab} onValueChange={(value) => {
-                setCurrentTab(value);
-                markAsRead(value);
-              }}>
-                <TabsList className="w-full grid grid-cols-4 bg-gray-50 rounded-lg p-1">
-                  <TabsTrigger value="content" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-xs py-1">
-                    <div className="flex items-center">
-                      <FileText className="h-3 w-3 mr-1" />
-                      <span>Contenu</span>
-                      {readSections.includes('content') && (
-                        <CheckCircle className="h-2 w-2 ml-1 text-green-500" />
-                      )}
-                    </div>
-                  </TabsTrigger>
-
-                  <TabsTrigger value="formula" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-xs py-1">
-                    <div className="flex items-center">
-                      <Code className="h-3 w-3 mr-1" />
-                      <span>Formule</span>
-                      {readSections.includes('formula') && (
-                        <CheckCircle className="h-2 w-2 ml-1 text-green-500" />
-                      )}
-                    </div>
-                  </TabsTrigger>
-
-                  <TabsTrigger value="examples" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-xs py-1">
-                    <div className="flex items-center">
-                      <BookOpen className="h-3 w-3 mr-1" />
-                      <span>Exemples</span>
-                      {readSections.includes('examples') && (
-                        <CheckCircle className="h-2 w-2 ml-1 text-green-500" />
-                      )}
-                    </div>
-                  </TabsTrigger>
-
-                  <TabsTrigger value="exceptions" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-xs py-1">
-                    <div className="flex items-center">
-                      <AlertTriangle className="h-3 w-3 mr-1" />
-                      <span>Exceptions</span>
-                      {readSections.includes('exceptions') && (
-                        <CheckCircle className="h-2 w-2 ml-1 text-green-500" />
-                      )}
-                    </div>
-                  </TabsTrigger>
-                </TabsList>
-
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={currentTab}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                    className="mt-3"
+        {/* Main Content */}
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-6"
+          >
+            {/* Title Card */}
+            <Card className="border-green-200">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl font-bold text-green-600 flex items-center justify-center gap-3">
+                  {title}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleSpeak(title)}
+                    className="p-2"
                   >
-                    <TabsContent value="content" className="focus:outline-none mt-0">
-                      <div className="bg-white rounded-lg overflow-hidden">
-                        {/* Title */}
-                        <div className="border-b border-gray-100 p-3 flex justify-between items-center">
-                          <h2 className="text-sm font-semibold text-gray-800">
-                            Règle grammaticale : {title}
-                          </h2>
-                          <button
-                            onClick={() => handleSpeak(getLanguageContent('content'))}
-                            className="text-green-600 hover:text-green-800 focus:outline-none"
-                            aria-label="Écouter le contenu"
-                          >
-                            <Volume2 className="h-3 w-3" />
-                          </button>
-                        </div>
+                    <Volume2 className="w-4 h-4" />
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+            </Card>
 
-                        {/* Content */}
-                        <div className="p-3">
-                          {getLanguageContent('content') ? (
-                            <div className="space-y-2">
-                              {getLanguageContent('content')
-                                .split(/\r?\n/)
-                                .filter(line => line.trim() !== '')
-                                .map((line: string, index: number) => (
-                                  <p key={index} className="text-sm text-gray-700">{line}</p>
-                                ))}
-                            </div>
-                          ) : (
-                            <p className="text-xs text-gray-500 italic">Aucun contenu disponible</p>
-                          )}
-                        </div>
-
-                        {/* Explanation */}
-                        <div className="bg-gray-50 p-3 mt-2 rounded-lg">
-                          <h3 className="text-sm font-semibold mb-2">Explication</h3>
-                          {getLanguageContent('explanation') ? (
-                            <div className="space-y-2">
-                              {getLanguageContent('explanation')
-                                .split(/\r?\n/)
-                                .filter(line => line.trim() !== '')
-                                .map((line: string, index: number) => (
-                                  <p key={index} className="text-xs text-gray-700">{line}</p>
-                                ))}
-                            </div>
-                          ) : (
-                            <p className="text-xs text-gray-500 italic">Aucune explication disponible</p>
-                          )}
-                        </div>
+            {/* Content Card with Tabs */}
+            <Card className="overflow-hidden border border-gray-100 shadow-sm">
+              <div className="p-4 space-y-4">
+                {/* Section tabs */}
+                <Tabs defaultValue="content" value={currentTab} onValueChange={(value) => {
+                  setCurrentTab(value);
+                  markAsRead(value);
+                }}>
+                  <TabsList className="w-full grid grid-cols-4 bg-gray-50 rounded-lg p-1">
+                    <TabsTrigger value="content" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-xs py-1">
+                      <div className="flex items-center">
+                        <FileText className="h-3 w-3 mr-1" />
+                        <span>Contenu</span>
+                        {readSections.includes('content') && (
+                          <CheckCircle className="h-2 w-2 ml-1 text-green-500" />
+                        )}
                       </div>
-                    </TabsContent>
+                    </TabsTrigger>
 
-                    <TabsContent value="formula" className="focus:outline-none mt-0">
-                      <div className="bg-white rounded-lg overflow-hidden">
-                        <div className="border-b border-gray-100 p-3 flex justify-between items-center">
-                          <h2 className="text-sm font-semibold text-gray-800">Formule</h2>
-                          <button
-                            onClick={() => handleSpeak(getLanguageContent('formula'))}
-                            className="text-green-600 hover:text-green-800 focus:outline-none"
-                          >
-                            <Volume2 className="h-3 w-3" />
-                          </button>
-                        </div>
-                        <div className="p-3">
-                          {getLanguageContent('formula') ? (
-                            <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-                              {getLanguageContent('formula')
-                                .split(/\r?\n/)
-                                .filter(line => line.trim() !== '')
-                                .map((line: string, index: number) => (
-                                  <p key={index} className="text-sm text-gray-800 mb-1">{line}</p>
-                                ))}
-                            </div>
-                          ) : (
-                            <Alert className="p-2">
-                              <AlertCircle className="h-3 w-3" />
-                              <AlertDescription className="text-xs">Aucune formule disponible pour ce sujet.</AlertDescription>
-                            </Alert>
-                          )}
-                        </div>
+                    <TabsTrigger value="formula" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-xs py-1">
+                      <div className="flex items-center">
+                        <Code className="h-3 w-3 mr-1" />
+                        <span>Formule</span>
+                        {readSections.includes('formula') && (
+                          <CheckCircle className="h-2 w-2 ml-1 text-green-500" />
+                        )}
                       </div>
-                    </TabsContent>
+                    </TabsTrigger>
 
-                    <TabsContent value="examples" className="focus:outline-none mt-0">
-                      <div className="bg-white rounded-lg overflow-hidden">
-                        <div className="border-b border-gray-100 p-3 flex justify-between items-center">
-                          <h2 className="text-sm font-semibold text-gray-800">Exemples</h2>
-                          <button
-                            onClick={() => handleSpeak(getLanguageContent('example'))}
-                            className="text-green-600 hover:text-green-800 focus:outline-none"
-                          >
-                            <Volume2 className="h-3 w-3" />
-                          </button>
-                        </div>
-                        <div className="p-3">
-                          {getLanguageContent('example') ? (
-                            <div className="p-3 bg-green-50 rounded-lg border border-green-100">
-                              {getLanguageContent('example')
-                                .split(/\r?\n/)
-                                .filter(line => line.trim() !== '')
-                                .map((line: string, index: number) => (
-                                  <p key={index} className="text-sm text-gray-800 mb-1">{line}</p>
-                                ))}
-                            </div>
-                          ) : (
-                            <Alert className="p-2">
-                              <AlertCircle className="h-3 w-3" />
-                              <AlertDescription className="text-xs">Aucun exemple disponible pour ce sujet.</AlertDescription>
-                            </Alert>
-                          )}
-                        </div>
+                    <TabsTrigger value="examples" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-xs py-1">
+                      <div className="flex items-center">
+                        <BookOpen className="h-3 w-3 mr-1" />
+                        <span>Exemples</span>
+                        {readSections.includes('examples') && (
+                          <CheckCircle className="h-2 w-2 ml-1 text-green-500" />
+                        )}
                       </div>
-                    </TabsContent>
+                    </TabsTrigger>
 
-                    <TabsContent value="exceptions" className="focus:outline-none mt-0">
-                      <div className="bg-white rounded-lg overflow-hidden">
-                        <div className="border-b border-gray-100 p-3 flex justify-between items-center">
-                          <h2 className="text-sm font-semibold text-gray-800">Exceptions</h2>
-                          <button
-                            onClick={() => handleSpeak(getLanguageContent('exception'))}
-                            className="text-green-600 hover:text-green-800 focus:outline-none"
-                          >
-                            <Volume2 className="h-3 w-3" />
-                          </button>
-                        </div>
-                        <div className="p-3">
-                          {getLanguageContent('exception') ? (
-                            <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
-                              {getLanguageContent('exception')
-                                .split(/\r?\n/)
-                                .filter(line => line.trim() !== '')
-                                .map((line: string, index: number) => (
-                                  <p key={index} className="text-sm text-gray-800 mb-1">{line}</p>
-                                ))}
-                            </div>
-                          ) : (
-                            <Alert className="p-2">
-                              <AlertCircle className="h-3 w-3" />
-                              <AlertDescription className="text-xs">Aucune exception notée pour ce sujet.</AlertDescription>
-                            </Alert>
-                          )}
-                        </div>
+                    <TabsTrigger value="exceptions" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-xs py-1">
+                      <div className="flex items-center">
+                        <AlertTriangle className="h-3 w-3 mr-1" />
+                        <span>Exceptions</span>
+                        {readSections.includes('exceptions') && (
+                          <CheckCircle className="h-2 w-2 ml-1 text-green-500" />
+                        )}
                       </div>
-                    </TabsContent>
-                  </motion.div>
-                </AnimatePresence>
-              </Tabs>
-            </div>
-          </Card>
+                    </TabsTrigger>
+                  </TabsList>
 
-          {/* Completion */}
-          {!isComplete ? (
-            <div className="text-center">
-              <Button
-                size="lg"
-                onClick={handleComplete}
-                className="px-8 bg-green-600 hover:bg-green-700"
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentTab}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                      className="mt-3"
+                    >
+                      <TabsContent value="content" className="focus:outline-none mt-0">
+                        <div className="bg-white rounded-lg overflow-hidden">
+                          {/* Title */}
+                          <div className="border-b border-gray-100 p-3 flex justify-between items-center">
+                            <h2 className="text-sm font-semibold text-gray-800">
+                              Règle grammaticale : {title}
+                            </h2>
+                            <button
+                              onClick={() => handleSpeak(getLanguageContent('content'))}
+                              className="text-green-600 hover:text-green-800 focus:outline-none"
+                              aria-label="Écouter le contenu"
+                            >
+                              <Volume2 className="h-3 w-3" />
+                            </button>
+                          </div>
+
+                          {/* Content */}
+                          <div className="p-3">
+                            {getLanguageContent('content') ? (
+                              <div className="space-y-2">
+                                {getLanguageContent('content')
+                                  .split(/\r?\n/)
+                                  .filter(line => line.trim() !== '')
+                                  .map((line: string, index: number) => (
+                                    <p key={index} className="text-sm text-gray-700">{line}</p>
+                                  ))}
+                              </div>
+                            ) : (
+                              <p className="text-xs text-gray-500 italic">Aucun contenu disponible</p>
+                            )}
+                          </div>
+
+                          {/* Explanation */}
+                          <div className="bg-gray-50 p-3 mt-2 rounded-lg">
+                            <h3 className="text-sm font-semibold mb-2">Explication</h3>
+                            {getLanguageContent('explanation') ? (
+                              <div className="space-y-2">
+                                {getLanguageContent('explanation')
+                                  .split(/\r?\n/)
+                                  .filter(line => line.trim() !== '')
+                                  .map((line: string, index: number) => (
+                                    <p key={index} className="text-xs text-gray-700">{line}</p>
+                                  ))}
+                              </div>
+                            ) : (
+                              <p className="text-xs text-gray-500 italic">Aucune explication disponible</p>
+                            )}
+                          </div>
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="formula" className="focus:outline-none mt-0">
+                        <div className="bg-white rounded-lg overflow-hidden">
+                          <div className="border-b border-gray-100 p-3 flex justify-between items-center">
+                            <h2 className="text-sm font-semibold text-gray-800">Formule</h2>
+                            <button
+                              onClick={() => handleSpeak(getLanguageContent('formula'))}
+                              className="text-green-600 hover:text-green-800 focus:outline-none"
+                            >
+                              <Volume2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                          <div className="p-3">
+                            {getLanguageContent('formula') ? (
+                              <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                                {getLanguageContent('formula')
+                                  .split(/\r?\n/)
+                                  .filter(line => line.trim() !== '')
+                                  .map((line: string, index: number) => (
+                                    <p key={index} className="text-sm text-gray-800 mb-1">{line}</p>
+                                  ))}
+                              </div>
+                            ) : (
+                              <Alert className="p-2">
+                                <AlertCircle className="h-3 w-3" />
+                                <AlertDescription className="text-xs">Aucune formule disponible pour ce sujet.</AlertDescription>
+                              </Alert>
+                            )}
+                          </div>
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="examples" className="focus:outline-none mt-0">
+                        <div className="bg-white rounded-lg overflow-hidden">
+                          <div className="border-b border-gray-100 p-3 flex justify-between items-center">
+                            <h2 className="text-sm font-semibold text-gray-800">Exemples</h2>
+                            <button
+                              onClick={() => handleSpeak(getLanguageContent('example'))}
+                              className="text-green-600 hover:text-green-800 focus:outline-none"
+                            >
+                              <Volume2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                          <div className="p-3">
+                            {getLanguageContent('example') ? (
+                              <div className="p-3 bg-green-50 rounded-lg border border-green-100">
+                                {getLanguageContent('example')
+                                  .split(/\r?\n/)
+                                  .filter(line => line.trim() !== '')
+                                  .map((line: string, index: number) => (
+                                    <p key={index} className="text-sm text-gray-800 mb-1">{line}</p>
+                                  ))}
+                              </div>
+                            ) : (
+                              <Alert className="p-2">
+                                <AlertCircle className="h-3 w-3" />
+                                <AlertDescription className="text-xs">Aucun exemple disponible pour ce sujet.</AlertDescription>
+                              </Alert>
+                            )}
+                          </div>
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="exceptions" className="focus:outline-none mt-0">
+                        <div className="bg-white rounded-lg overflow-hidden">
+                          <div className="border-b border-gray-100 p-3 flex justify-between items-center">
+                            <h2 className="text-sm font-semibold text-gray-800">Exceptions</h2>
+                            <button
+                              onClick={() => handleSpeak(getLanguageContent('exception'))}
+                              className="text-green-600 hover:text-green-800 focus:outline-none"
+                            >
+                              <Volume2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                          <div className="p-3">
+                            {getLanguageContent('exception') ? (
+                              <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
+                                {getLanguageContent('exception')
+                                  .split(/\r?\n/)
+                                  .filter(line => line.trim() !== '')
+                                  .map((line: string, index: number) => (
+                                    <p key={index} className="text-sm text-gray-800 mb-1">{line}</p>
+                                  ))}
+                              </div>
+                            ) : (
+                              <Alert className="p-2">
+                                <AlertCircle className="h-3 w-3" />
+                                <AlertDescription className="text-xs">Aucune exception notée pour ce sujet.</AlertDescription>
+                              </Alert>
+                            )}
+                          </div>
+                        </div>
+                      </TabsContent>
+                    </motion.div>
+                  </AnimatePresence>
+                </Tabs>
+              </div>
+            </Card>
+
+            {/* Completion */}
+            {!isComplete ? (
+              <div className="text-center">
+                <Button
+                  size="lg"
+                  onClick={handleComplete}
+                  className="px-8 bg-green-600 hover:bg-green-700"
+                >
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  J'ai terminé la lecture
+                </Button>
+              </div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center p-6 bg-green-50 border border-green-200 rounded-lg"
               >
-                <CheckCircle className="w-5 h-5 mr-2" />
-                J'ai terminé la lecture
-              </Button>
-            </div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center p-6 bg-green-50 border border-green-200 rounded-lg"
-            >
-              <Trophy className="w-12 h-12 text-green-500 mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-green-800 mb-2">Excellent travail !</h3>
-              <p className="text-green-700">
-                Vous avez terminé cette leçon de théorie en {formatTime(readingTime)}.
-              </p>
-            </motion.div>
-          )}
-        </motion.div>
+                <Trophy className="w-12 h-12 text-green-500 mx-auto mb-3" />
+                <h3 className="text-lg font-semibold text-green-800 mb-2">Excellent travail !</h3>
+                <p className="text-green-700">
+                  Vous avez terminé cette leçon de théorie en {formatTime(readingTime)}.
+                </p>
+              </motion.div>
+            )}
+          </motion.div>
+        </div>
       </div>
-    </div>
     );
   };
 

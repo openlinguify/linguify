@@ -131,7 +131,10 @@ export default function TermsFooter() {
               </span>
             </TermsSummaryDrawer>
             
-            <Link href="/annexes/legal" className="hover:text-white transition-colors">
+            <Link
+              href="/annexes/legal"
+              className="hover:text-white transition-colors"
+              legacyBehavior>
               {terms.legalNotice}
             </Link>
             
@@ -142,7 +145,10 @@ export default function TermsFooter() {
               {terms.privacyPolicy}
             </button>
             
-            <Link href="/contact" className="hover:text-white transition-colors">
+            <Link
+              href="/contact"
+              className="hover:text-white transition-colors"
+              legacyBehavior>
               {terms.contact}
             </Link>
           </nav>
@@ -155,7 +161,6 @@ export default function TermsFooter() {
           </p>
         </div>
       </div>
-      
       <TermsModal
         isOpen={isTermsModalOpen}
         onClose={() => setIsTermsModalOpen(false)}
@@ -165,7 +170,6 @@ export default function TermsFooter() {
         version={CURRENT_TERMS_VERSION}
         locale={currentLocale}
       />
-
       {/* Placeholder pour la future fenêtre de politique de confidentialité */}
       <TermsModal
         isOpen={isPrivacyModalOpen}

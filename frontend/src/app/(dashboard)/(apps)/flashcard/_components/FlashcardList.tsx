@@ -970,7 +970,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
           </>
         ) : (
           /* Actions dropdown - when no selection */
-          <DropdownMenu>
+          (<DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
                 <MoreHorizontal className="h-4 w-4 mr-2" />
@@ -1008,7 +1008,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu>)
         )}
       </div>
     </div>

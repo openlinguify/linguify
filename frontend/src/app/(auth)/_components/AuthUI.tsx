@@ -47,7 +47,6 @@ export function AuthUI({ mode, error, isLoading, onSubmit }: AuthUIProps) {
         <h2 className="text-2xl font-semibold text-center">{text.main}</h2>
         <p className="text-sm text-gray-600">{text.subtitle}</p>
       </AuthCardHeader>
-
       <AuthCardContent>
         {error && (
           <Alert variant="destructive" className="mb-4">
@@ -98,7 +97,10 @@ export function AuthUI({ mode, error, isLoading, onSubmit }: AuthUIProps) {
 
         <p className="mt-4 text-center text-sm text-gray-600">
           {text.alternate}{' '}
-          <Link href={text.alternatePath} className="text-sky-600 hover:text-sky-700">
+          <Link
+            href={text.alternatePath}
+            className="text-sky-600 hover:text-sky-700"
+            legacyBehavior>
             {text.alternateLink}
           </Link>
         </p>

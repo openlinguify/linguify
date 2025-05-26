@@ -247,23 +247,24 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Link href="/register">
-              <Button size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 font-medium px-8">
+            <Button asChild size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 font-medium px-8">
+              <Link href="/register">
                 {t('hero.start_button', 'Commencer gratuitement')}
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="/features">
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-white border-white bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all font-medium px-8 flex items-center"
-              >
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="text-white border-white bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all font-medium px-8 flex items-center"
+            >
+              <Link href="/features">
                 <Globe className="mr-2 h-5 w-5" />
                 {t('hero.discover_button', 'Découvrir nos applications')}
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </motion.div>
 
           {/* Interactive app demo */}
@@ -311,7 +312,6 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-
       {/* Language Selector */}
       <section className="py-10 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -339,7 +339,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Statistics Section - Improved visual presentation */}
       <section className="py-16 bg-gradient-to-b from-indigo-50 to-white flex justify-center items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -362,10 +361,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-
-
-
       {/* Features Section - Enhanced with animations */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -427,20 +422,17 @@ export default function Home() {
             variants={fadeIn}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
-            <Link href="/features">
-              <Button variant="outline" size="lg" className="text-indigo-600 border-indigo-600 hover:bg-indigo-50">
+            <Button asChild variant="outline" size="lg" className="text-indigo-600 border-indigo-600 hover:bg-indigo-50">
+              <Link href="/features">
                 {t('features.learn_more', 'En savoir plus sur nos fonctionnalités')}
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </motion.div>
         </div>
       </section>
-
       {/* New Info Component */}
       <NewInfo variant="compact" />
-
-
       {/* Testimonials Section - Improved with animated cards */}
       <section className="py-20 bg-indigo-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -513,7 +505,6 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-
       {/* Pricing Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -592,17 +583,18 @@ export default function Home() {
                   </div>
 
                   <div className="mt-8">
-                    <Link href={index === 2 ? "/contact" : "/register"}>
-                      <Button
-                        className={`w-full ${plan.popular
-                            ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                            : 'bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50'
-                          }`}
-                        size="lg"
-                      >
+                    <Button
+                      asChild
+                      className={`w-full ${plan.popular
+                          ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                          : 'bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50'
+                        }`}
+                      size="lg"
+                    >
+                      <Link href={index === 2 ? "/contact" : "/register"}>
                         {plan.cta}
-                      </Button>
-                    </Link>
+                      </Link>
+                    </Button>
                   </div>
                 </div>
               </motion.div>
@@ -610,7 +602,6 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-
       {/* Call-to-Action Section */}
       <section className="py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -641,16 +632,15 @@ export default function Home() {
             variants={fadeIn}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Link href="/register">
-              <Button size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 font-medium px-8">
+            <Button asChild size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 font-medium px-8">
+              <Link href="/register">
                 {t('cta.start_button', 'Commencer gratuitement')}
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </motion.div>
         </div>
       </section>
-
       {/* Language Switcher (desktop only) */}
       <div className="fixed bottom-6 right-6 hidden md:block z-10">
         <LanguageSwitcher
@@ -660,6 +650,5 @@ export default function Home() {
         />
       </div>
     </div>
-
   );
 }

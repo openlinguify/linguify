@@ -413,7 +413,6 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
                 </Badge>
                 <div className="h-px flex-1 bg-gradient-to-r from-indigo-600/30 via-purple-600/30 to-pink-400/30 ml-4"></div>
               </div>
-              
               {/* Liste des leçons pour ce niveau */}
               <div className={layout === "grid" 
                 ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6` 
@@ -435,14 +434,13 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
                       <div className={isCompactView ? "p-3" : "p-6"}>
                         {isCompactView ? (
                           // Compact view
-                          <div className="flex items-center gap-2">
+                          (<div className="flex items-center gap-2">
                             <div className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 
                               ${lessonStatus === 'completed' ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-300' : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'}`}>
                               {lessonStatus === 'completed' ? 
                                 <CheckCircle className="h-4 w-4" /> : 
                                 getLessonTypeIcon(lesson.lesson_type)}
                             </div>
-
                             <div className="flex-1 min-w-0">
                               <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                                 {lesson.title}
@@ -451,22 +449,20 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
                                 {lesson.unitTitle}
                               </p>
                             </div>
-                            
                             {expandedLessonId === lesson.id ?
                               <ChevronDown className="h-4 w-4 text-purple-600 dark:text-purple-300" /> :
                               <ChevronRight className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                             }
-                          </div>
+                          </div>)
                         ) : (
                           // Full view
-                          <div className="flex items-start gap-4">
+                          (<div className="flex items-start gap-4">
                             <div className={`flex items-center justify-center w-12 h-12 rounded-full shrink-0 
                               ${lessonStatus === 'completed' ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-300' : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'}`}>
                               {lessonStatus === 'completed' ? 
                                 <CheckCircle className="h-5 w-5" /> : 
                                 getLessonTypeIcon(lesson.lesson_type)}
                             </div>
-
                             <div className="flex-1 min-w-0">
                               <div className="flex items-start justify-between gap-4">
                                 <div>
@@ -525,10 +521,9 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
                                 )}
                               </div>
                             </div>
-                          </div>
+                          </div>)
                         )}
                       </div>
-                      
                       {/* Content list (visible when lesson is expanded) */}
                       {expandedLessonId === lesson.id && (
                         <div className="p-2 border-t-2 border-purple-200 dark:border-purple-800">
@@ -593,253 +588,248 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
         }, 0);
         
         return (
-        <div key={level} className="relative">
-          {/* Level header */}
-              <div className="flex items-center mb-4 learn-level-gradient px-4 py-2 rounded-xl border border-white/50 dark:border-purple-500/20 learn-card-shadow min-h-0">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
-                  Niveau {level}
-                </h2>
-                <Badge className="ml-4 bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/60 dark:to-indigo-900/60 text-purple-800 dark:text-purple-200 font-semibold px-3 py-1 shadow-sm">
-                  {levelUnits.length} unité{levelUnits.length > 1 ? 's' : ''}
-                </Badge>
-                <div className="h-px flex-1 bg-gradient-to-r from-indigo-600/30 via-purple-600/30 to-pink-400/30 ml-4"></div>
-              </div>
-
-          {/* Units - respects layout prop */}
-          <div className={layout === "grid" 
-            ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6` 
-            : "space-y-6"
-          }>
-            {levelUnits.map((unit) => (
-              <div key={unit.id} className="space-y-4">
-                {/* Unit card */}
-                <Card
-                  className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-200 dark:border-gray-700 cursor-pointer"
-                  onClick={() => handleUnitClick(unit.id)}
-                >
-                  <div className="p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-14 h-14 bg-purple-100 dark:bg-purple-900/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <BookOpen className="text-purple-600 dark:text-purple-400" size={28} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                {unit.title}
-                              </h3>
-                              {expandedUnitId === unit.id ? (
-                                <ChevronDown className="w-5 h-5 text-gray-400" />
-                              ) : (
-                                <ChevronRight className="w-5 h-5 text-gray-400" />
-                              )}
+          <div key={level} className="relative">
+            {/* Level header */}
+            <div className="flex items-center mb-4 learn-level-gradient px-4 py-2 rounded-xl border border-white/50 dark:border-purple-500/20 learn-card-shadow min-h-0">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-transparent bg-clip-text">
+                Niveau {level}
+              </h2>
+              <Badge className="ml-4 bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/60 dark:to-indigo-900/60 text-purple-800 dark:text-purple-200 font-semibold px-3 py-1 shadow-sm">
+                {levelUnits.length} unité{levelUnits.length > 1 ? 's' : ''}
+              </Badge>
+              <div className="h-px flex-1 bg-gradient-to-r from-indigo-600/30 via-purple-600/30 to-pink-400/30 ml-4"></div>
+            </div>
+            {/* Units - respects layout prop */}
+            <div className={layout === "grid" 
+              ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6` 
+              : "space-y-6"
+            }>
+              {levelUnits.map((unit) => (
+                <div key={unit.id} className="space-y-4">
+                  {/* Unit card */}
+                  <Card
+                    className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-200 dark:border-gray-700 cursor-pointer"
+                    onClick={() => handleUnitClick(unit.id)}
+                  >
+                    <div className="p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-14 h-14 bg-purple-100 dark:bg-purple-900/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <BookOpen className="text-purple-600 dark:text-purple-400" size={28} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between mb-3">
+                            <div>
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                  {unit.title}
+                                </h3>
+                                {expandedUnitId === unit.id ? (
+                                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                                ) : (
+                                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                                )}
+                              </div>
+                              <span className="text-sm text-gray-500 dark:text-gray-400">
+                                {unit.lesson_count || unit.lessons_count || loadedLessons[unit.id]?.length || 0} leçons • {unit.level}
+                              </span>
                             </div>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">
-                              {unit.lesson_count || unit.lessons_count || loadedLessons[unit.id]?.length || 0} leçons • {unit.level}
+                            <span className="text-sm text-gray-500 dark:text-gray-400 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full font-medium">
+                              {unitProgress[unit.id] || 0}% complété
                             </span>
                           </div>
-                          <span className="text-sm text-gray-500 dark:text-gray-400 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full font-medium">
-                            {unitProgress[unit.id] || 0}% complété
-                          </span>
-                        </div>
-                        {unit.description ? (
-                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                            {unit.description}
-                          </p>
-                        ) : (
-                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                            Cliquez pour voir les leçons
-                          </p>
-                        )}
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
-                          <div 
-                            className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-500 ease-out" 
-                            style={{width: `${unitProgress[unit.id] || 0}%`}}
-                          ></div>
+                          {unit.description ? (
+                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                              {unit.description}
+                            </p>
+                          ) : (
+                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                              Cliquez pour voir les leçons
+                            </p>
+                          )}
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
+                            <div 
+                              className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-500 ease-out" 
+                              style={{width: `${unitProgress[unit.id] || 0}%`}}
+                            ></div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
-                {/* Lessons (visible when unit is expanded) */}
-                {expandedUnitId === unit.id && (
-                  <div className="pl-6 space-y-4">
-                    {loadingLessonMap[unit.id] ? (
-                      <div className="flex justify-center py-4">
-                        <Loader2 className="h-6 w-6 animate-spin text-purple-500" />
-                      </div>
-                    ) : loadedLessons[unit.id]?.length > 0 ? (
-                      // Lessons list
-                      <div className={layout === "grid" 
-                        ? `grid grid-cols-1 md:grid-cols-2 gap-4` 
-                        : "space-y-4"
-                      }>
-                        {loadedLessons[unit.id].map(lesson => {
-                          const lessonStatus = lessonProgress[lesson.id]?.status || 'not_started';
-                          const completionPercentage = lessonProgress[lesson.id]?.completion_percentage || 0;
-                          
-                          return (
-                            <div key={lesson.id} className="space-y-2">
-                              {/* Lesson card with hover prefetching for better performance */}
-                              <Card
-                                className={`transform hover:shadow-md cursor-pointer bg-white dark:bg-transparent ${
-                                  lessonStatus === 'completed' ? 'border-l-4 border-green-500' :
-                                  lessonStatus === 'in_progress' ? 'border-l-4 border-amber-500' : ''
-                                }`}
-                                onClick={() => handleLessonClick(lesson.id, unit.id)}
-                                onMouseEnter={() => handleLessonHover(lesson.id)}
-                              >
-                                <div className={isCompactView ? "p-3" : "p-6"}>
-                                  {isCompactView ? (
-                                    // Compact view
-                                    <div className="flex items-center gap-2">
-                                      <div className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 
-                                        ${lessonStatus === 'completed' ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-300' : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'}`}>
-                                        {lessonStatus === 'completed' ? 
-                                          <CheckCircle className="h-4 w-4" /> : 
-                                          getLessonTypeIcon(lesson.lesson_type)}
-                                      </div>
+                  {/* Lessons (visible when unit is expanded) */}
+                  {expandedUnitId === unit.id && (
+                    <div className="pl-6 space-y-4">
+                      {loadingLessonMap[unit.id] ? (
+                        <div className="flex justify-center py-4">
+                          <Loader2 className="h-6 w-6 animate-spin text-purple-500" />
+                        </div>
+                      ) : loadedLessons[unit.id]?.length > 0 ? (
+                        // Lessons list
+                        (<div className={layout === "grid" 
+                          ? `grid grid-cols-1 md:grid-cols-2 gap-4` 
+                          : "space-y-4"
+                        }>
+                          {loadedLessons[unit.id].map(lesson => {
+                            const lessonStatus = lessonProgress[lesson.id]?.status || 'not_started';
+                            const completionPercentage = lessonProgress[lesson.id]?.completion_percentage || 0;
+                            
+                            return (
+                              <div key={lesson.id} className="space-y-2">
+                                {/* Lesson card with hover prefetching for better performance */}
+                                <Card
+                                  className={`transform hover:shadow-md cursor-pointer bg-white dark:bg-transparent ${
+                                    lessonStatus === 'completed' ? 'border-l-4 border-green-500' :
+                                    lessonStatus === 'in_progress' ? 'border-l-4 border-amber-500' : ''
+                                  }`}
+                                  onClick={() => handleLessonClick(lesson.id, unit.id)}
+                                  onMouseEnter={() => handleLessonHover(lesson.id)}
+                                >
+                                  <div className={isCompactView ? "p-3" : "p-6"}>
+                                    {isCompactView ? (
+                                      // Compact view
+                                      (<div className="flex items-center gap-2">
+                                        <div className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 
+                                          ${lessonStatus === 'completed' ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-300' : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'}`}>
+                                          {lessonStatus === 'completed' ? 
+                                            <CheckCircle className="h-4 w-4" /> : 
+                                            getLessonTypeIcon(lesson.lesson_type)}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                            {lesson.title}
+                                          </h3>
+                                        </div>
+                                        {expandedLessonId === lesson.id ?
+                                          <ChevronDown className="h-4 w-4 text-purple-600 dark:text-purple-300" /> :
+                                          <ChevronRight className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                                        }
+                                      </div>)
+                                    ) : (
+                                      // Full view
+                                      (<div className="flex items-start gap-4">
+                                        <div className={`flex items-center justify-center w-12 h-12 rounded-full shrink-0 
+                                          ${lessonStatus === 'completed' ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-300' : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'}`}>
+                                          {lessonStatus === 'completed' ? 
+                                            <CheckCircle className="h-5 w-5" /> : 
+                                            getLessonTypeIcon(lesson.lesson_type)}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <div className="flex items-start justify-between gap-4">
+                                            <div>
+                                              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                                                {lesson.title}
+                                              </h3>
+                                              
+                                              {lesson.description && (
+                                                <p className="text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
+                                                  {lesson.description}
+                                                </p>
+                                              )}
 
-                                      <div className="flex-1 min-w-0">
-                                        <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                                          {lesson.title}
-                                        </h3>
-                                      </div>
-                                      
-                                      {expandedLessonId === lesson.id ?
-                                        <ChevronDown className="h-4 w-4 text-purple-600 dark:text-purple-300" /> :
-                                        <ChevronRight className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                                      }
-                                    </div>
-                                  ) : (
-                                    // Full view
-                                    <div className="flex items-start gap-4">
-                                      <div className={`flex items-center justify-center w-12 h-12 rounded-full shrink-0 
-                                        ${lessonStatus === 'completed' ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-300' : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'}`}>
-                                        {lessonStatus === 'completed' ? 
-                                          <CheckCircle className="h-5 w-5" /> : 
-                                          getLessonTypeIcon(lesson.lesson_type)}
-                                      </div>
-
-                                      <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between gap-4">
-                                          <div>
-                                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                                              {lesson.title}
-                                            </h3>
+                                              {completionPercentage > 0 && (
+                                                <div className="mt-2">
+                                                  <Progress
+                                                    className="h-1.5"
+                                                    value={completionPercentage}
+                                                  />
+                                                </div>
+                                              )}
+                                            </div>
                                             
-                                            {lesson.description && (
-                                              <p className="text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
-                                                {lesson.description}
-                                              </p>
+                                            {expandedLessonId === lesson.id ?
+                                              <ChevronDown className="h-5 w-5 text-purple-600 dark:text-purple-300" /> :
+                                              <ChevronRight className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                                            }
+                                          </div>
+
+                                          <div className="flex flex-wrap items-center gap-3 mt-4">
+                                            <span className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                                              <Clock className="h-4 w-4" />
+                                              {lesson.estimated_duration} min
+                                            </span>
+
+                                            <span className="flex items-center gap-2 text-sm font-medium px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">
+                                              {getLessonTypeIcon(lesson.lesson_type)}
+                                              {lesson.lesson_type}
+                                            </span>
+
+                                            {lessonStatus === 'in_progress' && (
+                                              <span className="flex items-center gap-1 text-sm font-medium px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300">
+                                                In Progress
+                                              </span>
                                             )}
 
-                                            {completionPercentage > 0 && (
-                                              <div className="mt-2">
-                                                <Progress
-                                                  className="h-1.5"
-                                                  value={completionPercentage}
-                                                />
-                                              </div>
+                                            {lessonStatus === 'completed' && (
+                                              <span className="flex items-center gap-1 text-sm font-medium px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300">
+                                                <CheckCircle className="h-4 w-4 mr-1" />
+                                                Completed
+                                              </span>
                                             )}
                                           </div>
-                                          
-                                          {expandedLessonId === lesson.id ?
-                                            <ChevronDown className="h-5 w-5 text-purple-600 dark:text-purple-300" /> :
-                                            <ChevronRight className="h-5 w-5 text-gray-400 dark:text-gray-500" />
-                                          }
                                         </div>
-
-                                        <div className="flex flex-wrap items-center gap-3 mt-4">
-                                          <span className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                                            <Clock className="h-4 w-4" />
-                                            {lesson.estimated_duration} min
-                                          </span>
-
-                                          <span className="flex items-center gap-2 text-sm font-medium px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">
-                                            {getLessonTypeIcon(lesson.lesson_type)}
-                                            {lesson.lesson_type}
-                                          </span>
-
-                                          {lessonStatus === 'in_progress' && (
-                                            <span className="flex items-center gap-1 text-sm font-medium px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300">
-                                              In Progress
-                                            </span>
-                                          )}
-
-                                          {lessonStatus === 'completed' && (
-                                            <span className="flex items-center gap-1 text-sm font-medium px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300">
-                                              <CheckCircle className="h-4 w-4 mr-1" />
-                                              Completed
-                                            </span>
-                                          )}
-                                        </div>
+                                      </div>)
+                                    )}
+                                  </div>
+                                </Card>
+                                {/* Content list (visible when lesson is expanded) */}
+                                {expandedLessonId === lesson.id && (
+                                  <div className="pl-6 border-2 border-purple-200 dark:border-purple-800 rounded-lg overflow-hidden bg-white dark:bg-transparent p-2">
+                                    {loadingContentMap[lesson.id] ? (
+                                      <div className="p-4 flex justify-center">
+                                        <Loader2 className="h-5 w-5 animate-spin text-purple-500" />
                                       </div>
-                                    </div>
-                                  )}
-                                </div>
-                              </Card>
-
-                              {/* Content list (visible when lesson is expanded) */}
-                              {expandedLessonId === lesson.id && (
-                                <div className="pl-6 border-2 border-purple-200 dark:border-purple-800 rounded-lg overflow-hidden bg-white dark:bg-transparent p-2">
-                                  {loadingContentMap[lesson.id] ? (
-                                    <div className="p-4 flex justify-center">
-                                      <Loader2 className="h-5 w-5 animate-spin text-purple-500" />
-                                    </div>
-                                  ) : loadedContents[lesson.id]?.length > 0 ? (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2">
-                                      {loadedContents[lesson.id].map(content => {
-                                        // Extract title in appropriate language
-                                        const title = getLocalizedContent(content, targetLanguage, 'title', 'Content');
-                                        const contentStatus = contentProgress[content.id]?.status || 'not_started';
-                                        
-                                        return (
-                                          <div
-                                            key={content.id}
-                                            className={`border p-2 rounded-md hover:bg-purple-50 dark:hover:bg-purple-900/20 cursor-pointer flex items-center justify-between
-                                              ${contentStatus === 'completed' ? 'border-green-500 bg-green-50/30 dark:bg-green-900/10' : 
-                                                contentStatus === 'in_progress' ? 'border-amber-500 bg-amber-50/30 dark:bg-amber-900/10' : 
-                                                'border-purple-300 dark:border-purple-700'}`}
-                                            onClick={() => handleContentClick(unit.id, lesson.id, content.id, content.content_type)}
-                                          >
-                                            <div className="flex items-center gap-2">
-                                              <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
-                                                {contentStatus === 'completed' ? 
-                                                  <CheckCircle className="h-3 w-3 text-green-600 dark:text-green-300" /> : 
-                                                  getContentTypeIcon(content.content_type)}
+                                    ) : loadedContents[lesson.id]?.length > 0 ? (
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2">
+                                        {loadedContents[lesson.id].map(content => {
+                                          // Extract title in appropriate language
+                                          const title = getLocalizedContent(content, targetLanguage, 'title', 'Content');
+                                          const contentStatus = contentProgress[content.id]?.status || 'not_started';
+                                          
+                                          return (
+                                            <div
+                                              key={content.id}
+                                              className={`border p-2 rounded-md hover:bg-purple-50 dark:hover:bg-purple-900/20 cursor-pointer flex items-center justify-between
+                                                ${contentStatus === 'completed' ? 'border-green-500 bg-green-50/30 dark:bg-green-900/10' : 
+                                                  contentStatus === 'in_progress' ? 'border-amber-500 bg-amber-50/30 dark:bg-amber-900/10' : 
+                                                  'border-purple-300 dark:border-purple-700'}`}
+                                              onClick={() => handleContentClick(unit.id, lesson.id, content.id, content.content_type)}
+                                            >
+                                              <div className="flex items-center gap-2">
+                                                <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
+                                                  {contentStatus === 'completed' ? 
+                                                    <CheckCircle className="h-3 w-3 text-green-600 dark:text-green-300" /> : 
+                                                    getContentTypeIcon(content.content_type)}
+                                                </div>
+                                                <span className="text-purple-700 dark:text-purple-300 font-medium text-sm">{title}</span>
                                               </div>
-                                              <span className="text-purple-700 dark:text-purple-300 font-medium text-sm">{title}</span>
-                                            </div>
-                                            <ChevronRight className="h-4 w-4 text-purple-400 dark:text-purple-500" />
-                                            </div>
-                                          );
-                                        })}
-                                    </div>
-                                  ) : (
-                                    <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                                      No content available for this lesson
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                        No lessons available for this unit
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
+                                              <ChevronRight className="h-4 w-4 text-purple-400 dark:text-purple-500" />
+                                              </div>
+                                            );
+                                          })}
+                                      </div>
+                                    ) : (
+                                      <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                                        No content available for this lesson
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>)
+                      ) : (
+                        <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                          No lessons available for this unit
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
         );
       })}
     </div>

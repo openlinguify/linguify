@@ -26,7 +26,7 @@ export function withProtectedApi(handler: HandlerFunction) {
       }
 
       // CSRF protection (implement as needed)
-      if (!await validateCsrf(req)) {
+      if (!(await validateCsrf(req))) {
         return NextResponse.json(
           { error: 'Invalid CSRF token' },
           { status: 403 }

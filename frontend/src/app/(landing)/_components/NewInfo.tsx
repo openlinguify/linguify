@@ -186,12 +186,12 @@ const NewInfo: React.FC<NewInfoProps> = ({ t: propT, variant = 'default', curren
                   <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">Cultural Immersion</span>
                   <span className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm font-medium">Grammar Checker</span>
                 </div>
-                <Link href="/contact">
-                  <Button variant="outline" className="hover:bg-indigo-50">
+                <Button asChild variant="outline" className="hover:bg-indigo-50">
+                  <Link href="/contact">
                     {t("future_apps.button", "Join the waitlist")}
                     <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
               
               <div className="mt-8 md:mt-0 md:w-1/3">

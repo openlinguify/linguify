@@ -127,12 +127,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="flex-1 dark:text-white bg-transparent overflow-hidden flex flex-col">
           {pathname.startsWith('/learning') ? (
             // Pour les pages learning, utiliser toute la hauteur
-            <div className="flex-1 flex flex-col overflow-hidden">{children}</div>
+            (<div className="flex-1 flex flex-col overflow-hidden">{children}</div>)
           ) : (
             // Pour les autres pages, padding normal avec scroll
-            <div className="overflow-y-auto">
+            (<div className="overflow-y-auto">
               <div className="pt-6 px-8 pb-8 w-full max-w-7xl mx-auto bg-transparent">{children}</div>
-            </div>
+            </div>)
           )}
         </main>
       </div>
