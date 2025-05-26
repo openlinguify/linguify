@@ -3,16 +3,18 @@
 // src/addons/learning/components/Navigation/ContentTypeRouter.tsx
 
 import React, { useEffect, useState } from 'react';
-import TheoryContent from "../Theory/TheoryContent";
-import VocabularyLesson from "../Exercises/VocabularyLesson";
-import MultipleChoiceQuestion from "../Exercises/MultipleChoiceQuestion";
-import NumberComponent from "../Exercises/Numbers";
+// Modern components
+import ModernTheoryWrapper from "../Exercises/ModernTheoryWrapper";
+import { ModernVocabularyWrapper } from "../Exercises/ModernVocabularyWrapper";
+import { ModernMatchingWrapper } from "../Exercises/ModernMatchingWrapper";
+import ModernFillBlankWrapper from "../Exercises/ModernFillBlankWrapper";
+import { ModernSpeakingWrapper } from "../Exercises/ModernSpeakingWrapper";
+import ModernMCQWrapper from "../Exercises/ModernMCQWrapper";
+import ModernTestRecapWrapper from "../Exercises/ModernTestRecapWrapper";
+import ModernReorderingWrapper from "../Exercises/ModernReorderingWrapper";
+import { ModernNumbersWrapper } from "../Exercises/ModernNumbersWrapper";
+// Legacy components still used for specific cases
 import NumbersGame from "../Exercises/NumbersGame";
-import ReorderingContent from "../Exercises/ReorderingContent";
-import FillBlankExercise from "../Exercises/FillBlankExercise";
-import MatchingExercise from "../Exercises/MatchingExercise";
-import SpeakingPractice from "../Speaking/SpeakingPractice";
-import TestRecap from "../TestRecap";
 import { ContentTypeRouterProps } from "@/addons/learning/types";
 import courseAPI from "@/addons/learning/api/courseAPI";
 import LessonProgressIndicator from "./LessonProgressIndicator";
@@ -216,6 +218,73 @@ export default function ContentTypeRouter({
     setCurrentStep(newStep);
   };
 
+  // Helper functions to adapt API data for modern components
+  const adaptVocabularyData = async () => {
+    try {
+      const apiData = await courseAPI.getVocabularyContent(contentId, language);
+      if (apiData && apiData.results && apiData.results.length > 0) {
+        const vocab = apiData.results[0];
+        return {
+          word: vocab.word || '',
+          translation: vocab.translation || '',
+          pronunciation: vocab.phonetic || '',
+          definition: vocab.definition || '',
+          examples: vocab.example_sentences ? vocab.example_sentences.map((ex: any) => ({
+            sentence: ex.sentence || '',
+            translation: ex.translation || ''
+          })) : [],
+          difficulty: vocab.difficulty || 'beginner',
+          partOfSpeech: vocab.part_of_speech || '',
+          related: []
+        };
+      }
+    } catch (error) {
+      console.error('Error adapting vocabulary data:', error);
+    }
+    return null;
+  };
+
+  const adaptTheoryData = async () => {
+    try {
+      const apiData = await courseAPI.getTheoryContent(contentId, language);
+      if (apiData) {
+        return {
+          title: apiData.title || `Theory Lesson ${contentId}`,
+          language: language,
+          content: {
+            sections: apiData.content ? [{
+              id: "main",
+              title: apiData.title || "Theory",
+              content: apiData.content,
+              examples: apiData.examples || []
+            }] : [],
+            summary: apiData.summary || "Review the concepts above."
+          }
+        };
+      }
+    } catch (error) {
+      console.error('Error adapting theory data:', error);
+    }
+    return null;
+  };
+
+  const adaptMatchingData = async () => {
+    try {
+      const apiData = await courseAPI.getMatchingExercises(contentId, language);
+      if (apiData && apiData.length > 0) {
+        const exercise = apiData[0];
+        return exercise.pairs ? exercise.pairs.map((pair: any, index: number) => ({
+          id: (index + 1).toString(),
+          left: pair.left || '',
+          right: pair.right || ''
+        })) : [];
+      }
+    } catch (error) {
+      console.error('Error adapting matching data:', error);
+    }
+    return [];
+  };
+
   // Common props for all content components
   const commonProps = {
     lessonId: contentId,
@@ -226,6 +295,8 @@ export default function ContentTypeRouter({
     onStepChange: handleStepChange,
     totalSteps
   };
+
+  // Les nouveaux wrappers modernes utilisent directement les props existants
 
   // Create the content component with direct access to the progress indicator
   const renderContent = () => {
@@ -242,39 +313,41 @@ export default function ContentTypeRouter({
       }
     };
 
-    // Route to the correct component based on content type
+    // Route to the correct component based on content type - prioritize modern components
     switch (normalizedType) {
       case 'theory':
-        return <TheoryContent {...propsWithProgressIndicator} />;
+        return <ModernTheoryWrapper {...propsWithProgressIndicator} />;
 
       case 'vocabulary':
       case 'vocabularylist':
-        return <VocabularyLesson {...propsWithProgressIndicator} />;
-
-      case 'multiple choice':
-        return <MultipleChoiceQuestion {...propsWithProgressIndicator} />;
-
-      case 'numbers':
-        return <NumberComponent {...propsWithProgressIndicator} />;
-
-      case 'numbers_game':
-        return <NumbersGame {...propsWithProgressIndicator} />;
-
-      case 'reordering':
-        return <ReorderingContent {...propsWithProgressIndicator} />;
-
-      case 'fill_blank':
-        return <FillBlankExercise {...propsWithProgressIndicator} />;
+        return <ModernVocabularyWrapper {...propsWithProgressIndicator} />;
 
       case 'matching':
-        return <MatchingExercise {...propsWithProgressIndicator} />;
+        return <ModernMatchingWrapper {...propsWithProgressIndicator} />;
+
+      case 'multiple choice':
+      case 'multiple_choice':
+      case 'mcq':
+        return <ModernMCQWrapper {...propsWithProgressIndicator} />;
+
+      case 'numbers':
+        return <ModernNumbersWrapper {...commonProps} />;
+
+      case 'numbers_game':
+        return <NumbersGame lessonId={contentId} language={language} />;
+
+      case 'reordering':
+        return <ModernReorderingWrapper {...propsWithProgressIndicator} />;
+
+      case 'fill_blank':
+        return <ModernFillBlankWrapper {...propsWithProgressIndicator} />;
 
       case 'speaking':
-        return <SpeakingPractice {...propsWithProgressIndicator} />;
+        return <ModernSpeakingWrapper {...propsWithProgressIndicator} />;
         
       case 'test_recap':
       case 'testrecap':
-        return <TestRecap {...propsWithProgressIndicator} />;
+        return <ModernTestRecapWrapper {...propsWithProgressIndicator} />;
 
       default:
         return (

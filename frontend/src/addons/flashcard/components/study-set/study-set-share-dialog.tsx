@@ -2,7 +2,7 @@
 
 import { Copy, Share } from "lucide-react";
 
-import { Button } from "@acme/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,18 +10,19 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@acme/ui/dialog";
-import { Input } from "@acme/ui/input";
-import { toast } from "@acme/ui/toast";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
 
-import { getAppUrl } from "~/utils/get-url";
+// import { getAppUrl } from "~/utils/get-url";
+const getAppUrl = () => 'http://localhost:3000'; // Placeholder
 
 const StudySetShareDialog = ({ id }: { id: string }) => {
   const url = `${getAppUrl()}/study-sets/${id}`;
 
   const onCopy = async () => {
     await navigator.clipboard.writeText(url);
-    toast.success("Copied");
+    toast({ title: "Copied" });
   };
 
   return (

@@ -617,3 +617,383 @@ class UserFeedback(models.Model):
             str: A string representing the user's username and the feedback type.
         """
         return f"{self.user.username} - {self.feedback_type}"
+
+
+# Cookie Consent Management Models
+
+class CookieConsentManager(models.Manager):
+    """Manager for CookieConsent model"""
+    
+    def get_latest_consent(self, user=None, session_id=None, ip_address=None):
+        """Get the latest consent for a user, session, or IP"""
+        queryset = self.get_queryset()
+        
+        if user:
+            queryset = queryset.filter(user=user)
+        elif session_id:
+            queryset = queryset.filter(session_id=session_id)
+        elif ip_address:
+            queryset = queryset.filter(ip_address=ip_address)
+        else:
+            return None
+            
+        return queryset.order_by('-created_at').first()
+    
+    def has_valid_consent(self, user=None, session_id=None, ip_address=None, version="1.0"):
+        """Check if there's a valid consent for the given parameters"""
+        consent = self.get_latest_consent(user, session_id, ip_address)
+        
+        if not consent:
+            return False
+            
+        # Check if consent is for current version
+        return consent.version == version and not consent.is_expired()
+    
+    def get_analytics_data(self, days=30):
+        """Get consent analytics for the last N days"""
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        start_date = timezone.now() - timedelta(days=days)
+        
+        queryset = self.filter(created_at__gte=start_date)
+        
+        return {
+            'total_consents': queryset.count(),
+            'accept_all': queryset.filter(
+                essential=True,
+                analytics=True,
+                functionality=True,
+                performance=True
+            ).count(),
+            'essential_only': queryset.filter(
+                essential=True,
+                analytics=False,
+                functionality=False,
+                performance=False
+            ).count(),
+            'custom': queryset.exclude(
+                models.Q(
+                    essential=True,
+                    analytics=True,
+                    functionality=True,
+                    performance=True
+                ) | models.Q(
+                    essential=True,
+                    analytics=False,
+                    functionality=False,
+                    performance=False
+                )
+            ).count(),
+            'by_version': dict(
+                queryset.values('version').annotate(
+                    count=models.Count('id')
+                ).values_list('version', 'count')
+            )
+        }
+
+
+class CookieConsent(models.Model):
+    """Model to store cookie consent information"""
+    
+    # Unique identifier for this consent record
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    
+    # User identification (can be null for anonymous users)
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        null=True, 
+        blank=True,
+        related_name='cookie_consents',
+        help_text="User who gave consent (null for anonymous users)"
+    )
+    
+    # Session and IP tracking for anonymous users
+    session_id = models.CharField(
+        max_length=40,
+        null=True,
+        blank=True,
+        help_text="Session ID for anonymous users"
+    )
+    
+    ip_address = models.GenericIPAddressField(
+        null=True,
+        blank=True,
+        help_text="IP address when consent was given"
+    )
+    
+    # User Agent for fraud detection and analytics
+    user_agent = models.TextField(
+        null=True,
+        blank=True,
+        help_text="User agent string when consent was given"
+    )
+    
+    # Consent version (important for GDPR compliance)
+    version = models.CharField(
+        max_length=10,
+        default="1.0",
+        help_text="Version of the consent form"
+    )
+    
+    # Cookie categories consent
+    essential = models.BooleanField(
+        default=True,
+        help_text="Essential cookies (always true)"
+    )
+    
+    analytics = models.BooleanField(
+        default=False,
+        help_text="Analytics cookies (Google Analytics, etc.)"
+    )
+    
+    functionality = models.BooleanField(
+        default=False,
+        help_text="Functionality cookies (user preferences, etc.)"
+    )
+    
+    performance = models.BooleanField(
+        default=False,
+        help_text="Performance cookies (caching, optimization, etc.)"
+    )
+    
+    # Additional metadata
+    language = models.CharField(
+        max_length=10,
+        default='fr',
+        help_text="Language when consent was given"
+    )
+    
+    # GDPR compliance fields
+    consent_method = models.CharField(
+        max_length=20,
+        choices=[
+            ('banner', 'Cookie Banner'),
+            ('settings', 'Settings Page'),
+            ('api', 'API Call'),
+            ('import', 'Data Import'),
+        ],
+        default='banner',
+        help_text="How the consent was obtained"
+    )
+    
+    # Timestamps
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text="When consent was given"
+    )
+    
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        help_text="When consent was last updated"
+    )
+    
+    expires_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When consent expires (null = never)"
+    )
+    
+    # Revocation tracking
+    is_revoked = models.BooleanField(
+        default=False,
+        help_text="Whether consent has been revoked"
+    )
+    
+    revoked_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When consent was revoked"
+    )
+    
+    revocation_reason = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        choices=[
+            ('user_request', 'User Request'),
+            ('expired', 'Expired'),
+            ('version_change', 'Version Change'),
+            ('admin_action', 'Admin Action'),
+            ('data_deletion', 'Account Deletion'),
+        ],
+        help_text="Reason for revocation"
+    )
+    
+    # Custom manager
+    objects = CookieConsentManager()
+    
+    class Meta:
+        app_label = 'authentication'
+        verbose_name = "Cookie Consent"
+        verbose_name_plural = "Cookie Consents"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+            models.Index(fields=['session_id', '-created_at']),
+            models.Index(fields=['ip_address', '-created_at']),
+            models.Index(fields=['version']),
+            models.Index(fields=['created_at']),
+            models.Index(fields=['is_revoked']),
+        ]
+        
+        # Unique constraint to prevent duplicate active consents
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user'],
+                condition=models.Q(is_revoked=False, user__isnull=False),
+                name='unique_active_user_consent'
+            ),
+        ]
+    
+    def __str__(self):
+        if self.user:
+            identifier = f"User {self.user.id}"
+        elif self.session_id:
+            identifier = f"Session {self.session_id[:8]}..."
+        else:
+            identifier = f"IP {self.ip_address}"
+            
+        status = "Revoked" if self.is_revoked else "Active"
+        return f"{identifier} - {status} (v{self.version})"
+    
+    def save(self, *args, **kwargs):
+        """Custom save method"""
+        # Essential cookies are always required
+        self.essential = True
+        
+        # If this is a new consent for an existing user, revoke old ones
+        if self.user and not self.pk:
+            CookieConsent.objects.filter(
+                user=self.user,
+                is_revoked=False
+            ).update(
+                is_revoked=True,
+                revoked_at=timezone.now(),
+                revocation_reason='version_change'
+            )
+        
+        super().save(*args, **kwargs)
+    
+    def is_expired(self):
+        """Check if consent has expired"""
+        if not self.expires_at:
+            return False
+        
+        from django.utils import timezone
+        return timezone.now() > self.expires_at
+    
+    def revoke(self, reason='user_request'):
+        """Revoke this consent"""
+        from django.utils import timezone
+        
+        self.is_revoked = True
+        self.revoked_at = timezone.now()
+        self.revocation_reason = reason
+        self.save()
+    
+    def get_consent_summary(self):
+        """Get a summary of consent choices"""
+        categories = []
+        if self.essential:
+            categories.append('essential')
+        if self.analytics:
+            categories.append('analytics')
+        if self.functionality:
+            categories.append('functionality')
+        if self.performance:
+            categories.append('performance')
+        
+        return {
+            'categories': categories,
+            'total_accepted': len(categories),
+            'consent_level': self._get_consent_level()
+        }
+    
+    def _get_consent_level(self):
+        """Determine the level of consent given"""
+        if self.analytics and self.functionality and self.performance:
+            return 'full'
+        elif not self.analytics and not self.functionality and not self.performance:
+            return 'minimal'
+        else:
+            return 'partial'
+    
+    def to_dict(self):
+        """Convert to dictionary for API responses"""
+        return {
+            'id': str(self.id),
+            'user_id': self.user.id if self.user else None,
+            'version': self.version,
+            'essential': self.essential,
+            'analytics': self.analytics,
+            'functionality': self.functionality,
+            'performance': self.performance,
+            'language': self.language,
+            'consent_method': self.consent_method,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat(),
+            'expires_at': self.expires_at.isoformat() if self.expires_at else None,
+            'is_revoked': self.is_revoked,
+            'revoked_at': self.revoked_at.isoformat() if self.revoked_at else None,
+            'summary': self.get_consent_summary()
+        }
+
+
+class CookieConsentLog(models.Model):
+    """Audit log for cookie consent changes"""
+    
+    consent = models.ForeignKey(
+        CookieConsent,
+        on_delete=models.CASCADE,
+        related_name='logs'
+    )
+    
+    action = models.CharField(
+        max_length=20,
+        choices=[
+            ('created', 'Created'),
+            ('updated', 'Updated'),
+            ('revoked', 'Revoked'),
+            ('expired', 'Expired'),
+        ]
+    )
+    
+    old_values = models.JSONField(
+        null=True,
+        blank=True,
+        help_text="Previous values before change"
+    )
+    
+    new_values = models.JSONField(
+        null=True,
+        blank=True,
+        help_text="New values after change"
+    )
+    
+    ip_address = models.GenericIPAddressField(
+        null=True,
+        blank=True
+    )
+    
+    user_agent = models.TextField(
+        null=True,
+        blank=True
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        app_label = 'authentication'
+        verbose_name = "Cookie Consent Log"
+        verbose_name_plural = "Cookie Consent Logs"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['consent', '-created_at']),
+            models.Index(fields=['action']),
+            models.Index(fields=['created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.consent} - {self.action} at {self.created_at}"

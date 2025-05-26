@@ -34,6 +34,28 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   const [shuffledChoices, setShuffledChoices] = useState<Choice[]>([]);
   const [showValidation, setShowValidation] = useState(false);
 
+  // Debug: Log the data being received
+  useEffect(() => {
+    console.log('🔍 MultipleChoiceQuestion received data:', data);
+    console.log('🔍 MultipleChoiceQuestion choices:', data.choices);
+    console.log('🔍 MultipleChoiceQuestion correct_answer:', data.correct_answer);
+  }, [data]);
+
+  // Show fallback if no data
+  if (!data.choices || data.choices.length === 0) {
+    return (
+      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+        <p className="text-yellow-700">
+          Aucune question à choix multiples trouvée (ID: {data.id})
+        </p>
+        <div className="mt-2 text-sm">
+          <p>Question: {data.question || 'Non fournie'}</p>
+          <p>Choices: {data.choices?.length || 0} choix disponibles</p>
+        </div>
+      </div>
+    );
+  }
+
   // Initialize with shuffled choices if needed
   useEffect(() => {
     if (data.shuffle) {
@@ -64,8 +86,15 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     onAnswer(selectedAnswer);
   };
 
+  // Handle Enter key press
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" onKeyDown={handleKeyDown}>
       <div className="text-lg font-medium mb-2">{data.question}</div>
 
       <RadioGroup

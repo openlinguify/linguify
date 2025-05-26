@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import testRecapAPI, { TestRecapQuestion as TestRecapQuestionType } from '../../api/testRecapAPI';
-import { Loader2 } from 'lucide-react';
+import { TestRecapQuestion as TestRecapQuestionType } from '../../api/testRecapAPI';
 import MultipleChoiceQuestion from './questions/MultipleChoiceQuestion';
 import FillBlankQuestion from './questions/FillBlankQuestion';
 import MatchingQuestion from './questions/MatchingQuestion';
@@ -22,29 +20,10 @@ const TestRecapQuestion: React.FC<TestRecapQuestionProps> = ({
   onAnswer,
   savedAnswer
 }) => {
-  const { data, isLoading, error } = useQuery(
-    ['questionData', question.id, language],
-    () => testRecapAPI.getQuestionData(question.id, language),
-    {
-      staleTime: 0, // Force fetch fresh data every time
-      cacheTime: 0, // Don't cache data
-      refetchOnMount: true, // Refetch when the component mounts
-      refetchOnWindowFocus: true, // Refetch when the window regains focus
-    }
-  );
+  // Use question data directly instead of making additional API call
+  const questionData = question;
 
-  const questionData = data?.data;
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-primary mb-2" />
-        <p className="text-sm text-muted-foreground">Loading question...</p>
-      </div>
-    );
-  }
-
-  if (error || !questionData) {
+  if (!questionData) {
     return (
       <div className="p-4 bg-destructive/10 rounded-md text-center">
         <p className="text-destructive">Failed to load question. Please try again.</p>
@@ -55,54 +34,191 @@ const TestRecapQuestion: React.FC<TestRecapQuestionProps> = ({
   // Render the appropriate question component based on the question type
   switch (question.question_type) {
     case 'multiple_choice':
+      // For multiple choice questions, data might be in question_data or directly on question
+      const choices = question.options || 
+                     question.question_data?.options || 
+                     question.question_data?.choices || [];
+      
+      const mcqData = {
+        id: question.id,
+        question: question.question || question.question_data?.question || 'Select the correct answer',
+        choices: choices.map((option: any, index: number) => ({
+          id: index.toString(),
+          text: typeof option === 'string' ? option : option.text || option.choice || `Option ${index + 1}`
+        })),
+        correct_answer: question.correct_answer || question.question_data?.correct_answer || '',
+        explanation: question.question_data?.explanation
+      };
+      
+      // Debug: Log the multiple choice data mapping
+      console.log('🔍 TestRecapQuestion mapping multiple choice data:', {
+        originalQuestion: question,
+        mappedData: mcqData,
+        choices: choices
+      });
+      
       return (
         <MultipleChoiceQuestion 
-          data={questionData} 
+          data={mcqData} 
           onAnswer={onAnswer}
           savedAnswer={savedAnswer}
         />
       );
     
     case 'fill_blank':
+      // For fill blank questions, data might be in question_data or directly on question
+      const sentence = question.sentence || 
+                      question.question_data?.sentence || 
+                      question.question_data?.text || '';
+      const options = question.options || 
+                     question.question_data?.options || 
+                     question.question_data?.choices || [];
+      
+      const fillBlankData = {
+        id: question.id,
+        question: question.question || 'Fill in the blank',
+        sentence: sentence,
+        options: options.map((option: any, index: number) => ({
+          id: index.toString(),
+          text: typeof option === 'string' ? option : option.text || option.choice || `Option ${index + 1}`
+        })),
+        correct_answers: { 0: question.correct_answer || question.question_data?.correct_answer || '' },
+        explanation: question.question_data?.explanation
+      };
+      
+      // Debug: Log the fill blank data mapping
+      console.log('🔍 TestRecapQuestion mapping fill blank data:', {
+        originalQuestion: question,
+        mappedData: fillBlankData,
+        sentence: sentence,
+        options: options
+      });
+      
       return (
         <FillBlankQuestion 
-          data={questionData} 
+          data={fillBlankData} 
           onAnswer={onAnswer}
           savedAnswer={savedAnswer}
         />
       );
     
     case 'matching':
+      // For matching questions, data might be in question_data or directly on question
+      const targetWords = question.target_words || 
+                         question.question_data?.target_words || 
+                         question.question_data?.pairs?.map((p: any) => p.target) || 
+                         [];
+      const nativeWords = question.native_words || 
+                         question.question_data?.native_words ||
+                         question.question_data?.pairs?.map((p: any) => p.native) ||
+                         [];
+      
+      const matchingData = {
+        id: question.id,
+        question: question.question || 'Match the items',
+        target_items: targetWords.map((word: any, index: number) => ({
+          id: index.toString(),
+          text: typeof word === 'string' ? word : word.text || word.word || 'Item ' + (index + 1)
+        })),
+        native_items: nativeWords.map((word: any, index: number) => ({
+          id: index.toString(),
+          text: typeof word === 'string' ? word : word.text || word.word || 'Item ' + (index + 1)
+        })),
+        explanation: question.question_data?.explanation
+      };
+      
+      // Debug: Log the matching data mapping
+      console.log('🔍 TestRecapQuestion mapping matching data:', {
+        originalQuestion: question,
+        mappedData: matchingData,
+        targetWords: targetWords,
+        nativeWords: nativeWords
+      });
+      
       return (
         <MatchingQuestion 
-          data={questionData} 
+          data={matchingData} 
           onAnswer={onAnswer}
           savedAnswer={savedAnswer}
         />
       );
     
     case 'reordering':
+      const reorderingData = {
+        id: question.id,
+        question: question.question || 'Reorder the items',
+        items: question.target_words?.map((word, index) => ({
+          id: index.toString(),
+          text: word
+        })) || [],
+        correct_order: question.correct_answer?.split(' ') || [],
+        explanation: question.question_data?.explanation
+      };
       return (
         <ReorderingQuestion 
-          data={questionData} 
+          data={reorderingData} 
           onAnswer={onAnswer}
           savedAnswer={savedAnswer}
         />
       );
     
     case 'speaking':
+      // For speaking questions, data might be in question_data or directly on question
+      const targetPhrase = question.correct_answer || 
+                          question.question_data?.target_phrase || 
+                          question.question_data?.phrase || 
+                          question.sentence || '';
+      const speakingPrompt = question.question_data?.prompt || 
+                           (targetPhrase ? `Pronounce this phrase: "${targetPhrase}"` : 'Speak the phrase');
+      const vocabularyItems = question.question_data?.vocabulary_items || [];
+      
+      const speakingData = {
+        id: question.id,
+        question: question.question || speakingPrompt,
+        target_phrase: targetPhrase,
+        prompt: speakingPrompt,
+        vocabulary_items: vocabularyItems,
+        time_limit: question.question_data?.time_limit || 60,
+        explanation: question.question_data?.explanation
+      };
+      
+      // Debug: Log the speaking data mapping
+      console.log('🔍 TestRecapQuestion mapping speaking data:', {
+        originalQuestion: question,
+        mappedData: speakingData,
+        targetPhrase: targetPhrase,
+        vocabularyItems: vocabularyItems
+      });
+      
       return (
         <SpeakingQuestion 
-          data={questionData} 
+          data={speakingData} 
           onAnswer={onAnswer}
           savedAnswer={savedAnswer}
         />
       );
     
     case 'vocabulary':
+      // For vocabulary questions, data might be in question_data or directly on question
+      const vocabularyData = {
+        id: question.id,
+        word: question.word || question.question_data?.word || '',
+        definition: question.definition || question.question_data?.definition || '',
+        example_sentence: question.example_sentence || question.question_data?.example || question.question_data?.example_sentence || '',
+        correct_answer: question.correct_answer || '',
+        explanation: question.question_data?.explanation || ''
+      };
+      
+      // Debug: Log the vocabulary data mapping
+      console.log('🔍 TestRecapQuestion mapping vocabulary data:', {
+        originalQuestion: question,
+        mappedData: vocabularyData,
+        questionData: question.question_data
+      });
+      
       return (
         <VocabularyQuestion 
-          data={questionData} 
+          data={vocabularyData} 
           onAnswer={onAnswer}
           savedAnswer={savedAnswer}
         />

@@ -2,17 +2,18 @@
 
 import { useState } from "react";
 
-import { Button } from "@acme/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@acme/ui/dialog";
-import { Textarea } from "@acme/ui/textarea";
-import { toast } from "@acme/ui/toast";
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/use-toast";
 
-import { api } from "~/trpc/react";
+// import { api } from "~/trpc/react";
+import { api } from "../../api/placeholder-api";
 
 interface StudySetExportDialogProps {
   id: string;
@@ -42,7 +43,7 @@ const StudySetExportDialog = ({
 
   const copy = () => {
     void navigator.clipboard.writeText(content);
-    toast.success("Copied");
+    toast({ title: "Copied" });
     setCopied(true);
   };
 

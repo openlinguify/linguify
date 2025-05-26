@@ -45,7 +45,7 @@ export function ContentTypeWrapper({
           courseAPI.getLessons(unitId, language)
             .then(lessons => {
               if (lessons && lessons.length > 0) {
-                const lesson = lessons.find(l => l.id === parseInt(String(lessonId)));
+                const lesson = lessons.find((l: any) => l.id === parseInt(String(lessonId)));
                 if (lesson) {
                   setLessonTitle(lesson.title);
                 }

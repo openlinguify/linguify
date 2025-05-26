@@ -3,7 +3,8 @@
 import React from "react";
 import { useParams } from "next/navigation";
 
-import { api } from "~/trpc/react";
+// import { api } from "~/trpc/react";
+import { api } from "../../api/placeholder-api";
 
 const StudySetInfo = () => {
   const { id }: { id: string } = useParams();

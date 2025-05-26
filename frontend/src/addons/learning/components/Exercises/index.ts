@@ -1,20 +1,30 @@
 // src/addons/learning/components/Exercises/index.ts
 
-// Export all exercise components
-export { default as FillBlankExercise } from './FillBlankExercise';
-export { default as MatchingExercise } from './MatchingExercise';
-export { default as MultipleChoiceQuestion } from './MultipleChoiceQuestion';
-export { default as Numbers } from './Numbers';
+// Export remaining legacy exercise components
 export { default as NumbersGame } from './NumbersGame';
 export { default as NumbersGrid } from './NumbersGrid';
-export { default as ReorderingContent } from './ReorderingContent';
-export { default as VocabularyLesson } from './VocabularyLesson';
+
+// Export modern exercise wrappers (compatible with existing API)
+export { default as ModernExerciseLayout } from './ModernExerciseLayout';
+export { ModernVocabularyWrapper } from './ModernVocabularyWrapper';
+export { ModernMatchingWrapper } from './ModernMatchingWrapper';
+export { ModernSpeakingWrapper } from './ModernSpeakingWrapper';
+export { ModernNumbersWrapper } from './ModernNumbersWrapper';
+export { default as ModernTheoryWrapper } from './ModernTheoryWrapper';
+export { default as ModernFillBlankWrapper } from './ModernFillBlankWrapper';
+export { default as ModernMCQWrapper } from './ModernMCQWrapper';
+export { default as ModernTestRecapWrapper } from './ModernTestRecapWrapper';
+export { default as ModernReorderingWrapper } from './ModernReorderingWrapper';
 
 // Export utility components
 export { default as ExerciseNavBar } from '../Navigation/ExerciseNavBar';
 export { default as ExerciseNavigation } from './ExerciseNavigation';
 export { default as ExerciseProgress } from './ExerciseProgress';
 export { default as ExerciseStyles } from './ExerciseStyles';
+export { default as ProgressIndicatorWrapper } from './ProgressIndicatorWrapper';
+
+// Export shared exercise components
+export * from './shared';
 
 // Export utility styles
 export {

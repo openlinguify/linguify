@@ -47,7 +47,13 @@ frontend/.env.local
 frontend/prisma/
 .qodo
 
-**/.claude/settings.local.json
+# === PRIVATE FILES (not for open source) ===
+private/
+**/private/
+debug_*.html
+*.debug.html
 
+# === CLAUDE AI ===
+**/.claude/settings.local.json
 **/CLAUDE.local.md
 

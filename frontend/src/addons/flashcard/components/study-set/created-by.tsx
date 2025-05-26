@@ -1,14 +1,16 @@
 import React from "react";
 import Link from "next/link";
 
-import type { RouterOutputs } from "@acme/api";
-import { Avatar, AvatarFallback, AvatarImage } from "@acme/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { RouterOutputs } from "../../api/placeholder-api";
 
 const CreatedBy = ({
   user,
 }: {
   user: RouterOutputs["studySet"]["byId"]["user"];
 }) => {
+  if (!user) return null;
+  
   const { id, image, name } = user;
 
   return (

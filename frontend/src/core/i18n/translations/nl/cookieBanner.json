@@ -1,0 +1,36 @@
+{
+  "nl": {
+    "title": "We waarderen je privacy",
+    "description": "We gebruiken cookies om je browse-ervaring op onze site te verbeteren. Sommige cookies zijn noodzakelijk voor het correct functioneren van onze website en diensten. Andere cookies zijn optioneel en helpen je ervaring te personaliseren, inclusief reclame en analyses. Door op \"Alles accepteren\" te klikken, ga je akkoord met ons gebruik van cookies.",
+    "learnMore": "Meer weten",
+    "buttons": {
+      "acceptAll": "Alles accepteren",
+      "essential": "Alleen essentiële",
+      "customize": "Aanpassen",
+      "savePreferences": "Mijn voorkeuren opslaan"
+    },
+    "customization": {
+      "title": "Cookies aanpassen",
+      "description": "Kies welke types cookies je wilt toestaan. Je kunt deze instellingen op elk moment wijzigen.",
+      "required": "Vereist"
+    },
+    "categories": {
+      "essential": {
+        "title": "Essentiële cookies",
+        "description": "Noodzakelijk voor basisfunctionaliteit van de site zoals inloggen, beveiliging en toegankelijkheid. Kunnen niet worden uitgeschakeld."
+      },
+      "functionality": {
+        "title": "Functionaliteitscookies",
+        "description": "Maken personalisatie van je ervaring mogelijk door je voorkeuren zoals taal, thema en leerinstellingen te onthouden."
+      },
+      "analytics": {
+        "title": "Analytische cookies",
+        "description": "Helpen ons begrijpen hoe je onze site gebruikt om functies en gebruikerservaring te verbeteren."
+      },
+      "performance": {
+        "title": "Prestatiecookies",
+        "description": "Optimaliseren siteprestaties door je acties en voorkeuren te onthouden voor sneller laden."
+      }
+    }
+  }
+}

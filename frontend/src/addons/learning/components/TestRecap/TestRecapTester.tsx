@@ -1,52 +1,31 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import React from 'react';
 import { Card } from '@/components/ui/card';
-import TestRecap from './TestRecap';
 
 /**
- * Simple test component to test TestRecap functionality
+ * Test component - shows maintenance message instead of demo data
  */
 const TestRecapTester = () => {
-  const [showTest, setShowTest] = useState(false);
-  
-  if (!showTest) {
-    return (
-      <div className="container mx-auto p-8">
-        <Card className="p-6 max-w-lg mx-auto">
-          <h1 className="text-2xl font-bold mb-4">TestRecap Tester</h1>
-          <p className="mb-6">
-            This is a test component to verify that the TestRecap functionality works properly.
-            Clicking the button below will load a TestRecap with demo data.
-          </p>
-          <Button
-            onClick={() => setShowTest(true)}
-            className="w-full mt-4 bg-blue-600 text-white py-2 rounded"
-          >
-            Load TestRecap Demo
-          </Button>
-        </Card>
-      </div>
-    );
-  }
-  
   return (
-    <TestRecap 
-      lessonId="test-123" 
-      language="en"
-      onComplete={() => {
-        alert('Test completed!');
-        setShowTest(false);
-      }}
-      progressIndicator={{
-        currentStep: 1,
-        totalSteps: 8,
-        contentType: 'test_recap',
-        lessonId: 'test-123',
-        lessonTitle: 'Test Recap Demo'
-      }}
-    />
+    <div className="container mx-auto p-8">
+      <Card className="p-6 max-w-lg mx-auto text-center">
+        <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-2xl">🔧</span>
+        </div>
+        <h1 className="text-2xl font-bold mb-4">TestRecap en maintenance</h1>
+        <p className="text-gray-600 mb-6">
+          Le système de test de révision est temporairement en maintenance. 
+          Aucune donnée de démonstration n'est disponible.
+        </p>
+        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+          <p className="text-sm text-orange-800">
+            <strong>Note :</strong> Cette page est destinée aux tests de développement. 
+            Utilisez les vraies leçons pour accéder aux sessions de révision.
+          </p>
+        </div>
+      </Card>
+    </div>
   );
 };
 

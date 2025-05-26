@@ -1,4 +1,5 @@
-# course/models.py
+# -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator, ValidationError
 from django.utils.translation import gettext_lazy as _

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
 
-import { Button } from "@acme/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,9 +18,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@acme/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
-import { api } from "~/trpc/react";
+// import { api } from "~/trpc/react";
+import { api } from "../../api/placeholder-api";
 import DeleteStudySetDialog from "./delete-study-set-dialog";
 import StudySetCombineDialog from "./study-set-combine-dialog";
 import StudySetExportDialog from "./study-set-export-dialog";

@@ -162,6 +162,13 @@ const ReorderingQuestion: React.FC<ReorderingQuestionProps> = ({
     onAnswer(items);
   };
 
+  // Handle Enter key press
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+
   // Reset the order
   const handleReset = () => {
     // Shuffle again
@@ -175,7 +182,7 @@ const ReorderingQuestion: React.FC<ReorderingQuestionProps> = ({
   const isCurrentOrderCorrect = JSON.stringify(items) === JSON.stringify(data.correct_order);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" onKeyDown={handleKeyDown}>
       <div className="text-lg font-medium mb-2">{data.question}</div>
       
       <div className="mb-4">

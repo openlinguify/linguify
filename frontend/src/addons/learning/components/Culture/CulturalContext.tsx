@@ -8,6 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Info, AlertCircle, MapPin, Cake, Globe, Book, ExternalLink } from "lucide-react";
 import { CulturalContextProps } from "@/addons/learning/types";
 
+// Placeholder cultureAPI
+const cultureAPI = {
+  getCulturalContent: async (_params: Record<string, string>) => null,
+  getLanguageCulture: async (_languageCode: string) => null
+};
+
 
 
 export default function CulturalContext({ 

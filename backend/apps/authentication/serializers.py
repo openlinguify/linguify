@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import CoachProfile, Review, UserFeedback
+from .models import CoachProfile, Review, UserFeedback, CookieConsent, CookieConsentLog
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -218,3 +218,169 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             })
 
         return data
+
+
+# Cookie Consent Serializers
+
+class CookieConsentSerializer(serializers.ModelSerializer):
+    """Serializer for cookie consent"""
+    
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
+    consent_summary = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = CookieConsent
+        fields = [
+            'id', 'user_id', 'session_id', 'ip_address', 'version',
+            'essential', 'analytics', 'functionality', 'performance',
+            'language', 'consent_method', 'created_at', 'updated_at',
+            'expires_at', 'is_revoked', 'revoked_at', 'revocation_reason',
+            'consent_summary'
+        ]
+        read_only_fields = [
+            'id', 'user_id', 'ip_address', 'user_agent', 'created_at', 
+            'updated_at', 'is_revoked', 'revoked_at', 'revocation_reason'
+        ]
+    
+    def get_consent_summary(self, obj):
+        """Get consent summary"""
+        return obj.get_consent_summary()
+    
+    def create(self, validated_data):
+        """Create new consent record"""
+        request = self.context.get('request')
+        
+        if request:
+            # Get IP address
+            x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+            if x_forwarded_for:
+                ip_address = x_forwarded_for.split(',')[0]
+            else:
+                ip_address = request.META.get('REMOTE_ADDR')
+            
+            # Get user agent
+            user_agent = request.META.get('HTTP_USER_AGENT', '')
+            
+            # Get session ID
+            session_id = request.session.session_key
+            
+            validated_data.update({
+                'ip_address': ip_address,
+                'user_agent': user_agent,
+                'session_id': session_id,
+            })
+            
+            # Add user if authenticated
+            if request.user.is_authenticated:
+                validated_data['user'] = request.user
+        
+        return super().create(validated_data)
+
+
+class CookieConsentCreateSerializer(serializers.Serializer):
+    """Serializer for creating cookie consent via API"""
+    
+    essential = serializers.BooleanField(default=True, read_only=True)  # Always true
+    analytics = serializers.BooleanField(default=False)
+    functionality = serializers.BooleanField(default=False)
+    performance = serializers.BooleanField(default=False)
+    language = serializers.CharField(max_length=10, default='fr')
+    version = serializers.CharField(max_length=10, default='1.0')
+    consent_method = serializers.ChoiceField(
+        choices=CookieConsent._meta.get_field('consent_method').choices,
+        default='api'
+    )
+    
+    def create(self, validated_data):
+        """Create consent record"""
+        request = self.context.get('request')
+        
+        # Get request metadata
+        if request:
+            x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+            if x_forwarded_for:
+                ip_address = x_forwarded_for.split(',')[0]
+            else:
+                ip_address = request.META.get('REMOTE_ADDR')
+            
+            user_agent = request.META.get('HTTP_USER_AGENT', '')
+            session_id = request.session.session_key
+            
+            consent_data = {
+                'essential': True,  # Always true
+                'analytics': validated_data.get('analytics', False),
+                'functionality': validated_data.get('functionality', False),
+                'performance': validated_data.get('performance', False),
+                'language': validated_data.get('language', 'fr'),
+                'version': validated_data.get('version', '1.0'),
+                'consent_method': validated_data.get('consent_method', 'api'),
+                'ip_address': ip_address,
+                'user_agent': user_agent,
+                'session_id': session_id,
+            }
+            
+            # Add user if authenticated
+            if request.user.is_authenticated:
+                consent_data['user'] = request.user
+            
+            consent = CookieConsent.objects.create(**consent_data)
+            
+            # Log the creation
+            CookieConsentLog.objects.create(
+                consent=consent,
+                action='created',
+                new_values=consent_data,
+                ip_address=ip_address,
+                user_agent=user_agent
+            )
+            
+            return consent
+        
+        raise serializers.ValidationError("Request context is required")
+
+
+class CookieConsentLogSerializer(serializers.ModelSerializer):
+    """Serializer for cookie consent logs"""
+    
+    consent_id = serializers.UUIDField(source='consent.id', read_only=True)
+    
+    class Meta:
+        model = CookieConsentLog
+        fields = [
+            'id', 'consent_id', 'action', 'old_values', 'new_values',
+            'ip_address', 'user_agent', 'created_at'
+        ]
+        read_only_fields = ['id', 'created_at']
+
+
+class CookieConsentStatsSerializer(serializers.Serializer):
+    """Serializer for cookie consent statistics"""
+    
+    total_consents = serializers.IntegerField()
+    accept_all = serializers.IntegerField()
+    essential_only = serializers.IntegerField()
+    custom = serializers.IntegerField()
+    by_version = serializers.DictField()
+    
+    # Additional calculated fields
+    accept_all_percentage = serializers.SerializerMethodField()
+    essential_only_percentage = serializers.SerializerMethodField()
+    custom_percentage = serializers.SerializerMethodField()
+    
+    def get_accept_all_percentage(self, obj):
+        total = obj.get('total_consents', 0)
+        if total == 0:
+            return 0
+        return round((obj.get('accept_all', 0) / total) * 100, 2)
+    
+    def get_essential_only_percentage(self, obj):
+        total = obj.get('total_consents', 0)
+        if total == 0:
+            return 0
+        return round((obj.get('essential_only', 0) / total) * 100, 2)
+    
+    def get_custom_percentage(self, obj):
+        total = obj.get('total_consents', 0)
+        if total == 0:
+            return 0
+        return round((obj.get('custom', 0) / total) * 100, 2)

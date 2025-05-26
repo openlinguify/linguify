@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
 from apps.course.models import ContentLesson, TheoryContent
 
 # Vérifier si "Dates - Theory - theory - 2" a déjà un TheoryContent

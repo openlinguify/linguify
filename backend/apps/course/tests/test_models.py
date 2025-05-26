@@ -1,4 +1,5 @@
-# backend/apps/course/tests/test_models.py
+# -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
 import pytest
 from django.core.exceptions import ValidationError
 from apps.course.models import (

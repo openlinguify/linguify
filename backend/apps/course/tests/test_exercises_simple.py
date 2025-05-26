@@ -1,7 +1,6 @@
-"""
-Tests simplifiés pour le module Course.
-Version sans conflit d'importation.
-"""
+# -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
+
 import pytest
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -9,14 +8,14 @@ from django.core.exceptions import ValidationError
 
 @pytest.mark.django_db
 class TestCourseBasics:
-    """Tests simples pour vérifier la configuration de pytest avec Django."""
+    """Simple tests to verify pytest configuration with Django."""
     
     def test_django_db_setup(self):
-        """Test simple pour vérifier que la connexion à la base de données fonctionne."""
+        """Simple test to check that the database connection works."""
         from django.contrib.auth import get_user_model
         User = get_user_model()
         
-        # Créer un utilisateur de test
+        # Create a test user
         user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
@@ -25,24 +24,24 @@ class TestCourseBasics:
             last_name='User'
         )
         
-        # Vérifier que l'utilisateur a bien été créé
+        # Check that the user was created
         assert user.id is not None
         assert user.username == 'testuser'
         assert user.email == 'test@example.com'
         
-        # Supprimer l'utilisateur
+        # Delete the user
         user.delete()
         assert User.objects.filter(username='testuser').count() == 0
         
     def test_timezone_awareness(self):
-        """Test pour vérifier que les dates sont bien gérées avec le timezone."""
+        """Test to verify that dates are handled with timezone awareness."""
         now = timezone.now()
         assert now.tzinfo is not None
         
-        # Vérifier que la date est bien dans le futur
+        # Check that the date is in the future
         future = now + timezone.timedelta(days=30)
         assert future > now
         
-        # Vérifier que la différence est bien de 30 jours
+        # Check that the difference is 30 days
         diff = future - now
         assert diff.days == 30

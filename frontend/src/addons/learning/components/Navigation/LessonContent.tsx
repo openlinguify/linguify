@@ -39,7 +39,7 @@ const LessonContent: React.FC<LessonContentProps> = ({
       try {
         // Fetch lesson info to get title
         const lessons = await courseAPI.getLessons(unitId, userLanguage);
-        const currentLesson = lessons.find(l => l.id === parseInt(lessonId));
+        const currentLesson = lessons.find((l: any) => l.id === parseInt(lessonId));
         
         if (currentLesson) {
           setLessonTitle(currentLesson.title);
@@ -169,7 +169,7 @@ const LessonContent: React.FC<LessonContentProps> = ({
           <ContentTypeRouter
             contentType={currentContent.content_type}
             contentId={currentContent.id.toString()}
-            language={userLanguage}
+            language={userLanguage as 'fr' | 'en' | 'es' | 'nl'}
             unitId={unitId}
             onComplete={handleContentComplete}
           />

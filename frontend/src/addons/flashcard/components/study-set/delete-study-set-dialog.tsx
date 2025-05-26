@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Loader2Icon, Trash2Icon } from "lucide-react";
 
-import { Button } from "@acme/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -12,10 +12,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@acme/ui/dialog";
-import { toast } from "@acme/ui/toast";
+} from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast";
 
-import { api } from "~/trpc/react";
+// import { api } from "~/trpc/react";
+import { api } from "../../api/placeholder-api";
 
 interface DeleteStudySetDialogProps {
   id: string;
@@ -31,11 +32,11 @@ const DeleteStudySetDialog = ({
   const router = useRouter();
   const { mutate, isPending } = api.studySet.delete.useMutation({
     onSuccess() {
-      toast.success("Successfully deleted study set");
+      toast({ title: "Successfully deleted study set" });
       router.push("/latest");
     },
     onError() {
-      toast.error("Couldn't delete study set, try again");
+      toast({ title: "Couldn't delete study set, try again", variant: "destructive" });
     },
   });
 

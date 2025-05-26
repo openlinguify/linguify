@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { Edit } from "lucide-react";
 
-import type { Session } from "@acme/auth";
-import { Button } from "@acme/ui/button";
+// TODO: Replace with appropriate Session type
+type Session = any;
+
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@acme/ui/tooltip";
+} from "@/components/ui/tooltip";
 
 import StudySetFoldersDialog from "./study-set-folders-dialog";
 import StudySetOptionsDropdown from "./study-set-options-dropdown";
