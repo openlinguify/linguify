@@ -8,9 +8,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='testrecap',
-            name='correct_answer',
-            field=models.CharField(max_length=255, blank=True, null=True),
-        ),
+        # No operations - TestRecap models already configured
     ]

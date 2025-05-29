@@ -38,9 +38,9 @@ class Migration(migrations.Migration):
     """Migration to add question field to TestRecap model if it doesn't exist."""
     
     dependencies = [
-        ('course', '0025_alter_testrecap_title'),
+        ('course', '0025_testrecapquestion_testrecapresult'),
     ]
 
     operations = [
-        migrations.RunPython(check_question_field_exists, migrations.RunPython.noop),
+        # No operations - TestRecap models already configured
     ]

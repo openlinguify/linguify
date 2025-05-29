@@ -10,34 +10,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='testrecap',
-            name='title',
-            field=models.CharField(default='Test Recap', max_length=255),
-        ),
+        # Keep only ContentLesson changes
         migrations.AlterField(
             model_name='contentlesson',
             name='content_type',
             field=models.CharField(choices=[('Theory', 'Theory'), ('VocabularyList', 'VocabularyList'), ('Grammar', 'Grammar'), ('Multiple choice', 'Multiple choice'), ('Numbers', 'Numbers'), ('Reordering', 'Reordering'), ('Matching', 'Matching'), ('Speaking', 'Speaking'), ('Question and answer', 'Question and answer'), ('fill_blank', 'Fill in the blanks'), ('True or False', 'True or False'), ('Test', 'Test'), ('test_recap', 'Test Recap')], db_index=True, max_length=100),
-        ),
-        migrations.AlterField(
-            model_name='testrecap',
-            name='title_en',
-            field=models.CharField(default='Test Recap', max_length=255),
-        ),
-        migrations.AlterField(
-            model_name='testrecap',
-            name='title_es',
-            field=models.CharField(default='Resumen del test', max_length=255),
-        ),
-        migrations.AlterField(
-            model_name='testrecap',
-            name='title_fr',
-            field=models.CharField(default='Récapitulatif du test', max_length=255),
-        ),
-        migrations.AlterField(
-            model_name='testrecap',
-            name='title_nl',
-            field=models.CharField(default='Test samenvatting', max_length=255),
         ),
     ]

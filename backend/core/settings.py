@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'apps.course',
     'apps.data',
     # 'apps.flashcard',
+    'apps.jobs',
     'apps.language_ai',
     # 'apps.payments',
     # 'apps.quiz',
@@ -350,26 +351,40 @@ APPEND_SLASH = True
 ASGI_APPLICATION = 'core.asgi.application'
 
 # Use in-memory channel layer for testing
-if os.environ.get('TEST_MODE') == 'True':
+if os.environ.get('TEST_MODE') == 'True' or 'test' in sys.argv:
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels.layers.InMemoryChannelLayer"
         }
     }
 else:
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels_redis.core.RedisChannelLayer',
-            'CONFIG': {
-                # Use Redis from Docker Compose by default in development
-                # or use environment variable for production
-                "hosts": [(
-                    os.environ.get('REDIS_HOST', '127.0.0.1'),
-                    int(os.environ.get('REDIS_PORT', 6379))
-                )],
+    # Try Redis first, fallback to in-memory if Redis is not available
+    try:
+        import redis
+        redis_client = redis.Redis(
+            host=os.environ.get('REDIS_HOST', '127.0.0.1'),
+            port=int(os.environ.get('REDIS_PORT', 6379)),
+            socket_connect_timeout=1
+        )
+        redis_client.ping()
+        CHANNEL_LAYERS = {
+            'default': {
+                'BACKEND': 'channels_redis.core.RedisChannelLayer',
+                'CONFIG': {
+                    "hosts": [(
+                        os.environ.get('REDIS_HOST', '127.0.0.1'),
+                        int(os.environ.get('REDIS_PORT', 6379))
+                    )],
+                },
             },
-        },
-    }
+        }
+    except (ImportError, redis.exceptions.ConnectionError, redis.exceptions.TimeoutError):
+        # Fallback to in-memory layer if Redis is not available
+        CHANNEL_LAYERS = {
+            "default": {
+                "BACKEND": "channels.layers.InMemoryChannelLayer"
+            }
+        }
 
 
 LOGGING = {
@@ -391,10 +406,11 @@ LOGGING = {
 
 
 # Configuration email pour l'envoi depuis les formulaires de contact
-if os.environ.get('TEST_MODE') == 'True':
+if os.environ.get('TEST_MODE') == 'True' or os.environ.get('EMAIL_DEBUG') == 'True':
     # Use console backend for testing
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     DEFAULT_FROM_EMAIL = 'test@example.com'
+    print("[DEBUG] Mode EMAIL DEBUG activé - emails affichés en console")
 else:
     # Use SMTP for production/development
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

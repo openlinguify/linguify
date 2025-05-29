@@ -48,7 +48,12 @@ frontend/prisma/
 .qodo
 
 # === PRIVATE FILES (not for open source) ===
+# === JOBS SYSTEM (private business module) ===
+
+backend/media/
+frontend/src/core/api/jobsApi.ts
 private/
+screenshots/
 **/private/
 debug_*.html
 *.debug.html

@@ -51,6 +51,19 @@
         }
       ]
     },
+    "company": {
+      "title": "Bedrijf",
+      "items": [
+        {
+          "name": "Over ons",
+          "href": "/about"
+        },
+        {
+          "name": "Carrières",
+          "href": "/careers"
+        }
+      ]
+    },
     "copyright": {
       "rights": "© {year} Next-Corporation. Alle rechten voorbehouden.",
       "tagline": "Linguify zet zich in om onderwijs wereldwijd toegankelijk te maken."

@@ -13,44 +13,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='TestRecapQuestion',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('question_type', models.CharField(choices=[('multiple_choice', 'Multiple Choice'), ('fill_blank', 'Fill in the Blank'), ('matching', 'Matching'), ('reordering', 'Reordering'), ('speaking', 'Speaking'), ('vocabulary', 'Vocabulary')], max_length=50)),
-                ('multiple_choice_id', models.IntegerField(blank=True, null=True)),
-                ('fill_blank_id', models.IntegerField(blank=True, null=True)),
-                ('matching_id', models.IntegerField(blank=True, null=True)),
-                ('reordering_id', models.IntegerField(blank=True, null=True)),
-                ('speaking_id', models.IntegerField(blank=True, null=True)),
-                ('vocabulary_id', models.IntegerField(blank=True, null=True)),
-                ('order', models.PositiveIntegerField(default=1, help_text='Order in which this question appears in the test')),
-                ('points', models.PositiveIntegerField(default=1, help_text='Points awarded for correctly answering this question')),
-                ('test_recap', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='questions', to='course.testrecap')),
-            ],
-            options={
-                'verbose_name': 'Test Recap Question',
-                'verbose_name_plural': 'Test Recap Questions',
-                'ordering': ['test_recap', 'order'],
-            },
-        ),
-        migrations.CreateModel(
-            name='TestRecapResult',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('score', models.FloatField(help_text='Score as percentage (0-100)')),
-                ('passed', models.BooleanField(default=False)),
-                ('time_spent', models.PositiveIntegerField(help_text='Time spent in seconds')),
-                ('completed_at', models.DateTimeField(auto_now_add=True)),
-                ('detailed_results', models.JSONField(blank=True, default=dict, help_text="Format: {question_id: {correct: bool, time_spent: seconds, answer: user's answer}}")),
-                ('test_recap', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user_results', to='course.testrecap')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='test_results', to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'verbose_name': 'Test Recap Result',
-                'verbose_name_plural': 'Test Recap Results',
-                'ordering': ['-completed_at'],
-                'unique_together': {('user', 'test_recap', 'completed_at')},
-            },
-        ),
+        # No operations - TestRecap models already exist
     ]

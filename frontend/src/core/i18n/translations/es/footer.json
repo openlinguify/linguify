@@ -51,6 +51,19 @@
         }
       ]
     },
+    "company": {
+      "title": "Empresa",
+      "items": [
+        {
+          "name": "Acerca de",
+          "href": "/about"
+        },
+        {
+          "name": "Carreras",
+          "href": "/careers"
+        }
+      ]
+    },
     "copyright": {
       "rights": "© {year} Next-Corporation. Todos los derechos reservados.",
       "tagline": "Linguify está comprometido a hacer que la educación sea accesible en todo el mundo."

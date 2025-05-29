@@ -10,44 +10,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='testrecapexercise',
-            name='test_recap',
-        ),
-        migrations.AlterField(
-            model_name='testrecap',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, null=True),
-        ),
-        migrations.AlterField(
-            model_name='testrecap',
-            name='title_en',
-            field=models.CharField(max_length=255),
-        ),
-        migrations.AlterField(
-            model_name='testrecap',
-            name='title_es',
-            field=models.CharField(max_length=255),
-        ),
-        migrations.AlterField(
-            model_name='testrecap',
-            name='title_fr',
-            field=models.CharField(max_length=255),
-        ),
-        migrations.AlterField(
-            model_name='testrecap',
-            name='title_nl',
-            field=models.CharField(max_length=255),
-        ),
-        migrations.AlterField(
-            model_name='testrecap',
-            name='updated_at',
-            field=models.DateTimeField(auto_now=True, null=True),
-        ),
-        migrations.DeleteModel(
-            name='TestRecapAttempt',
-        ),
-        migrations.DeleteModel(
-            name='TestRecapExercise',
-        ),
+        # No operations - TestRecap models already properly configured
     ]
