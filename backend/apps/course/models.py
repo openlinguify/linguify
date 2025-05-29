@@ -518,8 +518,7 @@ class ContentLesson(models.Model):
 
   
     def save(self, *args, **kwargs):
-        """Override save to ensure content type is lowercase and validate duration"""
-        self.content_type = self.content_type.lower()
+        """Override save to validate duration"""
         if self.estimated_duration is None or self.estimated_duration < 1:
             self.estimated_duration = 1
         super().save(*args, **kwargs)

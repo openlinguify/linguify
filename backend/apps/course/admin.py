@@ -215,6 +215,46 @@ class SplitVocabularyForm(forms.Form):
         initial=True
     )
 
+# Inline pour afficher les mots de vocabulaire dans ContentLesson
+class VocabularyListInline(admin.TabularInline):
+    model = VocabularyList
+    extra = 0
+    readonly_fields = ('get_vocab_id', 'get_content_lesson_id')
+    fields = (
+        'get_vocab_id', 'get_content_lesson_id', 
+        'word_en', 'word_fr', 'word_es', 'word_nl', 
+        'definition_en', 'definition_fr', 'definition_es', 'definition_nl',
+        'word_type_en', 'word_type_fr', 'word_type_es', 'word_type_nl',
+        'example_sentence_en', 'example_sentence_fr', 'example_sentence_es', 'example_sentence_nl',
+        'synonymous_en', 'synonymous_fr', 'synonymous_es', 'synonymous_nl',
+        'antonymous_en', 'antonymous_fr', 'antonymous_es', 'antonymous_nl'
+    )
+    verbose_name = "Mot de vocabulaire"
+    verbose_name_plural = "Mots de vocabulaire associés"
+    can_delete = True
+    classes = ['vocabulary-inline']
+    
+    def get_vocab_id(self, obj):
+        """Affiche l'ID du vocabulaire avec un lien cliquable"""
+        if obj.pk:
+            url = reverse('admin:course_vocabularylist_change', args=[obj.pk])
+            return format_html('<strong><a href="{}" target="_blank" style="color: #007bff; text-decoration: none;">ID: {}</a></strong>', url, obj.pk)
+        return "Nouveau"
+    get_vocab_id.short_description = 'Vocab ID'
+    
+    def get_content_lesson_id(self, obj):
+        """Affiche l'ID de la ContentLesson avec un lien cliquable"""
+        if obj.content_lesson:
+            url = reverse('admin:course_contentlesson_change', args=[obj.content_lesson.pk])
+            return format_html('<strong><a href="{}" target="_blank" style="color: #28a745; text-decoration: none;">CL: {}</a></strong>', url, obj.content_lesson.pk)
+        return "-"
+    get_content_lesson_id.short_description = 'Content Lesson ID'
+    
+    class Media:
+        css = {
+            'all': ('admin/css/vocabulary_inline.css',)
+        }
+
 # Remplacer la classe ContentLessonAdmin existante par celle-ci
 @admin.register(ContentLesson)
 class ContentLessonAdmin(admin.ModelAdmin):
@@ -223,6 +263,12 @@ class ContentLessonAdmin(admin.ModelAdmin):
     search_fields = ('title_en', 'title_fr', 'instruction_en')
     ordering = ('lesson', 'order')
     actions = ['split_vocabulary_action']
+    
+    def get_inlines(self, request, obj):
+        """Afficher l'inline vocabulaire seulement pour les leçons de vocabulaire"""
+        if obj and 'vocabulary' in obj.content_type.lower():
+            return [VocabularyListInline]
+        return []
     
     def get_urls(self):
         urls = super().get_urls()
@@ -1931,26 +1977,150 @@ class TheoryContentAdmin(admin.ModelAdmin):
 
 @admin.register(VocabularyList)
 class VocabularyListAdmin(admin.ModelAdmin):
-    list_display = ('id', 'word_en', 'word_fr', 'word_type_en', 'content_lesson')
-    list_filter = ('content_lesson__lesson__unit', 'word_type_en')
-    search_fields = ('word_en', 'word_fr', 'definition_en')
+    list_display = ('id', 'get_words_display', 'get_definitions_display', 'get_word_type_display', 'get_content_lesson_display', 'get_unit_display', 'get_level_display')
+    list_filter = ('content_lesson__lesson__unit__level', 'content_lesson__lesson__unit', 'word_type_en', 'content_lesson__lesson__lesson_type')
+    search_fields = ('word_en', 'word_fr', 'word_es', 'word_nl', 'definition_en', 'definition_fr', 'content_lesson__title_en')
+    ordering = ('content_lesson__lesson__unit__order', 'content_lesson__order', 'id')
+    list_per_page = 500  # Augmenté pour afficher tous les mots sur une page
+    
     fieldsets = (
-        ('Lesson Reference', {
-            'fields': ('content_lesson',)
+        ('Refererences', {
+            'fields': ('get_vocab_info', 'content_lesson'),
+            'classes': ('wide',),
         }),
-        ('English', {
-            'fields': ('word_en', 'definition_en', 'example_sentence_en', 'word_type_en', 'synonymous_en', 'antonymous_en'),
-        }),
-        ('French', {
-            'fields': ('word_fr', 'definition_fr', 'example_sentence_fr', 'word_type_fr', 'synonymous_fr', 'antonymous_fr'),
-        }),
-        ('Spanish', {
-            'fields': ('word_es', 'definition_es', 'example_sentence_es', 'word_type_es', 'synonymous_es', 'antonymous_es'),
-        }),
-        ('Dutch', {
-            'fields': ('word_nl', 'definition_nl', 'example_sentence_nl', 'word_type_nl', 'synonymous_nl', 'antonymous_nl'),
+        ('Vocabulary Table', {
+            'fields': (
+                'word_en', 'word_fr', 'word_es', 'word_nl',
+                'word_type_en', 'word_type_fr', 'word_type_es', 'word_type_nl',
+                'definition_en', 'definition_fr', 'definition_es', 'definition_nl',
+                'example_sentence_en', 'example_sentence_fr', 'example_sentence_es', 'example_sentence_nl',
+                'synonymous_en', 'synonymous_fr', 'synonymous_es', 'synonymous_nl',
+                'antonymous_en', 'antonymous_fr', 'antonymous_es', 'antonymous_nl',
+            ),
+            'classes': ('wide', 'horizontal-table'),
         }),
     )
+    
+    readonly_fields = ('get_vocab_info',)
+    
+    def get_words_display(self, obj):
+        """Affiche les mots dans les 4 langues avec des couleurs"""
+        return format_html(
+            '<div style="line-height: 1.4;">'
+            '<span style="background-color: #fff3cd; padding: 2px 6px; border-radius: 3px; margin: 1px; display: inline-block;"><strong>EN:</strong> {}</span><br>'
+            '<span style="background-color: #d4edda; padding: 2px 6px; border-radius: 3px; margin: 1px; display: inline-block;"><strong>FR:</strong> {}</span><br>'
+            '<span style="background-color: #d1ecf1; padding: 2px 6px; border-radius: 3px; margin: 1px; display: inline-block;"><strong>ES:</strong> {}</span><br>'
+            '<span style="background-color: #f8d7da; padding: 2px 6px; border-radius: 3px; margin: 1px; display: inline-block;"><strong>NL:</strong> {}</span>'
+            '</div>',
+            obj.word_en, obj.word_fr, obj.word_es, obj.word_nl
+        )
+    get_words_display.short_description = 'Mots (4 langues)'
+    
+    def get_definitions_display(self, obj):
+        """Affiche les définitions condensées"""
+        return format_html(
+            '<div style="line-height: 1.3; font-size: 12px;">'
+            '<strong>EN:</strong> {}<br>'
+            '<strong>FR:</strong> {}'
+            '</div>',
+            obj.definition_en[:50] + '...' if len(obj.definition_en) > 50 else obj.definition_en,
+            obj.definition_fr[:50] + '...' if len(obj.definition_fr) > 50 else obj.definition_fr
+        )
+    get_definitions_display.short_description = 'Définitions (EN/FR)'
+    
+    def get_word_type_display(self, obj):
+        """Affiche le type de mot avec style"""
+        return format_html(
+            '<span style="background-color: #e9ecef; padding: 4px 8px; border-radius: 4px; font-weight: bold; color: #495057;">{}</span>',
+            obj.word_type_en
+        )
+    get_word_type_display.short_description = 'Type'
+    get_word_type_display.admin_order_field = 'word_type_en'
+    
+    def get_content_lesson_display(self, obj):
+        """Affiche la ContentLesson avec ID et titre complet"""
+        if obj.content_lesson:
+            url = reverse('admin:course_contentlesson_change', args=[obj.content_lesson.pk])
+            lesson_title = obj.content_lesson.lesson.title_en if obj.content_lesson.lesson else "N/A"
+            return format_html(
+                '<a href="{}" target="_blank" style="color: #28a745; text-decoration: none; font-weight: bold;">'
+                '<div style="background-color: #d4edda; padding: 6px 8px; border-radius: 4px; line-height: 1.3;">'
+                '📚 <strong>ID: {}</strong><br>'
+                '<span style="font-size: 11px;">{}</span><br>'
+                '<span style="font-size: 10px; color: #666;">{}</span>'
+                '</div></a>',
+                url, 
+                obj.content_lesson.pk,
+                obj.content_lesson.title_en,
+                lesson_title[:30] + '...' if len(lesson_title) > 30 else lesson_title
+            )
+        return "-"
+    get_content_lesson_display.short_description = 'Content Lesson'
+    get_content_lesson_display.admin_order_field = 'content_lesson'
+    
+    def get_unit_display(self, obj):
+        """Affiche l'unité avec style"""
+        if obj.content_lesson and obj.content_lesson.lesson:
+            unit = obj.content_lesson.lesson.unit
+            url = reverse('admin:course_unit_change', args=[unit.pk])
+            return format_html(
+                '<a href="{}" target="_blank" style="color: #6f42c1; text-decoration: none;">'
+                '<span style="background-color: #e2e3f0; padding: 3px 6px; border-radius: 3px; font-size: 12px;">'
+                'Unit {}'
+                '</span></a>',
+                url, unit.order
+            )
+        return "-"
+    get_unit_display.short_description = 'Unit'
+    
+    def get_level_display(self, obj):
+        """Affiche le niveau avec couleur"""
+        if obj.content_lesson and obj.content_lesson.lesson and obj.content_lesson.lesson.unit:
+            level = obj.content_lesson.lesson.unit.level
+            colors = {
+                'A1': '#28a745', 'A2': '#17a2b8',
+                'B1': '#ffc107', 'B2': '#fd7e14',
+                'C1': '#dc3545', 'C2': '#6f42c1'
+            }
+            color = colors.get(level, '#6c757d')
+            return format_html(
+                '<span style="background-color: {}; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold; font-size: 11px;">{}</span>',
+                color, level
+            )
+        return "-"
+    get_level_display.short_description = 'Niveau'
+    
+    def get_vocab_info(self, obj):
+        """Affiche les informations de contexte du vocabulaire"""
+        if obj.content_lesson:
+            lesson = obj.content_lesson.lesson
+            unit = lesson.unit if lesson else None
+            unit_url = reverse('admin:course_unit_change', args=[unit.pk]) if unit else '#'
+            contentlesson_url = reverse('admin:course_contentlesson_change', args=[obj.content_lesson.pk])
+            return format_html(
+                '<div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #007bff;">'
+                '<h4 style="margin: 0 0 10px 0; color: #007bff;">📍 Contexte du mot</h4>'
+                '<p><strong>ID Vocabulaire:</strong> #{}</p>'
+                '<p><strong>Unité:</strong> <a href="{}" target="_blank" style="color: #6f42c1; text-decoration: none; font-weight: bold;">{} ({})</a></p>'
+                '<p><strong>Content Lesson:</strong> <a href="{}" target="_blank" style="color: #28a745; text-decoration: none; font-weight: bold;">{} (ID: {})</a></p>'
+                '<p><strong>Ordre dans la leçon:</strong> {}</p>'
+                '<div style="margin-top: 15px; padding: 10px; background-color: #e3f2fd; border-radius: 4px;">'
+                '<p style="margin: 0; font-size: 12px;"><strong>🔗 Navigation rapide:</strong></p>'
+                '<a href="{}" target="_blank" style="display: inline-block; margin: 5px 10px 0 0; padding: 5px 10px; background-color: #28a745; color: white; text-decoration: none; border-radius: 3px; font-size: 11px;">✏️ Éditer ContentLesson</a>'
+                '<a href="{}" target="_blank" style="display: inline-block; margin: 5px 0 0 0; padding: 5px 10px; background-color: #6f42c1; color: white; text-decoration: none; border-radius: 3px; font-size: 11px;">📚 Voir Unité</a>'
+                '</div>'
+                '</div>',
+                obj.id, unit_url, unit.title_en if unit else 'N/A', unit.level if unit else 'N/A',
+                contentlesson_url, obj.content_lesson.title_en, obj.content_lesson.id, obj.content_lesson.order,
+                contentlesson_url, unit_url
+            )
+        return "Aucune information disponible"
+    get_vocab_info.short_description = 'Informations contextuelles'
+    
+    class Media:
+        css = {
+            'all': ('admin/css/vocabularylist_admin.css',)
+        }
 
 @admin.register(Numbers)
 class NumbersAdmin(admin.ModelAdmin):

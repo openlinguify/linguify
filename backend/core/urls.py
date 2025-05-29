@@ -34,6 +34,7 @@ urlpatterns = [
     path('api/contact/', views.contact_view, name='contact'),
     path('api/v1/notifications/', include('apps.notification.urls', namespace='notification')),
     path('api/v1/language_ai/', include('apps.language_ai.urls', namespace='language_ai')),
+    path('api/v1/jobs/', include('apps.jobs.urls', namespace='jobs')),
     # path('api/v1/flashcard/', include('flashcard.urls', namespace='flashcard')),
     # path('api/v1/task/', include('task.urls', namespace='task')),
     # path('api/v1/chat/', include('chat.urls', namespace='chat')),

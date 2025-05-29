@@ -1,0 +1,66 @@
+{
+  "fr": {
+    "hero": {
+      "title": "Carrières",
+      "subtitle": "Travaillez avec nous. Ensemble, nous sommes imbattables. Rejoignez notre équipe chez Linguify et participez à une mission extraordinaire pour révolutionner l'apprentissage des langues.",
+      "cta": "Découvrir nos postes ouverts"
+    },
+    "about": {
+      "title": "Qui nous sommes",
+      "description": "Chez Linguify, nous nous concentrons sur l'illumination des opportunités d'apprentissage. Notre succès découle des talents uniques et variés de notre #MeilleureÉquipe. Nous combinons une innovation primée avec une équipe de personnes passionnées et intelligentes d'horizons divers. Nous encourageons les membres de notre équipe à s'exprimer librement et à s'efforcer d'être la meilleure version d'eux-mêmes chaque jour."
+    },
+    "dna": {
+      "title": "Notre ADN Linguify",
+      "values": [
+        {
+          "title": "Le travail significatif compte",
+          "description": "Chez Linguify, chaque jour est une opportunité d'avoir un impact. Nous avons une vision claire de nos objectifs, pourquoi ils comptent, et comment les atteindre. C'est ce qui nous rend performants. Dans ce parcours, nous voulons que vous fonciez, posiez ces questions brûlantes, fassiez sensation, et n'arrêtiez jamais d'apprendre et de grandir."
+        },
+        {
+          "title": "Poursuite de l'excellence",
+          "description": "Nous nous élevons mutuellement vers des sommets toujours plus hauts. Chez Linguify, l'excellence n'est pas un objectif, c'est un mode de vie. Nous encourageons l'innovation, la créativité et l'amélioration continue dans tout ce que nous faisons."
+        }
+      ]
+    },
+    "positions": {
+      "title": "Nos postes ouverts",
+      "departments": "Tous les départements",
+      "noPositions": "Aucun poste disponible pour le moment. Revenez bientôt !",
+      "apply": "Postuler"
+    },
+    "benefits": {
+      "title": "Ce que nous offrons",
+      "items": [
+        {
+          "title": "Santé & bien-être",
+          "description": "Nous vous couvrons, de la tête aux pieds. Nos avantages garantissent votre bien-être physique et mental avec un temps libre suffisant et deux journées spéciales de bien-être à l'échelle de l'entreprise."
+        },
+        {
+          "title": "Travail hybride",
+          "description": "Avec trois bureaux mondiaux et des centaines de bureaux à domicile, nous soutenons nos équipes où qu'elles donnent le meilleur d'elles-mêmes. Flexibilité et équilibre vie-travail sont notre priorité."
+        },
+        {
+          "title": "Formation continue",
+          "description": "Nous investissons dans votre croissance professionnelle avec des formations, des conférences et des opportunités d'apprentissage continu pour développer vos compétences."
+        },
+        {
+          "title": "Innovation",
+          "description": "Participez à des projets innovants qui façonnent l'avenir de l'apprentissage des langues. Votre créativité et vos idées sont valorisées et encouragées."
+        },
+        {
+          "title": "Équipe internationale",
+          "description": "Travaillez avec des collègues talentueux du monde entier. Découvrez différentes cultures et perspectives dans un environnement de travail inclusif."
+        },
+        {
+          "title": "Avantages sociaux",
+          "description": "Bénéficiez d'une couverture santé complète, de congés payés généreux, de tickets restaurant et d'autres avantages adaptés à vos besoins."
+        }
+      ]
+    },
+    "contact": {
+      "title": "Vous ne trouvez pas votre poste idéal ?",
+      "description": "Pas de soucis ! Envoyez-nous un message et explorons ensemble comment vous pouvez briller chez Linguify.",
+      "cta": "Contactez-nous"
+    }
+  }
+}

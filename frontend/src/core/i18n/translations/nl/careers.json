@@ -1,0 +1,66 @@
+{
+  "nl": {
+    "hero": {
+      "title": "Carrières",
+      "subtitle": "Werk met ons samen. Samen zijn we onstuitbaar. Sluit je aan bij ons team bij Linguify en maak deel uit van een buitengewone missie om taalonderwijs te revolutioneren.",
+      "cta": "Verken onze openstaande posities"
+    },
+    "about": {
+      "title": "Wie we zijn",
+      "description": "Bij Linguify richten we ons op het verlichten van leermogelijkheden. Ons succes komt voort uit de unieke en gevarieerde talenten van ons #BesteTeamOoit. We combineren bekroonde innovatie met een team van gepassioneerde en intelligente individuen uit diverse achtergronden. We moedigen onze teamleden aan om zich vrij uit te drukken en ernaar te streven elke dag hun beste zelf te zijn."
+    },
+    "dna": {
+      "title": "Ons Linguify DNA",
+      "values": [
+        {
+          "title": "Betekenisvol werk telt",
+          "description": "Bij Linguify is elke dag een kans om impact te maken. We hebben een duidelijke visie op onze doelen, waarom ze ertoe doen en hoe we ze kunnen bereiken. Dat is wat ons succesvol maakt. Op deze reis willen we dat je ervoor gaat, die brandende vragen stelt, voor opschudding zorgt en nooit stopt met leren en groeien."
+        },
+        {
+          "title": "Streven naar grootsheid",
+          "description": "We tillen elkaar naar steeds grotere hoogten. Bij Linguify is excellentie geen doel, het is een manier van leven. We moedigen innovatie, creativiteit en continue verbetering aan in alles wat we doen."
+        }
+      ]
+    },
+    "positions": {
+      "title": "Onze openstaande rollen",
+      "departments": "Alle Afdelingen",
+      "noPositions": "Geen posities beschikbaar op dit moment. Kom snel terug!",
+      "apply": "Solliciteren"
+    },
+    "benefits": {
+      "title": "Wat we bieden",
+      "items": [
+        {
+          "title": "Gezondheid & welzijn",
+          "description": "We hebben je gedekt, van top tot teen. Onze voordelen zorgen voor je fysieke en mentale welzijn met ruime vrije tijd en twee speciale bedrijfsbrede welzijnsdagen."
+        },
+        {
+          "title": "Hybride werkplek",
+          "description": "Met drie wereldwijde hubs en honderden thuiskantoren ondersteunen we onze teams waar ze het beste presteren. Flexibiliteit en werk-privébalans zijn onze prioriteit."
+        },
+        {
+          "title": "Continu leren",
+          "description": "We investeren in je professionele groei met training, conferenties en continue leermogelijkheden om je vaardigheden te ontwikkelen."
+        },
+        {
+          "title": "Innovatie",
+          "description": "Neem deel aan innovatieve projecten die de toekomst van taalonderwijs vormgeven. Je creativiteit en ideeën worden gewaardeerd en aangemoedigd."
+        },
+        {
+          "title": "Internationaal team",
+          "description": "Werk samen met getalenteerde collega's van over de hele wereld. Ontdek verschillende culturen en perspectieven in een inclusieve werkomgeving."
+        },
+        {
+          "title": "Voordelenpakket",
+          "description": "Geniet van uitgebreide zorgverzekering, royale betaalde vrije tijd, maaltijdbonnen en andere voordelen op maat van jouw behoeften."
+        }
+      ]
+    },
+    "contact": {
+      "title": "Zie je je perfecte match niet?",
+      "description": "Geen zorgen! Stuur ons een bericht en laten we onderzoeken hoe jij kunt schitteren bij Linguify.",
+      "cta": "Neem contact op"
+    }
+  }
+}

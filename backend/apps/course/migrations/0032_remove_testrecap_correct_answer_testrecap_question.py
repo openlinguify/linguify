@@ -10,13 +10,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='testrecap',
-            name='correct_answer',
-        ),
-        migrations.AddField(
-            model_name='testrecap',
-            name='question',
-            field=models.CharField(default='Test', max_length=255),
-        ),
+        # No operations - TestRecap models already configured
     ]

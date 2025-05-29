@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Linguify. See LICENSE file for full copyright and licensing details.
+
 from django.contrib import admin
 from django.shortcuts import render, redirect
 from django.contrib import messages

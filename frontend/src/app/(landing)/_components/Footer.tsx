@@ -174,6 +174,9 @@ export const Footer: React.FC = () => {
             {/* Support Links */}
             {t.support && <LinkSection title={t.support.title} items={t.support.items} />}
 
+            {/* Company Links */}
+            {t.company && <LinkSection title={t.company.title} items={t.company.items} />}
+
             {/* Legal Links */}
             <LinkSection title={t.legal.title} items={t.legal.items} />
 
