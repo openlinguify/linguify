@@ -61,4 +61,4 @@ debug_*.html
 # === CLAUDE AI ===
 **/.claude/settings.local.json
 **/CLAUDE.local.md
-
+.claude/
