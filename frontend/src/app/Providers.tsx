@@ -2,7 +2,8 @@
 // src/app/Providers.tsx
 import React, { useEffect } from 'react';
 import { ThemeProvider } from 'next-themes';
-import { AuthProvider } from '@/core/auth/AuthProvider';
+import { AuthProvider } from '@/core/auth/AuthAdapter';  // Compatibility adapter
+import { SupabaseAuthProvider } from '@/core/auth/SupabaseAuthProvider';
 import { UserSettingsProvider } from '@/core/context/UserSettingsContext';
 import { OnboardingProvider } from '@/components/onboarding/OnboardingProvider';
 import { NotificationProvider } from '@/core/context/NotificationContext';
@@ -30,20 +31,22 @@ export default function Providers({ children }: ProvidersProps) {
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <QueryProvider>
         <LanguageProvider>
-          <AuthProvider>
-            <UserSettingsProvider>
-              <LanguageSyncProvider>
-                <NotificationProvider>
-                  <OnboardingProvider>
-                    <ServiceWorkerRegistration />
-                    {children}
-                    <Toaster />
-                    <LanguageTransition />
-                  </OnboardingProvider>
-                </NotificationProvider>
-              </LanguageSyncProvider>
-            </UserSettingsProvider>
-          </AuthProvider>
+          <SupabaseAuthProvider>
+            <AuthProvider>
+              <UserSettingsProvider>
+                <LanguageSyncProvider>
+                  <NotificationProvider>
+                    <OnboardingProvider>
+                      <ServiceWorkerRegistration />
+                      {children}
+                      <Toaster />
+                      <LanguageTransition />
+                    </OnboardingProvider>
+                  </NotificationProvider>
+                </LanguageSyncProvider>
+              </UserSettingsProvider>
+            </AuthProvider>
+          </SupabaseAuthProvider>
         </LanguageProvider>
       </QueryProvider>
     </ThemeProvider>

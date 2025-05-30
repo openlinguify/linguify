@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuthContext } from '@/core/auth/AuthProvider';
+import { useAuthContext } from '@/core/auth/AuthAdapter';
 
 interface TermsStatus {
   terms_accepted: boolean;

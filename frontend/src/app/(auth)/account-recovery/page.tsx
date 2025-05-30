@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle, CheckCircle, Clock, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import apiClient from '@/core/api/apiClient';
-import { useAuthContext } from '@/core/auth/AuthProvider';
+import { useAuthContext } from '@/core/auth/AuthAdapter';
 
 export default function AccountRecoveryPage() {
   const router = useRouter();
@@ -34,10 +34,10 @@ export default function AccountRecoveryPage() {
   useEffect(() => {
     if (isAuthenticated && user) {
       if (!user.is_pending_deletion) {
-        // If account is not pending deletion, redirect to dashboard
+        // If account is not pending deletion, redirect to home
         setError("Your account is not scheduled for deletion.");
         setTimeout(() => {
-          router.push('/dashboard');
+          router.push('/');
         }, 3000);
       } else {
         // Set deletion information
@@ -60,9 +60,9 @@ export default function AccountRecoveryPage() {
       if (response.data.success) {
         setSuccess(response.data.message || "Your account has been restored successfully.");
         
-        // Redirect to dashboard after a delay
+        // Redirect to home after a delay
         setTimeout(() => {
-          router.push('/dashboard');
+          router.push('/');
         }, 3000);
       } else {
         throw new Error(response.data.message || "Failed to restore account");
@@ -102,8 +102,8 @@ export default function AccountRecoveryPage() {
             <CardDescription>{error}</CardDescription>
           </CardHeader>
           <CardFooter className="flex justify-center">
-            <Button onClick={() => router.push('/dashboard')}>
-              Return to Dashboard
+            <Button onClick={() => router.push('/')}>
+              Return to Home
             </Button>
           </CardFooter>
         </Card>
@@ -123,8 +123,8 @@ export default function AccountRecoveryPage() {
             <CardDescription>{success}</CardDescription>
           </CardHeader>
           <CardFooter className="flex justify-center">
-            <Button onClick={() => router.push('/dashboard')}>
-              Return to Dashboard
+            <Button onClick={() => router.push('/')}>
+              Return to Home
             </Button>
           </CardFooter>
         </Card>

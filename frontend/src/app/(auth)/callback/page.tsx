@@ -1,153 +1,86 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useSupabaseAuth } from '@/core/auth/SupabaseAuthProvider'
 
 export default function CallbackPage() {
-  const { isAuthenticated, isLoading, error, user } = useAuth0();
-  const router = useRouter();
-  const [processingTime, setProcessingTime] = useState(0);
-  const [timeoutReached, setTimeoutReached] = useState(false);
+  const router = useRouter()
+  const { user, loading } = useSupabaseAuth()
+  const [error, setError] = useState<string | null>(null)
 
-  // Compteur pour détecter les blocages
   useEffect(() => {
-    const startTime = Date.now();
-    const interval = setInterval(() => {
-      const currentTime = Math.floor((Date.now() - startTime) / 1000);
-      setProcessingTime(currentTime);
-      
-      // Après 15 secondes, considérer qu'il y a un problème
-      if (currentTime > 15) {
-        setTimeoutReached(true);
-      }
-    }, 1000);
-    
-    return () => clearInterval(interval);
-  }, []);
-
-  // Traitement du retour Auth0
-  useEffect(() => {
-    console.log("[Auth Flow] Callback page loaded, processing Auth0 response");
-    console.log("[Auth Flow] Auth0 state:", {
-      isLoading,
-      isAuthenticated,
-      hasUser: !!user,
-      hasError: !!error,
-      url: typeof window !== 'undefined' ? window.location.href : 'SSR'
-    });
-
-    // Débloquer automatiquement après 30 secondes quoi qu'il arrive
-    const emergencyTimeout = setTimeout(() => {
-      console.log("[Auth Flow] Emergency timeout triggered after 30s, forcing redirect");
-      router.push('/');
-    }, 30000);
-
-    if (!isLoading) {
-      if (isAuthenticated && user) {
-        console.log("[Auth Flow] User successfully authenticated with Auth0", {
-          email: user.email,
-          name: user.name,
-          sub: user.sub
-        });
-
-        // Récupérer la destination de retour (si spécifiée dans state)
-        let returnTo = '/';
-        try {
-          const urlParams = new URLSearchParams(window.location.search);
-          const stateParam = urlParams.get('state');
-          const codeParam = urlParams.get('code');
-
-          console.log("[Auth Flow] Auth0 callback parameters", {
-            hasState: !!stateParam,
-            hasCode: !!codeParam
-          });
-
-          if (stateParam) {
-            try {
-              const decodedState = JSON.parse(atob(stateParam));
-              if (decodedState && decodedState.returnTo) {
-                returnTo = decodedState.returnTo;
-                console.log(`[Auth Flow] Return destination found in state: ${returnTo}`);
-              }
-            } catch (e) {
-              console.log("[Auth Flow] Could not parse state as JSON");
-              if (stateParam.startsWith('/')) {
-                returnTo = stateParam;
-                console.log(`[Auth Flow] Using state directly as returnTo: ${returnTo}`);
-              }
-            }
-          }
-        } catch (e) {
-          console.error("[Auth Flow] Error processing state:", e);
+    const handleCallback = async () => {
+      try {
+        // Check for error in URL params
+        const urlParams = new URLSearchParams(window.location.search)
+        const error = urlParams.get('error')
+        const errorDescription = urlParams.get('error_description')
+        
+        if (error) {
+          setError(errorDescription || error)
+          return
         }
 
-        // Redirection instantanée après authentification réussie
-        console.log(`[Auth Flow] Authentication successful, redirecting to: ${returnTo}`);
-        router.push(returnTo);
-      } else if (error) {
-        console.error("[Auth Flow] Auth0 authentication error:", error);
-        setTimeoutReached(true);
-      } else if (!isAuthenticated && !isLoading) {
-        console.log("[Auth Flow] Callback executed but user is not authenticated and no error was reported");
+        // Wait for loading to complete
+        if (!loading) {
+          if (user) {
+            // User is authenticated, redirect to home page
+            router.push('/')
+          } else {
+            // No user found, redirect to login
+            router.push('/login')
+          }
+        }
+      } catch (err) {
+        console.error('Callback error:', err)
+        setError('Une erreur est survenue lors de la connexion')
       }
     }
 
-    return () => clearTimeout(emergencyTimeout);
-  }, [isAuthenticated, isLoading, error, router, user]);
+    handleCallback()
+  }, [user, loading, router])
 
-  // Afficher une interface de secours en cas de problème
-  if (timeoutReached || (processingTime > 10 && !isLoading && !isAuthenticated)) {
+  if (error) {
     return (
-      <div className="fixed inset-0 flex flex-col items-center justify-center bg-white p-4">
-        <div className="max-w-md w-full text-center">
-          <div className="mb-6">
-            <Image 
-              src="/logo.png" 
-              alt="Linguify Logo" 
-              width={80} 
-              height={80} 
-              className="mx-auto"
-              onError={(e) => {
-                const target = e.target as HTMLElement;
-                target.style.display = 'none';
-              }}
-            />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            {error ? "Erreur d'authentification" : "La connexion prend plus de temps que prévu"}
-          </h2>
-          <p className="text-gray-600 mb-6">
-            {error 
-              ? `Une erreur s'est produite : ${error.message || 'Erreur inconnue'}`
-              : "Nous rencontrons des difficultés à finaliser votre connexion."}
-          </p>
-          <div className="space-y-4">
-            <button 
-              onClick={() => router.push('/login')}
-              className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors"
-            >
-              Réessayer la connexion
-            </button>
-            <button 
-              onClick={() => router.push('/')}
-              className="w-full py-3 px-4 border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-lg transition-colors"
-            >
-              Retourner à l'accueil
-            </button>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">Erreur de connexion</h3>
+            <p className="mt-1 text-sm text-gray-500">{error}</p>
+            <div className="mt-6">
+              <button
+                onClick={() => router.push('/login')}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+              >
+                Retour à la connexion
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  // Interface minimale pendant le traitement
+  // Loading state
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-white">
-      <div className="relative w-16 h-16">
-        <div className="absolute top-0 left-0 w-full h-full rounded-full border-4 border-transparent border-t-purple-600 border-r-indigo-500 animate-spin"></div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <div className="relative w-16 h-16 mx-auto">
+          <div className="absolute top-0 left-0 w-full h-full rounded-full border-4 border-transparent border-t-purple-600 border-r-indigo-500 animate-spin"></div>
+          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+            <div className="w-8 h-8 text-indigo-600 text-xl font-bold">L</div>
+          </div>
+        </div>
+        <p className="mt-4 text-lg text-gray-700 font-medium">
+          Finalisation de votre connexion...
+        </p>
       </div>
     </div>
-  );
+  )
 }

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/popover";
 import { LessonNotification } from "./LessonNotification";
 import lastAccessedLessonService, { LastAccessedLesson } from "@/core/api/lastAccessedLessonService";
-import { useAuthContext } from "@/core/auth/AuthProvider";
+import { useAuthContext } from "@/core/auth/AuthAdapter";
 
 interface NotificationButtonProps {
   count?: number;

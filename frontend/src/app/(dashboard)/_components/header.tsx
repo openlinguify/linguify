@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useAuthContext } from "@/core/auth/AuthProvider";
+import { useAuthContext } from "@/core/auth/AuthAdapter";
 import { useTranslation } from "@/core/i18n/useTranslations";
 
 // Import refactored components

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 // Hooks
-import { useAuthContext } from '@/core/auth/AuthProvider';
+import { useAuthContext } from '@/core/auth/AuthAdapter';
 import { useOnboardingForm } from './hooks/useOnboardingForm';
 import { useOnboardingValidation } from './hooks/useOnboardingValidation';
 import { useFocusManagement } from './hooks/useFocusManagement';

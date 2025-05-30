@@ -20,7 +20,7 @@ import { useNotifications } from '@/core/context/NotificationContext';
 import { NotificationType } from '@/core/types/notification.types';
 import { useTranslation } from "@/core/i18n/useTranslations";
 import { toast } from '@/components/ui/use-toast';
-import { useAuthContext } from '@/core/auth/AuthProvider';
+import { useAuthContext } from '@/core/auth/AuthAdapter';
 import notificationWebsocket from '@/core/api/notificationWebsocket';
 
 interface SubscriptionSetting {

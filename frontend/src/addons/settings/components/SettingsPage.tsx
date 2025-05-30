@@ -30,7 +30,7 @@ import {
   Mail,
   Calendar,
 } from "lucide-react";
-import { useAuthContext } from "@/core/auth/AuthProvider";
+import { useAuthContext } from "@/core/auth/AuthAdapter";
 import { useLanguageSync } from "@/core/i18n/useLanguageSync";
 import { useTranslation } from "@/core/i18n/useTranslations";
 import { triggerLanguageTransition, TransitionType } from "@/core/i18n/LanguageTransition";

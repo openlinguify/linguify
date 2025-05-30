@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useRouter } from 'next/navigation';
-import { useAuthContext } from '@/core/auth/AuthProvider';
+import { useAuthContext } from '@/core/auth/AuthAdapter';
 import authService from '@/core/auth/authService';
 import { TermsModal } from './index';
 

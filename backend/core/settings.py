@@ -96,7 +96,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'apps.authentication.auth0_auth.Auth0Authentication',
+        'apps.authentication.supabase_auth.SupabaseAuthentication',
+        # 'apps.authentication.auth0_auth.Auth0Authentication',  # Legacy for migration
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -131,10 +132,18 @@ if DEBUG:
     SESSION_COOKIE_HTTPONLY = True
 
 
-AUTH0_DOMAIN = env('AUTH0_DOMAIN')
-AUTH0_CLIENT_ID = env('AUTH0_CLIENT_ID')
-AUTH0_CLIENT_SECRET = env('AUTH0_CLIENT_SECRET')
-AUTH0_AUDIENCE = env('AUTH0_AUDIENCE')
+# Supabase Configuration
+SUPABASE_URL = env('SUPABASE_URL')
+SUPABASE_ANON_KEY = env('SUPABASE_ANON_KEY')
+SUPABASE_SERVICE_ROLE_KEY = env('SUPABASE_SERVICE_ROLE_KEY')
+SUPABASE_PROJECT_ID = env('SUPABASE_PROJECT_ID')
+SUPABASE_JWT_SECRET = env('SUPABASE_JWT_SECRET')
+
+# Legacy Auth0 Configuration (for migration purposes)
+AUTH0_DOMAIN = env('AUTH0_DOMAIN', default='')
+AUTH0_CLIENT_ID = env('AUTH0_CLIENT_ID', default='')
+AUTH0_CLIENT_SECRET = env('AUTH0_CLIENT_SECRET', default='')
+AUTH0_AUDIENCE = env('AUTH0_AUDIENCE', default='')
 AUTH0_CALLBACK_URL = f"{BACKEND_URL}/api/auth/callback/"
 FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:3000')
 FRONTEND_CALLBACK_URL = f"{FRONTEND_URL}/callback"
@@ -267,17 +276,35 @@ if os.environ.get('TEST_MODE') == 'True':
         }
     }
 else:
-    # Use PostgreSQL for production/development
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env('DB_NAME'),
-            'USER': env('DB_USER'),
-            'PASSWORD': env('DB_PASSWORD'),
-            'HOST': env('DB_HOST', default='localhost'),
-            'PORT': env('DB_PORT', default='5432'),
+    # Use Supabase PostgreSQL for production/development
+    use_supabase_db = env.bool('USE_SUPABASE_DB', default=True)
+    
+    if use_supabase_db:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': env('SUPABASE_DB_NAME', default='postgres'),
+                'USER': env('SUPABASE_DB_USER'),
+                'PASSWORD': env('SUPABASE_DB_PASSWORD'),
+                'HOST': env('SUPABASE_DB_HOST'),
+                'PORT': env('SUPABASE_DB_PORT', default='6543'),
+                'OPTIONS': {
+                    'sslmode': 'require',
+                },
+            }
         }
-    }
+    else:
+        # Use local PostgreSQL for development
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': env('DB_NAME'),
+                'USER': env('DB_USER'),
+                'PASSWORD': env('DB_PASSWORD'),
+                'HOST': env('DB_HOST', default='localhost'),
+                'PORT': env('DB_PORT', default='5432'),
+            }
+        }
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [

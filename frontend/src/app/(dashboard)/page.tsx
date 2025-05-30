@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, Brain, NotebookPen, Settings, User, HandHelping, MessageCircle } from "lucide-react";
 import Link from "next/link";
-import { useAuthContext } from "@/core/auth/AuthProvider";
+import { useAuthContext } from "@/core/auth/AuthAdapter";
 import { useTranslation } from "@/core/i18n/useTranslations";
 import { useLanguage } from "@/core/hooks/useLanguage";
 import { Button } from "@/components/ui/button";

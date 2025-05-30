@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/accordion';
 import { toast } from '@/components/ui/use-toast';
 import pushNotificationService from '@/core/api/pushNotificationService';
-import { useAuthContext } from '@/core/auth/AuthProvider';
+import { useAuthContext } from '@/core/auth/AuthAdapter';
 
 interface PushNotificationManagerProps {
   className?: string;

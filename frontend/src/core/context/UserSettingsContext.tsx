@@ -1,7 +1,7 @@
 // src/core/context/UserSettingsContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import apiClient from '@/core/api/apiClient';
-import { useAuthContext } from '@/core/auth/AuthProvider';
+import { useAuthContext } from '@/core/auth/AuthAdapter';
 import { toast } from '@/components/ui/use-toast';
 import { DEFAULT_USER_SETTINGS } from '@/addons/settings/constants/usersettings';
 
@@ -300,12 +300,12 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   // Fonction helper pour obtenir la langue cible formatée
   const getTargetLanguage = () => {
-    return settings.target_language.toLowerCase();
+    return settings.target_language?.toLowerCase() || 'en';
   };
 
   // Fonction helper pour obtenir la langue maternelle formatée
   const getNativeLanguage = () => {
-    return settings.native_language.toLowerCase();
+    return settings.native_language?.toLowerCase() || 'fr';
   };
 
   // Fonction helper pour obtenir le niveau de langue
