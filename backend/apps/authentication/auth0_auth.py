@@ -12,10 +12,16 @@ from uuid import uuid4
 
 # Fix for newer versions of PyJWT
 try:
-    from jwt.exceptions import InvalidKeyError
-except ImportError:
-    # Use InvalidKeyTypeError as InvalidKeyError for newer PyJWT versions
     from jwt.exceptions import InvalidKeyTypeError as InvalidKeyError
+    from jwt.exceptions import JWTException as InvalidTokenError
+    from jwt.exceptions import JWTException as ExpiredSignatureError
+except ImportError:
+    # Fallback for older PyJWT versions
+    try:
+        from jwt.exceptions import InvalidKeyError, ExpiredSignatureError, InvalidTokenError
+    except ImportError:
+        from jwt import InvalidTokenError, ExpiredSignatureError
+        InvalidKeyError = Exception
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -145,7 +151,7 @@ class Auth0Authentication(authentication.BaseAuthentication):
                 
                 return payload
                 
-            except jwt.InvalidTokenError as e:
+            except InvalidTokenError as e:
                 # Specifically handle "token not yet valid" errors with more detail
                 if 'invalid claim' in str(e) and 'iat' in str(e):
                     try:
@@ -416,12 +422,18 @@ class Auth0Authentication(authentication.BaseAuthentication):
             # Authentication failed
             raise exceptions.AuthenticationFailed('Invalid authentication credentials')
         
-        except jwt.ExpiredSignatureError:
-            logger.error("Token has expired")
-            raise exceptions.AuthenticationFailed('Token has expired')
-        except jwt.InvalidTokenError:
-            logger.error("Invalid token")
-            raise exceptions.AuthenticationFailed('Invalid token')
+        except Exception as jwt_error:
+            # Handle JWT-related errors
+            error_msg = str(jwt_error)
+            if 'expired' in error_msg.lower():
+                logger.error("Token has expired")
+                raise exceptions.AuthenticationFailed('Token has expired')
+            elif any(term in error_msg.lower() for term in ['invalid', 'signature', 'token']):
+                logger.error(f"Invalid token: {error_msg}")
+                raise exceptions.AuthenticationFailed('Invalid token')
+            else:
+                logger.error(f"JWT error: {error_msg}")
+                raise exceptions.AuthenticationFailed('Authentication failed')
         except Exception as e:
             if isinstance(e, exceptions.AuthenticationFailed):
                 raise

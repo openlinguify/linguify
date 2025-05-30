@@ -1,19 +1,56 @@
+# Version obsolète supprimée pour éviter l'avertissement
+
 services:
+  # PostgreSQL Database
   db:
-    image: postgres
+    image: postgres:15
     restart: always
     environment:
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - 5432:5432
+      - "${DB_PORT}:5432"
     volumes:
       - linguify_pgdata:/var/lib/postgresql/data
- 
-  adminer:
-    image: adminer
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
     restart: always
     ports:
-      - 8080:8080
- 
+      - "6379:6379"
+    volumes:
+      - linguify_redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Database Admin Interface (optional)
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+
 volumes:
   linguify_pgdata:
+    driver: local
+  linguify_redis_data:
+    driver: local
+
+networks:
+  default:
+    name: linguify-network

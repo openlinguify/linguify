@@ -1,34 +1,12 @@
-version: '3'
+# Override file pour extensions futures
+# Ce fichier est utilisé pour ajouter des services supplémentaires
+# Pour l'instant, nous gardons seulement les services de base
 
-services:
-  # Main web application
-  web:
-    # Keep existing web service configuration
-
-  # Scheduled tasks service
-  scheduled-tasks:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: >
-      bash -c "
-        echo '0 0 * * * cd /app && python manage.py process_deleted_accounts >> /var/log/cron.log 2>&1' > /etc/cron.d/process_deleted_accounts && 
-        chmod 0644 /etc/cron.d/process_deleted_accounts && 
-        crontab /etc/cron.d/process_deleted_accounts && 
-        touch /var/log/cron.log && 
-        cron -f
-      "
-    volumes:
-      - .:/app
-      - ./logs:/var/log
-    depends_on:
-      - db
-      - redis
-    networks:
-      - linguify-network
-    restart: unless-stopped
-
-# Use the same networks as in the main docker-compose.yml
-networks:
-  linguify-network:
-    driver: bridge
+# Pour ajouter des tâches programmées plus tard, décommentez :
+# services:
+#   scheduled-tasks:
+#     image: python:3.12
+#     command: echo "Scheduled tasks placeholder"
+#     depends_on:
+#       - db
+#       - redis
