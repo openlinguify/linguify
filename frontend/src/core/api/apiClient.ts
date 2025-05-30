@@ -1,6 +1,6 @@
 // Unified API Client with authentication and performance optimizations
 import axios, { AxiosRequestConfig, AxiosError, AxiosInstance } from 'axios';
-import authService from '../auth/authService';
+import { supabaseAuthService } from '../auth/supabaseAuthService';
 
 // Cache implementation for GET requests
 const cache = new Map<string, { data: any; timestamp: number }>();
@@ -46,7 +46,7 @@ export function createAuthenticatedApiClient(
     async (config: AxiosRequestConfig) => {
       try {
         // Add auth token
-        const token = authService.getAuthToken();
+        const token = await supabaseAuthService.getAccessToken();
         
         if (token) {
           config.headers = config.headers || {};
@@ -248,7 +248,7 @@ export function createAuthenticatedApiClient(
 }
 
 // Create different instances for different use cases
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 // Standard API client with caching (default)
 export const apiClient = createAuthenticatedApiClient(API_BASE_URL);

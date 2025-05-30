@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { useAuthContext } from '@/core/auth/AuthProvider';
+import { useAuthContext } from '@/core/auth/AuthAdapter';
 import { useToast } from '@/components/ui/use-toast';
 import { useTranslation } from '@/core/i18n/useTranslations';
 import apiClient from '@/core/api/apiClient';

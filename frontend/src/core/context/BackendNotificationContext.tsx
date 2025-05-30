@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useAuthContext } from '@/core/auth/AuthProvider';
+import { useAuthContext } from '@/core/auth/AuthAdapter';
 import { useUserSettings } from '@/core/context/UserSettingsContext';
 import notificationApi, { NotificationDto, NotificationActionDto } from '@/core/api/notificationApi';
 import notificationWebsocket from '@/core/api/notificationWebsocket';

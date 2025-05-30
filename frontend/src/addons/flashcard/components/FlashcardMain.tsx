@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import FlashcardDeckList from './FlashcardDeckList';
 import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
 import type { FlashcardDeck } from "@/addons/flashcard/types";
-import { useAuthContext } from "@/core/auth/AuthProvider";
+import { useAuthContext } from "@/core/auth/AuthAdapter";
 import { useTranslation } from "@/core/i18n/useTranslations";
 
 const FlashcardMain = () => {

@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/core/utils/utils";
 import LanguageSwitcher from "./LanguageSwitcher";
-import { useAuthContext } from "@/core/auth/AuthProvider";
+import { useAuthContext } from "@/core/auth/AuthAdapter";
 
 // Import translations
 import enTranslations from "@/core/i18n/translations/en/common.json";

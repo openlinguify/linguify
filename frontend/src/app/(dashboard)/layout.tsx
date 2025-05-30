@@ -5,7 +5,7 @@ import React, { useEffect, useMemo } from "react";
 import Header from "./_components/header";
 import { usePathname } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { useAuthContext } from "@/core/auth/AuthProvider";
+import { useAuthContext } from "@/core/auth/AuthAdapter";
 import { useTranslation } from "@/core/i18n/useTranslations";
 import { useTermsGuard } from "@/core/auth/termsGuard";
 import TermsAcceptance from "@/components/terms/TermsAcceptance";

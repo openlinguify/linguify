@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useAuthContext } from '@/core/auth/AuthProvider';
+import { useAuthContext } from '@/core/auth/AuthAdapter';
 import { useUserSettings } from '@/core/context/UserSettingsContext';
 import { notificationService } from '@/core/api/notificationService';
 import { useEffect as useReactEffect } from 'react';

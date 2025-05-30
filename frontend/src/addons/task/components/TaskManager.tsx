@@ -30,7 +30,7 @@ import {
   AlertDialogTitle,
 } from "@components/ui/alert-dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useAuthContext } from "@/core/auth/AuthProvider";
+import { useAuthContext } from "@/core/auth/AuthAdapter";
 import { taskAPI } from "../services/taskAPI";
 
 interface Task {

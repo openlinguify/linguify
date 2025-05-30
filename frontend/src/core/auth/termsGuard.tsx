@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthContext } from './AuthProvider';
+import { useAuthContext } from './AuthAdapter';
 import { useTermsAcceptance } from '@/core/hooks/useTermsAcceptance';
 import TermsAcceptance from '@/components/terms/TermsAcceptance';
 

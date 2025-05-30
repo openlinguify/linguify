@@ -22,7 +22,7 @@ jest.mock('../hooks/useOnboardingValidation', () => ({
   useOnboardingValidation: jest.fn(),
 }));
 
-jest.mock('@/core/auth/AuthProvider', () => ({
+jest.mock('@/core/auth/AuthAdapter', () => ({
   useAuthContext: jest.fn().mockReturnValue({ user: { id: '123' } }),
 }));
 
