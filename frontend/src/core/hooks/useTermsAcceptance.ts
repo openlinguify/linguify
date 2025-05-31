@@ -33,6 +33,8 @@ export function useTermsAcceptance() {
     setLoading(true);
     setError(null);
 
+    let response: Response | undefined;
+    
     try {
       // Add debugging info
       console.log('[Terms] Fetching terms status with token', { 
@@ -41,7 +43,7 @@ export function useTermsAcceptance() {
         isAuthenticated 
       });
 
-      const response = await fetch('/api/auth/terms/status', {
+      response = await fetch('/api/auth/terms/status', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -68,15 +70,22 @@ export function useTermsAcceptance() {
       }
     } catch (err) {
       console.error('Error fetching terms status:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred');
       
-      // For now, skip the terms check to unblock the app
-      console.log('[Terms] Setting default terms status to unblock app');
-      setTermsStatus({
-        terms_accepted: true,
-        terms_accepted_at: new Date().toISOString(),
-        terms_version: 'default'
-      });
+      // If it's a 401 error, don't set error state - just skip terms check
+      if (response?.status === 401) {
+        console.log('[Terms] Auth error (401), skipping terms check');
+        setTermsStatus(null);
+      } else {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+        
+        // For other errors, use a permissive default to unblock the app
+        console.log('[Terms] Setting default terms status to unblock app');
+        setTermsStatus({
+          terms_accepted: true,
+          terms_accepted_at: new Date().toISOString(),
+          terms_version: 'default'
+        });
+      }
     } finally {
       setLoading(false);
     }

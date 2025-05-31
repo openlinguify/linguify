@@ -51,8 +51,9 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
         const storedUILanguage = localStorage.getItem('language');
         let finalSettings = { ...DEFAULT_USER_SETTINGS };
 
-        // Si authentifié, essayer de charger depuis le backend
-        if (isAuthenticated && token) {
+        // Si authentifié ET qu'on a un token valide ET qu'on n'est pas en cours de chargement auth, essayer de charger depuis le backend
+        if (isAuthenticated && token && token.length > 10 && !authLoading) { // Basic token validation
+          console.log('[UserSettings] User is authenticated with valid token, attempting to load from backend');
           try {
             const response = await apiClient.get('/api/auth/me/settings/');
 
@@ -61,24 +62,30 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
               finalSettings = { ...finalSettings, ...response.data };
               console.log('[UserSettings] Loaded settings from backend', finalSettings);
             }
-          } catch (apiError) {
+          } catch (apiError: any) {
             console.error('[UserSettings] Error loading from API:', apiError);
 
-            // En cas d'erreur API, essayer de charger depuis localStorage
-            const storedData = localStorage.getItem('userSettings');
-            if (storedData) {
-              try {
-                const parsedSettings = JSON.parse(storedData);
-                finalSettings = { ...finalSettings, ...parsedSettings };
-                console.log('[UserSettings] Loaded settings from localStorage', parsedSettings);
-              } catch (parseError) {
-                console.error('[UserSettings] Error parsing stored settings:', parseError);
+            // Only fallback to localStorage if it's not an auth error
+            if (apiError.status !== 401) {
+              const storedData = localStorage.getItem('userSettings');
+              if (storedData) {
+                try {
+                  const parsedSettings = JSON.parse(storedData);
+                  finalSettings = { ...finalSettings, ...parsedSettings };
+                  console.log('[UserSettings] Loaded settings from localStorage', parsedSettings);
+                } catch (parseError) {
+                  console.error('[UserSettings] Error parsing stored settings:', parseError);
+                }
               }
+            } else {
+              // For 401 errors, just use default settings
+              console.log('[UserSettings] Auth error, using default settings');
             }
           }
         }
-        // Si non authentifié, charger depuis localStorage
+        // Si non authentifié OU pas de token valide, charger depuis localStorage
         else {
+          console.log('[UserSettings] User not authenticated or invalid token, loading from localStorage');
           const storedData = localStorage.getItem('userSettings');
           if (storedData) {
             try {
@@ -116,7 +123,10 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
 
     // Si l'authentification est chargée, charger les paramètres
     if (!authLoading) {
+      console.log('[UserSettings] Auth loaded, loading settings. Auth state:', { isAuthenticated, hasToken: !!token, tokenLength: token?.length });
       loadSettings();
+    } else {
+      console.log('[UserSettings] Auth still loading, waiting...');
     }
   }, [isAuthenticated, authLoading, token]);
 
