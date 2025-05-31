@@ -151,20 +151,47 @@ export function createAuthenticatedApiClient(
         if (error.response.status === 401) {
           console.warn('[API] Authentication error (401)');
           
-          // Try to refresh token
+          // Check if we already tried to refresh (prevent infinite loops)
+          if (error.config._retry) {
+            console.warn('[API] Already tried to refresh, not retrying');
+            supabaseAuthService.clearAuthData();
+            if (typeof window !== 'undefined') {
+              const returnTo = window.location.pathname;
+              window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
+            }
+            throw enhancedError;
+          }
+          
+          // Try to refresh token only once
           try {
-            const newToken = await authService.refreshToken();
+            console.log('[API] Attempting token refresh...');
+            const newToken = await supabaseAuthService.refreshToken();
+            console.log('[API] Token refresh result:', { hasNewToken: !!newToken, newTokenLength: newToken?.length });
+            
             if (newToken && error.config) {
+              error.config._retry = true; // Mark as retry attempt
               error.config.headers = error.config.headers || {};
               error.config.headers.Authorization = `Bearer ${newToken}`;
+              console.log('[API] Retrying request with new token');
               return apiClient.request(error.config);
+            } else {
+              // No token available, user needs to login
+              console.warn('[API] No valid token available after refresh attempt');
+              supabaseAuthService.clearAuthData();
+              if (typeof window !== 'undefined') {
+                const returnTo = window.location.pathname;
+                console.log('[API] Redirecting to login, returnTo:', returnTo);
+                window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
+              }
             }
           } catch (refreshError) {
             // Clear auth data and redirect to login
-            authService.clearAuthData();
+            console.error('[API] Token refresh failed:', refreshError);
+            supabaseAuthService.clearAuthData();
             
             if (typeof window !== 'undefined') {
               const returnTo = window.location.pathname;
+              console.log('[API] Redirecting to login after refresh error, returnTo:', returnTo);
               window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
             }
           }

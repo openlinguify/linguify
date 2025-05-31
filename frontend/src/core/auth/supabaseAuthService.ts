@@ -192,10 +192,38 @@ class SupabaseAuthService {
   // Get access token
   async getAccessToken(): Promise<string | null> {
     try {
+      // First try to get session from Supabase
       const session = await this.getCurrentSession()
-      return session?.access_token || null
+      if (session?.access_token) {
+        return session.access_token
+      }
+      
+      // Fallback: get token directly from localStorage
+      if (typeof window !== 'undefined') {
+        const authData = localStorage.getItem('sb-epafiiysxzqcjlgupnft-auth-token')
+        if (authData) {
+          const parsed = JSON.parse(authData)
+          return parsed.access_token || null
+        }
+      }
+      
+      return null
     } catch (error) {
       console.error('Error getting access token:', error)
+      
+      // Last resort: try localStorage directly
+      if (typeof window !== 'undefined') {
+        try {
+          const authData = localStorage.getItem('sb-epafiiysxzqcjlgupnft-auth-token')
+          if (authData) {
+            const parsed = JSON.parse(authData)
+            return parsed.access_token || null
+          }
+        } catch (e) {
+          console.error('Error reading from localStorage:', e)
+        }
+      }
+      
       return null
     }
   }
@@ -240,6 +268,32 @@ class SupabaseAuthService {
       ...options,
       headers
     })
+  }
+
+  // Refresh token
+  async refreshToken(): Promise<string | null> {
+    try {
+      const { data, error } = await this.supabase.auth.refreshSession()
+      if (error) throw error
+      return data.session?.access_token || null
+    } catch (error) {
+      console.error('Error refreshing token:', error)
+      return null
+    }
+  }
+
+  // Clear auth data and sign out
+  async clearAuthData(): Promise<void> {
+    try {
+      await this.supabase.auth.signOut()
+      // Clear any local storage if needed
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('supabase.auth.token')
+        sessionStorage.clear()
+      }
+    } catch (error) {
+      console.error('Error clearing auth data:', error)
+    }
   }
 }
 

@@ -1,0 +1,9 @@
+// Backup of original middleware - COMPLETELY DISABLED
+export function middleware() {
+  // DISABLED - return NextResponse.next() for all requests
+  return;
+}
+
+export const config = {
+  matcher: [],
+};
