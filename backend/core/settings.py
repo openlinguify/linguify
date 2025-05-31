@@ -210,7 +210,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'apps.authentication.middleware.JWTMiddleware',
+    # 'apps.authentication.middleware.JWTMiddleware',  # Disabled - using Supabase now
 ]
 
 CORS_ALLOW_METHODS = [
