@@ -1541,3 +1541,62 @@ class EnhancedCourseSearchView(TargetLanguageMixin, generics.ListAPIView):
             queryset = queryset.filter(lesson__unit__level=level)
         
         return list(queryset.values_list('content_type', flat=True).distinct().order_by('content_type'))
+
+
+@api_view(['POST'])
+def complete_lesson(request):
+    """
+    API endpoint to mark a lesson as completed.
+    
+    Expected payload:
+    {
+        "lesson_id": 8,
+        "content_type": "vocabulary",
+        "score": 95,
+        "time_spent": 300
+    }
+    """
+    try:
+        lesson_id = request.data.get('lesson_id')
+        content_type = request.data.get('content_type', 'lesson')
+        score = request.data.get('score', 100)
+        time_spent = request.data.get('time_spent', 0)
+        
+        if not lesson_id:
+            return Response(
+                {"error": "lesson_id is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Verify the lesson exists
+        try:
+            if content_type == 'content_lesson':
+                lesson = ContentLesson.objects.get(id=lesson_id)
+                lesson_title = lesson.title_en or f"Content Lesson {lesson_id}"
+            else:
+                lesson = Lesson.objects.get(id=lesson_id)
+                lesson_title = lesson.title_en or f"Lesson {lesson_id}"
+        except (Lesson.DoesNotExist, ContentLesson.DoesNotExist):
+            return Response(
+                {"error": f"Lesson with id {lesson_id} not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Log the completion for now (in a real app, you'd save to a progress model)
+        logger.info(f"Lesson completed: {lesson_title} (ID: {lesson_id}) - Score: {score}% - Time: {time_spent}s")
+        
+        return Response({
+            "message": "Lesson completed successfully",
+            "lesson_id": lesson_id,
+            "lesson_title": lesson_title,
+            "score": score,
+            "time_spent": time_spent,
+            "status": "completed"
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        logger.error(f"Error completing lesson: {str(e)}")
+        return Response(
+            {"error": "Failed to complete lesson"}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

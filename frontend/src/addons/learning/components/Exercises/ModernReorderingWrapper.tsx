@@ -563,50 +563,27 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
     const isSubmitted = currentExercise?.id ? submitted[currentExercise.id] : false;
 
     return (
-      <div className="space-y-4 p-4">
-        <div className="w-full max-w-4xl mx-auto space-y-6">
-          {/* Header and Progress */}
-          <div className="text-center mb-4">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Exercice de Remise en Ordre
-            </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-              Remettez les mots dans le bon ordre pour former une phrase correcte
-            </p>
-            
-            {/* Progress */}
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <span className="text-sm text-gray-600 dark:text-gray-300">
-                Exercice {safeCurrentIndex + 1} sur {exercises.length}
-              </span>
-              <Progress value={progress} className="w-32 h-2" />
-              <span className="text-sm text-gray-600 dark:text-gray-300">
-                {Math.round(progress)}%
-              </span>
-            </div>
-            
-            {/* Current Score */}
-            <div className="flex items-center justify-center text-sm text-gray-600 dark:text-gray-300">
-              <span>Score: {score}/{exercises.length}</span>
-            </div>
-          </div>
-
-          {/* Main Exercise Card */}
-          <motion.div
-            key={currentExercise?.id}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-6"
-          >
+      <div className="w-full max-w-4xl mx-auto">
+        {/* Main Exercise Card */}
+        <motion.div
+          key={currentExercise?.id}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.3 }}
+        >
           {/* Exercise Card */}
           <Card className="border-blue-200">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">
-                  Exercice {safeCurrentIndex + 1} sur {exercises.length}
-                </CardTitle>
+                {/* Compact progress info */}
+                <div className="text-center text-xs text-gray-500 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span>Exercice {safeCurrentIndex + 1}/{exercises.length}</span>
+                    <Progress value={progress} className="w-16 h-1" />
+                    <span>Score: {score}/{exercises.length}</span>
+                  </div>
+                </div>
                 <div className="flex gap-2">
                   {currentExercise?.hint && (
                     <Button
@@ -783,9 +760,7 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
               )}
             </div>
           </div>
-
-          </motion.div>
-        </div>
+        </motion.div>
       </div>
     );
   };
@@ -802,7 +777,9 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
         onRetry={retry}
         onBack={handleComplete}
       >
-        {renderReorderingContent()}
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
+          {renderReorderingContent()}
+        </div>
       </BaseExerciseWrapper>
 
       <LessonCompletionModal

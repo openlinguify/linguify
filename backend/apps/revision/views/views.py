@@ -8,7 +8,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.utils import timezone
 from django.db.models import Q
 from django.db import transaction
-import pandas as pd
+# import pandas as pd  # Temporarily disabled due to C extension issues
 import logging
 
 from apps.revision.models import RevisionSession, VocabularyWord, VocabularyList, Flashcard

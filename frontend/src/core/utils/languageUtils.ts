@@ -11,16 +11,19 @@ import { useTranslation } from '../i18n/useTranslations';
  */
 export function getUserTargetLanguage(): string {
   try {
-    // Récupérer depuis localStorage
-    const userSettingsStr = localStorage.getItem('userSettings');
-    if (userSettingsStr) {
-      const userSettings = JSON.parse(userSettingsStr);
-      if (userSettings.target_language) {
-        // Normaliser le format (EN -> en, FR -> fr, etc.)
-        const lang = userSettings.target_language.toLowerCase();
-        // Vérifier que c'est une langue supportée
-        if (['en', 'fr', 'es', 'nl'].includes(lang)) {
-          return lang;
+    // Vérifier si localStorage est disponible (côté client)
+    if (typeof window !== 'undefined' && window.localStorage) {
+      // Récupérer depuis localStorage
+      const userSettingsStr = localStorage.getItem('userSettings');
+      if (userSettingsStr) {
+        const userSettings = JSON.parse(userSettingsStr);
+        if (userSettings.target_language) {
+          // Normaliser le format (EN -> en, FR -> fr, etc.)
+          const lang = userSettings.target_language.toLowerCase();
+          // Vérifier que c'est une langue supportée
+          if (['en', 'fr', 'es', 'nl'].includes(lang)) {
+            return lang;
+          }
         }
       }
     }
@@ -62,15 +65,18 @@ export function addLanguageParam(url: URL, targetLanguage?: string): URL {
  * Récupère la langue maternelle de l'utilisateur depuis les paramètres stockés
  */
 export function getUserNativeLanguage(): string {
-  // Récupérer depuis localStorage ou utiliser 'en' par défaut
-  const userSettingsStr = localStorage.getItem('userSettings');
-  if (userSettingsStr) {
-    try {
-      const settings = JSON.parse(userSettingsStr);
-      return settings.native_language?.toLowerCase() || 'en';
-    } catch (e) {
-      console.error("Error parsing user settings:", e);
+  try {
+    // Vérifier si localStorage est disponible (côté client)
+    if (typeof window !== 'undefined' && window.localStorage) {
+      // Récupérer depuis localStorage ou utiliser 'en' par défaut
+      const userSettingsStr = localStorage.getItem('userSettings');
+      if (userSettingsStr) {
+        const settings = JSON.parse(userSettingsStr);
+        return settings.native_language?.toLowerCase() || 'en';
+      }
     }
+  } catch (e) {
+    console.error("Error parsing user settings:", e);
   }
   // Retourner 'en' par défaut
   return 'en';
@@ -86,24 +92,27 @@ export function saveLanguageSettings(settings: {
   language_level?: string;
 }): void {
   try {
-    // Lire les paramètres actuels
-    const userSettingsStr = localStorage.getItem('userSettings');
-    let userSettings = {};
-    
-    if (userSettingsStr) {
-      userSettings = JSON.parse(userSettingsStr);
+    // Vérifier si localStorage est disponible (côté client)
+    if (typeof window !== 'undefined' && window.localStorage) {
+      // Lire les paramètres actuels
+      const userSettingsStr = localStorage.getItem('userSettings');
+      let userSettings = {};
+      
+      if (userSettingsStr) {
+        userSettings = JSON.parse(userSettingsStr);
+      }
+      
+      // Mettre à jour avec les nouveaux paramètres
+      const updatedSettings = { 
+        ...userSettings, 
+        ...settings 
+      };
+      
+      // Enregistrer dans localStorage
+      localStorage.setItem('userSettings', JSON.stringify(updatedSettings));
+      
+      console.log('Language settings saved locally:', settings);
     }
-    
-    // Mettre à jour avec les nouveaux paramètres
-    const updatedSettings = { 
-      ...userSettings, 
-      ...settings 
-    };
-    
-    // Enregistrer dans localStorage
-    localStorage.setItem('userSettings', JSON.stringify(updatedSettings));
-    
-    console.log('Language settings saved locally:', settings);
   } catch (error) {
     console.error('Error saving language settings:', error);
   }

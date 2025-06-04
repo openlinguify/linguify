@@ -12,12 +12,10 @@ export const ModernNumbersWrapper: React.FC<NumbersLessonProps> = ({
 }) => {
   const renderNumbersContent = () => {
     return (
-      <div className="flex-1 bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-gray-900 dark:to-yellow-900">
-        <NumbersGame 
-          lessonId={lessonId}
-          language={language}
-        />
-      </div>
+      <NumbersGame 
+        lessonId={lessonId}
+        language={language}
+      />
     );
   };
 
@@ -32,7 +30,9 @@ export const ModernNumbersWrapper: React.FC<NumbersLessonProps> = ({
       onRetry={() => {}}
       onBack={onComplete}
     >
-      {renderNumbersContent()}
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        {renderNumbersContent()}
+      </div>
     </BaseExerciseWrapper>
   );
 };

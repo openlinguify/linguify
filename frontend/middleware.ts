@@ -176,6 +176,21 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Legacy route redirects for /learn/lesson/ routes
+  if (pathname.startsWith('/learn/lesson/')) {
+    const lessonId = pathname.split('/')[3];
+    if (lessonId && !isNaN(Number(lessonId))) {
+      const newUrl = new URL(`/learning/content/vocabulary/${lessonId}`, request.url);
+      debugLog('🔄 Legacy Route Redirect', {
+        action: 'Redirect',
+        reason: 'Legacy /learn/lesson/ format',
+        from: pathname,
+        to: newUrl.pathname
+      });
+      return NextResponse.redirect(newUrl);
+    }
+  }
+
   // Protected paths
   if (PROTECTED_PATHS.some(path => pathname === path || pathname.startsWith(path))) {
     if (!isAuthenticated) {

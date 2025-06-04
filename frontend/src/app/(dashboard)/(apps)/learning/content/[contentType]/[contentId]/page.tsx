@@ -2,7 +2,6 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import ContentTypeRouter from '../../../../../../../addons/learning/components/Navigation/ContentTypeRouter';
-import { getUserTargetLanguage } from '../../../../../../../core/utils/languageUtils';
 
 interface PageProps {
   params: Promise<{
@@ -24,14 +23,14 @@ export default async function DirectContentPage({ params, searchParams }: PagePr
   const { contentType, contentId } = resolvedParams;
   const decodedContentType = decodeURIComponent(contentType);
   
-  // Get language from query param or user settings
-  const rawLanguage = resolvedSearchParams.language || getUserTargetLanguage();
+  // Get language from query param or default to 'fr' (server-side safe)
+  const rawLanguage = resolvedSearchParams.language || 'fr';
   
   // Validate and convert to expected type
   const supportedLanguages = ['en', 'fr', 'es', 'nl'] as const;
   const language = supportedLanguages.includes(rawLanguage as any) 
     ? (rawLanguage as 'en' | 'fr' | 'es' | 'nl') 
-    : 'en'; // Default to English if not valid
+    : 'fr'; // Default to French if not valid
 
   // Get parentLessonId from query params or default to contentId
   const parentLessonId = resolvedSearchParams.parentLessonId || contentId;

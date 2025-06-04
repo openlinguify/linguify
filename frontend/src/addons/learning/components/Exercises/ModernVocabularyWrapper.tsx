@@ -102,7 +102,8 @@ export const ModernVocabularyWrapper: React.FC<VocabularyLessonProps> = ({
     if (onComplete) {
       onComplete();
     } else {
-      router.push(`/learn/lesson/${lessonId}`);
+      // Navigate to the correct learning route structure
+      router.push(`/learning/content/vocabulary/${lessonId}`);
     }
   };
 
@@ -123,172 +124,203 @@ export const ModernVocabularyWrapper: React.FC<VocabularyLessonProps> = ({
     return (
       <div className="space-y-6">
         {/* Progress Header */}
-        <div className="space-y-4">
+        <div className="text-center space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Leçon de Vocabulaire</h2>
-            <Badge variant="outline" className="text-sm">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Leçon de Vocabulaire</h2>
+            <Badge variant="outline" className="text-sm px-3 py-1">
               {currentIndex + 1} / {vocabularyItems.length}
             </Badge>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-3 bg-gray-200 dark:bg-gray-700" />
         </div>
 
+        {/* Main Content Area */}
+        <div className="flex flex-col items-center space-y-6">
           {/* Vocabulary Card */}
           {currentItem && (
-            <Card className="w-full max-w-2xl mx-auto mb-6">
-              <CardHeader className="text-center pb-4">
-                <div className="flex items-center justify-center gap-3 mb-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => speak(currentItem.word)}
-                    className="flex items-center gap-2"
-                  >
-                    <Volume2 className="h-4 w-4" />
-                    Écouter
-                  </Button>
-                  <Badge variant={knownWords.has(currentItem.id) ? "default" : "secondary"}>
-                    {currentItem.word_type || 'mot'}
-                  </Badge>
-                </div>
-                <CardTitle className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                  {currentItem.word}
-                </CardTitle>
-              </CardHeader>
-
-              <CardContent>
-                <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="definition" className="flex items-center gap-2">
-                      <BookOpen className="h-4 w-4" />
-                      Définition
-                    </TabsTrigger>
-                    <TabsTrigger value="example" className="flex items-center gap-2">
-                      <Eye className="h-4 w-4" />
-                      Exemple
-                    </TabsTrigger>
-                    <TabsTrigger value="related" className="flex items-center gap-2">
-                      <Star className="h-4 w-4" />
-                      Lié
-                    </TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="definition" className="mt-6">
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-center space-y-4"
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="w-full max-w-2xl"
+            >
+              <Card className="shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                <CardHeader className="text-center pb-6">
+                  {/* Word Type and Audio */}
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => speak(currentItem.word)}
+                      className="flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                     >
-                      <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                        {getFieldByLanguage('definition')}
-                      </p>
-                    </motion.div>
-                  </TabsContent>
+                      <Volume2 className="h-4 w-4" />
+                      Écouter
+                    </Button>
+                    <Badge variant={knownWords.has(currentItem.id) ? "default" : "secondary"} className="px-3 py-1">
+                      {currentItem.word_type || 'Expression'}
+                    </Badge>
+                  </div>
+                  
+                  {/* Main Word */}
+                  <CardTitle className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-4">
+                    {currentItem.word}
+                  </CardTitle>
+                </CardHeader>
 
-                  <TabsContent value="example" className="mt-6">
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-center space-y-4"
-                    >
-                      <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                        <p className="text-lg italic text-blue-800 dark:text-blue-200">
-                          "{getFieldByLanguage('example_sentence')}"
+                <CardContent className="px-6 pb-6">
+                  {/* Content Tabs */}
+                  <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 mb-6">
+                      <TabsTrigger value="definition" className="flex items-center gap-2">
+                        <BookOpen className="h-4 w-4" />
+                        Définition
+                      </TabsTrigger>
+                      <TabsTrigger value="example" className="flex items-center gap-2">
+                        <Eye className="h-4 w-4" />
+                        Exemple
+                      </TabsTrigger>
+                      <TabsTrigger value="related" className="flex items-center gap-2">
+                        <Star className="h-4 w-4" />
+                        Lié
+                      </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="definition" className="mt-0">
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-center space-y-4 min-h-[100px] flex items-center justify-center"
+                      >
+                        <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                          {getFieldByLanguage('definition') || 'Définition non disponible'}
                         </p>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => speak(getFieldByLanguage('example_sentence'))}
-                          className="mt-2"
-                        >
-                          <Volume2 className="h-4 w-4 mr-2" />
-                          Écouter l'exemple
-                        </Button>
-                      </div>
-                    </motion.div>
-                  </TabsContent>
+                      </motion.div>
+                    </TabsContent>
 
-                  <TabsContent value="related" className="mt-6">
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="space-y-4"
+                    <TabsContent value="example" className="mt-0">
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-center space-y-4 min-h-[100px] flex flex-col items-center justify-center"
+                      >
+                        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg w-full">
+                          <p className="text-lg italic text-blue-800 dark:text-blue-200 mb-3">
+                            "{getFieldByLanguage('example_sentence') || 'Exemple non disponible'}"
+                          </p>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => speak(getFieldByLanguage('example_sentence'))}
+                            className="text-blue-600 hover:text-blue-700"
+                          >
+                            <Volume2 className="h-4 w-4 mr-2" />
+                            Écouter l'exemple
+                          </Button>
+                        </div>
+                      </motion.div>
+                    </TabsContent>
+
+                    <TabsContent value="related" className="mt-0">
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-4 min-h-[100px]"
+                      >
+                        {currentItem.synonymous && (
+                          <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                            <h4 className="font-medium text-green-700 dark:text-green-400 mb-2">Synonymes:</h4>
+                            <p className="text-gray-700 dark:text-gray-300">{currentItem.synonymous}</p>
+                          </div>
+                        )}
+                        {currentItem.antonymous && (
+                          <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                            <h4 className="font-medium text-red-700 dark:text-red-400 mb-2">Antonymes:</h4>
+                            <p className="text-gray-700 dark:text-gray-300">{currentItem.antonymous}</p>
+                          </div>
+                        )}
+                        {!currentItem.synonymous && !currentItem.antonymous && (
+                          <div className="text-center py-8">
+                            <p className="text-gray-500 dark:text-gray-400">Aucune information supplémentaire disponible</p>
+                          </div>
+                        )}
+                      </motion.div>
+                    </TabsContent>
+                  </Tabs>
+
+                  {/* Learning Action Buttons */}
+                  <div className="flex justify-center gap-4 mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
+                    <Button
+                      variant={knownWords.has(currentItem.id) ? "default" : "outline"}
+                      onClick={handleMarkAsKnown}
+                      className="flex items-center gap-2 px-6"
+                      size="lg"
                     >
-                      {currentItem.synonymous && (
-                        <div>
-                          <h4 className="font-medium text-green-600 dark:text-green-400 mb-2">Synonymes:</h4>
-                          <p className="text-gray-700 dark:text-gray-300">{currentItem.synonymous}</p>
-                        </div>
-                      )}
-                      {currentItem.antonymous && (
-                        <div>
-                          <h4 className="font-medium text-red-600 dark:text-red-400 mb-2">Antonymes:</h4>
-                          <p className="text-gray-700 dark:text-gray-300">{currentItem.antonymous}</p>
-                        </div>
-                      )}
-                    </motion.div>
-                  </TabsContent>
-                </Tabs>
-
-                {/* Action Buttons */}
-                <div className="flex justify-center gap-3 mt-6">
-                  <Button
-                    variant={knownWords.has(currentItem.id) ? "default" : "outline"}
-                    onClick={handleMarkAsKnown}
-                    className="flex items-center gap-2"
-                  >
-                    <CheckCircle className="h-4 w-4" />
-                    Je connais
-                  </Button>
-                  <Button
-                    variant={difficultWords.has(currentItem.id) ? "destructive" : "outline"}
-                    onClick={handleMarkAsDifficult}
-                    className="flex items-center gap-2"
-                  >
-                    <Heart className="h-4 w-4" />
-                    Difficile
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                      <CheckCircle className="h-5 w-5" />
+                      Je connais
+                    </Button>
+                    <Button
+                      variant={difficultWords.has(currentItem.id) ? "destructive" : "outline"}
+                      onClick={handleMarkAsDifficult}
+                      className="flex items-center gap-2 px-6"
+                      size="lg"
+                    >
+                      <Heart className="h-5 w-5" />
+                      Difficile
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           )}
 
-        {/* Navigation */}
-        <div className="flex justify-between items-center pt-4">
-          <Button
-            variant="outline"
-            onClick={handlePreviousWord}
-            disabled={currentIndex === 0}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Précédent
-          </Button>
-
-          <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              onClick={() => router.push('/learning')}
-              className="flex items-center gap-2"
-            >
-              <Home className="h-4 w-4" />
-              Accueil
-            </Button>
-            
-            {currentIndex === vocabularyItems.length - 1 ? (
-              <Button onClick={handleComplete} className="flex items-center gap-2">
-                <Trophy className="h-4 w-4" />
-                Terminer
-              </Button>
-            ) : (
+          {/* Navigation Controls */}
+          <div className="w-full max-w-2xl">
+            <div className="flex justify-between items-center pt-4">
               <Button
-                onClick={handleNextWord}
-                className="flex items-center gap-2"
+                variant="outline"
+                onClick={handlePreviousWord}
+                disabled={currentIndex === 0}
+                className="flex items-center gap-2 px-6"
+                size="lg"
               >
-                Suivant
-                <ArrowLeft className="h-4 w-4 rotate-180" />
+                <ArrowLeft className="h-4 w-4" />
+                Précédent
               </Button>
-            )}
+
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  onClick={() => router.push('/learning')}
+                  className="flex items-center gap-2"
+                  size="lg"
+                >
+                  <Home className="h-4 w-4" />
+                  Accueil
+                </Button>
+                
+                {currentIndex === vocabularyItems.length - 1 ? (
+                  <Button 
+                    onClick={handleComplete} 
+                    className="flex items-center gap-2 px-6 bg-green-600 hover:bg-green-700"
+                    size="lg"
+                  >
+                    <Trophy className="h-4 w-4" />
+                    Terminer
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleNextWord}
+                    className="flex items-center gap-2 px-6"
+                    size="lg"
+                  >
+                    Suivant
+                    <ArrowLeft className="h-4 w-4 rotate-180" />
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -302,7 +334,9 @@ export const ModernVocabularyWrapper: React.FC<VocabularyLessonProps> = ({
       unitId={unitId}
       onBack={onComplete}
     >
-      {renderVocabularyContent()}
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        {renderVocabularyContent()}
+      </div>
     </BaseExerciseWrapper>
   );
 };

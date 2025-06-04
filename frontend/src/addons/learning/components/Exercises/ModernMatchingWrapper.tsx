@@ -315,8 +315,15 @@ export const ModernMatchingWrapper: React.FC<MatchingWrapperProps> = ({
           }, 1500);
         } else {
           // Last exercise completed, show final completion modal via hook
+          console.log('[ModernMatchingWrapper] All exercises completed! Showing completion modal...');
+          console.log('Current exercise index:', currentExerciseIndex);
+          console.log('Total exercises:', allExercises.length);
+          console.log('Total score:', totalScore + score + 1);
+          console.log('Total attempts:', totalAttempts + attempts + 1);
+          
           setTimeout(() => {
             const finalScore = `${totalScore + score + 1}/${totalAttempts + attempts + 1}`;
+            console.log('[ModernMatchingWrapper] Calling showCompletion with score:', finalScore);
             showCompletion(finalScore);
           }, 1500);
         }
@@ -382,40 +389,19 @@ export const ModernMatchingWrapper: React.FC<MatchingWrapperProps> = ({
 
     return (
       <div className="space-y-4 p-4">
-        <div className="w-full max-w-4xl mx-auto space-y-6">
-        {/* Header and Progress */}
-        <div className="text-center mb-4">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Exercice d'Association
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-            Associez les mots anglais avec leurs traductions françaises
-          </p>
-          
-          {/* Progress */}
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              {allExercises.length > 1 ? `Set ${currentExerciseIndex + 1} sur ${allExercises.length}` : 'Exercice'}
-            </span>
-            <Progress value={overallProgress} className="w-32 h-2" />
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              {Math.round(overallProgress)}%
-            </span>
-          </div>
-          
-          {/* Current Exercise Score */}
-          <div className="flex items-center justify-center gap-6 text-sm text-gray-600 dark:text-gray-300">
-            <span>Score: {score}/{Object.keys(correctPairs).length}</span>
-            <span>Précision: {accuracy}%</span>
-            {allExercises.length > 1 && totalAttempts > 0 && (
-              <span>Total: {totalScore}/{totalAttempts}</span>
-            )}
-          </div>
-        </div>
-
+        <div className="w-full max-w-4xl mx-auto">
         {/* Main Exercise Card */}
         <Card className="w-full max-w-6xl mx-auto">
           <CardContent className="p-6">
+            {/* Compact progress info at the top */}
+            <div className="text-center text-xs text-gray-500 mb-4 space-y-1">
+              <div className="flex items-center justify-center gap-3">
+                <span>{allExercises.length > 1 ? `Set ${currentExerciseIndex + 1}/${allExercises.length}` : 'Association'}</span>
+                <Progress value={overallProgress} className="w-16 h-1" />
+                <span>Score: {score}/{Object.keys(correctPairs).length}</span>
+                <span>Précision: {accuracy}%</span>
+              </div>
+            </div>
             {/* Exercise Navigation for multiple sets */}
             {allExercises.length > 1 && (
               <div className="flex justify-center items-center gap-2 mb-6">
@@ -611,22 +597,36 @@ export const ModernMatchingWrapper: React.FC<MatchingWrapperProps> = ({
         error={error ? new Error(error) : null}
         onBack={() => router.push('/learning')}
       >
-        {renderMatchingContent()}
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
+          {renderMatchingContent()}
+        </div>
       </BaseExerciseWrapper>
 
       <LessonCompletionModal
         show={showCompletionModal}
         onComplete={() => {
+          console.log('[ModernMatchingWrapper] Completion modal - Complete button clicked');
           completeLesson();
           closeCompletion();
         }}
         onKeepReviewing={() => {
+          console.log('[ModernMatchingWrapper] Completion modal - Keep reviewing button clicked');
           resetExercise();
         }}
         title="Excellent travail !"
         type="exercise"
         completionMessage="Vous avez terminé avec succès tous les exercices d'association !"
       />
+      
+      {/* Debug info */}
+      {process.env.NODE_ENV === 'development' && (
+        <div style={{position: 'fixed', top: 10, right: 10, background: 'white', padding: '10px', border: '1px solid black', fontSize: '12px'}}>
+          <div>showCompletionModal: {showCompletionModal.toString()}</div>
+          <div>currentExerciseIndex: {currentExerciseIndex}</div>
+          <div>totalExercises: {allExercises.length}</div>
+          <div>isComplete: {isComplete.toString()}</div>
+        </div>
+      )}
     </>
   );
 };

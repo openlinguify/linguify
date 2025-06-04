@@ -332,31 +332,18 @@ export const ModernSpeakingWrapper: React.FC<SpeakingWrapperProps> = ({
     const allItemsCompleted = completedItems.size === exerciseData.vocabulary_items.length;
 
     return (
-      <div className="space-y-3">
-        {/* Header */}
-        <div className="text-center mb-3">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-            {exerciseData.title}
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-            {exerciseData.instructions}
-          </p>
-          
-          {/* Progress */}
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <span className="text-xs text-gray-600 dark:text-gray-300">
-              Mot {currentItemIndex + 1} sur {exerciseData.vocabulary_items.length}
-            </span>
-            <Progress value={progress} className="w-24 h-1" />
-            <span className="text-xs text-gray-600 dark:text-gray-300">
-              {Math.round(progress)}%
-            </span>
-          </div>
-        </div>
-
+      <div className="w-full max-w-2xl mx-auto">
         {/* Main Exercise Card */}
-        <Card className="w-full max-w-2xl mx-auto">
+        <Card className="w-full">
           <CardHeader>
+            {/* Compact progress info */}
+            <div className="text-center text-xs text-gray-500 mb-2 space-y-1">
+              <div className="flex items-center justify-center gap-2">
+                <span>Mot {currentItemIndex + 1}/{exerciseData.vocabulary_items.length}</span>
+                <Progress value={progress} className="w-16 h-1" />
+                <span>{Math.round(progress)}%</span>
+              </div>
+            </div>
             <CardTitle className="flex items-center justify-between">
               <span>Prononciation</span>
               {isItemCompleted && (
@@ -579,7 +566,9 @@ export const ModernSpeakingWrapper: React.FC<SpeakingWrapperProps> = ({
         error={error}
         onBack={onComplete}
       >
-        {renderSpeakingContent()}
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
+          {renderSpeakingContent()}
+        </div>
       </BaseExerciseWrapper>
 
       <LessonCompletionModal

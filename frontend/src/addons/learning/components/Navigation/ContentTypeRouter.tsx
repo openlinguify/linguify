@@ -18,6 +18,9 @@ import NumbersGame from "../Exercises/NumbersGame";
 import { ContentTypeRouterProps } from "@/addons/learning/types";
 import courseAPI from "@/addons/learning/api/courseAPI";
 import LessonProgressIndicator from "./LessonProgressIndicator";
+import { getUserTargetLanguage } from "@/core/utils/languageUtils";
+import { useRouter } from 'next/navigation';
+import { useLessonCompletion } from "@/addons/learning/hooks/useLessonCompletion";
 
 /**
  * Composant qui route vers le bon composant d'exercice en fonction du type de contenu
@@ -29,11 +32,45 @@ export default function ContentTypeRouter({
   unitId,
   onComplete
 }: ContentTypeRouterProps) {
+  const router = useRouter();
   const [unitTitle, setUnitTitle] = useState<string>("");
   // Track progress for the lesson - current exercise and total exercises
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [totalSteps, setTotalSteps] = useState<number>(0);
   const [lessonData, setLessonData] = useState<any>(null);
+  // Get user's actual target language from localStorage once component is mounted
+  const [userLanguage, setUserLanguage] = useState<string>(language);
+  
+  // Use the lesson completion hook
+  const { completeLesson } = useLessonCompletion({
+    lessonId: contentId,
+    unitId,
+    onComplete: () => {
+      // Navigate to learning dashboard after completion
+      router.push('/learning');
+    }
+  });
+
+  // Effect to get user's actual target language from localStorage once mounted
+  useEffect(() => {
+    // Get user's target language from localStorage once component is mounted
+    const actualUserLanguage = getUserTargetLanguage();
+    setUserLanguage(actualUserLanguage);
+  }, []);
+
+  // Default completion handler
+  const handleContentComplete = async () => {
+    console.log('Content completed:', { contentType, contentId, unitId });
+    
+    try {
+      // Use the lesson completion hook which handles API call and navigation
+      await completeLesson(100); // Pass a score of 100 for completion
+    } catch (error) {
+      console.error('Error completing lesson:', error);
+      // Fallback navigation if hook fails
+      router.push('/learning');
+    }
+  };
 
   // Track that this lesson was accessed and fetch lesson data for progress tracking
   useEffect(() => {
@@ -43,8 +80,8 @@ export default function ContentTypeRouter({
     // This prevents suspense errors with promises in client components
     const directTrackLesson = () => {
       try {
-        // Get language from params or function props
-        const currentLanguage = language || 'en';
+        // Get language from user language state or fallback
+        const currentLanguage = userLanguage || language || 'en';
 
         // Create a basic lesson object with available information
         // Ensure content type is normalized to match the routing
@@ -94,7 +131,7 @@ export default function ContentTypeRouter({
             case 'vocabulary':
             case 'vocabularylist':
               // For vocabulary lists, try to get the actual count from the API
-              const vocabularyData = await courseAPI.getVocabularyContent(contentId, language);
+              const vocabularyData = await courseAPI.getVocabularyContent(contentId, userLanguage || language);
               setTotalSteps(vocabularyData?.count || 10);
               break;
             case 'multiple choice':
@@ -102,7 +139,7 @@ export default function ContentTypeRouter({
               break;
             case 'matching':
               // For matching, try to get the exercises to count pairs
-              const matchingData = await courseAPI.getMatchingExercises(contentId, language);
+              const matchingData = await courseAPI.getMatchingExercises(contentId, userLanguage || language);
               if (matchingData && matchingData.length > 0) {
                 const exercise = matchingData[0];
                 setTotalSteps(exercise.pairs_count || 6);
@@ -112,12 +149,12 @@ export default function ContentTypeRouter({
               break;
             case 'speaking':
               // For speaking, try to get vocabulary items
-              const speakingData = await courseAPI.getSpeakingExerciseVocabulary(contentId, language);
+              const speakingData = await courseAPI.getSpeakingExerciseVocabulary(contentId, userLanguage || language);
               setTotalSteps(speakingData?.results?.length || 5);
               break;
             case 'fill_blank':
               // For fill blank, get exercises count
-              const fillBlankData = await courseAPI.getFillBlankExercises(contentId, language);
+              const fillBlankData = await courseAPI.getFillBlankExercises(contentId, userLanguage || language);
               setTotalSteps(fillBlankData?.length || 5);
               break;
             case 'test_recap':
@@ -141,7 +178,7 @@ export default function ContentTypeRouter({
                   if (exists) {
                     // TestRecap exists, get the questions to set total steps
                     try {
-                      const questionsResponse = await testRecapAPI.getQuestions(testRecapId, language);
+                      const questionsResponse = await testRecapAPI.getQuestions(testRecapId, userLanguage || language);
                       const questions = questionsResponse?.data || [];
                       
                       if (Array.isArray(questions) && questions.length > 0) {
@@ -208,7 +245,7 @@ export default function ContentTypeRouter({
     return () => {
       isMounted = false;
     };
-  }, [contentId, unitId, contentType]);
+  }, [contentId, unitId, contentType, userLanguage]);
 
   // Normalize the content type and decode URL-encoded characters
   const normalizedType = decodeURIComponent(contentType).toLowerCase().trim();
@@ -221,7 +258,7 @@ export default function ContentTypeRouter({
   // Helper functions to adapt API data for modern components
   const adaptVocabularyData = async () => {
     try {
-      const apiData = await courseAPI.getVocabularyContent(contentId, language);
+      const apiData = await courseAPI.getVocabularyContent(contentId, userLanguage || language);
       if (apiData && apiData.results && apiData.results.length > 0) {
         const vocab = apiData.results[0];
         return {
@@ -246,11 +283,11 @@ export default function ContentTypeRouter({
 
   const adaptTheoryData = async () => {
     try {
-      const apiData = await courseAPI.getTheoryContent(contentId, language);
+      const apiData = await courseAPI.getTheoryContent(contentId, userLanguage || language);
       if (apiData) {
         return {
           title: apiData.title || `Theory Lesson ${contentId}`,
-          language: language,
+          language: userLanguage || language,
           content: {
             sections: apiData.content ? [{
               id: "main",
@@ -270,7 +307,7 @@ export default function ContentTypeRouter({
 
   const adaptMatchingData = async () => {
     try {
-      const apiData = await courseAPI.getMatchingExercises(contentId, language);
+      const apiData = await courseAPI.getMatchingExercises(contentId, userLanguage || language);
       if (apiData && apiData.length > 0) {
         const exercise = apiData[0];
         return exercise.pairs ? exercise.pairs.map((pair: any, index: number) => ({
@@ -288,9 +325,9 @@ export default function ContentTypeRouter({
   // Common props for all content components
   const commonProps = {
     lessonId: contentId,
-    language,
+    language: userLanguage || language,
     unitId,
-    onComplete,
+    onComplete: handleContentComplete,
     currentStep,
     onStepChange: handleStepChange,
     totalSteps
@@ -334,7 +371,7 @@ export default function ContentTypeRouter({
         return <ModernNumbersWrapper {...commonProps} />;
 
       case 'numbers_game':
-        return <NumbersGame lessonId={contentId} language={language} />;
+        return <NumbersGame lessonId={contentId} language={userLanguage || language} />;
 
       case 'reordering':
         return <ModernReorderingWrapper {...propsWithProgressIndicator} />;

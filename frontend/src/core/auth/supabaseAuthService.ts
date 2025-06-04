@@ -200,7 +200,7 @@ class SupabaseAuthService {
       
       // Fallback: get token directly from localStorage
       if (typeof window !== 'undefined') {
-        const authData = localStorage.getItem('sb-epafiiysxzqcjlgupnft-auth-token')
+        const authData = localStorage.getItem('sb-bfsxhrpyotstyhddkvrf-auth-token')
         if (authData) {
           const parsed = JSON.parse(authData)
           return parsed.access_token || null
@@ -214,7 +214,7 @@ class SupabaseAuthService {
       // Last resort: try localStorage directly
       if (typeof window !== 'undefined') {
         try {
-          const authData = localStorage.getItem('sb-epafiiysxzqcjlgupnft-auth-token')
+          const authData = localStorage.getItem('sb-bfsxhrpyotstyhddkvrf-auth-token')
           if (authData) {
             const parsed = JSON.parse(authData)
             return parsed.access_token || null

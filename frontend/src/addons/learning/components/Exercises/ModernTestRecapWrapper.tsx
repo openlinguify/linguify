@@ -70,7 +70,7 @@ export const ModernTestRecapWrapper: React.FC<ModernTestRecapWrapperProps> = ({
       onBack={onBack}
     >
       {data && (
-        <div className="flex-1 p-4">
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
           <TestRecapMain
             lessonId={typeof lessonId === 'string' ? parseInt(lessonId) : lessonId}
             testRecapId={data.testRecapId}
