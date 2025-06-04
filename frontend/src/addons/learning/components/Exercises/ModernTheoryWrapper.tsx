@@ -227,47 +227,26 @@ const ModernTheoryWrapper: React.FC<TheoryWrapperProps> = ({
     const availableSections = getAvailableSections();
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
-        {/* Exercise Header */}
-        <div className="bg-gradient-to-r from-green-500 to-green-600 text-white">
-          <div className="max-w-4xl mx-auto px-4 py-6">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-white/20 rounded-lg">
-                <BookOpen className="w-6 h-6" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <h1 className="text-2xl font-bold">Théorie</h1>
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                    Lecture
-                  </Badge>
-                </div>
-                <p className="text-white/90">Apprenez les concepts fondamentaux</p>
-              </div>
-            </div>
-
-            {/* Progress */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center text-sm">
-                <span>Temps de lecture</span>
-                <span>{formatTime(readingTime)}</span>
-              </div>
-              <Progress value={isComplete ? 100 : 50} className="h-2 bg-white/20" />
-            </div>
-          </div>
-        </div>
-        {/* Main Content */}
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-6"
-          >
+      <div className="max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="space-y-6"
+        >
             {/* Title Card */}
             <Card className="border-green-200">
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl font-bold text-green-600 flex items-center justify-center gap-3">
+                {/* Compact info */}
+                <div className="text-center text-xs text-gray-500 mb-2 space-y-1">
+                  <div className="flex items-center justify-center gap-2">
+                    <span>Théorie</span>
+                    <span>•</span>
+                    <span>Temps: {formatTime(readingTime)}</span>
+                    <Progress value={isComplete ? 100 : 50} className="w-16 h-1" />
+                  </div>
+                </div>
+                <CardTitle className="text-xl font-bold text-green-600 flex items-center justify-center gap-3">
                   {title}
                   <Button
                     variant="outline"
@@ -514,8 +493,7 @@ const ModernTheoryWrapper: React.FC<TheoryWrapperProps> = ({
                 </p>
               </motion.div>
             )}
-          </motion.div>
-        </div>
+        </motion.div>
       </div>
     );
   };
@@ -530,9 +508,10 @@ const ModernTheoryWrapper: React.FC<TheoryWrapperProps> = ({
       lessonId={lessonId}
       onRetry={retry}
       onBack={() => router.back()}
-      className="bg-gradient-to-br from-green-50 to-emerald-100"
     >
-      {renderTheoryContent()}
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        {renderTheoryContent()}
+      </div>
     </BaseExerciseWrapper>
   );
 };

@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
-import pandas as pd
+# import pandas as pd  # Temporarily disabled due to C extension issues
 from rest_framework import filters
 from django.shortcuts import get_object_or_404
 from apps.revision.models import FlashcardDeck, Flashcard

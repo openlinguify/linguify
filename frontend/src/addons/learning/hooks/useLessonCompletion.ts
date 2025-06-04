@@ -2,6 +2,7 @@
 import { useState, useCallback, useEffect } from 'react';
 // Progress system removed - lessonCompletionService disabled
 import { LessonCompletionState, UseLessonCompletionOptions } from "@/addons/learning/types";
+import { apiClient } from "@/core/api/apiClient";
 
 /**
  * Hook pour gérer l'état de complétion d'une leçon de manière cohérente
@@ -45,19 +46,16 @@ export function useLessonCompletion({
       const contentLessonId = parseInt(lessonId);
       const completionPercentage = 100;
       
-      // Déterminer la leçon parent (contentLessonId ou unitId)
-      const parentLessonId = unitId ? parseInt(unitId) : contentLessonId;
-      
-      // Progress tracking disabled
-      console.log('Lesson completion would be:', {
-        lessonId: contentLessonId,
-        parentLessonId,
-        completionPercentage,
-        timeSpent: state.timeSpent,
+      // Call the lesson completion API using the configured API client
+      const response = await apiClient.post('/api/v1/course/complete-lesson/', {
+        lesson_id: contentLessonId,
+        content_type: 'content_lesson',
         score: score || Math.round(completionPercentage / 10),
-        unitId
+        time_spent: state.timeSpent
       });
       
+      // apiClient.post returns data directly, no need to check response.ok
+      console.log('Lesson completion successful:', response);
       setState(prev => ({ ...prev, isCompleted: true }));
       
       // Appeler le callback externe si fourni
@@ -66,6 +64,12 @@ export function useLessonCompletion({
       }
     } catch (error) {
       console.error("Error completing lesson:", error);
+      // Still mark as completed locally even if API fails
+      setState(prev => ({ ...prev, isCompleted: true }));
+      
+      if (onComplete) {
+        onComplete();
+      }
     }
   }, [lessonId, unitId, state.timeSpent, onComplete]);
   

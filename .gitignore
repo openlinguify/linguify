@@ -39,6 +39,7 @@ venv/
 backend/venv/
 backend/myenv/
 backend/.env
+backend/.env.backup
 
 # === FRONTEND ===
 frontend/node_modules/

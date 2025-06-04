@@ -12,6 +12,7 @@ import { LanguageProvider } from '@/core/i18n/i18nProvider';
 import { LanguageSyncProvider } from '@/core/i18n/LanguageSyncProvider';
 import { LanguageTransition } from '@/core/i18n/LanguageTransition';
 import { registerServiceWorker } from '@/core/api/serviceWorkerRegistration';
+import { AppManagerProvider } from '@/core/context/AppManagerContext';
 import { Toaster } from '@/components/ui/toaster';
 
 interface ProvidersProps {
@@ -34,16 +35,18 @@ export default function Providers({ children }: ProvidersProps) {
           <SupabaseAuthProvider>
             <AuthProvider>
               <UserSettingsProvider>
-                <LanguageSyncProvider>
-                  <NotificationProvider>
-                    <OnboardingProvider>
-                      <ServiceWorkerRegistration />
-                      {children}
-                      <Toaster />
-                      <LanguageTransition />
-                    </OnboardingProvider>
-                  </NotificationProvider>
-                </LanguageSyncProvider>
+                <AppManagerProvider>
+                  <LanguageSyncProvider>
+                    <NotificationProvider>
+                      <OnboardingProvider>
+                        <ServiceWorkerRegistration />
+                        {children}
+                        <Toaster />
+                        <LanguageTransition />
+                      </OnboardingProvider>
+                    </NotificationProvider>
+                  </LanguageSyncProvider>
+                </AppManagerProvider>
               </UserSettingsProvider>
             </AuthProvider>
           </SupabaseAuthProvider>

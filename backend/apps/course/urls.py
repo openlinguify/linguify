@@ -19,6 +19,7 @@ from .views import (
     SpeakingExerciseViewSet,
     TestRecapViewSet,
     EnhancedCourseSearchView,
+    complete_lesson,
 )
 
 app_name = 'course'
@@ -58,6 +59,9 @@ urlpatterns = [
     
     # Enhanced search and filtering API
     path('search/', EnhancedCourseSearchView.as_view(), name='enhanced-course-search'),
+    
+    # Lesson completion endpoint
+    path('complete-lesson/', complete_lesson, name='complete-lesson'),
     
     # Include router URLs for TestRecap
     path('', include(router.urls)),

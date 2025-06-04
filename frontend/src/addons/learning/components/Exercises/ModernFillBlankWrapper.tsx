@@ -274,53 +274,25 @@ const ModernFillBlankWrapper: React.FC<FillBlankWrapperProps> = ({
     const isSubmitted = submitted[currentExercise.id];
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
-
-        {/* Exercise Header */}
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-          <div className="max-w-4xl mx-auto px-4 py-6">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-white/20 rounded-lg">
-                <PenTool className="w-6 h-6" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <h1 className="text-2xl font-bold">Exercice Fill-Blank</h1>
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                    {currentIndex + 1} / {exercises.length}
-                  </Badge>
-                </div>
-                <p className="text-white/90">Complétez les phrases avec le mot correct</p>
-              </div>
-            </div>
-
-            {/* Progress */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center text-sm">
-                <span>Progression</span>
-                <span>{Math.round(progress)}%</span>
-              </div>
-              <Progress value={progress} className="h-2 bg-white/20" />
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <motion.div
-            key={currentExercise.id}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-6"
-          >
+      <div className="max-w-4xl mx-auto">
+        <motion.div
+          key={currentExercise.id}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.3 }}
+        >
             {/* Exercise Card */}
             <Card className="border-orange-200">
               <CardHeader className="text-center">
-                <CardTitle className="text-lg">
-                  Question {currentIndex + 1} sur {exercises.length}
-                </CardTitle>
+                {/* Compact progress info */}
+                <div className="text-center text-xs text-gray-500 mb-2 space-y-1">
+                  <div className="flex items-center justify-center gap-2">
+                    <span>Question {currentIndex + 1}/{exercises.length}</span>
+                    <Progress value={progress} className="w-16 h-1" />
+                    <span>{Math.round(progress)}%</span>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="p-8">
                 <div className="space-y-6">
@@ -438,8 +410,7 @@ const ModernFillBlankWrapper: React.FC<FillBlankWrapperProps> = ({
                 </p>
               </motion.div>
             )}
-          </motion.div>
-        </div>
+        </motion.div>
       </div>
     );
   };
@@ -453,9 +424,10 @@ const ModernFillBlankWrapper: React.FC<FillBlankWrapperProps> = ({
       contentTypeName="exercices fill-blank"
       lessonId={lessonId}
       onBack={() => router.back()}
-      className="bg-gradient-to-br from-orange-50 to-amber-100"
     >
-      {renderFillBlankContent()}
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        {renderFillBlankContent()}
+      </div>
     </BaseExerciseWrapper>
   );
 };

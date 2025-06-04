@@ -70,7 +70,7 @@ INSTALLED_APPS = [
     # 'apps.task',
     'apps.notification',
     #'subscription',
-    #'app_manager', # 'app_manager', # TODO: Uncomment when app_manager is ready
+    'app_manager',
     
     # Django REST framework modules
     'rest_framework',

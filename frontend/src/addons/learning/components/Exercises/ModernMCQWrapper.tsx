@@ -413,8 +413,8 @@ const ModernMCQWrapper: React.FC<MCQWrapperProps> = ({
       
       if (!hasPassedThreshold) {
         return (
-          <div className="text-center p-8">
-            <Card className="w-full max-w-md mx-auto">
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <Card className="w-full max-w-md">
               <CardContent className="p-6">
                 <div className="text-center space-y-4">
                   <XCircle className="w-16 h-16 text-red-500 mx-auto" />
@@ -440,49 +440,29 @@ const ModernMCQWrapper: React.FC<MCQWrapperProps> = ({
     const selectedAnswer = selectedAnswers[currentQuestion.id];
 
     return (
-      <div className="space-y-4 p-4">
-        <div className="w-full max-w-4xl mx-auto space-y-6">
-          {/* Header and Progress */}
-          <div className="text-center mb-4">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Questions à Choix Multiples
-            </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-              Choisissez la meilleure réponse pour chaque question
-            </p>
-            
-            {/* Progress */}
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <span className="text-sm text-gray-600 dark:text-gray-300">
-                Question {currentIndex + 1} sur {questions.length}
-              </span>
-              <Progress value={progress} className="w-32 h-2" />
-              <span className="text-sm text-gray-600 dark:text-gray-300">
-                {Math.round(progress)}%
-              </span>
-            </div>
-            
-            {/* Current Score */}
-            <div className="flex items-center justify-center text-sm text-gray-600 dark:text-gray-300">
-              <span>Score: {score}/{questions.length}</span>
-            </div>
-          </div>
-
-          {/* Main Exercise Card */}
-          <Card className="w-full max-w-4xl mx-auto">
-            <CardContent className="p-6">
-              <motion.div
-                key={currentQuestion.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-6"
-              >
+      <div className="flex justify-center">
+        <Card className="w-full max-w-xl shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+          <CardContent className="p-4">
+            <motion.div
+              key={currentQuestion.id}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-4"
+            >
+              {/* Progress info at the top */}
+              <div className="text-center text-xs text-gray-500 space-y-1">
+                <div className="flex items-center justify-center gap-2">
+                  <span>Question {currentIndex + 1}/{questions.length}</span>
+                  <Progress value={progress} className="w-16 h-1" />
+                  <span>Score: {score}/{questions.length}</span>
+                </div>
+              </div>
                 {/* Question Header */}
-                <div className="flex items-center justify-between border-b pb-4">
-                  <h3 className="text-lg font-medium">
-                    Question {currentIndex + 1} sur {questions.length}
+                <div className="flex items-center justify-between border-b pb-2">
+                  <h3 className="text-base font-medium">
+                    Question {currentIndex + 1}
                   </h3>
                   <div className="flex gap-2">
                     {currentQuestion.hint && (
@@ -507,88 +487,94 @@ const ModernMCQWrapper: React.FC<MCQWrapperProps> = ({
                     </Button>
                   </div>
                 </div>
-              {/* Question */}
-              <div className="text-lg font-medium text-gray-800">
-                {currentQuestion.question}
-              </div>
 
-              {/* Hint */}
-              <AnimatePresence>
-                {showHint[currentQuestion.id] && currentQuestion.hint && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="bg-yellow-50 border border-yellow-200 rounded-lg p-4"
-                  >
-                    <div className="flex items-start gap-2">
-                      <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5" />
-                      <div>
-                        <h4 className="font-medium text-yellow-800">Indice</h4>
-                        <p className="text-yellow-700">{currentQuestion.hint}</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                {/* Question */}
+                <div className="text-base font-medium text-gray-800 dark:text-gray-200 text-center py-2">
+                  {currentQuestion.question}
+                </div>
 
-              {/* Options */}
-              <div className="space-y-3">
-                {currentQuestion.options.map((option, index) => (
-                  <Card
-                    key={index}
-                    className={`cursor-pointer transition-all duration-200 ${getOptionStyle(option)}`}
-                    onClick={() => handleAnswerSelect(option)}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-800">{option}</span>
-                        <div className="flex items-center gap-2">
-                          {isSubmitted && option === currentQuestion.correct_answer && (
-                            <CheckCircle className="w-5 h-5 text-green-500" />
-                          )}
-                          {isSubmitted && selectedAnswer === option && option !== currentQuestion.correct_answer && (
-                            <XCircle className="w-5 h-5 text-red-500" />
-                          )}
+                {/* Hint */}
+                <AnimatePresence>
+                  {showHint[currentQuestion.id] && currentQuestion.hint && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="bg-yellow-50 border border-yellow-200 rounded-lg p-4"
+                    >
+                      <div className="flex items-start gap-2">
+                        <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5" />
+                        <div>
+                          <h4 className="font-medium text-yellow-800">Indice</h4>
+                          <p className="text-yellow-700">{currentQuestion.hint}</p>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-              {/* Explanation */}
-              <AnimatePresence>
-                {showExplanation[currentQuestion.id] && isSubmitted && currentQuestion.explanation && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className={`border rounded-lg p-4 ${
-                      isAnswerCorrect() 
-                        ? 'bg-green-50 border-green-200' 
-                        : 'bg-red-50 border-red-200'
-                    }`}
-                  >
-                    <div className="flex items-start gap-2">
-                      {isAnswerCorrect() ? (
-                        <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
-                      ) : (
-                        <XCircle className="w-5 h-5 text-red-600 mt-0.5" />
-                      )}
-                      <div>
-                        <h4 className={`font-medium ${
-                          isAnswerCorrect() ? 'text-green-800' : 'text-red-800'
-                        }`}>
-                          {isAnswerCorrect() ? 'Correct !' : 'Incorrect'}
-                        </h4>
-                        <p className={isAnswerCorrect() ? 'text-green-700' : 'text-red-700'}>
-                          {currentQuestion.explanation}
-                        </p>
+                {/* Options */}
+                <div className="space-y-2">
+                  {currentQuestion.options.map((option, index) => (
+                    <motion.div
+                      key={index}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Card
+                        className={`cursor-pointer transition-all duration-200 ${getOptionStyle(option)}`}
+                        onClick={() => handleAnswerSelect(option)}
+                      >
+                        <CardContent className="p-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-800 dark:text-gray-200">{option}</span>
+                            <div className="flex items-center gap-2">
+                              {isSubmitted && option === currentQuestion.correct_answer && (
+                                <CheckCircle className="w-5 h-5 text-green-500" />
+                              )}
+                              {isSubmitted && selectedAnswer === option && option !== currentQuestion.correct_answer && (
+                                <XCircle className="w-5 h-5 text-red-500" />
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Explanation */}
+                <AnimatePresence>
+                  {showExplanation[currentQuestion.id] && isSubmitted && currentQuestion.explanation && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className={`border rounded-lg p-4 ${
+                        isAnswerCorrect() 
+                          ? 'bg-green-50 border-green-200' 
+                          : 'bg-red-50 border-red-200'
+                      }`}
+                    >
+                      <div className="flex items-start gap-2">
+                        {isAnswerCorrect() ? (
+                          <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-600 mt-0.5" />
+                        )}
+                        <div>
+                          <h4 className={`font-medium ${
+                            isAnswerCorrect() ? 'text-green-800' : 'text-red-800'
+                          }`}>
+                            {isAnswerCorrect() ? 'Correct !' : 'Incorrect'}
+                          </h4>
+                          <p className={isAnswerCorrect() ? 'text-green-700' : 'text-red-700'}>
+                            {currentQuestion.explanation}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-                )}
+                    </motion.div>
+                  )}
                 </AnimatePresence>
 
                 {/* Navigation */}
@@ -597,37 +583,35 @@ const ModernMCQWrapper: React.FC<MCQWrapperProps> = ({
                     variant="outline"
                     onClick={handlePrevious}
                     disabled={currentIndex === 0}
-                    className="flex items-center gap-2"
+                    size="sm"
                   >
                     Précédent
                   </Button>
 
-                  <div className="flex gap-3">
-                    {!isSubmitted ? (
-                      <Button
-                        onClick={handleSubmit}
-                        disabled={!selectedAnswer}
-                        className="px-8"
-                      >
-                        Vérifier la réponse
+                  {!isSubmitted ? (
+                    <Button
+                      onClick={handleSubmit}
+                      disabled={!selectedAnswer}
+                      className="px-6"
+                      size="sm"
+                    >
+                      Vérifier
+                    </Button>
+                  ) : (
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-xs text-gray-500">
+                        Passage automatique...
+                      </span>
+                      <Button onClick={handleNext} variant="outline" size="sm">
+                        {currentIndex < questions.length - 1 ? 'Suivant' : 'Terminer'}
                       </Button>
-                    ) : (
-                      <div className="flex items-center gap-4">
-                        <span className="text-sm text-gray-600">
-                          Passage automatique dans quelques secondes...
-                        </span>
-                        <Button onClick={handleNext} variant="outline" className="px-6">
-                          {currentIndex < questions.length - 1 ? 'Passer maintenant' : 'Terminer maintenant'}
-                        </Button>
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </CardContent>
           </Card>
         </div>
-      </div>
     );
   };
 
@@ -641,7 +625,9 @@ const ModernMCQWrapper: React.FC<MCQWrapperProps> = ({
         lessonId={lessonId}
         onBack={onComplete}
       >
-        {renderMCQContent()}
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
+          {renderMCQContent()}
+        </div>
       </BaseExerciseWrapper>
 
       <LessonCompletionModal
