@@ -26,14 +26,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user, 
     session, 
     loading, 
+    isAuthenticated: supabaseIsAuthenticated,
     signIn, 
     signUp, 
     signOut, 
-    getAccessToken 
+    getAccessToken,
+    isAuthReady
   } = useSupabaseAuth()
 
   const router = useRouter()
-  const isAuthenticated = !!user
+  const isAuthenticated = supabaseIsAuthenticated
   const token = session?.access_token || null
 
   // Adapter les méthodes pour maintenir la compatibilité
@@ -59,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value: AuthContextType = {
     isAuthenticated,
-    isLoading: loading,
+    isLoading: loading || !isAuthReady,
     user,
     token,
     error: null, // Supabase gère les erreurs différemment

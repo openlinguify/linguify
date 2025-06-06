@@ -1,6 +1,7 @@
 # authentication/supabase_auth.py
-import jwt
+
 import json
+import jwt
 import requests
 from django.conf import settings
 from rest_framework import authentication, exceptions
@@ -25,7 +26,30 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
         self.service_role_key = settings.SUPABASE_SERVICE_ROLE_KEY
 
     def verify_token(self, token):
-        """Verify the JWT token using Supabase JWT secret"""
+        """Verify the JWT token using Supabase JWT secret with enhanced validation"""
+        
+        # TEMPORARY: Bypass authentication in development
+        if settings.DEBUG and getattr(settings, 'BYPASS_AUTH_FOR_DEVELOPMENT', False):
+            logger.warning("Authentication bypassed for development")
+            return {
+                'sub': 'dev-user-123',
+                'email': 'dev@example.com',
+                'aud': 'authenticated',
+                'role': 'authenticated',  # Add the missing role field
+                'exp': int(time.time()) + 3600,
+                'iat': int(time.time()),
+                'iss': f'{self.project_url}/auth/v1'
+            }
+        
+        # Log token info for debugging
+        if settings.DEBUG:
+            logger.debug(f"Verifying token: {token[:50]}...")
+            
+        # Basic token format validation
+        if not token or len(token.split('.')) != 3:
+            logger.error("Invalid token format - expected JWT with 3 parts")
+            return None
+        
         try:
             # Check cache first
             token_hash = hash(token)
@@ -70,6 +94,40 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
                 
                 return payload
                 
+            except jwt.InvalidAudienceError as e:
+                logger.error(f"Invalid token audience: {str(e)}")
+                # Try without audience verification for debugging
+                try:
+                    payload_no_aud = jwt.decode(
+                        token,
+                        self.jwt_secret,
+                        algorithms=['HS256'],
+                        options={
+                            'verify_signature': True,
+                            'verify_exp': False,
+                            'verify_aud': False,
+                        }
+                    )
+                    actual_aud = payload_no_aud.get('aud')
+                    logger.error(f"Token has audience: '{actual_aud}', expected: 'authenticated'")
+                    logger.error(f"Token issuer: {payload_no_aud.get('iss')}")
+                    logger.error(f"Token role: {payload_no_aud.get('role')}")
+                    
+                    # If the audience is 'anon', this is the anon key, not a user token
+                    if actual_aud == 'anon':
+                        logger.error("Received anon key instead of user token - check frontend implementation")
+                except Exception as debug_error:
+                    logger.error(f"Failed to decode token for debugging: {debug_error}")
+                return None
+            except jwt.InvalidSignatureError as e:
+                logger.error(f"Invalid token signature: {str(e)} - check SUPABASE_JWT_SECRET")
+                return None
+            except jwt.ExpiredSignatureError as e:
+                logger.error(f"Token expired: {str(e)} - token needs refresh")
+                return None
+            except jwt.InvalidIssuerError as e:
+                logger.error(f"Invalid token issuer: {str(e)} - expected {self.project_url}/auth/v1")
+                return None
             except jwt.InvalidTokenError as e:
                 logger.error(f"Invalid token: {str(e)}")
                 return None
@@ -116,13 +174,24 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
             return None, False
     
     def get_user_from_payload(self, payload, token=None):
-        """Get or create user from token payload"""
+        """Get or create user from token payload with enhanced validation"""
         try:
             sub = payload.get('sub')  # Supabase user ID
             email = payload.get('email')
+            role = payload.get('role')
+            aud = payload.get('aud')
             
+            # Enhanced validation
             if not sub:
                 logger.error("No sub (user ID) found in payload")
+                return None
+                
+            if role != 'authenticated':
+                logger.error(f"Invalid role in token: '{role}', expected: 'authenticated'")
+                return None
+                
+            if aud != 'authenticated':
+                logger.error(f"Invalid audience in token: '{aud}', expected: 'authenticated'")
                 return None
             
             # Check cache for this user by sub
@@ -188,12 +257,13 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
                 first_name = (payload.get('given_name') or '')[:30]
                 last_name = (payload.get('family_name') or '')[:30]
                 
-                user = User.objects.create(
+                # Create user using the custom manager method
+                user = User.objects.create_user(
                     email=email,
                     username=username or email.split('@')[0],
+                    password=uuid4().hex,  # Random password for OAuth users
                     first_name=first_name or '',
                     last_name=last_name or '',
-                    password=uuid4().hex  # Random password for OAuth users
                 )
                 logger.info(f"Created new user: {email}")
             
@@ -210,15 +280,28 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
         """
         Authenticate the request and return a two-tuple of (user, token).
+        Enhanced with better error handling and debugging.
         """
         # Get the auth header
         auth_header = request.headers.get('Authorization', '')
         
+        if not auth_header:
+            logger.debug("No Authorization header found")
+            return None
+            
         if not auth_header.startswith('Bearer '):
+            logger.debug(f"Invalid Authorization header format: {auth_header[:20]}...")
             return None
 
         # Extract the token
-        token = auth_header.split(' ')[1]
+        try:
+            token = auth_header.split(' ')[1]
+            if not token:
+                logger.error("Empty token in Authorization header")
+                return None
+        except IndexError:
+            logger.error("Malformed Authorization header")
+            return None
         
         # Look for user in request for optimized reuse
         if hasattr(request, '_supabase_user') and hasattr(request, '_supabase_token') and request._supabase_token == token:
@@ -275,22 +358,33 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed('Invalid authentication credentials')
         
         except Exception as jwt_error:
-            # Handle JWT-related errors
+            # Enhanced error handling for better debugging
             error_msg = str(jwt_error)
+            logger.error(f"Authentication error: {error_msg}")
+            
             if 'expired' in error_msg.lower():
-                logger.error("Token has expired")
+                logger.info("Token has expired - client should refresh")
                 raise exceptions.AuthenticationFailed('Token has expired')
-            elif any(term in error_msg.lower() for term in ['invalid', 'signature', 'token']):
+            elif 'signature' in error_msg.lower():
+                logger.error("Invalid token signature - check JWT secret configuration")
+                raise exceptions.AuthenticationFailed('Invalid token signature')
+            elif 'audience' in error_msg.lower():
+                logger.error("Invalid token audience - token may be anon key instead of user token")
+                raise exceptions.AuthenticationFailed('Invalid token audience')
+            elif 'issuer' in error_msg.lower():
+                logger.error("Invalid token issuer - check Supabase URL configuration")
+                raise exceptions.AuthenticationFailed('Invalid token issuer')
+            elif any(term in error_msg.lower() for term in ['invalid', 'token']):
                 logger.error(f"Invalid token: {error_msg}")
                 raise exceptions.AuthenticationFailed('Invalid token')
             else:
-                logger.error(f"JWT error: {error_msg}")
+                logger.error(f"Unexpected authentication error: {error_msg}")
                 raise exceptions.AuthenticationFailed('Authentication failed')
         except Exception as e:
             if isinstance(e, exceptions.AuthenticationFailed):
                 raise
-            logger.exception(f"Authentication failed: {str(e)}")
-            raise exceptions.AuthenticationFailed(str(e))
+            logger.exception(f"Unexpected error during authentication: {str(e)}")
+            raise exceptions.AuthenticationFailed('Authentication system error')
     
     def authenticate_header(self, request):
         return 'Bearer'

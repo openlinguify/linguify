@@ -212,6 +212,9 @@
     pairs_count: number;
     order: number;
     exercise_data: MatchingExerciseData;
+    target_words?: string[];
+    native_words?: string[];
+    correct_pairs?: Record<string, string>;
   }
 
   export interface MatchingExerciseProps {
@@ -230,6 +233,7 @@
     native_language: string;
     target_words: string[];
     native_words: string[];
+    correct_pairs?: Record<string, string>;
     total_pairs: number;
   }
 

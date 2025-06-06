@@ -226,6 +226,67 @@ def debug_auth_headers(request):
 
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
+def test_token(request):
+    """Test endpoint to verify if authentication is working"""
+    try:
+        user = request.user
+        
+        # Get the authorization header
+        auth_header = request.headers.get('Authorization', '')
+        token = None
+        if auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+        
+        # Try to decode the token for debugging
+        token_info = None
+        if token and settings.DEBUG:
+            try:
+                import jwt
+                # Decode without verification for debugging
+                token_info = jwt.decode(
+                    token,
+                    options={"verify_signature": False},
+                    algorithms=["HS256"]
+                )
+            except Exception as e:
+                logger.error(f"Error decoding token for debug: {e}")
+        
+        response_data = {
+            'message': 'Authentication successful',
+            'user': {
+                'id': user.id,
+                'email': user.email,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'is_authenticated': user.is_authenticated,
+                'date_joined': user.date_joined.isoformat() if hasattr(user, 'date_joined') else None,
+            },
+            'token_preview': f"{token[:20]}..." if token else None,
+        }
+        
+        # Add token info in debug mode
+        if settings.DEBUG and token_info:
+            response_data['token_debug'] = {
+                'iss': token_info.get('iss'),
+                'aud': token_info.get('aud'),
+                'role': token_info.get('role'),
+                'sub': token_info.get('sub'),
+                'exp': token_info.get('exp'),
+                'iat': token_info.get('iat'),
+            }
+        
+        return JsonResponse(response_data)
+        
+    except Exception as e:
+        logger.error(f"Error in test_token view: {e}")
+        return JsonResponse({
+            'error': 'Internal server error',
+            'detail': str(e) if settings.DEBUG else 'Authentication test failed'
+        }, status=500)
+
+@api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
 def debug_apps_system(request):
     """Endpoint pour déboguer le système d'apps"""
     if not settings.DEBUG:
