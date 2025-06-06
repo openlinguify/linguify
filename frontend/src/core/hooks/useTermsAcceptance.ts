@@ -92,7 +92,7 @@ export function useTermsAcceptance() {
     }
   }, [isAuthenticated, token]);
 
-  // Call fetchTermsStatus when component mounts or authentication changes
+  // Fetch terms status when authenticated
   useEffect(() => {
     if (isAuthenticated) {
       fetchTermsStatus();

@@ -15,12 +15,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { isAuthenticated, isLoading, login } = useAuthContext();
   const pathname = usePathname();
   const { t, isLoading: translationsLoading, locale } = useTranslation();
-  const {
-    termsAccepted,
-    showTermsDialog,
-    setShowTermsDialog,
-    handleTermsAccepted
-  } = useTermsGuard();
+  
+  // Terms guard - protect access until terms are accepted
+  const { termsAccepted, showTermsDialog } = useTermsGuard();
 
   // Créer une map de correspondance entre les chemins et les clés de traduction
   const titleMap = useMemo(() => ({
@@ -72,7 +69,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const publicPages = ["/home", "/login", "/register", "/callback"];
     const isPublicPage = publicPages.includes(pathname);
 
-    if (!isLoading && !isAuthenticated && !isPublicPage) {
+    // Check if user comes from simple login
+    const hasSimpleLogin = localStorage.getItem('supabase_login_success') === 'true';
+    
+    if (!isLoading && !isAuthenticated && !isPublicPage && !hasSimpleLogin) {
       // Journaliser l'accès au dashboard sans authentification
       console.log("[Auth Flow] Unauthorized access attempt to dashboard", {
         path: pathname,
@@ -102,6 +102,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
+  // Block access if terms not accepted
+  if (isAuthenticated && !termsAccepted && !showTermsDialog) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-10 w-10 animate-spin text-purple-600" />
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen flex flex-col relative overflow-hidden">
       {/* Background with overlay for light mode - Minimal Linguify branded background */}
@@ -110,17 +119,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="absolute inset-0 bg-[url('/static/background_dark/new/linguify-dark-minimal.svg')] bg-cover bg-no-repeat bg-fixed hidden dark:block"></div>
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full">
-        {/* Show terms notification if terms not accepted */}
-        {isAuthenticated && !termsAccepted && <TermsNotification variant="banner" locale={locale as 'en' | 'fr' | 'es' | 'nl'} />}
-
+        {/* Terms notification */}
+        <TermsNotification />
+        
         {/* Terms acceptance dialog */}
-        <TermsAcceptance
-          isOpen={showTermsDialog}
-          onClose={() => setShowTermsDialog(false)}
-          onAccept={handleTermsAccepted}
-          showCancelButton={true}
-          locale={locale as 'en' | 'fr' | 'es' | 'nl'}
-        />
+        {showTermsDialog && <TermsAcceptance />}
 
         <Header />
         {/* Main Content */}

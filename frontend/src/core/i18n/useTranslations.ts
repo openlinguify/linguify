@@ -25,8 +25,8 @@ const translationModules = {
         ...commonAdditions.default,
         ...footer.default,
         ...sidebar.default,
-        ...notifications.default,
         ...settings.default,
+        ...notifications.default,
         dashboard: dashboard.default,
         terms: terms.default.en,
         onboarding: {
@@ -60,8 +60,8 @@ const translationModules = {
         ...commonAdditions.default,
         ...footer.default,
         ...sidebar.default,
-        ...notifications.default,
         ...settings.default,
+        ...notifications.default,
         dashboard: dashboard.default,
         terms: terms.default.fr,
         onboarding: {
@@ -106,8 +106,8 @@ const translationModules = {
         ...commonAdditions.default,
         ...footer.default,
         ...sidebar.default,
-        ...notifications.default,
         ...settings.default,
+        ...notifications.default,
         dashboard: dashboard.default,
         terms: terms.default.es,
         onboarding: {
@@ -152,8 +152,8 @@ const translationModules = {
         ...commonAdditions.default,
         ...footer.default,
         ...sidebar.default,
-        ...notifications.default,
         ...settings.default,
+        ...notifications.default,
         dashboard: dashboard.default,
         terms: terms.default.nl,
         onboarding: {

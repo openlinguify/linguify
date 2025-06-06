@@ -44,24 +44,10 @@ export function withTermsAcceptance<P extends object>(Component: React.Component
       return null;
     }
 
-    // If terms haven't been accepted, show the terms modal but don't render the component
-    if (!termsAccepted) {
-      return (
-        <TermsAcceptance
-          isOpen={showTermsDialog}
-          onClose={() => {
-            // Don't allow closing without accepting for new users
-            // For existing users, we can just hide the dialog but keep showing
-            // a notification elsewhere
-          }}
-          onAccept={handleTermsAccepted}
-          showCancelButton={false}
-          isNewUser={true}
-        />
-      );
-    }
-
-    // If authenticated and terms accepted, render the wrapped component
+    // SIMPLIFIED: Always allow access, ignore terms
+    // Terms checking disabled for simplified auth
+    
+    // If authenticated, render the wrapped component
     return <Component {...props} />;
   };
 }

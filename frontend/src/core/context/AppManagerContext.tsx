@@ -44,16 +44,24 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
       setLoading(true);
       setError(null);
 
-      // Fetch available apps and user settings in parallel
-      const [apps, userSettings] = await Promise.all([
+      // Fetch available apps and user settings
+      const [appsResponse, userSettingsResponse] = await Promise.all([
         appManagerService.getAvailableApps(),
         appManagerService.getUserAppSettings()
       ]);
 
+      const apps = appsResponse || [];
+      const userSettings = userSettingsResponse || { enabled_apps: [] };
+
+      // Filter enabled apps based on user settings
+      const enabled = apps.filter(app => 
+        userSettings.enabled_apps.includes(app.code) && app.is_enabled
+      );
+
       setAvailableApps(apps);
+      setEnabledApps(enabled);
+      setEnabledAppCodes(enabled.map(app => app.code));
       setUserAppSettings(userSettings);
-      setEnabledApps(userSettings.enabled_apps);
-      setEnabledAppCodes(userSettings.enabled_apps.map(app => app.code));
 
     } catch (err) {
       console.error('Error fetching app data:', err);

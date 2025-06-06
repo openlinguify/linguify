@@ -5,6 +5,7 @@ import { parseError, ErrorType } from '../utils/errorHandling';
 // Chemin API
 const NOTEBOOK_API = '/api/v1/notebook';
 
+
 /**
  * Fonction pour valider et normaliser les données d'une note
  */

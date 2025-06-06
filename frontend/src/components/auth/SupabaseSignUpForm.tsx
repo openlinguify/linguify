@@ -124,12 +124,30 @@ export function SupabaseSignUpForm() {
           </CardDescription>
         </CardHeader>
         {emailConfirmationRequired && (
-          <CardContent>
+          <CardContent className="space-y-4">
             <Alert>
               <AlertDescription>
                 💡 Astuce : Vérifiez aussi votre dossier spam si vous ne recevez pas l'email.
               </AlertDescription>
             </Alert>
+            
+            <div className="text-center space-y-2">
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.reload()}
+                className="w-full"
+              >
+                🔄 Renvoyer l'email de confirmation
+              </Button>
+              
+              <Button 
+                variant="link" 
+                onClick={() => router.push('/login')}
+                className="w-full text-sm"
+              >
+                J'ai déjà confirmé mon email → Se connecter
+              </Button>
+            </div>
           </CardContent>
         )}
       </Card>
