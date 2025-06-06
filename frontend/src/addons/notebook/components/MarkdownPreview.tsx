@@ -31,13 +31,13 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
   // Mémoriser les composants pour éviter de les recréer à chaque rendu
   const markdownComponents = useMemo(() => ({
     // Override rendering for certain components when truncated
-    h1: truncate ? ({ node, ...props }) => <span className="font-bold text-base" {...props} /> : undefined,
-    h2: truncate ? ({ node, ...props }) => <span className="font-bold text-base" {...props} /> : undefined,
-    h3: truncate ? ({ node, ...props }) => <span className="font-semibold" {...props} /> : undefined,
+    h1: truncate ? ({ node, ...props }: { node?: any; [key: string]: any }) => <span className="font-bold text-base" {...props} /> : undefined,
+    h2: truncate ? ({ node, ...props }: { node?: any; [key: string]: any }) => <span className="font-bold text-base" {...props} /> : undefined,
+    h3: truncate ? ({ node, ...props }: { node?: any; [key: string]: any }) => <span className="font-semibold" {...props} /> : undefined,
     pre: truncate
-      ? ({ node, ...props }) => <span className="bg-gray-100 dark:bg-gray-800 px-1 rounded" {...props} />
+      ? ({ node, ...props }: { node?: any; [key: string]: any }) => <span className="bg-gray-100 dark:bg-gray-800 px-1 rounded" {...props} />
       : undefined,
-    code: ({ node, inline, className, children, ...props }) => {
+    code: ({ node, inline, className, children, ...props }: { node?: any; inline?: boolean; className?: string; children?: any; [key: string]: any }) => {
       if (truncate) {
         return <span className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">{children}</span>;
       }
@@ -56,7 +56,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
         </code>
       );
     },
-    img: truncate ? ({ node, ...props }) => <span className="text-blue-500">[Image]</span> : undefined,
+    img: truncate ? ({ node, ...props }: { node?: any; [key: string]: any }) => <span className="text-blue-500">[Image]</span> : undefined,
   }), [truncate]);
 
   if (!content) {
@@ -64,11 +64,10 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
   }
 
   return (
-    <div className={`markdown-content ${className}`}>
+    <div className={`markdown-content text-sm ${className}`}>
       <ReactMarkdown
         rehypePlugins={[rehypeSanitize]}
         remarkPlugins={[remarkGfm]}
-        className="text-sm"
         components={markdownComponents}
       >
         {displayContent}

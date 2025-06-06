@@ -72,6 +72,7 @@ export default function DashboardHome() {
   } = useLanguage();
   const router = useRouter();
   const [isPrefetching, setIsPrefetching] = useState(false);
+  
 
   // Remove the redirect logic - let user access real dashboard
 
@@ -144,6 +145,9 @@ export default function DashboardHome() {
       <div style={{ marginTop: '10vh' }}>
         <EnabledAppsGrid />
       </div>
+      
+      {/* Auth Debug Panel (only in development) */}
+      {/* <AuthDebugPanel /> */}
     </div>
   );
 }

@@ -15,6 +15,7 @@ interface AuthContextType {
   user: User | null
   session: any | null
   loading: boolean
+  isAuthenticated: boolean
   signIn: (email: string, password: string) => Promise<{ user: User | null; error?: any }>
   signUp: (email: string, password: string, metadata?: any) => Promise<{ user: User | null; error?: any }>
   signOut: () => Promise<{ error?: any }>
@@ -22,6 +23,9 @@ interface AuthContextType {
   signInWithOAuth: (provider: 'google' | 'github' | 'facebook') => Promise<{ data: any; error?: any }>
   getAccessToken: () => Promise<string | null>
   makeAuthenticatedRequest: (url: string, options?: RequestInit) => Promise<Response>
+  isAuthReady: boolean
+  refreshSession: () => Promise<void>
+  getUserProfile: () => Promise<any>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -34,27 +38,42 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isAuthReady, setIsAuthReady] = useState(false)
+  const [authError, setAuthError] = useState<string | null>(null)
 
   useEffect(() => {
+    let mounted = true
+    
     // Get initial session
     const getInitialSession = async () => {
       try {
+        console.log('[AuthProvider] Getting initial session...')
         const initialSession = await supabaseAuthService.getCurrentSession()
         
+        if (!mounted) return
+        
         setSession(initialSession)
+        setAuthError(null)
         
         if (initialSession?.user) {
+          console.log('[AuthProvider] Found authenticated user:', initialSession.user.email)
           setUser(initialSession.user as User)
         } else {
+          console.log('[AuthProvider] No authenticated user found')
           setUser(null)
         }
       } catch (error) {
-        console.error('Error getting initial session:', error)
-        // Don't throw error, just set user to null
-        setUser(null)
-        setSession(null)
+        console.error('[AuthProvider] Error getting initial session:', error)
+        if (mounted) {
+          setUser(null)
+          setSession(null)
+          setAuthError(error instanceof Error ? error.message : 'Unknown auth error')
+        }
       } finally {
-        setLoading(false)
+        if (mounted) {
+          setLoading(false)
+          setIsAuthReady(true)
+        }
       }
     }
 
@@ -63,9 +82,16 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
     // Listen for auth state changes
     const { data: authListener } = supabaseAuthService.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session)
+        console.log('[AuthProvider] Auth state changed:', event, {
+          hasSession: !!session,
+          hasUser: !!session?.user,
+          userEmail: session?.user?.email
+        })
+        
+        if (!mounted) return
         
         setSession(session)
+        setAuthError(null)
         
         if (session?.user) {
           setUser(session.user as User)
@@ -74,11 +100,24 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
         }
         
         setLoading(false)
+        setIsAuthReady(true)
+        
+        // Handle specific events
+        if (event === 'SIGNED_OUT') {
+          console.log('[AuthProvider] User signed out, clearing state')
+          setUser(null)
+          setSession(null)
+        } else if (event === 'TOKEN_REFRESHED') {
+          console.log('[AuthProvider] Token refreshed')
+        } else if (event === 'SIGNED_IN') {
+          console.log('[AuthProvider] User signed in')
+        }
       }
     )
 
     // Cleanup listener
     return () => {
+      mounted = false
       authListener?.subscription?.unsubscribe()
     }
   }, [])
@@ -130,18 +169,44 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   const makeAuthenticatedRequest = async (url: string, options?: RequestInit) => {
     return await supabaseAuthService.makeAuthenticatedRequest(url, options)
   }
+  
+  const refreshSession = async () => {
+    try {
+      setLoading(true)
+      const newToken = await supabaseAuthService.refreshToken()
+      if (newToken) {
+        // Session will be updated via the auth state change listener
+        console.log('[AuthProvider] Session refreshed successfully')
+      }
+    } catch (error) {
+      console.error('[AuthProvider] Error refreshing session:', error)
+      setAuthError(error instanceof Error ? error.message : 'Failed to refresh session')
+    } finally {
+      setLoading(false)
+    }
+  }
+  
+  const getUserProfile = async () => {
+    return await supabaseAuthService.getUserProfile()
+  }
+
+  const isAuthenticated = !!user && !!session
 
   const value: AuthContextType = {
     user,
     session,
     loading,
+    isAuthenticated,
     signIn,
     signUp,
     signOut,
     resetPassword,
     signInWithOAuth,
     getAccessToken,
-    makeAuthenticatedRequest
+    makeAuthenticatedRequest,
+    isAuthReady,
+    refreshSession,
+    getUserProfile
   }
 
   return (

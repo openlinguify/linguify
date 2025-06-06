@@ -35,7 +35,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Note } from '@/addons/notebook/types';
 import LoadingIndicator from './LoadingIndicator';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 
 interface ReviewReminderProps {
   onReviewNote?: (noteId: number) => void;
@@ -78,8 +78,8 @@ const ReviewReminder: React.FC<ReviewReminderProps> = ({
       setIsLoading(true);
       setError(null);
       
-      const notes = await notebookAPI.getDueForReview();
-      setDueNotes(notes);
+      const response = await notebookAPI.getDueForReview();
+      setDueNotes(response.notes || []);
     } catch (error) {
       console.error('Error fetching due notes:', error);
       setError('Could not load notes due for review');

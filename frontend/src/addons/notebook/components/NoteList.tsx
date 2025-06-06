@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, FileText, Clock } from "lucide-react";
 import { Note } from "@/addons/notebook/types";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
-import { format } from "date-fns/format";
+import format from "date-fns/format";
 import { fr } from "date-fns/locale";
 import { useMediaQueryHook } from "./NotebookMain";
 import MarkdownPreview from "./MarkdownPreview";

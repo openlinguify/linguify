@@ -189,27 +189,44 @@ class SupabaseAuthService {
     return this.supabase.auth.onAuthStateChange(callback)
   }
 
-  // Get access token
+  // Get access token with enhanced validation
   async getAccessToken(): Promise<string | null> {
     try {
       console.log('[SupabaseAuth] Getting access token...')
-      // First try to get session from Supabase
+      
+      // Get session from Supabase
       const session = await this.getCurrentSession()
       
       if (session?.access_token) {
-        console.log('[SupabaseAuth] Found access token in session:', { 
+        // Validate token expiration
+        if (session.expires_at) {
+          const expiresAt = new Date(session.expires_at * 1000)
+          const now = new Date()
+          const timeUntilExpiry = expiresAt.getTime() - now.getTime()
+          
+          // If token expires in less than 5 minutes, try to refresh
+          if (timeUntilExpiry < 5 * 60 * 1000) {
+            console.log('[SupabaseAuth] Token expires soon, attempting refresh...')
+            const newToken = await this.refreshToken()
+            if (newToken) {
+              console.log('[SupabaseAuth] Token refreshed successfully')
+              return newToken
+            }
+          }
+        }
+        
+        console.log('[SupabaseAuth] Found valid access token:', { 
           hasToken: !!session.access_token, 
           tokenLength: session.access_token.length,
-          tokenPreview: session.access_token.substring(0, 20) + '...'
+          tokenPreview: session.access_token.substring(0, 20) + '...',
+          expiresAt: session.expires_at ? new Date(session.expires_at * 1000).toISOString() : 'unknown'
         })
         return session.access_token
       }
       
       console.log('[SupabaseAuth] No session or access token found')
-      // If no session, don't try localStorage - user is not authenticated
       return null
     } catch (error) {
-      // Don't log error if it's just missing session
       const errorMessage = error instanceof Error ? error.message : String(error)
       if (!errorMessage.includes('Auth session missing')) {
         console.error('[SupabaseAuth] Error getting access token:', error)
@@ -261,13 +278,13 @@ class SupabaseAuthService {
     })
   }
 
-  // Refresh token with rate limiting protection
+  // Enhanced token refresh with better error handling
   async refreshToken(): Promise<string | null> {
     try {
       // Rate limiting protection
       const now = Date.now()
-      const lastRefreshKey = 'last_token_refresh'
-      const refreshCountKey = 'token_refresh_count'
+      const lastRefreshKey = 'supabase_last_token_refresh'
+      const refreshCountKey = 'supabase_token_refresh_count'
       
       const lastRefresh = parseInt(localStorage.getItem(lastRefreshKey) || '0')
       let refreshCount = parseInt(localStorage.getItem(refreshCountKey) || '0')
@@ -277,8 +294,8 @@ class SupabaseAuthService {
         refreshCount = 0
       }
       
-      // Don't allow more than 5 refreshes per minute
-      if (refreshCount >= 5) {
+      // Don't allow more than 3 refreshes per minute
+      if (refreshCount >= 3) {
         console.warn('[SupabaseAuth] Rate limit: too many refresh attempts')
         return null
       }
@@ -287,18 +304,30 @@ class SupabaseAuthService {
       localStorage.setItem(lastRefreshKey, now.toString())
       localStorage.setItem(refreshCountKey, refreshCount.toString())
       
+      console.log('[SupabaseAuth] Attempting token refresh...')
       const { data, error } = await this.supabase.auth.refreshSession()
-      if (error) throw error
-      return data.session?.access_token || null
-    } catch (error) {
-      console.error('Error refreshing token:', error)
       
-      // If it's a rate limit error, clear session to prevent loops
-      if (error.message?.includes('rate limit')) {
-        console.warn('[SupabaseAuth] Rate limit detected, clearing session')
-        await this.clearAuthData()
+      if (error) {
+        console.error('[SupabaseAuth] Token refresh failed:', error)
+        
+        // If refresh fails completely, clear auth data
+        if (error.message?.includes('refresh_token_not_found') || 
+            error.message?.includes('invalid_grant')) {
+          console.warn('[SupabaseAuth] Invalid refresh token, clearing auth data')
+          await this.clearAuthData()
+        }
+        
+        return null
       }
       
+      if (data.session?.access_token) {
+        console.log('[SupabaseAuth] Token refreshed successfully')
+        return data.session.access_token
+      }
+      
+      return null
+    } catch (error) {
+      console.error('[SupabaseAuth] Error refreshing token:', error)
       return null
     }
   }
@@ -306,14 +335,77 @@ class SupabaseAuthService {
   // Clear auth data and sign out
   async clearAuthData(): Promise<void> {
     try {
+      console.log('[SupabaseAuth] Clearing auth data and signing out...')
+      
+      // Sign out from Supabase
       await this.supabase.auth.signOut()
-      // Clear any local storage if needed
+      
+      // Clear local storage items
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('supabase.auth.token')
+        // Clear Supabase-specific items
+        const keysToRemove = [
+          'supabase.auth.token',
+          'supabase_last_token_refresh',
+          'supabase_token_refresh_count',
+          'auth_failure_count',
+          'auth_failure_time'
+        ]
+        
+        keysToRemove.forEach(key => {
+          localStorage.removeItem(key)
+        })
+        
+        // Clear session storage
         sessionStorage.clear()
+        
+        console.log('[SupabaseAuth] Auth data cleared successfully')
       }
     } catch (error) {
-      console.error('Error clearing auth data:', error)
+      console.error('[SupabaseAuth] Error clearing auth data:', error)
+    }
+  }
+  
+  // Check if user is authenticated with valid session
+  async isAuthenticated(): Promise<boolean> {
+    try {
+      const session = await this.getCurrentSession()
+      if (!session) return false
+      
+      // Check if session is expired
+      if (session.expires_at) {
+        const expiresAt = new Date(session.expires_at * 1000)
+        const now = new Date()
+        if (now >= expiresAt) {
+          console.log('[SupabaseAuth] Session expired')
+          return false
+        }
+      }
+      
+      return true
+    } catch (error) {
+      console.error('[SupabaseAuth] Error checking authentication:', error)
+      return false
+    }
+  }
+  
+  // Get user profile with caching
+  async getUserProfile() {
+    try {
+      const user = await this.getCurrentUser()
+      if (!user) return null
+      
+      return {
+        id: user.id,
+        email: user.email,
+        full_name: user.user_metadata?.full_name || '',
+        avatar_url: user.user_metadata?.avatar_url || '',
+        provider: user.app_metadata?.provider || 'email',
+        created_at: user.created_at,
+        last_sign_in_at: user.last_sign_in_at
+      }
+    } catch (error) {
+      console.error('[SupabaseAuth] Error getting user profile:', error)
+      return null
     }
   }
 }

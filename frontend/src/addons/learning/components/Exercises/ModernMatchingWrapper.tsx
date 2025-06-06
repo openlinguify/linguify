@@ -130,18 +130,18 @@ export const ModernMatchingWrapper: React.FC<MatchingWrapperProps> = ({
       console.log('[ModernMatchingWrapper] Loading specific exercise:', exercise);
 
       // Extract target and native words and correct pairs
-      let targetWords = [];
-      let nativeWords = [];
-      let correctPairsFromBackend = {};
+      let targetWords: string[] = [];
+      let nativeWords: string[] = [];
+      let correctPairsFromBackend: Record<string, string> = {};
 
       if (exercise.exercise_data?.target_words && exercise.exercise_data?.native_words) {
         targetWords = exercise.exercise_data.target_words;
         nativeWords = exercise.exercise_data.native_words;
-        correctPairsFromBackend = exercise.exercise_data.correct_pairs || {};
+        correctPairsFromBackend = (exercise.exercise_data as any).correct_pairs || {};
       } else if (exercise.target_words && exercise.native_words) {
         targetWords = exercise.target_words;
         nativeWords = exercise.native_words;
-        correctPairsFromBackend = exercise.correct_pairs || {};
+        correctPairsFromBackend = (exercise as any).correct_pairs || {};
       }
 
       console.log('[ModernMatchingWrapper] Target words:', targetWords);
@@ -501,14 +501,15 @@ export const ModernMatchingWrapper: React.FC<MatchingWrapperProps> = ({
                   <div className="flex items-center justify-between">
                     <span className="text-lg font-medium">{word.right}</span>
                     <div className="flex items-center gap-2">
-                      <Volume2 
-                        className="h-4 w-4 text-gray-400 cursor-pointer hover:text-blue-500" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          speak(word.right);
-                        }}
-                        title="Écouter la prononciation"
-                      />
+                      <div title="Écouter la prononciation">
+                        <Volume2 
+                          className="h-4 w-4 text-gray-400 cursor-pointer hover:text-blue-500" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            speak(word.right);
+                          }}
+                        />
+                      </div>
                       {word.isMatched && <CheckCircle className="h-5 w-5 text-green-500" />}
                     </div>
                   </div>
