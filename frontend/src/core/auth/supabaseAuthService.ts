@@ -192,36 +192,27 @@ class SupabaseAuthService {
   // Get access token
   async getAccessToken(): Promise<string | null> {
     try {
+      console.log('[SupabaseAuth] Getting access token...')
       // First try to get session from Supabase
       const session = await this.getCurrentSession()
+      
       if (session?.access_token) {
+        console.log('[SupabaseAuth] Found access token in session:', { 
+          hasToken: !!session.access_token, 
+          tokenLength: session.access_token.length,
+          tokenPreview: session.access_token.substring(0, 20) + '...'
+        })
         return session.access_token
       }
       
-      // Fallback: get token directly from localStorage
-      if (typeof window !== 'undefined') {
-        const authData = localStorage.getItem('sb-bfsxhrpyotstyhddkvrf-auth-token')
-        if (authData) {
-          const parsed = JSON.parse(authData)
-          return parsed.access_token || null
-        }
-      }
-      
+      console.log('[SupabaseAuth] No session or access token found')
+      // If no session, don't try localStorage - user is not authenticated
       return null
     } catch (error) {
-      console.error('Error getting access token:', error)
-      
-      // Last resort: try localStorage directly
-      if (typeof window !== 'undefined') {
-        try {
-          const authData = localStorage.getItem('sb-bfsxhrpyotstyhddkvrf-auth-token')
-          if (authData) {
-            const parsed = JSON.parse(authData)
-            return parsed.access_token || null
-          }
-        } catch (e) {
-          console.error('Error reading from localStorage:', e)
-        }
+      // Don't log error if it's just missing session
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      if (!errorMessage.includes('Auth session missing')) {
+        console.error('[SupabaseAuth] Error getting access token:', error)
       }
       
       return null

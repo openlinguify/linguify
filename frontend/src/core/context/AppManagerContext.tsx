@@ -88,10 +88,10 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
 
   // Load apps when user authentication changes
   useEffect(() => {
-    if (isAuthenticated && user) {
+    if (isAuthenticated && user && !loading) {
       refreshApps();
     } else {
-      // Clear data when user logs out
+      // Clear data when user logs out or not authenticated
       setAvailableApps([]);
       setEnabledApps([]);
       setEnabledAppCodes([]);

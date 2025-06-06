@@ -56,7 +56,9 @@ export function createAuthenticatedApiClient(
             console.log(`[API] Request ${config.method?.toUpperCase()} ${config.url} with token`);
           }
         } else {
-          console.warn(`[API] Request ${config.method?.toUpperCase()} ${config.url} without token`);
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`[API] Request ${config.method?.toUpperCase()} ${config.url} without token`);
+          }
         }
 
         // Cache logic for GET requests
@@ -154,11 +156,17 @@ export function createAuthenticatedApiClient(
           // Check if we already tried to refresh (prevent infinite loops)
           if (error.config._retry) {
             console.warn('[API] Already tried to refresh, not retrying');
-            supabaseAuthService.clearAuthData();
-            if (typeof window !== 'undefined') {
-              const returnTo = window.location.pathname;
-              window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
-            }
+            enhancedError.authenticationFailed = true;
+            throw enhancedError;
+          }
+          
+          // Don't auto-redirect on auth pages
+          const isAuthPage = typeof window !== 'undefined' && 
+            (window.location.pathname.includes('/login') || window.location.pathname.includes('/register'));
+          
+          if (isAuthPage) {
+            console.log('[API] Authentication error on auth page, not redirecting');
+            enhancedError.authenticationFailed = true;
             throw enhancedError;
           }
           
@@ -177,23 +185,15 @@ export function createAuthenticatedApiClient(
             } else {
               // No token available, user needs to login
               console.warn('[API] No valid token available after refresh attempt');
-              supabaseAuthService.clearAuthData();
-              if (typeof window !== 'undefined') {
-                const returnTo = window.location.pathname;
-                console.log('[API] Redirecting to login, returnTo:', returnTo);
-                window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
-              }
+              enhancedError.authenticationFailed = true;
+              throw enhancedError;
             }
           } catch (refreshError) {
-            // Clear auth data and redirect to login
+            // Clear auth data and throw error
             console.error('[API] Token refresh failed:', refreshError);
-            supabaseAuthService.clearAuthData();
-            
-            if (typeof window !== 'undefined') {
-              const returnTo = window.location.pathname;
-              console.log('[API] Redirecting to login after refresh error, returnTo:', returnTo);
-              window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
-            }
+            await supabaseAuthService.clearAuthData();
+            enhancedError.authenticationFailed = true;
+            throw enhancedError;
           }
         }
         
