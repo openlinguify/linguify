@@ -121,10 +121,15 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
       }
     };
 
-    // Si l'authentification est chargée, charger les paramètres
+    // Si l'authentification est chargée, charger les paramètres seulement si authentifié
     if (!authLoading) {
       console.log('[UserSettings] Auth loaded, loading settings. Auth state:', { isAuthenticated, hasToken: !!token, tokenLength: token?.length });
-      loadSettings();
+      if (isAuthenticated && token) {
+        loadSettings();
+      } else {
+        console.log('[UserSettings] User not authenticated, skipping settings load');
+        setInitialized(true);
+      }
     } else {
       console.log('[UserSettings] Auth still loading, waiting...');
     }

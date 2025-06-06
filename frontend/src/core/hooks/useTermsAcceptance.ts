@@ -43,7 +43,8 @@ export function useTermsAcceptance() {
         isAuthenticated 
       });
 
-      response = await fetch('/api/auth/terms/status', {
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      response = await fetch(`${backendUrl}/api/auth/terms/status`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
