@@ -1,7 +1,7 @@
 // src/core/context/AppManagerContext.tsx
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { appManagerService, App, UserAppSettings } from '@/core/api/appManagerApi';
 import { useAuthContext } from '@/core/auth/AuthAdapter';
 
@@ -27,16 +27,19 @@ interface AppManagerProviderProps {
 
 export function AppManagerProvider({ children }: AppManagerProviderProps) {
   const { user, isAuthenticated } = useAuthContext();
+  
   const [availableApps, setAvailableApps] = useState<App[]>([]);
   const [enabledApps, setEnabledApps] = useState<App[]>([]);
   const [enabledAppCodes, setEnabledAppCodes] = useState<string[]>([]);
   const [userAppSettings, setUserAppSettings] = useState<UserAppSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
 
-  const refreshApps = async () => {
+  const refreshApps = useCallback(async () => {
     if (!isAuthenticated) {
       setLoading(false);
+      setInitialized(true);
       return;
     }
 
@@ -53,22 +56,15 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
       const apps = appsResponse || [];
       const userSettings = userSettingsResponse || { enabled_apps: [] };
 
-      console.log('[AppManager] Available apps:', apps);
-      console.log('[AppManager] User settings:', userSettings);
-
       // Filter enabled apps based on user settings
       // userSettings.enabled_apps is an array of App objects, not codes
       const enabledAppCodes = userSettings.enabled_apps.map(app => 
         typeof app === 'string' ? app : app.code
       );
       
-      console.log('[AppManager] Enabled app codes:', enabledAppCodes);
-      
       const enabled = apps.filter(app => 
         enabledAppCodes.includes(app.code) && app.is_enabled
       );
-
-      console.log('[AppManager] Enabled apps:', enabled);
 
       setAvailableApps(apps);
       setEnabledApps(enabled);
@@ -80,8 +76,9 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
       setError('Failed to load app data');
     } finally {
       setLoading(false);
+      setInitialized(true);
     }
-  };
+  }, [isAuthenticated]);
 
   const toggleApp = async (appCode: string, enabled: boolean): Promise<boolean> => {
     try {
@@ -108,17 +105,18 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
 
   // Load apps when user authentication changes
   useEffect(() => {
-    if (isAuthenticated && user && !loading) {
+    if (isAuthenticated && user) {
       refreshApps();
-    } else {
+    } else if (!isAuthenticated) {
       // Clear data when user logs out or not authenticated
       setAvailableApps([]);
       setEnabledApps([]);
       setEnabledAppCodes([]);
       setUserAppSettings(null);
       setLoading(false);
+      setInitialized(true);
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, refreshApps]);
 
   const value: AppManagerContextType = {
     availableApps,
