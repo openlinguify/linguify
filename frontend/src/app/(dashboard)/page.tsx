@@ -70,6 +70,8 @@ export default function DashboardHome() {
   const router = useRouter();
   const [isPrefetching, setIsPrefetching] = useState(false);
 
+  // Remove the redirect logic - let user access real dashboard
+
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push("/login");

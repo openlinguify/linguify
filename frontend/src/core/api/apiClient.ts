@@ -153,6 +153,32 @@ export function createAuthenticatedApiClient(
         if (error.response.status === 401) {
           console.warn('[API] Authentication error (401)');
           
+          // Circuit breaker: prevent too many auth failures
+          const now = Date.now();
+          const authFailureKey = 'auth_failure_count';
+          const authFailureTimeKey = 'auth_failure_time';
+          
+          let failureCount = parseInt(localStorage.getItem(authFailureKey) || '0');
+          const lastFailureTime = parseInt(localStorage.getItem(authFailureTimeKey) || '0');
+          
+          // Reset counter if it's been more than 5 minutes
+          if (now - lastFailureTime > 5 * 60 * 1000) {
+            failureCount = 0;
+          }
+          
+          failureCount++;
+          localStorage.setItem(authFailureKey, failureCount.toString());
+          localStorage.setItem(authFailureTimeKey, now.toString());
+          
+          // If too many failures, just clear auth data without redirect
+          if (failureCount > 15) {
+            console.error('[API] Too many auth failures, clearing auth data');
+            localStorage.clear();
+            sessionStorage.clear();
+            // Don't redirect automatically, let the app handle it
+            return;
+          }
+          
           // Check if we already tried to refresh (prevent infinite loops)
           if (error.config._retry) {
             console.warn('[API] Already tried to refresh, not retrying');

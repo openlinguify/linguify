@@ -141,6 +141,68 @@ export default function DebugAuthPage() {
             )}
           </div>
 
+          {/* Backend Connection Test */}
+          <div className="bg-white p-6 rounded-lg shadow md:col-span-2">
+            <h2 className="text-xl font-semibold mb-4">Backend Connection Test</h2>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={async () => {
+                    try {
+                      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+                      
+                      // First test backend config
+                      const configResponse = await fetch(`${backendUrl}/api/auth/debug/supabase-config/`);
+                      const configData = await configResponse.json();
+                      console.log('Backend config:', configData);
+                      
+                      // Then test with token
+                      const token = await supabaseAuthService.getAccessToken();
+                      const tokenResponse = await fetch(`${backendUrl}/api/auth/debug/test-token/`, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ token })
+                      });
+                      
+                      const tokenData = await tokenResponse.json();
+                      console.log('Token test result:', tokenData);
+                      
+                      alert(`Config: ${JSON.stringify(configData, null, 2)}\n\nToken Test: ${JSON.stringify(tokenData, null, 2)}`);
+                    } catch (error) {
+                      console.error('Backend test error:', error);
+                      alert(`Error: ${error}`);
+                    }
+                  }}
+                  className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+                >
+                  Test Backend Config & Token
+                </button>
+                
+                <button
+                  onClick={async () => {
+                    try {
+                      const session = await supabaseAuthService.getCurrentSession();
+                      console.log('Current Supabase session:', session);
+                      alert(`Session: ${session ? 'Active' : 'No session'}\nToken: ${session?.access_token ? 'Present' : 'Missing'}`);
+                    } catch (error) {
+                      alert(`Error: ${error}`);
+                    }
+                  }}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                >
+                  Check Supabase Session
+                </button>
+              </div>
+              
+              <div className="text-sm text-gray-600">
+                <p>Backend URL: {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}</p>
+                <p>Open browser console to see detailed logs</p>
+              </div>
+            </div>
+          </div>
+
           {/* Actions */}
           <div className="bg-white p-6 rounded-lg shadow md:col-span-2">
             <h2 className="text-xl font-semibold mb-4">Actions</h2>

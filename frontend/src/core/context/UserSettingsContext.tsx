@@ -51,40 +51,23 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
         const storedUILanguage = localStorage.getItem('language');
         let finalSettings = { ...DEFAULT_USER_SETTINGS };
 
-        // Si authentifié ET qu'on a un token valide ET qu'on n'est pas en cours de chargement auth, essayer de charger depuis le backend
-        if (isAuthenticated && token && token.length > 10 && !authLoading) { // Basic token validation
-          console.log('[UserSettings] User is authenticated with valid token, attempting to load from backend');
-          try {
-            const response = await apiClient.get('/api/auth/me/settings/');
-
-            if (response.data) {
-              // Fusionner avec les valeurs par défaut
-              finalSettings = { ...finalSettings, ...response.data };
-              console.log('[UserSettings] Loaded settings from backend', finalSettings);
-            }
-          } catch (apiError: any) {
-            console.error('[UserSettings] Error loading from API:', apiError);
-
-            // Only fallback to localStorage if it's not an auth error
-            if (apiError.status !== 401) {
-              const storedData = localStorage.getItem('userSettings');
-              if (storedData) {
-                try {
-                  const parsedSettings = JSON.parse(storedData);
-                  finalSettings = { ...finalSettings, ...parsedSettings };
-                  console.log('[UserSettings] Loaded settings from localStorage', parsedSettings);
-                } catch (parseError) {
-                  console.error('[UserSettings] Error parsing stored settings:', parseError);
-                }
-              }
-            } else {
-              // For 401 errors, just use default settings
-              console.log('[UserSettings] Auth error, using default settings');
-            }
-          }
-        }
+        // SIMPLIFIED: Skip backend API calls, use default settings
+        if (isAuthenticated && token && token.length > 10 && !authLoading) {
+          console.log('[UserSettings] Using default settings (backend API disabled)');
+          // Use default settings with some mock user data
+          finalSettings = {
+            ...finalSettings,
+            email_notifications: true,
+            push_notifications: true,
+            interface_language: storedUILanguage || 'en',
+            daily_goal: 20,
+            weekday_reminders: true,
+            weekend_reminders: false,
+            reminder_time: '18:00'
+          };
+          console.log('[UserSettings] Applied default settings', finalSettings);
+        } else {
         // Si non authentifié OU pas de token valide, charger depuis localStorage
-        else {
           console.log('[UserSettings] User not authenticated or invalid token, loading from localStorage');
           const storedData = localStorage.getItem('userSettings');
           if (storedData) {

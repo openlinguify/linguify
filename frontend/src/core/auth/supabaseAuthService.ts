@@ -261,14 +261,44 @@ class SupabaseAuthService {
     })
   }
 
-  // Refresh token
+  // Refresh token with rate limiting protection
   async refreshToken(): Promise<string | null> {
     try {
+      // Rate limiting protection
+      const now = Date.now()
+      const lastRefreshKey = 'last_token_refresh'
+      const refreshCountKey = 'token_refresh_count'
+      
+      const lastRefresh = parseInt(localStorage.getItem(lastRefreshKey) || '0')
+      let refreshCount = parseInt(localStorage.getItem(refreshCountKey) || '0')
+      
+      // Reset count if it's been more than 1 minute
+      if (now - lastRefresh > 60000) {
+        refreshCount = 0
+      }
+      
+      // Don't allow more than 5 refreshes per minute
+      if (refreshCount >= 5) {
+        console.warn('[SupabaseAuth] Rate limit: too many refresh attempts')
+        return null
+      }
+      
+      refreshCount++
+      localStorage.setItem(lastRefreshKey, now.toString())
+      localStorage.setItem(refreshCountKey, refreshCount.toString())
+      
       const { data, error } = await this.supabase.auth.refreshSession()
       if (error) throw error
       return data.session?.access_token || null
     } catch (error) {
       console.error('Error refreshing token:', error)
+      
+      // If it's a rate limit error, clear session to prevent loops
+      if (error.message?.includes('rate limit')) {
+        console.warn('[SupabaseAuth] Rate limit detected, clearing session')
+        await this.clearAuthData()
+      }
+      
       return null
     }
   }
