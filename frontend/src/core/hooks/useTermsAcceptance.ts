@@ -71,9 +71,9 @@ export function useTermsAcceptance() {
     } catch (err) {
       console.error('Error fetching terms status:', err);
       
-      // If it's a 401 error, don't set error state - just skip terms check
-      if (response?.status === 401) {
-        console.log('[Terms] Auth error (401), skipping terms check');
+      // If it's a network error or auth error, just skip terms check
+      if (err instanceof Error && (err.message.includes('401') || err.message.includes('Failed to fetch'))) {
+        console.log('[Terms] Auth or network error, skipping terms check');
         setTermsStatus(null);
       } else {
         setError(err instanceof Error ? err.message : 'An error occurred');
