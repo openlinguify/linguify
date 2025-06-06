@@ -27,7 +27,7 @@ const UserProfileCard = memo(({
   };
   targetLanguageName: string;
   languageLevel: string;
-  t: (key: string, options?: Record<string, unknown>, fallback?: string) => string
+  t: (key: string, options?: Record<string, string>, fallback?: string) => string
 }) => {
   return (
     <Card className="w-full dark:bg-transparent">

@@ -235,7 +235,7 @@ const dashboardFallback = {
 
 export function useTranslation() {
   const [locale, setLocale] = useState<AvailableLocales>(currentLocale);
-  const [translations, setTranslations] = useState<any>({});
+  const [translations, setTranslations] = useState<Record<string, unknown>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   // Subscribe to language changes
@@ -285,7 +285,7 @@ export function useTranslation() {
 
   // Translation function with fallback support
   // Helper function to safely get nested keys
-  const getNestedValue = useCallback((obj: any, keys: string[]): any => {
+  const getNestedValue = useCallback((obj: Record<string, unknown>, keys: string[]): unknown => {
     if (!obj || typeof obj !== 'object' || keys.length === 0) return undefined;
 
     // Handle special cases for namespaced objects (dashboard, terms, onboarding)
@@ -318,9 +318,9 @@ export function useTranslation() {
     return current;
   }, []);
 
-  const t: TranslationFunction = useCallback((key, params = {}, fallback) => {
+  const t = useCallback((key: string, params: Record<string, string> = {}, fallback?: string): string => {
     const keys = key.split('.');
-    let value = getNestedValue(translations, keys);
+    const value = getNestedValue(translations, keys);
 
     if (value === undefined) {
       if (process.env.NODE_ENV === 'development') {
