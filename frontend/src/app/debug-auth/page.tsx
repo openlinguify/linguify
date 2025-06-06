@@ -145,7 +145,7 @@ export default function DebugAuthPage() {
           <div className="bg-white p-6 rounded-lg shadow md:col-span-2">
             <h2 className="text-xl font-semibold mb-4">Backend Connection Test</h2>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <button
                   onClick={async () => {
                     try {
@@ -183,16 +183,69 @@ export default function DebugAuthPage() {
                 <button
                   onClick={async () => {
                     try {
-                      const session = await supabaseAuthService.getCurrentSession();
-                      console.log('Current Supabase session:', session);
-                      alert(`Session: ${session ? 'Active' : 'No session'}\nToken: ${session?.access_token ? 'Present' : 'Missing'}`);
+                      const token = await supabaseAuthService.getAccessToken();
+                      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+                      
+                      // Test the app-manager APIs
+                      const [appsResponse, settingsResponse] = await Promise.all([
+                        fetch(`${backendUrl}/api/v1/app-manager/apps/`, {
+                          headers: { 'Authorization': `Bearer ${token}` }
+                        }),
+                        fetch(`${backendUrl}/api/v1/app-manager/settings/`, {
+                          headers: { 'Authorization': `Bearer ${token}` }
+                        })
+                      ]);
+                      
+                      const appsData = await appsResponse.json();
+                      const settingsData = await settingsResponse.json();
+                      
+                      console.log('Apps API response:', appsData);
+                      console.log('Settings API response:', settingsData);
+                      
+                      alert(`Apps (${appsResponse.status}): ${JSON.stringify(appsData).substring(0, 200)}\n\nSettings (${settingsResponse.status}): ${JSON.stringify(settingsData).substring(0, 200)}`);
                     } catch (error) {
+                      console.error('Apps API test error:', error);
                       alert(`Error: ${error}`);
                     }
                   }}
                   className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
                 >
-                  Check Supabase Session
+                  Test Apps API
+                </button>
+                
+                <button
+                  onClick={async () => {
+                    try {
+                      const token = await supabaseAuthService.getAccessToken();
+                      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+                      
+                      // First, check current state
+                      const getResponse = await fetch(`${backendUrl}/api/auth/debug/apps-system/`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                      });
+                      const getData = await getResponse.json();
+                      console.log('Apps system GET:', getData);
+                      
+                      // Then try to create default apps
+                      const postResponse = await fetch(`${backendUrl}/api/auth/debug/apps-system/`, {
+                        method: 'POST',
+                        headers: { 
+                          'Authorization': `Bearer ${token}`,
+                          'Content-Type': 'application/json'
+                        }
+                      });
+                      const postData = await postResponse.json();
+                      console.log('Apps system POST:', postData);
+                      
+                      alert(`GET: ${JSON.stringify(getData, null, 2)}\n\nPOST: ${JSON.stringify(postData, null, 2)}`);
+                    } catch (error) {
+                      console.error('Apps system test error:', error);
+                      alert(`Error: ${error}`);
+                    }
+                  }}
+                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  Debug & Fix Apps
                 </button>
               </div>
               

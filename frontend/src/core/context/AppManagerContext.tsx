@@ -53,14 +53,26 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
       const apps = appsResponse || [];
       const userSettings = userSettingsResponse || { enabled_apps: [] };
 
+      console.log('[AppManager] Available apps:', apps);
+      console.log('[AppManager] User settings:', userSettings);
+
       // Filter enabled apps based on user settings
-      const enabled = apps.filter(app => 
-        userSettings.enabled_apps.includes(app.code) && app.is_enabled
+      // userSettings.enabled_apps is an array of App objects, not codes
+      const enabledAppCodes = userSettings.enabled_apps.map(app => 
+        typeof app === 'string' ? app : app.code
       );
+      
+      console.log('[AppManager] Enabled app codes:', enabledAppCodes);
+      
+      const enabled = apps.filter(app => 
+        enabledAppCodes.includes(app.code) && app.is_enabled
+      );
+
+      console.log('[AppManager] Enabled apps:', enabled);
 
       setAvailableApps(apps);
       setEnabledApps(enabled);
-      setEnabledAppCodes(enabled.map(app => app.code));
+      setEnabledAppCodes(enabledAppCodes);
       setUserAppSettings(userSettings);
 
     } catch (err) {
