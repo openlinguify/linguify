@@ -26,7 +26,7 @@ const translationModules = {
         ...footer.default,
         ...sidebar.default,
         ...settings.default,
-        ...notifications.default,
+        ...notifications.default, // Charge toute la structure (notifications, test_notifications, etc.)
         dashboard: dashboard.default,
         terms: terms.default.en,
         onboarding: {
@@ -260,18 +260,9 @@ export function useTranslation() {
     const loadTranslations = async () => {
       try {
         setIsLoading(true);
-        console.log('Loading translations for locale:', locale);
         const module = await translationModules[locale]();
         if (isMounted) {
           setTranslations(module);
-          console.log('Translations loaded:', Object.keys(module).length, 'entries');
-        
-        // Debug dangerZone translations specifically
-        if (module.dangerZone) {
-          console.log('DangerZone translations found:', Object.keys(module.dangerZone).length, 'entries');
-        } else {
-          console.warn('No dangerZone translations found for locale:', locale);
-        }
         }
       } catch (error) {
         console.error('Translation load error:', error);
