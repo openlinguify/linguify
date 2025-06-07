@@ -306,13 +306,15 @@ def generate_django_apps(module_name):
 
 class {capitalize(module_name)}Config(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = '{module_name}'
+    name = 'apps.{module_name}'
     verbose_name = '{capitalize(module_name)}'
 """
 
 def generate_django_models(module_name, description):
     return f"""from django.db import models
-from authentication.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class {capitalize(module_name)}(models.Model):
@@ -390,7 +392,8 @@ urlpatterns = [
 
 def generate_django_tests(module_name):
     return f"""from django.test import TestCase
-from django.contrib.auth import get_user_modelfrom .models import {capitalize(module_name)}
+from django.contrib.auth import get_user_model
+from .models import {capitalize(module_name)}
 
 User = get_user_model()
 

@@ -53,7 +53,7 @@ create_linguify_module() {
     
     # Use the existing Python script to create the module
     cd "$(dirname "$0")"
-    python scripts/tools/modules/create_new_module.py "$module_name" "$icon_name" --description "$description"
+    python3 scripts/tools/modules/create_new_module.py "$module_name" "$icon_name" --description "$description"
     
     # Create the __manifest__.py file
     create_manifest_file "$module_name" "$description"

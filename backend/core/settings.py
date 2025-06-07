@@ -74,7 +74,6 @@ INSTALLED_APPS = [
     'apps.notification',
     #'subscription',
     'app_manager',
-    
     # Django REST framework modules
     'rest_framework',
     'rest_framework.authtoken',
