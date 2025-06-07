@@ -50,7 +50,6 @@ Our modern tech stack offers plenty of opportunities to enhance your skills:
 - **Frontend**: React, Next.js, TypeScript, Tailwind CSS
 - **Backend**: Django, Python, RESTful APIs
 - **Database**: PostgreSQL
-- **AI Integration**: OpenAI, Hugging Face, Ollama (open-source models)
 - **Authentication**: Auth0, JWT with GDPR-compliant account management
 - **UI/UX**: Figma designs, accessibility-focused components
 - **DevOps**: GitHub Actions, Docker
