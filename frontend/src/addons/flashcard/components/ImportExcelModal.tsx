@@ -1,6 +1,6 @@
 // src/app/(dashboard)/(apps)/flashcard/_components/ImportExcelModal.tsx
 'use client';
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,6 +43,24 @@ import { cn } from "@/core/utils/utils";
 import { useTranslation } from "@/core/i18n/useTranslations";
 import { ImportExcelModalProps, ColumnMapping } from "@/addons/flashcard/types";
 
+// Data interfaces
+interface ExcelRowData {
+  [key: string]: string | number;
+}
+
+interface ImportResult {
+  success: boolean;
+  imported: number;
+  total: number;
+  errors?: string[];
+}
+
+interface PreviewResult {
+  data: ExcelRowData[];
+  columns: string[];
+  total: number;
+}
+
 export default function ImportExcelModal({
   deckId,
   isOpen,
@@ -56,8 +74,8 @@ export default function ImportExcelModal({
   const [progress, setProgress] = useState(0);
   const [hasHeader, setHasHeader] = useState(true);
   const [step, setStep] = useState<'upload' | 'map' | 'preview' | 'import'>('upload');
-  const [previewData, setPreviewData] = useState<any[]>([]);
-  const [originalData, setOriginalData] = useState<any[]>([]); // To store original data
+  const [previewData, setPreviewData] = useState<ExcelRowData[]>([]);
+  const [originalData, setOriginalData] = useState<ExcelRowData[]>([]); // To store original data
   const [totalRows, setTotalRows] = useState(0);
   const [columns, setColumns] = useState<string[]>([]);
   const [columnMapping, setColumnMapping] = useState<ColumnMapping>({ frontColumn: '', backColumn: '' });
@@ -71,12 +89,31 @@ export default function ImportExcelModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
+  const resetState = useCallback(() => {
+    setPreviewData([]);
+    setOriginalData([]);
+    setColumns([]);
+    setColumnMapping({ frontColumn: '', backColumn: '' });
+    setTotalRows(0);
+    setInvalidRows([]);
+    setHasUnsavedChanges(false);
+    setError(null);
+  }, []);
+
+  const resetForm = useCallback(() => {
+    setSelectedFile(null);
+    setStep('upload');
+    setLastValidStep('upload');
+    resetState();
+    setHasUnsavedChanges(false);
+  }, [resetState]);
+
   // Reset on each modal opening
   useEffect(() => {
     if (isOpen) {
       resetForm();
     }
-  }, [isOpen]);
+  }, [isOpen, resetForm]);
 
   // Monitor unsaved changes
   useEffect(() => {
@@ -151,13 +188,13 @@ export default function ImportExcelModal({
       const result = await revisionApi.flashcards.importFromExcel(deckId, selectedFile, {
         hasHeader,
         previewOnly: true
-      });
+      }) as PreviewResult;
 
       setProgress(100);
 
       // Extract columns from the preview data if available
-      const extractedColumns = result.preview && result.preview.length > 0 ?
-        Object.keys(result.preview[0]) : [];
+      const extractedColumns = result.data && result.data.length > 0 ?
+        Object.keys(result.data[0]) : [];
 
       if (extractedColumns.length > 0) {
         setColumns(extractedColumns);
@@ -168,9 +205,9 @@ export default function ImportExcelModal({
           backColumn: extractedColumns.length > 1 ? extractedColumns[1] : '',
         });
 
-        setPreviewData(result.preview || []);
-        setOriginalData(result.preview || []); // Save original data
-        setTotalRows(result.preview?.length || 0);
+        setPreviewData(result.data || []);
+        setOriginalData(result.data || []); // Save original data
+        setTotalRows(result.data?.length || 0);
 
         // Move to mapping step
         setStep('map');
@@ -184,11 +221,12 @@ export default function ImportExcelModal({
         });
       }
 
-    } catch (error: any) {
-      setError(error.message || t('dashboard.flashcards.excelImport.analysisError'));
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : t('dashboard.flashcards.excelImport.analysisError');
+      setError(errorMessage);
       toast({
         title: t('dashboard.flashcards.excelImport.analysisError'),
-        description: error.message || t('dashboard.flashcards.excelImport.analysisError'),
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -246,9 +284,7 @@ export default function ImportExcelModal({
       const result = await revisionApi.flashcards.importFromExcel(deckId, selectedFile, {
         hasHeader,
         previewOnly: false,
-        frontColumn: columnMapping.frontColumn,
-        backColumn: columnMapping.backColumn
-      } as any);
+      }) as ImportResult;
 
       clearInterval(progressInterval);
       setProgress(100);
@@ -256,8 +292,8 @@ export default function ImportExcelModal({
       toast({
         title: t('dashboard.flashcards.excelImport.importSuccess'),
         description: t('dashboard.flashcards.excelImport.importCreated', {
-          created: String(result.created),
-          failed: String(result.failed)
+          created: String(result.imported || 0),
+          failed: String((result.total || 0) - (result.imported || 0))
         }),
       });
 
@@ -275,11 +311,12 @@ export default function ImportExcelModal({
         resetForm();
       }, 2000);
 
-    } catch (error: any) {
-      setError(error.message || t('dashboard.flashcards.excelImport.analysisError'));
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : t('dashboard.flashcards.excelImport.analysisError');
+      setError(errorMessage);
       toast({
         title: t('dashboard.flashcards.excelImport.errorTitle'),
-        description: error.message || t('dashboard.flashcards.excelImport.analysisError'),
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -311,24 +348,6 @@ export default function ImportExcelModal({
     }
   };
 
-  const resetState = () => {
-    setPreviewData([]);
-    setOriginalData([]);
-    setColumns([]);
-    setColumnMapping({ frontColumn: '', backColumn: '' });
-    setTotalRows(0);
-    setInvalidRows([]);
-    setHasUnsavedChanges(false);
-    setError(null);
-  };
-
-  const resetForm = () => {
-    setSelectedFile(null);
-    setStep('upload');
-    setLastValidStep('upload');
-    resetState();
-    setHasUnsavedChanges(false);
-  };
 
   const renderStepIndicator = () => (
     <div className="flex items-center justify-between mb-4">

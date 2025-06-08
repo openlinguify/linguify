@@ -6,11 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import { App } from '@/core/api/appManagerApi';
 import { useAppManager } from '@/core/context/AppManagerContext';
-import { Search, Settings, MoreHorizontal, Package, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Search, MoreHorizontal, Package, CheckCircle, XCircle, Clock } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
 interface AppStoreLayoutProps {
@@ -38,7 +37,7 @@ const getCategoryFromAppCode = (appCode: string): string => {
 function AppCard({ app, isInstalled, onToggle, loading }: AppCardProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
-  const IconComponent = (LucideIcons as any)[app.icon_name] || Package;
+  const IconComponent = (LucideIcons as Record<string, React.ComponentType>)[app.icon_name] || Package;
   
   const handleToggle = async () => {
     setIsProcessing(true);
@@ -53,7 +52,7 @@ function AppCard({ app, isInstalled, onToggle, loading }: AppCardProps) {
           : `${app.display_name} est maintenant disponible et peut être utilisée.`,
         duration: 5000,
       });
-    } catch (error) {
+    } catch (_error) {
       // Show error notification
       toast({
         title: "Erreur",
@@ -234,7 +233,6 @@ function CategorySidebar({
 export function AppStoreLayoutImproved({ className }: AppStoreLayoutProps) {
   const { 
     availableApps, 
-    enabledAppCodes, 
     loading, 
     error, 
     toggleApp,
@@ -298,7 +296,7 @@ export function AppStoreLayoutImproved({ className }: AppStoreLayoutProps) {
           {/* Header */}
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Magasin d'applications
+              Magasin d&apos;applications
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
               Installez et gérez vos applications Linguify. 

@@ -190,7 +190,7 @@ class NotificationWebsocketService {
   /**
    * Handle WebSocket connection opened
    */
-  private handleOpen(event: Event): void {
+  private handleOpen(_event: Event): void {
     console.log('Notification WebSocket connected');
     
     // Reset reconnect attempts on successful connection

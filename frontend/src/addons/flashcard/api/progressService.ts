@@ -32,7 +32,7 @@ export const progressService = {
     today.setHours(0, 0, 0, 0);
     
     let streak = 0;
-    let currentDate = new Date(today);
+    const currentDate = new Date(today);
     
     for (let i = 0; i < 30; i++) { // Limiter à 30 jours pour éviter les boucles infinies
       const hasReviewOnDate = sortedDates.some(date => {

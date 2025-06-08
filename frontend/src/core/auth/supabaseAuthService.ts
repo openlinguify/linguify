@@ -3,15 +3,26 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
 interface AuthUser {
   id: string
-  email: string
-  user_metadata?: any
-  app_metadata?: any
+  email?: string // Make email optional to match Supabase User type
+  user_metadata?: Record<string, unknown>
+  app_metadata?: Record<string, unknown>
+  created_at?: string
+  last_sign_in_at?: string
+}
+
+interface AuthSession {
+  access_token: string
+  refresh_token?: string
+  expires_at?: number
+  expires_in?: number
+  token_type?: string
+  user?: AuthUser
 }
 
 interface AuthResponse {
   user: AuthUser | null
-  session: any
-  error?: any
+  session: AuthSession | null
+  error?: AuthError
 }
 
 interface AuthError {
@@ -19,8 +30,15 @@ interface AuthError {
   status?: number
 }
 
+interface TokenCache {
+  token: string
+  expiresAt: number
+}
+
 class SupabaseAuthService {
   private supabase: SupabaseClient
+  private tokenCache: TokenCache | null = null
+  private tokenCacheTTL = 4 * 60 * 1000 // 4 minutes (less than the 5 minute refresh threshold)
 
   constructor() {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -34,7 +52,7 @@ class SupabaseAuthService {
   }
 
   // Sign up with email and password
-  async signUp(email: string, password: string, metadata?: any): Promise<AuthResponse> {
+  async signUp(email: string, password: string, metadata?: Record<string, unknown>): Promise<AuthResponse> {
     try {
       const { data, error } = await this.supabase.auth.signUp({
         email,
@@ -48,15 +66,16 @@ class SupabaseAuthService {
 
       return {
         user: data.user as AuthUser,
-        session: data.session
+        session: data.session as AuthSession
       }
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to sign up';
       return {
         user: null,
         session: null,
         error: {
-          message: error.message || 'Failed to sign up',
-          status: error.status
+          message: errorMessage,
+          status: (error as unknown as {status?: number})?.status
         }
       }
     }
@@ -74,15 +93,15 @@ class SupabaseAuthService {
 
       return {
         user: data.user as AuthUser,
-        session: data.session
+        session: data.session as AuthSession
       }
-    } catch (error: any) {
+    } catch (error) {
       return {
         user: null,
         session: null,
         error: {
-          message: error.message || 'Failed to sign in',
-          status: error.status
+          message: error instanceof Error ? error.message : 'Failed to sign in',
+          status: (error as unknown as {status?: number})?.status
         }
       }
     }
@@ -91,14 +110,17 @@ class SupabaseAuthService {
   // Sign out
   async signOut(): Promise<{ error?: AuthError }> {
     try {
+      // Clear token cache
+      this.tokenCache = null
+      
       const { error } = await this.supabase.auth.signOut()
       if (error) throw error
       return {}
-    } catch (error: any) {
+    } catch (error) {
       return {
         error: {
-          message: error.message || 'Failed to sign out',
-          status: error.status
+          message: error instanceof Error ? error.message : 'Failed to sign out',
+          status: (error as unknown as {status?: number})?.status
         }
       }
     }
@@ -127,7 +149,7 @@ class SupabaseAuthService {
   }
 
   // Get current session
-  async getCurrentSession() {
+  async getCurrentSession(): Promise<AuthSession | null> {
     try {
       const { data: { session }, error } = await this.supabase.auth.getSession()
       if (error) {
@@ -137,7 +159,7 @@ class SupabaseAuthService {
         }
         return null
       }
-      return session
+      return session as AuthSession | null
     } catch (error) {
       // Don't log error if it's just missing session
       const errorMessage = error instanceof Error ? error.message : String(error)
@@ -156,11 +178,11 @@ class SupabaseAuthService {
       })
       if (error) throw error
       return {}
-    } catch (error: any) {
+    } catch (error) {
       return {
         error: {
-          message: error.message || 'Failed to send reset password email',
-          status: error.status
+          message: error instanceof Error ? error.message : 'Failed to send reset password email',
+          status: (error as unknown as {status?: number})?.status
         }
       }
     }
@@ -174,25 +196,43 @@ class SupabaseAuthService {
       })
       if (error) throw error
       return {}
-    } catch (error: any) {
+    } catch (error) {
       return {
         error: {
-          message: error.message || 'Failed to update password',
-          status: error.status
+          message: error instanceof Error ? error.message : 'Failed to update password',
+          status: (error as unknown as {status?: number})?.status
         }
       }
     }
   }
 
   // Listen to auth state changes
-  onAuthStateChange(callback: (event: string, session: any) => void) {
-    return this.supabase.auth.onAuthStateChange(callback)
+  onAuthStateChange(callback: (event: string, session: AuthSession | null) => void) {
+    return this.supabase.auth.onAuthStateChange((event, session) => {
+      // Clear token cache on auth state changes
+      if (event === 'SIGNED_OUT' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
+        this.tokenCache = null
+      }
+      // Convert Supabase session to our AuthSession type
+      const authSession: AuthSession | null = session ? {
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+        expires_at: session.expires_at,
+        expires_in: session.expires_in,
+        token_type: session.token_type,
+        user: session.user as AuthUser
+      } : null
+      callback(event, authSession)
+    })
   }
 
-  // Get access token with enhanced validation
+  // Get access token with enhanced validation and caching
   async getAccessToken(): Promise<string | null> {
     try {
-      console.log('[SupabaseAuth] Getting access token...')
+      // Check cache first
+      if (this.tokenCache && Date.now() < this.tokenCache.expiresAt) {
+        return this.tokenCache.token
+      }
       
       // Get session from Supabase
       const session = await this.getCurrentSession()
@@ -206,25 +246,29 @@ class SupabaseAuthService {
           
           // If token expires in less than 5 minutes, try to refresh
           if (timeUntilExpiry < 5 * 60 * 1000) {
-            console.log('[SupabaseAuth] Token expires soon, attempting refresh...')
             const newToken = await this.refreshToken()
             if (newToken) {
-              console.log('[SupabaseAuth] Token refreshed successfully')
+              // Update cache with new token
+              this.tokenCache = {
+                token: newToken,
+                expiresAt: Date.now() + this.tokenCacheTTL
+              }
               return newToken
             }
           }
         }
         
-        console.log('[SupabaseAuth] Found valid access token:', { 
-          hasToken: !!session.access_token, 
-          tokenLength: session.access_token.length,
-          tokenPreview: session.access_token.substring(0, 20) + '...',
-          expiresAt: session.expires_at ? new Date(session.expires_at * 1000).toISOString() : 'unknown'
-        })
+        // Cache the token
+        this.tokenCache = {
+          token: session.access_token,
+          expiresAt: Date.now() + this.tokenCacheTTL
+        }
+        
         return session.access_token
       }
       
-      console.log('[SupabaseAuth] No session or access token found')
+      // Clear cache if no valid session
+      this.tokenCache = null
       return null
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
@@ -232,6 +276,8 @@ class SupabaseAuthService {
         console.error('[SupabaseAuth] Error getting access token:', error)
       }
       
+      // Clear cache on error
+      this.tokenCache = null
       return null
     }
   }
@@ -247,12 +293,12 @@ class SupabaseAuthService {
       })
       if (error) throw error
       return { data, error: null }
-    } catch (error: any) {
+    } catch (error) {
       return {
         data: null,
         error: {
-          message: error.message || `Failed to sign in with ${provider}`,
-          status: error.status
+          message: error instanceof Error ? error.message : `Failed to sign in with ${provider}`,
+          status: (error as unknown as {status?: number})?.status
         }
       }
     }

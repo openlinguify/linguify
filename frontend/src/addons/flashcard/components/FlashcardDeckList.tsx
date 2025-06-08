@@ -134,7 +134,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
       if (onDeckUpdate) {
         onDeckUpdate();
       }
-    } catch (error) {
+    } catch {
       toast({
         title: t('dashboard.flashcards.errorTitle'),
         description: t('dashboard.flashcards.createDeckError'),
@@ -187,7 +187,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
       if (onDeckUpdate) {
         onDeckUpdate();
       }
-    } catch (error) {
+    } catch {
       toast({
         title: t('dashboard.flashcards.errorTitle'),
         description: t('dashboard.flashcards.operationFailed'),
@@ -234,7 +234,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
       if (onDeckUpdate) {
         onDeckUpdate();
       }
-    } catch (error) {
+    } catch {
       toast({
         title: t('dashboard.flashcards.errorTitle'),
         description: t('dashboard.flashcards.updateDeckError'),
@@ -288,7 +288,7 @@ const FlashcardDeckList: React.FC<FlashcardDeckListProps> = ({
       if (onDeckUpdate) {
         onDeckUpdate();
       }
-    } catch (error) {
+    } catch {
       toast({
         title: t('dashboard.flashcards.errorTitle'),
         description: t('dashboard.flashcards.archiveError'),

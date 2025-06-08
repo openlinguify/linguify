@@ -64,7 +64,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
 
       // Inform parent component about the change
       onCardUpdate();
-    } catch (err) {
+    } catch {
       toast({
         title: t('dashboard.flashcards.errorTitle'),
         description: t('dashboard.flashcards.deleteError'),
@@ -217,7 +217,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
     if (selectedDeck) {
       fetchCards();
     }
-  }, [selectedDeck]);
+  }, [selectedDeck, fetchCards]);
 
   // Computed values
   const filteredCards = cards.filter((card) => {

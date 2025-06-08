@@ -300,7 +300,7 @@ export function LanguageAIMain({ userLanguage }: LanguageAIMainProps) {
                 <CardHeader className="bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/40 dark:to-purple-900/40">
                   <CardTitle className={`${commonStyles.gradientText}`}>Historique des conversations</CardTitle>
                   <CardDescription>
-                    Vos conversations précédentes avec l'IA
+                    Vos conversations précédentes avec l&apos;IA
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -311,7 +311,7 @@ export function LanguageAIMain({ userLanguage }: LanguageAIMainProps) {
                   ) : conversations.length === 0 ? (
                     <div className="text-center py-8">
                       <MessageCircle className="h-12 w-12 mx-auto text-indigo-200 dark:text-indigo-800 mb-4" />
-                      <p className="text-gray-500">Vous n'avez pas encore de conversations</p>
+                      <p className="text-gray-500">Vous n&apos;avez pas encore de conversations</p>
                       <Button 
                         onClick={handleStartNewConversation}
                         className="mt-4 bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 hover:from-indigo-700 hover:via-purple-600 hover:to-pink-600 text-white"

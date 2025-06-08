@@ -45,12 +45,17 @@ const leaderboardAPI = {
       return response.data;
     } catch (error) {
       console.error('[Leaderboard] Failed to fetch leaderboard:', error);
+      const axiosError = error as {
+        message?: string;
+        response?: { status?: number; statusText?: string; data?: unknown };
+        config?: unknown;
+      };
       console.error('[Leaderboard] Error details:', {
-        message: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        config: error.config
+        message: axiosError.message,
+        status: axiosError.response?.status,
+        statusText: axiosError.response?.statusText,
+        data: axiosError.response?.data,
+        config: axiosError.config
       });
       throw error;
     }

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   PlusCircle,
   Edit2,
@@ -31,7 +31,6 @@ import {
 } from "@components/ui/alert-dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuthContext } from "@/core/auth/AuthAdapter";
-import { taskAPI } from "../services/taskAPI";
 
 interface Task {
   id: number;
@@ -42,7 +41,7 @@ interface Task {
 }
 
 const TaskManager = () => {
-  const { getAccessToken } = useAuthContext();
+  const { getToken } = useAuthContext();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState("");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -52,15 +51,11 @@ const TaskManager = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetchTasks();
-  }, [filter]);
-
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const token = await getAccessToken();
+      const token = await getToken();
       const params = filter !== "all" ? `?status=${filter}` : "";
 
       const response = await fetch(
@@ -85,14 +80,18 @@ const TaskManager = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filter, getToken]);
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
 
   const handleAddTask = async () => {
     if (!newTask.trim()) return;
 
     try {
       setError(null);
-      const token = await getAccessToken();
+      const token = await getToken();
 
       const response = await fetch("http://localhost:8000/api/v1/task/items/", {
         method: "POST",
@@ -120,7 +119,7 @@ const TaskManager = () => {
   const handleUpdateTask = async (task: Task) => {
     try {
       setError(null);
-      const token = await getAccessToken();
+      const token = await getToken();
 
       const response = await fetch(
         `http://localhost:8000/api/v1/task/items/${task.id}/`,
@@ -148,7 +147,7 @@ const TaskManager = () => {
   const handleDeleteTask = async (task: Task) => {
     try {
       setError(null);
-      const token = await getAccessToken();
+      const token = await getToken();
 
       const response = await fetch(
         `http://localhost:8000/api/v1/task/items/${task.id}/`,

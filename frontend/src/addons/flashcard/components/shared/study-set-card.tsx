@@ -1,21 +1,17 @@
 // Placeholder component for study-set-card
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FlashcardDeck } from '@/addons/flashcard/types';
 
 interface StudySetCardProps {
-  studySet: {
-    id: string;
-    title: string;
-    description?: string;
-    [key: string]: any;
-  };
+  studySet: FlashcardDeck;
 }
 
 const StudySetCard: React.FC<StudySetCardProps> = ({ studySet }) => {
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader>
-        <CardTitle className="text-lg">{studySet.title}</CardTitle>
+        <CardTitle className="text-lg">{studySet.name}</CardTitle>
       </CardHeader>
       <CardContent>
         {studySet.description && (

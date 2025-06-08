@@ -9,6 +9,14 @@ type Session = {
   };
 } | null;
 
+interface StudySetData {
+  id: string;
+  title: string;
+  description: string;
+  user: { id: string; name: string; image: string | null };
+  flashcards: Array<{ id: string; term: string; definition: string }>;
+}
+
 // import { api } from "~/trpc/react";
 import { api } from "../../api/placeholder-api";
 // import FlashcardCard from "../shared/flashcard-card";
@@ -16,15 +24,15 @@ import { api } from "../../api/placeholder-api";
 const StudySetFlashcards = ({ session }: { session: Session | null }) => {
   console.log('Session:', session); // Keep session usage for future functionality
   const { id }: { id: string } = useParams();
-  const { data } = api.studySet.byId.useQuery({ id });
+  const { data } = api.studySet.byId.useQuery({ id }) as { data: StudySetData | null };
 
   return (
     <div className="mb-8">
       <span className="mb-5 inline-block text-lg font-bold">
-        Terms in this set ({data?.flashcards.length})
+        Terms in this set ({data?.flashcards?.length || 0})
       </span>
       <div className="flex flex-col gap-3">
-        {data?.flashcards.map((flashcard: any, index: number) => (
+        {data?.flashcards?.map((flashcard, index: number) => (
           <div key={index} className="p-4 border rounded-lg">
             <div className="font-semibold">{flashcard.term}</div>
             <div className="text-gray-600">{flashcard.definition}</div>

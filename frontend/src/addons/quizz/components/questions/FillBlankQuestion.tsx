@@ -88,7 +88,7 @@ const FillBlankQuestion: React.FC<FillBlankQuestionProps> = ({
           alt.toLowerCase().trim() === inputValue.toLowerCase().trim()
         ));
       
-      setValidationResults(prev => ({ ...prev, [blankId]: isCorrect }));
+      setValidationResults(prev => ({ ...prev, [blankId]: Boolean(isCorrect) }));
     }
   };
 
