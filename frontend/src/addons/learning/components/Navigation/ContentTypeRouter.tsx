@@ -322,10 +322,16 @@ export default function ContentTypeRouter({
     return [];
   };
 
+  // Validate language to ensure type safety
+  const validateLanguage = (lang: string): 'en' | 'fr' | 'es' | 'nl' | undefined => {
+    const validLanguages = ['en', 'fr', 'es', 'nl'];
+    return validLanguages.includes(lang) ? lang as 'en' | 'fr' | 'es' | 'nl' : undefined;
+  };
+
   // Common props for all content components
   const commonProps = {
     lessonId: contentId,
-    language: userLanguage || language,
+    language: validateLanguage(userLanguage || language || 'fr'),
     unitId,
     onComplete: handleContentComplete,
     currentStep,
@@ -371,7 +377,7 @@ export default function ContentTypeRouter({
         return <ModernNumbersWrapper {...commonProps} />;
 
       case 'numbers_game':
-        return <NumbersGame lessonId={contentId} language={userLanguage || language} />;
+        return <NumbersGame lessonId={contentId} language={validateLanguage(userLanguage || language || 'fr')} />;
 
       case 'reordering':
         return <ModernReorderingWrapper {...propsWithProgressIndicator} />;

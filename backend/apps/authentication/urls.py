@@ -31,7 +31,7 @@ from .supabase_views import (
     supabase_reset_password,
 )
 from django.conf import settings
-from .debug_views import cors_debug, debug_supabase_config, test_token_verification, debug_auth_headers
+from .debug_views import cors_debug, debug_supabase_config, test_token_verification, debug_auth_headers, debug_apps_system, test_token
 from .views_terms import accept_terms, terms_status
 
 urlpatterns = [
@@ -76,8 +76,10 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += [
+        path('test-token/', test_token, name='test_token'),
         path('cors-debug/', cors_debug, name='cors_debug'),
         path('debug/supabase-config/', debug_supabase_config, name='debug_supabase_config'),
         path('debug/test-token/', test_token_verification, name='test_token_verification'),
         path('debug/auth-headers/', debug_auth_headers, name='debug_auth_headers'),
+        path('debug/apps-system/', debug_apps_system, name='debug_apps_system'),
     ]

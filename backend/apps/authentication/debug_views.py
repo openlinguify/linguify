@@ -223,3 +223,203 @@ def debug_auth_headers(request):
         'auth_info': info,
         'all_headers': dict(request.headers)
     })
+
+@api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
+def test_token(request):
+    """Test endpoint to verify if authentication is working"""
+    try:
+        user = request.user
+        
+        # Get the authorization header
+        auth_header = request.headers.get('Authorization', '')
+        token = None
+        if auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+        
+        # Try to decode the token for debugging
+        token_info = None
+        if token and settings.DEBUG:
+            try:
+                import jwt
+                # Decode without verification for debugging
+                token_info = jwt.decode(
+                    token,
+                    options={"verify_signature": False},
+                    algorithms=["HS256"]
+                )
+            except Exception as e:
+                logger.error(f"Error decoding token for debug: {e}")
+        
+        response_data = {
+            'message': 'Authentication successful',
+            'user': {
+                'id': user.id,
+                'email': user.email,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'is_authenticated': user.is_authenticated,
+                'date_joined': user.date_joined.isoformat() if hasattr(user, 'date_joined') else None,
+            },
+            'token_preview': f"{token[:20]}..." if token else None,
+        }
+        
+        # Add token info in debug mode
+        if settings.DEBUG and token_info:
+            response_data['token_debug'] = {
+                'iss': token_info.get('iss'),
+                'aud': token_info.get('aud'),
+                'role': token_info.get('role'),
+                'sub': token_info.get('sub'),
+                'exp': token_info.get('exp'),
+                'iat': token_info.get('iat'),
+            }
+        
+        return JsonResponse(response_data)
+        
+    except Exception as e:
+        logger.error(f"Error in test_token view: {e}")
+        return JsonResponse({
+            'error': 'Internal server error',
+            'detail': str(e) if settings.DEBUG else 'Authentication test failed'
+        }, status=500)
+
+@api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
+def debug_apps_system(request):
+    """Endpoint pour déboguer le système d'apps"""
+    if not settings.DEBUG:
+        return JsonResponse({'error': 'Debug endpoint disabled in production'}, status=403)
+    
+    try:
+        from app_manager.models import App, UserAppSettings
+        from django.contrib.auth import get_user_model
+        
+        User = get_user_model()
+        
+        # Vérifier les apps définies
+        apps = App.objects.all()
+        apps_data = [
+            {
+                'code': app.code,
+                'display_name': app.display_name,
+                'is_enabled': app.is_enabled,
+                'order': app.order
+            }
+            for app in apps
+        ]
+        
+        # Si POST, essayer de créer les apps par défaut
+        if request.method == 'POST':
+            default_apps = [
+                {
+                    'code': 'learning',
+                    'display_name': 'Learning',
+                    'description': 'Interactive language lessons and exercises',
+                    'icon_name': 'BookOpen',
+                    'color': '#8B5CF6',
+                    'route_path': '/learning',
+                    'is_enabled': True,
+                    'order': 1
+                },
+                {
+                    'code': 'memory',
+                    'display_name': 'Memory',
+                    'description': 'Memory training with spaced repetition (Flashcards)',
+                    'icon_name': 'Brain',
+                    'color': '#EF4444',
+                    'route_path': '/flashcard',
+                    'is_enabled': True,
+                    'order': 2
+                },
+                {
+                    'code': 'notes',
+                    'display_name': 'Notes',
+                    'description': 'Take notes and organize vocabulary',
+                    'icon_name': 'NotebookPen',
+                    'color': '#06B6D4',
+                    'route_path': '/notebook',
+                    'is_enabled': True,
+                    'order': 3
+                },
+                {
+                    'code': 'conversation_ai',
+                    'display_name': 'Conversation AI',
+                    'description': 'Practice conversations with AI',
+                    'icon_name': 'MessageSquare',
+                    'color': '#F59E0B',
+                    'route_path': '/language_ai',
+                    'is_enabled': True,
+                    'order': 4
+                }
+            ]
+            
+            created_count = 0
+            for app_data in default_apps:
+                app, created = App.objects.get_or_create(
+                    code=app_data['code'],
+                    defaults=app_data
+                )
+                if created:
+                    created_count += 1
+            
+            # Re-get apps after creation
+            apps = App.objects.all()
+            apps_data = [
+                {
+                    'code': app.code,
+                    'display_name': app.display_name,
+                    'is_enabled': app.is_enabled,
+                    'order': app.order
+                }
+                for app in apps
+            ]
+        
+        # Vérifier l'utilisateur actuel (si authentifié)
+        user_info = None
+        user_settings_info = None
+        
+        if hasattr(request, 'user') and request.user.is_authenticated:
+            user = request.user
+            user_info = {
+                'id': user.id,
+                'email': user.email,
+                'username': getattr(user, 'username', 'N/A')
+            }
+            
+            user_settings = UserAppSettings.objects.filter(user=user).first()
+            if user_settings:
+                user_settings_info = {
+                    'enabled_apps': user_settings.enabled_apps,
+                    'preferences': user_settings.user_preferences
+                }
+            else:
+                # Créer des settings par défaut si l'utilisateur est authentifié
+                enabled_apps = [app.code for app in apps if app.is_enabled]
+                if enabled_apps:
+                    UserAppSettings.objects.create(
+                        user=user,
+                        enabled_apps=enabled_apps
+                    )
+                    user_settings_info = {
+                        'enabled_apps': enabled_apps,
+                        'preferences': {},
+                        'created': True
+                    }
+        
+        return JsonResponse({
+            'status': 'success',
+            'apps_count': len(apps_data),
+            'apps': apps_data,
+            'user_info': user_info,
+            'user_settings': user_settings_info,
+            'method': request.method
+        })
+        
+    except Exception as e:
+        logger.exception(f"Error in debug_apps_system: {str(e)}")
+        return JsonResponse({
+            'status': 'error',
+            'error': str(e)
+        })

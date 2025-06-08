@@ -10,20 +10,13 @@ User = get_user_model()
 class App(models.Model):
     """
     Represents an application available in the Linguify platform.
-    The 4 main apps: learning, memory, notes, conversation_ai
+    Apps are discovered dynamically from installed modules with __manifest__.py files.
     """
-    APP_CHOICES = [
-        ('learning', 'Learning'),
-        ('memory', 'Memory'), 
-        ('notes', 'Notes'),
-        ('conversation_ai', 'Conversation AI'),
-    ]
     
     # Technical identifier of the application
     code = models.CharField(
         max_length=50, 
-        unique=True, 
-        choices=APP_CHOICES,
+        unique=True,
         help_text="Technical code of the application"
     )
     
@@ -57,6 +50,26 @@ class App(models.Model):
         help_text="Frontend routing path (e.g., /learning)"
     )
     
+    # App category from manifest
+    category = models.CharField(
+        max_length=100,
+        default='Uncategorized',
+        help_text="Application category"
+    )
+    
+    # Version from manifest
+    version = models.CharField(
+        max_length=20,
+        default='1.0.0',
+        help_text="Application version"
+    )
+    
+    # Whether app is installable (from manifest)
+    installable = models.BooleanField(
+        default=True,
+        help_text="Whether the app can be installed"
+    )
+    
     # Globally enabled application
     is_enabled = models.BooleanField(
         default=True,
@@ -67,6 +80,13 @@ class App(models.Model):
     order = models.PositiveIntegerField(
         default=0,
         help_text="Display order in the interface"
+    )
+    
+    # Manifest-based metadata (JSON field for extensibility)
+    manifest_data = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Additional data from the module's __manifest__.py file"
     )
     
     # Timestamps
@@ -85,6 +105,108 @@ class App(models.Model):
     def clean(self):
         if self.color and not self.color.startswith('#'):
             raise ValidationError({'color': 'Color must start with #'})
+    
+    @classmethod
+    def discover_apps_from_manifests(cls):
+        """
+        Discover and sync applications from __manifest__.py files.
+        This method scans all Django apps for manifest files and creates/updates App records.
+        """
+        import os
+        import importlib.util
+        from django.conf import settings
+        from django.apps import apps
+        
+        discovered_apps = []
+        
+        # Get all installed Django apps
+        for app_config in apps.get_app_configs():
+            app_name = app_config.name
+            
+            # Skip Django's built-in apps and non-project apps
+            if not app_name.startswith('apps.'):
+                continue
+            
+            # Look for __manifest__.py in the app directory
+            try:
+                app_path = app_config.path
+                manifest_path = os.path.join(app_path, '__manifest__.py')
+                
+                if os.path.exists(manifest_path):
+                    # Load the manifest
+                    spec = importlib.util.spec_from_file_location("manifest", manifest_path)
+                    manifest_module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(manifest_module)
+                    
+                    # The manifest should be a dictionary assigned to __manifest__
+                    manifest_data = None
+                    if hasattr(manifest_module, '__manifest__'):
+                        manifest_data = getattr(manifest_module, '__manifest__')
+                    elif hasattr(manifest_module, '__dict__'):
+                        # Fallback: Look for any dictionary with 'name' key
+                        for key, value in manifest_module.__dict__.items():
+                            if isinstance(value, dict) and 'name' in value:
+                                manifest_data = value
+                                break
+                    
+                    if manifest_data:
+                        app_code = app_name.split('.')[-1]  # Extract 'course' from 'apps.course'
+                        
+                        # Extract info from manifest
+                        display_name = manifest_data.get('name', app_code.capitalize())
+                        description = manifest_data.get('summary', manifest_data.get('description', ''))
+                        category = manifest_data.get('category', 'Uncategorized')
+                        version = manifest_data.get('version', '1.0.0')
+                        installable = manifest_data.get('installable', True)
+                        
+                        # Get frontend components info
+                        frontend_components = manifest_data.get('frontend_components', {})
+                        icon_name = frontend_components.get('icon', 'Package')
+                        route_path = frontend_components.get('route', f'/{app_code}')
+                        
+                        # Create or update the App record
+                        app_obj, created = cls.objects.update_or_create(
+                            code=app_code,
+                            defaults={
+                                'display_name': display_name,
+                                'description': description[:500] if description else '',  # Limit description length
+                                'icon_name': icon_name,
+                                'route_path': route_path,
+                                'category': category,
+                                'version': version,
+                                'installable': installable,
+                                'manifest_data': manifest_data,
+                            }
+                        )
+                        
+                        discovered_apps.append({
+                            'code': app_code,
+                            'name': display_name,
+                            'created': created,
+                            'app_obj': app_obj
+                        })
+                            
+            except Exception as e:
+                print(f"Error processing manifest for {app_name}: {e}")
+                continue
+        
+        return discovered_apps
+    
+    @classmethod
+    def sync_apps(cls):
+        """
+        Sync all applications from manifests and return a summary.
+        """
+        discovered = cls.discover_apps_from_manifests()
+        
+        summary = {
+            'total_discovered': len(discovered),
+            'newly_created': len([app for app in discovered if app['created']]),
+            'updated': len([app for app in discovered if not app['created']]),
+            'apps': discovered
+        }
+        
+        return summary
 
 
 class UserAppSettings(models.Model):

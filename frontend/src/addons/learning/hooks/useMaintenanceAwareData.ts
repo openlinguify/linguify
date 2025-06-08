@@ -59,9 +59,9 @@ export function useMaintenanceAwareData<T>({
       const result = await fetchFunction(lessonId, language);
       
       // Vérifier si les données sont vides après transformation
-      let transformedResult = result;
+      let transformedResult: Awaited<T> = result;
       if (dataTransformerRef.current) {
-        transformedResult = dataTransformerRef.current(result);
+        transformedResult = dataTransformerRef.current(result) as Awaited<T>;
       }
       
       // Si les données sont vides, considérer comme maintenance

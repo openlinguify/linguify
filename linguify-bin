@@ -1,0 +1,323 @@
+#!/bin/bash
+
+# Linguify Module Management Tool
+# Usage: ./linguify-bin scaffold <module_name> <output_directory>
+#        ./linguify-bin --apps-path="./apps/" -d linguify
+
+set -e
+
+COMMAND=""
+MODULE_NAME=""
+OUTPUT_DIR=""
+ICON_NAME="Package"
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        scaffold)
+            COMMAND="scaffold"
+            shift
+            ;;
+        --apps-path=*)
+            # For Odoo-style compatibility
+            APPS_PATH="${1#*=}"
+            shift
+            ;;
+        -d)
+            # For Odoo-style compatibility - project name
+            PROJECT_NAME="$2"
+            shift 2
+            ;;
+        --icon=*)
+            ICON_NAME="${1#*=}"
+            shift
+            ;;
+        *)
+            if [[ -z "$MODULE_NAME" ]]; then
+                MODULE_NAME="$1"
+            elif [[ -z "$OUTPUT_DIR" ]]; then
+                OUTPUT_DIR="$1"
+            fi
+            shift
+            ;;
+    esac
+done
+
+# Function to create a module using the existing Python script
+create_linguify_module() {
+    local module_name="$1"
+    local icon_name="$2"
+    local description="$3"
+    
+    echo "🚀 Creating Linguify module: $module_name"
+    
+    # Use the existing Python script to create the module
+    cd "$(dirname "$0")"
+    python3 scripts/tools/modules/create_new_module.py "$module_name" "$icon_name" --description "$description"
+    
+    # Create the __manifest__.py file
+    create_manifest_file "$module_name" "$description"
+    
+    echo "✅ Module created successfully!"
+    echo "📁 Module location: backend/apps/$module_name"
+    echo "📁 Frontend addon: frontend/src/addons/$module_name"
+    echo ""
+    echo "📝 Next steps:"
+    echo "1. cd backend"
+    echo "2. python manage.py makemigrations $module_name"
+    echo "3. python manage.py migrate"
+    echo "4. Access at: http://localhost:3000/$module_name"
+}
+
+# Function to create __manifest__.py file
+create_manifest_file() {
+    local module_name="$1"
+    local description="$2"
+    local manifest_path="backend/apps/$module_name/__manifest__.py"
+    
+    # Capitalize module name for display
+    local display_name=$(echo "$module_name" | sed 's/.*/\L&/; s/[a-z]*/\u&/g')
+    
+    cat > "$manifest_path" << EOF
+# -*- coding: utf-8 -*-
+{
+    'name': '$display_name',
+    'version': '1.0.0',
+    'category': 'Education/Language Learning',
+    'summary': '$([ -n "$description" ] && echo "$description" || echo "$display_name module for Linguify")',
+    'description': '''
+$display_name Module for Linguify
+================================
+
+$([ -n "$description" ] && echo "$description" || echo "This module provides $module_name functionality for the Linguify language learning platform.")
+
+Features:
+- CRUD operations for $module_name entities
+- REST API endpoints
+- Frontend React components
+- Integration with Linguify core systems
+
+Usage:
+- Access via /api/v1/$module_name/
+- Frontend available at /$module_name
+    ''',
+    'author': 'Linguify Team',
+    'website': 'https://linguify.com',
+    'license': 'MIT',
+    'depends': [
+        'authentication',  # Core authentication system
+        'app_manager',     # App management system
+    ],
+    'data': [
+        # Add data files here if needed
+        # 'data/demo_data.xml',
+        # 'views/menu.xml',
+    ],
+    'demo': [
+        # Add demo data files here
+    ],
+    'css': [
+        'static/$module_name/css/style.css',
+    ],
+    'js': [
+        'static/$module_name/js/main.js',
+    ],
+    'installable': True,
+    'auto_install': False,
+    'application': True,
+    'sequence': 100,
+    'frontend_components': {
+        'main_component': '${display_name}View',
+        'route': '/$module_name',
+        'icon': '$ICON_NAME',
+        'menu_order': 10,
+    },
+    'api_endpoints': {
+        'base_url': '/api/v1/$module_name/',
+        'viewset': '${display_name}ViewSet',
+    },
+    'permissions': {
+        'create': 'auth.user',
+        'read': 'auth.user', 
+        'update': 'auth.user',
+        'delete': 'auth.user',
+    },
+    'technical_info': {
+        'django_app': 'apps.$module_name',
+        'models': ['$display_name'],
+        'admin_registered': True,
+        'rest_framework': True,
+    }
+}
+EOF
+    
+    echo "📄 Created __manifest__.py at $manifest_path"
+}
+
+# Function to create standalone module (for custom directory)
+create_standalone_module() {
+    local module_name="$1"
+    local output_dir="$2"
+    
+    echo "🚀 Creating standalone Linguify module: $module_name in $output_dir/"
+    
+    # Create the output directory if it doesn't exist
+    mkdir -p "$output_dir"
+    
+    # Create the module directory structure  
+    MODULE_DIR="$output_dir/$module_name"
+    mkdir -p "$MODULE_DIR"
+    
+    # Create backend structure
+    mkdir -p "$MODULE_DIR/backend/apps/$module_name"
+    mkdir -p "$MODULE_DIR/backend/apps/$module_name/management/commands"
+    mkdir -p "$MODULE_DIR/backend/apps/$module_name/migrations"
+    mkdir -p "$MODULE_DIR/backend/apps/$module_name/templates/$module_name"
+    mkdir -p "$MODULE_DIR/backend/apps/$module_name/static/$module_name/css"
+    mkdir -p "$MODULE_DIR/backend/apps/$module_name/static/$module_name/js"
+    mkdir -p "$MODULE_DIR/backend/apps/$module_name/tests"
+    
+    # Create frontend structure
+    mkdir -p "$MODULE_DIR/frontend/src/addons/$module_name/components"
+    mkdir -p "$MODULE_DIR/frontend/src/addons/$module_name/api"
+    mkdir -p "$MODULE_DIR/frontend/src/addons/$module_name/hooks"
+    mkdir -p "$MODULE_DIR/frontend/src/addons/$module_name/types"
+    
+    # Create basic files
+    create_basic_module_files "$MODULE_DIR" "$module_name"
+    
+    echo "✅ Standalone module structure created successfully!"
+    echo ""
+    echo "📁 Module structure:"
+    echo "├── backend/"
+    echo "│   └── apps/$module_name/"
+    echo "│       ├── management/commands/"
+    echo "│       ├── migrations/"
+    echo "│       ├── templates/$module_name/"
+    echo "│       ├── static/$module_name/"
+    echo "│       └── tests/"
+    echo "└── frontend/"
+    echo "    └── src/addons/$module_name/"
+    echo "        ├── components/"
+    echo "        ├── api/"
+    echo "        ├── hooks/"
+    echo "        └── types/"
+    echo ""
+    echo "📝 Next steps:"
+    echo "1. cd $MODULE_DIR"
+    echo "2. Edit __manifest__.py to configure your module"
+    echo "3. Implement your module functionality"
+}
+
+# Function to create basic module files for standalone modules
+create_basic_module_files() {
+    local module_dir="$1" 
+    local module_name="$2"
+    local display_name=$(echo "$module_name" | sed 's/.*/\L&/; s/[a-z]*/\u&/g')
+    
+    # Create __manifest__.py
+    cat > "$module_dir/__manifest__.py" << EOF
+# -*- coding: utf-8 -*-
+{
+    'name': '$display_name',
+    'version': '1.0.0',
+    'category': 'Education/Language Learning',
+    'summary': '$display_name module for Linguify',
+    'description': '''
+$display_name Module for Linguify
+================================
+
+This module provides $module_name functionality for the Linguify language learning platform.
+
+Features:
+- CRUD operations for $module_name entities
+- REST API endpoints
+- Frontend React components
+- Integration with Linguify core systems
+    ''',
+    'author': 'Linguify Team',
+    'website': 'https://linguify.com',
+    'license': 'MIT',
+    'depends': [
+        'authentication',
+        'app_manager',
+    ],
+    'installable': True,
+    'auto_install': False,
+    'application': True,
+}
+EOF
+
+    # Create README.md
+    cat > "$module_dir/README.md" << EOF
+# $display_name Module
+
+$display_name module for the Linguify language learning platform.
+
+## Installation
+
+1. Copy this module to your Linguify project:
+   \`\`\`bash
+   cp -r $module_name /path/to/linguify/backend/apps/
+   cp -r frontend/src/addons/$module_name /path/to/linguify/frontend/src/addons/
+   \`\`\`
+
+2. Add the module to Django settings:
+   \`\`\`python
+   INSTALLED_APPS = [
+       # ... other apps
+       'apps.$module_name',
+   ]
+   \`\`\`
+
+3. Run migrations:
+   \`\`\`bash
+   python manage.py makemigrations $module_name
+   python manage.py migrate
+   \`\`\`
+
+4. Access the module at: http://localhost:3000/$module_name
+
+## Structure
+
+- \`backend/apps/$module_name/\` - Django backend application
+- \`frontend/src/addons/$module_name/\` - React frontend components
+
+## Configuration
+
+Edit \`__manifest__.py\` to configure module settings, dependencies, and metadata.
+EOF
+
+    echo "📄 Created basic module files in $module_dir"
+}
+
+# Main execution
+if [[ "$COMMAND" == "scaffold" ]]; then
+    if [[ -z "$MODULE_NAME" ]]; then
+        echo "Error: Module name is required"
+        echo "Usage: ./linguify-bin scaffold <module_name> [output_directory]"
+        exit 1
+    fi
+    
+    if [[ -n "$OUTPUT_DIR" ]]; then
+        # Create standalone module in custom directory
+        create_standalone_module "$MODULE_NAME" "$OUTPUT_DIR"
+    else
+        # Create module in main project using Python script
+        create_linguify_module "$MODULE_NAME" "$ICON_NAME" "Generated $MODULE_NAME module"
+    fi
+else
+    echo "Linguify Module Management Tool"
+    echo ""
+    echo "Usage:"
+    echo "  ./linguify-bin scaffold <module_name> [output_directory]"
+    echo "  ./linguify-bin scaffold <module_name> --icon=<IconName>"
+    echo ""
+    echo "Examples:"
+    echo "  ./linguify-bin scaffold bibliotheque custom      # Create in custom/ directory"
+    echo "  ./linguify-bin scaffold quiz --icon=Brain        # Create in main project"
+    echo ""
+    echo "Options:"
+    echo "  --icon=<IconName>    Lucide icon name (default: Package)"
+    echo ""
+fi

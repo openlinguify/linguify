@@ -18,7 +18,7 @@ const OnboardingContext = createContext<OnboardingContextType | undefined>(undef
 export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isAuthenticated, isLoading } = useAuthContext();
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [isOnboardingComplete, setIsOnboardingComplete] = useState(true);
+  const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
 
   // Reset onboarding (for testing or manual reset)
   const resetOnboarding = () => {
@@ -75,10 +75,11 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
       });
 
-      const shouldShowOnboarding = !hasCompletedOnboarding && !isProfileComplete;
+      // SIMPLIFIED: Never force onboarding
+      const shouldShowOnboarding = false;
       
-      setIsOnboardingComplete(hasCompletedOnboarding || isProfileComplete);
-      setShowOnboarding(shouldShowOnboarding);
+      setIsOnboardingComplete(true);
+      setShowOnboarding(false);
     };
 
     checkOnboardingStatus();

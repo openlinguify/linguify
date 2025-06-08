@@ -5,7 +5,8 @@ export * from './components';
 
 // Export API services
 export * from './api/courseAPI';
-export * from './api/testRecapAPI';
+export { default as testRecapAPI } from './api/testRecapAPI';
+export type { TestRecap, TestRecapResult } from './api/testRecapAPI';
 
 // Export hooks
 export * from './hooks/useExerciseProgress';

@@ -42,7 +42,8 @@ export default function TermsAcceptance({
       // Call the backend API to record acceptance
       console.log('[Terms] Attempting to accept terms', { hasToken: !!currentToken });
 
-      const response = await fetch('/api/auth/terms/accept', {
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${backendUrl}/api/auth/terms/accept`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

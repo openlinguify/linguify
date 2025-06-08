@@ -15,13 +15,13 @@ export default function LoginPage() {
     setMounted(true);
   }, []);
 
-  // Rediriger si déjà authentifié
+  // Redirect authenticated users to dashboard
   useEffect(() => {
-    if (mounted && !loading && user) {
+    if (mounted && user && !loading) {
       console.log("[Auth Flow] User already authenticated, redirecting to dashboard");
       router.push('/');
     }
-  }, [mounted, loading, user, router]);
+  }, [mounted, user, loading, router]);
 
   // Afficher le spinner pendant le chargement
   if (!mounted || loading) {
