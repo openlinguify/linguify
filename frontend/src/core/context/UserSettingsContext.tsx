@@ -1,5 +1,5 @@
 // src/core/context/UserSettingsContext.tsx
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import apiClient from '@/core/api/apiClient';
 import { useAuthContext } from '@/core/auth/AuthAdapter';
 import { toast } from '@/components/ui/use-toast';
@@ -30,18 +30,17 @@ const UserSettingsContext = createContext<UserSettingsContextType | null>(null);
 // Provider Component
 export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { isAuthenticated, user, token, isLoading: authLoading } = useAuthContext();
+  
   const [settings, setSettings] = useState<typeof DEFAULT_USER_SETTINGS>({ ...DEFAULT_USER_SETTINGS });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);
 
-  // Charger les paramètres initiaux
-  useEffect(() => {
-    // Fonction pour charger les paramètres
-    const loadSettings = async () => {
-      // Déjà en cours de chargement, ne pas recharger
-      if (isLoading && initialized) return;
+  // Fonction pour charger les paramètres (stable avec useCallback)
+  const loadSettings = useCallback(async () => {
+      // Déjà en cours de chargement ou initialisé, ne pas recharger
+      if (isLoading || initialized) return;
 
       setIsLoading(true);
       setError(null);
@@ -51,47 +50,42 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
         const storedUILanguage = localStorage.getItem('language');
         let finalSettings = { ...DEFAULT_USER_SETTINGS };
 
-        // Si authentifié ET qu'on a un token valide ET qu'on n'est pas en cours de chargement auth, essayer de charger depuis le backend
-        if (isAuthenticated && token && token.length > 10 && !authLoading) { // Basic token validation
-          console.log('[UserSettings] User is authenticated with valid token, attempting to load from backend');
+        // Charger les paramètres depuis le backend si authentifié
+        if (isAuthenticated && token && token.length > 10 && !authLoading) {
           try {
-            const response = await apiClient.get('/api/auth/me/settings/');
-
-            if (response.data) {
-              // Fusionner avec les valeurs par défaut
-              finalSettings = { ...finalSettings, ...response.data };
-              console.log('[UserSettings] Loaded settings from backend', finalSettings);
-            }
-          } catch (apiError: any) {
-            console.error('[UserSettings] Error loading from API:', apiError);
-
-            // Only fallback to localStorage if it's not an auth error
-            if (apiError.status !== 401) {
-              const storedData = localStorage.getItem('userSettings');
-              if (storedData) {
-                try {
-                  const parsedSettings = JSON.parse(storedData);
-                  finalSettings = { ...finalSettings, ...parsedSettings };
-                  console.log('[UserSettings] Loaded settings from localStorage', parsedSettings);
-                } catch (parseError) {
-                  console.error('[UserSettings] Error parsing stored settings:', parseError);
-                }
-              }
+            const response = await apiClient.get('/api/auth/profile/');
+            
+            if (response?.data) {
+              const backendSettings = {
+                ...finalSettings,
+                email_notifications: response.data.email_notifications ?? true,
+                push_notifications: response.data.push_notifications ?? true,
+                interface_language: storedUILanguage || response.data.interface_language || 'en',
+                daily_goal: response.data.daily_goal ?? 20,
+                weekday_reminders: response.data.weekday_reminders ?? true,
+                weekend_reminders: response.data.weekend_reminders ?? false,
+                reminder_time: response.data.reminder_time || '18:00',
+                target_language: response.data.target_language || finalSettings.target_language,
+                native_language: response.data.native_language || finalSettings.native_language,
+                language_level: response.data.language_level || finalSettings.language_level
+              };
+              finalSettings = backendSettings;
+              // Settings loaded successfully
             } else {
-              // For 401 errors, just use default settings
-              console.log('[UserSettings] Auth error, using default settings');
+              // No backend data, using defaults
             }
+          } catch (error) {
+            console.error('[UserSettings] Error loading from backend, using defaults:', error);
+            // Fallback to defaults on error
           }
-        }
+        } else {
         // Si non authentifié OU pas de token valide, charger depuis localStorage
-        else {
-          console.log('[UserSettings] User not authenticated or invalid token, loading from localStorage');
           const storedData = localStorage.getItem('userSettings');
           if (storedData) {
             try {
               const parsedSettings = JSON.parse(storedData);
               finalSettings = { ...finalSettings, ...parsedSettings };
-              console.log('[UserSettings] Loaded settings from localStorage', parsedSettings);
+              console.debug('[UserSettings] Loaded settings from localStorage', parsedSettings);
             } catch (parseError) {
               console.error('[UserSettings] Error parsing stored settings:', parseError);
             }
@@ -102,7 +96,7 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
         if (storedUILanguage && ['en', 'fr', 'es', 'nl'].includes(storedUILanguage)) {
           // Si la langue UI diffère de celle des paramètres, la priorité va à la langue UI
           if (finalSettings.interface_language !== storedUILanguage) {
-            console.log('[UserSettings] Synchronizing with UI language:', storedUILanguage);
+            console.debug('[UserSettings] Synchronizing with UI language:', storedUILanguage);
             finalSettings.interface_language = storedUILanguage;
           }
         }
@@ -119,20 +113,24 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
         setIsLoading(false);
         setInitialized(true);
       }
-    };
+  }, [isAuthenticated, token, isLoading, initialized]);
 
-    // Si l'authentification est chargée, charger les paramètres
-    if (!authLoading) {
-      console.log('[UserSettings] Auth loaded, loading settings. Auth state:', { isAuthenticated, hasToken: !!token, tokenLength: token?.length });
-      loadSettings();
-    } else {
-      console.log('[UserSettings] Auth still loading, waiting...');
+  // Charger les paramètres initiaux
+  useEffect(() => {
+    // Si l'authentification est chargée, charger les paramètres seulement si authentifié
+    if (!authLoading && !initialized) {
+      if (isAuthenticated && token) {
+        loadSettings();
+      } else {
+        setInitialized(true);
+        setIsLoading(false);
+      }
     }
-  }, [isAuthenticated, authLoading, token]);
+  }, [isAuthenticated, authLoading, token, initialized]);
 
   // Si l'utilisateur est connecté, utiliser les données du profil
   useEffect(() => {
-    if (user) {
+    if (user && initialized) {
       const userLanguageSettings = {
         native_language: user.native_language,
         target_language: user.target_language,
@@ -140,27 +138,23 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
         objectives: user.objectives,
       };
       
-      // Mettre à jour les paramètres avec les données utilisateur
-      setSettings(prev => ({ ...prev, ...userLanguageSettings }));
-      
-      // Mettre à jour localStorage
-      const storedData = localStorage.getItem('userSettings');
-      if (storedData) {
-        try {
-          const parsedSettings = JSON.parse(storedData);
-          const updatedSettings = { ...parsedSettings, ...userLanguageSettings };
+      // Mettre à jour les paramètres avec les données utilisateur seulement si nécessaire
+      setSettings(prev => {
+        const needsUpdate = Object.entries(userLanguageSettings).some(
+          ([key, value]) => prev[key as keyof typeof prev] !== value
+        );
+        
+        if (needsUpdate) {
+          const updatedSettings = { ...prev, ...userLanguageSettings };
+          // Mettre à jour localStorage
           localStorage.setItem('userSettings', JSON.stringify(updatedSettings));
-        } catch (e) {
-          console.error('[UserSettings] Error updating localStorage with user profile data:', e);
+          return updatedSettings;
         }
-      } else {
-        localStorage.setItem('userSettings', JSON.stringify({ 
-          ...DEFAULT_USER_SETTINGS, 
-          ...userLanguageSettings 
-        }));
-      }
+        
+        return prev;
+      });
     }
-  }, [user]);
+  }, [user, initialized]);
 
   // Mettre à jour un paramètre individuel
   const updateSetting = async <K extends keyof typeof DEFAULT_USER_SETTINGS>(
@@ -187,7 +181,7 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
           await apiClient.post('/api/auth/me/settings/', { [key]: value });
         }
         
-        console.log(`[UserSettings] Successfully updated ${String(key)} to ${String(value)}`);
+        console.debug(`[UserSettings] Successfully updated ${String(key)} to ${String(value)}`);
       } catch (error) {
         console.error(`[UserSettings] Error updating ${String(key)}:`, error);
         // Restaurer l'ancienne valeur en cas d'erreur

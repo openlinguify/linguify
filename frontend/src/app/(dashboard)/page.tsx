@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, memo, useCallback } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { User } from "lucide-react";
@@ -20,10 +20,14 @@ const UserProfileCard = memo(({
   languageLevel,
   t
 }: {
-  user: any;
+  user: {
+    full_name?: string;
+    email?: string;
+    [key: string]: any;
+  };
   targetLanguageName: string;
   languageLevel: string;
-  t: (key: string, options?: any, fallback?: string) => string
+  t: (key: string, options?: Record<string, string>, fallback?: string) => string
 }) => {
   return (
     <Card className="w-full dark:bg-transparent">
@@ -64,11 +68,13 @@ export default function DashboardHome() {
   const { t } = useTranslation();
   const {
     languageLevel,
-    targetLanguageName,
-    isLoading: langLoading
+    targetLanguageName
   } = useLanguage();
   const router = useRouter();
   const [isPrefetching, setIsPrefetching] = useState(false);
+  
+
+  // Remove the redirect logic - let user access real dashboard
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -91,7 +97,7 @@ export default function DashboardHome() {
           // Prefetch essential data in parallel
           Promise.allSettled([
             courseModule.default.getUnits(),
-            notebookModule.notebookAPI.getCategories()
+            notebookModule.notebookAPI.getAllNotes()
           ]).catch(err => {
             console.error("Error during data prefetching:", err);
           });
@@ -102,16 +108,24 @@ export default function DashboardHome() {
     }
   }, [isAuthenticated, isPrefetching]);
 
-  // Loading skeleton
-  if (authLoading || langLoading) {
+  // Loading skeleton - only wait for auth, not language
+  // IMPORTANT: Don't wait for langLoading as it can stay true and block app display
+  if (authLoading) {
     return (
-      <div className="w-full space-y-8 max-w-7xl mx-auto font-poppins animate-pulse">
+      <div className="w-full space-y-8 max-w-7xl mx-auto font-poppins">
         {/* User profile skeleton */}
-        <div className="w-full h-20 bg-gray-200 dark:bg-gray-800 rounded-lg"></div>
+        <div className="w-full h-20 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"></div>
 
-        {/* Apps grid skeleton */}
-        <div style={{ marginTop: '10vh' }}>
-          <EnabledAppsGrid />
+        {/* Apps grid skeleton - simplified */}
+        <div style={{ marginTop: '10vh' }} className="flex justify-center px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8 justify-items-center w-full max-w-7xl">
+            {Array(4).fill(0).map((_, i) => (
+              <div key={i} className="w-full flex flex-col items-center animate-pulse">
+                <div className="w-full max-w-[100px] aspect-square bg-gray-200 dark:bg-gray-800 rounded-xl mb-2"></div>
+                <div className="w-20 h-4 bg-gray-200 dark:bg-gray-800 rounded"></div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -131,6 +145,9 @@ export default function DashboardHome() {
       <div style={{ marginTop: '10vh' }}>
         <EnabledAppsGrid />
       </div>
+      
+      {/* Auth Debug Panel (only in development) */}
+      {/* <AuthDebugPanel /> */}
     </div>
   );
 }

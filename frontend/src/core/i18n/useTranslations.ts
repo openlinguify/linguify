@@ -25,8 +25,8 @@ const translationModules = {
         ...commonAdditions.default,
         ...footer.default,
         ...sidebar.default,
-        ...notifications.default,
         ...settings.default,
+        ...notifications.default, // Charge toute la structure (notifications, test_notifications, etc.)
         dashboard: dashboard.default,
         terms: terms.default.en,
         onboarding: {
@@ -60,8 +60,8 @@ const translationModules = {
         ...commonAdditions.default,
         ...footer.default,
         ...sidebar.default,
-        ...notifications.default,
         ...settings.default,
+        ...notifications.default,
         dashboard: dashboard.default,
         terms: terms.default.fr,
         onboarding: {
@@ -106,8 +106,8 @@ const translationModules = {
         ...commonAdditions.default,
         ...footer.default,
         ...sidebar.default,
-        ...notifications.default,
         ...settings.default,
+        ...notifications.default,
         dashboard: dashboard.default,
         terms: terms.default.es,
         onboarding: {
@@ -152,8 +152,8 @@ const translationModules = {
         ...commonAdditions.default,
         ...footer.default,
         ...sidebar.default,
-        ...notifications.default,
         ...settings.default,
+        ...notifications.default,
         dashboard: dashboard.default,
         terms: terms.default.nl,
         onboarding: {
@@ -235,7 +235,7 @@ const dashboardFallback = {
 
 export function useTranslation() {
   const [locale, setLocale] = useState<AvailableLocales>(currentLocale);
-  const [translations, setTranslations] = useState<any>({});
+  const [translations, setTranslations] = useState<Record<string, unknown>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   // Subscribe to language changes
@@ -260,18 +260,9 @@ export function useTranslation() {
     const loadTranslations = async () => {
       try {
         setIsLoading(true);
-        console.log('Loading translations for locale:', locale);
         const module = await translationModules[locale]();
         if (isMounted) {
           setTranslations(module);
-          console.log('Translations loaded:', Object.keys(module).length, 'entries');
-        
-        // Debug dangerZone translations specifically
-        if (module.dangerZone) {
-          console.log('DangerZone translations found:', Object.keys(module.dangerZone).length, 'entries');
-        } else {
-          console.warn('No dangerZone translations found for locale:', locale);
-        }
         }
       } catch (error) {
         console.error('Translation load error:', error);
@@ -294,7 +285,7 @@ export function useTranslation() {
 
   // Translation function with fallback support
   // Helper function to safely get nested keys
-  const getNestedValue = useCallback((obj: any, keys: string[]): any => {
+  const getNestedValue = useCallback((obj: Record<string, unknown>, keys: string[]): unknown => {
     if (!obj || typeof obj !== 'object' || keys.length === 0) return undefined;
 
     // Handle special cases for namespaced objects (dashboard, terms, onboarding)
@@ -327,9 +318,9 @@ export function useTranslation() {
     return current;
   }, []);
 
-  const t: TranslationFunction = useCallback((key, params = {}, fallback) => {
+  const t = useCallback((key: string, params: Record<string, string> = {}, fallback?: string): string => {
     const keys = key.split('.');
-    let value = getNestedValue(translations, keys);
+    const value = getNestedValue(translations, keys);
 
     if (value === undefined) {
       if (process.env.NODE_ENV === 'development') {

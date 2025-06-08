@@ -292,7 +292,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
-
+    
+    # Custom manager
     objects = UserManager()
 
     def update_profile(self, **kwargs):

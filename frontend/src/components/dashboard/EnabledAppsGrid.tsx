@@ -32,7 +32,7 @@ export function EnabledAppsGrid() {
       <div className="flex justify-center px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8 justify-items-center w-full max-w-7xl">
           {Array(4).fill(0).map((_, i) => (
-            <div key={i} className="w-full flex flex-col items-center animate-pulse">
+            <div key={i} className="w-full flex flex-col items-center">
               <div className="w-full max-w-[100px] aspect-square bg-gray-200 dark:bg-gray-800 rounded-xl mb-2"></div>
               <div className="w-20 h-4 bg-gray-200 dark:bg-gray-800 rounded"></div>
             </div>

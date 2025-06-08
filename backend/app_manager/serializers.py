@@ -10,7 +10,8 @@ class AppSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'code', 'display_name', 'description', 
             'icon_name', 'color', 'route_path', 'is_enabled', 
-            'order', 'created_at', 'updated_at'
+            'order', 'category', 'version', 'installable', 
+            'manifest_data', 'created_at', 'updated_at'
         ]
         read_only_fields = ['created_at', 'updated_at']
 
@@ -46,9 +47,7 @@ class UserAppSettingsSerializer(serializers.ModelSerializer):
 
 class AppToggleSerializer(serializers.Serializer):
     """Serializer for toggling app activation"""
-    app_code = serializers.ChoiceField(
-        choices=[choice[0] for choice in App.APP_CHOICES]
-    )
+    app_code = serializers.CharField()
     enabled = serializers.BooleanField()
     
     def validate_app_code(self, value):

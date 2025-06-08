@@ -24,6 +24,9 @@ if not env('SECRET_KEY', default=None):
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
+# Development authentication bypass for JWT issues
+BYPASS_AUTH_FOR_DEVELOPMENT = env.bool('BYPASS_AUTH_FOR_DEVELOPMENT', default=DEBUG)
+
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 if not DEBUG:
     if not ALLOWED_HOSTS:
@@ -71,7 +74,7 @@ INSTALLED_APPS = [
     'apps.notification',
     #'subscription',
     'app_manager',
-    
+    'apps.quizz',
     # Django REST framework modules
     'rest_framework',
     'rest_framework.authtoken',
@@ -138,6 +141,13 @@ SUPABASE_ANON_KEY = env('SUPABASE_ANON_KEY')
 SUPABASE_SERVICE_ROLE_KEY = env('SUPABASE_SERVICE_ROLE_KEY')
 SUPABASE_PROJECT_ID = env('SUPABASE_PROJECT_ID')
 SUPABASE_JWT_SECRET = env('SUPABASE_JWT_SECRET')
+
+# TEMPORARY: Enable auth bypass for development debugging
+# REMOVE THIS IN PRODUCTION!
+if DEBUG:
+    BYPASS_AUTH_FOR_DEVELOPMENT = False  # Disabled to use real Supabase auth
+    # print("WARNING: Authentication bypass is enabled for development!")
+    # print("This should NEVER be used in production!")
 
 # Legacy Auth0 Configuration (for migration purposes)
 AUTH0_DOMAIN = env('AUTH0_DOMAIN', default='')

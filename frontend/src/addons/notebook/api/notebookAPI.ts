@@ -5,6 +5,7 @@ import { parseError, ErrorType } from '../utils/errorHandling';
 // Chemin API
 const NOTEBOOK_API = '/api/v1/notebook';
 
+
 /**
  * Fonction pour valider et normaliser les données d'une note
  */
@@ -412,10 +413,17 @@ export const notebookAPI = {
       updated_at: new Date().toISOString(),
       language: "fr",
       tags: [],
+      related_words: [],
+      example_sentences: [],
+      note_type: "NOTE" as const,
+      is_pinned: false,
+      is_archived: false,
+      priority: "LOW" as const,
+      is_shared: false,
+      is_due_for_review: false,
       // Set reviewed date to now 
       last_reviewed_at: new Date().toISOString(),
-      review_count: 1,
-      next_review_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days from now
+      review_count: 1
     } as Note;
 
     // Original implementation kept for reference when the server issue is fixed:

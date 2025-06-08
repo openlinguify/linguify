@@ -54,6 +54,7 @@ function logError(message: string, error?: any) {
   console.error(`❌ REVISION ERROR: ${message}`, error);
 }
 
+
 /**
  * Service pour interagir avec l'API de révision
  */

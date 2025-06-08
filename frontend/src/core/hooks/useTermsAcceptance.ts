@@ -3,6 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuthContext } from '@/core/auth/AuthAdapter';
 
+// Cache pour éviter les appels multiples
+let termsStatusCache: { data: TermsStatus; timestamp: number } | null = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 interface TermsStatus {
   terms_accepted: boolean;
   terms_accepted_at: string | null;
@@ -19,31 +23,28 @@ export function useTermsAcceptance() {
   // Fetch terms acceptance status
   const fetchTermsStatus = useCallback(async () => {
     if (!isAuthenticated) {
-      console.log('[Terms] User not authenticated, skipping terms status fetch');
       setLoading(false);
       return;
     }
 
     if (!token) {
-      console.log('[Terms] No token available, skipping terms status fetch');
+      setLoading(false);
+      return;
+    }
+
+    // Vérifier le cache d'abord
+    if (termsStatusCache && Date.now() - termsStatusCache.timestamp < CACHE_DURATION) {
+      setTermsStatus(termsStatusCache.data);
       setLoading(false);
       return;
     }
 
     setLoading(true);
     setError(null);
-
-    let response: Response | undefined;
     
     try {
-      // Add debugging info
-      console.log('[Terms] Fetching terms status with token', { 
-        tokenExists: !!token, 
-        tokenLength: token?.length,
-        isAuthenticated 
-      });
-
-      response = await fetch('/api/auth/terms/status', {
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${backendUrl}/api/auth/terms/status`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -52,16 +53,15 @@ export function useTermsAcceptance() {
         credentials: 'include'
       });
 
-      console.log('[Terms] Response status:', response.status);
-
       if (!response.ok) {
         const errorText = await response.text();
-        console.log('[Terms] Error response:', errorText);
         throw new Error(`Failed to fetch terms status: ${response.status} ${errorText}`);
       }
 
       const data = await response.json();
-      console.log('[Terms] Terms status received:', data);
+      
+      // Mettre en cache la réponse
+      termsStatusCache = { data, timestamp: Date.now() };
       setTermsStatus(data);
 
       // If terms not accepted and user is authenticated, show the dialog
@@ -71,9 +71,9 @@ export function useTermsAcceptance() {
     } catch (err) {
       console.error('Error fetching terms status:', err);
       
-      // If it's a 401 error, don't set error state - just skip terms check
-      if (response?.status === 401) {
-        console.log('[Terms] Auth error (401), skipping terms check');
+      // If it's a network error or auth error, just skip terms check
+      if (err instanceof Error && (err.message.includes('401') || err.message.includes('Failed to fetch'))) {
+        console.log('[Terms] Auth or network error, skipping terms check');
         setTermsStatus(null);
       } else {
         setError(err instanceof Error ? err.message : 'An error occurred');
@@ -91,7 +91,7 @@ export function useTermsAcceptance() {
     }
   }, [isAuthenticated, token]);
 
-  // Call fetchTermsStatus when component mounts or authentication changes
+  // Fetch terms status when authenticated
   useEffect(() => {
     if (isAuthenticated) {
       fetchTermsStatus();
