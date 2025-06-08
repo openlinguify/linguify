@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@auth0/nextjs-auth0';
 
 interface HandlerFunction {
-  (req: NextRequest, session: any): Promise<NextResponse>;
+  (req: NextRequest, session: Record<string, unknown>): Promise<NextResponse>;
 }
 
 export function withProtectedApi(handler: HandlerFunction) {
@@ -45,12 +45,20 @@ export function withProtectedApi(handler: HandlerFunction) {
   };
 }
 
-async function isRateLimited(req: NextRequest, user: any): Promise<boolean> {
+async function isRateLimited(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  req: NextRequest, 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  user: Record<string, unknown>
+): Promise<boolean> {
   // Implement rate limiting logic here
   return false;
 }
 
-async function validateCsrf(req: NextRequest): Promise<boolean> {
+async function validateCsrf(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  req: NextRequest
+): Promise<boolean> {
   // Implement CSRF validation logic here
   return true;
 }

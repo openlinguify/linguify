@@ -6,26 +6,26 @@ import { supabaseAuthService } from './supabaseAuthService'
 
 interface User {
   id: string
-  email: string
-  user_metadata?: any
-  app_metadata?: any
+  email?: string
+  user_metadata?: Record<string, unknown>
+  app_metadata?: Record<string, unknown>
 }
 
 interface AuthContextType {
   user: User | null
-  session: any | null
+  session: Record<string, unknown> | null
   loading: boolean
   isAuthenticated: boolean
-  signIn: (email: string, password: string) => Promise<{ user: User | null; error?: any }>
-  signUp: (email: string, password: string, metadata?: any) => Promise<{ user: User | null; error?: any }>
-  signOut: () => Promise<{ error?: any }>
-  resetPassword: (email: string) => Promise<{ error?: any }>
-  signInWithOAuth: (provider: 'google' | 'github' | 'facebook') => Promise<{ data: any; error?: any }>
+  signIn: (email: string, password: string) => Promise<{ user: User | null; error?: Record<string, unknown> }>
+  signUp: (email: string, password: string, metadata?: Record<string, unknown>) => Promise<{ user: User | null; error?: Record<string, unknown> }>
+  signOut: () => Promise<{ error?: Record<string, unknown> }>
+  resetPassword: (email: string) => Promise<{ error?: Record<string, unknown> }>
+  signInWithOAuth: (provider: 'google' | 'github' | 'facebook') => Promise<{ data: Record<string, unknown>; error?: Record<string, unknown> }>
   getAccessToken: () => Promise<string | null>
   makeAuthenticatedRequest: (url: string, options?: RequestInit) => Promise<Response>
   isAuthReady: boolean
   refreshSession: () => Promise<void>
-  getUserProfile: () => Promise<any>
+  getUserProfile: () => Promise<Record<string, unknown>>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -36,9 +36,10 @@ interface SupabaseAuthProviderProps {
 
 export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
-  const [session, setSession] = useState<any | null>(null)
+  const [session, setSession] = useState<Record<string, unknown> | null>(null)
   const [loading, setLoading] = useState(true)
   const [isAuthReady, setIsAuthReady] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [authError, setAuthError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
         
         if (!mounted) return
         
-        setSession(initialSession)
+        setSession(initialSession as Record<string, unknown> | null)
         setAuthError(null)
         
         if (initialSession?.user) {
@@ -90,7 +91,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
         
         if (!mounted) return
         
-        setSession(session)
+        setSession(session as Record<string, unknown> | null)
         setAuthError(null)
         
         if (session?.user) {
@@ -126,17 +127,23 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
     setLoading(true)
     try {
       const result = await supabaseAuthService.signIn(email, password)
-      return result
+      return {
+        user: result.user as User | null,
+        error: result.error as Record<string, unknown> | undefined
+      }
     } finally {
       setLoading(false)
     }
   }
 
-  const signUp = async (email: string, password: string, metadata?: any) => {
+  const signUp = async (email: string, password: string, metadata?: Record<string, unknown>) => {
     setLoading(true)
     try {
       const result = await supabaseAuthService.signUp(email, password, metadata)
-      return result
+      return {
+        user: result.user as User | null,
+        error: result.error as Record<string, unknown> | undefined
+      }
     } finally {
       setLoading(false)
     }
@@ -148,18 +155,27 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
       const result = await supabaseAuthService.signOut()
       setUser(null)
       setSession(null)
-      return result
+      return {
+        error: result.error as Record<string, unknown> | undefined
+      }
     } finally {
       setLoading(false)
     }
   }
 
   const resetPassword = async (email: string) => {
-    return await supabaseAuthService.resetPassword(email)
+    const result = await supabaseAuthService.resetPassword(email)
+    return {
+      error: result.error as Record<string, unknown> | undefined
+    }
   }
 
   const signInWithOAuth = async (provider: 'google' | 'github' | 'facebook') => {
-    return await supabaseAuthService.signInWithOAuth(provider)
+    const result = await supabaseAuthService.signInWithOAuth(provider)
+    return {
+      data: result.data as Record<string, unknown>,
+      error: result.error as Record<string, unknown> | undefined
+    }
   }
 
   const getAccessToken = async () => {
@@ -187,7 +203,8 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   }
   
   const getUserProfile = async () => {
-    return await supabaseAuthService.getUserProfile()
+    const result = await supabaseAuthService.getUserProfile()
+    return result as Record<string, unknown>
   }
 
   const isAuthenticated = !!user && !!session

@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: AuthContextType = {
     isAuthenticated,
     isLoading: loading || !isAuthReady,
-    user,
+    user: user as Record<string, unknown> | null,
     token,
     error: null, // Supabase gère les erreurs différemment
     login,

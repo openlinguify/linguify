@@ -1,5 +1,6 @@
 // src/services/errorHandlingService.ts
 import { toast } from '../../components/ui/use-toast';
+import { ToastAction } from '../../components/ui/toast';
 import Router from 'next/router';
 import * as React from 'react';
 
@@ -267,8 +268,8 @@ export function handleApiError<T = unknown>(
       description: message,
       variant: "destructive",
       // Utilisez un bouton de nouvelle tentative si un rappel est fourni
-      action: retryCallback ? {
-        label: "Réessayer",
+      action: retryCallback ? React.createElement(ToastAction, {
+        altText: "Réessayer",
         onClick: () => {
           toast({
             title: "Nouvelle tentative",
@@ -276,7 +277,7 @@ export function handleApiError<T = unknown>(
           });
           retryCallback();
         }
-      } : undefined,
+      }, "Réessayer") : undefined,
       duration: 5000,
     });
   }

@@ -111,7 +111,7 @@ class NotificationManager {
       icon?: string;
       type?: NotificationType;
       priority?: NotificationPriority;
-      data?: any;
+      data?: Record<string, unknown>;
     } = {}
   ): number {
     return window.setTimeout(() => {
@@ -159,7 +159,7 @@ class NotificationManager {
       icon?: string;
       type?: NotificationType;
       priority?: NotificationPriority;
-      data?: any;
+      data?: Record<string, unknown>;
     } = {}
   ): string {
     // Generate a unique ID for this schedule
@@ -348,7 +348,7 @@ class NotificationManager {
    * Get all stored notification schedules
    * @returns Object with all schedules
    */
-  private getStoredSchedules(): Record<string, any> {
+  private getStoredSchedules(): Record<string, Record<string, unknown>> {
     const stored = localStorage.getItem('notification_schedules');
     return stored ? JSON.parse(stored) : {};
   }

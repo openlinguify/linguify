@@ -10,8 +10,16 @@ import { CulturalContextProps } from "@/addons/learning/types";
 
 // Placeholder cultureAPI
 const cultureAPI = {
-  getCulturalContent: async (_params: Record<string, string>) => null,
-  getLanguageCulture: async (_languageCode: string) => null
+  getCulturalContent: async (params: Record<string, string>) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _ = params;
+    return null;
+  },
+  getLanguageCulture: async (languageCode: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _ = languageCode;
+    return null;
+  }
 };
 
 
@@ -22,7 +30,7 @@ export default function CulturalContext({
   theme 
 }: CulturalContextProps) {
   // State for cultural content
-  const [content, setContent] = useState<any>(null);
+  const [content, setContent] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -135,7 +143,7 @@ export default function CulturalContext({
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <MapPin className="h-5 w-5 text-purple-600" />
-                  Where it's spoken
+                  Where it&apos;s spoken
                 </h3>
                 <div className="pl-7">
                   <ul className="list-disc space-y-1 pl-5">
@@ -145,7 +153,7 @@ export default function CulturalContext({
                   </ul>
                 </div>
                 
-                {content.keyFacts && (
+                {content.keyFacts && Array.isArray(content.keyFacts) ? (
                   <>
                     <h3 className="text-lg font-semibold flex items-center gap-2">
                       <Info className="h-5 w-5 text-purple-600" />
@@ -153,13 +161,13 @@ export default function CulturalContext({
                     </h3>
                     <div className="pl-7">
                       <ul className="list-disc space-y-1 pl-5">
-                        {content.keyFacts.map((fact: string, i: number) => (
+                        {(content.keyFacts as string[]).map((fact: string, i: number) => (
                           <li key={i}>{fact}</li>
                         ))}
                       </ul>
                     </div>
                   </>
-                )}
+                ) : null}
               </div>
               
               {/* Map or flag image */}
@@ -177,12 +185,12 @@ export default function CulturalContext({
             </div>
             
             {/* Cultural context description */}
-            {content.culturalContext && (
+            {content.culturalContext ? (
               <div className="mt-6 bg-gray-50 p-4 rounded-lg">
                 <h3 className="text-lg font-semibold mb-2">Cultural Context</h3>
-                <p className="text-gray-700">{content.culturalContext}</p>
+                <p className="text-gray-700">{String(content.culturalContext)}</p>
               </div>
-            )}
+            ) : null}
           </TabsContent>
           
           {/* Customs Tab */}
@@ -194,18 +202,18 @@ export default function CulturalContext({
                   Social Customs
                 </h3>
                 
-                {content.customs.map((custom: any, i: number) => (
+                {(content.customs as Array<Record<string, unknown>>).map((custom: Record<string, unknown>, i: number) => (
                   <Card key={i} className="bg-gray-50 shadow-none">
                     <CardContent className="p-4">
-                      <h4 className="font-medium text-lg mb-2">{custom.title}</h4>
-                      <p className="text-gray-700">{custom.description}</p>
+                      <h4 className="font-medium text-lg mb-2">{String(custom.title)}</h4>
+                      <p className="text-gray-700">{String(custom.description)}</p>
                       
-                      {custom.tips && (
+                      {custom.tips ? (
                         <div className="mt-3 bg-white p-3 rounded-md border border-purple-100">
                           <h5 className="text-sm font-medium text-purple-700 mb-1">Cultural Tip</h5>
-                          <p className="text-sm text-gray-600">{custom.tips}</p>
+                          <p className="text-sm text-gray-600">{String(custom.tips)}</p>
                         </div>
-                      )}
+                      ) : null}
                     </CardContent>
                   </Card>
                 ))}
@@ -236,11 +244,11 @@ export default function CulturalContext({
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {content.expressions.map((item: any, i: number) => (
+                      {(content.expressions as Array<Record<string, unknown>>).map((item: Record<string, unknown>, i: number) => (
                         <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                          <td className="px-4 py-3 text-sm font-medium">{item.expression}</td>
-                          <td className="px-4 py-3 text-sm text-gray-700">{item.translation}</td>
-                          <td className="px-4 py-3 text-sm text-gray-600">{item.context}</td>
+                          <td className="px-4 py-3 text-sm font-medium">{String(item.expression)}</td>
+                          <td className="px-4 py-3 text-sm text-gray-700">{String(item.translation)}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600">{String(item.context)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -264,7 +272,7 @@ export default function CulturalContext({
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {content.media.map((item: any, i: number) => (
+                  {(content.media as Array<Record<string, unknown>>).map((item: Record<string, unknown>, i: number) => (
                     <Card key={i} className="overflow-hidden">
                       <div className="h-32 bg-gray-200 relative">
                         {/* This would be an actual image in production */}
@@ -273,8 +281,8 @@ export default function CulturalContext({
                         </div>
                       </div>
                       <CardContent className="p-4">
-                        <h4 className="font-medium text-lg">{item.title}</h4>
-                        <p className="text-sm text-gray-600 my-2">{item.description}</p>
+                        <h4 className="font-medium text-lg">{String(item.title)}</h4>
+                        <p className="text-sm text-gray-600 my-2">{String(item.description)}</p>
                         <Button variant="outline" size="sm" className="mt-2">
                           <ExternalLink className="h-4 w-4 mr-2" />
                           Explore

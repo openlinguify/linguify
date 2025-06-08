@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from './AuthAdapter';
 import { useTermsAcceptance } from '@/core/hooks/useTermsAcceptance';
-import TermsAcceptance from '@/components/terms/TermsAcceptance';
+// import TermsAcceptance from '@/components/terms/TermsAcceptance';
 
 // Higher-order component to ensure terms have been accepted
 export function withTermsAcceptance<P extends object>(Component: React.ComponentType<P>) {
@@ -11,8 +11,10 @@ export function withTermsAcceptance<P extends object>(Component: React.Component
     const { 
       termsAccepted, 
       loading: termsLoading, 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       showTermsDialog,
       setShowTermsDialog,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       handleTermsAccepted
     } = useTermsAcceptance();
     const router = useRouter();

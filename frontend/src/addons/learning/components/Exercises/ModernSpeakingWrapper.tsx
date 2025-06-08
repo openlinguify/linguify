@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { Mic, MicOff, Volume2, Check, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ExerciseNavBar from '../Navigation/ExerciseNavBar';
+// import ExerciseNavBar from '../Navigation/ExerciseNavBar'; // Removed unused import
 import courseAPI from '../../api/courseAPI';
 import { useSpeechSynthesis } from '@/core/speech/useSpeechSynthesis';
 import { useSpeechRecognition } from '@/core/speech/useSpeechRecognition';
@@ -30,11 +30,11 @@ interface VocabularyItem {
   example_sentence_nl?: string;
 }
 
-interface SpeakingExerciseData {
-  vocabulary_items: VocabularyItem[];
-  title: string;
-  instructions: string;
-}
+// interface SpeakingExerciseData {
+//   vocabulary_items: VocabularyItem[];
+//   title: string;
+//   instructions: string;
+// } // Removed unused interface
 
 interface SpeakingWrapperProps {
   lessonId: string;
@@ -53,10 +53,10 @@ interface SpeakingWrapperProps {
 
 export const ModernSpeakingWrapper: React.FC<SpeakingWrapperProps> = ({
   lessonId,
-  language = 'fr',
+  // language = 'fr', // Removed unused parameter
   unitId,
-  onComplete,
-  progressIndicator
+  onComplete
+  // progressIndicator // Removed unused prop
 }) => {
   const router = useRouter();
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -64,10 +64,10 @@ export const ModernSpeakingWrapper: React.FC<SpeakingWrapperProps> = ({
   const [completedItems, setCompletedItems] = useState<Set<number>>(new Set());
   const [isRecording, setIsRecording] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [practiceMode, setPracticeMode] = useState<'listen' | 'speak'>('speak');
+  // const [practiceMode, setPracticeMode] = useState<'listen' | 'speak'>('speak'); // Removed unused state
 
   // Create a data fetcher for speaking exercise
-  const fetchSpeakingData = useCallback(async (fetchLessonId: string | number, language?: string) => {
+  const fetchSpeakingData = useCallback(async (fetchLessonId: string | number) => {
     console.log(`[ModernSpeakingWrapper] Fetching speaking exercise for lesson: ${fetchLessonId}`);
     
     const response = await courseAPI.getSpeakingExercise(fetchLessonId);
@@ -82,14 +82,14 @@ export const ModernSpeakingWrapper: React.FC<SpeakingWrapperProps> = ({
   }, []);
 
   // Use the maintenance-aware data hook
-  const { data: exerciseData, loading, error, isMaintenance } = useMaintenanceAwareData({
+  const { data: exerciseData, loading, error } = useMaintenanceAwareData({
     lessonId,
     contentType: 'speaking',
     fetchFunction: fetchSpeakingData
   });
 
   // Speech hooks
-  const { speak, isSpeaking, stop: stopSpeaking } = useSpeechSynthesis(language);
+  const { speak, isSpeaking } = useSpeechSynthesis('fr'); // Fixed language parameter
   const { 
     transcript, 
     isRecording: isListening, 
@@ -317,9 +317,9 @@ export const ModernSpeakingWrapper: React.FC<SpeakingWrapperProps> = ({
           <Card className="w-full max-w-md">
             <CardContent className="p-6">
               <div className="text-center">
-                <p className="text-gray-600 dark:text-gray-300">Aucun contenu d'exercice trouvé.</p>
+                <p className="text-gray-600 dark:text-gray-300">Aucun contenu d&apos;exercice trouvé.</p>
                 <Button onClick={() => router.push('/learning')} variant="outline" className="mt-4">
-                  Retour à l'apprentissage
+                  Retour à l&apos;apprentissage
                 </Button>
               </div>
             </CardContent>
@@ -423,7 +423,7 @@ export const ModernSpeakingWrapper: React.FC<SpeakingWrapperProps> = ({
               {!speechRecognitionSupported ? (
                 <Alert>
                   <AlertDescription>
-                    La reconnaissance vocale n'est pas supportée par votre navigateur.
+                    La reconnaissance vocale n&apos;est pas supportée par votre navigateur.
                   </AlertDescription>
                 </Alert>
               ) : (
@@ -477,8 +477,8 @@ export const ModernSpeakingWrapper: React.FC<SpeakingWrapperProps> = ({
                       ) : (
                         <div>
                           <p>❌ Prononciation incorrecte</p>
-                          <p className="text-xs mt-1">Attendu: "{getWordByLanguage(currentItem)}"</p>
-                          <p className="text-xs">Prononcé: "{userRecording}"</p>
+                          <p className="text-xs mt-1">Attendu: &quot;{getWordByLanguage(currentItem)}&quot;</p>
+                          <p className="text-xs">Prononcé: &quot;{userRecording}&quot;</p>
                         </div>
                       )}
                     </div>

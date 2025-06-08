@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import TestRecapMain from '../TestRecap/TestRecapMain';
-import ExerciseNavBar from '../Navigation/ExerciseNavBar';
+// import ExerciseNavBar from '../Navigation/ExerciseNavBar'; // Removed unused import
 import { BaseExerciseWrapper } from './shared/BaseExerciseWrapper';
 import { useMaintenanceAwareData } from '../../hooks/useMaintenanceAwareData';
 import courseAPI from '../../api/courseAPI';
@@ -27,13 +27,13 @@ export const ModernTestRecapWrapper: React.FC<ModernTestRecapWrapperProps> = ({
   testRecapId,
   onComplete,
   onBack,
-  unitId,
-  progressIndicator
+  unitId
+  // progressIndicator // Removed unused prop
 }) => {
-  const router = useRouter();
+  // const router = useRouter(); // Removed unused variable
 
   // Create a data fetcher that properly detects maintenance scenarios
-  const fetchTestRecapData = useCallback(async (fetchLessonId: string | number, language?: string) => {
+  const fetchTestRecapData = useCallback(async (fetchLessonId: string | number) => {
     console.log(`Fetching TestRecap data for content lesson: ${fetchLessonId}`);
     
     // If we have a direct testRecapId, use it

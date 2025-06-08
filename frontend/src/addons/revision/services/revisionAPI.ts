@@ -40,7 +40,7 @@ export const revisionApi = {
         params: { range }
       });
       return response.data;
-    } catch (error) {
+    } catch {
       // Return default stats if API is not available
       console.warn('Vocabulary stats API not available, returning defaults');
       return {
@@ -60,7 +60,7 @@ export const revisionApi = {
     try {
       const response = await apiClient.get(`${API_BASE}/words/`, { params });
       return response.data;
-    } catch (error) {
+    } catch {
       console.warn('Vocabulary words API not available, returning empty array');
       return [];
     }
@@ -75,7 +75,7 @@ export const revisionApi = {
         params: { limit }
       });
       return response.data;
-    } catch (error) {
+    } catch {
       console.warn('Due vocabulary API not available, returning empty array');
       return [];
     }
@@ -90,7 +90,7 @@ export const revisionApi = {
         success
       });
       return response.data;
-    } catch (error) {
+    } catch {
       console.warn('Mark word reviewed API not available');
       throw new Error('Unable to save review progress');
     }

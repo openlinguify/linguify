@@ -203,7 +203,7 @@ const notificationApi = {
     title: string;
     message: string;
     priority: string;
-    data?: any;
+    data?: Record<string, unknown>;
     actions?: NotificationActionDto[];
   }): Promise<NotificationDto | null> {
     try {
@@ -224,7 +224,7 @@ const notificationApi = {
     email_notifications: boolean;
     push_notifications: boolean;
     notification_types: { [key: string]: boolean };
-    notification_schedule: { [key: string]: any };
+    notification_schedule: { [key: string]: unknown };
   }): Promise<boolean> {
     try {
       await apiClient.post('/api/user/notification-settings/', settings);
@@ -243,7 +243,7 @@ const notificationApi = {
     email_notifications: boolean;
     push_notifications: boolean;
     notification_types: { [key: string]: boolean };
-    notification_schedule: { [key: string]: any };
+    notification_schedule: { [key: string]: unknown };
   } | null> {
     try {
       const response = await apiClient.get('/api/user/notification-settings/');

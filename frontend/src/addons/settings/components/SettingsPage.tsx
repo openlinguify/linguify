@@ -1497,20 +1497,20 @@ export default function SettingsPage() {
                   <h3 className="text-lg font-medium">{String(t('billing.currentPlan'))}</h3>
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="font-medium">{user.is_subscribed ? String(t('billing.premiumPlan')) : String(t('billing.freePlan'))}</p>
+                      <p className="font-medium">{Boolean(user.is_subscribed) ? String(t('billing.premiumPlan')) : String(t('billing.freePlan'))}</p>
                       <p className="text-sm text-muted-foreground">
-                        {user.is_subscribed 
+                        {Boolean(user.is_subscribed) 
                           ? 'Your subscription renews on the 1st of each month' 
                           : String(t('billing.upgradeToPremium'))}
                       </p>
                     </div>
-                    <Button variant={user.is_subscribed ? "outline" : "default"}>
-                      {user.is_subscribed ? String(t('billing.manageSubscription')) : String(t('billing.upgrade'))}
+                    <Button variant={Boolean(user.is_subscribed) ? "outline" : "default"}>
+                      {Boolean(user.is_subscribed) ? String(t('billing.manageSubscription')) : String(t('billing.upgrade'))}
                     </Button>
                   </div>
                 </div>
                 
-                {user.is_subscribed && (
+                {Boolean(user.is_subscribed) && (
                   <div className="bg-background rounded-lg border shadow-xs p-5 space-y-4">
                     <h3 className="text-lg font-medium">{String(t('billing.paymentMethod'))}</h3>
                     <div className="flex justify-between items-center">
@@ -1530,7 +1530,7 @@ export default function SettingsPage() {
                 
                 <div className="bg-background rounded-lg border shadow-xs p-5 space-y-4">
                   <h3 className="text-lg font-medium">{String(t('billing.billingHistory'))}</h3>
-                  {user.is_subscribed ? (
+                  {Boolean(user.is_subscribed) ? (
                     <div className="space-y-4">
                       <div className="flex justify-between items-center py-2 border-b">
                         <div>
