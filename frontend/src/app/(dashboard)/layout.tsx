@@ -28,6 +28,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     '/learning': 'dashboard.layoutpathname.learning',
     '/progress': 'dashboard.layoutpathname.progress',
     '/language_ai': 'dashboard.conversationAICard.title',
+    '/quizz': 'Quiz Interactif',
   }), []);
 
   useEffect(() => {
