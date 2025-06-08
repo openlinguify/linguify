@@ -80,12 +80,9 @@ export function SupabaseLoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-md shadow-lg border-gray-100 bg-white">
       <CardHeader>
         <CardTitle>Connexion</CardTitle>
-        <CardDescription>
-          Connectez-vous à votre compte Linguify
-        </CardDescription>
       </CardHeader>
       
       <CardContent>

@@ -1,6 +1,4 @@
 // src/app/(auth)/(routes)/layout.tsx
-import { Globe } from "lucide-react";
-import { AuthCard } from "./_components/auth-card";
 
 export default function AuthLayout({
   children,
@@ -8,22 +6,20 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-purple-50 to-white p-4 md:p-8">
-      {/* Logo and Brand */}
+    <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 min-h-screen flex flex-col items-center justify-center p-6">
       <div className="mb-8 flex items-center gap-2">
-        <Globe className="h-8 w-8 text-brand-purple" />
-        <span className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
-          Linguify
+        <span className="text-3xl font-bold text-white">
+          Open Linguify
         </span>
       </div>
 
-      {/* Auth Card Container */}
-      <AuthCard>
+      {/* Main Content */}
+      <div>
         {children}
-      </AuthCard>
+      </div>
 
       {/* Footer */}
-      <footer className="mt-8 text-center text-sm text-gray-500">
+      <footer className="mt-8 text-center text-white text-sm">
         <p>
           By continuing, you agree to our{" "}
           <a href="/terms" className="text-brand-purple hover:underline">
