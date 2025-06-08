@@ -2,23 +2,17 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
   Volume2, 
   BookOpen, 
   CheckCircle,
   Trophy,
-  ArrowLeft,
-  Home,
-  Clock,
-  Eye,
   Code,
   FileText,
   AlertTriangle,
-  Lightbulb,
   AlertCircle
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -83,8 +77,8 @@ const ModernTheoryWrapper: React.FC<TheoryWrapperProps> = ({
   lessonId,
   language = 'en',
   unitId,
-  onComplete,
-  progressIndicator
+  onComplete
+  // progressIndicator // Removed unused prop
 }) => {
   const router = useRouter();
   const { speak } = useSpeechSynthesis('en');
@@ -94,7 +88,7 @@ const ModernTheoryWrapper: React.FC<TheoryWrapperProps> = ({
   const [startTime] = useState(Date.now());
   const [currentTab, setCurrentTab] = useState('content');
   const [readSections, setReadSections] = useState<string[]>([]);
-  const [progress, setProgress] = useState(0);
+  // const [progress, setProgress] = useState(0); // Removed unused state variable
 
   // Create fetch function for theory data
   const fetchTheoryData = useCallback(async (fetchLessonId: string | number, language?: string) => {
@@ -196,15 +190,16 @@ const ModernTheoryWrapper: React.FC<TheoryWrapperProps> = ({
   useEffect(() => {
     if (readSections.length > 0 && theoryContent) {
       const availableSections = getAvailableSections();
-      const newProgress = Math.round((readSections.length / availableSections.length) * 100);
-      setProgress(newProgress);
+      // Progress calculation removed since progress state was unused
+      // const newProgress = Math.round((readSections.length / availableSections.length) * 100);
+      // setProgress(newProgress);
 
       // Set completed if all sections are read
-      if (newProgress === 100 && !isComplete) {
+      if (readSections.length === availableSections.length && !isComplete) {
         setIsComplete(true);
       }
     }
-  }, [readSections, theoryContent, isComplete]);
+  }, [readSections, theoryContent, isComplete, getAvailableSections]);
 
   const handleComplete = () => {
     setIsComplete(true);
@@ -477,7 +472,7 @@ const ModernTheoryWrapper: React.FC<TheoryWrapperProps> = ({
                   className="px-8 bg-green-600 hover:bg-green-700"
                 >
                   <CheckCircle className="w-5 h-5 mr-2" />
-                  J'ai terminé la lecture
+                  J&apos;ai terminé la lecture
                 </Button>
               </div>
             ) : (

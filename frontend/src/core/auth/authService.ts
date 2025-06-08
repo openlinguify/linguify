@@ -17,7 +17,7 @@ let memoryToken: string | null = null;
 let memoryExpiry: number | null = null;
 
 // Enhanced logging
-function logDebug(message: string, data?: any): void {
+function logDebug(message: string, data?: Record<string, unknown>): void {
   if (DEBUG_MODE) {
     if (data) {
       console.log(`[Auth Debug] ${message}`, data);
@@ -27,7 +27,7 @@ function logDebug(message: string, data?: any): void {
   }
 }
 
-function logInfo(message: string, data?: any): void {
+function logInfo(message: string, data?: Record<string, unknown>): void {
   if (data) {
     console.info(`[Auth Info] ${message}`, data);
   } else {
@@ -35,7 +35,7 @@ function logInfo(message: string, data?: any): void {
   }
 }
 
-function logWarning(message: string, data?: any): void {
+function logWarning(message: string, data?: Record<string, unknown>): void {
   if (data) {
     console.warn(`[Auth Warning] ${message}`, data);
   } else {
@@ -43,7 +43,7 @@ function logWarning(message: string, data?: any): void {
   }
 }
 
-function logError(message: string, error?: any): void {
+function logError(message: string, error?: Record<string, unknown>): void {
   if (error) {
     console.error(`[Auth Error] ${message}`, error);
   } else {
@@ -66,7 +66,7 @@ export interface UserProfile {
   objectives: string;
   is_coach: boolean;
   is_subscribed: boolean;
-  [key: string]: any; // Pour les autres champs possibles
+  [key: string]: unknown; // Pour les autres champs possibles
 }
 
 /**

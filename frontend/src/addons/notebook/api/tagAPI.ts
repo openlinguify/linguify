@@ -325,7 +325,7 @@ export const tagAPI = {
       cache.featureTimestamp = now;
 
       return true;
-    } catch (error) {
+    } catch {
       // Mettre à jour le cache même en cas d'erreur
       cache.featureAvailable = false;
       cache.featureTimestamp = Date.now();

@@ -38,7 +38,7 @@ export interface TestRecapQuestion {
   word?: string;
   definition?: string;
   example_sentence?: string;
-  question_data?: Record<string, any>;
+  question_data?: Record<string, unknown>;
 }
 
 export interface TestRecapResult {
@@ -47,14 +47,14 @@ export interface TestRecapResult {
   user_id: string;
   score: number;
   passed: boolean;
-  answers: Record<string, any>; // Maps question ID to answer
+  answers: Record<string, unknown>; // Maps question ID to answer
   completed_at: string;
   time_taken: number; // in seconds
   time_spent?: number; // Alternative property name used in some contexts
   detailed_results?: Record<string, {
     correct: boolean;
     time_spent: number;
-    user_answer: any;
+    user_answer: unknown;
     correct_answer: string;
     question_text: string;
     question_type?: string;
@@ -72,8 +72,9 @@ const testRecapAPI = {
       console.log(`Attempting to fetch TestRecap ${testId} with language ${lang}`);
       
       return await apiClient.get(`/api/v1/course/test-recap/${testId}/?language=${lang}`);
-    } catch (error: any) {
-      console.warn(`Error fetching TestRecap ${testId}:`, error?.status || error?.message);
+    } catch (error: unknown) {
+      const err = error as { status?: number; message?: string };
+      console.warn(`Error fetching TestRecap ${testId}:`, err?.status || err?.message);
       // Re-throw errors so they can be properly handled by the caller
       throw error;
     }
@@ -88,8 +89,9 @@ const testRecapAPI = {
       // Use v1 endpoint directly with language parameter
       const url = `/api/v1/course/test-recap/${testId}/questions/?language=${lang}`;
       return await apiClient.get(url);
-    } catch (error: any) {
-      console.warn(`Error fetching questions for TestRecap ${testId}:`, error?.status || error?.message);
+    } catch (error: unknown) {
+      const err = error as { status?: number; message?: string };
+      console.warn(`Error fetching questions for TestRecap ${testId}:`, err?.status || err?.message);
       // Re-throw errors so they can be properly handled by the caller
       throw error;
     }
@@ -100,19 +102,20 @@ const testRecapAPI = {
     try {
       const lang = language || getUserTargetLanguage();
       return await apiClient.get(`/api/v1/course/test-recap/question/${questionId}/?language=${lang}`);
-    } catch (error: any) {
-      console.warn(`Error fetching question ${questionId}:`, error?.status || error?.message);
+    } catch (error: unknown) {
+      const err = error as { status?: number; message?: string };
+      console.warn(`Error fetching question ${questionId}:`, err?.status || err?.message);
       throw error;
     }
   },
 
   // Submit test answers
-  submitTest: async (testId: string, answers: Record<string, any>, timeTaken: number, questions?: any[]) => {
+  submitTest: async (testId: string, answers: Record<string, unknown>, timeTaken: number, questions?: unknown[]) => {
     try {
       // Calculate score based on correct answers
       let correctCount = 0;
       // Use the actual number of questions available, not just answered ones
-      let totalQuestions = questions ? questions.length : Object.keys(answers).length;
+      const totalQuestions = questions ? questions.length : Object.keys(answers).length;
       
       console.log(`📊 Scoring: ${Object.keys(answers).length} answers for ${totalQuestions} questions`);
       
@@ -150,7 +153,7 @@ const testRecapAPI = {
       const score = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
       
       // Create detailed results with consistent validation
-      const detailed_results: Record<string, any> = {};
+      const detailed_results: Record<string, unknown> = {};
       
       console.log('🔍 Debug submitTest:', {
         questionsExists: !!questions,
@@ -161,8 +164,9 @@ const testRecapAPI = {
       
       // Include all questions, even those not answered
       if (questions && questions.length > 0) {
-        questions.forEach((question) => {
-          const questionId = question.id.toString();
+        questions.forEach((questionItem: unknown) => {
+          const question = questionItem as Record<string, unknown>;
+          const questionId = String(question.id || '');
           const answer = answers[questionId];
           
           // Extract correct answer based on question type
@@ -170,15 +174,18 @@ const testRecapAPI = {
           let questionText = `Question ${question.order || questionId}`;
           let exerciseType = 'Exercice';
           
+          // Safely access question_data
+          const questionData = (question.question_data as Record<string, unknown>) || {};
+          
           // Determine exercise type and extract data accordingly
           if (question.question_type === 'vocabulary') {
             exerciseType = 'Vocabulaire';
             // Try multiple sources for vocabulary data, matching TestRecapQuestion.tsx logic
-            const word = question.word || question.question_data?.word || '';
-            const definition = question.definition || question.question_data?.definition || '';
-            const exampleSentence = question.example_sentence || question.question_data?.example || question.question_data?.example_sentence || '';
+            const word = String(question.word || questionData.word || '');
+            const definition = String(question.definition || questionData.definition || '');
+            const exampleSentence = String(question.example_sentence || questionData.example || questionData.example_sentence || '');
             
-            correctAnswer = question.correct_answer || word || 'Non disponible';
+            correctAnswer = String(question.correct_answer || word || 'Non disponible');
             
             if (word && definition) {
               questionText = `Que signifie "${word}" ?`;
@@ -194,8 +201,8 @@ const testRecapAPI = {
           } else if (question.question_type === 'multiple_choice') {
             exerciseType = 'Choix multiple';
             // Try multiple sources for MCQ data
-            const mcqQuestion = question.question || question.question_data?.question || '';
-            const mcqCorrectAnswer = question.correct_answer || question.question_data?.correct_answer || '';
+            const mcqQuestion = String(question.question || questionData.question || '');
+            const mcqCorrectAnswer = String(question.correct_answer || questionData.correct_answer || '');
             
             correctAnswer = mcqCorrectAnswer || 'Non disponible';
             questionText = mcqQuestion || `Question à choix multiple ${questionId}`;
@@ -206,14 +213,14 @@ const testRecapAPI = {
           } else if (question.question_type === 'fill_blank') {
             exerciseType = 'Texte à trous';
             // Try multiple sources for fill blank data
-            const sentence = question.sentence || question.question_data?.sentence || question.question_data?.text || '';
-            const fbCorrectAnswer = question.correct_answer || question.question_data?.correct_answer || '';
+            const sentence = String(question.sentence || questionData.sentence || questionData.text || '');
+            const fbCorrectAnswer = String(question.correct_answer || questionData.correct_answer || '');
             
             correctAnswer = fbCorrectAnswer || 'Non disponible';
             if (sentence) {
               questionText = `Complétez : ${sentence}`;
             } else {
-              questionText = question.question || `Texte à trous ${questionId}`;
+              questionText = String(question.question || `Texte à trous ${questionId}`);
             }
             
             console.log(`🔍 Fill blank extraction for Q${questionId}:`, {
@@ -222,9 +229,9 @@ const testRecapAPI = {
           } else if (question.question_type === 'matching') {
             exerciseType = 'Association';
             // Try multiple sources for matching data
-            const targetWords = question.target_words || question.question_data?.target_words || [];
-            const nativeWords = question.native_words || question.question_data?.native_words || [];
-            const correctPairs = question.correct_pairs || question.question_data?.correct_pairs || {};
+            const targetWords = (question.target_words || questionData.target_words || []) as unknown[];
+            const nativeWords = (question.native_words || questionData.native_words || []) as unknown[];
+            const correctPairs = (question.correct_pairs || questionData.correct_pairs || {}) as Record<string, unknown>;
             
             if (correctPairs && typeof correctPairs === 'object' && Object.keys(correctPairs).length > 0) {
               const pairs = Object.entries(correctPairs).map(([k, v]) => `${k} → ${v}`);
@@ -241,11 +248,11 @@ const testRecapAPI = {
             });
           } else if (question.question_type === 'reordering') {
             exerciseType = 'Réorganisation';
-            const targetWords = question.target_words || question.question_data?.target_words || [];
-            const sentence = question.sentence || question.question_data?.sentence || '';
+            const targetWords = (question.target_words || questionData.target_words || []) as unknown[];
+            const sentence = String(question.sentence || questionData.sentence || '');
             
             if (targetWords && Array.isArray(targetWords) && targetWords.length > 0) {
-              correctAnswer = targetWords.join(' ');
+              correctAnswer = targetWords.map(String).join(' ');
             } else if (sentence) {
               correctAnswer = sentence;
             } else {
@@ -259,20 +266,20 @@ const testRecapAPI = {
           } else if (question.question_type === 'speaking') {
             exerciseType = 'Expression orale';
             // Try multiple sources for speaking data, matching TestRecapQuestion.tsx logic
-            const targetPhrase = question.correct_answer || 
-                               question.question_data?.target_phrase || 
-                               question.question_data?.phrase || 
+            const targetPhrase = String(question.correct_answer || 
+                               questionData.target_phrase || 
+                               questionData.phrase || 
                                question.sentence || 
                                question.target_phrase ||
-                               question.phrase || '';
-            const vocabularyItems = question.question_data?.vocabulary_items || question.vocabulary_items || [];
+                               question.phrase || '');
+            const vocabularyItems = (questionData.vocabulary_items || question.vocabulary_items || []) as unknown[];
             
             if (targetPhrase) {
               correctAnswer = targetPhrase;
               questionText = `Prononcez : "${targetPhrase}"`;
             } else if (vocabularyItems && Array.isArray(vocabularyItems) && vocabularyItems.length > 0) {
-              const firstVocab = vocabularyItems[0];
-              correctAnswer = firstVocab.word || 'Mot à prononcer';
+              const firstVocab = vocabularyItems[0] as Record<string, unknown>;
+              correctAnswer = String(firstVocab?.word || 'Mot à prononcer');
               questionText = `Prononcez le mot : "${correctAnswer}"`;
             } else {
               correctAnswer = 'Expression correcte';
@@ -284,8 +291,8 @@ const testRecapAPI = {
             });
           } else {
             // Fallback for unknown types
-            correctAnswer = question.correct_answer || question.question_data?.correct_answer || 'Non disponible';
-            questionText = question.question || question.question_data?.question || question.sentence || `Question ${questionId}`;
+            correctAnswer = String(question.correct_answer || questionData.correct_answer || 'Non disponible');
+            questionText = String(question.question || questionData.question || question.sentence || `Question ${questionId}`);
             
             console.log(`🔍 Fallback extraction for Q${questionId} (${question.question_type}):`, {
               correctAnswer, questionText, originalQuestion: question
@@ -342,12 +349,13 @@ const testRecapAPI = {
       
       // Use the API to submit answers
       return await apiClient.post(`/api/v1/course/test-recap/${testId}/submit/`, payload);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { status?: number; statusText?: string; data?: unknown }; message?: string };
       console.error(`❌ Error submitting TestRecap ${testId}:`, {
-        status: error?.response?.status,
-        statusText: error?.response?.statusText,
-        data: error?.response?.data,
-        message: error?.message
+        status: err?.response?.status,
+        statusText: err?.response?.statusText,
+        data: err?.response?.data,
+        message: err?.message
       });
       // Re-throw errors so they can be properly handled by the caller
       throw error;
@@ -358,8 +366,9 @@ const testRecapAPI = {
   getResults: async (testId: string) => {
     try {
       return await apiClient.get(`/api/v1/course/test-recap/${testId}/results/`);
-    } catch (error: any) {
-      console.warn(`Error fetching results for TestRecap ${testId}:`, error?.status || error?.message);
+    } catch (error: unknown) {
+      const err = error as { status?: number; message?: string };
+      console.warn(`Error fetching results for TestRecap ${testId}:`, err?.status || err?.message);
       throw error;
     }
   },
@@ -368,8 +377,9 @@ const testRecapAPI = {
   getLatestResult: async (testId: string) => {
     try {
       return await apiClient.get(`/api/v1/course/test-recap/${testId}/latest-result/`);
-    } catch (error: any) {
-      console.warn(`Error fetching latest result for TestRecap ${testId}:`, error?.status || error?.message);
+    } catch (error: unknown) {
+      const err = error as { status?: number; message?: string };
+      console.warn(`Error fetching latest result for TestRecap ${testId}:`, err?.status || err?.message);
       throw error;
     }
   },
@@ -380,50 +390,55 @@ const testRecapAPI = {
       // Use HEAD request to check if resource exists without fetching full content
       await apiClient.head(`/api/v1/course/test-recap/${testId}/`);
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { status?: number; message?: string };
       // If 404, resource doesn't exist
-      if (error?.status === 404) {
+      if (err?.status === 404) {
         return false;
       }
       
       // For other errors, also indicate it doesn't exist for simplicity
-      console.warn(`Error checking if TestRecap ${testId} exists:`, error?.status || error?.message);
+      console.warn(`Error checking if TestRecap ${testId} exists:`, err?.status || err?.message);
       return false;
     }
   },
   
   // Get all TestRecaps for a lesson
-  getTestRecapsForLesson: async (lessonId: string | number): Promise<any> => {
+  getTestRecapsForLesson: async (lessonId: string | number): Promise<unknown> => {
     try {
       const response = await apiClient.get(`/api/v1/course/test-recap/?lesson_id=${lessonId}`);
       return response;
-    } catch (error: any) {
-      console.warn(`Error fetching TestRecaps for lesson ${lessonId}:`, error?.status || error?.message);
+    } catch (error: unknown) {
+      const err = error as { status?: number; message?: string };
+      console.warn(`Error fetching TestRecaps for lesson ${lessonId}:`, err?.status || err?.message);
       throw error;
     }
   },
   
   // Get TestRecap for a content lesson
-  getTestRecapForContentLesson: async (contentLessonId: string | number): Promise<any> => {
+  getTestRecapForContentLesson: async (contentLessonId: string | number): Promise<unknown> => {
     try {
       const response = await apiClient.get(`/api/v1/course/test-recap/for_content_lesson/?content_lesson_id=${contentLessonId}`);
       return response;
-    } catch (error: any) {
-      console.warn(`Error fetching TestRecap for content lesson ${contentLessonId}:`, error?.status || error?.message);
+    } catch (error: unknown) {
+      const err = error as { status?: number; message?: string };
+      console.warn(`Error fetching TestRecap for content lesson ${contentLessonId}:`, err?.status || err?.message);
       throw error;
     }
   },
   
   // Submit a test recap with answers
-  submitTestRecap: async (submission: any): Promise<any> => {
+  submitTestRecap: async (submission: unknown): Promise<unknown> => {
     try {
-      const { test_recap_id, ...submitData } = submission;
+      const submissionObj = submission as { test_recap_id?: string | number; [key: string]: unknown };
+      const { test_recap_id, ...submitData } = submissionObj;
       console.log(`Submitting TestRecap ${test_recap_id} with data:`, submitData);
       
       const response = await apiClient.post(`/api/v1/course/test-recap/${test_recap_id}/submit/`, submitData);
       return response;
-    } catch (error: any) {
-      console.error(`Error submitting TestRecap:`, error?.status || error?.message);
+    } catch (error: unknown) {
+      const err = error as { status?: number; message?: string };
+      console.error(`Error submitting TestRecap:`, err?.status || err?.message);
       throw error;
     }
   }

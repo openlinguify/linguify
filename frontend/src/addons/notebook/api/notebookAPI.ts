@@ -9,19 +9,21 @@ const NOTEBOOK_API = '/api/v1/notebook';
 /**
  * Fonction pour valider et normaliser les données d'une note
  */
-const validateNote = (data: any): Note => {
-  if (!data) {
+const validateNote = (data: Partial<Note> | unknown): Note => {
+  if (!data || typeof data !== 'object') {
     throw new Error('Note invalide ou vide');
   }
 
+  const noteData = data as Record<string, unknown>;
+  
   return {
-    ...data,
-    content: data.content || '',
-    translation: data.translation || '',
-    example_sentences: Array.isArray(data.example_sentences) ? data.example_sentences : [],
-    related_words: Array.isArray(data.related_words) ? data.related_words : [],
-    tags: Array.isArray(data.tags) ? data.tags : []
-  };
+    ...noteData,
+    content: (typeof noteData.content === 'string' ? noteData.content : ''),
+    translation: (typeof noteData.translation === 'string' ? noteData.translation : ''),
+    example_sentences: Array.isArray(noteData.example_sentences) ? noteData.example_sentences : [],
+    related_words: Array.isArray(noteData.related_words) ? noteData.related_words : [],
+    tags: Array.isArray(noteData.tags) ? noteData.tags : []
+  } as Note;
 };
 
 /**
@@ -74,7 +76,7 @@ export const notebookAPI = {
       }
       
       // Valider chaque note reçue
-      const validatedNotes = results.map((note: any) => validateNote(note));
+      const validatedNotes = results.map((note: unknown) => validateNote(note));
       
       return {
         notes: validatedNotes,
@@ -286,7 +288,8 @@ export const notebookAPI = {
   /**
    * Récupérer les notes dues pour révision avec pagination standard
    */
-  async getDueForReview(page?: number, pageSize: number = 50): Promise<{notes: Note[], nextPage: number | null, prevPage: number | null, totalCount: number}> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getDueForReview(_page?: number): Promise<{notes: Note[], nextPage: number | null, prevPage: number | null, totalCount: number}> {
     // Skip the API call since we know it's causing a 500 error
     // Return mock data to prevent errors
     console.debug('Bypassing notes/due_for_review endpoint due to 500 error - returning empty results');
@@ -338,7 +341,7 @@ export const notebookAPI = {
       }
       
       // Valider chaque note reçue
-      const validatedNotes = results.map((note: any) => validateNote(note));
+      const validatedNotes = results.map((note: unknown) => validateNote(note));
       
       return {
         notes: validatedNotes,
@@ -401,7 +404,8 @@ export const notebookAPI = {
   /**
    * Marquer une note comme révisée
    */
-  async markReviewed(id: number, successful: boolean = true): Promise<Note> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async markReviewed(id: number, _successful?: boolean): Promise<Note> {
     // Skip the API call since we're having server issues
     // Return a synthetic note object to prevent errors
     console.debug('Bypassing mark_reviewed endpoint to prevent potential errors - returning synthetic data');
@@ -563,7 +567,14 @@ export const notebookAPI = {
   /**
    * Get users that a note is shared with
    */
-  async getSharedUsers(noteId: number): Promise<any[]> {
+  async getSharedUsers(noteId: number): Promise<Array<{
+    id: number;
+    username: string;
+    email: string;
+    shared_at: string;
+    can_edit: boolean;
+    shareId: number;
+  }>> {
     try {
       if (!noteId || isNaN(noteId)) {
         throw new Error("Invalid note ID");
@@ -571,14 +582,17 @@ export const notebookAPI = {
 
       const { data } = await apiClient.get(`${NOTEBOOK_API}/shared-notes/?note=${noteId}`);
 
-      return data.map((share: any) => ({
-        id: share.shared_with.id,
-        username: share.shared_with_username,
-        email: share.shared_with.email,
-        shared_at: share.shared_at,
-        can_edit: share.can_edit,
-        shareId: share.id
-      }));
+      return data.map((share: Record<string, unknown>) => {
+        const sharedWith = share.shared_with as Record<string, unknown>;
+        return {
+          id: typeof sharedWith?.id === 'number' ? sharedWith.id : 0,
+          username: typeof share.shared_with_username === 'string' ? share.shared_with_username : '',
+          email: typeof sharedWith?.email === 'string' ? sharedWith.email : '',
+          shared_at: typeof share.shared_at === 'string' ? share.shared_at : '',
+          can_edit: typeof share.can_edit === 'boolean' ? share.can_edit : false,
+          shareId: typeof share.id === 'number' ? share.id : 0,
+        };
+      });
     } catch (error) {
       const parsedError = parseError(error);
 
@@ -718,7 +732,8 @@ export const notebookAPI = {
   /**
    * Disable link sharing for a note
    */
-  async disableLinkSharing(noteId: number): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async disableLinkSharing(_noteId: number): Promise<void> {
     // Skip the API call since we know the endpoint doesn't exist yet
     console.debug('Link sharing API endpoint not implemented yet - mock operation');
     return;
@@ -751,7 +766,8 @@ export const notebookAPI = {
    * Get link sharing status and link for a note
    */
   async getLinkSharing(
-    noteId: number
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _noteId: number
   ): Promise<{ enabled: boolean; link?: string; expiration_days?: number }> {
     // Skip the API call since we know the endpoint doesn't exist yet
     // Return a default disabled state to prevent 404 errors

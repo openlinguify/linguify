@@ -68,8 +68,8 @@ const lastAccessedLessonService = {
       const lessonData: LastAccessedLesson = {
         id: lesson.id,
         title: isContentLesson
-          ? (lesson as ContentLessonProgress).title
-          : (lesson as LessonProgress).title,
+          ? ((lesson as ContentLessonProgress).title || 'Untitled Lesson')
+          : ((lesson as LessonProgress).title || 'Untitled Lesson'),
         contentType: isContentLesson
           ? ((lesson as ContentLessonProgress).contentType || '').toLowerCase().trim()
           : ((lesson as LessonProgress & {contentType?: string}).contentType || 'lesson').toLowerCase().trim(),
@@ -82,8 +82,8 @@ const lastAccessedLessonService = {
       // Add unit data if available - prioritize the explicitly passed unitId
       if (unitId) {
         lessonData.unitId = unitId;
-      } else if ('lesson_id' in lesson && (lesson as any).lesson_id) {
-        lessonData.unitId = (lesson as any).lesson_id;
+      } else if ('lesson_id' in lesson && (lesson as Record<string, unknown>).lesson_id) {
+        lessonData.unitId = Number((lesson as Record<string, unknown>).lesson_id);
       }
       
       if (unitTitle) {
@@ -91,20 +91,20 @@ const lastAccessedLessonService = {
       }
       
       // Preserve any additional routing information if present in the lesson object
-      if ('language' in lesson && (lesson as any).language) {
-        lessonData.language = (lesson as any).language;
+      if ('language' in lesson && (lesson as Record<string, unknown>).language) {
+        lessonData.language = String((lesson as Record<string, unknown>).language);
       }
       
-      if ('parentLessonId' in lesson && (lesson as any).parentLessonId) {
-        lessonData.parentLessonId = (lesson as any).parentLessonId;
+      if ('parentLessonId' in lesson && (lesson as Record<string, unknown>).parentLessonId) {
+        lessonData.parentLessonId = Number((lesson as Record<string, unknown>).parentLessonId);
       }
       
-      if ('contentId' in lesson && (lesson as any).contentId) {
-        lessonData.contentId = (lesson as any).contentId;
+      if ('contentId' in lesson && (lesson as Record<string, unknown>).contentId) {
+        lessonData.contentId = Number((lesson as Record<string, unknown>).contentId);
       }
       
-      if ('routeType' in lesson && (lesson as any).routeType) {
-        lessonData.routeType = (lesson as any).routeType;
+      if ('routeType' in lesson && (lesson as Record<string, unknown>).routeType) {
+        lessonData.routeType = String((lesson as Record<string, unknown>).routeType) as 'unit-lesson' | 'content';
       }
       
       // Preserve existing timeSpent if this lesson was already tracked

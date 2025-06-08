@@ -1,23 +1,17 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+// import { Badge } from '@/components/ui/badge'; // Removed unused import
 import { Progress } from '@/components/ui/progress';
 import { 
   Volume2, 
   CheckCircle, 
   XCircle, 
   Lightbulb,
-  Trophy,
-  ArrowLeft,
-  Home,
-  RotateCcw,
-  Brain,
-  Target,
-  Shuffle
+  RotateCcw
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useSpeechSynthesis } from '@/core/speech/useSpeechSynthesis';
@@ -27,8 +21,8 @@ import { BaseExerciseWrapper } from './shared/BaseExerciseWrapper';
 import { useMaintenanceAwareData } from '../../hooks/useMaintenanceAwareData';
 import { useLessonCompletion } from '../../hooks/useLessonCompletion';
 import { LessonCompletionModal } from '../shared/LessonCompletionModal';
-import { getUserTargetLanguage, getUserNativeLanguage } from '@/core/utils/languageUtils';
-import ExerciseNavBar from '../Navigation/ExerciseNavBar';
+import { getUserTargetLanguage } from '@/core/utils/languageUtils';
+// import ExerciseNavBar from '../Navigation/ExerciseNavBar'; // Removed unused import
 
 interface ReorderingWrapperProps {
   lessonId: string;
@@ -58,8 +52,8 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
   lessonId,
   language,
   unitId,
-  onComplete,
-  progressIndicator
+  onComplete
+  // progressIndicator // Removed unused prop
 }) => {
   const router = useRouter();
   
@@ -70,7 +64,7 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
   console.log('[ModernReorderingWrapper] Language prop:', language);
   
   const { speak: speakTarget } = useSpeechSynthesis(targetLanguage); // Pour la langue d'apprentissage
-  const { speak: speakNative } = useSpeechSynthesis('fr'); // Pour le français
+  // const { speak: speakNative } = useSpeechSynthesis('fr'); // Removed unused variable
 
   // Audio feedback
   const playSuccessSound = useCallback(() => {
@@ -103,7 +97,7 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
     showCompletion,
     closeCompletion,
     completeLesson,
-    timeSpent
+    // timeSpent // Removed unused variable
   } = useLessonCompletion({
     lessonId,
     unitId,
@@ -136,7 +130,7 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
         console.log(`[ModernReorderingWrapper] Found ${reorderingData.length} reordering exercises from direct API`);
         
         // Convert reordering data to ReorderingExercise format
-        const convertedExercises = reorderingData.map((item: any) => {
+        const convertedExercises = reorderingData.map((item: Record<string, unknown>) => {
           // Get the sentence based on language
           const getSentenceByLanguage = (lang: string) => {
             switch (lang.toLowerCase()) {
@@ -366,7 +360,7 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
       console.log('[ModernReorderingWrapper] ⏰ Timeout triggered - calling handleNext with score:', newScore);
       handleNext(newScore);
     }, 2500);
-  }, [currentExercise, selectedWords, score, speakTarget, playSuccessSound, playFailSound, submitted]);
+  }, [currentExercise, selectedWords, score, speakTarget, playSuccessSound, playFailSound, submitted]); // handleNext will be stable
 
   const handleNext = useCallback((finalScore?: number) => {
     // Protection contre les appels multiples
@@ -458,7 +452,7 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
         }, 3000); // 3 secondes pour lire le message
       }
     }
-  }, [exercises, currentIndex, score, isComplete, playFailSound, showCompletion]);
+  }, [exercises, currentIndex, score, isComplete, playFailSound, showCompletion]); // resetExercise is stable
 
   const resetExercise = () => {
     setCurrentIndex(0);
@@ -513,7 +507,7 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
     if (!exercises || exercises.length === 0) {
       return (
         <div className="text-center p-8">
-          <p className="text-muted-foreground">Aucune donnée d'exercice disponible.</p>
+          <p className="text-muted-foreground">Aucune donnée d&apos;exercice disponible.</p>
         </div>
       );
     }

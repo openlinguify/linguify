@@ -10,9 +10,9 @@ let fastCacheInstance: EnhancedCache | null = null;
 // Enhanced cache with improved performance
 class EnhancedCache {
   private static instance: EnhancedCache;
-  private cache: Map<string, { data: any, timestamp: number }>;
+  private cache: Map<string, { data: unknown, timestamp: number }>;
   private prefetchQueue: Set<string>;
-  private pendingRequests: Map<string, Promise<any>>; // Pour éviter les appels dupliqués
+  private pendingRequests: Map<string, Promise<unknown>>; // Pour éviter les appels dupliqués
   private ttl: number = 10 * 60 * 1000; // 10 minutes in milliseconds
   private maxSize: number = 100; // Maximum number of items to keep in cache
   private hits: number = 0;
@@ -43,7 +43,7 @@ class EnhancedCache {
     return EnhancedCache.instance;
   }
 
-  public get(key: string, customTTL?: number): any {
+  public get(key: string, customTTL?: number): unknown {
     const entry = this.cache.get(key);
     if (!entry) {
       this.misses++;
@@ -60,18 +60,33 @@ class EnhancedCache {
 
     this.hits++;
     // Return shallow copy for performance - most data is immutable
-    return Array.isArray(entry.data) ? [...entry.data] : { ...entry.data };
+    if (Array.isArray(entry.data)) {
+      return [...entry.data] as unknown;
+    }
+    if (entry.data !== null && typeof entry.data === 'object') {
+      return { ...entry.data as Record<string, unknown> } as unknown;
+    }
+    return entry.data;
   }
 
-  public set(key: string, data: any, priority: boolean = false): void {
+  public set(key: string, data: unknown, priority: boolean = false): void {
     // If cache is at capacity and this is not a priority item, enforce limits
     if (this.cache.size >= this.maxSize && !priority) {
       this.evictOldest();
     }
 
     // Store shallow copy for performance - most data is immutable
+    let processedData: unknown;
+    if (Array.isArray(data)) {
+      processedData = [...data];
+    } else if (data !== null && typeof data === 'object') {
+      processedData = { ...data as Record<string, unknown> };
+    } else {
+      processedData = data;
+    }
+    
     this.cache.set(key, {
-      data: Array.isArray(data) ? [...data] : { ...data },
+      data: processedData,
       timestamp: Date.now()
     });
   }
@@ -88,7 +103,7 @@ class EnhancedCache {
     }
   }
 
-  public prefetch(key: string, fetcher: () => Promise<any>, priority: boolean = false): void {
+  public prefetch(key: string, fetcher: () => Promise<unknown>, priority: boolean = false): void {
     // Don't prefetch if already in progress or in cache
     if (this.prefetchQueue.has(key) || this.get(key)) return;
 
@@ -122,14 +137,14 @@ class EnhancedCache {
     // Vérifier le cache d'abord
     const cachedData = this.get(key);
     if (cachedData) {
-      return cachedData;
+      return cachedData as T;
     }
 
     // Vérifier si une requête est déjà en cours
     const pendingRequest = this.pendingRequests.get(key);
     if (pendingRequest) {
       console.log(`Request already pending for: ${key}`);
-      return pendingRequest;
+      return pendingRequest as Promise<T>;
     }
 
     // Créer une nouvelle requête
@@ -203,30 +218,32 @@ import {
 } from "@/addons/learning/types/";
 
 
-const adaptTheoryContent = (data: any): TheoryData => {
+const adaptTheoryContent = (data: unknown): TheoryData => {
   // Si les données sont déjà au nouveau format JSON, retournez-les directement
-  if (data.using_json_format && data.language_specific_content) {
-    return data as TheoryData;
+  const dataObj = data as Record<string, unknown>;
+  if (dataObj.using_json_format && dataObj.language_specific_content) {
+    return dataObj as TheoryData;
   }
   
   // Sinon, convertissez l'ancien format vers le nouveau format pour la compatibilité frontend
   const availableLanguages = ['en', 'fr', 'es', 'nl'].filter(lang => {
-    return data[`content_${lang}`] && data[`content_${lang}`].trim() !== '';
+    const content = dataObj[`content_${lang}`];
+    return content && typeof content === 'string' && content.trim() !== '';
   });
   
   const languageSpecificContent: Record<string, Record<string, string>> = {};
   for (const lang of availableLanguages) {
     languageSpecificContent[lang] = {
-      content: data[`content_${lang}`] || '',
-      explanation: data[`explication_${lang}`] || '',
-      formula: data[`formula_${lang}`] || '',
-      example: data[`example_${lang}`] || '',
-      exception: data[`exception_${lang}`] || ''
+      content: String(dataObj[`content_${lang}`] || ''),
+      explanation: String(dataObj[`explication_${lang}`] || ''),
+      formula: String(dataObj[`formula_${lang}`] || ''),
+      example: String(dataObj[`example_${lang}`] || ''),
+      exception: String(dataObj[`exception_${lang}`] || '')
     };
   }
   
   return {
-    ...data,
+    ...dataObj,
     using_json_format: true,
     available_languages: availableLanguages,
     language_specific_content: languageSpecificContent
@@ -284,20 +301,21 @@ const courseAPI = {
       }
 
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { name?: string; response?: { status?: number; data?: unknown }; message?: string };
       // Don't log errors for aborted requests
-      if (err.name === 'AbortError') {
+      if (error.name === 'AbortError') {
         return [];
       }
 
       console.error('Failed to fetch units:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
       });
 
       // Throw an error for non-aborted requests
-      throw new Error(`Failed to fetch units: ${err.message}`);
+      throw new Error(`Failed to fetch units: ${error.message || 'Unknown error'}`);
     }
   },
 
@@ -351,9 +369,10 @@ const courseAPI = {
 
         return response.data || [];
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { name?: string };
       // Don't log errors for aborted requests
-      if (err.name === 'AbortError') {
+      if (error.name === 'AbortError') {
         return [];
       }
 
@@ -460,16 +479,17 @@ const courseAPI = {
       }
 
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { name?: string; response?: { status?: number; data?: unknown }; message?: string };
       // Don't log errors for aborted requests
-      if (err.name === 'AbortError') {
+      if (error.name === 'AbortError') {
         return [];
       }
 
       console.error('Failed to fetch content lessons:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
       });
       return []; // Return empty array on error
     }
@@ -501,11 +521,11 @@ const courseAPI = {
         }
       });
       if (Array.isArray(response.data)) {
-        return response.data.map((item: any) => adaptTheoryContent(item));
+        return response.data.map((item: unknown) => adaptTheoryContent(item));
       }
 
       return [adaptTheoryContent(response.data)];
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to fetch theory content:', err);
       return [];
     }
@@ -562,7 +582,7 @@ const courseAPI = {
       
       // Return the full response including pagination info
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to fetch vocabulary content:', err);
       return { 
         results: [],
@@ -608,11 +628,12 @@ const courseAPI = {
       });
 
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number; data?: unknown }; message?: string };
       console.error('Failed to fetch fill in the blank exercises:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
       });
       return []; // Return empty array on error
     }
@@ -636,11 +657,12 @@ const courseAPI = {
       });
 
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number; data?: unknown }; message?: string };
       console.error('Failed to check fill in the blank answer:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
       });
       return { is_correct: false, error: 'Failed to check answer' };
     }
@@ -677,11 +699,12 @@ const courseAPI = {
       });
 
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number; data?: unknown }; message?: string };
       console.error('Failed to fetch reordering exercises:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
       });
       return []; // Return empty array on error
     }
@@ -718,11 +741,12 @@ const courseAPI = {
       });
 
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number; data?: unknown }; message?: string };
       console.error('Failed to fetch matching exercises:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
       });
       return [];
     }
@@ -757,11 +781,12 @@ const courseAPI = {
       });
 
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number; data?: unknown }; message?: string };
       console.error(`Failed to fetch matching exercise #${exerciseId}:`, {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
       });
       return null;
     }
@@ -821,29 +846,31 @@ const courseAPI = {
           success_threshold: data.success_threshold || 60,
           feedback: data.feedback || {}
         };
-      } catch (apiError: any) {
+      } catch (apiError: unknown) {
+        const error = apiError as { response?: { status?: number; statusText?: string; data?: { error?: string } } };
         // Capturer spécifiquement les erreurs API
         console.error('API error when checking matching answers:', {
-          status: apiError.response?.status,
-          statusText: apiError.response?.statusText,
-          data: apiError.response?.data
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data
         });
 
         // Si l'API renvoie un message d'erreur structuré, l'utiliser
-        if (apiError.response?.data?.error) {
-          throw new Error(`Server error: ${apiError.response.data.error}`);
+        if (error.response?.data?.error) {
+          throw new Error(`Server error: ${error.response.data.error}`);
         }
 
         // Sinon, remonter l'erreur originale
         throw apiError;
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { message?: string };
       console.error('Failed to check matching answers:', err);
 
       // En cas d'erreur, renvoyer un objet résultat par défaut avec echec
       return {
         score: 0,
-        message: `Error: ${err.message || 'An unknown error occurred'}`,
+        message: `Error: ${error.message || 'An unknown error occurred'}`,
         correct_count: 0,
         wrong_count: 0,
         total_count: 0,
@@ -871,7 +898,7 @@ const courseAPI = {
       console.log(`Creating matching exercise for content lesson ${parsedContentLessonId}`);
 
       // Prepare request body with validated values
-      const requestBody: any = {
+      const requestBody: Record<string, unknown> = {
         content_lesson_id: parsedContentLessonId
       };
       
@@ -890,11 +917,12 @@ const courseAPI = {
       const response = await apiClient.post('/api/v1/course/matching/auto-create/', requestBody);
 
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number; data?: unknown }; message?: string };
       console.error('Failed to create matching exercise:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
       });
       return null;
     }
@@ -929,7 +957,7 @@ const courseAPI = {
       console.log('Received speaking vocabulary data:', response.data);
 
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to fetch speaking exercise vocabulary:', err);
       return { results: [] };
     }
@@ -955,15 +983,17 @@ const courseAPI = {
         // Use the testRecapAPI method to get the TestRecap
         const response = await testRecapAPI.getTestRecapForContentLesson(parsedContentLessonId);
         
-        if (response && response.data && response.data.id) {
-          console.log(`Found test recap ID: ${response.data.id}`);
-          return response.data.id;
+        const apiResponse = response as { data?: { id?: string | number } };
+        if (apiResponse && apiResponse.data && apiResponse.data.id) {
+          console.log(`Found test recap ID: ${apiResponse.data.id}`);
+          return apiResponse.data.id;
         } else {
-          console.log(`API returned response without test recap ID:`, response.data);
+          console.log(`API returned response without test recap ID:`, apiResponse?.data);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const error = err as { response?: { status?: number } };
         // If we get a 404, it means no test recap could be found for this content lesson
-        if (err.response && err.response.status === 404) {
+        if (error.response && error.response.status === 404) {
           console.log(`No test recap could be found for content lesson ${parsedContentLessonId}`);
           return 'NO_CONTENT_AVAILABLE'; // Return a special value to indicate maintenance
         } else {
@@ -975,7 +1005,7 @@ const courseAPI = {
       // If the API call succeeded but returned no valid ID, it's also a maintenance case
       console.log(`No suitable test recap found for content lesson ${parsedContentLessonId}, maintenance required`);
       return 'NO_CONTENT_AVAILABLE';
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(`Failed to find test recap ID for content lesson ${contentLessonId}:`, err);
       return null;
     }
@@ -1007,7 +1037,7 @@ const courseAPI = {
       });
       
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to fetch test recaps:', err);
       return [];
     }
@@ -1033,7 +1063,7 @@ const courseAPI = {
       });
       
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(`Failed to fetch test recap #${testId}:`, err);
       return null;
     }
@@ -1059,13 +1089,13 @@ const courseAPI = {
       });
       
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(`Failed to fetch test recap questions for test #${testId}:`, err);
       return [];
     }
   },
   
-  submitTestRecapAnswers: async (testId: number | string, answers: Record<string, any>, timeTaken: number, targetLanguage?: string, isDemo?: boolean) => {
+  submitTestRecapAnswers: async (testId: number | string, answers: Record<string, unknown>, timeTaken: number, targetLanguage?: string, isDemo?: boolean) => {
     try {
       const parsedTestId = Number(testId);
       if (isNaN(parsedTestId)) {
@@ -1088,7 +1118,7 @@ const courseAPI = {
       });
       
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(`Failed to submit test recap answers for test #${testId}:`, err);
       throw err;
     }
@@ -1127,7 +1157,7 @@ const courseAPI = {
       const cachedData = FastCache.get(cacheKey);
       if (cachedData) {
         console.log(`Using cached search results for: ${params.toString()}`);
-        return cachedData;
+        return cachedData as CourseSearchResponse;
       }
       
       console.log(`🔍 Backend search API call with params:`, Object.fromEntries(params));
@@ -1145,11 +1175,12 @@ const courseAPI = {
       });
       
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number; data?: unknown }; message?: string };
       console.error('Failed to search courses:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
         filters
       });
       throw err;
@@ -1175,7 +1206,7 @@ const courseAPI = {
           vocabulary_items: vocabularyItems
         }
       };
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error in getVocabularyLesson:', err);
       return {
         data: {
@@ -1208,7 +1239,7 @@ const courseAPI = {
           instructions: 'Pratiquez la prononciation des mots suivants'
         }
       };
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error in getSpeakingExercise:', err);
       return {
         data: {
