@@ -72,7 +72,7 @@ export default function EditCardModal({ card, isOpen, onClose, onSave }: EditCar
                 description: t('dashboard.flashcards.updateSuccess')
             });
             onClose();
-        } catch (err) {
+        } catch {
             toast({
                 title: t('dashboard.flashcards.errorTitle'),
                 description: t('dashboard.flashcards.updateError'),

@@ -6,9 +6,17 @@ import { useParams } from "next/navigation";
 // import { api } from "~/trpc/react";
 import { api } from "../../api/placeholder-api";
 
+interface StudySetData {
+  id: string;
+  title: string;
+  description: string;
+  user: { id: string; name: string; image: string | null };
+  flashcards: Array<{ id: string; term: string; definition: string }>;
+}
+
 const StudySetInfo = () => {
   const { id }: { id: string } = useParams();
-  const { data } = api.studySet.byId.useQuery({ id });
+  const { data } = api.studySet.byId.useQuery({ id }) as { data: StudySetData | null };
 
   if (!data) {
     return null;

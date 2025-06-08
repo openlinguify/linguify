@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 import {
   User,
   Bell,
@@ -52,6 +53,14 @@ import {
   ProfileFormData,
   DEFAULT_USER_SETTINGS,
 } from '@/addons/settings/constants/usersettings';
+
+// Helper function to safely convert user properties to strings
+const safeString = (value: unknown): string => {
+  if (typeof value === 'string') return value;
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'object' && Object.keys(value).length === 0) return '';
+  return String(value);
+};
 
 export default function SettingsPage() {
   const { user, isAuthenticated, isLoading, logout } = useAuthContext();
@@ -115,27 +124,27 @@ export default function SettingsPage() {
   useEffect(() => {
     if (user) {
       setFormData({
-        username: user.username || '',
-        first_name: user.first_name || '',
-        last_name: user.last_name || '',
-        email: user.email || '',
-        bio: user.bio || '',
-        gender: user.gender || null,
-        birthday: user.birthday ? new Date(user.birthday).toISOString().split('T')[0] : null,
-        native_language: user.native_language || 'EN',
-        target_language: user.target_language || 'FR',
-        language_level: user.language_level || 'A1',
-        objectives: user.objectives || 'Travel',
+        username: safeString(user.username),
+        first_name: safeString(user.first_name),
+        last_name: safeString(user.last_name),
+        email: safeString(user.email),
+        bio: safeString(user.bio),
+        gender: safeString(user.gender) || null,
+        birthday: user.birthday && typeof user.birthday === 'string' ? new Date(user.birthday).toISOString().split('T')[0] : null,
+        native_language: safeString(user.native_language) || 'EN',
+        target_language: safeString(user.target_language) || 'FR',
+        language_level: safeString(user.language_level) || 'A1',
+        objectives: safeString(user.objectives) || 'Travel',
         interface_language: 'en'
       });
       
       // Set initial language settings from user data
       setSettings(prev => ({
         ...prev,
-        native_language: user.native_language || "EN",
-        target_language: user.target_language || "FR",
-        language_level: user.language_level || "A1",
-        objectives: user.objectives || "Travel",
+        native_language: safeString(user.native_language) || "EN",
+        target_language: safeString(user.target_language) || "FR",
+        language_level: safeString(user.language_level) || "A1",
+        objectives: safeString(user.objectives) || "Travel",
       }));
       
       // Load user settings
@@ -201,7 +210,7 @@ export default function SettingsPage() {
           // Update localStorage
           localStorage.setItem('userSettings', JSON.stringify(response.data));
         }
-      } catch (error) {
+      } catch {
         console.log('Settings API not available, using default values');
       }
     } catch (error) {
@@ -310,7 +319,7 @@ export default function SettingsPage() {
           ...settings,
           interface_language: formData.interface_language
         });
-      } catch (error) {
+      } catch {
         console.log('Settings API not available, saved locally only');
       }
 
@@ -376,7 +385,7 @@ export default function SettingsPage() {
       // Try to save to backend
       try {
         await apiClient.post('/api/auth/me/settings/', settings);
-      } catch (error) {
+      } catch {
         console.log('Settings API not available, saved locally only');
       }
 
@@ -486,17 +495,17 @@ export default function SettingsPage() {
     // Reset form to original user data
     if (user) {
       setFormData({
-        username: user.username || '',
-        first_name: user.first_name || '',
-        last_name: user.last_name || '',
-        email: user.email || '',
-        bio: user.bio || '',
-        gender: user.gender || null,
-        birthday: user.birthday ? new Date(user.birthday).toISOString().split('T')[0] : null,
-        native_language: user.native_language || 'EN',
-        target_language: user.target_language || 'FR',
-        language_level: user.language_level || 'A1',
-        objectives: user.objectives || 'Travel',
+        username: safeString(user.username),
+        first_name: safeString(user.first_name),
+        last_name: safeString(user.last_name),
+        email: safeString(user.email),
+        bio: safeString(user.bio),
+        gender: safeString(user.gender) || null,
+        birthday: user.birthday && typeof user.birthday === 'string' ? new Date(user.birthday).toISOString().split('T')[0] : null,
+        native_language: safeString(user.native_language) || 'EN',
+        target_language: safeString(user.target_language) || 'FR',
+        language_level: safeString(user.language_level) || 'A1',
+        objectives: safeString(user.objectives) || 'Travel',
         interface_language: settings.interface_language || 'en'
       });
     }
@@ -707,10 +716,12 @@ export default function SettingsPage() {
                   className="h-24 w-24 rounded-full overflow-hidden border-4 border-background cursor-pointer transition-all hover:opacity-90"
                   onClick={handleProfilePictureClick}
                 >
-                  {user.picture ? (
-                    <img
+                  {user.picture && typeof user.picture === 'string' ? (
+                    <Image
                       src={user.picture}
                       alt={fullName}
+                      width={96}
+                      height={96}
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -1483,25 +1494,25 @@ export default function SettingsPage() {
               />
               <CardContent className="space-y-6">
                 <div className="bg-background rounded-lg border shadow-xs p-5 space-y-4">
-                  <h3 className="text-lg font-medium">{t('billing.currentPlan')}</h3>
+                  <h3 className="text-lg font-medium">{String(t('billing.currentPlan'))}</h3>
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="font-medium">{user.is_subscribed ? t('billing.premiumPlan') : t('billing.freePlan')}</p>
+                      <p className="font-medium">{user.is_subscribed ? String(t('billing.premiumPlan')) : String(t('billing.freePlan'))}</p>
                       <p className="text-sm text-muted-foreground">
                         {user.is_subscribed 
                           ? 'Your subscription renews on the 1st of each month' 
-                          : t('billing.upgradeToPremium')}
+                          : String(t('billing.upgradeToPremium'))}
                       </p>
                     </div>
                     <Button variant={user.is_subscribed ? "outline" : "default"}>
-                      {user.is_subscribed ? t('billing.manageSubscription') : t('billing.upgrade')}
+                      {user.is_subscribed ? String(t('billing.manageSubscription')) : String(t('billing.upgrade'))}
                     </Button>
                   </div>
                 </div>
                 
                 {user.is_subscribed && (
                   <div className="bg-background rounded-lg border shadow-xs p-5 space-y-4">
-                    <h3 className="text-lg font-medium">{t('billing.paymentMethod')}</h3>
+                    <h3 className="text-lg font-medium">{String(t('billing.paymentMethod'))}</h3>
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-3">
                         <div className="bg-muted p-2 rounded-md">
@@ -1512,13 +1523,13 @@ export default function SettingsPage() {
                           <p className="text-sm text-muted-foreground">Expires 04/24</p>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">{t('billing.edit')}</Button>
+                      <Button variant="outline" size="sm">{String(t('billing.edit'))}</Button>
                     </div>
                   </div>
                 )}
                 
                 <div className="bg-background rounded-lg border shadow-xs p-5 space-y-4">
-                  <h3 className="text-lg font-medium">{t('billing.billingHistory')}</h3>
+                  <h3 className="text-lg font-medium">{String(t('billing.billingHistory'))}</h3>
                   {user.is_subscribed ? (
                     <div className="space-y-4">
                       <div className="flex justify-between items-center py-2 border-b">

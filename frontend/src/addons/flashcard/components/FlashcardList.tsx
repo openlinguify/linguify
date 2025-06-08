@@ -351,11 +351,12 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
 
       // Refresh the card list
       await onCardUpdate();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error creating card:", error);
+      const errorMessage = error instanceof Error ? error.message : t('dashboard.flashcards.createError');
       toast({
         title: t('dashboard.flashcards.errorTitle'),
-        description: error.message || t('dashboard.flashcards.createError'),
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -379,7 +380,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
 
       // Refresh the card list
       await onCardUpdate();
-    } catch (err) {
+    } catch {
       toast({
         title: t('dashboard.flashcards.errorTitle'),
         description: t('dashboard.flashcards.updateError'),
@@ -404,7 +405,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
 
       // Refresh the card list
       await onCardUpdate();
-    } catch (err) {
+    } catch {
       toast({
         title: t('dashboard.flashcards.errorTitle'),
         description: t('dashboard.flashcards.updateStatusError'),
@@ -450,7 +451,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       // Refresh the card list
       await onCardUpdate();
 
-    } catch (error) {
+    } catch {
       toast({
         title: t('dashboard.flashcards.errorTitle'),
         description: t('dashboard.flashcards.bulkUpdateError'),
@@ -528,7 +529,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       try {
         // Call batch API
         console.log("Attempting batch deletion");
-        const result = await revisionApi.flashcards.deleteBatch(selectedCards);
+        await revisionApi.flashcards.deleteBatch(selectedCards);
         clearInterval(progressInterval);
 
         // Set to almost complete
@@ -541,7 +542,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
           console.log("Deletion complete", { progress: 100 });
         }, 500);
 
-        processed = result.deleted || totalCards;
+        processed = totalCards; // Since batch deletion succeeded, all cards were processed
 
       } catch (batchError) {
         console.warn("Batch delete failed, using individual deletion", batchError);
@@ -659,7 +660,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       title: t('dashboard.flashcards.exportComplete'),
       description: t('dashboard.flashcards.exportSuccess', { count: allFilteredCards.length.toString() })
     });
-  }, [allFilteredCards, deck, t]);
+  }, [allFilteredCards, deck, t, toast]);
 
   // ======= Render Helpers =======
   const renderTableHead = () => (

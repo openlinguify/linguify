@@ -1,5 +1,17 @@
 // src/core/api/lastAccessedLessonService.ts
-import { LessonProgress, ContentLessonProgress } from '@/addons/progress/types';
+// TODO: Create proper progress types when progress module is implemented
+interface LessonProgress {
+  id: number;
+  completed: boolean;
+  lastAccessed?: string;
+  completionPercentage?: number;
+  title?: string;
+}
+
+interface ContentLessonProgress extends LessonProgress {
+  contentType: string;
+  contentId: number;
+}
 
 // Interface for the last accessed lesson data
 export interface LastAccessedLesson {
@@ -59,19 +71,19 @@ const lastAccessedLessonService = {
           ? (lesson as ContentLessonProgress).title
           : (lesson as LessonProgress).title,
         contentType: isContentLesson
-          ? ((lesson as ContentLessonProgress).content_type || '').toLowerCase().trim()
-          : (lesson.contentType || 'lesson').toLowerCase().trim(),
+          ? ((lesson as ContentLessonProgress).contentType || '').toLowerCase().trim()
+          : ((lesson as LessonProgress & {contentType?: string}).contentType || 'lesson').toLowerCase().trim(),
         lastAccessed,
         dateCreated: now.toISOString(),
-        completionPercentage: lesson.completion_percentage || 0,
+        completionPercentage: lesson.completionPercentage || 0,
         timeSpent: 0 // Initialize time spent
       };
       
       // Add unit data if available - prioritize the explicitly passed unitId
       if (unitId) {
         lessonData.unitId = unitId;
-      } else if ('lesson_id' in lesson && lesson.lesson_id) {
-        lessonData.unitId = lesson.lesson_id;
+      } else if ('lesson_id' in lesson && (lesson as any).lesson_id) {
+        lessonData.unitId = (lesson as any).lesson_id;
       }
       
       if (unitTitle) {
@@ -79,20 +91,20 @@ const lastAccessedLessonService = {
       }
       
       // Preserve any additional routing information if present in the lesson object
-      if ('language' in lesson && lesson.language) {
-        lessonData.language = lesson.language;
+      if ('language' in lesson && (lesson as any).language) {
+        lessonData.language = (lesson as any).language;
       }
       
-      if ('parentLessonId' in lesson && lesson.parentLessonId) {
-        lessonData.parentLessonId = lesson.parentLessonId;
+      if ('parentLessonId' in lesson && (lesson as any).parentLessonId) {
+        lessonData.parentLessonId = (lesson as any).parentLessonId;
       }
       
-      if ('contentId' in lesson && lesson.contentId) {
-        lessonData.contentId = lesson.contentId;
+      if ('contentId' in lesson && (lesson as any).contentId) {
+        lessonData.contentId = (lesson as any).contentId;
       }
       
-      if ('routeType' in lesson && lesson.routeType) {
-        lessonData.routeType = lesson.routeType;
+      if ('routeType' in lesson && (lesson as any).routeType) {
+        lessonData.routeType = (lesson as any).routeType;
       }
       
       // Preserve existing timeSpent if this lesson was already tracked
@@ -184,7 +196,7 @@ const lastAccessedLessonService = {
       
       // Also update in history
       const historyJSON = localStorage.getItem(STORAGE_HISTORY_KEY) || '[]';
-      let history: LastAccessedLesson[] = JSON.parse(historyJSON);
+      const history: LastAccessedLesson[] = JSON.parse(historyJSON);
       
       // Find and update the lesson in history
       const index = history.findIndex(item => item.id === lessonId);

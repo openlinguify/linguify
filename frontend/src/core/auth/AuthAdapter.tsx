@@ -9,7 +9,7 @@ import { useSupabaseAuth } from './SupabaseAuthProvider'
 interface AuthContextType {
   isAuthenticated: boolean
   isLoading: boolean
-  user: any | null
+  user: Record<string, unknown> | null
   token: string | null
   error: string | null
   login: (returnTo?: string) => Promise<void>
@@ -27,8 +27,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session, 
     loading, 
     isAuthenticated: supabaseIsAuthenticated,
-    signIn, 
-    signUp, 
+    signIn: _signIn, 
+    signUp: _signUp, 
     signOut, 
     getAccessToken,
     isAuthReady

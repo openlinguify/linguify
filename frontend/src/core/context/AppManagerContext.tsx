@@ -35,6 +35,10 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);
+  
+  // Request deduplication
+  const refreshPromiseRef = React.useRef<Promise<void> | null>(null);
+  const lastRefreshRef = React.useRef<number>(0);
 
   const refreshApps = useCallback(async () => {
     if (!isAuthenticated) {
@@ -43,41 +47,59 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
       return;
     }
 
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Fetch available apps and user settings
-      const [appsResponse, userSettingsResponse] = await Promise.all([
-        appManagerService.getAvailableApps(),
-        appManagerService.getUserAppSettings()
-      ]);
-
-      const apps = appsResponse || [];
-      const userSettings = userSettingsResponse || { enabled_apps: [] };
-
-      // Filter enabled apps based on user settings
-      // userSettings.enabled_apps is an array of App objects, not codes
-      const enabledAppCodes = userSettings.enabled_apps.map(app => 
-        typeof app === 'string' ? app : app.code
-      );
-      
-      const enabled = apps.filter(app => 
-        enabledAppCodes.includes(app.code) && app.is_enabled
-      );
-
-      setAvailableApps(apps);
-      setEnabledApps(enabled);
-      setEnabledAppCodes(enabledAppCodes);
-      setUserAppSettings(userSettings);
-
-    } catch (err) {
-      console.error('Error fetching app data:', err);
-      setError('Failed to load app data');
-    } finally {
-      setLoading(false);
-      setInitialized(true);
+    // Debounce: Skip if called too frequently (within 500ms)
+    const now = Date.now();
+    if (now - lastRefreshRef.current < 500) {
+      return refreshPromiseRef.current || Promise.resolve();
     }
+    lastRefreshRef.current = now;
+
+    // Deduplication: Return existing promise if request is in progress
+    if (refreshPromiseRef.current) {
+      return refreshPromiseRef.current;
+    }
+
+    const refreshPromise = (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch available apps and user settings
+        const [appsResponse, userSettingsResponse] = await Promise.all([
+          appManagerService.getAvailableApps(),
+          appManagerService.getUserAppSettings()
+        ]);
+
+        const apps = appsResponse || [];
+        const userSettings = userSettingsResponse || { enabled_apps: [] };
+
+        // Filter enabled apps based on user settings
+        // userSettings.enabled_apps is an array of App objects, not codes
+        const enabledAppCodes = userSettings.enabled_apps.map(app => 
+          typeof app === 'string' ? app : app.code
+        );
+        
+        const enabled = apps.filter(app => 
+          enabledAppCodes.includes(app.code) && app.is_enabled
+        );
+
+        setAvailableApps(apps);
+        setEnabledApps(enabled);
+        setEnabledAppCodes(enabledAppCodes);
+        setUserAppSettings(userSettings);
+
+      } catch (err) {
+        console.error('Error fetching app data:', err);
+        setError('Failed to load app data');
+      } finally {
+        setLoading(false);
+        setInitialized(true);
+        refreshPromiseRef.current = null;
+      }
+    })();
+
+    refreshPromiseRef.current = refreshPromise;
+    return refreshPromise;
   }, [isAuthenticated]);
 
   const toggleApp = async (appCode: string, enabled: boolean): Promise<boolean> => {
@@ -105,6 +127,11 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
 
   // Load apps when user authentication changes
   useEffect(() => {
+    // Skip if already initialized and auth state hasn't changed
+    if (initialized && isAuthenticated && availableApps.length > 0) {
+      return;
+    }
+    
     if (isAuthenticated && user) {
       refreshApps();
     } else if (!isAuthenticated) {
@@ -116,7 +143,7 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
       setLoading(false);
       setInitialized(true);
     }
-  }, [isAuthenticated, user, refreshApps]);
+  }, [isAuthenticated, user]); // Remove refreshApps from dependencies to avoid circular updates
 
   const value: AppManagerContextType = {
     availableApps,

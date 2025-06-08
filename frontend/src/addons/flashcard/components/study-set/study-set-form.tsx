@@ -1,9 +1,16 @@
 "use client";
 
 // Temporarily disabled form component to fix build
+interface StudySetDefaultValues {
+  id?: string;
+  title?: string;
+  description?: string;
+}
+
 interface StudySetFormProps {
-  defaultValues?: any;
-  [key: string]: any;
+  defaultValues?: StudySetDefaultValues;
+  onSubmit?: (data: StudySetDefaultValues) => void;
+  className?: string;
 }
 
 const StudySetForm = (props: StudySetFormProps) => {

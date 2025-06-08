@@ -2,7 +2,13 @@ import Link from "next/link";
 import { Edit } from "lucide-react";
 
 // TODO: Replace with appropriate Session type
-type Session = any;
+interface Session {
+  user?: {
+    id: string;
+    name?: string;
+    email?: string;
+  };
+}
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +32,7 @@ const StudySetCTA = ({ session, id, userId }: StudySetCTAProps) => {
   return (
     <div className="flex gap-2">
       {session && <StudySetFoldersDialog session={session} />}
-      {session?.user.id === userId && (
+      {session?.user?.id === userId && (
         <TooltipProvider>
           <Tooltip>
             <Link href={`/study-sets/${id}/edit`} legacyBehavior>
@@ -46,8 +52,8 @@ const StudySetCTA = ({ session, id, userId }: StudySetCTAProps) => {
       <StudySetShareDialog id={id} />
       <StudySetOptionsDropdown
         id={id}
-        isOwner={session?.user.id === userId}
-        userId={session?.user.id}
+        isOwner={session?.user?.id === userId}
+        userId={session?.user?.id}
       />
     </div>
   );

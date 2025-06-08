@@ -91,7 +91,7 @@ export default function HelpCenter() {
 
       // Réinitialiser le formulaire
       setFeedbackForm({ name: '', email: '', message: '' });
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: "Erreur",
         description: "Impossible d'envoyer le feedback",
@@ -105,7 +105,7 @@ export default function HelpCenter() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold bg-clip-text text-transparent">
-            Centre d'Aide Linguify
+            Centre d&apos;Aide Linguify
           </h1>
           <p className="text-gray-600 mt-2">
             Trouvez des réponses, des tutoriels et partagez vos retours
@@ -115,7 +115,7 @@ export default function HelpCenter() {
           variant="outline" 
           onClick={() => router.push("/")}
         >
-          <ChevronRight className="mr-2" /> Retour à l'accueil
+          <ChevronRight className="mr-2" /> Retour à l&apos;accueil
         </Button>
       </div>
 
@@ -168,7 +168,7 @@ export default function HelpCenter() {
             ))}
             <div className="text-center mt-6">
               <p className="text-gray-500">
-                Vous n'avez pas trouvé de réponse ? 
+                Vous n&apos;avez pas trouvé de réponse ? 
                 <Button variant="link">Contactez notre support</Button>
               </p>
             </div>
@@ -221,7 +221,7 @@ export default function HelpCenter() {
       </Tabs>
 
       <div className="text-center text-gray-500 mt-10">
-        <p>Besoin d'aide supplémentaire ?</p>
+        <p>Besoin d&apos;aide supplémentaire ?</p>
         <div className="flex justify-center space-x-4 mt-4">
           <Button variant="outline">
             <Users className="mr-2" /> Communauté

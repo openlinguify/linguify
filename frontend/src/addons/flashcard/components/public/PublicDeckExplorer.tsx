@@ -31,7 +31,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { revisionApi } from "@/addons/flashcard/api/revisionAPI";
 import { useTranslation } from "@/core/i18n/useTranslations";
 import { useRouter } from "next/navigation";
-import { PublicDeckExplorerProps } from "@/addons/flashcard/types";
+import { PublicDeckExplorerProps, FlashcardDeck } from "@/addons/flashcard/types";
 
 const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
   onDeckClone,
@@ -42,9 +42,9 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
   const router = useRouter();
 
   // États
-  const [popularDecks, setPopularDecks] = useState<any[]>([]);
-  const [recentDecks, setRecentDecks] = useState<any[]>([]);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [popularDecks, setPopularDecks] = useState<FlashcardDeck[]>([]);
+  const [recentDecks, setRecentDecks] = useState<FlashcardDeck[]>([]);
+  const [searchResults, setSearchResults] = useState<FlashcardDeck[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>(initialTab);
@@ -56,7 +56,7 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
   });
 
   // Mise à jour d'un filtre individuel
-  const updateFilter = useCallback((key: keyof typeof filters, value: any) => {
+  const updateFilter = useCallback((key: keyof typeof filters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   }, []);
 
@@ -125,7 +125,7 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
   }, [filters, toast, t]);
 
   // Clonage d'un deck
-  const handleCloneDeck = useCallback(async (deck: any) => {
+  const handleCloneDeck = useCallback(async (deck: FlashcardDeck) => {
     try {
       setClonedDecks(prev => new Set(prev).add(deck.id));
 
@@ -184,7 +184,7 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
   }, [filters, activeTab, searchDecks]);
 
   // Rendu d'un deck individuel
-  const renderDeckCard = (deck: any) => {
+  const renderDeckCard = (deck: FlashcardDeck) => {
     const isCloning = clonedDecks.has(deck.id);
     const cardCount = deck.card_count || 0;
     const learnedCount = deck.learned_count || 0;
@@ -329,7 +329,7 @@ const PublicDeckExplorer: React.FC<PublicDeckExplorerProps> = ({
   );
 
   // Méthode pour rendre la grille de decks avec un état de chargement/vide
-  const renderDeckGrid = (decks: any[], isLoadingState: boolean, emptyMessage: string, emptyIcon: React.ReactNode, refreshAction: () => void) => {
+  const renderDeckGrid = (decks: FlashcardDeck[], isLoadingState: boolean, emptyMessage: string, emptyIcon: React.ReactNode, refreshAction: () => void) => {
     if (isLoadingState) {
       return (
         <div className="flex justify-center items-center py-12">

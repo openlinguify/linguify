@@ -1,10 +1,34 @@
 // Placeholder API until external dependencies are available
 // This file provides mock implementations for tRPC and external APIs
 
+// Placeholder types
+interface MutationOptions<T = unknown> {
+  onSuccess?: (data?: T) => void;
+  onError?: (error?: unknown) => void;
+}
+
+interface StudySetData {
+  id?: string;
+  title?: string;
+  description?: string;
+  flashcards?: Array<{ id: string; term: string; definition: string }>;
+}
+
+interface QueryParams {
+  id?: string;
+}
+
+interface CombineData {
+  id?: string;
+  studySetIds?: string[];
+  studySets?: string[];
+  title?: string;
+}
+
 export const api = {
   studySet: {
     delete: {
-      useMutation: (options?: any) => ({
+      useMutation: (options?: MutationOptions<void>) => ({
         mutate: async (id: { id: string }) => {
           console.log('Delete study set:', id);
           options?.onSuccess?.();
@@ -19,13 +43,13 @@ export const api = {
       })
     },
     update: {
-      useMutation: (options?: any) => ({
-        mutate: async (data: any) => {
+      useMutation: (options?: MutationOptions<StudySetData>) => ({
+        mutate: async (data: StudySetData) => {
           console.log('Update study set:', data);
           options?.onSuccess?.();
           return Promise.resolve(data);
         },
-        mutateAsync: async (data: any) => {
+        mutateAsync: async (data: StudySetData) => {
           console.log('Update study set:', data);
           options?.onSuccess?.();
           return Promise.resolve(data);
@@ -34,13 +58,13 @@ export const api = {
       })
     },
     create: {
-      useMutation: (options?: any) => ({
-        mutate: async (data: any) => {
+      useMutation: (options?: MutationOptions<StudySetData>) => ({
+        mutate: async (data: StudySetData) => {
           console.log('Create study set:', data);
           options?.onSuccess?.();
           return Promise.resolve({ ...data, id: Math.random().toString() });
         },
-        mutateAsync: async (data: any) => {
+        mutateAsync: async (data: StudySetData) => {
           console.log('Create study set:', data);
           options?.onSuccess?.();
           return Promise.resolve({ ...data, id: Math.random().toString() });
@@ -49,7 +73,7 @@ export const api = {
       })
     },
     byId: {
-      useQuery: (query: any, options?: any) => ({
+      useQuery: (query: QueryParams, options?: { initialData?: unknown }) => ({
         data: query?.id ? {
           id: query.id,
           title: `Study Set ${query.id}`,
@@ -65,7 +89,7 @@ export const api = {
       })
     },
     allByUser: {
-      useQuery: (_params: any) => ({
+      useQuery: (params?: { userId?: string }) => ({
         data: [
           { id: '1', title: 'Study Set 1' },
           { id: '2', title: 'Study Set 2' }
@@ -91,14 +115,14 @@ export const api = {
       })
     },
     combine: {
-      useMutation: (options?: any) => ({
-        mutate: async (data: any) => {
+      useMutation: (options?: MutationOptions<{ id: string; title: string }>) => ({
+        mutate: async (data: CombineData) => {
           console.log('Combine study sets:', data);
           const combinedSet = { id: Math.random().toString(), title: 'Combined Study Set' };
           options?.onSuccess?.(combinedSet);
           return Promise.resolve(combinedSet);
         },
-        mutateAsync: async (data: any) => {
+        mutateAsync: async (data: CombineData) => {
           console.log('Combine study sets:', data);
           const combinedSet = { id: Math.random().toString(), title: 'Combined Study Set' };
           options?.onSuccess?.(combinedSet);
@@ -112,7 +136,7 @@ export const api = {
     studySet: {
       invalidate: () => Promise.resolve(),
       byId: {
-        getData: (params: any) => ({
+        getData: (params: QueryParams) => ({
           id: params.id,
           title: `Study Set ${params.id}`,
           description: `Description for study set ${params.id}`,

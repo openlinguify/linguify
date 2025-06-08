@@ -91,7 +91,11 @@ export interface FlashcardDeck {
   created_at: string;
   updated_at: string;
   is_active: boolean;
-  user?: any;
+  user?: {
+    id: number;
+    username: string;
+    email?: string;
+  };
   card_count?: number;
   learned_count?: number;
   cards?: Flashcard[];
@@ -118,7 +122,11 @@ export interface FlashcardAppProps {
 
 export interface ApiError extends Error {
   status?: number;
-  data?: any;
+  data?: {
+    message?: string;
+    error?: string;
+    details?: Record<string, unknown>;
+  };
 }
 
 export interface FormData {

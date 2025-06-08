@@ -9,7 +9,7 @@ type RouterOutputs = {
       id: string;
       title: string;
       description?: string | null;
-    };
+    } | null;
   };
 };
 
@@ -31,7 +31,7 @@ const EditStudySet = ({
     <StudySetForm
       defaultValues={{
         ...data,
-        description: data.description ?? undefined,
+        description: data?.description ?? undefined,
       }}
     />
   );

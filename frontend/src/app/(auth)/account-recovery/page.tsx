@@ -11,8 +11,8 @@ import { useAuthContext } from '@/core/auth/AuthAdapter';
 
 export default function AccountRecoveryPage() {
   const router = useRouter();
-  const { isAuthenticated, user, login } = useAuthContext();
-  const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenticated, user } = useAuthContext();
+  const [isLoading] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -41,10 +41,15 @@ export default function AccountRecoveryPage() {
         }, 3000);
       } else {
         // Set deletion information
+        const userData = user as {
+          deletion_scheduled_at?: unknown;
+          deletion_date?: unknown;
+          days_until_deletion?: unknown;
+        };
         setDeletionInfo({
-          scheduled_at: user.deletion_scheduled_at,
-          deletion_date: user.deletion_date,
-          days_remaining: user.days_until_deletion || 0
+          scheduled_at: String(userData.deletion_scheduled_at || ''),
+          deletion_date: String(userData.deletion_date || ''),
+          days_remaining: Number(userData.days_until_deletion) || 0
         });
       }
     }

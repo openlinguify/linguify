@@ -1,31 +1,69 @@
 // src/components/dashboard/EnabledAppsGrid.tsx
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { AppCard } from './AppCard';
 import { useAppManager } from '@/core/context/AppManagerContext';
-import { Loader2, Settings, Store } from 'lucide-react';
+import { Store } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 export function EnabledAppsGrid() {
   const { enabledApps, loading, error } = useAppManager();
+  const router = useRouter();
+  const prefetchedRoutes = useRef(new Set<string>());
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // Prefetch data for the most common apps when hovering over the menu items
+  // Prefetch route when app card becomes visible
+  useEffect(() => {
+    if (!('IntersectionObserver' in window)) return;
+
+    observerRef.current = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && entry.target instanceof HTMLElement) {
+          const routePath = entry.target.dataset.routePath;
+          if (routePath && !prefetchedRoutes.current.has(routePath)) {
+            // Use Next.js router prefetch
+            router.prefetch(routePath);
+            prefetchedRoutes.current.add(routePath);
+          }
+        }
+      });
+    }, {
+      rootMargin: '50px' // Start prefetching 50px before the element is visible
+    });
+
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, [router]);
+
+  // Enhanced prefetch on hover with data preloading
   const prefetchDataForApp = useCallback((routePath: string) => {
-    // Temporarily disable dynamic imports to fix webpack error
-    console.log(`Hover on ${routePath} - prefetch disabled temporarily`);
-    
-    // TODO: Re-enable after fixing webpack issue
-    // if (routePath === "/learning") {
-    //   import('@/addons/learning/api/courseAPI').then(module => {
-    //     const courseAPI = module.default;
-    //     courseAPI.getUnits();
-    //   }).catch(err => {
-    //     console.error("Error prefetching learning data:", err);
-    //   });
-    // }
-  }, []);
+    // Prefetch the route if not already done
+    if (!prefetchedRoutes.current.has(routePath)) {
+      router.prefetch(routePath);
+      prefetchedRoutes.current.add(routePath);
+    }
+
+    // Preload critical data for specific apps
+    if (routePath === '/learning') {
+      // Use dynamic import to load the API module only when needed
+      import('@/addons/learning/api/courseAPI').then(({ courseAPI }) => {
+        // Cache the units data
+        courseAPI.getUnits().catch(() => {
+          // Silently fail - this is just a prefetch
+        });
+      }).catch(() => {
+        // Module loading failed - ignore for prefetch
+      });
+    } else if (routePath === '/flashcard') {
+      import('@/addons/flashcard/api/revisionAPI').then(({ revisionAPI }) => {
+        revisionAPI.getDecks().catch(() => {});
+      }).catch(() => {});
+    }
+  }, [router]);
 
   if (loading) {
     return (
@@ -115,6 +153,7 @@ export function EnabledAppsGrid() {
             key={app.id}
             app={app}
             onMouseEnter={() => prefetchDataForApp(app.route_path)}
+            observerRef={observerRef}
           />
         ))}
       </div>

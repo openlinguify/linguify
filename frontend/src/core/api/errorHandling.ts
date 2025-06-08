@@ -1,14 +1,13 @@
 // src/services/errorHandlingService.ts
-import { toast } from '@/components/ui/use-toast';
-import axios from 'axios';
+import { toast } from '../../components/ui/use-toast';
 import Router from 'next/router';
-import React from 'react';
+import * as React from 'react';
 
 // Declare Sentry on the Window interface
 declare global {
   interface Window {
     Sentry?: {
-      captureException(error: any): void;
+      captureException(error: unknown): void;
     }
   }
 }
@@ -25,36 +24,41 @@ export enum ErrorType {
 }
 
 // Options pour la gestion des erreurs
-export interface ErrorHandlingOptions {
+export interface ErrorHandlingOptions<T = unknown> {
   showToast?: boolean;               // Afficher un toast avec l'erreur
   logToConsole?: boolean;            // Journaliser l'erreur dans la console
   redirectTo?: string;               // Rediriger vers un chemin après l'erreur
-  retryCallback?: () => Promise<any>; // Fonction de rappel pour réessayer
-  fallbackData?: any;                // Données de secours en cas d'erreur
+  retryCallback?: () => Promise<unknown>; // Fonction de rappel pour réessayer
+  fallbackData?: T;                // Données de secours en cas d'erreur
   captureError?: boolean;            // Envoyer l'erreur à un service de monitoring
 }
 
-export interface ApiErrorResult<T = any> {
+export interface ApiErrorResult<T = unknown> {
   message: string;                // Message d'erreur
   statusCode?: number;            // Code de statut HTTP (s'il existe)
   errorType: ErrorType;           // Type d'erreur
-  originalError: any;             // Erreur originale
-  retry?: () => Promise<any>;     // Fonction pour réessayer
+  originalError: unknown;             // Erreur originale
+  retry?: () => Promise<unknown>;     // Fonction pour réessayer
   fallbackData?: T;               // Données de secours
 }
 
 /**
  * Déterminer le type d'erreur en fonction de la réponse
  */
-function determineErrorType(error: any): ErrorType {
+function determineErrorType(error: unknown): ErrorType {
+  const axiosError = error as {
+    isAxiosError?: boolean;
+    response?: { status?: number };
+    message?: string;
+  };
   // Si c'est une erreur Axios
-  if (error?.isAxiosError) {
+  if (axiosError?.isAxiosError) {
     // S'il n'y a pas de réponse, c'est probablement une erreur réseau
-    if (!error.response) {
+    if (!axiosError.response) {
       return ErrorType.NETWORK;
     }
     
-    const statusCode = error.response?.status;
+    const statusCode = axiosError.response?.status;
     
     if (statusCode === 401) {
       return ErrorType.AUTHENTICATION;
@@ -64,13 +68,13 @@ function determineErrorType(error: any): ErrorType {
       return ErrorType.NOT_FOUND;
     } else if (statusCode === 422 || statusCode === 400) {
       return ErrorType.VALIDATION;
-    } else if (statusCode >= 500) {
+    } else if (statusCode && statusCode >= 500) {
       return ErrorType.SERVER;
     }
   }
   
   // Si l'erreur est due à un problème de connexion
-  if (error?.message === 'Network Error' || !navigator.onLine) {
+  if (axiosError?.message === 'Network Error' || !navigator.onLine) {
     return ErrorType.NETWORK;
   }
   
@@ -80,7 +84,16 @@ function determineErrorType(error: any): ErrorType {
 /**
  * Obtenir un message d'erreur convivial basé sur le type d'erreur
  */
-function getFriendlyMessage(error: any, errorType: ErrorType, defaultMessage: string): string {
+function getFriendlyMessage(error: unknown, errorType: ErrorType, defaultMessage: string): string {
+  const axiosError = error as {
+    response?: {
+      data?: {
+        errors?: string | string[];
+        detail?: string;
+      };
+    };
+  };
+
   // Si un message personnalisé est fourni, l'utiliser
   if (defaultMessage && defaultMessage !== 'Une erreur s\'est produite') {
     return defaultMessage;
@@ -102,7 +115,7 @@ function getFriendlyMessage(error: any, errorType: ErrorType, defaultMessage: st
       
     case ErrorType.VALIDATION:
       // Essayer d'extraire des messages d'erreur spécifiques de l'API
-      const validationErrors = error?.response?.data?.errors || error?.response?.data?.detail;
+      const validationErrors = axiosError?.response?.data?.errors || axiosError?.response?.data?.detail;
       if (validationErrors) {
         if (typeof validationErrors === 'string') {
           return validationErrors;
@@ -125,7 +138,7 @@ function getFriendlyMessage(error: any, errorType: ErrorType, defaultMessage: st
 /**
  * Journaliser l'erreur avec différents niveaux de détail
  */
-function logError(error: any, message: string, errorType: ErrorType): void {
+function logError(error: unknown, message: string, errorType: ErrorType): void {
   // Utiliser un groupe pour organiser les logs
   console.group(`🚨 Erreur API [${errorType}]: ${message}`);
   
@@ -133,35 +146,49 @@ function logError(error: any, message: string, errorType: ErrorType): void {
   console.error('Message:', message);
   console.error('Type:', errorType);
   
+  const axiosError = error as {
+    config?: {
+      url?: string;
+      method?: string;
+      params?: Record<string, unknown>;
+      data?: unknown;
+    };
+    response?: {
+      status?: number;
+      statusText?: string;
+      data?: unknown;
+    };
+  };
+
   // Détails de la requête si disponible (Axios)
-  if (error?.config) {
-    console.log('URL:', error.config.url);
-    console.log('Méthode:', error.config.method?.toUpperCase());
+  if (axiosError?.config) {
+    console.log('URL:', axiosError.config.url);
+    console.log('Méthode:', axiosError.config.method?.toUpperCase());
     
-    if (error.config.params) {
-      console.log('Paramètres:', error.config.params);
+    if (axiosError.config.params) {
+      console.log('Paramètres:', axiosError.config.params);
     }
     
     // Masquer les informations sensibles dans les données
-    if (error.config.data) {
+    if (axiosError.config.data) {
       try {
-        const data = JSON.parse(error.config.data);
+        const data = JSON.parse(axiosError.config.data as string);
         // Masquer les mots de passe ou tokens sensibles
         const sanitizedData = { ...data };
         if (sanitizedData.password) sanitizedData.password = '******';
         if (sanitizedData.token) sanitizedData.token = '******';
         console.log('Données:', sanitizedData);
-      } catch (e) {
+      } catch {
         console.log('Données:', '[Non-parsable]');
       }
     }
   }
   
   // Détails de la réponse si disponible
-  if (error?.response) {
-    console.log('Statut:', error.response.status);
-    console.log('Statut texte:', error.response.statusText);
-    console.log('Données de réponse:', error.response.data);
+  if (axiosError?.response) {
+    console.log('Statut:', axiosError.response.status);
+    console.log('Statut texte:', axiosError.response.statusText);
+    console.log('Données de réponse:', axiosError.response.data);
   }
   
   // Stack trace
@@ -174,10 +201,10 @@ function logError(error: any, message: string, errorType: ErrorType): void {
 /**
  * Fonction principale pour gérer les erreurs API
  */
-export function handleApiError<T = any>(
-  error: any, 
+export function handleApiError<T = unknown>(
+  error: unknown, 
   friendlyMessage: string = "Une erreur s'est produite",
-  options: ErrorHandlingOptions = {}
+  options: ErrorHandlingOptions<T> = {}
 ): ApiErrorResult<T> {
   const { 
     showToast = true, 
@@ -195,7 +222,8 @@ export function handleApiError<T = any>(
   const message = getFriendlyMessage(error, errorType, friendlyMessage);
   
   // Extraire le code de statut (si disponible)
-  const statusCode = error?.response?.status;
+  const axiosError = error as { response?: { status?: number } };
+  const statusCode = axiosError?.response?.status;
   
   // Journaliser l'erreur si demandé
   if (logToConsole) {
@@ -240,7 +268,6 @@ export function handleApiError<T = any>(
       variant: "destructive",
       // Utilisez un bouton de nouvelle tentative si un rappel est fourni
       action: retryCallback ? {
-        // @ts-ignore - en ignorant l'erreur ici pour le moment - le composant toast attend en fait ce format
         label: "Réessayer",
         onClick: () => {
           toast({
@@ -327,7 +354,7 @@ export interface RetryConfig {
   backoffFactor: number;     // Facteur multiplicatif pour l'augmentation du délai (backoff exponentiel)
   retryStatusCodes: number[]; // Codes de statut HTTP pour lesquels une nouvelle tentative sera effectuée
   retryNetworkErrors: boolean; // Réessayer en cas d'erreurs réseau
-  onRetry?: (error: any, retryCount: number, delayMs: number) => void; // Callback appelé avant chaque nouvelle tentative
+  onRetry?: (error: unknown, retryCount: number, delayMs: number) => void; // Callback appelé avant chaque nouvelle tentative
 }
 
 /**
@@ -352,21 +379,23 @@ const delay = (ms: number): Promise<void> => {
 /**
  * Vérifier si l'erreur est une erreur réseau
  */
-const isNetworkError = (error: any): boolean => {
-  return !error.response && error.request && navigator.onLine;
+const isNetworkError = (error: unknown): boolean => {
+  const networkError = error as { response?: unknown; request?: unknown };
+  return !networkError.response && !!networkError.request && navigator.onLine;
 };
 
 /**
  * Vérifier si l'erreur est retryable selon la configuration
  */
-const isRetryableError = (error: any, config: RetryConfig): boolean => {
+const isRetryableError = (error: unknown, config: RetryConfig): boolean => {
   // Erreur réseau et configuration pour réessayer les erreurs réseau
   if (isNetworkError(error) && config.retryNetworkErrors) {
     return true;
   }
   
   // Vérifier si le code de statut est dans la liste des codes retryables
-  const statusCode = error.response?.status;
+  const axiosError = error as { response?: { status?: number } };
+  const statusCode = axiosError.response?.status;
   if (statusCode && config.retryStatusCodes.includes(statusCode)) {
     return true;
   }
@@ -400,7 +429,7 @@ export async function withRetry<T>(
     ...retryConfig
   };
   
-  let lastError: any;
+  let lastError: unknown;
   
   for (let retryCount = 0; retryCount <= config.maxRetries; retryCount++) {
     try {
@@ -441,10 +470,12 @@ export async function withRetry<T>(
   throw lastError;
 }
 
-export default { 
+const errorHandling = { 
   handleApiError,
   useIsOnline,
   waitForNetwork,
   withRetry,
   ErrorType
 };
+
+export default errorHandling;

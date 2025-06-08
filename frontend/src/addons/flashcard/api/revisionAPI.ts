@@ -1,14 +1,73 @@
 // src/addons/flashcard/api/revisionAPI.ts
 import apiClient from '@/core/api/apiClient';
 import authService from '@/core/auth/authService';
-import { SearchParams } from '@/addons/flashcard/types/';
+import { SearchParams, FlashcardDeck, Flashcard } from '@/addons/flashcard/types/';
+
+// API Response types
+interface CacheEntry<T = unknown> {
+  data: T;
+  timestamp: number;
+}
+
+interface CloneOptions {
+  name?: string;
+  description?: string;
+}
+
+interface ArchiveManagementData {
+  deck_id: number;
+  action: 'archive' | 'unarchive' | 'extend';
+  extension_days?: number;
+}
+
+interface ExpiringDecksResponse {
+  decks: FlashcardDeck[];
+  count: number;
+}
+
+interface FlashcardCreateData {
+  deck_id?: number;
+  deck?: number;
+  front_text: string;
+  back_text: string;
+}
+
+interface FlashcardUpdateData {
+  front_text?: string;
+  back_text?: string;
+  learned?: boolean;
+}
+
+interface DeckCreateData {
+  name: string;
+  description?: string;
+  is_active?: boolean;
+  is_public?: boolean;
+}
+
+interface DeckUpdateData {
+  name?: string;
+  description?: string;
+  is_active?: boolean;
+  is_public?: boolean;
+}
+
+interface ImportOptions {
+  hasHeader?: boolean;
+  previewOnly?: boolean;
+}
+
+interface DueForReviewParams {
+  limit?: number;
+  deck?: number;
+}
 
 // Configuration de base
 const API_BASE = '/api/v1/revision';
 
 // Request deduplication cache
-const pendingRequests = new Map<string, Promise<any>>();
-const requestCache = new Map<string, { data: any; timestamp: number }>();
+const pendingRequests = new Map<string, Promise<unknown>>();
+const requestCache = new Map<string, CacheEntry>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 // Helper function for request deduplication
@@ -16,13 +75,13 @@ async function getOrFetch<T>(key: string, fetcher: () => Promise<T>): Promise<T>
   // Check cache first
   const cached = requestCache.get(key);
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    return cached.data;
+    return cached.data as T;
   }
 
   // Check if request is already pending
   const pending = pendingRequests.get(key);
   if (pending) {
-    return pending;
+    return pending as Promise<T>;
   }
 
   // Create new request
@@ -45,12 +104,12 @@ async function getOrFetch<T>(key: string, fetcher: () => Promise<T>): Promise<T>
 // Fonctions de journalisation
 const enableDebugLogging = process.env.NODE_ENV === 'development';
 
-function logDebug(message: string, data?: any) {
+function logDebug(message: string, data?: unknown) {
   if (!enableDebugLogging) return;
   console.log(`🔄 REVISION: ${message}`, data || '');
 }
 
-function logError(message: string, error?: any) {
+function logError(message: string, error?: unknown) {
   console.error(`❌ REVISION ERROR: ${message}`, error);
 }
 
@@ -65,7 +124,7 @@ export const revisionApi = {
      * Récupère tous les decks de flashcards
      * @param params Paramètres optionnels pour filtrer les decks
      */
-    async getAll(params?: SearchParams): Promise<any[]> {
+    async getAll(params?: SearchParams): Promise<FlashcardDeck[]> {
       const key = `decks_all_${JSON.stringify(params || {})}`;
       return getOrFetch(key, async () => {
         logDebug('Récupération des decks', params);
@@ -77,7 +136,7 @@ export const revisionApi = {
     /**
      * Récupère un deck par son ID
      */
-    async getById(id: number): Promise<any> {
+    async getById(id: number): Promise<FlashcardDeck> {
       const key = `deck_${id}`;
       return getOrFetch(key, async () => {
         logDebug('Récupération du deck par ID', { id });
@@ -89,7 +148,7 @@ export const revisionApi = {
     /**
      * Crée un nouveau deck
      */
-    async create(data: any): Promise<any> {
+    async create(data: DeckCreateData): Promise<FlashcardDeck> {
       const payload = {
         ...data,
         description: data.description?.trim() || `Deck created on ${new Date().toLocaleDateString()}`,
@@ -104,7 +163,7 @@ export const revisionApi = {
     /**
      * Met à jour un deck existant
      */
-    async update(id: number, data: any): Promise<any> {
+    async update(id: number, data: DeckUpdateData): Promise<FlashcardDeck> {
       logDebug('Mise à jour du deck', { id, data });
       const response = await apiClient.patch(`${API_BASE}/decks/${id}/`, data);
       return response.data;
@@ -113,7 +172,7 @@ export const revisionApi = {
     /**
      * Supprime un deck par son ID
      */
-    async delete(id: number): Promise<any> {
+    async delete(id: number): Promise<void> {
       logDebug('Suppression du deck', { id });
       const response = await apiClient.delete(`${API_BASE}/decks/${id}/`);
       return response.data;
@@ -124,7 +183,7 @@ export const revisionApi = {
      * @param id ID du deck
      * @param makePublic Si défini, force la visibilité à cette valeur
      */
-    async togglePublic(id: number, makePublic?: boolean): Promise<any> {
+    async togglePublic(id: number, makePublic?: boolean): Promise<FlashcardDeck> {
       const data = makePublic !== undefined ? { make_public: makePublic } : {};
       logDebug('Basculement de la visibilité publique', { id, makePublic });
       const response = await apiClient.post(`${API_BASE}/decks/${id}/toggle_public/`, data);
@@ -136,7 +195,7 @@ export const revisionApi = {
      * @param id ID du deck à cloner
      * @param options Options de personnalisation
      */
-    async clone(id: number, options?: { name?: string; description?: string }): Promise<any> {
+    async clone(id: number, options?: CloneOptions): Promise<FlashcardDeck> {
       logDebug('Clonage du deck', { id, options });
       
       try {
@@ -145,7 +204,7 @@ export const revisionApi = {
         const response = await apiClient.post(`${API_BASE}/public/${id}/clone/`, options || {});
         return response.data;
       } catch (error: unknown) {
-        const err = error as { response?: { status?: number; data?: any }; message?: string };
+        const err = error as { response?: { status?: number; data?: unknown }; message?: string };
         
         if (err.response && err.response.status === 404) {
           // Si 404, essayer l'endpoint classique
@@ -167,11 +226,7 @@ export const revisionApi = {
     /**
      * Gère l'archivage et la prolongation des decks
      */
-    async archiveManagement(data: {
-      deck_id: number;
-      action: 'archive' | 'unarchive' | 'extend';
-      extension_days?: number;
-    }): Promise<any> {
+    async archiveManagement(data: ArchiveManagementData): Promise<FlashcardDeck> {
       logDebug('Gestion de l\'archivage', data);
       const response = await apiClient.post(`${API_BASE}/decks/archive_management/`, data);
       return response.data;
@@ -180,7 +235,7 @@ export const revisionApi = {
     /**
      * Récupère les decks archivés de l'utilisateur
      */
-    async getArchived(): Promise<any[]> {
+    async getArchived(): Promise<FlashcardDeck[]> {
       logDebug('Récupération des decks archivés');
       const response = await apiClient.get(`${API_BASE}/decks/archived/`);
       return response.data;
@@ -189,7 +244,7 @@ export const revisionApi = {
     /**
      * Récupère les decks qui vont bientôt expirer
      */
-    async getExpiringSoon(): Promise<any> {
+    async getExpiringSoon(): Promise<ExpiringDecksResponse> {
       logDebug('Récupération des decks expirant bientôt');
       const response = await apiClient.get(`${API_BASE}/decks/expiring_soon/`);
       return response.data;
@@ -198,7 +253,7 @@ export const revisionApi = {
     /**
      * Récupère les decks publics
      */
-    async getPublic(params?: SearchParams): Promise<any[]> {
+    async getPublic(params?: SearchParams): Promise<FlashcardDeck[]> {
       logDebug('Récupération des decks publics', params);
       const response = await apiClient.get(`${API_BASE}/public/`, { params });
       return response.data;
@@ -206,7 +261,7 @@ export const revisionApi = {
     /**
      * Récupère un deck public par son ID
      */
-    async getPublicById(id: number): Promise<any> {
+    async getPublicById(id: number): Promise<FlashcardDeck> {
       logDebug('Récupération du deck public par ID', { id });
       const response = await apiClient.get(`${API_BASE}/decks/${id}/`, {
         params: { public_access: true }
@@ -214,7 +269,7 @@ export const revisionApi = {
       return response.data;
     },
     
-    async getPublicCards(id: number): Promise<any[]> {
+    async getPublicCards(id: number): Promise<Flashcard[]> {
       logDebug('Récupération des cartes du deck public', { id });
       const response = await apiClient.get(`${API_BASE}/decks/${id}/cards/`, {
         params: { public_access: true }
@@ -224,7 +279,7 @@ export const revisionApi = {
     /**
      * Récupère les decks publics populaires
      */
-    async getPopular(limit: number = 10): Promise<any[]> {
+    async getPopular(limit: number = 10): Promise<FlashcardDeck[]> {
       logDebug('Récupération des decks populaires', { limit });
       const response = await apiClient.get(`${API_BASE}/public/popular/`, {
         params: { limit }
@@ -235,7 +290,7 @@ export const revisionApi = {
     /**
      * Récupère les decks publics récents
      */
-    async getRecent(limit: number = 10): Promise<any[]> {
+    async getRecent(limit: number = 10): Promise<FlashcardDeck[]> {
       logDebug('Récupération des decks récents', { limit });
       const response = await apiClient.get(`${API_BASE}/public/recent/`, {
         params: { limit }
@@ -246,7 +301,7 @@ export const revisionApi = {
     /**
      * Recherche des decks selon plusieurs critères
      */
-    async search(params: SearchParams): Promise<any[]> {
+    async search(params: SearchParams): Promise<FlashcardDeck[]> {
       logDebug('Recherche de decks', params);
       const response = await apiClient.get(`${API_BASE}/decks/`, { params });
       return response.data;
@@ -255,7 +310,7 @@ export const revisionApi = {
     /**
      * Supprime plusieurs decks en une seule opération
      */
-    async batchDelete(deckIds: number[]): Promise<any> {
+    async batchDelete(deckIds: number[]): Promise<void> {
       logDebug('Suppression par lots de decks', { count: deckIds.length });
       const response = await apiClient.post(`${API_BASE}/decks/batch_delete/`, { deckIds });
       return response.data;
@@ -267,7 +322,7 @@ export const revisionApi = {
     /**
      * Récupère toutes les cartes d'un deck
      */
-    async getAll(deckId: number): Promise<any[]> {
+    async getAll(deckId: number): Promise<Flashcard[]> {
       const key = `cards_${deckId}`;
       return getOrFetch(key, async () => {
         logDebug('Récupération des cartes du deck', { deckId });
@@ -290,7 +345,7 @@ export const revisionApi = {
     /**
      * Récupère une carte par son ID
      */
-    async getById(id: number): Promise<any> {
+    async getById(id: number): Promise<Flashcard> {
       logDebug('Récupération de la carte par ID', { id });
       const response = await apiClient.get(`${API_BASE}/flashcards/${id}/`);
       return response.data;
@@ -299,7 +354,7 @@ export const revisionApi = {
     /**
      * Crée une nouvelle carte
      */
-    async create(data: any): Promise<any> {
+    async create(data: FlashcardCreateData): Promise<Flashcard> {
       logDebug('Création d\'une carte', data);
       const payload = {
         ...data,
@@ -312,7 +367,7 @@ export const revisionApi = {
     /**
      * Met à jour une carte existante
      */
-    async update(id: number, data: any): Promise<any> {
+    async update(id: number, data: FlashcardUpdateData): Promise<Flashcard> {
       logDebug('Mise à jour de la carte', { id, data });
       const response = await apiClient.patch(`${API_BASE}/flashcards/${id}/`, data);
       return response.data;
@@ -321,7 +376,7 @@ export const revisionApi = {
     /**
      * Supprime une carte
      */
-    async delete(id: number): Promise<any> {
+    async delete(id: number): Promise<void> {
       logDebug('Suppression de la carte', { id });
       const response = await apiClient.delete(`${API_BASE}/flashcards/${id}/`);
       return response.data;
@@ -330,7 +385,7 @@ export const revisionApi = {
     /**
      * Bascule l'état d'apprentissage d'une carte
      */
-    async toggleLearned(id: number, success: boolean = true): Promise<any> {
+    async toggleLearned(id: number, success: boolean = true): Promise<Flashcard> {
       logDebug('Basculement de l\'état d\'apprentissage', { id, success });
       const response = await apiClient.patch(`${API_BASE}/flashcards/${id}/toggle_learned/`, {
         success
@@ -341,7 +396,7 @@ export const revisionApi = {
     /**
      * Récupère les cartes à réviser
      */
-    async dueForReview(params?: { limit?: number; deck?: number }): Promise<any[]> {
+    async dueForReview(params?: DueForReviewParams): Promise<Flashcard[]> {
       logDebug('Récupération des cartes à réviser', params);
       const response = await apiClient.get(`${API_BASE}/flashcards/due_for_review/`, {
         params
@@ -352,7 +407,7 @@ export const revisionApi = {
     /**
      * Supprime plusieurs cartes en une seule opération
      */
-    async deleteBatch(cardIds: number[]): Promise<any> {
+    async deleteBatch(cardIds: number[]): Promise<void> {
       logDebug('Suppression par lots de cartes', { count: cardIds.length });
       const response = await apiClient.post(`${API_BASE}/flashcards/batch_delete/`, {
         cardIds
@@ -366,8 +421,8 @@ export const revisionApi = {
     async importFromExcel(
       deckId: number,
       file: File,
-      options: { hasHeader?: boolean; previewOnly?: boolean } = {}
-    ): Promise<any> {
+      options: ImportOptions = {}
+    ): Promise<unknown> {
       logDebug('Importation depuis Excel', { deckId, fileName: file.name, options });
 
       // Vérifier le format du fichier

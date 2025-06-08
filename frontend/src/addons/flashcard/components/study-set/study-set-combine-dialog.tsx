@@ -63,7 +63,7 @@ const StudySetCombineDialog = ({
   });
   const router = useRouter();
   const { mutate, isPending } = api.studySet.combine.useMutation({
-    async onSuccess(data: any) {
+    async onSuccess(data: { id: string; title: string }) {
       router.push(`/study-sets/${data.id}`);
       toast({ title: "Successfully combined study sets" });
       onOpenChange(false);

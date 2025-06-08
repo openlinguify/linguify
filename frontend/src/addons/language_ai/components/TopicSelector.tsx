@@ -148,6 +148,7 @@ export function TopicSelector({ onSelectTopic, preferredLanguage }: TopicSelecto
     
     // Nettoyer le timeout si le composant est démonté
     return () => clearTimeout(apiTimeout);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Filtrer les sujets en fonction des filtres sélectionnés

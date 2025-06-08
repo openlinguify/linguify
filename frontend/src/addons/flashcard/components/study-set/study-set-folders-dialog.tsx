@@ -1,7 +1,13 @@
 "use client";
 
 // TODO: Replace with appropriate Session type
-type Session = any;
+interface Session {
+  user?: {
+    id: string;
+    name?: string;
+    email?: string;
+  };
+}
 
 interface StudySetFoldersDialogProps {
   session: Session;
