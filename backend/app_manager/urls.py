@@ -4,7 +4,8 @@ from .views import (
     AppListView,
     UserAppSettingsView,
     toggle_app,
-    user_enabled_apps
+    user_enabled_apps,
+    debug_apps
 )
 
 app_name = 'app_manager'
@@ -21,4 +22,7 @@ urlpatterns = [
     
     # Toggle app on/off
     path('toggle/', toggle_app, name='toggle-app'),
+    
+    # Debug view
+    path('debug/', debug_apps, name='debug-apps'),
 ]

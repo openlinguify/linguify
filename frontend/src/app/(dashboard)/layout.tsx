@@ -11,6 +11,10 @@ import { useTermsGuard } from "@/core/auth/termsGuard";
 import TermsAcceptance from "@/components/terms/TermsAcceptance";
 import TermsNotification from "@/components/notifications/TermsNotification";
 
+// Pages qui nécessitent la pleine largeur sans scroll externe
+const FULL_WIDTH_PAGES = ['/settings', '/app-store'];
+const FULL_HEIGHT_PAGES = ['/learning'];
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, login } = useAuthContext();
   const pathname = usePathname();
@@ -129,9 +133,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <Header />
         {/* Main Content */}
         <main className="flex-1 dark:text-white bg-transparent overflow-hidden flex flex-col">
-          {pathname.startsWith('/learning') ? (
+          {FULL_HEIGHT_PAGES.some(page => pathname.startsWith(page)) ? (
             // Pour les pages learning, utiliser toute la hauteur
             (<div className="flex-1 flex flex-col overflow-hidden">{children}</div>)
+          ) : FULL_WIDTH_PAGES.some(page => pathname.startsWith(page)) ? (
+            // Pour les pages settings et app-store, utiliser toute la largeur sans scroll externe
+            (<div className="flex-1 flex flex-col overflow-hidden">
+              <div className="pt-6 w-full bg-transparent h-full">{children}</div>
+            </div>)
           ) : (
             // Pour les autres pages, padding normal avec scroll
             (<div className="overflow-y-auto">

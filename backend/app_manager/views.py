@@ -9,11 +9,27 @@ from .serializers import AppSerializer, UserAppSettingsSerializer, AppToggleSeri
 
 class AppListView(generics.ListAPIView):
     """
-    List all available applications
+    List all available applications with deduplication
     """
-    queryset = App.objects.filter(is_enabled=True)
     serializer_class = AppSerializer
     permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        # Get all enabled apps
+        apps = App.objects.filter(is_enabled=True).order_by('display_name', '-id')
+        
+        # Deduplicate by display_name - keep the one with highest ID (most recent)
+        seen_names = set()
+        unique_apps = []
+        
+        for app in apps:
+            if app.display_name not in seen_names:
+                unique_apps.append(app)
+                seen_names.add(app.display_name)
+        
+        # Return as queryset - we'll filter the IDs
+        unique_ids = [app.id for app in unique_apps]
+        return App.objects.filter(id__in=unique_ids).order_by('order', 'display_name')
 
 class UserAppSettingsView(generics.RetrieveUpdateAPIView):
     """
@@ -93,4 +109,35 @@ def user_enabled_apps(request):
     return Response({
         'enabled_apps': serializer.data,
         'enabled_app_codes': user_settings.get_enabled_app_codes()
+    })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def debug_apps(request):
+    """
+    Debug view to see all app data
+    """
+    user_settings, created = UserAppSettings.objects.get_or_create(
+        user=request.user
+    )
+    
+    all_apps = App.objects.all().order_by('code')
+    enabled_apps = user_settings.enabled_apps.all()
+    
+    app_data = []
+    for app in all_apps:
+        app_data.append({
+            'id': app.id,
+            'code': app.code,
+            'display_name': app.display_name,
+            'is_enabled': app.is_enabled,
+            'user_has_enabled': app in enabled_apps
+        })
+    
+    return Response({
+        'total_apps': all_apps.count(),
+        'enabled_by_user': enabled_apps.count(),
+        'apps': app_data,
+        'enabled_app_codes': user_settings.get_enabled_app_codes(),
+        'user_created': created
     })
