@@ -122,6 +122,7 @@ export const LANGUAGE_OPTIONS = [
     language_level: string;
     objectives: string;
     interface_language: string;
+    profile_picture?: string | null;
   }
   
   export const DEFAULT_USER_SETTINGS: UserSettings = {

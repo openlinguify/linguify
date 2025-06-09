@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { App } from '@/core/api/appManagerApi';
 import { useAppManager } from '@/core/context/AppManagerContext';
 import { Search, MoreHorizontal, Package, CheckCircle, XCircle, Clock } from 'lucide-react';
@@ -41,24 +42,30 @@ function AppCard({ app, isInstalled, onToggle, loading }: AppCardProps) {
   
   const handleToggle = async () => {
     setIsProcessing(true);
+    
     try {
-      await onToggle(app.code, !isInstalled);
+      const success = await onToggle(app.code, !isInstalled);
       
-      // Show success notification with appropriate message
-      toast({
-        title: isInstalled ? "Application désinstallée" : "Application installée",
-        description: isInstalled 
-          ? `${app.display_name} a été désinstallée. Vos données sont conservées pendant 30 jours et peuvent être récupérées en réinstallant l'application.`
-          : `${app.display_name} est maintenant disponible et peut être utilisée.`,
-        duration: 5000,
-      });
-    } catch (_error) {
-      // Show error notification
+      if (success) {
+        toast({
+          title: isInstalled ? "Application désinstallée" : "Application installée",
+          description: `${app.display_name} ${isInstalled ? 'a été désinstallée' : 'est maintenant disponible'}.`,
+          duration: 3000,
+        });
+      } else {
+        toast({
+          title: "Erreur",
+          description: `Impossible de ${isInstalled ? 'désinstaller' : 'installer'} ${app.display_name}.`,
+          variant: "destructive",
+          duration: 3000,
+        });
+      }
+    } catch (error) {
       toast({
         title: "Erreur",
-        description: `Impossible de ${isInstalled ? 'désinstaller' : 'installer'} ${app.display_name}. Veuillez réessayer.`,
+        description: `Erreur lors de l'opération. Veuillez réessayer.`,
         variant: "destructive",
-        duration: 4000,
+        duration: 3000,
       });
     } finally {
       setIsProcessing(false);
@@ -66,11 +73,14 @@ function AppCard({ app, isInstalled, onToggle, loading }: AppCardProps) {
   };
 
   return (
-    <Card className="relative group hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700">
+    <Card className="relative group hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700 flex flex-col h-full">
       {/* Status indicator */}
       <div className="absolute top-2 left-2 z-10">
         {isInstalled && (
-          <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+          <Badge 
+            variant="secondary" 
+            className="text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+          >
             <CheckCircle className="w-3 h-3 mr-1" />
             Installée
           </Badge>
@@ -106,53 +116,79 @@ function AppCard({ app, isInstalled, onToggle, loading }: AppCardProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="pt-0">
-        <div className="flex items-center justify-between">
-          <Button
-            className={`px-6 py-2 text-sm font-medium rounded transition-colors ${
-              isInstalled 
-                ? 'bg-red-600 hover:bg-red-700 text-white' 
-                : 'bg-purple-600 hover:bg-purple-700 text-white'
-            }`}
-            onClick={handleToggle}
-            disabled={loading || isProcessing}
-          >
-            {(loading || isProcessing) ? (
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>{isInstalled ? 'Désinstallation...' : 'Installation...'}</span>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-2">
-                {isInstalled ? (
-                  <>
-                    <XCircle className="w-4 h-4" />
-                    <span>Désinstaller</span>
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Installer</span>
-                  </>
-                )}
-              </div>
-            )}
-          </Button>
+      <CardContent className="pt-0 flex-1 flex flex-col justify-end">
+        <div className="space-y-2">
+          {isInstalled ? (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  className="w-full px-4 py-2 text-sm font-medium rounded transition-all duration-300 bg-red-600 hover:bg-red-700 text-white transform hover:scale-105"
+                  disabled={loading || isProcessing}
+                >
+                  {(loading || isProcessing) ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Désinstallation...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center space-x-2">
+                      <XCircle className="w-4 h-4" />
+                      <span>Désinstaller</span>
+                    </div>
+                  )}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Désinstaller {app.display_name} ?</AlertDialogTitle>
+                  <AlertDialogDescription asChild>
+                    <div>
+                      <p className="mb-3">Cette action désinstallera l'application de votre compte.</p>
+                      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md">
+                        <div className="flex items-center text-sm text-blue-700 dark:text-blue-300">
+                          <Clock className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span><strong>Important :</strong> Vos données seront conservées pendant 30 jours après la désinstallation et pourront être récupérées si vous réinstallez l'application.</span>
+                        </div>
+                      </div>
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={handleToggle}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Désinstaller
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          ) : (
+            <Button
+              className="w-full px-4 py-2 text-sm font-medium rounded transition-all duration-300 bg-purple-600 hover:bg-purple-700 text-white transform hover:scale-105"
+              onClick={handleToggle}
+              disabled={loading || isProcessing}
+            >
+              {(loading || isProcessing) ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Installation...</span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center space-x-2">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Installer</span>
+                </div>
+              )}
+            </Button>
+          )}
           
-          <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700">
+          <Button variant="ghost" size="sm" className="w-full text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-300 transform hover:scale-105">
             En savoir plus
           </Button>
         </div>
         
-        {/* Data retention notice for installed apps */}
-        {isInstalled && (
-          <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md">
-            <div className="flex items-center text-xs text-blue-600 dark:text-blue-400">
-              <Clock className="w-3 h-3 mr-1" />
-              <span>Données conservées 30 jours après désinstallation</span>
-            </div>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
@@ -236,7 +272,7 @@ export function AppStoreLayoutImproved({ className }: AppStoreLayoutProps) {
     loading, 
     error, 
     toggleApp,
-    isAppEnabled 
+    isAppEnabled
   } = useAppManager();
 
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -292,7 +328,7 @@ export function AppStoreLayoutImproved({ className }: AppStoreLayoutProps) {
       />
       
       <div className="flex-1 p-6 overflow-auto">
-        <div className="max-w-6xl mx-auto">
+        <div className="w-full">
           {/* Header */}
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -324,7 +360,7 @@ export function AppStoreLayoutImproved({ className }: AppStoreLayoutProps) {
           {!loading && (
             <>
               {filteredApps.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
                   {filteredApps.map((app) => (
                     <AppCard
                       key={app.id}

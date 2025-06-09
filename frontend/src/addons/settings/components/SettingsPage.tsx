@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ResponsiveGrid, ModernCard, IconButton, SectionHeader, InfoField, ModernAvatar } from "@/components/ui/styled-components";
+import { layouts, cards, buttons, icons, avatars, headers, fields } from "@/styles/variants";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -21,6 +23,7 @@ import {
   AlertCircle,
   Loader2,
   Save,
+  Edit,
   Camera,
   BookOpen,
   Palette,
@@ -53,6 +56,57 @@ const safeString = (value: unknown): string => {
   if (typeof value === 'object' && Object.keys(value).length === 0) return '';
   return String(value);
 };
+
+// Helper function to safely format errors for logging
+const formatError = (error: unknown): string => {
+  if (error instanceof Error) return error.message;
+  if (typeof error === 'string') return error;
+  if (error && typeof error === 'object') {
+    try {
+      return JSON.stringify(error);
+    } catch {
+      return '[Complex Error Object]';
+    }
+  }
+  return String(error);
+};
+
+// Composant NavButton pour éviter la répétition
+const NavButton = ({ 
+  icon: Icon, 
+  tabKey, 
+  label, 
+  activeTab, 
+  onClick,
+  variant = "default"
+}: {
+  icon: React.ComponentType<{ className?: string }>
+  tabKey: string
+  label: string
+  activeTab: string
+  onClick: () => void
+  variant?: "default" | "destructive"
+}) => {
+  const isActive = activeTab === tabKey
+  const baseClasses = `${buttons.variant.nav} ${buttons.size.nav}`
+  const variantClasses = variant === "destructive"
+    ? isActive 
+      ? "bg-red-500 text-white shadow-md" 
+      : "hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400"
+    : isActive 
+      ? buttons.variant.navActive 
+      : buttons.variant.ghost
+  
+  return (
+    <button
+      className={`${baseClasses} ${variantClasses}`}
+      onClick={onClick}
+    >
+      <Icon className={`${icons.size.sm} mr-3`} />
+      {label}
+    </button>
+  )
+}
 
 export default function SettingsPage() {
   const { user, isAuthenticated, isLoading, logout, refreshUser } = useAuthContext();
@@ -130,7 +184,7 @@ export default function SettingsPage() {
       });
       
       // Initialize current profile picture
-      setCurrentProfilePicture(user.picture || null);
+      setCurrentProfilePicture(typeof user.picture === 'string' ? user.picture : null);
       
       setSettings(prev => ({
         ...prev,
@@ -164,7 +218,7 @@ export default function SettingsPage() {
         }));
       }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('Error fetching user profile:', formatError(error));
     }
   };
   
@@ -203,7 +257,7 @@ export default function SettingsPage() {
         console.log('Settings API not available, using default values');
       }
     } catch (error) {
-      console.error('Error loading settings:', error);
+      console.error('Error loading settings:', formatError(error));
     }
   };
 
@@ -295,7 +349,7 @@ export default function SettingsPage() {
       }, 3000);
 
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Error updating profile:', formatError(error));
       setAlert({
         show: true,
         type: 'error',
@@ -339,7 +393,7 @@ export default function SettingsPage() {
         // Fetch complete profile to update the UI
         console.log('Before fetchUserProfile - Current user picture:', user?.picture);
         await fetchUserProfile();
-        console.log('After fetchUserProfile - Form data profile_picture:', formData.profile_picture);
+        console.log('After fetchUserProfile - Form data updated');
         
         // Update the local formData and currentProfilePicture with the new picture URL
         if (response.data.picture) {
@@ -369,7 +423,7 @@ export default function SettingsPage() {
         }
       }
     } catch (error) {
-      console.error('Error uploading profile picture:', error);
+      console.error('Error uploading profile picture:', formatError(error));
       toast({
         title: "Error",
         description: "Failed to upload profile picture. Please try again.",
@@ -396,241 +450,192 @@ export default function SettingsPage() {
   const fullName = `${formData.first_name || ''} ${formData.last_name || ''}`.trim() || formData.username;
 
   return (
-    <div className="w-full h-full bg-gray-50 dark:bg-gray-900 overflow-hidden flex flex-col">
+    <div className="w-full h-full bg-gray-50 dark:bg-gray-900 overflow-hidden flex flex-col min-h-0">
       {alert.show && (
-        <Alert className={alert.type === 'error' ? 'mx-auto max-w-7xl w-full px-4 mb-4 border-destructive bg-destructive/10' : 'mx-auto max-w-7xl w-full px-4 mb-4 border-green-500 bg-green-50 dark:bg-green-900/20'}>
+        <Alert className={alert.type === 'error' ? 'w-full px-4 mb-4 border-destructive bg-destructive/10' : 'w-full px-4 mb-4 border-green-500 bg-green-50 dark:bg-green-900/20'}>
           <AlertDescription>
             {alert.message}
           </AlertDescription>
         </Alert>
       )}
-      <div className="max-w-7xl w-full mx-auto px-4 py-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+      <div className={layouts.container.page}>
+        <div className={layouts.grid.sidebar}>
           {/* Left sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-card rounded-lg shadow-sm border overflow-hidden sticky top-6">
-              <div className="p-4 lg:p-6 flex flex-col items-center">
+          <div className="xl:col-span-1">
+            <ModernCard variant="elevated" className="sticky top-8 max-h-[calc(100vh-6rem)] overflow-hidden">
+              <div className={`${layouts.container.card} flex flex-col items-center h-full`}>
                 <div className="relative mb-4">
-                  <div
-                    className="h-24 w-24 rounded-full overflow-hidden border-4 border-background cursor-pointer transition-all hover:opacity-90"
+                  <ModernAvatar
+                    src={`${currentProfilePicture || formData.profile_picture || (typeof user.picture === 'string' ? user.picture : '')}${((currentProfilePicture || formData.profile_picture || (typeof user.picture === 'string' ? user.picture : '')) as string)?.includes?.('?') ? '&' : '?'}t=${profilePictureKey}`}
+                    alt={fullName}
+                    fallback={fullName}
+                    size="lg"
                     onClick={handleProfilePictureClick}
-                  >
-                    {(currentProfilePicture || formData.profile_picture || user.picture) && typeof (currentProfilePicture || formData.profile_picture || user.picture) === 'string' ? (
-                      <img
-                        src={`${currentProfilePicture || formData.profile_picture || user.picture}${(currentProfilePicture || formData.profile_picture || user.picture).includes('?') ? '&' : '?'}t=${profilePictureKey}`}
-                        alt={fullName}
-                        className="h-full w-full object-cover"
-                        key={`${currentProfilePicture || formData.profile_picture || user.picture}-${profilePictureKey}`} // Force re-render when URL or key changes
-                        onError={() => {
-                          console.log('Image failed to load, falling back to default');
-                          // Don't clear currentProfilePicture to avoid infinite loop
-                        }}
-                      />
-                    ) : (
-                      <div className="h-full w-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center">
-                        <span className="text-3xl font-bold text-white">
-                          {fullName.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                    )}
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleFileChange}
-                    />
-                  </div>
-                  {isUploading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
-                      <Loader2 className="h-8 w-8 animate-spin text-white" />
-                    </div>
-                  )}
-                  <div className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-1.5 rounded-full cursor-pointer hover:bg-primary/90 transition-colors">
-                    <Camera className="h-3.5 w-3.5" />
+                    isLoading={isUploading}
+                  />
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  <div className="absolute bottom-1 right-1 bg-primary text-primary-foreground p-2.5 rounded-full cursor-pointer hover:bg-primary/90 transition-all hover:scale-110 shadow-lg">
+                    <Camera className={icons.size.sm} />
                   </div>
                 </div>
-                <h2 className="text-xl font-bold">{fullName}</h2>
-                <p className="text-sm text-muted-foreground mb-4">{formData.email}</p>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">{fullName}</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{formData.email}</p>
                 
-                <div className="w-full space-y-1">
-                  <Button 
-                    variant={activeTab === "profile" ? "default" : "ghost"} 
-                    className="w-full justify-start" 
+                <div className="w-full space-y-1 flex-1 overflow-y-auto pr-2 -mr-2">
+                  <NavButton
+                    icon={User}
+                    tabKey="profile"
+                    label={t('tabs.profile')}
+                    activeTab={activeTab}
                     onClick={() => {
                       setActiveTab("profile");
                       setIsEditing(false);
                     }}
-                  >
-                    <User className="mr-2 h-4 w-4" />
-                    {t('tabs.profile')}
-                  </Button>
-                  <Button 
-                    variant={activeTab === "language" ? "default" : "ghost"} 
-                    className="w-full justify-start" 
+                  />
+                  <NavButton
+                    icon={Languages}
+                    tabKey="language"
+                    label={t('tabs.language')}
+                    activeTab={activeTab}
                     onClick={() => setActiveTab("language")}
-                  >
-                    <Languages className="mr-2 h-4 w-4" />
-                    {t('tabs.language')}
-                  </Button>
-                  <Button 
-                    variant={activeTab === "appearance" ? "default" : "ghost"} 
-                    className="w-full justify-start" 
+                  />
+                  <NavButton
+                    icon={Palette}
+                    tabKey="appearance"
+                    label={t('tabs.appearance')}
+                    activeTab={activeTab}
                     onClick={() => setActiveTab("appearance")}
-                  >
-                    <Palette className="mr-2 h-4 w-4" />
-                    {t('tabs.appearance')}
-                  </Button>
-                  <Button 
-                    variant={activeTab === "notifications" ? "default" : "ghost"} 
-                    className="w-full justify-start" 
+                  />
+                  <NavButton
+                    icon={Bell}
+                    tabKey="notifications"
+                    label={t('tabs.notifications')}
+                    activeTab={activeTab}
                     onClick={() => setActiveTab("notifications")}
-                  >
-                    <Bell className="mr-2 h-4 w-4" />
-                    {t('tabs.notifications')}
-                  </Button>
-                  <Button 
-                    variant={activeTab === "learning" ? "default" : "ghost"} 
-                    className="w-full justify-start" 
+                  />
+                  <NavButton
+                    icon={BookOpen}
+                    tabKey="learning"
+                    label={t('tabs.learning')}
+                    activeTab={activeTab}
                     onClick={() => setActiveTab("learning")}
-                  >
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    {t('tabs.learning')}
-                  </Button>
-                  <Button 
-                    variant={activeTab === "security" ? "default" : "ghost"} 
-                    className="w-full justify-start" 
+                  />
+                  <NavButton
+                    icon={Lock}
+                    tabKey="security"
+                    label={t('tabs.security')}
+                    activeTab={activeTab}
                     onClick={() => setActiveTab("security")}
-                  >
-                    <Lock className="mr-2 h-4 w-4" />
-                    {t('tabs.security')}
-                  </Button>
-                  <Button 
-                    variant={activeTab === "privacy" ? "default" : "ghost"} 
-                    className="w-full justify-start" 
+                  />
+                  <NavButton
+                    icon={Shield}
+                    tabKey="privacy"
+                    label={t('tabs.privacy')}
+                    activeTab={activeTab}
                     onClick={() => setActiveTab("privacy")}
-                  >
-                    <Shield className="mr-2 h-4 w-4" />
-                    {t('tabs.privacy')}
-                  </Button>
-                  <Button 
-                    variant={activeTab === "billing" ? "default" : "ghost"} 
-                    className="w-full justify-start" 
+                  />
+                  <NavButton
+                    icon={CreditCard}
+                    tabKey="billing"
+                    label={t('tabs.billing')}
+                    activeTab={activeTab}
                     onClick={() => setActiveTab("billing")}
-                  >
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    {t('tabs.billing')}
-                  </Button>
-                  <Button 
-                    variant={activeTab === "danger" ? "default" : "ghost"} 
-                    className="w-full justify-start" 
+                  />
+                  <NavButton
+                    icon={AlertCircle}
+                    tabKey="danger"
+                    label={t('tabs.danger')}
+                    activeTab={activeTab}
                     onClick={() => setActiveTab("danger")}
-                  >
-                    <AlertCircle className="mr-2 h-4 w-4" />
-                    {t('tabs.danger')}
-                  </Button>
+                    variant="destructive"
+                  />
                 </div>
               </div>
-            </div>
+            </ModernCard>
           </div>
 
           {/* Main content area */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className={`xl:col-span-4 ${layouts.container.section}`}>
             {/* Profile Section */}
             {activeTab === "profile" && (
-              <Card className="shadow-sm">
-                <CardHeader className="pb-3 bg-muted/30">
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="h-5 w-5" />
-                    {t('tabs.profile')}
-                  </CardTitle>
-                  <CardDescription>
-                    {t('profileInfo.subtitle')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="flex justify-end mb-4">
+              <ModernCard variant="elevated">
+                <SectionHeader
+                  icon={User}
+                  title={t('tabs.profile')}
+                  description={t('profileInfo.subtitle')}
+                />
+                <div className={layouts.container.card}>
+                  <div className="flex justify-end mb-6">
                     {isEditing && (
-                      <Button variant="outline" onClick={() => setIsEditing(false)} className="mr-2">
+                      <IconButton
+                        variant="ghost"
+                        size="default"
+                        className="mr-3"
+                        onClick={() => setIsEditing(false)}
+                      >
                         {t('cancel')}
-                      </Button>
+                      </IconButton>
                     )}
-                    <Button
+                    <IconButton
+                      icon={isSaving ? Loader2 : isEditing ? Save : Edit}
+                      variant="primary"
+                      size="default"
                       onClick={isEditing ? saveProfile : () => setIsEditing(true)}
                       disabled={isSaving}
+                      className={isSaving ? 'pointer-events-none' : ''}
                     >
-                      {isSaving ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          {t('saving')}
-                        </>
-                      ) : (
-                        <>
-                          <Save className="mr-2 h-4 w-4" />
-                          {isEditing ? t('saveChanges') : t('profileInfo.editProfile')}
-                        </>
-                      )}
-                    </Button>
+                      {isSaving ? t('saving') : isEditing ? t('saveChanges') : t('profileInfo.editProfile')}
+                    </IconButton>
                   </div>
                   
                   {!isEditing ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      <div>
-                        <h3 className="text-sm font-medium mb-1 flex items-center gap-2">
-                          <User className="h-4 w-4" />
-                          {t('profileInfo.firstName')}
-                        </h3>
-                        <p className="text-muted-foreground">{formData.first_name || t('profileInfo.notSpecified')}</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium mb-1 flex items-center gap-2">
-                          <User className="h-4 w-4" />
-                          {t('profileInfo.lastName')}
-                        </h3>
-                        <p className="text-muted-foreground">{formData.last_name || t('profileInfo.notSpecified')}</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium mb-1 flex items-center gap-2">
-                          <User className="h-4 w-4" />
-                          {t('profileInfo.username')}
-                        </h3>
-                        <p className="text-muted-foreground">{formData.username}</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium mb-1 flex items-center gap-2">
-                          <Mail className="h-4 w-4" />
-                          {t('profileInfo.email')}
-                        </h3>
-                        <p className="text-muted-foreground">{formData.email}</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium mb-1">
-                          {t('profileInfo.gender')}
-                        </h3>
-                        <p className="text-muted-foreground">
-                          {formData.gender
-                            ? GENDER_OPTIONS.find(opt => opt.value === formData.gender)?.label || t('profileInfo.notSpecified')
-                            : t('profileInfo.notSpecified')
-                          }
-                        </p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium mb-1 flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          {t('profileInfo.birthday')}
-                        </h3>
-                        <p className="text-muted-foreground">
-                          {formData.birthday ? new Date(formData.birthday).toLocaleDateString() : t('profileInfo.notSpecified')}
-                        </p>
-                      </div>
+                    <ResponsiveGrid variant="profile">
+                      <InfoField
+                        icon={User}
+                        label={t('profileInfo.firstName')}
+                        value={formData.first_name || t('profileInfo.notSpecified')}
+                      />
+                      <InfoField
+                        icon={User}
+                        label={t('profileInfo.lastName')}
+                        value={formData.last_name || t('profileInfo.notSpecified')}
+                      />
+                      <InfoField
+                        icon={User}
+                        label={t('profileInfo.username')}
+                        value={formData.username}
+                      />
+                      <InfoField
+                        icon={Mail}
+                        label={t('profileInfo.email')}
+                        value={formData.email}
+                      />
+                      <InfoField
+                        label={t('profileInfo.gender')}
+                        value={formData.gender
+                          ? GENDER_OPTIONS.find(opt => opt.value === formData.gender)?.label || t('profileInfo.notSpecified')
+                          : t('profileInfo.notSpecified')
+                        }
+                      />
+                      <InfoField
+                        icon={Calendar}
+                        label={t('profileInfo.birthday')}
+                        value={formData.birthday ? new Date(formData.birthday).toLocaleDateString() : t('profileInfo.notSpecified')}
+                      />
                       <div className="col-span-full">
-                        <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
-                          <BookOpen className="h-4 w-4" />
-                          {t('profileInfo.bio')}
-                        </h3>
-                        <p className="text-muted-foreground">{formData.bio || 'No bio provided yet.'}</p>
+                        <InfoField
+                          icon={BookOpen}
+                          label={t('profileInfo.bio')}
+                          value={formData.bio || 'No bio provided yet.'}
+                        />
                       </div>
-                    </div>
+                    </ResponsiveGrid>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -712,8 +717,8 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </ModernCard>
             )}
 
             {activeTab === "language" && (

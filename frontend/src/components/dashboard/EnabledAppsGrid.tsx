@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
 export function EnabledAppsGrid() {
-  const { enabledApps, loading, error } = useAppManager();
+  const { availableApps, enabledAppCodes, loading, error } = useAppManager();
   const router = useRouter();
   const prefetchedRoutes = useRef(new Set<string>());
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -122,6 +122,11 @@ export function EnabledAppsGrid() {
     created_at: '',
     updated_at: ''
   };
+
+  // Filter available apps to only show enabled ones
+  const enabledApps = availableApps.filter(app => 
+    enabledAppCodes.includes(app.code) && app.is_enabled
+  );
 
   const allApps = [
     ...enabledApps.sort((a, b) => a.order - b.order),
