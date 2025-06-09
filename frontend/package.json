@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "dev:all": "concurrently \"cd ../backend && python manage.py runserver\" \"npm run dev\"",
+    "dev:all-poetry": "concurrently \"cd ../backend && poetry run python manage.py runserver\" \"npm run dev\"",
     "analyze": "next build",
     "analyze:env": "cross-env ANALYZE=true next build",
     "analyze:windows": "powershell -ExecutionPolicy Bypass -File scripts/analyze-windows.ps1",

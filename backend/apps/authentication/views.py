@@ -181,6 +181,9 @@ def get_me(request):
         user = request.user
         
         if request.method == 'GET':
+            # Log profile picture URLs for debugging
+            logger.debug(f"User {user.id} profile picture data - URL: {user.profile_picture_url}, Django file: {user.profile_picture}")
+            
             # Create a comprehensive response with user information
             data = {
                 'id': str(user.id),
@@ -190,7 +193,7 @@ def get_me(request):
                 'username': user.username,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'picture': request.build_absolute_uri(user.profile_picture.url) if hasattr(user, 'profile_picture') and user.profile_picture else None,
+                'picture': user.profile_picture_url or (user.get_profile_picture_absolute_url(request) if user.profile_picture else None),
                 'language_level': user.language_level,
                 'native_language': user.native_language,
                 'target_language': user.target_language,
@@ -243,7 +246,7 @@ def get_me(request):
                 'username': user.username,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'picture': request.build_absolute_uri(user.profile_picture.url) if hasattr(user, 'profile_picture') and user.profile_picture else None,
+                'picture': user.profile_picture_url or (user.get_profile_picture_absolute_url(request) if user.profile_picture else None),
                 'language_level': user.language_level,
                 'native_language': user.native_language,
                 'target_language': user.target_language,
@@ -480,7 +483,7 @@ def optimize_image(image_file, max_size=(800, 800), quality=85):
 @parser_classes([MultiPartParser, FormParser])
 def update_profile_picture(request):
     """
-    Update user profile picture
+    Update user profile picture using Supabase Storage
     """
     user = request.user
     
@@ -499,57 +502,57 @@ def update_profile_picture(request):
                         status=status.HTTP_400_BAD_REQUEST)
     
     try:
-        # Delete existing profile picture if any
-        if user.profile_picture:
-            try:
-                # Vérifier si le fichier existe avant de tenter de le supprimer
-                if os.path.exists(user.profile_picture.path):
-                    user.profile_picture.delete(save=False)
-                else:
-                    # Le fichier n'existe plus, simplement noter et continuer
-                    logger.warning(f"Profile picture file not found on disk: {user.profile_picture.path}")
-            except Exception as e:
-                logger.warning(f"Failed to delete old profile picture: {str(e)}")
+        from .supabase_storage import supabase_storage
+        logger.info("Supabase storage service imported successfully")
         
-        try:
-            # Process and save optimized image
-            optimized_image = optimize_image(request.FILES['profile_picture'])
-            user.profile_picture = optimized_image
-            # Utiliser update_fields pour éviter les problèmes de validation
-            user.save(update_fields=['profile_picture'])
-        except Exception as e:
-            logger.error(f"Image processing failed: {str(e)}")
+        # Delete existing profile picture from Supabase if any
+        if user.profile_picture_filename:
+            try:
+                supabase_storage.delete_profile_picture(user.profile_picture_filename)
+            except Exception as e:
+                logger.warning(f"Failed to delete old profile picture from Supabase: {str(e)}")
+        
+        # Upload to Supabase Storage
+        upload_result = supabase_storage.upload_profile_picture(
+            user_id=str(user.id),
+            file=uploaded_file,
+            original_filename=uploaded_file.name
+        )
+        
+        if not upload_result.get('success'):
             return Response(
-                {'error': f'Failed to process image: {str(e)}'},
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY
+                {'error': upload_result.get('error', 'Failed to upload image to Supabase')},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         
-        # Get full URL for the profile picture
-        if user.profile_picture:
-            picture_url = request.build_absolute_uri(user.profile_picture.url)
-            debug_info = {
-                'file_name': user.profile_picture.name,
-                'file_path': user.profile_picture.path,
-                'file_url': user.profile_picture.url,
-                'full_url': picture_url,
-                'exists': os.path.exists(user.profile_picture.path)
-            }
-            logger.debug(f"Profile picture debug info: {debug_info}")
-        else:
-            picture_url = None
-            debug_info = {'error': 'Profile picture not saved'}
+        # Update user with Supabase URL and filename
+        user.profile_picture_url = upload_result['public_url']
+        user.profile_picture_filename = upload_result['filename']
         
-        # Create response with cache control
+        # Clear the old Django storage profile picture if it exists
+        if user.profile_picture:
+            logger.info(f"Clearing old Django profile picture for user {user.id}")
+            user.profile_picture = None
+            
+        user.save(update_fields=['profile_picture_url', 'profile_picture_filename', 'profile_picture'])
+        
+        # Refresh user from database to ensure we have the latest data
+        user.refresh_from_db()
+        
+        # Log the updated values
+        logger.info(f"User {user.id} profile picture updated - URL: {user.profile_picture_url}, Filename: {user.profile_picture_filename}")
+        
+        # Create response
         response = Response({
             'message': 'Profile picture updated successfully',
-            'picture': picture_url,
-            'debug_info': debug_info if settings.DEBUG else None
+            'picture': upload_result['public_url'],
+            'urls': upload_result.get('urls', {}),
+            'filename': upload_result['filename'],
+            'profile_picture_url': user.profile_picture_url  # Add this for debugging
         })
-        logger.info(
-            f"Received file: {request.FILES['profile_picture'].name}, "
-            f"size: {request.FILES['profile_picture'].size}, "
-            f"content type: {request.FILES['profile_picture'].content_type}")
-    
+        
+        logger.info(f"Profile picture uploaded to Supabase for user {user.id}: {upload_result['filename']}")
+        
         # Add cache control header for better performance
         response['Cache-Control'] = 'public, max-age=86400'  # Cache for 24 hours
         return response

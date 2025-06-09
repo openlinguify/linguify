@@ -54,15 +54,21 @@ export function UserMenu({ user, className = "" }: UserMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className={`flex items-center gap-2 ${className}`}>
-          {user?.picture ? (
+          {user?.picture && typeof user.picture === 'string' ? (
             <img
               src={user.picture}
               alt={t('dashboard.header.profile')}
               className="h-6 w-6 rounded-full object-cover"
+              onError={(e) => {
+                console.error('Failed to load profile picture:', user.picture);
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+              }}
             />
           ) : (
             <User className="h-4 w-4" />
           )}
+          <User className="h-4 w-4 hidden" />
           <span className="max-w-[100px] truncate">{user?.name || t('dashboard.header.profile')}</span>
           <ChevronDown className="h-4 w-4" />
         </Button>
@@ -70,13 +76,16 @@ export function UserMenu({ user, className = "" }: UserMenuProps) {
       <DropdownMenuContent align="end" className="w-48 bg-background">
         <DropdownMenuLabel>
           <div className="flex items-center gap-2">
-            {user?.picture && (
+            {user?.picture && typeof user.picture === 'string' ? (
               <img
                 src={user.picture}
                 alt={t('dashboard.header.profile')}
                 className="h-8 w-8 rounded-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
-            )}
+            ) : null}
             <div>
               <p className="font-medium text-sm">{user?.name}</p>
               <p className="text-xs text-muted-foreground">{user?.email}</p>
