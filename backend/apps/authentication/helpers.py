@@ -26,6 +26,19 @@ def get_profile_picture_urls(user, use_cache=True):
     if not user:
         return get_default_profile_picture()
 
+    # Priorité à Supabase Storage
+    if hasattr(user, 'profile_picture_url') and user.profile_picture_url:
+        # Si l'utilisateur a une URL Supabase, l'utiliser directement
+        return {
+            'default': user.profile_picture_url,
+            'small': user.profile_picture_url,
+            'medium': user.profile_picture_url,
+            'large': user.profile_picture_url,
+            'optimized': user.profile_picture_url,
+            'original': user.profile_picture_url,
+            'supabase': True  # Marquer comme provenant de Supabase
+        }
+
     if not user.profile_picture:
         return get_default_profile_picture()
 

@@ -36,6 +36,11 @@ if not DEBUG:
 BACKEND_URL = env.str('BACKEND_URL', default='http://localhost:8000')
 FRONTEND_URL = env.str('FRONTEND_URL', default='http://localhost:3000')
 
+# Supabase settings
+SUPABASE_URL = env.str('SUPABASE_URL', default='')
+SUPABASE_ANON_KEY = env.str('SUPABASE_ANON_KEY', default='')
+SUPABASE_SERVICE_ROLE_KEY = env.str('SUPABASE_SERVICE_ROLE_KEY', default='')
+
 # normally Allowed hosts should be set to the domain name of the website
 # but for development purposes we can set it to all
 # normally, ALLOWED_HOSTS = ['yourdomain.com'] or empty in development mode

@@ -23,21 +23,39 @@ class UserSerializer(serializers.ModelSerializer):
     is_active = serializers.BooleanField(read_only=True)
     is_superuser = serializers.BooleanField(read_only=True)
     is_staff = serializers.BooleanField(read_only=True)
+    name = serializers.SerializerMethodField()
+    picture = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         # Expose only necessary fields for viewing
         fields = [
             'public_id', 'username', 'first_name', 'last_name', 'email', 'birthday', 'gender',
-            'profile_picture', 'bio', 'native_language', 'target_language',
+            'profile_picture', 'picture', 'bio', 'native_language', 'target_language',
             'language_level', 'objectives', 'is_active', 'is_coach', 'is_subscribed',
-            'is_superuser', 'is_staff', 'created_at', 'updated_at'
+            'is_superuser', 'is_staff', 'created_at', 'updated_at', 'name'
         ]
         # Mark sensitive fields as read-only
         read_only_fields = [
             'public_id', 'is_active', 'is_superuser', 'is_staff',
-            'created_at', 'updated_at'
+            'created_at', 'updated_at', 'name'
         ]
+
+    def get_name(self, obj):
+        """Generate full name from first_name and last_name"""
+        return f"{obj.first_name} {obj.last_name}".strip() or obj.username or obj.email
+    
+    def get_picture(self, obj):
+        """Get profile picture URL, prioritizing Supabase Storage"""
+        # Priority: Supabase URL first, then local file
+        if obj.profile_picture_url:
+            return obj.profile_picture_url
+        elif obj.profile_picture:
+            try:
+                return obj.profile_picture.url
+            except Exception:
+                return None
+        return None
 
     def update(self, instance, validated_data):
         "To make an update to the user profile"

@@ -115,7 +115,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="h-screen flex flex-col relative overflow-hidden">
       {/* Background with overlay for light mode - Minimal Linguify branded background */}
-      <div className="absolute inset-0 bg-[url('/static/background_light/new/linguify-light-minimal.svg')] bg-cover bg-no-repeat bg-fixed dark:hidden"></div>
+      <div className="absolute inset-0 bg-[url('/static/background_light/light.jpg')] bg-cover bg-no-repeat bg-fixed dark:hidden"></div>
       {/* Background with overlay for dark mode - Minimal Linguify branded background */}
       <div className="absolute inset-0 bg-[url('/static/background_dark/new/linguify-dark-minimal.svg')] bg-cover bg-no-repeat bg-fixed hidden dark:block"></div>
       {/* Content */}

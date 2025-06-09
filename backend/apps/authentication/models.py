@@ -1,19 +1,21 @@
 # backend/authentication/models.py
-from django.core.validators import MinValueValidator
-from typing import Any, Optional
-from django.http import Http404
-from django.db.models import QuerySet, Q
+import os
+import datetime
 from uuid import uuid4
+from typing import Any, Optional
+from decimal import Decimal
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from decimal import Decimal
-from .storage import ProfileStorage
+from django.core.validators import MinValueValidator
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import QuerySet, Q
+from django.http import Http404
 from django.utils import timezone
-import datetime
-from PIL import Image
-import os
 from django.conf import settings
+from PIL import Image
+
+from .storage import ProfileStorage
 
 LANGUAGE_CHOICES = [
     ('EN', 'English'),
@@ -253,6 +255,18 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True,
         validators=[validate_profile_picture]
     )
+    # Supabase storage fields
+    profile_picture_url = models.URLField(
+        null=True,
+        blank=True,
+        help_text="URL de la photo de profil stockée dans Supabase"
+    )
+    profile_picture_filename = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="Nom du fichier dans Supabase Storage"
+    )
     bio = models.TextField(max_length=500, null=True, blank=True)
     native_language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default=LANGUAGE_CHOICES[0][0],
                                        help_text="Your native language")
@@ -326,6 +340,41 @@ class User(AbstractBaseUser, PermissionsMixin):
                 setattr(self, k, v)
         
         self.save()
+
+    @property
+    def get_profile_picture_url(self):
+        """
+        Retourne l'URL de la photo de profil en priorisant Supabase sur le stockage local
+        """
+        # Prioriser Supabase Storage
+        if self.profile_picture_url:
+            return self.profile_picture_url
+        
+        # Fallback vers le stockage local Django
+        if self.profile_picture:
+            try:
+                return self.profile_picture.url
+            except Exception:
+                return None
+        
+        return None
+    
+    def get_profile_picture_absolute_url(self, request):
+        """
+        Retourne l'URL absolue de la photo de profil pour les API
+        """
+        # Prioriser Supabase Storage (déjà absolu)
+        if self.profile_picture_url:
+            return self.profile_picture_url
+        
+        # Fallback vers le stockage local Django avec URL absolue
+        if self.profile_picture:
+            try:
+                return request.build_absolute_uri(self.profile_picture.url)
+            except Exception:
+                return None
+        
+        return None
 
     def deactivate_user(self):
         self.is_active = False

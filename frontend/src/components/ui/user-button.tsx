@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/services/AuthProvider";
+import { useAuth } from "@/core/auth/SupabaseAuthProvider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,6 +32,7 @@ export function UserButton() {
   }
 
   const userName = user?.name || "User";
+  const profilePicture = (user as any)?.profile_picture || (user as any)?.picture;
 
   return (
     <DropdownMenu>
@@ -42,7 +43,14 @@ export function UserButton() {
           aria-label={`User menu for ${userName}`}
         >
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.picture || ""} alt={userName} />
+            <AvatarImage 
+              src={
+                profilePicture 
+                  ? `${profilePicture}${profilePicture.includes('?') ? '&' : '?'}t=${Date.now()}`
+                  : ""
+              } 
+              alt={userName} 
+            />
             <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
           </Avatar>
         </Button>
