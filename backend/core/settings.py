@@ -44,7 +44,9 @@ SUPABASE_SERVICE_ROLE_KEY = env.str('SUPABASE_SERVICE_ROLE_KEY', default='')
 # normally Allowed hosts should be set to the domain name of the website
 # but for development purposes we can set it to all
 # normally, ALLOWED_HOSTS = ['yourdomain.com'] or empty in development mode
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'yourdomain.com']    
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+if not DEBUG and not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['linguify.onrender.com', 'openlinguify.com', 'www.openlinguify.com']    
 
 # Application definition
 
@@ -114,20 +116,22 @@ REST_FRAMEWORK = {
     ),
 }
 
-CORS_ALLOWED_ORIGINS = [
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
     "http://localhost:3000",
-    "https://linguify-api",
-]
+    "https://openlinguify.com",
+    "https://www.openlinguify.com"
+])
 
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = [
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://linguify-api",
-]
+    "https://openlinguify.com",
+    "https://www.openlinguify.com"
+])
 
 # En développement
 if DEBUG:
@@ -216,6 +220,7 @@ AUTH0_USERINFO_CACHE_TIMEOUT = 3600  # 1 heure en secondes
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -291,35 +296,45 @@ if os.environ.get('TEST_MODE') == 'True':
         }
     }
 else:
-    # Use Supabase PostgreSQL for production/development
-    use_supabase_db = env.bool('USE_SUPABASE_DB', default=True)
+    # Check for Render Database URL first (automatically provided)
+    database_url = env('DATABASE_URL', default=None)
     
-    if use_supabase_db:
+    if database_url:
+        # Use Render PostgreSQL (automatically configured)
+        import dj_database_url
         DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': env('SUPABASE_DB_NAME', default='postgres'),
-                'USER': env('SUPABASE_DB_USER'),
-                'PASSWORD': env('SUPABASE_DB_PASSWORD'),
-                'HOST': env('SUPABASE_DB_HOST'),
-                'PORT': env('SUPABASE_DB_PORT', default='6543'),
-                'OPTIONS': {
-                    'sslmode': 'require',
-                },
-            }
+            'default': dj_database_url.parse(database_url)
         }
     else:
-        # Use local PostgreSQL for development
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': env('DB_NAME'),
-                'USER': env('DB_USER'),
-                'PASSWORD': env('DB_PASSWORD'),
-                'HOST': env('DB_HOST', default='localhost'),
-                'PORT': env('DB_PORT', default='5432'),
+        # Use Supabase PostgreSQL for development
+        use_supabase_db = env.bool('USE_SUPABASE_DB', default=True)
+        
+        if use_supabase_db:
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.postgresql',
+                    'NAME': env('SUPABASE_DB_NAME', default='postgres'),
+                    'USER': env('SUPABASE_DB_USER'),
+                    'PASSWORD': env('SUPABASE_DB_PASSWORD'),
+                    'HOST': env('SUPABASE_DB_HOST'),
+                    'PORT': env('SUPABASE_DB_PORT', default='6543'),
+                    'OPTIONS': {
+                        'sslmode': 'require',
+                    },
+                }
             }
-        }
+        else:
+            # Use local PostgreSQL for development
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.postgresql',
+                    'NAME': env('DB_NAME'),
+                    'USER': env('DB_USER'),
+                    'PASSWORD': env('DB_PASSWORD'),
+                    'HOST': env('DB_HOST', default='localhost'),
+                    'PORT': env('DB_PORT', default='5432'),
+                }
+            }
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -355,6 +370,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = []
+
+# WhiteNoise settings for static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Profile pictures settings - Style réseau social
 PROFILE_PICTURES_ROOT = os.path.join(MEDIA_ROOT, 'profiles')
