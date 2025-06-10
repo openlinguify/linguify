@@ -51,7 +51,6 @@ frontend/prisma/
 # === PRIVATE FILES (not for open source) ===
 # === JOBS SYSTEM (private business module) ===
 
-frontend/src/core/api/jobsApi.ts
 private/
 screenshots/
 **/private/
