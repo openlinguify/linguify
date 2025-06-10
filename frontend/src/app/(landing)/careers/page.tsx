@@ -3,7 +3,34 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Container } from '../_components/Container';
-import { jobsApi, JobPosition, Department, formatEmploymentType, formatExperienceLevel, formatDate } from '@/core/api/jobsApi';
+// TODO: Re-enable jobs when jobsApi is available
+// import { jobsApi, JobPosition, Department, formatEmploymentType, formatExperienceLevel, formatDate } from '@/core/api/jobsApi';
+
+// Temporary types and functions for build
+interface Department {
+  id: number;
+  name: string;
+  description: string;
+  position_count: number;
+}
+
+interface JobPosition {
+  id: number;
+  title: string;
+  department_name?: string;
+  department?: Department;
+  location: string;
+  employment_type: string;
+  experience_level: string;
+  description?: string;
+  requirements?: string;
+  is_open?: boolean;
+  closing_date?: string;
+}
+
+const formatEmploymentType = (type: string) => type;
+const formatExperienceLevel = (level: string) => level;
+const formatDate = (date: string) => new Date(date).toLocaleDateString();
 import { ApplicationModal } from './components/ApplicationModal';
 
 // Import translations (we'll create these)
@@ -91,10 +118,15 @@ const CareersPage: React.FC = () => {
     const loadJobData = async () => {
       try {
         setLoading(true);
-        const [positionsData, departmentsData] = await Promise.all([
-          jobsApi.getJobPositions(),
-          jobsApi.getDepartments()
-        ]);
+        // TODO: Re-enable when jobsApi is available
+        // const [positionsData, departmentsData] = await Promise.all([
+        //   jobsApi.getJobPositions(),
+        //   jobsApi.getDepartments()
+        // ]);
+        
+        // Mock data for build
+        const positionsData: JobPosition[] = [];
+        const departmentsData: Department[] = [];
         setJobPositions(positionsData);
         setDepartments(departmentsData);
       } catch (err) {
