@@ -37,32 +37,6 @@ export function NoteList({
   const { isMobile } = useMediaQueryHook();
 
   // Si aucune note - version optimisée avec animations plus légères
-  if (notes.length === 0) {
-    return (
-      <div 
-        className="flex flex-col items-center justify-center h-full p-6 space-y-4 animate-fade-in"
-      >
-        <div 
-          className="rounded-full bg-gray-100 dark:bg-gray-800 p-4"
-        >
-          <FileText className="h-8 w-8 text-gray-400 dark:text-gray-500" />
-        </div>
-        <p className="text-center text-gray-500 dark:text-gray-400">
-          Vous n'avez pas encore de notes.
-        </p>
-        <div className="hover:scale-105 transition-transform">
-          <Button 
-            onClick={onCreateNote}
-            className="bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 text-white"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Créer une note
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   const parentRef = useRef<HTMLDivElement>(null);
 
   // Créer le virtualiseur qui gère le rendu efficace d'une liste de grande taille
@@ -147,6 +121,33 @@ export function NoteList({
       </div>
     );
   }, [isMobile, onSelectNote]);
+
+  // Si aucune note - version optimisée avec animations plus légères
+  if (notes.length === 0) {
+    return (
+      <div 
+        className="flex flex-col items-center justify-center h-full p-6 space-y-4 animate-fade-in"
+      >
+        <div 
+          className="rounded-full bg-gray-100 dark:bg-gray-800 p-4"
+        >
+          <FileText className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+        </div>
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          Vous n'avez pas encore de notes.
+        </p>
+        <div className="hover:scale-105 transition-transform">
+          <Button 
+            onClick={onCreateNote}
+            className="bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400 text-white"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Créer une note
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // Ajouter un détecteur de scroll pour le chargement infini
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {

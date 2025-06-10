@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 // import { Badge } from '@/components/ui/badge'; // Removed unused import
 import { Progress } from '@/components/ui/progress';
 import { 
-  Volume2, 
+  Volume2,
+  ArrowLeft, 
   CheckCircle, 
   XCircle, 
   Lightbulb,
