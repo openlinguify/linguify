@@ -41,30 +41,9 @@ const FillBlankQuestion: React.FC<FillBlankQuestionProps> = ({
   const [showValidation, setShowValidation] = useState(false);
   const [inputMode, setInputMode] = useState<'input' | 'select'>('input'); // Default to input mode
 
-  // Debug: Log the data being received
-  useEffect(() => {
-    console.log('🔍 FillBlankQuestion received data:', data);
-    console.log('🔍 FillBlankQuestion sentence:', data.sentence);
-    console.log('🔍 FillBlankQuestion options:', data.options);
-  }, [data]);
-
-  // Show fallback if no data
-  if (!data.sentence || !data.options || data.options.length === 0) {
-    return (
-      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-        <p className="text-yellow-700">
-          Aucune donnée de remplissage de blancs trouvée (ID: {data.id})
-        </p>
-        <div className="mt-2 text-sm">
-          <p>Sentence: {data.sentence || 'Non fournie'}</p>
-          <p>Options: {data.options?.length || 0} options disponibles</p>
-        </div>
-      </div>
-    );
-  }
-
   // Parse the sentence to extract text segments and identify blank positions
   const parsedSentence = React.useMemo(() => {
+    if (!data.sentence) return { segments: [], blankCount: 0 };
     // Support multiple blank formats: __blank__, ___, {blank}, [blank]
     let sentence = data.sentence;
     const blankPatterns = ['__blank__', '___', '{blank}', '[blank]', '{}', '[]'];
@@ -96,12 +75,34 @@ const FillBlankQuestion: React.FC<FillBlankQuestionProps> = ({
     }, {} as Record<string, string>);
   }, [data.options]);
 
+  // Debug: Log the data being received
+  useEffect(() => {
+    console.log('🔍 FillBlankQuestion received data:', data);
+    console.log('🔍 FillBlankQuestion sentence:', data.sentence);
+    console.log('🔍 FillBlankQuestion options:', data.options);
+  }, [data]);
+
   // Restore saved answers if available
   useEffect(() => {
     if (savedAnswer && Object.keys(savedAnswer).length > 0) {
       setAnswers(savedAnswer);
     }
   }, [savedAnswer]);
+
+  // Show fallback if no data
+  if (!data.sentence || !data.options || data.options.length === 0) {
+    return (
+      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+        <p className="text-yellow-700">
+          Aucune donnée de remplissage de blancs trouvée (ID: {data.id})
+        </p>
+        <div className="mt-2 text-sm">
+          <p>Sentence: {data.sentence || 'Non fournie'}</p>
+          <p>Options: {data.options?.length || 0} options disponibles</p>
+        </div>
+      </div>
+    );
+  }
 
   // Handle answer selection for a specific blank (dropdown mode)
   const handleSelectAnswer = (blankIndex: number, optionId: string) => {

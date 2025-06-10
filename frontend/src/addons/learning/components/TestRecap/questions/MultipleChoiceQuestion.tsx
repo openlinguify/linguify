@@ -41,6 +41,24 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     console.log('🔍 MultipleChoiceQuestion correct_answer:', data.correct_answer);
   }, [data]);
 
+  // Initialize with shuffled choices if needed
+  useEffect(() => {
+    if (data.choices && data.choices.length > 0) {
+      if (data.shuffle) {
+        setShuffledChoices([...data.choices].sort(() => Math.random() - 0.5));
+      } else {
+        setShuffledChoices(data.choices);
+      }
+    }
+  }, [data.choices, data.shuffle]);
+
+  // Restore saved answer if available
+  useEffect(() => {
+    if (savedAnswer) {
+      setSelectedAnswer(savedAnswer);
+    }
+  }, [savedAnswer]);
+
   // Show fallback if no data
   if (!data.choices || data.choices.length === 0) {
     return (
@@ -55,22 +73,6 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
       </div>
     );
   }
-
-  // Initialize with shuffled choices if needed
-  useEffect(() => {
-    if (data.shuffle) {
-      setShuffledChoices([...data.choices].sort(() => Math.random() - 0.5));
-    } else {
-      setShuffledChoices(data.choices);
-    }
-  }, [data.choices, data.shuffle]);
-
-  // Restore saved answer if available
-  useEffect(() => {
-    if (savedAnswer) {
-      setSelectedAnswer(savedAnswer);
-    }
-  }, [savedAnswer]);
 
   const handleAnswerChange = (value: string) => {
     setSelectedAnswer(value);

@@ -53,22 +53,6 @@ const SpeakingQuestion: React.FC<SpeakingQuestionProps> = ({
     console.log('🔍 SpeakingQuestion vocabulary_items:', data.vocabulary_items);
   }, [data]);
 
-  // Show fallback if no data
-  if (!data.target_phrase && !data.prompt) {
-    return (
-      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-        <p className="text-yellow-700">
-          Aucune question de prononciation trouvée (ID: {data.id})
-        </p>
-        <div className="mt-2 text-sm">
-          <p>Question: {data.question || 'Non fournie'}</p>
-          <p>Target phrase: {data.target_phrase || 'Non fournie'}</p>
-          <p>Prompt: {data.prompt || 'Non fourni'}</p>
-        </div>
-      </div>
-    );
-  }
-
   // Initialize speech recognition
   useEffect(() => {
     if (typeof window !== 'undefined' && 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
@@ -125,6 +109,22 @@ const SpeakingQuestion: React.FC<SpeakingQuestionProps> = ({
       }
     };
   }, [savedAnswer]);
+
+  // Show fallback if no data
+  if (!data.target_phrase && !data.prompt) {
+    return (
+      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+        <p className="text-yellow-700">
+          Aucune question de prononciation trouvée (ID: {data.id})
+        </p>
+        <div className="mt-2 text-sm">
+          <p>Question: {data.question || 'Non fournie'}</p>
+          <p>Target phrase: {data.target_phrase || 'Non fournie'}</p>
+          <p>Prompt: {data.prompt || 'Non fourni'}</p>
+        </div>
+      </div>
+    );
+  }
 
   const startRecording = async () => {
     try {

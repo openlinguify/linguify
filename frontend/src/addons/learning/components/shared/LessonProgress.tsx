@@ -41,7 +41,13 @@ const LessonProgress: React.FC<LessonProgressProps> = ({
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   
-  // Use the exercise progress hook if autoDetectExercises is true
+  // Always call the hook, but pass a flag to control its behavior
+  const exerciseProgressData = useExerciseProgress({ 
+    lessonId: autoDetectExercises ? lessonId : null, 
+    unitId: autoDetectExercises ? unitId : null 
+  });
+  
+  // Use the exercise progress hook data if autoDetectExercises is true
   const {
     exercises: detectedExercises,
     completedCount: detectedCompletedCount,
@@ -50,7 +56,7 @@ const LessonProgress: React.FC<LessonProgressProps> = ({
     isAllCompleted: detectedIsAllCompleted,
     loading,
     markLessonCompleted
-  } = autoDetectExercises ? useExerciseProgress({ lessonId, unitId }) : {
+  } = autoDetectExercises ? exerciseProgressData : {
     exercises: [],
     completedCount: 0,
     totalCount: 0, 
