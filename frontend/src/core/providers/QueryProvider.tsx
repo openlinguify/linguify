@@ -16,7 +16,7 @@ export default function QueryProvider({
         defaultOptions: {
           queries: {
             staleTime: 5 * 60 * 1000, // 5 minutes
-            cacheTime: 10 * 60 * 1000, // 10 minutes
+            gcTime: 10 * 60 * 1000, // 10 minutes (renamed from cacheTime in React Query v5)
             refetchOnWindowFocus: false,
             refetchOnReconnect: 'always',
             retry: (failureCount, error: any) => {

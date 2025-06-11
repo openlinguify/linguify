@@ -142,10 +142,7 @@ export default function NotificationDropdown({ className = "" }: NotificationDro
   );
   const systemNotifications = notifications.filter(n =>
     n.type === NotificationType.SYSTEM ||
-    n.type === NotificationType.ANNOUNCEMENT ||
-    n.type === 'info' ||
-    n.type === 'error' ||
-    n.type === 'warning'
+    n.type === NotificationType.ANNOUNCEMENT
   );
 
   // Get notifications based on active tab
@@ -230,7 +227,7 @@ export default function NotificationDropdown({ className = "" }: NotificationDro
           
           <TooltipContent side="bottom">
             {unreadCount > 0 
-              ? t('notifications.unread', { count: unreadCount }) 
+              ? t('notifications.unread', { count: unreadCount.toString() }) 
               : t('notifications.no_unread')}
           </TooltipContent>
         </Tooltip>
@@ -367,7 +364,6 @@ export default function NotificationDropdown({ className = "" }: NotificationDro
                       onClick={() => handleNotificationClick(notification)}
                       onMarkRead={() => markAsRead(notification.id)}
                       onDismiss={() => dismissNotification(notification.id)}
-                      icon={getNotificationTypeIcon(notification.type)}
                     />
                   ))}
                 </div>
@@ -380,7 +376,7 @@ export default function NotificationDropdown({ className = "" }: NotificationDro
         <div className="p-3 border-t flex justify-between items-center">
           <div className="text-xs text-muted-foreground">
             {notifications.length > 0 ? (
-              <span>{t('notifications.count', { count: notifications.length })}</span>
+              <span>{t('notifications.count', { count: notifications.length.toString() })}</span>
             ) : (
               <span>{t('notifications.no_notifications')}</span>
             )}

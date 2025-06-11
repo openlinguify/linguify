@@ -100,7 +100,7 @@ export function parseJwt(token: string): { exp: number, iat: number, sub: string
     
     return parsed;
   } catch (e) {
-    logError(`Failed to parse JWT token`, e);
+    logError(`Failed to parse JWT token`, e as Record<string, unknown>);
     return null;
   }
 }
@@ -138,7 +138,7 @@ export function isTokenExpired(token: string): boolean {
     
     return isExpired;
   } catch (e) {
-    logError(`Error checking token expiration`, e);
+    logError(`Error checking token expiration`, e as Record<string, unknown>);
     return true;
   }
 }
@@ -169,7 +169,7 @@ export function isTokenNotYetValid(token: string): boolean {
     
     return isNotYetValid;
   } catch (e) {
-    logError(`Error checking token validity timing`, e);
+    logError(`Error checking token validity timing`, e as Record<string, unknown>);
     return false;
   }
 }
@@ -230,7 +230,7 @@ export function storeAuthData(token: string, user?: UserProfile): void {
       });
     }
   } catch (error) {
-    logError(`Error storing auth data`, error);
+    logError(`Error storing auth data`, error as Record<string, unknown>);
   }
 }
 
@@ -256,12 +256,12 @@ export function clearAuthData(): void {
     // Log other potential auth cookies for debugging
     const cookies = document.cookie.split(';');
     if (cookies.length > 0 && cookies[0] !== '') {
-      logDebug(`Remaining cookies after clearAuthData:`, cookies);
+      logDebug(`Remaining cookies after clearAuthData:`, { cookies });
     }
     
     logInfo(`Auth data cleared successfully`);
   } catch (error) {
-    logError(`Error clearing auth data`, error);
+    logError(`Error clearing auth data`, error as Record<string, unknown>);
   }
 }
 
@@ -307,7 +307,7 @@ export function getAuthToken(): string | null {
           logWarning(`Invalid token format in localStorage`);
         }
       } catch (e) {
-        logError(`Error parsing stored auth data from localStorage`, e);
+        logError(`Error parsing stored auth data from localStorage`, e as Record<string, unknown>);
       }
     } else {
       logDebug(`No auth data found in localStorage`);
@@ -362,7 +362,7 @@ export function getAuthToken(): string | null {
     logInfo(`No valid auth token found in any storage`);
     return null;
   } catch (error) {
-    logError(`Error retrieving auth token`, error);
+    logError(`Error retrieving auth token`, error as Record<string, unknown>);
     return null;
   }
 }
@@ -417,7 +417,7 @@ export async function fetchUserProfile(token: string): Promise<UserProfile> {
     });
     return profileData;
   } catch (error) {
-    logError(`Error fetching user profile`, error);
+    logError(`Error fetching user profile`, error as Record<string, unknown>);
     throw error;
   }
 }
@@ -463,7 +463,7 @@ export function getStoredUserData(): UserProfile | null {
     }
     return null;
   } catch (error) {
-    logError(`Error retrieving user data from localStorage`, error);
+    logError(`Error retrieving user data from localStorage`, error as Record<string, unknown>);
     return null;
   }
 }
@@ -508,7 +508,7 @@ export async function authenticatedFetch(url: string, options: RequestInit = {})
     
     return response;
   } catch (error) {
-    logError(`Fetch error for ${url}`, error);
+    logError(`Fetch error for ${url}`, error as Record<string, unknown>);
     throw error;
   }
 }

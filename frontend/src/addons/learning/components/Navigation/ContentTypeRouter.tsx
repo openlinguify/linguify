@@ -58,6 +58,9 @@ export default function ContentTypeRouter({
     setUserLanguage(actualUserLanguage);
   }, []);
 
+  // Normalize the content type and decode URL-encoded characters
+  const normalizedType = decodeURIComponent(contentType).toLowerCase().trim();
+
   // Default completion handler
   const handleContentComplete = async () => {
     console.log('Content completed:', { contentType, contentId, unitId });
@@ -173,12 +176,12 @@ export default function ContentTypeRouter({
                   
                   // Check if the TestRecap exists
                   const testRecapAPI = (await import('@/addons/learning/api/testRecapAPI')).default;
-                  const exists = await testRecapAPI.checkExists(testRecapId);
+                  const exists = await testRecapAPI.checkExists(testRecapId.toString());
                   
                   if (exists) {
                     // TestRecap exists, get the questions to set total steps
                     try {
-                      const questionsResponse = await testRecapAPI.getQuestions(testRecapId, userLanguage || language);
+                      const questionsResponse = await testRecapAPI.getQuestions(testRecapId.toString(), userLanguage || language);
                       const questions = questionsResponse?.data || [];
                       
                       if (Array.isArray(questions) && questions.length > 0) {
@@ -245,10 +248,7 @@ export default function ContentTypeRouter({
     return () => {
       isMounted = false;
     };
-  }, [contentId, unitId, contentType, userLanguage]);
-
-  // Normalize the content type and decode URL-encoded characters
-  const normalizedType = decodeURIComponent(contentType).toLowerCase().trim();
+  }, [contentId, unitId, contentType, userLanguage, language, normalizedType]);
 
   // Handler for step change in exercises
   const handleStepChange = (newStep: number) => {
@@ -284,18 +284,34 @@ export default function ContentTypeRouter({
   const adaptTheoryData = async () => {
     try {
       const apiData = await courseAPI.getTheoryContent(contentId, userLanguage || language);
-      if (apiData) {
+      if (apiData && Array.isArray(apiData) && apiData.length > 0) {
+        const firstTheory = apiData[0];
         return {
-          title: apiData.title || `Theory Lesson ${contentId}`,
+          title: firstTheory.title || `Theory Lesson ${contentId}`,
           language: userLanguage || language,
           content: {
-            sections: apiData.content ? [{
+            sections: firstTheory.content ? [{
               id: "main",
-              title: apiData.title || "Theory",
-              content: apiData.content,
-              examples: apiData.examples || []
+              title: firstTheory.title || "Theory",
+              content: firstTheory.content,
+              examples: firstTheory.examples || []
             }] : [],
-            summary: apiData.summary || "Review the concepts above."
+            summary: firstTheory.summary || "Review the concepts above."
+          }
+        };
+      } else if (apiData && !Array.isArray(apiData)) {
+        // Handle case where apiData is a single object (fallback)
+        return {
+          title: (apiData as any).title || `Theory Lesson ${contentId}`,
+          language: userLanguage || language,
+          content: {
+            sections: (apiData as any).content ? [{
+              id: "main",
+              title: (apiData as any).title || "Theory",
+              content: (apiData as any).content,
+              examples: (apiData as any).examples || []
+            }] : [],
+            summary: (apiData as any).summary || "Review the concepts above."
           }
         };
       }

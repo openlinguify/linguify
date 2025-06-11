@@ -1,7 +1,7 @@
 // src/addons/quizz/components/QuizzView.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Trophy, Plus, Filter, Search, BarChart3, Crown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,12 +26,7 @@ const QuizzView: React.FC = () => {
   const [filters, setFilters] = useState<QuizFilters>({});
   const [categories, setCategories] = useState<string[]>([]);
 
-  useEffect(() => {
-    fetchQuizzes();
-    fetchCategories();
-  }, [filters]);
-
-  const fetchQuizzes = async () => {
+  const fetchQuizzes = useCallback(async () => {
     try {
       setLoading(true);
       let data;
@@ -60,7 +55,12 @@ const QuizzView: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    fetchQuizzes();
+    fetchCategories();
+  }, [fetchQuizzes]);
 
   const fetchCategories = async () => {
     try {

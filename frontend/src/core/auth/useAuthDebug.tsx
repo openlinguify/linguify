@@ -1,7 +1,7 @@
 // Debug hook for authentication issues
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSupabaseAuth } from './SupabaseAuthProvider'
 import { supabaseAuthService } from './supabaseAuthService'
 
@@ -27,7 +27,7 @@ export function useAuthDebug() {
   const [debugInfo, setDebugInfo] = useState<AuthDebugInfo | null>(null)
   const [isDebugging, setIsDebugging] = useState(false)
 
-  const runDebugCheck = async () => {
+  const runDebugCheck = useCallback(async () => {
     setIsDebugging(true)
     
     try {
@@ -62,7 +62,7 @@ export function useAuthDebug() {
         hasSession: !!session,
         hasAccessToken: !!accessToken,
         tokenPreview: accessToken ? `${accessToken.substring(0, 20)}...` : null,
-        sessionExpiry: session?.expires_at ? new Date(session.expires_at * 1000).toISOString() : null,
+        sessionExpiry: session?.expires_at ? new Date(Number(session.expires_at) * 1000).toISOString() : null,
         userEmail: user?.email || null,
         isAuthenticated,
         isReady: isAuthReady,
@@ -94,14 +94,14 @@ export function useAuthDebug() {
     } finally {
       setIsDebugging(false)
     }
-  }
+  }, [user, session, isAuthenticated, isAuthReady])
 
   // Auto-run debug when auth state changes
   useEffect(() => {
     if (isAuthReady && !loading) {
       runDebugCheck()
     }
-  }, [user, session, isAuthenticated, isAuthReady, loading])
+  }, [user, session, isAuthenticated, isAuthReady, loading, runDebugCheck])
 
   const testTokenValidation = async () => {
     try {

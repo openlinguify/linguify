@@ -26,6 +26,9 @@ interface JobPosition {
   requirements?: string;
   is_open?: boolean;
   closing_date?: string;
+  is_featured?: boolean;
+  salary_range?: string;
+  posted_date?: string;
 }
 
 const formatEmploymentType = (type: string) => type;
@@ -313,7 +316,7 @@ const CareersPage: React.FC = () => {
                           )}
                         </div>
                         <div className="mt-2 text-xs text-gray-500 dark:text-gray-500">
-                          Posted {formatDate(job.posted_date)}
+                          Posted {job.posted_date ? formatDate(job.posted_date) : 'Recently'}
                         </div>
                       </div>
                       {job.is_open ? (

@@ -108,7 +108,7 @@ const SpeakingQuestion: React.FC<SpeakingQuestionProps> = ({
         mediaRecorderRef.current.stop();
       }
     };
-  }, [savedAnswer]);
+  }, [savedAnswer, recognition]);
 
   // Show fallback if no data
   if (!data.target_phrase && !data.prompt) {

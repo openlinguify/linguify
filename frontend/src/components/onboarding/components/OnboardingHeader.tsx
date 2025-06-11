@@ -91,7 +91,7 @@ export const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(progressPercentage)}
-          aria-label={t('onboarding.progress.label', { current: currentStep, total: totalSteps }, `Onboarding Progress: Step ${currentStep} of ${totalSteps}`)}
+          aria-label={t('onboarding.progress.label', { current: currentStep.toString(), total: totalSteps.toString() }, `Onboarding Progress: Step ${currentStep} of ${totalSteps}`)}
         />
         <motion.div
           className="absolute h-2 top-0 left-0 rounded-full bg-white/70 pointer-events-none"

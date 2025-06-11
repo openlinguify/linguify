@@ -46,17 +46,14 @@ export function withProtectedApi(handler: HandlerFunction) {
 }
 
 async function isRateLimited(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  req: NextRequest, 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  user: Record<string, unknown>
+  _req: NextRequest, 
+  _user: Record<string, unknown>
 ): Promise<boolean> {
   // Implement rate limiting logic here
   return false;
 }
 
 async function validateCsrf(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   req: NextRequest
 ): Promise<boolean> {
   // Implement CSRF validation logic here

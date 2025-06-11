@@ -61,7 +61,7 @@ const MessengerChat = () => {
   };
 
   const handleStartConversation = (userId: number) => {
-    startConversation(userId);
+    startConversation(userId.toString());
     setShowNewChat(false);
   };
 
@@ -173,14 +173,14 @@ const MessengerChat = () => {
                         <div className="flex justify-between items-start">
                           <p className="font-medium truncate">{otherParticipant.name}</p>
                           <span className="text-xs text-muted-foreground">
-                            {conversation.lastMessageTime}
+                            {conversation.lastMessage ? new Date().toLocaleTimeString() : ''}
                           </span>
                         </div>
                         <p className="text-sm text-muted-foreground truncate">
                           {conversation.lastMessage}
                         </p>
                       </div>
-                      {conversation.unreadCount > 0 && (
+                      {(conversation.unreadCount ?? 0) > 0 && (
                         <Badge variant="secondary" className="rounded-full">
                           {conversation.unreadCount}
                         </Badge>
@@ -247,7 +247,7 @@ const MessengerChat = () => {
                       >
                         <p>{message.content}</p>
                         <span className="text-xs opacity-70 mt-1 block">
-                          {message.time}
+                          {message.timestamp.toLocaleTimeString()}
                         </span>
                       </div>
                     </div>

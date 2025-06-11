@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChevronDown, Printer, Download, ExternalLink } from 'lucide-react';
-import { AvailableLocale, getTranslations, TERMS_LAST_UPDATED, CURRENT_TERMS_VERSION } from './termsContent';
+import { AvailableLocale, getTranslations, TERMS_LAST_UPDATED, CURRENT_TERMS_VERSION, TermsSection } from './termsContent';
 import { useTranslation } from '@/core/i18n/useTranslations';
 
 interface TermsModalProps {
@@ -73,7 +73,7 @@ export default function TermsModal({
             <body>
               <h1>Linguify - ${translations.title} (${version})</h1>
               <div>${translations.lastUpdate} ${new Date().toLocaleDateString(locale === 'en' ? 'en-US' : locale === 'es' ? 'es-ES' : locale === 'nl' ? 'nl-NL' : 'fr-FR')}</div>
-              ${sections.map(section => `
+              ${sections.map((section: any) => `
                 <div class="section">
                   <div class="section-title">${section.title}</div>
                   <div>${section.content.replace(/\n/g, '<br>')}</div>
@@ -149,7 +149,7 @@ export default function TermsModal({
                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
               </div>
             ) : (
-              sections.map((section, index) => (
+              sections.map((section: TermsSection, index: number) => (
                 <div
                   key={index}
                   className="border rounded-lg overflow-hidden transition-all duration-200"

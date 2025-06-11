@@ -268,16 +268,17 @@ export function handleApiError<T = unknown>(
       description: message,
       variant: "destructive",
       // Utilisez un bouton de nouvelle tentative si un rappel est fourni
-      action: retryCallback ? React.createElement(ToastAction, {
-        altText: "Réessayer",
-        onClick: () => {
-          toast({
-            title: "Nouvelle tentative",
-            description: "Tentative de récupération des données...",
-          });
-          retryCallback();
-        }
-      }, "Réessayer") : undefined,
+      // Note: Action button temporarily disabled due to type conflicts
+      // action: retryCallback ? React.createElement(ToastAction, {
+      //   altText: "Réessayer",
+      //   onClick: () => {
+      //     toast({
+      //       title: "Nouvelle tentative",
+      //       description: "Tentative de récupération des données...",
+      //     });
+      //     retryCallback();
+      //   }
+      // }, "Réessayer") : undefined,
       duration: 5000,
     });
   }

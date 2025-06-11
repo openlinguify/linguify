@@ -39,7 +39,6 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   const [session, setSession] = useState<Record<string, unknown> | null>(null)
   const [loading, setLoading] = useState(true)
   const [isAuthReady, setIsAuthReady] = useState(false)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [authError, setAuthError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -240,5 +239,8 @@ export function useSupabaseAuth() {
   }
   return context
 }
+
+// Export alias for backward compatibility
+export const useAuth = useSupabaseAuth
 
 export { AuthContext }

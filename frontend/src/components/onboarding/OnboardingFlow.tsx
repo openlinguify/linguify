@@ -16,7 +16,7 @@ import {
 
 // Hooks
 import { useAuthContext } from '@/core/auth/AuthAdapter';
-import { useOnboardingForm } from './hooks/useOnboardingForm';
+import { useOnboardingForm, OnboardingFormData } from './hooks/useOnboardingForm';
 import { useOnboardingValidation } from './hooks/useOnboardingValidation';
 import { useFocusManagement } from './hooks/useFocusManagement';
 import { useTranslation } from '@/core/i18n/useTranslations';
@@ -383,7 +383,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, finalFocusR
                 <TermsAcceptanceStep
                   formData={formData}
                   validationErrors={validationErrors}
-                  onChange={handleInputChange}
+                  onChange={(field: string, value: any) => handleInputChange(field as any, value)}
                 />
               )}
 

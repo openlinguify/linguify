@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Users, Award, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,7 @@ const NewInfo: React.FC<NewInfoProps> = ({ t: propT, variant = 'default', curren
   const [currentLocale, setCurrentLocale] = useState<AvailableLocales>(propLocale || 'fr');
   
   // Import translations
-  const frTranslations = {
+  const frTranslations = useMemo(() => ({
     future_apps: {
       title: "Nouvelles Applications Éducatives à Venir",
       description: "Nos équipes travaillent activement sur de nouvelles applications éducatives innovantes pour enrichir notre écosystème d'apprentissage. Ces outils à venir offriront encore plus de moyens pour maîtriser les langues et améliorer votre parcours d'apprentissage.",
@@ -33,9 +33,9 @@ const NewInfo: React.FC<NewInfoProps> = ({ t: propT, variant = 'default', curren
         item3: "Certifications reconnues par l'industrie"
       }
     }
-  };
+  }), []);
   
-  const enTranslations = {
+  const enTranslations = useMemo(() => ({
     future_apps: {
       title: "More Education Apps Coming Soon",
       description: "Our teams are actively working on innovative new education apps to expand our learning ecosystem. These upcoming tools will provide even more ways to master languages and enhance your learning journey.",
@@ -47,9 +47,9 @@ const NewInfo: React.FC<NewInfoProps> = ({ t: propT, variant = 'default', curren
         item3: "Industry-recognized certifications"
       }
     }
-  };
+  }), []);
   
-  const esTranslations = {
+  const esTranslations = useMemo(() => ({
     future_apps: {
       title: "Próximamente Nuevas Aplicaciones Educativas",
       description: "Nuestros equipos están trabajando activamente en nuevas aplicaciones educativas innovadoras para expandir nuestro ecosistema de aprendizaje. Estas próximas herramientas proporcionarán aún más formas de dominar idiomas y mejorar tu viaje de aprendizaje.",
@@ -61,9 +61,9 @@ const NewInfo: React.FC<NewInfoProps> = ({ t: propT, variant = 'default', curren
         item3: "Certificaciones reconocidas por la industria"
       }
     }
-  };
+  }), []);
   
-  const nlTranslations = {
+  const nlTranslations = useMemo(() => ({
     future_apps: {
       title: "Binnenkort Meer Educatieve Apps",
       description: "Onze teams werken actief aan innovatieve nieuwe educatieve apps om ons leerecosysteem uit te breiden. Deze aankomende tools zullen nog meer manieren bieden om talen te beheersen en je leertraject te verbeteren.",
@@ -75,7 +75,7 @@ const NewInfo: React.FC<NewInfoProps> = ({ t: propT, variant = 'default', curren
         item3: "Door de industrie erkende certificeringen"
       }
     }
-  };
+  }), []);
   
   // Listen for language changes
   useEffect(() => {
@@ -133,7 +133,7 @@ const NewInfo: React.FC<NewInfoProps> = ({ t: propT, variant = 'default', curren
       console.error('Translation error:', error);
       return fallback;
     }
-  }, [currentLocale]);
+  }, [currentLocale, enTranslations, esTranslations, frTranslations, nlTranslations]);
   
   // Use provided translation function or internal one
   const t = propT || internalT;

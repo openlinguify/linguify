@@ -28,7 +28,7 @@ export function EmailVerificationBanner({
     }
 
     // Vérifier si l'email est déjà confirmé
-    const isEmailConfirmed = user.email_confirmed_at !== null
+    const isEmailConfirmed = (user as any).email_confirmed_at !== null
     
     if (isEmailConfirmed) {
       setIsVisible(false)
@@ -45,7 +45,7 @@ export function EmailVerificationBanner({
     }
 
     // Vérifier si assez de temps s'est écoulé depuis l'inscription
-    const createdAt = new Date(user.created_at)
+    const createdAt = new Date((user as any).created_at)
     const now = new Date()
     const daysSinceCreation = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24))
     

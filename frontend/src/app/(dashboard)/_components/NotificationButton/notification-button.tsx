@@ -43,6 +43,27 @@ export function NotificationButton({ count = 0, className = "" }: NotificationBu
     }
   }, [isAuthenticated]);
 
+  // Auto-dismiss notification timer reference
+  const autoDismissTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  // Function to clear the auto-dismiss timer
+  const clearAutoDismissTimer = React.useCallback(() => {
+    if (autoDismissTimerRef.current) {
+      clearTimeout(autoDismissTimerRef.current);
+      autoDismissTimerRef.current = null;
+    }
+  }, []);
+
+  // Function to start auto-dismiss timer (5-7 seconds)
+  const startAutoDismissTimer = React.useCallback(() => {
+    clearAutoDismissTimer(); // Clear any existing timer
+    autoDismissTimerRef.current = setTimeout(() => {
+      setOpen(false);
+      // Don't clear the notification data here, just close the popover
+      // This allows the notification to be shown again if the user clicks the bell
+    }, 6000); // 6 seconds - average of the requested 5-7 second range
+  }, [clearAutoDismissTimer]);
+
   // Function to check for notifications - extracted as a callback to reuse
   const checkForNotifications = React.useCallback(() => {
     if (isAuthenticated) {
@@ -75,7 +96,7 @@ export function NotificationButton({ count = 0, className = "" }: NotificationBu
         startAutoDismissTimer();
       }
     }
-  }, [isAuthenticated, hasNotification, lastLesson, open]);
+  }, [isAuthenticated, hasNotification, lastLesson, open, startAutoDismissTimer]);
 
   // When user logs in, check for notification
   useEffect(() => {
@@ -94,28 +115,7 @@ export function NotificationButton({ count = 0, className = "" }: NotificationBu
       // Clean up timer on unmount
       clearAutoDismissTimer();
     };
-  }, [isAuthenticated, checkForNotifications]);
-
-  // Auto-dismiss notification timer reference
-  const autoDismissTimerRef = React.useRef<NodeJS.Timeout | null>(null);
-
-  // Function to clear the auto-dismiss timer
-  const clearAutoDismissTimer = () => {
-    if (autoDismissTimerRef.current) {
-      clearTimeout(autoDismissTimerRef.current);
-      autoDismissTimerRef.current = null;
-    }
-  };
-
-  // Function to start auto-dismiss timer (5-7 seconds)
-  const startAutoDismissTimer = () => {
-    clearAutoDismissTimer(); // Clear any existing timer
-    autoDismissTimerRef.current = setTimeout(() => {
-      setOpen(false);
-      // Don't clear the notification data here, just close the popover
-      // This allows the notification to be shown again if the user clicks the bell
-    }, 6000); // 6 seconds - average of the requested 5-7 second range
-  };
+  }, [isAuthenticated, checkForNotifications, clearAutoDismissTimer]);
 
   // Dedicated effect to manage auto-dismiss timer based on open state
   useEffect(() => {
@@ -128,7 +128,7 @@ export function NotificationButton({ count = 0, className = "" }: NotificationBu
     return () => {
       clearAutoDismissTimer();
     };
-  }, [open]);
+  }, [open, lastLesson, hasNotification, startAutoDismissTimer, clearAutoDismissTimer]);
 
   const handleNotificationClick = () => {
     console.log("Notification button clicked!", { hasNotification, lastLesson });
@@ -197,7 +197,7 @@ export function NotificationButton({ count = 0, className = "" }: NotificationBu
   // Get history for recent lessons dropdown
   const recentLessonsHistory = useMemo(() => {
     return lastAccessedLessonService.getLessonHistory();
-  }, [lastLesson]);
+  }, []);
   
   // Format time for display
   const formatTimeSpent = (seconds?: number) => {

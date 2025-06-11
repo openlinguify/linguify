@@ -35,19 +35,19 @@ const TestRecapQuestion: React.FC<TestRecapQuestionProps> = ({
   switch (question.question_type) {
     case 'multiple_choice':
       // For multiple choice questions, data might be in question_data or directly on question
-      const choices = question.options || 
-                     question.question_data?.options || 
-                     question.question_data?.choices || [];
+      const choices = Array.isArray(question.options) ? question.options : 
+                     Array.isArray(question.question_data?.options) ? question.question_data.options :
+                     Array.isArray(question.question_data?.choices) ? question.question_data.choices : [];
       
       const mcqData = {
         id: question.id,
-        question: question.question || question.question_data?.question || 'Select the correct answer',
-        choices: choices.map((option: any, index: number) => ({
+        question: (question.question || question.question_data?.question || 'Select the correct answer') as string,
+        choices: (choices as any[]).map((option: any, index: number) => ({
           id: index.toString(),
           text: typeof option === 'string' ? option : option.text || option.choice || `Option ${index + 1}`
         })),
-        correct_answer: question.correct_answer || question.question_data?.correct_answer || '',
-        explanation: question.question_data?.explanation
+        correct_answer: (question.correct_answer || question.question_data?.correct_answer || '') as string,
+        explanation: question.question_data?.explanation as string | undefined
       };
       
       // Debug: Log the multiple choice data mapping
@@ -67,23 +67,23 @@ const TestRecapQuestion: React.FC<TestRecapQuestionProps> = ({
     
     case 'fill_blank':
       // For fill blank questions, data might be in question_data or directly on question
-      const sentence = question.sentence || 
+      const sentence = (question.sentence || 
                       question.question_data?.sentence || 
-                      question.question_data?.text || '';
-      const options = question.options || 
-                     question.question_data?.options || 
-                     question.question_data?.choices || [];
+                      question.question_data?.text || '') as string;
+      const options = Array.isArray(question.options) ? question.options : 
+                     Array.isArray(question.question_data?.options) ? question.question_data.options :
+                     Array.isArray(question.question_data?.choices) ? question.question_data.choices : [];
       
       const fillBlankData = {
         id: question.id,
         question: question.question || 'Fill in the blank',
         sentence: sentence,
-        options: options.map((option: any, index: number) => ({
+        options: (options as any[]).map((option: any, index: number) => ({
           id: index.toString(),
           text: typeof option === 'string' ? option : option.text || option.choice || `Option ${index + 1}`
         })),
-        correct_answers: { 0: question.correct_answer || question.question_data?.correct_answer || '' },
-        explanation: question.question_data?.explanation
+        correct_answers: { 0: (question.correct_answer || question.question_data?.correct_answer || '') as string },
+        explanation: question.question_data?.explanation as string | undefined
       };
       
       // Debug: Log the fill blank data mapping
@@ -104,27 +104,27 @@ const TestRecapQuestion: React.FC<TestRecapQuestionProps> = ({
     
     case 'matching':
       // For matching questions, data might be in question_data or directly on question
-      const targetWords = question.target_words || 
-                         question.question_data?.target_words || 
-                         question.question_data?.pairs?.map((p: any) => p.target) || 
+      const targetWords = Array.isArray(question.target_words) ? question.target_words : 
+                         Array.isArray(question.question_data?.target_words) ? question.question_data.target_words :
+                         Array.isArray(question.question_data?.pairs) ? question.question_data.pairs.map((p: any) => p.target) : 
                          [];
-      const nativeWords = question.native_words || 
-                         question.question_data?.native_words ||
-                         question.question_data?.pairs?.map((p: any) => p.native) ||
+      const nativeWords = Array.isArray(question.native_words) ? question.native_words : 
+                         Array.isArray(question.question_data?.native_words) ? question.question_data.native_words :
+                         Array.isArray(question.question_data?.pairs) ? question.question_data.pairs.map((p: any) => p.native) :
                          [];
       
       const matchingData = {
         id: question.id,
         question: question.question || 'Match the items',
-        target_items: targetWords.map((word: any, index: number) => ({
+        target_items: (targetWords as any[]).map((word: any, index: number) => ({
           id: index.toString(),
           text: typeof word === 'string' ? word : word.text || word.word || 'Item ' + (index + 1)
         })),
-        native_items: nativeWords.map((word: any, index: number) => ({
+        native_items: (nativeWords as any[]).map((word: any, index: number) => ({
           id: index.toString(),
           text: typeof word === 'string' ? word : word.text || word.word || 'Item ' + (index + 1)
         })),
-        explanation: question.question_data?.explanation
+        explanation: question.question_data?.explanation as string | undefined
       };
       
       // Debug: Log the matching data mapping
@@ -152,7 +152,7 @@ const TestRecapQuestion: React.FC<TestRecapQuestionProps> = ({
           text: word
         })) || [],
         correct_order: question.correct_answer?.split(' ') || [],
-        explanation: question.question_data?.explanation
+        explanation: question.question_data?.explanation as string | undefined
       };
       return (
         <ReorderingQuestion 
@@ -174,12 +174,12 @@ const TestRecapQuestion: React.FC<TestRecapQuestionProps> = ({
       
       const speakingData = {
         id: question.id,
-        question: question.question || speakingPrompt,
-        target_phrase: targetPhrase,
-        prompt: speakingPrompt,
-        vocabulary_items: vocabularyItems,
-        time_limit: question.question_data?.time_limit || 60,
-        explanation: question.question_data?.explanation
+        question: (question.question || speakingPrompt) as string,
+        target_phrase: targetPhrase as string,
+        prompt: speakingPrompt as string,
+        vocabulary_items: vocabularyItems as any[],
+        time_limit: (question.question_data?.time_limit || 60) as number,
+        explanation: question.question_data?.explanation as string | undefined
       };
       
       // Debug: Log the speaking data mapping
@@ -202,11 +202,11 @@ const TestRecapQuestion: React.FC<TestRecapQuestionProps> = ({
       // For vocabulary questions, data might be in question_data or directly on question
       const vocabularyData = {
         id: question.id,
-        word: question.word || question.question_data?.word || '',
-        definition: question.definition || question.question_data?.definition || '',
-        example_sentence: question.example_sentence || question.question_data?.example || question.question_data?.example_sentence || '',
+        word: (question.word || question.question_data?.word || '') as string,
+        definition: (question.definition || question.question_data?.definition || '') as string,
+        example_sentence: (question.example_sentence || question.question_data?.example || question.question_data?.example_sentence || '') as string,
         correct_answer: question.correct_answer || '',
-        explanation: question.question_data?.explanation || ''
+        explanation: (question.question_data?.explanation || '') as string
       };
       
       // Debug: Log the vocabulary data mapping

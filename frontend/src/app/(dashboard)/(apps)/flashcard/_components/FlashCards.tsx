@@ -1,6 +1,6 @@
 // src/app/(dashboard)/(apps)/flashcard/_components/FlashCards.tsx
 'use client';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -132,8 +132,8 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
       console.error("Error creating card:", err);
       const apiError = err as ApiError;
       const errorMessage =
-        apiError.data?.detail ||
         apiError.data?.error ||
+        apiError.data?.message ||
         t('dashboard.flashcards.createError');
 
       toast({
@@ -198,7 +198,7 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
   };
 
   // Data fetching
-  const fetchCards = async () => {
+  const fetchCards = useCallback(async () => {
     if (!selectedDeck) return;
 
     try {
@@ -221,14 +221,14 @@ const FlashcardApp: React.FC<FlashcardAppProps> = ({ selectedDeck, onCardUpdate 
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedDeck, setIsLoading, setCurrentIndex, setCards, setFilter, toast, t]);
 
   // Effects
   useEffect(() => {
     if (selectedDeck) {
       fetchCards();
     }
-  }, [selectedDeck]);
+  }, [selectedDeck, fetchCards]);
 
   // Computed values
   const filteredCards = cards.filter((card) => {

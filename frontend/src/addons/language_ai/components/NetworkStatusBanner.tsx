@@ -54,7 +54,7 @@ export function NetworkStatusBanner({ onRetry }: NetworkStatusBannerProps) {
       window.removeEventListener('online', handleNetworkChange);
       window.removeEventListener('offline', () => setShowBanner(true));
     };
-  }, []);
+  }, [setLastError]);
 
   if (!showBanner) {
     return null;

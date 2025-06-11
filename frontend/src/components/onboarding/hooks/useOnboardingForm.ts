@@ -83,14 +83,14 @@ export function useOnboardingForm() {
   useEffect(() => {
     if (user) {
       const userData = {
-        first_name: user.first_name || "",
-        last_name: user.last_name || "",
-        username: user.username || "",
-        bio: user.bio || "",
-        native_language: user.native_language || "",
-        target_language: user.target_language || "",
-        language_level: user.language_level || "A1",
-        objectives: user.objectives || "Travel",
+        first_name: (user as any).first_name || "",
+        last_name: (user as any).last_name || "",
+        username: (user as any).username || "",
+        bio: (user as any).bio || "",
+        native_language: (user as any).native_language || "",
+        target_language: (user as any).target_language || "",
+        language_level: (user as any).language_level || "A1",
+        objectives: (user as any).objectives || "Travel",
         interface_language: "en",
         termsAccepted: false // Always require explicit acceptance on onboarding
       };

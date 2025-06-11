@@ -132,11 +132,11 @@ const PublicDeckDetail: React.FC<PublicDeckDetailProps> = ({
   
       // Notifier le parent et naviguer
       if (onClone) {
-        onClone(result.deck?.id);
+        onClone(result.id);
       }
   
-      if (result.deck?.id) {
-        router.push(`/flashcard/deck/${result.deck.id}`);
+      if (result.id) {
+        router.push(`/flashcard/deck/${result.id}`);
       }
     } catch (error) {
       console.error('Error cloning deck:', error);

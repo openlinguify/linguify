@@ -91,7 +91,7 @@ const FlashcardMain = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold text-transparent bg-clip-text">
-          {t('dashboard.flashcards.userDecks', { name: user?.name || '' })}
+          {t('dashboard.flashcards.userDecks', { name: String(user?.name || 'User') })}
         </h1>
         <Button
           variant="outline"

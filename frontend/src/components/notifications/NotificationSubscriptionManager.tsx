@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Bell, 
   BookOpen, 
@@ -50,6 +50,66 @@ export function NotificationSubscriptionManager() {
   // Dialog state
   const [isOpen, setIsOpen] = useState(false);
   
+  // Load current subscriptions from WebSocket or settings
+  const loadCurrentSubscriptions = useCallback(() => {
+    // Create default settings
+    const defaultSettings: SubscriptionSetting[] = [
+      {
+        type: NotificationType.LESSON_REMINDER,
+        label: t('notifications.types.lesson_reminder'),
+        description: t('notifications.descriptions.lesson_reminder'),
+        icon: <BookOpen className="h-5 w-5 text-blue-500" />,
+        subscribed: true
+      },
+      {
+        type: NotificationType.FLASHCARD,
+        label: t('notifications.types.flashcard'),
+        description: t('notifications.descriptions.flashcard'),
+        icon: <MessageSquare className="h-5 w-5 text-green-500" />,
+        subscribed: true
+      },
+      {
+        type: NotificationType.ACHIEVEMENT,
+        label: t('notifications.types.achievement'),
+        description: t('notifications.descriptions.achievement'),
+        icon: <Trophy className="h-5 w-5 text-yellow-500" />,
+        subscribed: true
+      },
+      {
+        type: NotificationType.STREAK,
+        label: t('notifications.types.streak'),
+        description: t('notifications.descriptions.streak'),
+        icon: <Calendar className="h-5 w-5 text-orange-500" />,
+        subscribed: true
+      },
+      {
+        type: NotificationType.SYSTEM,
+        label: t('notifications.types.system'),
+        description: t('notifications.descriptions.system'),
+        icon: <AlertCircle className="h-5 w-5 text-purple-500" />,
+        subscribed: true
+      },
+      {
+        type: NotificationType.SYSTEM,
+        label: t('notifications.types.info'),
+        description: t('notifications.descriptions.info'),
+        icon: <Info className="h-5 w-5 text-sky-500" />,
+        subscribed: true
+      },
+      {
+        type: NotificationType.REMINDER,
+        label: t('notifications.types.progress'),
+        description: t('notifications.descriptions.progress'),
+        icon: <Star className="h-5 w-5 text-pink-500" />,
+        subscribed: true
+      }
+    ];
+    
+    setSettings(defaultSettings);
+    setIsLoading(false);
+    setHasChanges(false);
+  }, [t]);
+  
   // Initialize WebSocket connection listener
   useEffect(() => {
     if (!user?.token) return;
@@ -75,7 +135,7 @@ export function NotificationSubscriptionManager() {
     return () => {
       notificationWebsocket.removeConnectionListener(handleConnectionChange);
     };
-  }, [user, isLoading]);
+  }, [user, isLoading, loadCurrentSubscriptions]);
   
   // Setup message listener for subscription updates
   useEffect(() => {
@@ -124,66 +184,6 @@ export function NotificationSubscriptionManager() {
       }
     };
   }, [connected, t]);
-  
-  // Load current subscriptions from WebSocket or settings
-  const loadCurrentSubscriptions = () => {
-    // Create default settings
-    const defaultSettings: SubscriptionSetting[] = [
-      {
-        type: NotificationType.LESSON_REMINDER,
-        label: t('notifications.types.lesson_reminder'),
-        description: t('notifications.descriptions.lesson_reminder'),
-        icon: <BookOpen className="h-5 w-5 text-blue-500" />,
-        subscribed: true
-      },
-      {
-        type: NotificationType.FLASHCARD,
-        label: t('notifications.types.flashcard'),
-        description: t('notifications.descriptions.flashcard'),
-        icon: <MessageSquare className="h-5 w-5 text-green-500" />,
-        subscribed: true
-      },
-      {
-        type: NotificationType.ACHIEVEMENT,
-        label: t('notifications.types.achievement'),
-        description: t('notifications.descriptions.achievement'),
-        icon: <Trophy className="h-5 w-5 text-yellow-500" />,
-        subscribed: true
-      },
-      {
-        type: NotificationType.STREAK,
-        label: t('notifications.types.streak'),
-        description: t('notifications.descriptions.streak'),
-        icon: <Calendar className="h-5 w-5 text-orange-500" />,
-        subscribed: true
-      },
-      {
-        type: NotificationType.SYSTEM,
-        label: t('notifications.types.system'),
-        description: t('notifications.descriptions.system'),
-        icon: <AlertCircle className="h-5 w-5 text-purple-500" />,
-        subscribed: true
-      },
-      {
-        type: NotificationType.INFO,
-        label: t('notifications.types.info'),
-        description: t('notifications.descriptions.info'),
-        icon: <Info className="h-5 w-5 text-sky-500" />,
-        subscribed: true
-      },
-      {
-        type: NotificationType.PROGRESS,
-        label: t('notifications.types.progress'),
-        description: t('notifications.descriptions.progress'),
-        icon: <Star className="h-5 w-5 text-pink-500" />,
-        subscribed: true
-      }
-    ];
-    
-    setSettings(defaultSettings);
-    setIsLoading(false);
-    setHasChanges(false);
-  };
   
   // Update settings based on subscriptions array from server
   const handleSubscriptionsUpdate = (subscriptions: string[]) => {

@@ -89,40 +89,13 @@ export default function ReviewPage() {
     loadCards();
   }, [loadCards]);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Only handle shortcuts if we're actively reviewing cards
-      if (currentIndex < flashcards.length) {
-        if (e.key === ' ' || e.key === 'f' || e.key === 'F') {
-          // Space or F to flip card
-          handleFlip();
-        } else if ((e.key === 'ArrowRight' || e.key === 'j' || e.key === 'J') && isFlipped) {
-          // Right arrow or J for "Got it" (only when card is flipped)
-          markCardStatus(true);
-        } else if ((e.key === 'ArrowLeft' || e.key === 'k' || e.key === 'K') && isFlipped) {
-          // Left arrow or K for "Still Learning" (only when card is flipped)
-          markCardStatus(false);
-        } else if (e.key === '?' || e.key === 'h' || e.key === 'H') {
-          // ? or H to toggle keyboard shortcuts help
-          setShowKeyboardShortcuts(prev => !prev);
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [currentIndex, flashcards.length, isFlipped]);
-
   const currentCard = flashcards[currentIndex];
 
-  const handleFlip = () => {
+  const handleFlip = useCallback(() => {
     setIsFlipped(!isFlipped);
-  };
+  }, [isFlipped]);
 
-  const markCardStatus = async (success: boolean) => {
+  const markCardStatus = useCallback(async (success: boolean) => {
     if (!currentCard) return;
 
     try {
@@ -155,7 +128,34 @@ export default function ReviewPage() {
         variant: "destructive"
       });
     }
-  };
+  }, [currentCard, toast, t]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle shortcuts if we're actively reviewing cards
+      if (currentIndex < flashcards.length) {
+        if (e.key === ' ' || e.key === 'f' || e.key === 'F') {
+          // Space or F to flip card
+          handleFlip();
+        } else if ((e.key === 'ArrowRight' || e.key === 'j' || e.key === 'J') && isFlipped) {
+          // Right arrow or J for "Got it" (only when card is flipped)
+          markCardStatus(true);
+        } else if ((e.key === 'ArrowLeft' || e.key === 'k' || e.key === 'K') && isFlipped) {
+          // Left arrow or K for "Still Learning" (only when card is flipped)
+          markCardStatus(false);
+        } else if (e.key === '?' || e.key === 'h' || e.key === 'H') {
+          // ? or H to toggle keyboard shortcuts help
+          setShowKeyboardShortcuts(prev => !prev);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [currentIndex, flashcards.length, isFlipped, handleFlip, markCardStatus]);
 
   const getTotalReviewTime = (): string => {
     if (!reviewStartTime) return t('dashboard.flashcards.modes.review.na');

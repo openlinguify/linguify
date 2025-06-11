@@ -1,17 +1,40 @@
 // src/utils/progressAdapter.ts
 
-import { 
-    UnitProgress as ApiUnitProgress,
-    LessonProgress as ApiLessonProgress,
-    ContentLessonProgress as ApiContentProgress
-  } from "@/services/progressAPI";
-  
-  import {
-    UnitProgress,
-    LessonProgress, 
-    ContentLessonProgress,
-    ProgressStatus
-  } from "@/types/progress";
+// Type definitions - these should be moved to proper type files when the modules are created
+type ProgressStatus = 'not_started' | 'in_progress' | 'completed';
+
+interface ApiUnitProgress {
+  unit: number;
+  status: string;
+  [key: string]: any;
+}
+
+interface ApiLessonProgress {
+  lesson: number;
+  status: string;
+  [key: string]: any;
+}
+
+interface ApiContentProgress {
+  status: string;
+  content_lesson_details?: {
+    id: number;
+    [key: string]: any;
+  };
+  [key: string]: any;
+}
+
+interface UnitProgress extends Omit<ApiUnitProgress, 'status'> {
+  status: ProgressStatus;
+}
+
+interface LessonProgress extends Omit<ApiLessonProgress, 'status'> {
+  status: ProgressStatus;
+}
+
+interface ContentLessonProgress extends Omit<ApiContentProgress, 'status'> {
+  status: ProgressStatus;
+}
   
   /**
    * Convertit une chaîne de statut en ProgressStatus typé sécurisé

@@ -45,10 +45,7 @@ export function AppCard({ app, onMouseEnter, observerRef }: AppCardProps) {
         <div 
           className="w-full max-w-[100px] aspect-square rounded-xl flex items-center justify-center mb-2 transition-all duration-300 group-hover:transform group-hover:scale-105 shadow-lg hover:shadow-xl"
           style={{ 
-            backgroundColor: app.color,
-            ':hover': { 
-              backgroundColor: `${app.color}E6` // Add some transparency on hover
-            }
+            backgroundColor: app.color
           }}
         >
           <IconComponent className="w-14 h-14 text-white" />

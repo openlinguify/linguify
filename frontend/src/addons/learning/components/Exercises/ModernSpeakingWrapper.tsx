@@ -53,7 +53,7 @@ interface SpeakingWrapperProps {
 
 export const ModernSpeakingWrapper: React.FC<SpeakingWrapperProps> = ({
   lessonId,
-  // language = 'fr', // Removed unused parameter
+  language = 'fr',
   unitId,
   onComplete
   // progressIndicator // Removed unused prop
@@ -89,6 +89,7 @@ export const ModernSpeakingWrapper: React.FC<SpeakingWrapperProps> = ({
   });
 
   // Speech hooks
+  const speechLanguage = language === 'fr' ? 'fr-FR' : 'en-US';
   const { speak, isSpeaking } = useSpeechSynthesis('fr'); // Fixed language parameter
   const { 
     transcript, 
@@ -97,7 +98,7 @@ export const ModernSpeakingWrapper: React.FC<SpeakingWrapperProps> = ({
     stopRecording: stopListening, 
     error: speechRecognitionError,
     resetTranscript
-  } = useSpeechRecognition({ language: language === 'fr' ? 'fr-FR' : 'en-US' });
+  } = useSpeechRecognition({ language: speechLanguage });
   
   const speechRecognitionSupported = !speechRecognitionError;
 

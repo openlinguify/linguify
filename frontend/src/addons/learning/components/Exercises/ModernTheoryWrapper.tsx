@@ -132,7 +132,7 @@ const ModernTheoryWrapper: React.FC<TheoryWrapperProps> = ({
   }, [startTime]);
 
   // Helper to get content in current language (same as original TheoryContent)
-  const getLanguageContent = (field: string, defaultValue: string = ''): string => {
+  const getLanguageContent = useCallback((field: string, defaultValue: string = ''): string => {
     if (!theoryContent) return defaultValue;
 
     // Try using new JSON format first
@@ -145,7 +145,7 @@ const ModernTheoryWrapper: React.FC<TheoryWrapperProps> = ({
     // Fall back to old format if needed
     const oldFormatField = `${field}_${language}` as keyof TheoryContent;
     return (theoryContent[oldFormatField] as string) || defaultValue;
-  };
+  }, [theoryContent, language]);
 
   const getContentByLanguage = (content: Record<string, string> | null | undefined): string => {
     if (!content || typeof content !== 'object') return '';
@@ -159,7 +159,7 @@ const ModernTheoryWrapper: React.FC<TheoryWrapperProps> = ({
   };
 
   // Determine available sections
-  const getAvailableSections = () => {
+  const getAvailableSections = useCallback(() => {
     if (!theoryContent) return ['content'];
 
     const sections = ['content'];
@@ -174,7 +174,7 @@ const ModernTheoryWrapper: React.FC<TheoryWrapperProps> = ({
     if (getLanguageContent('exception')) sections.push('exceptions');
 
     return sections;
-  };
+  }, [theoryContent, getLanguageContent]);
 
   // Mark a section as read
   const markAsRead = (section: string) => {

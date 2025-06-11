@@ -278,7 +278,7 @@ export default function NotebookMain() {
       setIsLoading(false);
       setIsLoadingMore(false);
     }
-  }, [currentPage, notes, selectedNote]);
+  }, [currentPage, notes, selectedNote, searchFilters, toast]);
   
   // Fonction pour charger plus de notes quand l'utilisateur atteint la fin de la liste
   const loadMoreNotes = useCallback(() => {

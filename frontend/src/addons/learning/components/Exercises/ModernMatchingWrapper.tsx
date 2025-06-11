@@ -249,29 +249,6 @@ export const ModernMatchingWrapper: React.FC<MatchingWrapperProps> = ({
   }, [currentExerciseIndex, allExercises, loadSpecificExercise]);
 
   // Handle word selection and matching
-  const handleLeftClick = useCallback((word: WordPair) => {
-    if (matchedPairs.has(word.left)) return;
-    
-    // Don't speak target language words automatically to avoid giving hints
-    setSelectedLeft(word.left);
-    
-    if (selectedRight) {
-      checkMatch(word.left, selectedRight);
-    }
-  }, [selectedRight, matchedPairs]);
-
-  const handleRightClick = useCallback((word: WordPair) => {
-    if (matchedPairs.has(word.right)) return;
-    
-    // Speak native language words (translations) to help with pronunciation
-    speak(word.right);
-    setSelectedRight(word.right);
-    
-    if (selectedLeft) {
-      checkMatch(selectedLeft, word.right);
-    }
-  }, [selectedLeft, matchedPairs, speak]);
-
   const checkMatch = useCallback((leftWord: string, rightWord: string) => {
     setAttempts(prev => prev + 1);
     
@@ -336,7 +313,30 @@ export const ModernMatchingWrapper: React.FC<MatchingWrapperProps> = ({
     // Reset selections
     setSelectedLeft(null);
     setSelectedRight(null);
-  }, [correctPairs, matchedPairs, playSuccessSound, playFailSound]);
+  }, [correctPairs, matchedPairs, playSuccessSound, playFailSound, score, attempts, currentExerciseIndex, allExercises.length, totalScore, totalAttempts, showCompletion]);
+
+  const handleLeftClick = useCallback((word: WordPair) => {
+    if (matchedPairs.has(word.left)) return;
+    
+    // Don't speak target language words automatically to avoid giving hints
+    setSelectedLeft(word.left);
+    
+    if (selectedRight) {
+      checkMatch(word.left, selectedRight);
+    }
+  }, [selectedRight, matchedPairs, checkMatch]);
+
+  const handleRightClick = useCallback((word: WordPair) => {
+    if (matchedPairs.has(word.right)) return;
+    
+    // Speak native language words (translations) to help with pronunciation
+    speak(word.right);
+    setSelectedRight(word.right);
+    
+    if (selectedLeft) {
+      checkMatch(selectedLeft, word.right);
+    }
+  }, [selectedLeft, matchedPairs, speak, checkMatch]);
 
   const resetExercise = useCallback(() => {
     if (allExercises.length > 0 && allExercises[currentExerciseIndex]) {
