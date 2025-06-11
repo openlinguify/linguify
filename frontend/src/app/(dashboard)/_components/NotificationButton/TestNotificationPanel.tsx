@@ -75,7 +75,7 @@ export function TestNotificationPanel() {
       console.log('Created all test notifications:', notifications);
       toast({
         title: t('test_notifications.notification_created'),
-        description: t('test_notifications.all_notifications_created', { count: notifications.length }),
+        description: t('test_notifications.all_notifications_created', { count: notifications.length.toString() }),
       });
       setIsOpen(false);
     } catch (error) {

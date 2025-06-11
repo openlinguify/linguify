@@ -95,12 +95,12 @@ const lastAccessedLessonService = {
         lessonData.language = String((lesson as Record<string, unknown>).language);
       }
       
-      if ('parentLessonId' in lesson && (lesson as Record<string, unknown>).parentLessonId) {
-        lessonData.parentLessonId = Number((lesson as Record<string, unknown>).parentLessonId);
+      if ('parentLessonId' in lesson && (lesson as unknown as Record<string, unknown>).parentLessonId) {
+        lessonData.parentLessonId = Number((lesson as unknown as Record<string, unknown>).parentLessonId);
       }
       
-      if ('contentId' in lesson && (lesson as Record<string, unknown>).contentId) {
-        lessonData.contentId = Number((lesson as Record<string, unknown>).contentId);
+      if ('contentId' in lesson && (lesson as unknown as Record<string, unknown>).contentId) {
+        lessonData.contentId = Number((lesson as unknown as Record<string, unknown>).contentId);
       }
       
       if ('routeType' in lesson && (lesson as Record<string, unknown>).routeType) {

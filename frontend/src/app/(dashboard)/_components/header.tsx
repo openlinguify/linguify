@@ -135,7 +135,7 @@ const Header = () => {
               {process.env.NODE_ENV === 'development' && <TestNotificationPanel />}
 
               {/* User Menu */}
-              <UserMenu user={user} />
+              <UserMenu user={user as any} />
             </div>
           ) : (
             <AuthButtons onLogin={login} />

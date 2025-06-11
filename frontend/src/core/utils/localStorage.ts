@@ -66,7 +66,7 @@ export function useState<T>(key: string, initialValue: T): [T, (value: T) => voi
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [key]);
+  }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
   
   return [storedValue, setValue];
 }

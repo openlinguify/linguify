@@ -1,9 +1,10 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { useAuthContext } from '@/core/auth/AuthAdapter';
 import { useUserSettings } from '@/core/context/UserSettingsContext';
-import notificationApi, { NotificationDto, NotificationActionDto } from '@/core/api/notificationApi';
+import notificationApi from '@/core/api/notificationApi';
+import { NotificationDto, NotificationActionDto } from '@/core/types/notification.types';
 import notificationWebsocket from '@/core/api/notificationWebsocket';
 import { notificationService } from '@/core/api/notificationService';
 import { toast } from '@/components/ui/use-toast';
@@ -16,6 +17,8 @@ export enum NotificationType {
   REMINDER = 'reminder',
   FLASHCARD = 'flashcard',
   ANNOUNCEMENT = 'announcement',
+  STREAK = 'streak',
+  INFO = 'info',
 }
 
 // Define notification priority levels
@@ -89,8 +92,93 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [isWebSocketConnected, setIsWebSocketConnected] = useState<boolean>(false);
   
+  // Ref to track current page value for callbacks
+  const pageRef = useRef(page);
+  pageRef.current = page;
+  
   // Constants
   const PAGE_SIZE = 20;
+  
+  // Convert API action to client format
+  const apiToClientAction = useCallback((apiAction: NotificationActionDto): NotificationAction => {
+    return {
+      id: apiAction.id,
+      label: apiAction.label,
+      actionType: apiAction.action_type as 'navigate' | 'dismiss' | 'snooze' | 'custom',
+      actionData: apiAction.action_data,
+    };
+  }, []);
+  
+  // Convert API notification to client format
+  const apiToClientNotification = useCallback((apiNotification: NotificationDto): Notification => {
+    return {
+      id: apiNotification.id,
+      type: apiNotification.type as NotificationType,
+      title: apiNotification.title,
+      message: apiNotification.message,
+      priority: apiNotification.priority as NotificationPriority,
+      isRead: apiNotification.is_read,
+      createdAt: apiNotification.created_at,
+      expiresAt: apiNotification.expires_at,
+      data: apiNotification.data,
+      actions: apiNotification.actions?.map(apiToClientAction),
+    };
+  }, [apiToClientAction]);
+  
+  // Refresh unread count
+  const refreshUnreadCount = useCallback(async () => {
+    try {
+      const counts = await notificationApi.getNotificationCounts();
+      setUnreadCount(counts.unread);
+      return counts.unread;
+    } catch (error) {
+      console.error('Error refreshing unread count:', error);
+      return 0;
+    }
+  }, []);
+  
+  // Load notifications
+  const loadNotifications = useCallback(async (refresh = false) => {
+    if (!isAuthenticated) return;
+    
+    try {
+      setIsLoading(true);
+      
+      // Reset pagination if refreshing
+      const currentPage = refresh ? 1 : pageRef.current;
+      
+      // Fetch notifications
+      const response = await notificationApi.getNotifications({
+        page: currentPage,
+        page_size: PAGE_SIZE,
+      });
+      
+      // Convert API format to client format
+      const mappedNotifications = response.map(apiToClientNotification);
+      
+      // Update state
+      setNotifications(prev => refresh ? mappedNotifications : [...prev, ...mappedNotifications]);
+      setPage(prev => refresh ? 2 : prev + 1); // Increment page for next load
+      setHasMore(response.length === PAGE_SIZE); // If we got a full page, there might be more
+      
+      // Also refresh unread count
+      await refreshUnreadCount();
+    } catch (error) {
+      console.error('Error loading notifications:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated, apiToClientNotification, refreshUnreadCount]);
+  
+  // Check if the browser supports notifications and has permission
+  const checkNotificationPermission = () => {
+    if (!('Notification' in window)) {
+      setHasPermission(false);
+      return;
+    }
+    
+    setHasPermission(Notification.permission === 'granted');
+  };
   
   // Initialize on auth changes
   useEffect(() => {
@@ -143,7 +231,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
       setIsLoading(false);
       setHasMore(false);
     }
-  }, [isAuthenticated, token]);
+  }, [isAuthenticated, token, loadNotifications]);
   
   // Poll for unread count if WebSocket is not connected
   useEffect(() => {
@@ -161,45 +249,58 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
         clearInterval(interval);
       }
     };
-  }, [isAuthenticated, isWebSocketConnected]);
-  
-  // Load notifications
-  const loadNotifications = async (refresh = false) => {
-    if (!isAuthenticated) return;
-    
-    try {
-      setIsLoading(true);
-      
-      // Reset pagination if refreshing
-      const currentPage = refresh ? 1 : page;
-      
-      // Fetch notifications
-      const response = await notificationApi.getNotifications({
-        page: currentPage,
-        page_size: PAGE_SIZE,
-      });
-      
-      // Convert API format to client format
-      const mappedNotifications = response.map(apiToClientNotification);
-      
-      // Update state
-      setNotifications(refresh ? mappedNotifications : [...notifications, ...mappedNotifications]);
-      setPage(refresh ? 2 : page + 1); // Increment page for next load
-      setHasMore(response.length === PAGE_SIZE); // If we got a full page, there might be more
-      
-      // Also refresh unread count
-      await refreshUnreadCount();
-    } catch (error) {
-      console.error('Error loading notifications:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [isAuthenticated, isWebSocketConnected, refreshUnreadCount]);
   
   // Load more notifications (pagination)
   const loadMoreNotifications = async () => {
     if (!hasMore || isLoading) return;
     await loadNotifications(false);
+  };
+  
+  // Show a browser notification
+  const showBrowserNotification = (notification: Notification) => {
+    if (!('Notification' in window) || Notification.permission !== 'granted') {
+      return;
+    }
+    
+    // Determine notification icon based on type
+    let icon = '/logo/logo.png'; // Default icon
+    
+    // Set type-specific icons
+    switch (notification.type) {
+      case NotificationType.LESSON_REMINDER:
+        icon = '/static/images/logos/icon-exercice.jpg';
+        break;
+      case NotificationType.FLASHCARD:
+        icon = '/static/images/logos/flashcards.png';
+        break;
+      case NotificationType.ACHIEVEMENT:
+        icon = '/static/images/logos/icon-presentation.png';
+        break;
+      default:
+        icon = '/logo/logo.png';
+    }
+    
+    try {
+      const browserNotification = new Notification(notification.title, {
+        body: notification.message,
+        icon: icon,
+        tag: notification.id,
+      });
+      
+      // Add click handler to browser notification
+      browserNotification.onclick = () => {
+        window.focus();
+        markAsRead(notification.id);
+        
+        // If the notification has a primary action, execute it
+        if (notification.actions && notification.actions.length > 0) {
+          executeNotificationAction(notification.id, notification.actions[0].id);
+        }
+      };
+    } catch (error) {
+      console.error('Error showing browser notification:', error);
+    }
   };
   
   // Handle new notification from WebSocket
@@ -238,54 +339,6 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
         showBrowserNotification(newNotification);
       }
     }
-  };
-  
-  // Refresh unread count
-  const refreshUnreadCount = async () => {
-    try {
-      const counts = await notificationApi.getNotificationCounts();
-      setUnreadCount(counts.unread);
-      return counts.unread;
-    } catch (error) {
-      console.error('Error refreshing unread count:', error);
-      return 0;
-    }
-  };
-  
-  // Convert API notification to client format
-  const apiToClientNotification = (apiNotification: NotificationDto): Notification => {
-    return {
-      id: apiNotification.id,
-      type: apiNotification.type as NotificationType,
-      title: apiNotification.title,
-      message: apiNotification.message,
-      priority: apiNotification.priority as NotificationPriority,
-      isRead: apiNotification.is_read,
-      createdAt: apiNotification.created_at,
-      expiresAt: apiNotification.expires_at,
-      data: apiNotification.data,
-      actions: apiNotification.actions?.map(apiToClientAction),
-    };
-  };
-  
-  // Convert API action to client format
-  const apiToClientAction = (apiAction: NotificationActionDto): NotificationAction => {
-    return {
-      id: apiAction.id,
-      label: apiAction.label,
-      actionType: apiAction.action_type as 'navigate' | 'dismiss' | 'snooze' | 'custom',
-      actionData: apiAction.action_data,
-    };
-  };
-  
-  // Check if the browser supports notifications and has permission
-  const checkNotificationPermission = () => {
-    if (!('Notification' in window)) {
-      setHasPermission(false);
-      return;
-    }
-    
-    setHasPermission(Notification.permission === 'granted');
   };
   
   // Request permission to show browser notifications
@@ -349,52 +402,6 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
     
     return outputArray;
-  };
-  
-  // Show a browser notification
-  const showBrowserNotification = (notification: Notification) => {
-    if (!('Notification' in window) || Notification.permission !== 'granted') {
-      return;
-    }
-    
-    // Determine notification icon based on type
-    let icon = '/logo/logo.png'; // Default icon
-    
-    // Set type-specific icons
-    switch (notification.type) {
-      case NotificationType.LESSON_REMINDER:
-        icon = '/static/images/logos/icon-exercice.jpg';
-        break;
-      case NotificationType.FLASHCARD:
-        icon = '/static/images/logos/flashcards.png';
-        break;
-      case NotificationType.ACHIEVEMENT:
-        icon = '/static/images/logos/icon-presentation.png';
-        break;
-      default:
-        icon = '/logo/logo.png';
-    }
-    
-    try {
-      const browserNotification = new Notification(notification.title, {
-        body: notification.message,
-        icon: icon,
-        tag: notification.id,
-      });
-      
-      // Add click handler to browser notification
-      browserNotification.onclick = () => {
-        window.focus();
-        markAsRead(notification.id);
-        
-        // If the notification has a primary action, execute it
-        if (notification.actions && notification.actions.length > 0) {
-          executeNotificationAction(notification.id, notification.actions[0].id);
-        }
-      };
-    } catch (error) {
-      console.error('Error showing browser notification:', error);
-    }
   };
   
   // Mark a notification as read

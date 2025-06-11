@@ -55,8 +55,8 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
         } else {
           // This fallback should rarely be used now that we have proper wrapper logic
           const response = await testRecapAPI.getTestRecapsForLesson(lessonId);
-          if (response.data && response.data.length > 0) {
-            const testRecap = response.data[0];
+          if ((response as any).data && (response as any).data.length > 0) {
+            const testRecap = (response as any).data[0];
             
             // Check if the test recap has valid content
             if (!testRecap.questions || testRecap.questions.length === 0) {
@@ -165,7 +165,7 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
       
       // Submit the test
       const response = await testRecapAPI.submitTestRecap(submission);
-      setResults(response.data);
+      setResults((response as any).data);
       setCompleted(true);
       
       // Invalidate any related queries

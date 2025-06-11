@@ -24,7 +24,7 @@ export function LanguageSelector({ className = "" }: LanguageSelectorProps) {
   const { t, locale, changeLanguage } = useTranslation();
   const { settings, updateSetting } = useUserSettings();
   const { toast } = useToast();
-  const [selectedLanguage, setSelectedLanguage] = useState(locale);
+  const [selectedLanguage, setSelectedLanguage] = useState<'fr' | 'en' | 'es' | 'nl'>(locale);
 
   // Sync with user settings on mount and handle persistence across refreshes
   useEffect(() => {
@@ -35,7 +35,7 @@ export function LanguageSelector({ className = "" }: LanguageSelectorProps) {
           settings.interface_language !== locale) {
         console.log('Setting language from user settings:', settings.interface_language);
         changeLanguage(settings.interface_language as any);
-        setSelectedLanguage(settings.interface_language);
+        setSelectedLanguage(settings.interface_language as 'fr' | 'en' | 'es' | 'nl');
         return;
       }
 
@@ -46,7 +46,7 @@ export function LanguageSelector({ className = "" }: LanguageSelectorProps) {
           storedLanguage !== locale) {
         console.log('Setting language from localStorage:', storedLanguage);
         changeLanguage(storedLanguage as any);
-        setSelectedLanguage(storedLanguage);
+        setSelectedLanguage(storedLanguage as 'fr' | 'en' | 'es' | 'nl');
 
         // Also update user settings for consistency
         updateSetting('interface_language', storedLanguage).catch(err => {
@@ -91,7 +91,7 @@ export function LanguageSelector({ className = "" }: LanguageSelectorProps) {
     try {
       // Update UI language first for immediate feedback
       changeLanguage(value as any);
-      setSelectedLanguage(value);
+      setSelectedLanguage(value as 'fr' | 'en' | 'es' | 'nl');
 
       // Update user settings
       await updateSetting('interface_language', value);

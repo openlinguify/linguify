@@ -1,7 +1,7 @@
 // src/app/(dashboard)/(apps)/flashcard/flashcards/[id]/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -65,6 +65,60 @@ export default function LearnPage() {
   const router = useRouter();
   const { toast } = useToast();
 
+  // Reset learning session
+  const resetLearningSession = () => {
+    setCurrentIndex(0);
+    setScore(0);
+    setSelectedOption(null);
+    setIsCorrect(null);
+    setAnsweredQuestions({});
+  };
+
+  // Apply settings to filter cards
+  const applySettings = useCallback((newSettings: LearnSettings, cardsData = allFlashcards) => {
+    let filtered;
+
+    // Filter by card status
+    switch (newSettings.cardSource) {
+      case "new":
+        filtered = cardsData.filter(card => !card.learned && card.review_count === 0);
+        break;
+      case "review":
+        filtered = cardsData.filter(card => !card.learned && card.review_count > 0);
+        break;
+      case "difficult":
+        filtered = cardsData.filter(card => !card.learned && card.review_count > 2);
+        break;
+      case "all":
+      default:
+        filtered = [...cardsData];
+        break;
+    }
+
+    // Shuffle cards if enabled
+    if (newSettings.shuffleQuestions) {
+      filtered = shuffleArray(filtered);
+    }
+
+    // Limit the number of cards
+    filtered = filtered.slice(0, newSettings.cardLimit);
+
+    setFilteredFlashcards(filtered);
+
+    // Generate questions from the filtered cards
+    if (filtered.length > 0) {
+      const generatedQuestions = generateQuestions(filtered);
+      setQuestions(generatedQuestions);
+    } else {
+      setQuestions([]);
+    }
+
+    // Reset learning session
+    resetLearningSession();
+
+    return filtered;
+  }, [allFlashcards, resetLearningSession]);
+
   // Load cards and deck information
   useEffect(() => {
     const loadData = async () => {
@@ -108,7 +162,7 @@ export default function LearnPage() {
     };
 
     loadData();
-  }, [id, toast, isInitialLoad, t]);
+  }, [id, toast, isInitialLoad, t, applySettings, settings]);
 
   // Update statistics for deck
   const updateStatistics = (cards: any[]) => {
@@ -124,51 +178,6 @@ export default function LearnPage() {
       new: newCards,
       difficult
     });
-  };
-
-  // Apply settings to filter cards
-  const applySettings = (newSettings: LearnSettings, cardsData = allFlashcards) => {
-    let filtered;
-
-    // Filter by card status
-    switch (newSettings.cardSource) {
-      case "new":
-        filtered = cardsData.filter(card => !card.learned && card.review_count === 0);
-        break;
-      case "review":
-        filtered = cardsData.filter(card => !card.learned && card.review_count > 0);
-        break;
-      case "difficult":
-        filtered = cardsData.filter(card => !card.learned && card.review_count > 2);
-        break;
-      case "all":
-      default:
-        filtered = [...cardsData];
-        break;
-    }
-
-    // Shuffle cards if enabled
-    if (newSettings.shuffleQuestions) {
-      filtered = shuffleArray(filtered);
-    }
-
-    // Limit the number of cards
-    filtered = filtered.slice(0, newSettings.cardLimit);
-
-    setFilteredFlashcards(filtered);
-
-    // Generate questions from the filtered cards
-    if (filtered.length > 0) {
-      const generatedQuestions = generateQuestions(filtered);
-      setQuestions(generatedQuestions);
-    } else {
-      setQuestions([]);
-    }
-
-    // Reset learning session
-    resetLearningSession();
-
-    return filtered;
   };
 
   // Save settings and apply them
@@ -255,14 +264,6 @@ export default function LearnPage() {
     }, 1500);
   };
 
-  // Reset learning session
-  const resetLearningSession = () => {
-    setCurrentIndex(0);
-    setScore(0);
-    setSelectedOption(null);
-    setIsCorrect(null);
-    setAnsweredQuestions({});
-  };
 
   // Restart learning session with same questions
   const restartLearning = () => {

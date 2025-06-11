@@ -11,11 +11,9 @@ export function withTermsAcceptance<P extends object>(Component: React.Component
     const { 
       termsAccepted, 
       loading: termsLoading, 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      showTermsDialog,
+      showTermsDialog: _showTermsDialog,
       setShowTermsDialog,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      handleTermsAccepted
+      handleTermsAccepted: _handleTermsAccepted
     } = useTermsAcceptance();
     const router = useRouter();
 

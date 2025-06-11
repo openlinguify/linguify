@@ -3,7 +3,8 @@ import {
   Notification, 
   NotificationType, 
   NotificationPriority,
-  NotificationDto
+  NotificationDto,
+  NotificationAction
 } from '@/core/types/notification.types';
 import notificationApi from '@/core/api/notificationApi';
 import notificationWebsocket from '@/core/api/notificationWebsocket';
@@ -79,20 +80,20 @@ class NotificationService {
     }
     
     // Listen for lesson access events
-    window.addEventListener('lessonAccessed', (event: CustomEvent) => {
+    window.addEventListener('lessonAccessed' as any, ((event: CustomEvent) => {
       const lessonData = event.detail;
       if (lessonData) {
         notificationManager.trackLessonAndRemind(lessonData);
       }
-    });
+    }) as EventListener);
     
     // Listen for new notification events
-    window.addEventListener('newNotification', (event: CustomEvent) => {
+    window.addEventListener('newNotification' as any, ((event: CustomEvent) => {
       const notificationData = event.detail;
       if (notificationData) {
         this.handleNewNotification(notificationData);
       }
-    });
+    }) as EventListener);
   }
   
   /**
@@ -359,6 +360,7 @@ class NotificationService {
     message: string;
     priority: NotificationPriority;
     data?: any;
+    actions?: NotificationAction[];
   }): Notification {
     const newNotification: Notification = {
       id: `client-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
@@ -505,6 +507,55 @@ class NotificationService {
   reconnectWebSocket(authToken: string): void {
     this.authToken = authToken;
     notificationWebsocket.connect(authToken);
+  }
+
+  /**
+   * Check due flashcards count for a user
+   * @param userId User ID to check
+   * @returns Promise resolving to number of due cards
+   */
+  async checkDueCards(userId: string): Promise<number> {
+    try {
+      // This would normally make an API call to get due cards count
+      // For now, return a mock value
+      // TODO: Implement actual API call
+      return 0;
+    } catch (error) {
+      console.error('Error checking due cards:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Schedule a reminder notification
+   * @param delayMinutes Delay in minutes before showing reminder
+   * @param message Message to show in reminder
+   */
+  scheduleReminder(delayMinutes: number, message: string): void {
+    try {
+      // Use notificationManager to schedule the reminder
+      const delayMs = delayMinutes * 60 * 1000;
+      
+      setTimeout(() => {
+        if (this.hasNotificationPermission()) {
+          notificationManager.showBrowserNotification('Study Reminder', {
+            body: message,
+            icon: '/logo/logo.png',
+            requireInteraction: true,
+          });
+        }
+        
+        // Also create an in-app notification
+        this.createNotification({
+          type: NotificationType.REMINDER,
+          title: 'Study Reminder',
+          message: message,
+          priority: NotificationPriority.MEDIUM,
+        });
+      }, delayMs);
+    } catch (error) {
+      console.error('Error scheduling reminder:', error);
+    }
   }
 }
 

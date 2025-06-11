@@ -1,11 +1,11 @@
 // src/components/Profile.tsx
-import useAuth from '../hooks/useAuth';
+import { useAuthContext } from '@/core/auth/AuthAdapter';
 
 export default function Profile() {
-  const { user, isLoading, getAccessToken } = useAuth();
+  const { user, isLoading, getToken } = useAuthContext();
 
   const fetchData = async () => {
-    const token = await getAccessToken();
+    const token = await getToken();
     const response = await fetch('http://localhost:8000/api/protected', {
       headers: {
         Authorization: `Bearer ${token}`
@@ -20,7 +20,7 @@ export default function Profile() {
     <div>
       {user ? (
         <>
-          <h1>Welcome {user.name}</h1>
+          <h1>Welcome {(user as any)?.name}</h1>
           <button onClick={fetchData}>Load Protected Data</button>
         </>
       ) : (

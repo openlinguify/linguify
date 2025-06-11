@@ -186,8 +186,20 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
     }
   };
 
+  // Fetch lesson progress - disabled since progress system removed
+  const fetchLessonProgress = useCallback(async (unitId: number) => {
+    // Progress system removed - using mock data
+    try {
+      // Mock progress data for now
+      const progressMap: Record<number, any> = {};
+      setLessonProgress(prev => ({ ...prev, ...progressMap }));
+    } catch (err) {
+      console.error(`Error fetching lesson progress for unit ${unitId}:`, err);
+    }
+  }, []);
+
   // Load lessons for a unit
-  const loadLessonsForUnit = async (unitId: number) => {
+  const loadLessonsForUnit = useCallback(async (unitId: number) => {
     // Code unchanged
     // Skip if already loaded or currently loading
     if (loadedLessons[unitId] || loadingLessonMap[unitId]) return;
@@ -216,22 +228,22 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
     } finally {
       setLoadingLessonMap(prev => ({ ...prev, [unitId]: false }));
     }
-  };
+  }, [loadedLessons, loadingLessonMap, targetLanguage, fetchLessonProgress]);
 
-  // Fetch lesson progress - disabled since progress system removed
-  const fetchLessonProgress = async (unitId: number) => {
+  // Fetch content progress - disabled since progress system removed
+  const fetchContentProgress = useCallback(async (lessonId: number) => {
     // Progress system removed - using mock data
     try {
       // Mock progress data for now
       const progressMap: Record<number, any> = {};
-      setLessonProgress(prev => ({ ...prev, ...progressMap }));
+      setContentProgress(prev => ({ ...prev, ...progressMap }));
     } catch (err) {
-      console.error(`Error fetching lesson progress for unit ${unitId}:`, err);
+      console.error(`Error fetching content progress for lesson ${lessonId}:`, err);
     }
-  };
+  }, []);
 
   // Load content for a lesson
-  const loadContentForLesson = async (lessonId: number) => {
+  const loadContentForLesson = useCallback(async (lessonId: number) => {
     // Code unchanged
     // Skip if already loaded or currently loading
     if (loadedContents[lessonId] || loadingContentMap[lessonId]) return;
@@ -260,19 +272,7 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
     } finally {
       setLoadingContentMap(prev => ({ ...prev, [lessonId]: false }));
     }
-  };
-
-  // Fetch content progress - disabled since progress system removed
-  const fetchContentProgress = async (lessonId: number) => {
-    // Progress system removed - using mock data
-    try {
-      // Mock progress data for now
-      const progressMap: Record<number, any> = {};
-      setContentProgress(prev => ({ ...prev, ...progressMap }));
-    } catch (err) {
-      console.error(`Error fetching content progress for lesson ${lessonId}:`, err);
-    }
-  };
+  }, [loadedContents, loadingContentMap, targetLanguage, fetchContentProgress]);
 
   // Handle unit click avec useCallback pour éviter les re-renders
   const handleUnitClick = useCallback(async (unitId: number) => {
@@ -286,7 +286,7 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
       setExpandedLessonId(null);
       await loadLessonsForUnit(unitId);
     }
-  }, [expandedUnitId]);
+  }, [expandedUnitId, loadLessonsForUnit]);
 
   // Handle lesson click avec useCallback
   const handleLessonClick = useCallback(async (lessonId: number, _unitId: number) => {
@@ -298,7 +298,7 @@ const ExpandableUnitLessonView: React.FC<ExpandableUnitLessonViewProps> = React.
       setExpandedLessonId(lessonId);
       await loadContentForLesson(lessonId);
     }
-  }, [expandedLessonId]);
+  }, [expandedLessonId, loadContentForLesson]);
 
   // Prefetch data on hover avec useCallback
   const handleLessonHover = useCallback((lessonId: number) => {

@@ -10,7 +10,7 @@ import {
   Star
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import NewInfo from '../_components/NewInfo';
 import LanguageSwitcher from '../_components/LanguageSwitcher';
@@ -34,12 +34,12 @@ export default function Home() {
   const [currentLocale, setCurrentLocale] = useState<AvailableLocales>('fr');
 
   // Available languages
-  const languages = [
+  const languages = useMemo(() => [
     { id: 'spanish', code: 'es', name: 'Español', flag: '🇪🇸', color: 'bg-red-500' },
     { id: 'english', code: 'en', name: 'English', flag: '🇬🇧', color: 'bg-blue-600' },
     { id: 'french', code: 'fr', name: 'Français', flag: '🇫🇷', color: 'bg-indigo-500' },
     { id: 'dutch', code: 'nl', name: 'Nederlands', flag: '🇳🇱', color: 'bg-orange-500' },
-  ];
+  ], []);
 
   // Load language from localStorage on startup
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function Home() {
         setActiveLanguage(matching.id);
       }
     }
-  }, []);
+  }, [languages]);
 
   // Listen for language changes from other components
   useEffect(() => {
@@ -72,7 +72,7 @@ export default function Home() {
   }, []);
 
   // Translation helper function
-  const t = (path: string, fallback: string): string => {
+  const t = useCallback((path: string, fallback: string): string => {
     try {
       const translations: Record<AvailableLocales, TranslationType> = {
         fr: frTranslations,
@@ -101,7 +101,7 @@ export default function Home() {
       console.error('Translation error:', error);
       return fallback;
     }
-  };
+  }, [currentLocale]);
 
   // Testimonials
   const testimonials = useMemo(() => [
@@ -123,7 +123,7 @@ export default function Home() {
       text: t('testimonials.camille.text', "Grâce à Linguify, j'ai pu communiquer avec les locaux lors de mon voyage à travers l'Espagne. Une expérience incroyable !"),
       avatar: '/img/avatar3.png',
     },
-  ], [currentLocale, t]);
+  ], [t]);
 
   // Features
   const features = useMemo(() => getAppFeatures(t), [t]);
@@ -173,7 +173,7 @@ export default function Home() {
       cta: t('pricing.enterprise.cta', "Contacter les ventes"),
       popular: false
     }
-  ], [currentLocale, t]);
+  ], [t]);
 
   // Stats
   const stats = useMemo(() => [
@@ -181,7 +181,7 @@ export default function Home() {
     { figure: "100+", label: t('stats.units', "Unités d'apprentissage dans chaque langue") },
     { figure: "500+", label: t('stats.lessons', "Leçons interactives") },
     { figure: "10000+", label: t('stats.words', "Mots et expressions à apprendre") },
-  ], [currentLocale, t]);
+  ], [t]);
 
   // Smooth fadeIn animation for sections
   const fadeIn = {

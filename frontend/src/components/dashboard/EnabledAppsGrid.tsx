@@ -50,17 +50,17 @@ export function EnabledAppsGrid() {
     // Preload critical data for specific apps
     if (routePath === '/learning') {
       // Use dynamic import to load the API module only when needed
-      import('@/addons/learning/api/courseAPI').then(({ courseAPI }) => {
+      import('@/addons/learning/api/courseAPI').then((module) => {
         // Cache the units data
-        courseAPI.getUnits().catch(() => {
+        module.default.getUnits().catch(() => {
           // Silently fail - this is just a prefetch
         });
       }).catch(() => {
         // Module loading failed - ignore for prefetch
       });
     } else if (routePath === '/flashcard') {
-      import('@/addons/flashcard/api/revisionAPI').then(({ revisionAPI }) => {
-        revisionAPI.getDecks().catch(() => {});
+      import('@/addons/flashcard/api/revisionAPI').then((module) => {
+        module.default.decks.getAll().catch(() => {});
       }).catch(() => {});
     }
   }, [router]);

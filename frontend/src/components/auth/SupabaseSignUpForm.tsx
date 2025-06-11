@@ -72,14 +72,15 @@ export function SupabaseSignUpForm() {
         username: formData.username || formData.email.split('@')[0]
       }
 
-      const { user, session, error } = await signUp(formData.email, formData.password, metadata)
+      const { user, error } = await signUp(formData.email, formData.password, metadata)
       
       if (error) {
-        setError(error.message)
+        setError((error as any).message || 'Une erreur s\'est produite')
       } else if (user) {
         setRegistrationSuccess(true)
         // Check if email confirmation is required
-        if (!session) {
+        // Note: session is not available in the signUp response, check user properties
+        if (!(user as any).email_confirmed_at) {
           setError('')
           setRegistrationSuccess(true)
           setEmailConfirmationRequired(true)
@@ -103,7 +104,7 @@ export function SupabaseSignUpForm() {
     try {
       const { error } = await signInWithOAuth(provider)
       if (error) {
-        setError(error.message)
+        setError((error as any).message || 'Une erreur s\'est produite')
       }
       // The redirect will happen automatically
     } catch (err: any) {

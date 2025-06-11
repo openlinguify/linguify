@@ -1,7 +1,7 @@
 // src/addons/quizz/components/QuizPlayer.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Clock, ArrowRight, ArrowLeft, Check, X, Trophy, Pause, Play } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,23 +53,6 @@ export const QuizPlayer: React.FC<QuizPlayerProps> = ({ quiz, onComplete, onExit
     initializeSession();
   }, [quiz.id]);
 
-  // Timer effect
-  useEffect(() => {
-    if (timeLeft === null || timeLeft <= 0 || isCompleted) return;
-
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev !== null && prev <= 1) {
-          handleCompleteQuiz();
-          return 0;
-        }
-        return prev !== null ? prev - 1 : null;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [timeLeft, isCompleted]);
-
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -83,7 +66,7 @@ export const QuizPlayer: React.FC<QuizPlayerProps> = ({ quiz, onComplete, onExit
     }));
   };
 
-  const calculateResults = () => {
+  const calculateResults = useCallback(() => {
     let correctAnswers = 0;
     let totalPoints = 0;
     let earnedPoints = 0;
@@ -125,9 +108,9 @@ export const QuizPlayer: React.FC<QuizPlayerProps> = ({ quiz, onComplete, onExit
       percentage: Math.round((earnedPoints / totalPoints) * 100),
       questionResults,
     };
-  };
+  }, [quiz.questions, answers, totalQuestions]);
 
-  const handleCompleteQuiz = async () => {
+  const handleCompleteQuiz = useCallback(async () => {
     if (!sessionId) return;
 
     try {
@@ -143,7 +126,7 @@ export const QuizPlayer: React.FC<QuizPlayerProps> = ({ quiz, onComplete, onExit
       const finalResults = {
         ...localResults,
         ...backendResults,
-        timeSpent: quiz.timeLimit ? (quiz.timeLimit * 60) - timeLeft : undefined
+        timeSpent: quiz.timeLimit && timeLeft !== null ? (quiz.timeLimit * 60) - timeLeft : undefined
       };
       
       setResults(finalResults);
@@ -159,7 +142,24 @@ export const QuizPlayer: React.FC<QuizPlayerProps> = ({ quiz, onComplete, onExit
     } finally {
       setLoading(false);
     }
-  };
+  }, [sessionId, quiz.id, quiz.timeLimit, timeLeft, calculateResults, onComplete]);
+
+  // Timer effect
+  useEffect(() => {
+    if (timeLeft === null || timeLeft <= 0 || isCompleted) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev !== null && prev <= 1) {
+          handleCompleteQuiz();
+          return 0;
+        }
+        return prev !== null ? prev - 1 : null;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft, isCompleted, handleCompleteQuiz]);
 
   const handleNext = () => {
     if (currentQuestionIndex < totalQuestions - 1) {

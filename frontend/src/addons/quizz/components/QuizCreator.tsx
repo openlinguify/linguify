@@ -29,19 +29,20 @@ interface Answer {
 interface QuizCreatorProps {
   onSave: (quiz: any) => void;
   onCancel: () => void;
+  initialData?: any;
 }
 
-export const QuizCreator: React.FC<QuizCreatorProps> = ({ onSave, onCancel }) => {
+export const QuizCreator: React.FC<QuizCreatorProps> = ({ onSave, onCancel, initialData }) => {
   const [quiz, setQuiz] = useState({
-    title: '',
-    description: '',
-    category: '',
-    difficulty: 'medium' as 'easy' | 'medium' | 'hard',
-    timeLimit: '',
-    isPublic: true,
+    title: initialData?.title || '',
+    description: initialData?.description || '',
+    category: initialData?.category || '',
+    difficulty: (initialData?.difficulty || 'medium') as 'easy' | 'medium' | 'hard',
+    timeLimit: initialData?.timeLimit || '',
+    isPublic: initialData?.isPublic ?? true,
   });
 
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<Question[]>(initialData?.questions || []);
   const [currentQuestion, setCurrentQuestion] = useState<Question>({
     id: '',
     type: 'mcq',

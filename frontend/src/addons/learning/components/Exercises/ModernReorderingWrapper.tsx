@@ -143,7 +143,7 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
             }
           };
           
-          const sentence = getSentenceByLanguage(targetLanguage) || item.sentence || '';
+          const sentence = String(getSentenceByLanguage(targetLanguage) || item.sentence || '');
           // Split sentence into words (removing extra spaces and punctuation handling)
           const words = sentence.trim().split(/\s+/).filter((word: string) => word.length > 0);
           
@@ -152,8 +152,8 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
             sentence: sentence,
             words: words, // Split the sentence into individual words
             correctOrder: words, // The correct order is the original sentence order
-            hint: item.hint || 'Essayez de mettre les mots dans l\'ordre logique.',
-            explanation: item.explanation || 'Vérifiez la structure grammaticale de la phrase.'
+            hint: String(item.hint || 'Essayez de mettre les mots dans l\'ordre logique.'),
+            explanation: String(item.explanation || 'Vérifiez la structure grammaticale de la phrase.')
           };
         });
         
@@ -180,8 +180,8 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
               sentence: q.sentence || '',
               words: q.target_words || [],
               correctOrder: q.correct_answer ? q.correct_answer.split(' ') : [],
-              hint: q.question_data?.hint,
-              explanation: q.question_data?.explanation
+              hint: String(q.question_data?.hint || 'Essayez de mettre les mots dans l\'ordre logique.'),
+              explanation: String(q.question_data?.explanation || 'Vérifiez la structure grammaticale de la phrase.')
             }));
 
           if (reorderingQuestions.length > 0) {
@@ -216,6 +216,26 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
   const safeCurrentIndex = exercises ? Math.min(currentIndex, exercises.length - 1) : 0;
   const currentExercise = exercises?.[safeCurrentIndex];
   const progress = exercises && exercises.length > 0 ? ((safeCurrentIndex + 1) / exercises.length) * 100 : 0;
+
+  const resetExercise = useCallback(() => {
+    setCurrentIndex(0);
+    setSelectedWords([]);
+    setAvailableWords([]);
+    setSubmitted({});
+    setScore(0);
+    setFinalScoreForDisplay(0);
+    setShowHint({});
+    setShowExplanation({});
+    setIsComplete(false);
+    setIsSuccessful(false);
+    
+    // Réinitialiser les mots pour le premier exercice
+    if (exercises && exercises.length > 0) {
+      const firstExercise = exercises[0];
+      const shuffled = [...firstExercise.words].sort(() => Math.random() - 0.5);
+      setAvailableWords(shuffled);
+    }
+  }, [exercises]);
 
   // Initialize words when current exercise changes
   useEffect(() => {
@@ -283,85 +303,6 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
       setSelectedWords([]);
     }
   };
-
-  const handleSubmit = useCallback(() => {
-    if (!currentExercise || submitted[currentExercise.id]) {
-      console.log('[ModernReorderingWrapper] ❌ No current exercise or already submitted');
-      return;
-    }
-
-    console.log('[ModernReorderingWrapper] 🔍 DETAILED SUBMIT DEBUG:');
-    console.log('  currentExercise:', currentExercise);
-    console.log('  selectedWords:', selectedWords);
-    console.log('  selectedWords.length:', selectedWords.length);
-    console.log('  selectedWords JSON:', JSON.stringify(selectedWords));
-    console.log('  correctOrder:', currentExercise.correctOrder);
-    console.log('  correctOrder.length:', currentExercise.correctOrder.length);
-    console.log('  correctOrder JSON:', JSON.stringify(currentExercise.correctOrder));
-    
-    const isCorrect = JSON.stringify(selectedWords) === JSON.stringify(currentExercise.correctOrder);
-    
-    console.log('[ModernReorderingWrapper] 📊 COMPARISON RESULT:');
-    console.log('  isCorrect:', isCorrect);
-    console.log('  currentScore before:', score);
-    
-    // Comparaison mot par mot pour debug
-    if (selectedWords.length === currentExercise.correctOrder.length) {
-      console.log('[ModernReorderingWrapper] 🔍 WORD BY WORD COMPARISON:');
-      for (let i = 0; i < selectedWords.length; i++) {
-        const matches = selectedWords[i] === currentExercise.correctOrder[i];
-        console.log(`  Position ${i}: "${selectedWords[i]}" vs "${currentExercise.correctOrder[i]}" = ${matches}`);
-      }
-    } else {
-      console.log('[ModernReorderingWrapper] ⚠️ DIFFERENT LENGTHS:', {
-        selectedLength: selectedWords.length,
-        correctLength: currentExercise.correctOrder.length
-      });
-    }
-
-    // Marquer comme soumis IMMÉDIATEMENT pour éviter les clics multiples
-    setSubmitted(prev => {
-      const newSubmitted = {
-        ...prev,
-        [currentExercise.id]: true
-      };
-      console.log('[ModernReorderingWrapper] 📝 Updated submitted state:', newSubmitted);
-      return newSubmitted;
-    });
-
-    setShowExplanation(prev => ({
-      ...prev,
-      [currentExercise.id]: true
-    }));
-
-    // Calculer le nouveau score
-    const newScore = isCorrect ? score + 1 : score;
-    console.log('[ModernReorderingWrapper] 🎯 SCORE CALCULATION:');
-    console.log('  isCorrect:', isCorrect);
-    console.log('  currentScore:', score);
-    console.log('  newScore:', newScore);
-
-    if (isCorrect) {
-      console.log('[ModernReorderingWrapper] ✅ CORRECT ANSWER - Updating score and playing success sound');
-      setScore(prev => {
-        const updatedScore = prev + 1;
-        console.log('[ModernReorderingWrapper] 📈 Score updated from', prev, 'to', updatedScore);
-        return updatedScore;
-      });
-      speakTarget(selectedWords.join(' ')); // Prononce dans la langue d'apprentissage
-      playSuccessSound(); // Son de succès pour réponse correcte
-    } else {
-      console.log('[ModernReorderingWrapper] ❌ INCORRECT ANSWER - Playing fail sound');
-      playFailSound(); // Son d'échec pour réponse incorrecte
-    }
-
-    // Auto-progression après 2.5 secondes avec le nouveau score
-    console.log('[ModernReorderingWrapper] ⏰ Setting timeout for auto-progression with newScore:', newScore);
-    setTimeout(() => {
-      console.log('[ModernReorderingWrapper] ⏰ Timeout triggered - calling handleNext with score:', newScore);
-      handleNext(newScore);
-    }, 2500);
-  }, [currentExercise, selectedWords, score, speakTarget, playSuccessSound, playFailSound, submitted]); // handleNext will be stable
 
   const handleNext = useCallback((finalScore?: number) => {
     // Protection contre les appels multiples
@@ -453,27 +394,86 @@ const ModernReorderingWrapper: React.FC<ReorderingWrapperProps> = ({
         }, 3000); // 3 secondes pour lire le message
       }
     }
-  }, [exercises, currentIndex, score, isComplete, playFailSound, showCompletion]); // resetExercise is stable
+  }, [exercises, currentIndex, score, isComplete, playFailSound, showCompletion, resetExercise]);
 
-  const resetExercise = () => {
-    setCurrentIndex(0);
-    setSelectedWords([]);
-    setAvailableWords([]);
-    setSubmitted({});
-    setScore(0);
-    setFinalScoreForDisplay(0);
-    setShowHint({});
-    setShowExplanation({});
-    setIsComplete(false);
-    setIsSuccessful(false);
-    
-    // Réinitialiser les mots pour le premier exercice
-    if (exercises && exercises.length > 0) {
-      const firstExercise = exercises[0];
-      const shuffled = [...firstExercise.words].sort(() => Math.random() - 0.5);
-      setAvailableWords(shuffled);
+  const handleSubmit = useCallback(() => {
+    if (!currentExercise || submitted[currentExercise.id]) {
+      console.log('[ModernReorderingWrapper] ❌ No current exercise or already submitted');
+      return;
     }
-  };
+
+    console.log('[ModernReorderingWrapper] 🔍 DETAILED SUBMIT DEBUG:');
+    console.log('  currentExercise:', currentExercise);
+    console.log('  selectedWords:', selectedWords);
+    console.log('  selectedWords.length:', selectedWords.length);
+    console.log('  selectedWords JSON:', JSON.stringify(selectedWords));
+    console.log('  correctOrder:', currentExercise.correctOrder);
+    console.log('  correctOrder.length:', currentExercise.correctOrder.length);
+    console.log('  correctOrder JSON:', JSON.stringify(currentExercise.correctOrder));
+    
+    const isCorrect = JSON.stringify(selectedWords) === JSON.stringify(currentExercise.correctOrder);
+    
+    console.log('[ModernReorderingWrapper] 📊 COMPARISON RESULT:');
+    console.log('  isCorrect:', isCorrect);
+    console.log('  currentScore before:', score);
+    
+    // Comparaison mot par mot pour debug
+    if (selectedWords.length === currentExercise.correctOrder.length) {
+      console.log('[ModernReorderingWrapper] 🔍 WORD BY WORD COMPARISON:');
+      for (let i = 0; i < selectedWords.length; i++) {
+        const matches = selectedWords[i] === currentExercise.correctOrder[i];
+        console.log(`  Position ${i}: "${selectedWords[i]}" vs "${currentExercise.correctOrder[i]}" = ${matches}`);
+      }
+    } else {
+      console.log('[ModernReorderingWrapper] ⚠️ DIFFERENT LENGTHS:', {
+        selectedLength: selectedWords.length,
+        correctLength: currentExercise.correctOrder.length
+      });
+    }
+
+    // Marquer comme soumis IMMÉDIATEMENT pour éviter les clics multiples
+    setSubmitted(prev => {
+      const newSubmitted = {
+        ...prev,
+        [currentExercise.id]: true
+      };
+      console.log('[ModernReorderingWrapper] 📝 Updated submitted state:', newSubmitted);
+      return newSubmitted;
+    });
+
+    setShowExplanation(prev => ({
+      ...prev,
+      [currentExercise.id]: true
+    }));
+
+    // Calculer le nouveau score
+    const newScore = isCorrect ? score + 1 : score;
+    console.log('[ModernReorderingWrapper] 🎯 SCORE CALCULATION:');
+    console.log('  isCorrect:', isCorrect);
+    console.log('  currentScore:', score);
+    console.log('  newScore:', newScore);
+
+    if (isCorrect) {
+      console.log('[ModernReorderingWrapper] ✅ CORRECT ANSWER - Updating score and playing success sound');
+      setScore(prev => {
+        const updatedScore = prev + 1;
+        console.log('[ModernReorderingWrapper] 📈 Score updated from', prev, 'to', updatedScore);
+        return updatedScore;
+      });
+      speakTarget(selectedWords.join(' ')); // Prononce dans la langue d'apprentissage
+      playSuccessSound(); // Son de succès pour réponse correcte
+    } else {
+      console.log('[ModernReorderingWrapper] ❌ INCORRECT ANSWER - Playing fail sound');
+      playFailSound(); // Son d'échec pour réponse incorrecte
+    }
+
+    // Auto-progression après 2.5 secondes avec le nouveau score
+    console.log('[ModernReorderingWrapper] ⏰ Setting timeout for auto-progression with newScore:', newScore);
+    setTimeout(() => {
+      console.log('[ModernReorderingWrapper] ⏰ Timeout triggered - calling handleNext with score:', newScore);
+      handleNext(newScore);
+    }, 2500);
+  }, [currentExercise, selectedWords, score, speakTarget, playSuccessSound, playFailSound, submitted, handleNext]);
 
   const handlePrevious = () => {
     if (safeCurrentIndex > 0) {

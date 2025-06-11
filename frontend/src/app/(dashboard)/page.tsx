@@ -134,12 +134,14 @@ export default function DashboardHome() {
   return (
     <div className="w-full space-y-8 max-w-7xl mx-auto font-poppins">
       {/* User Profile Card */}
-      <UserProfileCard
-        user={user}
-        targetLanguageName={targetLanguageName}
-        languageLevel={languageLevel}
-        t={t}
-      />
+      {user && (
+        <UserProfileCard
+          user={user}
+          targetLanguageName={targetLanguageName}
+          languageLevel={languageLevel}
+          t={t}
+        />
+      )}
 
       {/* Enabled Apps Grid */}
       <div style={{ marginTop: '10vh' }}>

@@ -1,7 +1,7 @@
 // src/addons/quizz/components/QuizLeaderboard.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Crown, Medal, Trophy, Users, Calendar, Filter, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,16 +24,12 @@ const QuizLeaderboard: React.FC<QuizLeaderboardProps> = ({
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [selectedCategory, setSelectedCategory] = useState(category);
-  const [selectedTimeframe, setSelectedTimeframe] = useState(timeframe);
+  const [selectedTimeframe, setSelectedTimeframe] = useState<'daily' | 'weekly' | 'monthly' | 'alltime'>(timeframe);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentUserRank, setCurrentUserRank] = useState<{ rank: number; total: number } | null>(null);
 
-  useEffect(() => {
-    fetchLeaderboard();
-  }, [selectedCategory, selectedTimeframe]);
-
-  const fetchLeaderboard = async () => {
+  const fetchLeaderboard = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -55,7 +51,11 @@ const QuizLeaderboard: React.FC<QuizLeaderboardProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCategory, selectedTimeframe]);
+
+  useEffect(() => {
+    fetchLeaderboard();
+  }, [fetchLeaderboard]);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -152,7 +152,7 @@ const QuizLeaderboard: React.FC<QuizLeaderboardProps> = ({
         </div>
         
         <div className="flex gap-3">
-          <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
+          <Select value={selectedTimeframe} onValueChange={(value: 'daily' | 'weekly' | 'monthly' | 'alltime') => setSelectedTimeframe(value)}>
             <SelectTrigger className="w-40">
               <Calendar className="h-4 w-4 mr-2" />
               <SelectValue />
@@ -187,17 +187,17 @@ const QuizLeaderboard: React.FC<QuizLeaderboardProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                  {currentUserRank}
+                  {currentUserRank.rank}
                 </div>
                 <div>
                   <p className="font-medium">Votre position</p>
                   <p className="text-sm text-gray-600">
-                    {currentUserRank === 1 ? 'Vous êtes en tête !' : `${currentUserRank - 1} place(s) du podium`}
+                    {currentUserRank.rank === 1 ? 'Vous êtes en tête !' : `${currentUserRank.rank - 1} place(s) du podium`}
                   </p>
                 </div>
               </div>
               <Badge className="bg-purple-100 text-purple-800">
-                #{currentUserRank}
+                #{currentUserRank.rank}
               </Badge>
             </div>
           </CardContent>

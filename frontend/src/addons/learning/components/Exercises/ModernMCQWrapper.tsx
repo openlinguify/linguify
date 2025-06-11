@@ -148,8 +148,8 @@ const ModernMCQWrapper: React.FC<MCQWrapperProps> = ({
                 question: q.question || '',
                 options: q.options || [],
                 correct_answer: q.correct_answer || '',
-                explanation: q.question_data?.explanation,
-                hint: q.question_data?.hint
+                explanation: q.question_data?.explanation as string | undefined,
+                hint: q.question_data?.hint as string | undefined
               }));
 
             if (mcqFromTestRecap.length > 0) {
@@ -176,7 +176,7 @@ const ModernMCQWrapper: React.FC<MCQWrapperProps> = ({
     
     console.log('[ModernMCQWrapper] Successfully processed data with', mcqQuestions.length, 'questions');
     return { questions: mcqQuestions };
-  }, []);
+  }, [targetLanguage]);
 
   // Use the maintenance-aware data hook
   const { data, loading: isLoading, error } = useMaintenanceAwareData({

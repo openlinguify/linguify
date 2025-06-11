@@ -1,13 +1,28 @@
 // src/core/api/notificationManager.ts
 import apiClient from '@/core/api/apiClient';
 import { 
-  Notification, 
+  type Notification, 
   NotificationType, 
   NotificationPriority,
   NotificationDto as ApiNotification,
   NotificationSchedule
 } from '@/core/types/notification.types';
 import { LastAccessedLesson } from '@/core/api/lastAccessedLessonService';
+
+// Type for stored schedule
+interface StoredSchedule {
+  title: string;
+  message: string;
+  schedule: NotificationSchedule;
+  options?: {
+    icon?: string;
+    type?: NotificationType;
+    priority?: NotificationPriority;
+    data?: Record<string, unknown>;
+  };
+  nextExecutionTime: string | number | Date;
+  timeoutId?: number;
+}
 
 /**
  * Enhanced notification manager service
@@ -39,7 +54,7 @@ class NotificationManager {
     if (Notification.permission === 'granted') {
       try {
         const notification = new window.Notification(title, options);
-        return notification;
+        return notification as any;
       } catch (error) {
         console.error('Error showing notification:', error);
         return false;
@@ -50,7 +65,7 @@ class NotificationManager {
       if (permission === 'granted') {
         try {
           const notification = new window.Notification(title, options);
-          return notification;
+          return notification as any;
         } catch (error) {
           console.error('Error showing notification:', error);
           return false;
@@ -193,7 +208,7 @@ class NotificationManager {
     if (schedules[scheduleId]) {
       // Clear any pending timeout
       if (schedules[scheduleId].timeoutId) {
-        window.clearTimeout(schedules[scheduleId].timeoutId);
+        window.clearTimeout(schedules[scheduleId].timeoutId as any);
       }
       
       // Remove from stored schedules
@@ -213,7 +228,7 @@ class NotificationManager {
     if (!schedule) return;
     
     const now = new Date();
-    const nextExecution = new Date(schedule.nextExecutionTime);
+    const nextExecution = new Date(schedule.nextExecutionTime as string | number | Date);
     
     // Calculate delay until next execution
     const delayMs = Math.max(0, nextExecution.getTime() - now.getTime());
@@ -224,7 +239,7 @@ class NotificationManager {
       if (this.canShowNotifications()) {
         this.showBrowserNotification(schedule.title, {
           body: schedule.message,
-          icon: schedule.options.icon || '/logo/logo.png',
+          icon: schedule.options?.icon || '/logo/logo.png',
           tag: `scheduled-${scheduleId}-${Date.now()}`,
         });
       }
@@ -233,9 +248,9 @@ class NotificationManager {
       this.dispatchNotificationEvent({
         title: schedule.title,
         message: schedule.message,
-        type: schedule.options.type || NotificationType.REMINDER,
-        priority: schedule.options.priority || NotificationPriority.MEDIUM,
-        data: schedule.options.data,
+        type: schedule.options?.type || NotificationType.REMINDER,
+        priority: schedule.options?.priority || NotificationPriority.MEDIUM,
+        data: schedule.options?.data,
       });
       
       // Calculate next execution time for recurring schedules
@@ -348,7 +363,7 @@ class NotificationManager {
    * Get all stored notification schedules
    * @returns Object with all schedules
    */
-  private getStoredSchedules(): Record<string, Record<string, unknown>> {
+  private getStoredSchedules(): Record<string, StoredSchedule> {
     const stored = localStorage.getItem('notification_schedules');
     return stored ? JSON.parse(stored) : {};
   }

@@ -555,7 +555,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
           console.log("Deletion complete", { progress: 100 });
         }, 500);
 
-        processed = result.deleted || totalCards;
+        processed = totalCards; // Assume all cards were deleted if batch succeeded
 
       } catch (batchError) {
         console.warn("Batch delete failed, using individual deletion", batchError);
@@ -673,7 +673,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
       title: t('dashboard.flashcards.exportComplete'),
       description: t('dashboard.flashcards.exportSuccess', { count: allFilteredCards.length.toString() })
     });
-  }, [allFilteredCards, deck, t]);
+  }, [allFilteredCards, deck, t, toast]);
 
   // ======= Render Helpers =======
   const renderTableHead = () => (

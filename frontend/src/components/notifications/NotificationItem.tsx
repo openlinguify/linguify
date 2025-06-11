@@ -14,7 +14,7 @@ import {
   AlertCircle,
   BarChart
 } from "lucide-react";
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { Button } from '@/components/ui/button';
 import { useNotifications } from '@/core/context/NotificationContext';
 import { Notification, NotificationType } from '@/core/types/notification.types';

@@ -23,15 +23,21 @@ const EditStudySet = ({
   studySet: RouterOutputs["studySet"]["byId"];
 }) => {
   const { data } = api.studySet.byId.useQuery(
-    { id: studySet.id },
+    { id: studySet?.id ?? "" },
     { initialData: studySet },
   );
+
+  if (!studySet) {
+    return <div>Study set not found</div>;
+  }
 
   return (
     <StudySetForm
       defaultValues={{
         ...data,
-        description: data?.description ?? undefined,
+        description: (data && typeof data === 'object' && 'description' in data) 
+          ? (data as { description?: string | null }).description ?? undefined 
+          : undefined,
       }}
     />
   );

@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [enrichedUser, setEnrichedUser] = useState<Record<string, unknown> | null>(null)
   const [profileLoading, setProfileLoading] = useState(false)
   const isAuthenticated = supabaseIsAuthenticated
-  const token = session?.access_token || null
+  const token = session?.access_token ? String(session.access_token) : null
 
   // Enrichir les données utilisateur avec le profil Django
   useEffect(() => {
@@ -93,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     loadUserProfile()
-  }, [supabaseUser, token])
+  }, [supabaseUser, token, profileLoading])
 
   // Adapter les méthodes pour maintenir la compatibilité
   const login = async (returnTo?: string) => {

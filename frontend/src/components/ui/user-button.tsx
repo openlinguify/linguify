@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function UserButton() {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, signOut, isAuthenticated } = useAuth();
   const router = useRouter();
 
   if (!isAuthenticated) {
@@ -31,7 +31,7 @@ export function UserButton() {
     );
   }
 
-  const userName = user?.name || "User";
+  const userName = (user?.user_metadata?.name as string) || (user?.user_metadata?.full_name as string) || user?.email?.split('@')[0] || "User";
   const profilePicture = (user as any)?.profile_picture || (user as any)?.picture;
 
   return (
@@ -74,7 +74,7 @@ export function UserButton() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => logout()}
+          onClick={() => signOut()}
           className="text-red-600 focus:text-red-600"
           aria-label="Log out"
         >

@@ -96,7 +96,7 @@ const FlashcardMain = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-purple to-brand-gold text-transparent bg-clip-text">
-          {t('dashboard.flashcards.userDecks', { name: (user && 'name' in user ? user.name : '') || '' })}
+          {t('dashboard.flashcards.userDecks')}
         </h1>
         <div className="flex gap-2">
           {/* Nouveau bouton pour accéder à l'explorateur de decks publics */}

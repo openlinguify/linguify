@@ -78,7 +78,7 @@ export const UserProgress = ({
     } else {
       setDisplayValue(value);
     }
-  }, [value, animated]);
+  }, [value, animated, displayValue]);
 
   const getStatusClass = () => {
     if (value === 100) return "complete";

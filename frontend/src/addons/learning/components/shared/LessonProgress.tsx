@@ -43,8 +43,8 @@ const LessonProgress: React.FC<LessonProgressProps> = ({
   
   // Always call the hook, but pass a flag to control its behavior
   const exerciseProgressData = useExerciseProgress({ 
-    lessonId: autoDetectExercises ? lessonId : null, 
-    unitId: autoDetectExercises ? unitId : null 
+    lessonId: autoDetectExercises && lessonId ? lessonId : '', 
+    unitId: autoDetectExercises ? unitId : undefined 
   });
   
   // Use the exercise progress hook data if autoDetectExercises is true

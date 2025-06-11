@@ -128,7 +128,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <TermsNotification />
         
         {/* Terms acceptance dialog */}
-        {showTermsDialog && <TermsAcceptance />}
+        {showTermsDialog && (
+          <TermsAcceptance 
+            isOpen={showTermsDialog} 
+            onClose={() => {}} 
+            onAccept={() => {}} 
+          />
+        )}
 
         <Header />
         {/* Main Content */}

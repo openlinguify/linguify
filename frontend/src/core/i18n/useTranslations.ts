@@ -296,13 +296,13 @@ export function useTranslation() {
       if (obj[namespace] && typeof obj[namespace] === 'object') {
         if (keys.length === 2) {
           // Simple namespace.key pattern
-          return obj[namespace][keys[1]];
+          return (obj as any)[namespace][keys[1]];
         } else {
           // Deeper nesting like namespace.section.key
           let nestedValue = obj[namespace];
           for (let i = 1; i < keys.length; i++) {
             if (!nestedValue || typeof nestedValue !== 'object') return undefined;
-            nestedValue = nestedValue[keys[i]];
+            nestedValue = (nestedValue as any)[keys[i]];
           }
           return nestedValue;
         }
@@ -313,7 +313,7 @@ export function useTranslation() {
     let current = obj;
     for (const key of keys) {
       if (!current || typeof current !== 'object') return undefined;
-      current = current[key];
+      current = (current as any)[key];
     }
     return current;
   }, []);

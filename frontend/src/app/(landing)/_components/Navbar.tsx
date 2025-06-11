@@ -62,14 +62,14 @@ export const Navbar = () => {
   // Translation helper function
   const t = (path: string, fallback: string): string => {
     try {
-      const translations: Record<AvailableLocales, TranslationType> = {
+      const translations: Record<AvailableLocales, any> = {
         fr: frTranslations,
         en: enTranslations,
         es: esTranslations,
         nl: nlTranslations
       };
 
-      const currentTranslation = translations[currentLocale] || translations.en;
+      const currentTranslation = translations[currentLocale] || translations.en || {};
 
       // Split the path (e.g., "nav.home") into parts
       const keys = path.split('.');

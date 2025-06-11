@@ -43,7 +43,7 @@ const FillBlankQuestion: React.FC<FillBlankQuestionProps> = ({
 
   // Parse the sentence to extract text segments and identify blank positions
   const parsedSentence = React.useMemo(() => {
-    if (!data.sentence) return { segments: [], blankCount: 0 };
+    if (!data.sentence) return [];
     // Support multiple blank formats: __blank__, ___, {blank}, [blank]
     let sentence = data.sentence;
     const blankPatterns = ['__blank__', '___', '{blank}', '[blank]', '{}', '[]'];
@@ -210,7 +210,7 @@ const FillBlankQuestion: React.FC<FillBlankQuestionProps> = ({
 
       <Card className="p-4 bg-gray-50 dark:bg-gray-900">
         <div className="text-base">
-          {parsedSentence.map((part, index) => (
+          {parsedSentence.map((part: { text: string; isLast: boolean; blankIndex: number }, index: number) => (
             <React.Fragment key={index}>
               {part.text}
               {!part.isLast && (

@@ -20,7 +20,7 @@ const MatchGameTimer = ({ updateEllapsedTime }: MatchGameTimerProps) => {
       clearInterval(interval);
       updateEllapsedTime(timeRef.current);
     };
-  }, []);
+  }, [updateEllapsedTime]);
 
   return (
     <span className="mb-4 inline-block text-xl tabular-nums">

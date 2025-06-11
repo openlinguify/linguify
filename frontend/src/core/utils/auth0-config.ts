@@ -3,17 +3,16 @@ import { ConfigParameters } from '@auth0/nextjs-auth0/edge';
 
 export const auth0Config: ConfigParameters = {
   auth0Logout: true,
-  auth0: {
-    clientID: process.env.AUTH0_CLIENT_ID!,
-    clientSecret: process.env.AUTH0_CLIENT_SECRET!,
-    baseURL: process.env.AUTH0_BASE_URL!,
-    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL!,
+  clientID: process.env.AUTH0_CLIENT_ID!,
+  clientSecret: process.env.AUTH0_CLIENT_SECRET!,
+  baseURL: process.env.AUTH0_BASE_URL!,
+  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL!,
+  authorizationParams: {
     scope: 'openid profile email offline_access',
   },
   routes: {
     callback: '/api/auth/callback',
     login: '/api/auth/login',
-    logout: '/api/auth/logout',
     postLogoutRedirect: '/',
   },
   session: {
@@ -29,6 +28,4 @@ export const auth0Config: ConfigParameters = {
       secure: process.env.NODE_ENV === 'production',
     },
   },
-  errorPageRoute: '/error',
-  baseURL: process.env.AUTH0_BASE_URL,
 };

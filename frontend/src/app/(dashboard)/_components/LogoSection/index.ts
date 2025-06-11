@@ -1,1 +1,1 @@
-export { LogoSection } from './logo-section';
+export { default as LogoSection } from './logo-section';

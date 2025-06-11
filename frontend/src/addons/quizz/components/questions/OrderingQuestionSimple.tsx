@@ -1,7 +1,7 @@
 // src/addons/quizz/components/questions/OrderingQuestionSimple.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, ArrowUp, ArrowDown } from 'lucide-react';
@@ -29,6 +29,8 @@ const OrderingQuestion: React.FC<OrderingQuestionProps> = ({
 }) => {
   const [items, setItems] = useState<OrderingItem[]>([]);
 
+  const isValueEmpty = value.length === 0;
+
   useEffect(() => {
     if (value.length > 0) {
       // Reconstruct items from saved order
@@ -42,7 +44,7 @@ const OrderingQuestion: React.FC<OrderingQuestionProps> = ({
       setItems(shuffled);
       onChange(shuffled.map(item => item.id));
     }
-  }, [question.items, value.length === 0]);
+  }, [question.items, isValueEmpty, value, onChange]);
 
   const moveItem = (index: number, direction: 'up' | 'down') => {
     const newItems = [...items];

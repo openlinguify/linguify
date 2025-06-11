@@ -288,7 +288,6 @@ export const notebookAPI = {
   /**
    * Récupérer les notes dues pour révision avec pagination standard
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getDueForReview(_page?: number): Promise<{notes: Note[], nextPage: number | null, prevPage: number | null, totalCount: number}> {
     // Skip the API call since we know it's causing a 500 error
     // Return mock data to prevent errors
@@ -404,7 +403,6 @@ export const notebookAPI = {
   /**
    * Marquer une note comme révisée
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async markReviewed(id: number, _successful?: boolean): Promise<Note> {
     // Skip the API call since we're having server issues
     // Return a synthetic note object to prevent errors
@@ -732,7 +730,6 @@ export const notebookAPI = {
   /**
    * Disable link sharing for a note
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async disableLinkSharing(_noteId: number): Promise<void> {
     // Skip the API call since we know the endpoint doesn't exist yet
     console.debug('Link sharing API endpoint not implemented yet - mock operation');
@@ -766,7 +763,6 @@ export const notebookAPI = {
    * Get link sharing status and link for a note
    */
   async getLinkSharing(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _noteId: number
   ): Promise<{ enabled: boolean; link?: string; expiration_days?: number }> {
     // Skip the API call since we know the endpoint doesn't exist yet

@@ -82,37 +82,20 @@ export function useExerciseSession({
     return score >= passingScore;
   }, [score, passingScore]);
 
-  // Enregistrer une réponse
-  const recordAnswer = useCallback((isCorrect: boolean) => {
-    if (isCorrect) {
-      setCorrectAnswers(prev => prev + 1);
+  // Timer functions - declared first to avoid hoisting issues
+  const pauseTimer = useCallback(() => {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
     }
-    setTotalAnswers(prev => prev + 1);
-  }, []);
+  }, [timerInterval]);
 
-  // Navigation
-  const nextItem = useCallback(() => {
-    if (currentIndex < totalItems - 1) {
-      setCurrentIndex(prev => prev + 1);
-    } else {
-      // Dernier item - compléter automatiquement
-      complete();
-    }
-  }, [currentIndex, totalItems]);
+  const resetTimer = useCallback(() => {
+    pauseTimer();
+    setTimeSpent(0);
+  }, [pauseTimer]);
 
-  const previousItem = useCallback(() => {
-    if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
-    }
-  }, [currentIndex]);
-
-  const goToItem = useCallback((index: number) => {
-    if (index >= 0 && index < totalItems) {
-      setCurrentIndex(index);
-    }
-  }, [totalItems]);
-
-  // Completion
+  // Completion function - declared before being used
   const complete = useCallback((): ExerciseResult => {
     const result: ExerciseResult = {
       score,
@@ -129,19 +112,8 @@ export function useExerciseSession({
     onComplete?.(result);
     
     return result;
-  }, [score, correctAnswers, totalAnswers, accuracy, timeSpent, isPassed, onComplete]);
+  }, [score, correctAnswers, totalAnswers, accuracy, timeSpent, isPassed, onComplete, pauseTimer]);
 
-  // Reset
-  const reset = useCallback(() => {
-    setCurrentIndex(0);
-    setCorrectAnswers(0);
-    setTotalAnswers(0);
-    setTimeSpent(0);
-    setIsComplete(false);
-    resetTimer();
-  }, []);
-
-  // Timer functions
   const startTimer = useCallback(() => {
     if (timerInterval) {
       clearInterval(timerInterval);
@@ -153,8 +125,6 @@ export function useExerciseSession({
         
         // Vérifier la limite de temps
         if (timeLimit && newTime >= timeLimit) {
-          clearInterval(interval);
-          setTimerInterval(null);
           onTimeUp?.();
           complete();
         }
@@ -166,17 +136,45 @@ export function useExerciseSession({
     setTimerInterval(interval);
   }, [timerInterval, timeLimit, onTimeUp, complete]);
 
-  const pauseTimer = useCallback(() => {
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      setTimerInterval(null);
+  // Enregistrer une réponse
+  const recordAnswer = useCallback((isCorrect: boolean) => {
+    if (isCorrect) {
+      setCorrectAnswers(prev => prev + 1);
     }
-  }, [timerInterval]);
+    setTotalAnswers(prev => prev + 1);
+  }, []);
 
-  const resetTimer = useCallback(() => {
-    pauseTimer();
+  // Navigation
+  const nextItem = useCallback(() => {
+    if (currentIndex < totalItems - 1) {
+      setCurrentIndex(prev => prev + 1);
+    } else {
+      // Dernier item - compléter automatiquement
+      complete();
+    }
+  }, [currentIndex, totalItems, complete]);
+
+  const previousItem = useCallback(() => {
+    if (currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
+    }
+  }, [currentIndex]);
+
+  const goToItem = useCallback((index: number) => {
+    if (index >= 0 && index < totalItems) {
+      setCurrentIndex(index);
+    }
+  }, [totalItems]);
+
+  // Reset
+  const reset = useCallback(() => {
+    setCurrentIndex(0);
+    setCorrectAnswers(0);
+    setTotalAnswers(0);
     setTimeSpent(0);
-  }, [pauseTimer]);
+    setIsComplete(false);
+    resetTimer();
+  }, [resetTimer]);
 
   return {
     // État actuel
@@ -206,5 +204,3 @@ export function useExerciseSession({
     resetTimer
   };
 }
-
-export default useExerciseSession;

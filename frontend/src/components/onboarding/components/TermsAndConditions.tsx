@@ -102,14 +102,16 @@ const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({
   // Determine if we should show development mode message
   const isDevelopmentMode = typeof window !== 'undefined' && window.location.hostname === 'localhost';
 
-  // Get terms sections from translations or use defaults
-  const sections = t('terms.sections', { fallback: mockSections });
-  const keyPoints = t('terms.keyPoints', { fallback: defaultKeyPoints });
+  // Get terms sections from translations or use defaults  
+  const sectionsFromTranslation = t('terms.sections', {}, '');
+  const keyPointsFromTranslation = t('terms.keyPoints', {}, '');
 
-  // In development mode, always use mock data
-  const termsData = isDevelopmentMode
-    ? { sections: mockSections, keyPoints: defaultKeyPoints }
-    : { sections, keyPoints };
+  // Ensure we have array data (fallback to mock if translation returns string)
+  const sections = Array.isArray(sectionsFromTranslation) ? sectionsFromTranslation : mockSections;
+  const keyPoints = Array.isArray(keyPointsFromTranslation) ? keyPointsFromTranslation : defaultKeyPoints;
+
+  // Use the processed arrays
+  const termsData = { sections, keyPoints };
 
   // Helper functions
   const toggleSection = (id: string) => {
@@ -119,7 +121,7 @@ const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({
   };
 
   const expandAll = () => {
-    setExpandedSections(sections.map((section: any) => section.id));
+    setExpandedSections(termsData.sections.map((section: any) => section.id));
   };
 
   const collapseAll = () => {

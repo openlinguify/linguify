@@ -1,7 +1,7 @@
 // src/app/(dashboard)/(apps)/flashcard/learn/[id]/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -65,69 +65,53 @@ export default function LearnPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // Load cards and deck information
-  useEffect(() => {
-    const loadData = async () => {
-      if (!id) return;
+  // Shuffle an array
+  const shuffleArray = useCallback(<T,>(array: T[]): T[] => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  }, []);
 
-      try {
-        setIsLoading(true);
-        
-        // Get deck information
-        const deckData = await revisionApi.decks.getById(Number(id));
-        setDeckInfo({
-          name: deckData.name,
-          description: deckData.description || ""
-        });
+  // Get random incorrect answers
+  const getRandomIncorrectAnswers = useCallback((allCards: any[], currentCard: any, count: number): string[] => {
+    const otherCards = allCards.filter(card => card.id !== currentCard.id);
+    const shuffled = shuffleArray(otherCards);
+    return shuffled.slice(0, count).map(card => card.back_text);
+  }, [shuffleArray]);
 
-        // Get all the flashcards
-        const cards = await revisionApi.flashcards.getAll(Number(id));
-        setAllFlashcards(cards);
-        
-        // Calculate statistics for the deck
-        updateStatistics(cards);
-        
-        // Show settings dialog on initial load
-        if (isInitialLoad) {
-          setShowSettings(true);
-          setIsInitialLoad(false);
-        } else {
-          // Apply current settings to filter cards
-          applySettings(settings, cards);
-        }
-      } catch (error) {
-        console.error("Failed to load flashcards:", error);
-        toast({
-          title: t('dashboard.flashcards.modes.learn.errorTitle'),
-          description: t('dashboard.flashcards.modes.learn.errorDescription'),
-          variant: "destructive"
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Generate multiple choice questions
+  const generateLearnQuestions = useCallback((cards: any[]): LearnQuestion[] => {
+    return cards.map(card => {
+      // Get 3 random incorrect answers
+      const incorrectAnswers = getRandomIncorrectAnswers(allFlashcards, card, 3);
+      
+      // Shuffle all options
+      const allOptions = shuffleArray([card.back_text, ...incorrectAnswers]);
+      
+      return {
+        id: card.id,
+        term: card.front_text,
+        correctAnswer: card.back_text,
+        allOptions
+      };
+    });
+  }, [allFlashcards, shuffleArray, getRandomIncorrectAnswers]);
 
-    loadData();
-  }, [id, toast, isInitialLoad, t]);
-
-  // Update statistics for deck
-  const updateStatistics = (cards: any[]) => {
-    const known = cards.filter(card => card.learned).length;
-    const reviewing = cards.filter(card => !card.learned && card.review_count > 0).length;
-    const newCards = cards.filter(card => !card.learned && card.review_count === 0).length;
-    const difficult = cards.filter(card => !card.learned && card.review_count > 2).length;
-    
-    setStats({
-      total: cards.length,
-      known,
-      reviewing,
-      new: newCards,
-      difficult
+  // Handle save settings
+  const handleSaveSettings = () => {
+    applySettings(settings);
+    setShowSettings(false);
+    toast({
+      title: t('dashboard.flashcards.modes.learn.settingsApplied'),
+      description: t('dashboard.flashcards.modes.learn.learningSessionUpdated'),
     });
   };
-  
+
   // Apply settings to filter cards
-  const applySettings = (newSettings: LearnSettings, cardsData = allFlashcards) => {
+  const applySettings = useCallback((newSettings: LearnSettings, cardsData = allFlashcards) => {
     let filtered;
     
     // Filter by card status
@@ -159,7 +143,7 @@ export default function LearnPage() {
     
     // Generate questions from the filtered cards
     if (filtered.length > 0) {
-      const generatedQuestions = generateQuestions(filtered);
+      const generatedQuestions = generateLearnQuestions(filtered);
       setQuestions(generatedQuestions);
     } else {
       setQuestions([]);
@@ -169,53 +153,80 @@ export default function LearnPage() {
     resetLearningSession();
     
     return filtered;
+  }, [allFlashcards, generateLearnQuestions, shuffleArray]);
+
+  // Load cards and deck information
+  useEffect(() => {
+    const loadData = async () => {
+      if (!id) return;
+
+      try {
+        setIsLoading(true);
+        
+        // Get deck information
+        const deckData = await revisionApi.decks.getById(Number(id));
+        setDeckInfo({
+          name: deckData.name,
+          description: deckData.description || ""
+        });
+
+        // Get all the flashcards
+        const cardsData = await revisionApi.flashcards.getAll(Number(id));
+        setAllFlashcards(cardsData);
+
+        // Apply initial settings
+        applySettings(settings, cardsData);
+        
+      } catch (error) {
+        console.error('Error loading flashcards:', error);
+        toast({
+          title: t('dashboard.flashcards.modes.learn.error'),
+          description: t('dashboard.flashcards.modes.learn.failedToLoad'),
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [id, t, toast, applySettings, settings]);
+
+  // Reset learning session
+  const resetLearningSession = () => {
+    setCurrentIndex(0);
+    setScore(0);
+    setSelectedOption(null);
+    setIsCorrect(null);
+    setAnsweredQuestions({});
   };
 
-  // Save settings and apply them
-  const saveSettings = () => {
-    applySettings(settings);
-    setShowSettings(false);
-  };
-
-  // Generate multiple choice questions
-  const generateQuestions = (cards: any[]): LearnQuestion[] => {
-    return cards.map(card => {
-      // Get 3 random incorrect answers
-      const incorrectAnswers = getRandomIncorrectAnswers(allFlashcards, card, 3);
-      
-      // Shuffle all options
-      const allOptions = shuffleArray([card.back_text, ...incorrectAnswers]);
-      
-      return {
-        id: card.id,
-        term: card.front_text,
-        correctAnswer: card.back_text,
-        allOptions
-      };
-    });
-  };
-
-  // Get random incorrect answers
-  const getRandomIncorrectAnswers = (allCards: any[], currentCard: any, count: number): string[] => {
-    const otherCards = allCards.filter(card => card.id !== currentCard.id);
+  // Handle answer submission
+  const handleAnswerSubmit = (answer: string) => {
+    if (selectedOption !== null || !currentQuestion) return;
     
-    // If there aren't enough cards, duplicate some
-    if (otherCards.length < count) {
-      return [...otherCards.map(card => card.back_text)];
+    setSelectedOption(answer);
+    const correct = answer === currentQuestion.correctAnswer;
+    setIsCorrect(correct);
+    
+    if (correct) {
+      setScore(score + 1);
     }
     
-    // Otherwise, take random cards
-    return shuffleArray(otherCards).slice(0, count).map(card => card.back_text);
-  };
+    setAnsweredQuestions(prev => ({
+      ...prev,
+      [currentIndex]: correct
+    }));
 
-  // Shuffle an array
-  const shuffleArray = <T,>(array: T[]): T[] => {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-    return newArray;
+    // Auto-advance to next question after delay
+    setTimeout(() => {
+      setSelectedOption(null);
+      setIsCorrect(null);
+      
+      if (currentIndex < questions.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+      }
+    }, 1500);
   };
 
   // Handle selection of an answer option
@@ -253,15 +264,6 @@ export default function LearnPage() {
         setCurrentIndex(currentIndex + 1);
       }
     }, 1500);
-  };
-
-  // Reset learning session
-  const resetLearningSession = () => {
-    setCurrentIndex(0);
-    setScore(0);
-    setSelectedOption(null);
-    setIsCorrect(null);
-    setAnsweredQuestions({});
   };
 
   // Restart learning session with same questions
@@ -560,7 +562,7 @@ export default function LearnPage() {
               {t('dashboard.flashcards.modes.learn.cancel')}
             </Button>
             <Button 
-              onClick={saveSettings}
+              onClick={handleSaveSettings}
               className="bg-brand-purple hover:bg-brand-purple-dark text-white"
             >
               {t('dashboard.flashcards.modes.learn.startLearning')}

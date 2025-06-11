@@ -38,28 +38,19 @@ const getCategoryFromAppCode = (appCode: string): string => {
 function AppCard({ app, isInstalled, onToggle, loading }: AppCardProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
-  const IconComponent = (LucideIcons as Record<string, React.ComponentType>)[app.icon_name] || Package;
+  const IconComponent = (LucideIcons as any)[app.icon_name] || Package;
   
   const handleToggle = async () => {
     setIsProcessing(true);
     
     try {
-      const success = await onToggle(app.code, !isInstalled);
+      await onToggle(app.code, !isInstalled);
       
-      if (success) {
-        toast({
-          title: isInstalled ? "Application désinstallée" : "Application installée",
-          description: `${app.display_name} ${isInstalled ? 'a été désinstallée' : 'est maintenant disponible'}.`,
-          duration: 3000,
-        });
-      } else {
-        toast({
-          title: "Erreur",
-          description: `Impossible de ${isInstalled ? 'désinstaller' : 'installer'} ${app.display_name}.`,
-          variant: "destructive",
-          duration: 3000,
-        });
-      }
+      toast({
+        title: isInstalled ? "Application désinstallée" : "Application installée",
+        description: `${app.display_name} ${isInstalled ? 'a été désinstallée' : 'est maintenant disponible'}.`,
+        duration: 3000,
+      });
     } catch (error) {
       toast({
         title: "Erreur",

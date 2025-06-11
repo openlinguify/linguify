@@ -11,12 +11,10 @@ import { CulturalContextProps } from "@/addons/learning/types";
 // Placeholder cultureAPI
 const cultureAPI = {
   getCulturalContent: async (params: Record<string, string>) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const _ = params;
     return null;
   },
   getLanguageCulture: async (languageCode: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const _ = languageCode;
     return null;
   }

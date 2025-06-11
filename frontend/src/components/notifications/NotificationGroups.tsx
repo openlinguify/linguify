@@ -3,7 +3,8 @@
 import React, { useMemo } from 'react';
 import { format } from 'date-fns';
 import { useTranslation } from '@/core/i18n/useTranslations';
-import { Notification, NotificationType, useNotifications } from '@/core/context/NotificationContext';
+import { useNotifications } from '@/core/context/NotificationContext';
+import { Notification, NotificationType } from '@/core/types/notification.types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import NotificationItem from './NotificationItem';
 

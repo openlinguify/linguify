@@ -113,7 +113,7 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
         setIsLoading(false);
         setInitialized(true);
       }
-  }, [isAuthenticated, token, isLoading, initialized]);
+  }, [isAuthenticated, token, isLoading, initialized, authLoading]);
 
   // Charger les paramètres initiaux
   useEffect(() => {
@@ -126,16 +126,16 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
         setIsLoading(false);
       }
     }
-  }, [isAuthenticated, authLoading, token, initialized]);
+  }, [isAuthenticated, authLoading, token, initialized, loadSettings]);
 
   // Si l'utilisateur est connecté, utiliser les données du profil
   useEffect(() => {
     if (user && initialized) {
       const userLanguageSettings = {
-        native_language: user.native_language,
-        target_language: user.target_language,
-        language_level: user.language_level,
-        objectives: user.objectives,
+        native_language: (user as any).native_language as string,
+        target_language: (user as any).target_language as string,
+        language_level: (user as any).language_level as string,
+        objectives: (user as any).objectives as string,
       };
       
       // Mettre à jour les paramètres avec les données utilisateur seulement si nécessaire

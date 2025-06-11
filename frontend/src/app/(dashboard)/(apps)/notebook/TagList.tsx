@@ -1,11 +1,11 @@
 // src/components/notes/TagList.tsx
 import React from 'react';
-import { Tag } from '@/addons/notebook/types';
+import { TagItem } from '@/addons/notebook/components/TagManager';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 
 interface TagListProps {
-  tags: Tag[];
+  tags: TagItem[];
   selectedTags: number[];
   onSelectTag: (tagId: number) => void;
   onCreateTag?: () => void;
@@ -49,7 +49,7 @@ export function TagList({
             />
             <span className="truncate">{tag.name}</span>
             <span className="ml-auto text-xs text-gray-400">
-              {tag.notes_count}
+              {(tag as any).notes_count || 0}
             </span>
           </div>
         ))}

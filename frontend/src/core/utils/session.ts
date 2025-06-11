@@ -29,7 +29,7 @@ interface SessionUser {
   }
   
   export function isValidSession(sessionData: SessionData): boolean {
-    return (
+    return Boolean(
       sessionData &&
       sessionData.user &&
       sessionData.accessToken &&

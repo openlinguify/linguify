@@ -273,7 +273,6 @@ class PushNotificationService {
         body: 'This is a test notification from Linguify',
         icon: '/logo/logo.png',
         badge: '/logo/logo.png',
-        timestamp: Date.now()
       });
       
       notification.onclick = () => {

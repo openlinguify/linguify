@@ -30,12 +30,12 @@ export function SupabaseLoginForm() {
       
       if (error) {
         // Provide more user-friendly error messages
-        if (error.message.includes('Email not confirmed')) {
+        if ((error as any).message?.includes('Email not confirmed')) {
           setError('Votre email n\'est pas encore confirmé. Veuillez vérifier votre boîte email et cliquer sur le lien de confirmation.')
-        } else if (error.message.includes('Invalid login credentials')) {
+        } else if ((error as any).message?.includes('Invalid login credentials')) {
           setError('Email ou mot de passe incorrect.')
         } else {
-          setError(error.message)
+          setError((error as any).message || 'Une erreur s\'est produite')
         }
       } else if (user) {
         // Redirect to home page on success
@@ -53,7 +53,7 @@ export function SupabaseLoginForm() {
     try {
       const { error } = await signInWithOAuth(provider)
       if (error) {
-        setError(error.message)
+        setError((error as any).message || 'Une erreur est survenue')
       }
       // The redirect will happen automatically
     } catch (err: any) {
@@ -70,7 +70,7 @@ export function SupabaseLoginForm() {
     try {
       const { error } = await resetPassword(email)
       if (error) {
-        setError(error.message)
+        setError((error as any).message || 'Une erreur est survenue')
       } else {
         setResetEmailSent(true)
       }
