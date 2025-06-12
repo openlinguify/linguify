@@ -81,6 +81,50 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
     fetchData();
   }, [lessonId, testRecapId]);
 
+  const handleSubmitTest = useCallback(async () => {
+    if (!testRecap) return;
+    
+    try {
+      // Stop the timer
+      if (timer) clearInterval(timer);
+      
+      // Format submission data
+      const submission = {
+        test_recap_id: testRecap.id,
+        time_spent: timeSpent,
+        answers: Object.entries(answers).reduce((acc, [questionId, answer]) => {
+          return {
+            ...acc,
+            [questionId]: {
+              answer,
+              time_spent: timePerQuestion[questionId] || 0
+            }
+          };
+        }, {})
+      };
+      
+      // Submit the test
+      const response = await testRecapAPI.submitTestRecap(submission);
+      setResults((response as any).data);
+      setCompleted(true);
+      
+      // Invalidate any related queries
+      queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      
+      toast({
+        title: 'Test completed',
+        description: 'Your test has been submitted successfully',
+      });
+    } catch (err) {
+      console.error('Error submitting test:', err);
+      toast({
+        title: 'Error',
+        description: 'Failed to submit test. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  }, [testRecap, timer, timeSpent, answers, timePerQuestion, queryClient, toast]);
+
   // Timer logic for the test
   useEffect(() => {
     if (started && !completed) {
@@ -140,50 +184,6 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
       setCurrentQuestionIndex(prev => prev - 1);
     }
   };
-
-  const handleSubmitTest = useCallback(async () => {
-    if (!testRecap) return;
-    
-    try {
-      // Stop the timer
-      if (timer) clearInterval(timer);
-      
-      // Format submission data
-      const submission = {
-        test_recap_id: testRecap.id,
-        time_spent: timeSpent,
-        answers: Object.entries(answers).reduce((acc, [questionId, answer]) => {
-          return {
-            ...acc,
-            [questionId]: {
-              answer,
-              time_spent: timePerQuestion[questionId] || 0
-            }
-          };
-        }, {})
-      };
-      
-      // Submit the test
-      const response = await testRecapAPI.submitTestRecap(submission);
-      setResults((response as any).data);
-      setCompleted(true);
-      
-      // Invalidate any related queries
-      queryClient.invalidateQueries({ queryKey: ['userProgress'] });
-      
-      toast({
-        title: 'Test completed',
-        description: 'Your test has been submitted successfully',
-      });
-    } catch (err) {
-      console.error('Error submitting test:', err);
-      toast({
-        title: 'Error',
-        description: 'Failed to submit test. Please try again.',
-        variant: 'destructive',
-      });
-    }
-  }, [testRecap, timer, timeSpent, answers, timePerQuestion, queryClient, toast]);
 
   if (loading) {
     return (
