@@ -2,7 +2,7 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { supabaseAuthService } from './supabaseAuthService'
+import { authServiceWrapper } from './authServiceWrapper'
 
 interface User {
   id: string
@@ -48,7 +48,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
     const getInitialSession = async () => {
       try {
         console.log('[AuthProvider] Getting initial session...')
-        const initialSession = await supabaseAuthService.getCurrentSession()
+        const initialSession = await authServiceWrapper.getCurrentSession()
         
         if (!mounted) return
         
@@ -80,7 +80,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
     getInitialSession()
 
     // Listen for auth state changes
-    const { data: authListener } = supabaseAuthService.onAuthStateChange(
+    const authListener = authServiceWrapper.onAuthStateChange(
       async (event, session) => {
         console.log('[AuthProvider] Auth state changed:', event, {
           hasSession: !!session,
@@ -118,14 +118,20 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
     // Cleanup listener
     return () => {
       mounted = false
-      authListener?.subscription?.unsubscribe()
+      if (typeof authListener === 'function') {
+        authListener()
+      } else if (authListener?.data?.subscription) {
+        authListener.data.subscription.unsubscribe()
+      }
     }
   }, [])
 
   const signIn = async (email: string, password: string) => {
     setLoading(true)
     try {
-      const result = await supabaseAuthService.signIn(email, password)
+      console.log('[AuthProvider] Signing in with wrapper...')
+      const result = await authServiceWrapper.signIn(email, password)
+      console.log('[AuthProvider] Sign in result:', { hasUser: !!result.user, hasError: !!result.error })
       return {
         user: result.user as User | null,
         error: result.error as Record<string, unknown> | undefined
@@ -138,7 +144,9 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   const signUp = async (email: string, password: string, metadata?: Record<string, unknown>) => {
     setLoading(true)
     try {
-      const result = await supabaseAuthService.signUp(email, password, metadata)
+      console.log('[AuthProvider] Signing up with wrapper...')
+      const result = await authServiceWrapper.signUp(email, password, metadata)
+      console.log('[AuthProvider] Sign up result:', { hasUser: !!result.user, hasError: !!result.error })
       return {
         user: result.user as User | null,
         error: result.error as Record<string, unknown> | undefined
@@ -151,7 +159,8 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   const signOut = async () => {
     setLoading(true)
     try {
-      const result = await supabaseAuthService.signOut()
+      console.log('[AuthProvider] Signing out with wrapper...')
+      const result = await authServiceWrapper.signOut()
       setUser(null)
       setSession(null)
       return {
@@ -163,14 +172,14 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   }
 
   const resetPassword = async (email: string) => {
-    const result = await supabaseAuthService.resetPassword(email)
+    const result = await authServiceWrapper.resetPassword(email)
     return {
       error: result.error as Record<string, unknown> | undefined
     }
   }
 
   const signInWithOAuth = async (provider: 'google' | 'github' | 'facebook') => {
-    const result = await supabaseAuthService.signInWithOAuth(provider)
+    const result = await authServiceWrapper.signInWithOAuth(provider)
     return {
       data: result.data as Record<string, unknown>,
       error: result.error as Record<string, unknown> | undefined
@@ -178,17 +187,17 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   }
 
   const getAccessToken = async () => {
-    return await supabaseAuthService.getAccessToken()
+    return await authServiceWrapper.getAccessToken()
   }
 
   const makeAuthenticatedRequest = async (url: string, options?: RequestInit) => {
-    return await supabaseAuthService.makeAuthenticatedRequest(url, options)
+    return await authServiceWrapper.makeAuthenticatedRequest(url, options)
   }
   
   const refreshSession = async () => {
     try {
       setLoading(true)
-      const newToken = await supabaseAuthService.refreshToken()
+      const newToken = await authServiceWrapper.refreshToken()
       if (newToken) {
         // Session will be updated via the auth state change listener
         console.log('[AuthProvider] Session refreshed successfully')
@@ -202,7 +211,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   }
   
   const getUserProfile = async () => {
-    const result = await supabaseAuthService.getUserProfile()
+    const result = await authServiceWrapper.getUserProfile()
     return result as Record<string, unknown>
   }
 
