@@ -41,11 +41,25 @@ class SupabaseAuthService {
   private tokenCacheTTL = 4 * 60 * 1000 // 4 minutes (less than the 5 minute refresh threshold)
 
   constructor() {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     
-    if (!supabaseUrl || !supabaseAnonKey) {
-      throw new Error('Missing Supabase environment variables')
+    if (!supabaseUrl || supabaseUrl === 'your_supabase_project_url') {
+      console.error('[SupabaseAuth] NEXT_PUBLIC_SUPABASE_URL is not set or still has placeholder value')
+      throw new Error('NEXT_PUBLIC_SUPABASE_URL environment variable is not properly configured')
+    }
+    
+    if (!supabaseAnonKey || supabaseAnonKey === 'your_supabase_anon_key') {
+      console.error('[SupabaseAuth] NEXT_PUBLIC_SUPABASE_ANON_KEY is not set or still has placeholder value')
+      throw new Error('NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable is not properly configured')
+    }
+
+    // Validate URL format
+    try {
+      new URL(supabaseUrl)
+    } catch (error) {
+      console.error('[SupabaseAuth] Invalid Supabase URL format:', supabaseUrl)
+      throw new Error('NEXT_PUBLIC_SUPABASE_URL must be a valid URL')
     }
 
     this.supabase = createClient(supabaseUrl, supabaseAnonKey)
@@ -84,18 +98,40 @@ class SupabaseAuthService {
   // Sign in with email and password
   async signIn(email: string, password: string): Promise<AuthResponse> {
     try {
+      // Validate input parameters
+      if (!email || typeof email !== 'string') {
+        throw new Error('Email is required and must be a valid string')
+      }
+      
+      if (!password || typeof password !== 'string') {
+        throw new Error('Password is required and must be a valid string')
+      }
+
+      // Basic email format validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(email)) {
+        throw new Error('Please provide a valid email address')
+      }
+
+      console.log('[SupabaseAuth] Attempting sign in for email:', email.substring(0, 3) + '***')
+
       const { data, error } = await this.supabase.auth.signInWithPassword({
         email,
         password
       })
 
-      if (error) throw error
+      if (error) {
+        console.error('[SupabaseAuth] Sign in error:', error)
+        throw error
+      }
 
+      console.log('[SupabaseAuth] Sign in successful')
       return {
         user: data.user as AuthUser,
         session: data.session as AuthSession
       }
     } catch (error) {
+      console.error('[SupabaseAuth] Sign in failed:', error)
       return {
         user: null,
         session: null,
