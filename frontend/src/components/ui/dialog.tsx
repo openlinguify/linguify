@@ -33,6 +33,30 @@ const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => {
+  // Check if children contain DialogTitle
+  const hasDialogTitle = React.Children.toArray(children).some(child => 
+    React.isValidElement(child) && 
+    (child.type === DialogTitle || 
+     (child.props && child.props.children && 
+      React.Children.toArray(child.props.children).some(grandchild =>
+        React.isValidElement(grandchild) && grandchild.type === DialogTitle
+      )
+     )
+    )
+  );
+
+  // Check if children contain DialogDescription
+  const hasDialogDescription = React.Children.toArray(children).some(child => 
+    React.isValidElement(child) && 
+    (child.type === DialogDescription || 
+     (child.props && child.props.children && 
+      React.Children.toArray(child.props.children).some(grandchild =>
+        React.isValidElement(grandchild) && grandchild.type === DialogDescription
+      )
+     )
+    )
+  );
+
   // Set aria-describedby if not provided to prevent warning
   if (!props["aria-describedby"]) {
     props["aria-describedby"] = "dialog-description";
@@ -49,10 +73,19 @@ const DialogContent = React.forwardRef<
       )}
       {...props}
     >
-      {/* Hidden description element for accessibility */}
-      <div id="dialog-description" className="sr-only">
-        Dialog content for accessibility
-      </div>
+      {/* Hidden title for accessibility if no DialogTitle is present */}
+      {!hasDialogTitle && (
+        <DialogTitle className="sr-only">
+          Dialog
+        </DialogTitle>
+      )}
+
+      {/* Hidden description element for accessibility if no DialogDescription is present */}
+      {!hasDialogDescription && (
+        <div id="dialog-description" className="sr-only">
+          Dialog content for accessibility
+        </div>
+      )}
 
       {children}
       <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
