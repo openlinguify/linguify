@@ -71,7 +71,7 @@ export function useLessonCompletion({
         onComplete();
       }
     }
-  }, [lessonId, unitId, state.timeSpent, onComplete]);
+  }, [lessonId, state.timeSpent, onComplete]);
   
   /**
    * Afficher le modal de complétion

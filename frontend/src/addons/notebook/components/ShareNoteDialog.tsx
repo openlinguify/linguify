@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -91,7 +91,7 @@ const ShareNoteDialog: React.FC<ShareNoteDialogProps> = ({
   }, [isOpen, note.id]);
   
   // Load shared users for a note
-  const loadSharedUsers = async () => {
+  const loadSharedUsers = useCallback(async () => {
     if (!note.id) return;
     
     try {
@@ -106,10 +106,10 @@ const ShareNoteDialog: React.FC<ShareNoteDialogProps> = ({
     } finally {
       setIsLoadingUsers(false);
     }
-  };
+  }, [note.id]);
   
   // Check if link sharing is enabled for this note
-  const checkLinkSharing = async () => {
+  const checkLinkSharing = useCallback(async () => {
     if (!note.id) return;
     
     try {
@@ -132,7 +132,7 @@ const ShareNoteDialog: React.FC<ShareNoteDialogProps> = ({
         isLoading: false 
       }));
     }
-  };
+  }, [note.id]);
   
   // Share note with a user by email
   const handleShareWithUser = async () => {

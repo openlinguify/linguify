@@ -141,9 +141,12 @@ export function useFocusManagement(options: FocusManagementOptions = {}) {
       // Clean up event listeners
       document.removeEventListener('keydown', handleKeyDown);
 
+      // Capture the current value of finalFocusRef
+      const finalFocusElement = finalFocusRef?.current;
+      
       // Return focus to the element that had focus before
-      if (finalFocusRef?.current) {
-        finalFocusRef.current.focus();
+      if (finalFocusElement) {
+        finalFocusElement.focus();
       } else if (previouslyFocusedElement.current instanceof HTMLElement) {
         previouslyFocusedElement.current.focus();
       }

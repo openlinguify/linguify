@@ -143,7 +143,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, finalFocusR
   };
 
   // Navigation functions
-  const nextStep = () => {
+  const nextStep = useCallback(() => {
     // Validate current step
     const { isValid } = validateStep(step, formData);
 
@@ -159,9 +159,9 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, finalFocusR
         submitForm();
       }
     }
-  };
+  }, [step, formData, totalSteps, t, refocusOnUpdate]);
 
-  const prevStep = () => {
+  const prevStep = useCallback(() => {
     if (step > 1) {
       const prevStepNumber = step - 1;
       setStep(prevStepNumber);
@@ -170,7 +170,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, finalFocusR
       // Need to refocus after step change
       setTimeout(() => refocusOnUpdate(), 100);
     }
-  };
+  }, [step, t, totalSteps, refocusOnUpdate]);
 
   const goToStep = (stepNumber: number) => {
     if (stepNumber >= 1 && stepNumber <= totalSteps) {
@@ -186,7 +186,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, finalFocusR
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
 
   // Submit the form
-  const submitForm = async () => {
+  const submitForm = useCallback(async () => {
     setIsFormSubmitting(true);
     try {
       const success = await handleSubmit();
@@ -202,7 +202,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, finalFocusR
     } finally {
       setIsFormSubmitting(false);
     }
-  };
+  }, [handleSubmit, totalSteps, onComplete]);
 
   // Check if the Next button should be disabled
   const isNextDisabled =
