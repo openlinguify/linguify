@@ -1,5 +1,6 @@
 // src/core/auth/supabaseAuthService.ts
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { setupFetchInterceptor } from './fetchInterceptor'
 
 interface AuthUser {
   id: string
@@ -76,8 +77,43 @@ class SupabaseAuthService {
     }
 
     try {
+      console.log('[SupabaseAuth] Setting up fetch interceptor for debugging...')
+      setupFetchInterceptor()
+      
       console.log('[SupabaseAuth] Creating Supabase client...')
-      this.supabase = createClient(supabaseUrl, supabaseAnonKey)
+      this.supabase = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          // Add additional options to help with debugging
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        },
+        global: {
+          // Custom fetch with additional error handling
+          fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
+            try {
+              console.log('[SupabaseAuth] Custom fetch called:', {
+                url: typeof input === 'string' ? input : input.toString(),
+                method: init?.method || 'GET'
+              })
+              
+              // Use the original fetch
+              const response = await fetch(input, init)
+              
+              console.log('[SupabaseAuth] Fetch response:', {
+                ok: response.ok,
+                status: response.status,
+                statusText: response.statusText
+              })
+              
+              return response
+            } catch (error) {
+              console.error('[SupabaseAuth] Custom fetch error:', error)
+              throw error
+            }
+          }
+        }
+      })
       console.log('[SupabaseAuth] Supabase client created successfully')
     } catch (error) {
       console.error('[SupabaseAuth] Failed to create Supabase client:', error)

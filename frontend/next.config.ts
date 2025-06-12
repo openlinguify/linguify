@@ -41,13 +41,18 @@ const nextConfig: NextConfig = {
         port: '8000',
         pathname: '/media/**',
       },
+      // Production backend on Render
+      {
+        protocol: 'https',
+        hostname: 'linguify-h47a.onrender.com',
+        pathname: '/media/**',
+      },
       // Supabase Storage
       {
         protocol: 'https',
         hostname: '*.supabase.co',
         pathname: '/storage/v1/object/public/**',
       },
-      // Add any other domains you might need (e.g., production)
     ],
   },
   
@@ -55,26 +60,29 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/api/auth/:path*',
+        source: '/api/:path*',
         headers: [
           { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Origin', value: 'https://linguify-h47a.onrender.com' },
           { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
-          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version' },
+          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization' },
         ],
       },
     ]
   },
 
   async rewrites() {
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+    
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:8000/api/:path*'
+        destination: `${backendUrl}/api/:path*`
       },
       {
         source: '/media/:path*',
-        destination: 'http://localhost:8000/media/:path*'
+        destination: `${backendUrl}/media/:path*`
       }
     ]
   },
