@@ -24,8 +24,7 @@ const StudyModeCard = ({
   return (
     <Link
       href={`/flashcard/${path}/${deckId}`}
-      className="flex items-center gap-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-      legacyBehavior>
+      className="flex items-center gap-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
       <div className="rounded-md p-2 bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-400">
         {icon}
       </div>
