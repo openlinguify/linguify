@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Clock, Link2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function AccountDeletedPage() {
+function AccountDeletedContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [deletionType, setDeletionType] = useState<'temporary' | 'permanent'>('permanent');
@@ -119,5 +119,21 @@ export default function AccountDeletedPage() {
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function AccountDeletedPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-muted/30">
+        <Card className="w-full max-w-md shadow-lg">
+          <CardContent className="p-6">
+            <div className="text-center">Loading...</div>
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <AccountDeletedContent />
+    </Suspense>
   );
 }

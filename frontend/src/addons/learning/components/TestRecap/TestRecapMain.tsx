@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguageSync } from '@/core/i18n/useLanguageSync';
 import testRecapAPI, { TestRecap } from '../../api/testRecapAPI';
@@ -110,7 +110,7 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [started, completed, currentQuestionIndex, timeSpent, testRecap?.time_limit]);
+  }, [started, completed, currentQuestionIndex, timeSpent, testRecap?.time_limit, testRecap?.questions, timer, handleSubmitTest]);
 
   const handleStartTest = () => {
     setStarted(true);
@@ -141,7 +141,7 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
     }
   };
 
-  const handleSubmitTest = async () => {
+  const handleSubmitTest = useCallback(async () => {
     if (!testRecap) return;
     
     try {
@@ -183,7 +183,7 @@ const TestRecapMain: React.FC<TestRecapMainProps> = ({ lessonId, testRecapId }) 
         variant: 'destructive',
       });
     }
-  };
+  }, [testRecap, timer, timeSpent, answers, timePerQuestion, queryClient, toast]);
 
   if (loading) {
     return (
