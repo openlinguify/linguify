@@ -44,8 +44,16 @@ class SupabaseAuthService {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     
+    console.log('[SupabaseAuth] Environment check:', {
+      hasUrl: !!supabaseUrl,
+      hasKey: !!supabaseAnonKey,
+      urlLength: supabaseUrl?.length || 0,
+      keyLength: supabaseAnonKey?.length || 0,
+      isProduction: process.env.NODE_ENV === 'production'
+    })
+    
     if (!supabaseUrl || supabaseUrl === 'your_supabase_project_url') {
-      console.error('[SupabaseAuth] NEXT_PUBLIC_SUPABASE_URL is not set or still has placeholder value')
+      console.error('[SupabaseAuth] NEXT_PUBLIC_SUPABASE_URL is not set or still has placeholder value:', supabaseUrl)
       throw new Error('NEXT_PUBLIC_SUPABASE_URL environment variable is not properly configured')
     }
     
@@ -56,13 +64,25 @@ class SupabaseAuthService {
 
     // Validate URL format
     try {
-      new URL(supabaseUrl)
+      const parsedUrl = new URL(supabaseUrl)
+      console.log('[SupabaseAuth] Supabase URL validated:', {
+        protocol: parsedUrl.protocol,
+        hostname: parsedUrl.hostname,
+        origin: parsedUrl.origin
+      })
     } catch (error) {
-      console.error('[SupabaseAuth] Invalid Supabase URL format:', supabaseUrl)
+      console.error('[SupabaseAuth] Invalid Supabase URL format:', supabaseUrl, error)
       throw new Error('NEXT_PUBLIC_SUPABASE_URL must be a valid URL')
     }
 
-    this.supabase = createClient(supabaseUrl, supabaseAnonKey)
+    try {
+      console.log('[SupabaseAuth] Creating Supabase client...')
+      this.supabase = createClient(supabaseUrl, supabaseAnonKey)
+      console.log('[SupabaseAuth] Supabase client created successfully')
+    } catch (error) {
+      console.error('[SupabaseAuth] Failed to create Supabase client:', error)
+      throw error
+    }
   }
 
   // Sign up with email and password
@@ -114,6 +134,16 @@ class SupabaseAuthService {
       }
 
       console.log('[SupabaseAuth] Attempting sign in for email:', email.substring(0, 3) + '***')
+
+      // Additional validation before making the request
+      if (!this.supabase) {
+        throw new Error('Supabase client is not initialized')
+      }
+
+      // Check if we can access auth
+      if (!this.supabase.auth) {
+        throw new Error('Supabase auth is not available')
+      }
 
       const { data, error } = await this.supabase.auth.signInWithPassword({
         email,

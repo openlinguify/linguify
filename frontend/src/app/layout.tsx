@@ -47,7 +47,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable} ${montserrat.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/logo/logo2.svg" type="image/svg+xml" />
+        <link rel="icon" href="/logo/circle-logo.svg" type="image/svg+xml" />
       </head>
       <body className="bg-white dark:bg-black text-black dark:text-white font-sans">
         <Providers>
