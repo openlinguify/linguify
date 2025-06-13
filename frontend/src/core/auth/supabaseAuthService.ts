@@ -81,8 +81,11 @@ class SupabaseAuthService {
     }
 
     try {
-      console.log('[SupabaseAuth] Setting up fetch interceptor for debugging...')
-      setupFetchInterceptor()
+      // Only setup interceptor in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[SupabaseAuth] Setting up fetch interceptor for debugging...')
+        setupFetchInterceptor()
+      }
       
       console.log('[SupabaseAuth] Creating Supabase client...')
       this.supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -114,17 +117,36 @@ class SupabaseAuthService {
               const cleanInit = init ? { ...init } : {};
               if (cleanInit.headers) {
                 const headers = new Headers();
-                const sourceHeaders = cleanInit.headers instanceof Headers 
-                  ? cleanInit.headers 
-                  : new Headers(cleanInit.headers as HeadersInit);
                 
-                sourceHeaders.forEach((value, key) => {
-                  if (value && value !== 'undefined' && value !== 'null') {
-                    headers.set(key, value);
+                try {
+                  if (cleanInit.headers instanceof Headers) {
+                    cleanInit.headers.forEach((value, key) => {
+                      if (value !== null && value !== undefined && value !== 'null' && value !== 'undefined') {
+                        headers.set(key, String(value));
+                      }
+                    });
+                  } else if (Array.isArray(cleanInit.headers)) {
+                    cleanInit.headers.forEach(([key, value]) => {
+                      if (value !== null && value !== undefined && value !== 'null' && value !== 'undefined') {
+                        headers.set(key, String(value));
+                      }
+                    });
+                  } else if (typeof cleanInit.headers === 'object') {
+                    Object.entries(cleanInit.headers).forEach(([key, value]) => {
+                      if (value !== null && value !== undefined && value !== 'null' && value !== 'undefined') {
+                        headers.set(key, String(value));
+                      } else {
+                        console.warn('[SupabaseAuth] Skipping invalid header:', { key, value, type: typeof value });
+                      }
+                    });
                   }
-                });
-                
-                cleanInit.headers = headers;
+                  
+                  cleanInit.headers = headers;
+                } catch (headerError) {
+                  console.error('[SupabaseAuth] Error processing headers:', headerError);
+                  // Remove headers if they can't be processed
+                  delete cleanInit.headers;
+                }
               }
               
               const response = await fetch(finalUrl, cleanInit)
