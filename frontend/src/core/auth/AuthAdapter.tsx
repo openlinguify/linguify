@@ -41,6 +41,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profileLoading, setProfileLoading] = useState(false)
   const isAuthenticated = supabaseIsAuthenticated
   const token = session?.access_token ? String(session.access_token) : null
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('[AuthAdapter] Auth state update:', {
+      supabaseIsAuthenticated,
+      hasUser: !!supabaseUser,
+      hasSession: !!session,
+      hasToken: !!token,
+      isAuthReady,
+      loading
+    })
+  }, [supabaseIsAuthenticated, supabaseUser, session, token, isAuthReady, loading])
 
   // Enrichir les données utilisateur avec le profil Django
   useEffect(() => {
