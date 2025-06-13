@@ -4,7 +4,12 @@ const originalFetch = typeof window !== 'undefined' ? window.fetch.bind(window) 
 
 export async function simpleSignIn(email: string, password: string) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  let supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  // Clean the API key - remove any whitespace/newlines
+  if (supabaseAnonKey) {
+    supabaseAnonKey = supabaseAnonKey.replace(/\s+/g, '').trim();
+  }
   
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('[SimpleAuth] Missing environment variables');
