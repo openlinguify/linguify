@@ -122,16 +122,28 @@ CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
     "https://www.openlinguify.com"
 ])
 
+# Allow Vercel preview deployments
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://linguify-.*\.vercel\.app$",  # Matches all Vercel preview URLs
+]
 
-CORS_ALLOW_ALL_ORIGINS = True
+# In production, use specific origins. In dev, allow all.
+CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://openlinguify.com",
-    "https://www.openlinguify.com"
+    "https://www.openlinguify.com",
+    "https://linguify.vercel.app",
 ])
+
+# Add all Vercel preview URLs to CSRF trusted origins if in production
+if not DEBUG:
+    import re
+    # This will be populated dynamically if needed
+    pass
 
 # En développement
 if DEBUG:
