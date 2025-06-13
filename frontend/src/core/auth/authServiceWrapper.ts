@@ -2,6 +2,7 @@
 import { supabaseAuthService } from './supabaseAuthService';
 import { SupabaseRestAuth } from './supabaseRestAuth';
 import { directSignIn, directSignOut, directGetSession, getDirectSupabaseClient } from './directSupabaseAuth';
+import { simpleSignIn } from './simpleAuth';
 
 interface AuthUser {
   id: string
@@ -59,31 +60,34 @@ class AuthServiceWrapper {
   async signIn(email: string, password: string): Promise<AuthResponse> {
     console.log('[AuthWrapper] Attempting sign in...');
     
-    // Use direct Supabase client in production to avoid interceptor issues
+    // FORCE simple auth in production to avoid all SDK issues
     if (process.env.NODE_ENV === 'production') {
+      console.log('[AuthWrapper] Using simple auth in production...');
       try {
-        console.log('[AuthWrapper] Using direct Supabase client in production...');
-        const { data, error } = await directSignIn(email, password);
+        const result = await simpleSignIn(email, password);
         
-        if (error) {
+        if (result.error) {
           return {
             user: null,
             session: null,
-            error: {
-              message: error.message || 'Authentication failed',
-              status: (error as any).status || 401
-            }
+            error: result.error
           };
         }
         
         return {
-          user: data?.user as AuthUser || null,
-          session: data?.session as AuthSession || null
+          user: result.user as AuthUser || null,
+          session: result.session as AuthSession || null
         };
       } catch (error) {
-        console.error('[AuthWrapper] Direct sign in failed:', error);
-        // Fall back to REST
-        return await this.signInWithRest(email, password);
+        console.error('[AuthWrapper] Simple auth failed:', error);
+        return {
+          user: null,
+          session: null,
+          error: {
+            message: error instanceof Error ? error.message : 'Authentication failed',
+            status: 500
+          }
+        };
       }
     }
     

@@ -60,10 +60,27 @@ export class SupabaseRestAuth {
     }
 
     try {
-      const response = await fetch(url, {
-        ...options,
-        headers
-      })
+      // Create a clean request init object
+      const fetchOptions: RequestInit = {
+        method: options.method || 'GET',
+        headers: headers,
+        mode: 'cors',
+        credentials: 'same-origin'
+      };
+      
+      // Only add body if it exists and method supports it
+      if (options.body && (options.method === 'POST' || options.method === 'PUT' || options.method === 'PATCH')) {
+        fetchOptions.body = options.body;
+      }
+      
+      console.log('[SupabaseRestAuth] Fetch options:', {
+        url,
+        method: fetchOptions.method,
+        hasBody: !!fetchOptions.body,
+        headerKeys: Object.keys(headers)
+      });
+      
+      const response = await fetch(url, fetchOptions)
 
       console.log('[SupabaseRestAuth] Response:', {
         ok: response.ok,
