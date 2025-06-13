@@ -93,76 +93,16 @@ class SupabaseAuthService {
           // Add additional options to help with debugging
           persistSession: true,
           autoRefreshToken: true,
-          detectSessionInUrl: true
+          detectSessionInUrl: true,
+          storageKey: 'supabase.auth.token',
+          storage: typeof window !== 'undefined' ? window.localStorage : undefined,
         },
         global: {
-          // Custom fetch with additional error handling
-          fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
-            try {
-              console.log('[SupabaseAuth] Custom fetch called:', {
-                url: typeof input === 'string' ? input : input.toString(),
-                method: init?.method || 'GET',
-                hasHeaders: !!init?.headers,
-                hasBody: !!init?.body
-              })
-              
-              // Ensure we have a valid URL
-              let finalUrl = input;
-              if (typeof input === 'string' && !input.startsWith('http')) {
-                // If it's a relative URL, make it absolute using the Supabase URL
-                finalUrl = new URL(input, supabaseUrl).toString();
-              }
-              
-              // Clean up headers to avoid invalid values
-              const cleanInit = init ? { ...init } : {};
-              if (cleanInit.headers) {
-                const headers = new Headers();
-                
-                try {
-                  if (cleanInit.headers instanceof Headers) {
-                    cleanInit.headers.forEach((value, key) => {
-                      if (value !== null && value !== undefined && value !== 'null' && value !== 'undefined') {
-                        headers.set(key, String(value));
-                      }
-                    });
-                  } else if (Array.isArray(cleanInit.headers)) {
-                    cleanInit.headers.forEach(([key, value]) => {
-                      if (value !== null && value !== undefined && value !== 'null' && value !== 'undefined') {
-                        headers.set(key, String(value));
-                      }
-                    });
-                  } else if (typeof cleanInit.headers === 'object') {
-                    Object.entries(cleanInit.headers).forEach(([key, value]) => {
-                      if (value !== null && value !== undefined && value !== 'null' && value !== 'undefined') {
-                        headers.set(key, String(value));
-                      } else {
-                        console.warn('[SupabaseAuth] Skipping invalid header:', { key, value, type: typeof value });
-                      }
-                    });
-                  }
-                  
-                  cleanInit.headers = headers;
-                } catch (headerError) {
-                  console.error('[SupabaseAuth] Error processing headers:', headerError);
-                  // Remove headers if they can't be processed
-                  delete cleanInit.headers;
-                }
-              }
-              
-              const response = await fetch(finalUrl, cleanInit)
-              
-              console.log('[SupabaseAuth] Fetch response:', {
-                ok: response.ok,
-                status: response.status,
-                statusText: response.statusText
-              })
-              
-              return response
-            } catch (error) {
-              console.error('[SupabaseAuth] Custom fetch error:', error)
-              throw error
-            }
-          }
+          headers: {
+            'X-Client-Info': 'linguify-web'
+          },
+          // Disable custom fetch in production - let Supabase handle it
+          fetch: undefined
         }
       })
       console.log('[SupabaseAuth] Supabase client created successfully')
