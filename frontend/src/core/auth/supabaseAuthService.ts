@@ -45,13 +45,23 @@ class SupabaseAuthService {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     
-    console.log('[SupabaseAuth] Environment check:', {
-      hasUrl: !!supabaseUrl,
-      hasKey: !!supabaseAnonKey,
-      urlLength: supabaseUrl?.length || 0,
-      keyLength: supabaseAnonKey?.length || 0,
-      isProduction: process.env.NODE_ENV === 'production'
-    })
+    // More detailed logging for production debugging
+    if (process.env.NODE_ENV === 'production') {
+      console.log('[SupabaseAuth] Production environment check:', {
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseAnonKey,
+        urlStartsWith: supabaseUrl?.substring(0, 8),
+        isPlaceholder: supabaseUrl === 'your_supabase_project_url' || supabaseAnonKey === 'your_supabase_anon_key'
+      })
+    } else {
+      console.log('[SupabaseAuth] Environment check:', {
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseAnonKey,
+        urlLength: supabaseUrl?.length || 0,
+        keyLength: supabaseAnonKey?.length || 0,
+        isProduction: process.env.NODE_ENV === 'production'
+      })
+    }
     
     if (!supabaseUrl || supabaseUrl === 'your_supabase_project_url') {
       console.error('[SupabaseAuth] NEXT_PUBLIC_SUPABASE_URL is not set or still has placeholder value:', supabaseUrl)
@@ -94,11 +104,36 @@ class SupabaseAuthService {
             try {
               console.log('[SupabaseAuth] Custom fetch called:', {
                 url: typeof input === 'string' ? input : input.toString(),
-                method: init?.method || 'GET'
+                method: init?.method || 'GET',
+                hasHeaders: !!init?.headers,
+                hasBody: !!init?.body
               })
               
-              // Use the original fetch
-              const response = await fetch(input, init)
+              // Ensure we have a valid URL
+              let finalUrl = input;
+              if (typeof input === 'string' && !input.startsWith('http')) {
+                // If it's a relative URL, make it absolute using the Supabase URL
+                finalUrl = new URL(input, supabaseUrl).toString();
+              }
+              
+              // Clean up headers to avoid invalid values
+              const cleanInit = init ? { ...init } : {};
+              if (cleanInit.headers) {
+                const headers = new Headers();
+                const sourceHeaders = cleanInit.headers instanceof Headers 
+                  ? cleanInit.headers 
+                  : new Headers(cleanInit.headers as HeadersInit);
+                
+                sourceHeaders.forEach((value, key) => {
+                  if (value && value !== 'undefined' && value !== 'null') {
+                    headers.set(key, value);
+                  }
+                });
+                
+                cleanInit.headers = headers;
+              }
+              
+              const response = await fetch(finalUrl, cleanInit)
               
               console.log('[SupabaseAuth] Fetch response:', {
                 ok: response.ok,
