@@ -44,11 +44,19 @@ export class SupabaseRestAuth {
     
     console.log('[SupabaseRestAuth] Making request to:', url)
     
-    const headers = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'apikey': this.apiKey,
-      'Authorization': `Bearer ${this.apiKey}`,
-      ...options.headers
+      'Authorization': `Bearer ${this.apiKey}`
+    }
+    
+    // Merge additional headers if provided
+    if (options.headers) {
+      Object.entries(options.headers).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && String(value) !== 'undefined') {
+          headers[key] = String(value);
+        }
+      });
     }
 
     try {

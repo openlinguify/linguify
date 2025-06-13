@@ -4,7 +4,8 @@
 let originalFetch: typeof fetch | undefined;
 
 export function setupFetchInterceptor() {
-  if (typeof window === 'undefined') return;
+  // DISABLED IN PRODUCTION TO AVOID ISSUES
+  if (typeof window === 'undefined' || process.env.NODE_ENV === 'production') return;
   
   // Only intercept once
   if (originalFetch !== undefined) return;
