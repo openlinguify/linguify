@@ -43,7 +43,12 @@ class SupabaseAuthService {
 
   constructor() {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    let supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    
+    // Clean the API key - remove any whitespace/newlines
+    if (supabaseAnonKey) {
+      supabaseAnonKey = supabaseAnonKey.replace(/\s+/g, '').trim();
+    }
     
     // Environment check with proper typing
     const isProduction = process.env.NODE_ENV === 'production'

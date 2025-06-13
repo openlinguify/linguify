@@ -1,7 +1,12 @@
 // Authentication using XMLHttpRequest to completely avoid fetch issues
 export async function xhrSignIn(email: string, password: string): Promise<any> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  let supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  // Clean the API key - remove any whitespace/newlines that might have been added
+  if (supabaseAnonKey) {
+    supabaseAnonKey = supabaseAnonKey.replace(/\s+/g, '').trim();
+  }
   
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('[XHRAuth] Missing environment variables');
