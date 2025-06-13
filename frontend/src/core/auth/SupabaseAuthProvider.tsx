@@ -132,6 +132,28 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
       console.log('[AuthProvider] Signing in with wrapper...')
       const result = await authServiceWrapper.signIn(email, password)
       console.log('[AuthProvider] Sign in result:', { hasUser: !!result.user, hasError: !!result.error })
+      
+      // Update state immediately on successful sign in
+      if (result.user && !result.error) {
+        console.log('[AuthProvider] Setting user state after successful sign in')
+        setUser(result.user as User)
+        setSession(result.session as Record<string, unknown> | null)
+        setAuthError(null)
+        setIsAuthReady(true)
+        
+        // Set a temporary flag to indicate successful login
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('supabase_login_success', 'true')
+          // Clear the flag after 5 seconds
+          setTimeout(() => {
+            localStorage.removeItem('supabase_login_success')
+          }, 5000)
+        }
+        
+        // Force a small delay to ensure state is propagated
+        await new Promise(resolve => setTimeout(resolve, 100))
+      }
+      
       return {
         user: result.user as User | null,
         error: result.error as Record<string, unknown> | undefined
