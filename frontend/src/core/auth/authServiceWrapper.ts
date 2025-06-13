@@ -3,6 +3,7 @@ import { supabaseAuthService } from './supabaseAuthService';
 import { SupabaseRestAuth } from './supabaseRestAuth';
 import { directSignIn, directSignOut, directGetSession, getDirectSupabaseClient } from './directSupabaseAuth';
 import { simpleSignIn } from './simpleAuth';
+import { xhrSignIn } from './xhrAuth';
 
 interface AuthUser {
   id: string
@@ -60,11 +61,11 @@ class AuthServiceWrapper {
   async signIn(email: string, password: string): Promise<AuthResponse> {
     console.log('[AuthWrapper] Attempting sign in...');
     
-    // FORCE simple auth in production to avoid all SDK issues
+    // FORCE XHR auth in production to completely avoid fetch issues
     if (process.env.NODE_ENV === 'production') {
-      console.log('[AuthWrapper] Using simple auth in production...');
+      console.log('[AuthWrapper] Using XHR auth in production...');
       try {
-        const result = await simpleSignIn(email, password);
+        const result = await xhrSignIn(email, password);
         
         if (result.error) {
           return {
@@ -79,7 +80,7 @@ class AuthServiceWrapper {
           session: result.session as AuthSession || null
         };
       } catch (error) {
-        console.error('[AuthWrapper] Simple auth failed:', error);
+        console.error('[AuthWrapper] XHR auth failed:', error);
         return {
           user: null,
           session: null,
