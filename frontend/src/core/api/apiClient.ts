@@ -1,6 +1,6 @@
 // Unified API Client with authentication and performance optimizations
 import axios, { AxiosError, AxiosInstance, AxiosRequestHeaders } from 'axios';
-import { supabaseAuthService } from '../auth/supabaseAuthService';
+import { authServiceWrapper } from '../auth/authServiceWrapper';
 import { persistentCache } from '../utils/persistentCache';
 
 // Cache implementation for GET requests
@@ -47,19 +47,15 @@ export function createAuthenticatedApiClient(
     async (config) => {
       try {
         // Add auth token
-        const token = await supabaseAuthService.getAccessToken();
+        console.log(`[API] Requesting token for ${config.method?.toUpperCase()} ${config.url}`);
+        const token = await authServiceWrapper.getAccessToken();
         
         if (token) {
           config.headers = (config.headers || {}) as AxiosRequestHeaders;
           config.headers.Authorization = `Bearer ${token}`;
-          
-          if (process.env.NODE_ENV === 'development') {
-            console.log(`[API] Request ${config.method?.toUpperCase()} ${config.url} with token`);
-          }
+          console.log(`[API] Request ${config.method?.toUpperCase()} ${config.url} with token (${token.length} chars)`);
         } else {
-          if (process.env.NODE_ENV === 'development') {
-            console.log(`[API] Request ${config.method?.toUpperCase()} ${config.url} without token`);
-          }
+          console.log(`[API] Request ${config.method?.toUpperCase()} ${config.url} without token`);
         }
 
         // Cache logic for GET requests
@@ -243,7 +239,7 @@ export function createAuthenticatedApiClient(
           // Try to refresh token only once
           try {
             console.log('[API] Attempting token refresh...');
-            const newToken = await supabaseAuthService.refreshToken();
+            const newToken = await authServiceWrapper.refreshToken();
             console.log('[API] Token refresh result:', { hasNewToken: !!newToken, newTokenLength: newToken?.length });
             
             if (newToken && axiosError.config) {
@@ -261,7 +257,7 @@ export function createAuthenticatedApiClient(
           } catch (refreshError) {
             // Clear auth data and throw error
             console.error('[API] Token refresh failed:', refreshError);
-            await supabaseAuthService.clearAuthData();
+            await authServiceWrapper.signOut();
             enhancedError.authenticationFailed = true;
             throw enhancedError;
           }
