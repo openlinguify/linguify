@@ -45,23 +45,17 @@ class SupabaseAuthService {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     
-    // More detailed logging for production debugging
-    if (process.env.NODE_ENV === 'production') {
-      console.log('[SupabaseAuth] Production environment check:', {
-        hasUrl: !!supabaseUrl,
-        hasKey: !!supabaseAnonKey,
-        urlStartsWith: supabaseUrl?.substring(0, 8),
-        isPlaceholder: supabaseUrl === 'your_supabase_project_url' || supabaseAnonKey === 'your_supabase_anon_key'
-      })
-    } else {
-      console.log('[SupabaseAuth] Environment check:', {
-        hasUrl: !!supabaseUrl,
-        hasKey: !!supabaseAnonKey,
-        urlLength: supabaseUrl?.length || 0,
-        keyLength: supabaseAnonKey?.length || 0,
-        isProduction: process.env.NODE_ENV === 'production'
-      })
-    }
+    // Environment check with proper typing
+    const isProduction = process.env.NODE_ENV === 'production'
+    
+    console.log('[SupabaseAuth] Environment check:', {
+      hasUrl: !!supabaseUrl,
+      hasKey: !!supabaseAnonKey,
+      urlLength: supabaseUrl?.length || 0,
+      keyLength: supabaseAnonKey?.length || 0,
+      isProduction: isProduction,
+      nodeEnv: process.env.NODE_ENV
+    })
     
     if (!supabaseUrl || supabaseUrl === 'your_supabase_project_url') {
       console.error('[SupabaseAuth] NEXT_PUBLIC_SUPABASE_URL is not set or still has placeholder value:', supabaseUrl)
