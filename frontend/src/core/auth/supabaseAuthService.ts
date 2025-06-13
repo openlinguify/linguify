@@ -81,30 +81,27 @@ class SupabaseAuthService {
     }
 
     try {
-      // Only setup interceptor in development
-      if (process.env.NODE_ENV === 'development') {
+      console.log('[SupabaseAuth] Creating Supabase client...')
+      
+      // Create a simple client without any customization in production
+      if (process.env.NODE_ENV === 'production') {
+        this.supabase = createClient(supabaseUrl, supabaseAnonKey)
+      } else {
+        // Only setup interceptor in development
         console.log('[SupabaseAuth] Setting up fetch interceptor for debugging...')
         setupFetchInterceptor()
+        
+        this.supabase = createClient(supabaseUrl, supabaseAnonKey, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            storageKey: 'supabase.auth.token',
+            storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+          }
+        })
       }
       
-      console.log('[SupabaseAuth] Creating Supabase client...')
-      this.supabase = createClient(supabaseUrl, supabaseAnonKey, {
-        auth: {
-          // Add additional options to help with debugging
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true,
-          storageKey: 'supabase.auth.token',
-          storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-        },
-        global: {
-          headers: {
-            'X-Client-Info': 'linguify-web'
-          },
-          // Disable custom fetch in production - let Supabase handle it
-          fetch: undefined
-        }
-      })
       console.log('[SupabaseAuth] Supabase client created successfully')
     } catch (error) {
       console.error('[SupabaseAuth] Failed to create Supabase client:', error)
