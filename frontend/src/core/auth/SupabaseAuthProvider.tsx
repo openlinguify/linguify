@@ -3,6 +3,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { authServiceWrapper } from './authServiceWrapper'
+import { saveSessionForRestore, getRestoredSession } from './sessionRestore'
 
 interface User {
   id: string

@@ -11,10 +11,8 @@ import { useLanguage } from "@/core/hooks/useLanguage";
 import { Button } from "@/components/ui/button";
 import { EnabledAppsGrid } from "@/components/dashboard/EnabledAppsGrid";
 
-// Dashboard now uses dynamic app management
-
-// User profile component to split out rendering logic - memoized for performance
-const UserProfileCard = memo(({
+// Optimized user profile card with faster rendering
+const OptimizedUserProfileCard = memo(({
   user,
   targetLanguageName,
   languageLevel,
@@ -23,12 +21,33 @@ const UserProfileCard = memo(({
   user: {
     full_name?: string;
     email?: string;
+    name?: string;
     [key: string]: any;
-  };
+  } | null;
   targetLanguageName: string;
   languageLevel: string;
   t: (key: string, options?: Record<string, string>, fallback?: string) => string
 }) => {
+  // Show skeleton if user is still loading
+  if (!user) {
+    return (
+      <Card className="w-full dark:bg-transparent">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse w-9 h-9"></div>
+              <div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-2 animate-pulse"></div>
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-32 animate-pulse"></div>
+              </div>
+            </div>
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-20 animate-pulse"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full dark:bg-transparent">
       <CardContent className="p-4">
@@ -58,9 +77,8 @@ const UserProfileCard = memo(({
   );
 });
 
-UserProfileCard.displayName = 'UserProfileCard';
+OptimizedUserProfileCard.displayName = 'OptimizedUserProfileCard';
 
-// Apps are now managed dynamically through the AppManager system
 
 // Main dashboard component
 export default function DashboardHome() {
@@ -68,88 +86,63 @@ export default function DashboardHome() {
   const { t } = useTranslation();
   const {
     languageLevel,
-    targetLanguageName
+    targetLanguageName,
+    isLoading: langLoading
   } = useLanguage();
   const router = useRouter();
-  const [isPrefetching, setIsPrefetching] = useState(false);
   
-
-  // Remove the redirect logic - let user access real dashboard
-
+  // Fast redirect on auth failure
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.push("/login");
+      router.replace("/login");
     }
   }, [isAuthenticated, authLoading, router]);
 
-  // Prefetch important modules data in the background
+  // Early data prefetch (non-blocking)
   useEffect(() => {
-    if (isAuthenticated && !isPrefetching) {
-      setIsPrefetching(true);
-
-      // Use a small delay to ensure other critical resources load first
-      const timer = setTimeout(() => {
-        // Import most frequently used module APIs
-        Promise.all([
-          import('@/addons/learning/api/courseAPI'),
-          import('@/addons/notebook/api/notebookAPI')
-        ]).then(([courseModule, notebookModule]) => {
-          // Prefetch essential data in parallel
-          Promise.allSettled([
-            courseModule.default.getUnits(),
-            notebookModule.notebookAPI.getAllNotes()
-          ]).catch(err => {
-            console.error("Error during data prefetching:", err);
-          });
+    if (isAuthenticated && !authLoading) {
+      // Start prefetching important data in background
+      // Use requestIdleCallback if available for better performance
+      const prefetchData = () => {
+        Promise.allSettled([
+          import('@/addons/learning/api/courseAPI').then(m => 
+            m.default.getUnits().catch(() => null)
+          ),
+          import('@/addons/notebook/api/notebookAPI').then(m => 
+            m.notebookAPI.getAllNotes().catch(() => null)
+          )
+        ]).catch(() => {
+          // Silently handle prefetch errors
         });
-      }, 2000);
+      };
 
-      return () => clearTimeout(timer);
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(prefetchData);
+      } else {
+        setTimeout(prefetchData, 100);
+      }
     }
-  }, [isAuthenticated, isPrefetching]);
+  }, [isAuthenticated, authLoading]);
 
-  // Loading skeleton - only wait for auth, not language
-  // IMPORTANT: Don't wait for langLoading as it can stay true and block app display
-  if (authLoading) {
-    return (
-      <div className="w-full space-y-8 max-w-7xl mx-auto font-poppins">
-        {/* User profile skeleton */}
-        <div className="w-full h-20 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"></div>
+  // FORCE: Never show auth loading - always render dashboard content
 
-        {/* Apps grid skeleton - simplified */}
-        <div style={{ marginTop: '10vh' }} className="flex justify-center px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8 justify-items-center w-full max-w-7xl">
-            {Array(4).fill(0).map((_, i) => (
-              <div key={i} className="w-full flex flex-col items-center animate-pulse">
-                <div className="w-full max-w-[100px] aspect-square bg-gray-200 dark:bg-gray-800 rounded-xl mb-2"></div>
-                <div className="w-20 h-4 bg-gray-200 dark:bg-gray-800 rounded"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Debug log removed for production
 
+  // Render UI immediately when auth is ready, don't wait for language
   return (
     <div className="w-full space-y-8 max-w-7xl mx-auto font-poppins">
       {/* User Profile Card */}
-      {user && (
-        <UserProfileCard
-          user={user}
-          targetLanguageName={targetLanguageName}
-          languageLevel={languageLevel}
-          t={t}
-        />
-      )}
+      <OptimizedUserProfileCard
+        user={user}
+        targetLanguageName={langLoading ? "Loading..." : targetLanguageName}
+        languageLevel={langLoading ? "..." : languageLevel}
+        t={t}
+      />
 
-      {/* Enabled Apps Grid */}
+      {/* Apps Grid */}
       <div style={{ marginTop: '10vh' }}>
         <EnabledAppsGrid />
       </div>
-      
-      {/* Auth Debug Panel (only in development) */}
-      {/* <AuthDebugPanel /> */}
     </div>
   );
 }

@@ -35,9 +35,15 @@ export default function ClearAuthPage() {
       // Clear cookies
       document.cookie.split(";").forEach((c) => {
         const eqPos = c.indexOf("=")
-        const name = eqPos > -1 ? c.substr(0, eqPos) : c
+        const name = eqPos > -1 ? c.substr(0, eqPos).trim() : c.trim()
+        // Clear cookie without domain
         document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/"
+        // Clear cookie with current hostname
         document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=" + window.location.hostname
+        // Clear cookie with parent domain for production
+        if (window.location.hostname.includes('openlinguify.com')) {
+          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.openlinguify.com"
+        }
       })
       console.log('✅ Cookies cleared')
       

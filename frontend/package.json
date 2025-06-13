@@ -26,7 +26,10 @@
     "clean": "rm -rf .next node_modules",
     "type-check": "tsc --noEmit",
     "debug:webpack": "node scripts/debug-webpack.js",
-    "fix:webpack": "rm -rf .next && npm run dev"
+    "fix:webpack": "rm -rf .next && npm run dev",
+    "test:prod": "node scripts/test-production.js",
+    "prod:local": "NODE_ENV=production npm run build && NODE_ENV=production npm run start",
+    "test:production-behavior": "powershell -ExecutionPolicy Bypass -File scripts/test-production-behavior.ps1"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",

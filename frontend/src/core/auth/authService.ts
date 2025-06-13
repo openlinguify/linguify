@@ -217,8 +217,11 @@ export function storeAuthData(token: string, user?: UserProfile): void {
     logDebug(`Stored auth data in localStorage`);
 
     // Définir un cookie pour l'accès côté serveur et cross-tab
-    document.cookie = `${TOKEN_COOKIE_NAME}=${encodeURIComponent(token)}; path=/; max-age=86400; SameSite=Lax`;
-    logDebug(`Set auth cookie ${TOKEN_COOKIE_NAME}`);
+    // En production, utiliser le domaine racine pour partager entre sous-domaines
+    const isProduction = window.location.hostname.includes('openlinguify.com');
+    const cookieDomain = isProduction ? '; domain=.openlinguify.com' : '';
+    document.cookie = `${TOKEN_COOKIE_NAME}=${encodeURIComponent(token)}; path=/; max-age=86400; SameSite=Lax${cookieDomain}`;
+    logDebug(`Set auth cookie ${TOKEN_COOKIE_NAME}`, { domain: cookieDomain || 'default' });
     
     logInfo(`Auth data stored successfully`);
     
@@ -249,8 +252,12 @@ export function clearAuthData(): void {
     localStorage.removeItem(AUTH_STORAGE_KEY);
     logDebug(`Removed auth data from localStorage`);
 
-    // Effacer le cookie
+    // Effacer le cookie (avec et sans domaine pour assurer la suppression)
+    const isProduction = window.location.hostname.includes('openlinguify.com');
     document.cookie = `${TOKEN_COOKIE_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+    if (isProduction) {
+      document.cookie = `${TOKEN_COOKIE_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax; domain=.openlinguify.com`;
+    }
     logDebug(`Cleared auth cookie`);
     
     // Log other potential auth cookies for debugging

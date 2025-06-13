@@ -116,7 +116,10 @@ export default function SettingsPage() {
 
   useLanguageSync();
   const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem('settingsActiveTab') || 'profile';
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('settingsActiveTab') || 'profile';
+    }
+    return 'profile';
   });
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -201,7 +204,9 @@ export default function SettingsPage() {
 
   // Save active tab to localStorage
   useEffect(() => {
-    localStorage.setItem("settingsActiveTab", activeTab);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("settingsActiveTab", activeTab);
+    }
   }, [activeTab]);
 
   const fetchUserProfile = async () => {
@@ -224,7 +229,7 @@ export default function SettingsPage() {
   
   const fetchUserSettings = async () => {
     try {
-      const storedSettings = localStorage.getItem('userSettings');
+      const storedSettings = typeof window !== 'undefined' ? localStorage.getItem('userSettings') : null;
       if (storedSettings) {
         const parsedSettings = JSON.parse(storedSettings);
         setSettings(prev => ({
@@ -251,7 +256,9 @@ export default function SettingsPage() {
             interface_language: response.data.interface_language || prev.interface_language
           }));
           
-          localStorage.setItem('userSettings', JSON.stringify(response.data));
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('userSettings', JSON.stringify(response.data));
+          }
         }
       } catch {
         console.log('Settings API not available, using default values');
@@ -297,7 +304,9 @@ export default function SettingsPage() {
           if (value === 'light' || value === 'dark') {
             setTheme(value);
           } else {
-            localStorage.setItem('language', value);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('language', value);
+            }
 
             const event = new CustomEvent('app:language:changed', {
               detail: { locale: value, source: 'settings' }

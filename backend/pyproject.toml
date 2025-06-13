@@ -30,6 +30,7 @@ drf-spectacular = "^0.28.0"
 redis = "^6.1.0"
 pyjwt = "2.10.1"
 supabase = "^2.8.0"
+whitenoise = "^6.9.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
