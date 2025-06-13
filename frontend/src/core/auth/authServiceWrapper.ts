@@ -37,6 +37,7 @@ interface AuthError {
 class AuthServiceWrapper {
   private isSupabaseAvailable = true;
   private restAuth: SupabaseRestAuth | null = null;
+  private currentSession: AuthSession | null = null;
 
   constructor() {
     // Test Supabase availability
@@ -74,6 +75,9 @@ class AuthServiceWrapper {
             error: result.error
           };
         }
+        
+        // Store the session for token access
+        this.currentSession = result.session as AuthSession || null;
         
         return {
           user: result.user as AuthUser || null,
@@ -221,7 +225,10 @@ class AuthServiceWrapper {
   }
 
   async signOut(): Promise<{ error?: AuthError }> {
-    if (!this.isSupabaseAvailable) {
+    // Clear stored session
+    this.currentSession = null;
+    
+    if (!this.isSupabaseAvailable || process.env.NODE_ENV === 'production') {
       // Clear any local auth data
       if (typeof window !== 'undefined') {
         localStorage.clear();
@@ -242,15 +249,9 @@ class AuthServiceWrapper {
   }
 
   async getCurrentSession(): Promise<AuthSession | null> {
-    // Use direct Supabase client in production
+    // Use stored session in production
     if (process.env.NODE_ENV === 'production') {
-      try {
-        const session = await directGetSession();
-        return session as AuthSession | null;
-      } catch (error) {
-        console.error('[AuthWrapper] Direct get session failed:', error);
-        return null;
-      }
+      return this.currentSession;
     }
     
     if (!this.isSupabaseAvailable) {
@@ -309,6 +310,17 @@ class AuthServiceWrapper {
   }
 
   async getAccessToken(): Promise<string | null> {
+    // Use stored session token in production
+    if (process.env.NODE_ENV === 'production') {
+      const token = this.currentSession?.access_token || null;
+      if (token) {
+        console.log('[AuthWrapper] Providing access token:', token.substring(0, 50) + '...');
+      } else {
+        console.log('[AuthWrapper] No access token available');
+      }
+      return token;
+    }
+    
     if (!this.isSupabaseAvailable) {
       return null;
     }
