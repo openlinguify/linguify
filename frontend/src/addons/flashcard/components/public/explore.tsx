@@ -1,6 +1,6 @@
 // src/addons/flashcard/components/ExplorePage.tsx
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
@@ -16,7 +16,8 @@ import {
 import PublicDeckExplorer from '@/addons/flashcard/components/public/PublicDeckExplorer';
 import PublicDeckDetail from '@/addons/flashcard/components/public/PublicDeckDetail';
 
-const ExplorePage = () => {
+// Component that uses useSearchParams
+const ExplorePageContent = () => {
   const router = useRouter();
   const { toast } = useToast();
   
@@ -127,6 +128,37 @@ const ExplorePage = () => {
         </TabsContent>
       </Tabs>
     </div>
+  );
+};
+
+// Loading fallback component
+const ExplorePageLoading = () => {
+  return (
+    <div className="w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <div className="h-9 w-32 bg-gray-200 rounded animate-pulse" />
+          </div>
+          <div className="h-9 w-48 bg-gray-200 rounded animate-pulse" />
+        </div>
+      </div>
+      <div className="h-10 w-96 bg-gray-200 rounded animate-pulse mb-6" />
+      <div className="space-y-4">
+        <div className="h-24 bg-gray-200 rounded animate-pulse" />
+        <div className="h-24 bg-gray-200 rounded animate-pulse" />
+        <div className="h-24 bg-gray-200 rounded animate-pulse" />
+      </div>
+    </div>
+  );
+};
+
+// Main component with Suspense wrapper
+const ExplorePage = () => {
+  return (
+    <Suspense fallback={<ExplorePageLoading />}>
+      <ExplorePageContent />
+    </Suspense>
   );
 };
 

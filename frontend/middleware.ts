@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getUnauthenticatedRedirect, logEnvironmentInfo } from '@/core/utils/environment';
 
 // Debug function to log detailed information
 function debugLog(message: string, details?: Record<string, any>) {
@@ -104,11 +105,21 @@ export function middleware(request: NextRequest) {
     hasSessionToken: !!sessionToken
   });
 
+  // Check localStorage flag for recent login
+  const recentLoginFlag = request.cookies.get('supabase_login_success');
+  
+  // Check for Supabase auth cookies
+  const supabaseAuth = request.cookies.get('sb-access-token') || 
+                      request.cookies.get('sb-auth-token') ||
+                      request.cookies.get('sb-refresh-token');
+  
   // Comprehensive authentication check
   const isAuthenticated = !!(
     accessToken || 
     authToken || 
     sessionToken || 
+    supabaseAuth ||
+    recentLoginFlag ||
     request.headers.get('Authorization')
   );
 
@@ -133,18 +144,31 @@ export function middleware(request: NextRequest) {
 
   // Root path handling
   if (pathname === '/') {
+    // Special handling for production domains
+    const host = request.headers.get('host') || '';
+    const isProductionDomain = host.includes('openlinguify.com');
+    
+    // Log domain info for debugging
+    debugLog('🌐 Domain Check', {
+      host,
+      isProductionDomain,
+      hostname: request.nextUrl.hostname
+    });
+    
     if (!isAuthenticated) {
       debugLog('🚪 Root Path', {
         action: 'Redirect',
         reason: 'Unauthenticated',
-        destination: '/home'
+        destination: '/home',
+        domain: host
       });
       return NextResponse.redirect(new URL('/home', request.url));
     }
     
     debugLog('🏠 Root Path', {
       action: 'Allow Access',
-      reason: 'Authenticated'
+      reason: 'Authenticated',
+      domain: host
     });
     return NextResponse.next();
   }
@@ -194,12 +218,21 @@ export function middleware(request: NextRequest) {
   // Protected paths
   if (PROTECTED_PATHS.some(path => pathname === path || pathname.startsWith(path))) {
     if (!isAuthenticated) {
+      const host = request.headers.get('host') || '';
+      const redirectDestination = getUnauthenticatedRedirect(host);
+      
+      // Log environment info for debugging
+      logEnvironmentInfo('Middleware', host);
+      
       debugLog('🛡️ Protected Path', {
         action: 'Redirect',
         reason: 'Not Authenticated',
-        destination: '/login'
+        destination: redirectDestination,
+        host,
+        pathname
       });
-      return NextResponse.redirect(new URL('/login', request.url));
+      
+      return NextResponse.redirect(new URL(redirectDestination, request.url));
     }
     
     debugLog('🔒 Protected Path', {

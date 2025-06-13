@@ -80,20 +80,6 @@ export function EnabledAppsGrid() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="text-center p-8">
-        <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-        <Button asChild variant="outline">
-          <Link href="/app-store">
-            <Store className="h-4 w-4 mr-2" />
-            Go to App Store
-          </Link>
-        </Button>
-      </div>
-    );
-  }
-
   // Always add settings and app store to the enabled apps
   const settingsApp = {
     id: -1,
@@ -122,6 +108,20 @@ export function EnabledAppsGrid() {
     created_at: '',
     updated_at: ''
   };
+
+  if (error) {
+    return (
+      <div className="text-center p-8">
+        <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+        <Button asChild variant="outline">
+          <Link href="/app-store">
+            <Store className="h-4 w-4 mr-2" />
+            Go to App Store
+          </Link>
+        </Button>
+      </div>
+    );
+  }
 
   // Filter available apps to only show enabled ones
   const enabledApps = availableApps.filter(app => 

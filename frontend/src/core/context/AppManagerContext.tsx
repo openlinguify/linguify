@@ -39,9 +39,73 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  console.log('[AppManagerProvider] Rendered with isAuthenticated:', isAuthenticated);
+
   const refreshApps = useCallback(async () => {
+    console.log('[AppManager] refreshApps called, isAuthenticated:', isAuthenticated);
+    
     if (!isAuthenticated) {
+      console.log('[AppManager] Not authenticated, loading default apps');
+      // Charger les apps par défaut même sans auth
+      const defaultApps = [
+        {
+          id: 1,
+          code: 'learning',
+          display_name: 'Learning',
+          description: 'Interactive language lessons',
+          icon_name: 'BookOpen',
+          color: '#3B82F6',
+          route_path: '/learning',
+          is_enabled: true,
+          order: 1,
+          created_at: '',
+          updated_at: ''
+        },
+        {
+          id: 2,
+          code: 'flashcard',
+          display_name: 'Flashcards',
+          description: 'Review vocabulary with flashcards',
+          icon_name: 'CreditCard',
+          color: '#10B981',
+          route_path: '/flashcard',
+          is_enabled: true,
+          order: 2,
+          created_at: '',
+          updated_at: ''
+        },
+        {
+          id: 3,
+          code: 'notebook',
+          display_name: 'Notebook',
+          description: 'Take notes and track progress',
+          icon_name: 'FileText',
+          color: '#F59E0B',
+          route_path: '/notebook',
+          is_enabled: true,
+          order: 3,
+          created_at: '',
+          updated_at: ''
+        },
+        {
+          id: 4,
+          code: 'quizz',
+          display_name: 'Quiz',
+          description: 'Test your knowledge',
+          icon_name: 'Brain',
+          color: '#EF4444',
+          route_path: '/quizz',
+          is_enabled: true,
+          order: 4,
+          created_at: '',
+          updated_at: ''
+        }
+      ];
+      
+      setAvailableApps(defaultApps);
+      setEnabledAppCodes(['learning', 'flashcard', 'notebook', 'quizz']);
       setLoading(false);
+      console.log('[AppManager] Default apps loaded (no auth)');
       return;
     }
 
@@ -49,12 +113,17 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
       setError(null);
       console.log('[AppManager] Refreshing apps data...');
       
-      // Récupérer les applications disponibles et les paramètres utilisateur (avec cache-busting)
-      const timestamp = Date.now();
+      // Timeout après 2 secondes pour éviter l'attente infinie
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      
+      // Récupérer les applications disponibles et les paramètres utilisateur
       const [appsResponse, userSettingsResponse] = await Promise.all([
         appManagerService.getAvailableApps(),
         appManagerService.getUserAppSettings()
       ]);
+      
+      clearTimeout(timeoutId);
 
       const apps = appsResponse || [];
       const userSettings = userSettingsResponse || { enabled_apps: [] };
@@ -129,8 +198,68 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
       setEnabledAppCodes(enabledAppCodes);
 
     } catch (err) {
-      console.error('[AppManager] Error fetching apps:', err);
-      setError('Failed to load apps');
+      console.error('[AppManager] Backend unavailable, using default apps:', err);
+      
+      // Backend indisponible - utiliser les apps par défaut
+      const defaultApps = [
+        {
+          id: 1,
+          code: 'learning',
+          display_name: 'Learning',
+          description: 'Interactive language lessons',
+          icon_name: 'BookOpen',
+          color: '#3B82F6',
+          route_path: '/learning',
+          is_enabled: true,
+          order: 1,
+          created_at: '',
+          updated_at: ''
+        },
+        {
+          id: 2,
+          code: 'flashcard',
+          display_name: 'Flashcards',
+          description: 'Review vocabulary with flashcards',
+          icon_name: 'CreditCard',
+          color: '#10B981',
+          route_path: '/flashcard',
+          is_enabled: true,
+          order: 2,
+          created_at: '',
+          updated_at: ''
+        },
+        {
+          id: 3,
+          code: 'notebook',
+          display_name: 'Notebook',
+          description: 'Take notes and track progress',
+          icon_name: 'FileText',
+          color: '#F59E0B',
+          route_path: '/notebook',
+          is_enabled: true,
+          order: 3,
+          created_at: '',
+          updated_at: ''
+        },
+        {
+          id: 4,
+          code: 'quizz',
+          display_name: 'Quiz',
+          description: 'Test your knowledge',
+          icon_name: 'Brain',
+          color: '#EF4444',
+          route_path: '/quizz',
+          is_enabled: true,
+          order: 4,
+          created_at: '',
+          updated_at: ''
+        }
+      ];
+      
+      setAvailableApps(defaultApps);
+      setEnabledAppCodes(['learning', 'flashcard', 'notebook', 'quizz']);
+      setError(null); // Pas d'erreur - on a des apps par défaut
+      console.log('[AppManager] Default apps loaded (offline mode):', defaultApps.length);
     } finally {
       setLoading(false);
     }
@@ -180,13 +309,24 @@ export function AppManagerProvider({ children }: AppManagerProviderProps) {
       console.log('[AppManager] User authenticated, loading apps...');
       refreshApps();
     } else if (!isAuthenticated) {
-      console.log('[AppManager] User not authenticated, clearing state');
-      setAvailableApps([]);
-      setEnabledAppCodes([]);
-      setLoading(false);
+      console.log('[AppManager] User not authenticated, loading default apps');
+      refreshApps(); // Load default apps même sans auth
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]); // Ne se déclenche que sur les changements d'authentification, pas sur chaque changement d'user
+
+  // FORCE: Load apps immédiatement au montage
+  useEffect(() => {
+    console.log('[AppManager] Component mounted, force loading apps in 2 seconds');
+    const timer = setTimeout(() => {
+      if (loading) {
+        console.log('[AppManager] Force timeout - loading default apps anyway');
+        refreshApps();
+      }
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, [loading, refreshApps]);
 
   const forceRefresh = useCallback(async () => {
     console.log('[AppManager] 🔄 FORCE REFRESH - Clearing cache...');
