@@ -79,6 +79,12 @@ class AuthServiceWrapper {
         // Store the session for token access
         this.currentSession = result.session as AuthSession || null;
         
+        console.log('[AuthWrapper] Session stored:', {
+          hasSession: !!this.currentSession,
+          hasAccessToken: !!this.currentSession?.access_token,
+          tokenLength: this.currentSession?.access_token?.length || 0
+        });
+        
         return {
           user: result.user as AuthUser || null,
           session: result.session as AuthSession || null
@@ -313,11 +319,12 @@ class AuthServiceWrapper {
     // Use stored session token in production
     if (process.env.NODE_ENV === 'production') {
       const token = this.currentSession?.access_token || null;
-      if (token) {
-        console.log('[AuthWrapper] Providing access token:', token.substring(0, 50) + '...');
-      } else {
-        console.log('[AuthWrapper] No access token available');
-      }
+      console.log('[AuthWrapper] getAccessToken called - Production mode', {
+        hasSession: !!this.currentSession,
+        hasToken: !!token,
+        tokenLength: token?.length || 0,
+        tokenPreview: token ? token.substring(0, 50) + '...' : 'none'
+      });
       return token;
     }
     
@@ -337,6 +344,12 @@ class AuthServiceWrapper {
   }
 
   async refreshToken(): Promise<string | null> {
+    // In production, we don't support token refresh yet
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('[AuthWrapper] Token refresh not supported in production XHR mode');
+      return null;
+    }
+    
     if (!this.isSupabaseAvailable) {
       return null;
     }
