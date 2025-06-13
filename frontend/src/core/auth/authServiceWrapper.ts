@@ -1,6 +1,7 @@
 // src/core/auth/authServiceWrapper.ts
 import { supabaseAuthService } from './supabaseAuthService';
 import { SupabaseRestAuth } from './supabaseRestAuth';
+import { directSignIn, directSignOut, directGetSession, getDirectSupabaseClient } from './directSupabaseAuth';
 
 interface AuthUser {
   id: string
@@ -58,7 +59,35 @@ class AuthServiceWrapper {
   async signIn(email: string, password: string): Promise<AuthResponse> {
     console.log('[AuthWrapper] Attempting sign in...');
     
-    // Try Supabase SDK first if available
+    // Use direct Supabase client in production to avoid interceptor issues
+    if (process.env.NODE_ENV === 'production') {
+      try {
+        console.log('[AuthWrapper] Using direct Supabase client in production...');
+        const { data, error } = await directSignIn(email, password);
+        
+        if (error) {
+          return {
+            user: null,
+            session: null,
+            error: {
+              message: error.message || 'Authentication failed',
+              status: (error as any).status || 401
+            }
+          };
+        }
+        
+        return {
+          user: data?.user as AuthUser || null,
+          session: data?.session as AuthSession || null
+        };
+      } catch (error) {
+        console.error('[AuthWrapper] Direct sign in failed:', error);
+        // Fall back to REST
+        return await this.signInWithRest(email, password);
+      }
+    }
+    
+    // Original logic for development
     if (this.isSupabaseAvailable) {
       try {
         console.log('[AuthWrapper] Trying Supabase SDK...');
@@ -208,6 +237,17 @@ class AuthServiceWrapper {
   }
 
   async getCurrentSession(): Promise<AuthSession | null> {
+    // Use direct Supabase client in production
+    if (process.env.NODE_ENV === 'production') {
+      try {
+        const session = await directGetSession();
+        return session as AuthSession | null;
+      } catch (error) {
+        console.error('[AuthWrapper] Direct get session failed:', error);
+        return null;
+      }
+    }
+    
     if (!this.isSupabaseAvailable) {
       return null;
     }
