@@ -1,4 +1,7 @@
 // Ultra-simple authentication using raw fetch
+// Save original fetch before any potential modifications
+const originalFetch = typeof window !== 'undefined' ? window.fetch.bind(window) : fetch;
+
 export async function simpleSignIn(email: string, password: string) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -19,8 +22,8 @@ export async function simpleSignIn(email: string, password: string) {
     const url = `${supabaseUrl}/auth/v1/token?grant_type=password`;
     const body = JSON.stringify({ email, password });
     
-    // Use the most basic fetch possible
-    const response = await window.fetch(url, {
+    // Use the original fetch to avoid any modifications
+    const response = await originalFetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
