@@ -12,7 +12,7 @@ Disallow: /admin/
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://openlinguify.com/sitemap.xml
+Sitemap: https://www.openlinguify.com/sitemap.xml
 
 # Temps d'attente entre les requêtes (en secondes)
 Crawl-delay: 1

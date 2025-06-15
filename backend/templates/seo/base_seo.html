@@ -1,0 +1,139 @@
+{% load static %}
+{% load i18n %}
+
+{# SEO Meta Tags Template #}
+
+{# Basic Meta Tags #}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+{# Dynamic SEO Meta Tags #}
+{% if seo_meta %}
+    {{ seo_meta|safe }}
+{% else %}
+    {# Default meta tags if not provided #}
+    <title>{% block title %}OpenLinguify - Learn Languages Online with AI{% endblock %}</title>
+    <meta name="description" content="{% block description %}Master new languages with OpenLinguify's AI-powered lessons, interactive flashcards, and personalized learning paths. Start learning for free today!{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}language learning, learn languages online, AI language tutor, interactive language lessons{% endblock %}">
+{% endif %}
+
+{# Canonical URL #}
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+{# Hreflang Tags for Multi-language Support #}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_available_languages as LANGUAGES %}
+{% for lang_code, lang_name in LANGUAGES %}
+    {% if lang_code == 'en' %}
+        <link rel="alternate" hreflang="en" href="https://www.openlinguify.com{{ request.path }}">
+        <link rel="alternate" hreflang="x-default" href="https://www.openlinguify.com{{ request.path }}">
+    {% else %}
+        <link rel="alternate" hreflang="{{ lang_code }}" href="https://www.openlinguify.com/{{ lang_code }}{{ request.path }}">
+    {% endif %}
+{% endfor %}
+
+{# Open Graph Tags #}
+<meta property="og:site_name" content="OpenLinguify">
+<meta property="og:type" content="{% block og_type %}website{% endblock %}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:title" content="{% block og_title %}{{ seo_title|default:title }}{% endblock %}">
+<meta property="og:description" content="{% block og_description %}{{ seo_description|default:description }}{% endblock %}">
+<meta property="og:image" content="{% block og_image %}https://www.openlinguify.com/static/images/og-default.png{% endblock %}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="{{ LANGUAGE_CODE|default:'en' }}_{{ LANGUAGE_CODE|upper|default:'US' }}">
+{% for lang_code, lang_name in LANGUAGES %}
+    {% if lang_code != LANGUAGE_CODE %}
+        <meta property="og:locale:alternate" content="{{ lang_code }}_{{ lang_code|upper }}">
+    {% endif %}
+{% endfor %}
+
+{# Twitter Card Tags #}
+<meta name="twitter:card" content="{% block twitter_card %}summary_large_image{% endblock %}">
+<meta name="twitter:site" content="@openlinguify">
+<meta name="twitter:creator" content="@openlinguify">
+<meta name="twitter:title" content="{% block twitter_title %}{{ seo_title|default:title }}{% endblock %}">
+<meta name="twitter:description" content="{% block twitter_description %}{{ seo_description|default:description }}{% endblock %}">
+<meta name="twitter:image" content="{% block twitter_image %}https://www.openlinguify.com/static/images/og-default.png{% endblock %}">
+<meta name="twitter:image:alt" content="{% block twitter_image_alt %}OpenLinguify - Language Learning Platform{% endblock %}">
+
+{# Structured Data (JSON-LD) #}
+{% block structured_data %}
+{% if structured_data_scripts %}
+    {{ structured_data_scripts|safe }}
+{% else %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "OpenLinguify",
+        "url": "https://www.openlinguify.com/",
+        "logo": "https://www.openlinguify.com/static/images/logo.png",
+        "sameAs": [
+            "https://www.facebook.com/openlinguify",
+            "https://twitter.com/openlinguify",
+            "https://www.linkedin.com/company/openlinguify",
+            "https://www.youtube.com/openlinguify"
+        ]
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "url": "https://www.openlinguify.com/",
+        "name": "OpenLinguify",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://www.openlinguify.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+{% endif %}
+{% endblock %}
+
+{# Performance Optimization #}
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link rel="dns-prefetch" href="//www.google-analytics.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
+
+{# PWA and Mobile App Tags #}
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="OpenLinguify">
+<meta name="application-name" content="OpenLinguify">
+<meta name="msapplication-TileColor" content="#2b5797">
+<meta name="theme-color" content="#ffffff">
+
+{# Favicon and App Icons #}
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+<link rel="manifest" href="{% static 'manifest.json' %}">
+
+{# Security Headers #}
+<meta name="referrer" content="no-referrer-when-downgrade">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+{# Additional SEO Tags #}
+<meta name="robots" content="{% block robots %}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{% endblock %}">
+<meta name="googlebot" content="{% block googlebot %}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{% endblock %}">
+<meta name="author" content="OpenLinguify">
+<meta name="publisher" content="OpenLinguify">
+<meta name="copyright" content="OpenLinguify">
+<meta name="rating" content="general">
+<meta name="distribution" content="global">
+<meta name="revisit-after" content="7 days">
+
+{# Verification Tags (add your own codes) #}
+{% comment %}
+<meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE">
+<meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE">
+<meta name="yandex-verification" content="YOUR_YANDEX_VERIFICATION_CODE">
+<meta name="p:domain_verify" content="YOUR_PINTEREST_VERIFICATION_CODE">
+{% endcomment %}
