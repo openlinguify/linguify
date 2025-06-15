@@ -14,10 +14,14 @@ from drf_spectacular.views import (
 from apps.authentication.views_terms import accept_terms, terms_status
 from test_settings import test_settings
 from django.contrib.sitemaps.views import sitemap, index as sitemap_index
+from .sitemap_views import serve_sitemap, serve_robots_txt
 try:
     from .advanced_sitemaps import sitemaps
 except ImportError:
-    from .sitemaps import sitemaps
+    try:
+        from .sitemaps import sitemaps
+    except ImportError:
+        sitemaps = {}
 
 
 def redirect_to_admin(request):
@@ -56,8 +60,16 @@ urlpatterns = [
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('api/v1/quizz/', include('apps.quizz.urls', namespace='quizz')),
     
-    # Sitemap URLs
-    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
-    path('sitemap-<section>.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
-    path('sitemap-index.xml', sitemap_index, {'sitemaps': sitemaps}, name='sitemap_index'),
+    # Sitemap URLs - Static file serving (temporary solution)
+    path('robots.txt', serve_robots_txt, name='robots_txt'),
+    path('sitemap.xml', serve_sitemap, {'sitemap_name': 'sitemap'}, name='sitemap_main'),
+    path('sitemap-index.xml', serve_sitemap, {'sitemap_name': 'sitemap-index'}, name='sitemap_index'),
+    path('sitemap-static.xml', serve_sitemap, {'sitemap_name': 'sitemap-static'}, name='sitemap_static'),
+    path('sitemap-courses.xml', serve_sitemap, {'sitemap_name': 'sitemap-courses'}, name='sitemap_courses'),
+    path('sitemap-images.xml', serve_sitemap, {'sitemap_name': 'sitemap-images'}, name='sitemap_images'),
+    path('sitemap-videos.xml', serve_sitemap, {'sitemap_name': 'sitemap-videos'}, name='sitemap_videos'),
+    path('sitemap-en.xml', serve_sitemap, {'sitemap_name': 'sitemap-en'}, name='sitemap_en'),
+    path('sitemap-fr.xml', serve_sitemap, {'sitemap_name': 'sitemap-fr'}, name='sitemap_fr'),
+    path('sitemap-es.xml', serve_sitemap, {'sitemap_name': 'sitemap-es'}, name='sitemap_es'),
+    path('sitemap-nl.xml', serve_sitemap, {'sitemap_name': 'sitemap-nl'}, name='sitemap_nl'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
