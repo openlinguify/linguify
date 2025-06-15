@@ -402,3 +402,162 @@ class CookieConsentStatsSerializer(serializers.Serializer):
         if total == 0:
             return 0
         return round((obj.get('custom', 0) / total) * 100, 2)
+
+
+# === SETTINGS SERIALIZERS ===
+
+class NotificationSettingsSerializer(serializers.ModelSerializer):
+    """Serializer for notification preferences"""
+    
+    class Meta:
+        model = User
+        fields = [
+            'email_notifications',
+            'push_notifications', 
+            'achievement_notifications',
+            'lesson_notifications',
+            'flashcard_notifications',
+            'system_notifications',
+        ]
+
+
+class LearningSettingsSerializer(serializers.ModelSerializer):
+    """Serializer for learning preferences"""
+    
+    class Meta:
+        model = User
+        fields = [
+            'daily_goal',
+            'weekday_reminders',
+            'weekend_reminders', 
+            'reminder_time',
+            'speaking_exercises',
+            'listening_exercises',
+            'reading_exercises',
+            'writing_exercises',
+            'native_language',
+            'target_language',
+            'language_level',
+            'objectives',
+        ]
+        
+    def validate(self, data):
+        """Validate that native and target languages are different"""
+        native_lang = data.get('native_language', self.instance.native_language if self.instance else None)
+        target_lang = data.get('target_language', self.instance.target_language if self.instance else None)
+        
+        if native_lang and target_lang and native_lang == target_lang:
+            raise serializers.ValidationError(
+                "Native language and target language must be different"
+            )
+        
+        return data
+
+
+class PrivacySettingsSerializer(serializers.ModelSerializer):
+    """Serializer for privacy preferences"""
+    
+    class Meta:
+        model = User
+        fields = [
+            'public_profile',
+            'share_progress',
+            'share_activity',
+        ]
+
+
+class AppearanceSettingsSerializer(serializers.ModelSerializer):
+    """Serializer for appearance preferences"""
+    
+    class Meta:
+        model = User
+        fields = [
+            'theme',
+            'interface_language',
+        ]
+
+
+class GeneralSettingsSerializer(serializers.ModelSerializer):
+    """Serializer for general user settings"""
+    
+    class Meta:
+        model = User
+        fields = [
+            # Profile basics
+            'username',
+            'first_name', 
+            'last_name',
+            'bio',
+            'gender',
+            'birthday',
+            
+            # Language settings
+            'native_language',
+            'target_language',
+            'language_level',
+            'objectives',
+            'interface_language',
+            
+            # Notification settings
+            'email_notifications',
+            'push_notifications',
+            
+            # Learning settings  
+            'daily_goal',
+            'reminder_time',
+            
+            # Appearance
+            'theme',
+            
+            # Privacy
+            'public_profile',
+        ]
+        
+    def validate(self, data):
+        """Validate settings data"""
+        # Validate language differences
+        native_lang = data.get('native_language', self.instance.native_language if self.instance else None)
+        target_lang = data.get('target_language', self.instance.target_language if self.instance else None)
+        
+        if native_lang and target_lang and native_lang == target_lang:
+            raise serializers.ValidationError({
+                'target_language': "Target language and native language must be different"
+            })
+        
+        return data
+
+
+class SettingsStatsSerializer(serializers.Serializer):
+    """Serializer for settings statistics"""
+    
+    total_users = serializers.IntegerField()
+    notification_enabled_users = serializers.IntegerField()
+    public_profile_users = serializers.IntegerField()
+    daily_goal_average = serializers.FloatField()
+    most_common_native_language = serializers.CharField()
+    most_common_target_language = serializers.CharField()
+    most_common_level = serializers.CharField()
+    
+    
+class PasswordChangeSerializer(serializers.Serializer):
+    """Serializer for password change"""
+    
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True, min_length=8)
+    confirm_password = serializers.CharField(required=True)
+    
+    def validate(self, data):
+        """Validate password change data"""
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError({
+                'confirm_password': "New passwords don't match"
+            })
+        
+        return data
+    
+    def validate_old_password(self, value):
+        """Validate old password"""
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Old password is incorrect")
+        return value

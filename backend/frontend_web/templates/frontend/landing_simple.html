@@ -1,0 +1,722 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    
+    <!-- Favicon et icônes -->
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
+    
+    <!-- Meta tags -->
+    <meta name="description" content="{{ page_description }}">
+    <meta name="keywords" content="{{ page_keywords }}">
+    <meta name="author" content="Linguify">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{{ page_title }}">
+    <meta property="og:description" content="{{ page_description }}">
+    <meta property="og:image" content="{% static 'images/favicon.svg' %}">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
+    <meta property="twitter:title" content="{{ page_title }}">
+    <meta property="twitter:description" content="{{ page_description }}">
+    <meta property="twitter:image" content="{% static 'images/favicon.svg' %}">
+    
+    <!-- Thème couleur pour mobile -->
+    <meta name="theme-color" content="#6366f1">
+    <meta name="msapplication-navbutton-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    
+    <!-- Apple PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Linguify">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome pour plus d'icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-600: #475569;
+            --gray-900: #0f172a;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--gray-900);
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.75rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-section {
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 50%, #c7d2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 3rem;
+            opacity: 0.95;
+            color: #e0e7ff;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+        
+        .btn-hero {
+            padding: 18px 45px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: none;
+        }
+        
+        .btn-hero.primary {
+            background: white;
+            color: var(--primary-color);
+        }
+        
+        .btn-hero.primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            color: var(--primary-dark);
+        }
+        
+        .btn-hero.secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(15px);
+        }
+        
+        .btn-hero.secondary:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.6);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .language-selector {
+            padding: 4rem 0;
+            background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%);
+        }
+        
+        .language-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            border: 2px solid transparent;
+            background: white;
+            color: var(--gray-600);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            font-weight: 500;
+        }
+        
+        .language-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            border-color: var(--primary-color);
+        }
+        
+        .language-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+        
+        .stats-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #eef2ff 0%, #ffffff 50%, #eef2ff 100%);
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            transition: all 0.4s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .stat-number {
+            font-size: 4rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 1rem;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            color: var(--gray-600);
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        .features-section {
+            padding: 6rem 0;
+            background: white;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.4s ease;
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+        
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--gray-900);
+        }
+        
+        .feature-description {
+            color: var(--gray-600);
+            line-height: 1.7;
+            font-size: 1.1rem;
+        }
+        
+        .cta-section {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+        
+        .footer-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .footer-link {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-link:hover {
+            color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .btn-hero {
+                padding: 14px 30px;
+                font-size: 1rem;
+            }
+        }
+        
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'frontend_web:landing' %}">
+                <i class="bi bi-translate me-2"></i>
+                Linguify
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="#features">{% trans "Features" %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="#pricing">{% trans "Pricing" %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="#testimonials">{% trans "Testimonials" %}</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <!-- Language Selector in Navbar -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle fw-medium" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-globe me-1"></i>
+                            {% if LANGUAGE_CODE == 'fr' %}🇫🇷 FR
+                            {% elif LANGUAGE_CODE == 'en' %}🇬🇧 EN
+                            {% elif LANGUAGE_CODE == 'es' %}🇪🇸 ES
+                            {% elif LANGUAGE_CODE == 'nl' %}🇳🇱 NL
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'frontend_web:set_language' 'fr' %}">🇫🇷 Français</a></li>
+                            <li><a class="dropdown-item" href="{% url 'frontend_web:set_language' 'en' %}">🇬🇧 English</a></li>
+                            <li><a class="dropdown-item" href="{% url 'frontend_web:set_language' 'es' %}">🇪🇸 Español</a></li>
+                            <li><a class="dropdown-item" href="{% url 'frontend_web:set_language' 'nl' %}">🇳🇱 Nederlands</a></li>
+                        </ul>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium" href="/dashboard/">
+                                <i class="bi bi-grid-3x3-gap me-1"></i>
+                                {% trans "Dashboard" %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium" href="/auth/logout/">{% trans "Logout" %}</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium" href="/auth/login/">{% trans "Login" %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary rounded-pill px-4 ms-2 fw-medium" href="/auth/register/">
+                                {% trans "Get Started" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="hero-title animate-on-scroll">
+                        {% trans "Learn a new language at your own pace!" %}
+                    </h1>
+                    <p class="hero-subtitle animate-on-scroll">
+                        {% trans "Everything you need to learn a foreign language, at your own pace and wherever you are." %}
+                    </p>
+                    
+                    <div class="d-flex gap-3 flex-wrap animate-on-scroll">
+                        {% if not user.is_authenticated %}
+                            <a href="/auth/register/" class="btn-hero primary">
+                                <i class="fas fa-rocket"></i>
+                                {% trans "Start for Free" %}
+                            </a>
+                            <a href="#features" class="btn-hero secondary">
+                                <i class="fas fa-globe"></i>
+                                {% trans "Discover Our Apps" %}
+                            </a>
+                        {% else %}
+                            <a href="/dashboard/" class="btn-hero primary">
+                                <i class="bi bi-grid-3x3-gap"></i>
+                                {% trans "Access Dashboard" %}
+                            </a>
+                            <a href="/notebook/" class="btn-hero secondary">
+                                <i class="bi bi-journal-text"></i>
+                                {% trans "My Notes" %}
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 text-center animate-on-scroll">
+                    <div class="position-relative">
+                        <div class="bg-white p-1 rounded-4 shadow-lg">
+                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height: 350px;">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-play-circle fa-5x mb-3 opacity-50"></i>
+                                    <h3 class="h5">{% trans "App Preview" %}</h3>
+                                    <small>{% trans "(Interactive Demo)" %}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Language Selector -->
+    <section class="language-selector">
+        <div class="container">
+            <div class="text-center animate-on-scroll">
+                <h2 class="display-6 fw-bold mb-4">{% trans "Which language would you like to learn?" %}</h2>
+                <div class="d-flex flex-wrap justify-content-center gap-3" id="languageSelector">
+                    <button class="language-btn active" data-lang="spanish" type="button">
+                        <span>🇪🇸</span>
+                        <span>Español</span>
+                    </button>
+                    <button class="language-btn" data-lang="english" type="button">
+                        <span>🇬🇧</span>
+                        <span>English</span>
+                    </button>
+                    <button class="language-btn" data-lang="french" type="button">
+                        <span>🇫🇷</span>
+                        <span>Français</span>
+                    </button>
+                    <button class="language-btn" data-lang="dutch" type="button">
+                        <span>🇳🇱</span>
+                        <span>Nederlands</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-6 col-md-3 animate-on-scroll">
+                    <div class="stat-card">
+                        <span class="stat-number">4</span>
+                        <div class="stat-label">{% trans "Available Languages" %}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 animate-on-scroll">
+                    <div class="stat-card">
+                        <span class="stat-number">100+</span>
+                        <div class="stat-label">{% trans "Learning Units" %}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 animate-on-scroll">
+                    <div class="stat-card">
+                        <span class="stat-number">500+</span>
+                        <div class="stat-label">{% trans "Interactive Lessons" %}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 animate-on-scroll">
+                    <div class="stat-card">
+                        <span class="stat-number">10k+</span>
+                        <div class="stat-label">{% trans "Words and Expressions" %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="text-center mb-5 animate-on-scroll">
+                <h2 class="display-5 fw-bold mb-4">{% trans "Why Choose Linguify?" %}</h2>
+                <p class="lead text-muted">
+                    {% trans "Our platform has been designed by experts in linguistics and pedagogy to maximize your progress." %}
+                </p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6 animate-on-scroll">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3 class="feature-title">{% trans "Interactive Learning" %}</h3>
+                        <p class="feature-description">
+                            {% trans "Interactive learning modules adapted to your pace and level." %}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 animate-on-scroll">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3 class="feature-title">{% trans "Smart Flashcards" %}</h3>
+                        <p class="feature-description">
+                            {% trans "Effective memorization tools for rapid vocabulary retention." %}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 animate-on-scroll">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-notebook"></i>
+                        </div>
+                        <h3 class="feature-title">{% trans "Centralized Notebook" %}</h3>
+                        <p class="feature-description">
+                            {% trans "Centralized note-taking with smart organization and advanced search." %}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 animate-on-scroll">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="feature-title">{% trans "Progress Tracking" %}</h3>
+                        <p class="feature-description">
+                            {% trans "Visualize your progress and set achievable goals with detailed charts." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="display-5 fw-bold mb-4">
+                        {% trans "Ready to start your language learning journey?" %}
+                    </h2>
+                    <p class="lead mb-5">
+                        {% trans "Join our community of learners and start mastering a new language today." %}
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        {% if not user.is_authenticated %}
+                            <a href="/auth/register/" class="btn-hero primary">
+                                <i class="fas fa-rocket"></i>
+                                {% trans "Start for Free" %}
+                            </a>
+                        {% else %}
+                            <a href="/dashboard/" class="btn-hero primary">
+                                <i class="bi bi-grid-3x3-gap"></i>
+                                {% trans "Go to Dashboard" %}
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="footer-brand">
+                        <i class="bi bi-translate me-2"></i>
+                        Linguify
+                    </div>
+                    <p class="text-muted">
+                        {% trans "AI-powered language learning platform. Learn faster, better and with pleasure." %}
+                    </p>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="mb-3 text-white">{% trans "Product" %}</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#features" class="footer-link">{% trans "Features" %}</a></li>
+                        <li><a href="#pricing" class="footer-link">{% trans "Pricing" %}</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="mb-3 text-white">{% trans "Support" %}</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="footer-link">{% trans "Help Center" %}</a></li>
+                        <li><a href="#" class="footer-link">{% trans "Contact" %}</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="mb-3 text-white">{% trans "Legal" %}</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="footer-link">{% trans "Privacy" %}</a></li>
+                        <li><a href="#" class="footer-link">{% trans "Terms" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="my-4" style="border-color: #374151;">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-muted mb-0">
+                        © 2024 Linguify. {% trans "All rights reserved." %}
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="text-muted">
+                        {% trans "Made with ❤️ in France" %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Animation on scroll
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Language selector
+        document.querySelectorAll('.language-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.language-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const lang = this.dataset.lang;
+                localStorage.setItem('preferredLearningLanguage', lang);
+                console.log('Selected language:', lang);
+            });
+        });
+
+        // Service Worker registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{% static "sw.js" %}')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        console.log('🚀 Linguify Django Frontend Active!');
+    </script>
+</body>
+</html>

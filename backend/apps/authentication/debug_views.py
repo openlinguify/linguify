@@ -52,26 +52,6 @@ def cors_debug(request):
         }
     })
 
-@api_view(['GET', 'POST'])
-@permission_classes([AllowAny])
-def debug_supabase_config(request):
-    """Endpoint pour déboguer la configuration Supabase"""
-    if not settings.DEBUG:
-        return JsonResponse({'error': 'Debug endpoint disabled in production'}, status=403)
-    
-    config_info = {
-        'supabase_url': getattr(settings, 'SUPABASE_URL', 'NOT_SET'),
-        'has_jwt_secret': bool(getattr(settings, 'SUPABASE_JWT_SECRET', '')),
-        'jwt_secret_length': len(getattr(settings, 'SUPABASE_JWT_SECRET', '')),
-        'has_service_key': bool(getattr(settings, 'SUPABASE_SERVICE_ROLE_KEY', '')),
-        'use_supabase_db': getattr(settings, 'USE_SUPABASE_DB', None),
-        'debug': settings.DEBUG,
-    }
-    
-    return JsonResponse({
-        'status': 'ok',
-        'config': config_info
-    })
 
 @api_view(['POST'])
 @permission_classes([AllowAny])

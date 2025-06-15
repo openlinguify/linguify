@@ -1,0 +1,253 @@
+# FRENCH TRANSLATION FOR LINGUIFY
+# Copyright (C) 2024 Linguify
+# This file is distributed under the same license as the Linguify package.
+# Linguify Team <team@linguify.com>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Linguify 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-06-15 12:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Linguify Team <team@linguify.com>\n"
+"Language-Team: French <team@linguify.com>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Linguify - Apprendre les langues avec l'IA"
+msgstr "Linguify - Apprendre les langues avec l'IA"
+
+msgid "Linguify vous aide à apprendre les langues grâce à l'intelligence artificielle. Cours personnalisés, exercices interactifs et suivi de progression."
+msgstr "Linguify vous aide à apprendre les langues grâce à l'intelligence artificielle. Cours personnalisés, exercices interactifs et suivi de progression."
+
+msgid "apprentissage langues, IA, intelligence artificielle, cours personnalisés, flashcards, notebook"
+msgstr "apprentissage langues, IA, intelligence artificielle, cours personnalisés, flashcards, notebook"
+
+msgid "Basculer la navigation"
+msgstr "Basculer la navigation"
+
+msgid "Fonctionnalités"
+msgstr "Fonctionnalités"
+
+msgid "Tarifs"
+msgstr "Tarifs"
+
+msgid "Témoignages"
+msgstr "Témoignages"
+
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+msgid "Déconnexion"
+msgstr "Déconnexion"
+
+msgid "Connexion"
+msgstr "Connexion"
+
+msgid "Commencer"
+msgstr "Commencer"
+
+msgid "Apprenez une nouvelle langue à votre rythme !"
+msgstr "Apprenez une nouvelle langue à votre rythme !"
+
+msgid "Tout ce dont vous avez besoin pour apprendre une langue étrangère, à votre rythme et où que vous soyez."
+msgstr "Tout ce dont vous avez besoin pour apprendre une langue étrangère, à votre rythme et où que vous soyez."
+
+msgid "Commencer gratuitement"
+msgstr "Commencer gratuitement"
+
+msgid "Découvrir nos applications"
+msgstr "Découvrir nos applications"
+
+msgid "Accéder au Dashboard"
+msgstr "Accéder au Dashboard"
+
+msgid "Mes Notes"
+msgstr "Mes Notes"
+
+msgid "Aperçu de l'application"
+msgstr "Aperçu de l'application"
+
+msgid "(Démonstration interactive)"
+msgstr "(Démonstration interactive)"
+
+msgid "Quelle langue souhaitez-vous apprendre ?"
+msgstr "Quelle langue souhaitez-vous apprendre ?"
+
+msgid "Sélection de langue à apprendre"
+msgstr "Sélection de langue à apprendre"
+
+msgid "Langues disponibles"
+msgstr "Langues disponibles"
+
+msgid "Unités d'apprentissage"
+msgstr "Unités d'apprentissage"
+
+msgid "Leçons interactives"
+msgstr "Leçons interactives"
+
+msgid "Mots et expressions"
+msgstr "Mots et expressions"
+
+msgid "Pourquoi choisir Linguify ?"
+msgstr "Pourquoi choisir Linguify ?"
+
+msgid "Notre plateforme a été conçue par des experts en linguistique et en pédagogie pour maximiser votre progression."
+msgstr "Notre plateforme a été conçue par des experts en linguistique et en pédagogie pour maximiser votre progression."
+
+msgid "Apprentissage Interactif"
+msgstr "Apprentissage Interactif"
+
+msgid "Modules d'apprentissage interactifs adaptés à votre rythme et à votre niveau."
+msgstr "Modules d'apprentissage interactifs adaptés à votre rythme et à votre niveau."
+
+msgid "Flashcards Intelligentes"
+msgstr "Flashcards Intelligentes"
+
+msgid "Outils de mémorisation efficaces pour une rétention rapide du vocabulaire."
+msgstr "Outils de mémorisation efficaces pour une rétention rapide du vocabulaire."
+
+msgid "Notebook Centralisé"
+msgstr "Notebook Centralisé"
+
+msgid "Prise de notes centralisée avec organisation intelligente et recherche avancée."
+msgstr "Prise de notes centralisée avec organisation intelligente et recherche avancée."
+
+msgid "Suivi de Progression"
+msgstr "Suivi de Progression"
+
+msgid "Visualisez vos progrès et définissez des objectifs réalisables avec des graphiques détaillés."
+msgstr "Visualisez vos progrès et définissez des objectifs réalisables avec des graphiques détaillés."
+
+msgid "Changer de langue"
+msgstr "Changer de langue"
+
+msgid "Features"
+msgstr "Fonctionnalités"
+
+msgid "Pricing"
+msgstr "Tarifs"
+
+msgid "Testimonials"
+msgstr "Témoignages"
+
+msgid "Login"
+msgstr "Connexion"
+
+msgid "Logout"
+msgstr "Déconnexion"
+
+msgid "Get Started"
+msgstr "Commencer"
+
+msgid "Learn a new language at your own pace!"
+msgstr "Apprenez une nouvelle langue à votre rythme !"
+
+msgid "Everything you need to learn a foreign language, at your own pace and wherever you are."
+msgstr "Tout ce dont vous avez besoin pour apprendre une langue étrangère, à votre rythme et où que vous soyez."
+
+msgid "Start for Free"
+msgstr "Commencer gratuitement"
+
+msgid "Discover Our Apps"
+msgstr "Découvrir nos applications"
+
+msgid "Access Dashboard"
+msgstr "Accéder au Dashboard"
+
+msgid "My Notes"
+msgstr "Mes Notes"
+
+msgid "App Preview"
+msgstr "Aperçu de l'application"
+
+msgid "(Interactive Demo)"
+msgstr "(Démonstration interactive)"
+
+msgid "Which language would you like to learn?"
+msgstr "Quelle langue souhaitez-vous apprendre ?"
+
+msgid "Available Languages"
+msgstr "Langues disponibles"
+
+msgid "Learning Units"
+msgstr "Unités d'apprentissage"
+
+msgid "Interactive Lessons"
+msgstr "Leçons interactives"
+
+msgid "Words and Expressions"
+msgstr "Mots et expressions"
+
+msgid "Why Choose Linguify?"
+msgstr "Pourquoi choisir Linguify ?"
+
+msgid "Our platform has been designed by experts in linguistics and pedagogy to maximize your progress."
+msgstr "Notre plateforme a été conçue par des experts en linguistique et en pédagogie pour maximiser votre progression."
+
+msgid "Interactive Learning"
+msgstr "Apprentissage Interactif"
+
+msgid "Interactive learning modules adapted to your pace and level."
+msgstr "Modules d'apprentissage interactifs adaptés à votre rythme et à votre niveau."
+
+msgid "Smart Flashcards"
+msgstr "Flashcards Intelligentes"
+
+msgid "Effective memorization tools for rapid vocabulary retention."
+msgstr "Outils de mémorisation efficaces pour une rétention rapide du vocabulaire."
+
+msgid "Centralized Notebook"
+msgstr "Notebook Centralisé"
+
+msgid "Centralized note-taking with smart organization and advanced search."
+msgstr "Prise de notes centralisée avec organisation intelligente et recherche avancée."
+
+msgid "Progress Tracking"
+msgstr "Suivi de Progression"
+
+msgid "Visualize your progress and set achievable goals with detailed charts."
+msgstr "Visualisez vos progrès et définissez des objectifs réalisables avec des graphiques détaillés."
+
+msgid "Ready to start your language learning journey?"
+msgstr "Prêt à commencer votre voyage linguistique ?"
+
+msgid "Join our community of learners and start mastering a new language today."
+msgstr "Rejoignez notre communauté d'apprenants et commencez à maîtriser une nouvelle langue dès aujourd'hui."
+
+msgid "Go to Dashboard"
+msgstr "Aller au Dashboard"
+
+msgid "AI-powered language learning platform. Learn faster, better and with pleasure."
+msgstr "Plateforme d'apprentissage des langues propulsée par l'IA. Apprenez plus vite, mieux et avec plaisir."
+
+msgid "Product"
+msgstr "Produit"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Help Center"
+msgstr "Centre d'aide"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Legal"
+msgstr "Légal"
+
+msgid "Privacy"
+msgstr "Confidentialité"
+
+msgid "Terms"
+msgstr "Conditions"
+
+msgid "All rights reserved."
+msgstr "Tous droits réservés."
+
+msgid "Made with ❤️ in France"
+msgstr "Fait avec ❤️ en France"

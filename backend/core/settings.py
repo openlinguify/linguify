@@ -32,9 +32,19 @@ if not DEBUG:
     if not ALLOWED_HOSTS:
         raise ValueError("ALLOWED_HOSTS must be set in environment variables or .env file when DEBUG is False")
 
-# Paramètres de base
-BACKEND_URL = env.str('BACKEND_URL', default='http://localhost:8000')
-FRONTEND_URL = env.str('FRONTEND_URL', default='http://localhost:3000')
+# Paramètres de base - URLs principales
+if DEBUG:
+    # Développement local
+    BACKEND_URL = env.str('BACKEND_URL', default='http://localhost:8000')
+    BASE_URL = BACKEND_URL
+else:
+    # Production
+    BACKEND_URL = env.str('BACKEND_URL', default='https://www.openlinguify.com')
+    BASE_URL = BACKEND_URL
+
+# DEPRECATED: FRONTEND_URL sera supprimé avec le frontend Next.js
+# Pour la compatibilité temporaire uniquement
+FRONTEND_URL = env.str('FRONTEND_URL', default=BASE_URL)
 
 # Supabase settings
 SUPABASE_URL = env.str('SUPABASE_URL', default='')
@@ -82,16 +92,29 @@ INSTALLED_APPS = [
     #'subscription',
     'app_manager',
     'apps.quizz',
+    
+    # Frontend web
+    'frontend_web',
+    
     # Django REST framework modules
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    
+    # Frontend integration
+    # 'compressor',
+    # 'sass_processor',
 
     # test
     'pytest_django',
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
+
+# URLs d'authentification
+LOGIN_URL = '/auth/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/'
 
 # App config declarations in individual apps
 
@@ -106,8 +129,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'apps.authentication.supabase_auth.SupabaseAuthentication',
-        # 'apps.authentication.auth0_auth.Auth0Authentication',  # Legacy for migration
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -117,26 +140,23 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
-    "http://localhost:3000",
+    "http://localhost:8000",
     "https://openlinguify.com",
     "https://www.openlinguify.com"
 ])
 
-# Allow Vercel preview deployments
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://linguify-.*\.vercel\.app$",  # Matches all Vercel preview URLs
-]
+# No additional origin regexes needed for Django frontend
+CORS_ALLOWED_ORIGIN_REGEXES = []
 
 # In production, use specific origins. In dev, allow all.
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
     "https://openlinguify.com",
     "https://www.openlinguify.com",
-    "https://linguify.vercel.app",
 ])
 
 # Add all Vercel preview URLs to CSRF trusted origins if in production
@@ -176,9 +196,9 @@ AUTH0_CLIENT_ID = env('AUTH0_CLIENT_ID', default='')
 AUTH0_CLIENT_SECRET = env('AUTH0_CLIENT_SECRET', default='')
 AUTH0_AUDIENCE = env('AUTH0_AUDIENCE', default='')
 AUTH0_CALLBACK_URL = f"{BACKEND_URL}/api/auth/callback/"
-FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:3000')
-FRONTEND_CALLBACK_URL = f"{FRONTEND_URL}/callback"
-FRONTEND_LOGOUT_REDIRECT = FRONTEND_URL
+# DEPRECATED: Ces variables seront supprimées avec le frontend Next.js
+FRONTEND_CALLBACK_URL = f"{BASE_URL}/auth/login/"  # Redirection vers le login Django
+FRONTEND_LOGOUT_REDIRECT = f"{BASE_URL}/"  # Redirection vers la landing page Django
 AUTH0_ALGORITHM = 'RS256'
 
 JWT_AUTH = {
@@ -243,6 +263,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'apps.authentication.middleware.JWTMiddleware',  # Disabled - using Supabase now
+    'apps.authentication.middleware_terms.TermsAcceptanceMiddleware',  # Check terms acceptance
 ]
 
 CORS_ALLOW_METHODS = [
@@ -367,13 +388,28 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fr'
+TIME_ZONE = 'Europe/Paris'
 
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-TIME_ZONE = 'UTC'
+# Supported languages
+LANGUAGES = [
+    ('fr', 'Français'),
+    ('en', 'English'),
+    ('es', 'Español'), 
+    ('nl', 'Nederlands'),
+]
+
+# Locale paths
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
+
+# Translation middleware
+MIDDLEWARE.insert(1, 'django.middleware.locale.LocaleMiddleware')
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -417,6 +453,35 @@ PROFILE_PICTURE_MAX_VERSIONS = 5          # Nombre de versions historiques à co
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 APPEND_SLASH = True
+
+# Static files configuration
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # 'compressor.finders.CompressorFinder',
+    # 'sass_processor.finders.CssFinder',
+]
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Django Compressor settings (disabled for now)
+# COMPRESS_ENABLED = True
+# COMPRESS_CSS_FILTERS = [
+#     'compressor.filters.css_default.CssAbsoluteFilter',
+#     'sass_processor.compressor.SassCompiler',
+# ]
+# COMPRESS_JS_FILTERS = [
+#     'compressor.filters.jsmin.JSMinFilter',
+# ]
 
 
 

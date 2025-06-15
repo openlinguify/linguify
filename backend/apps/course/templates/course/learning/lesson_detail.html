@@ -1,0 +1,552 @@
+{% extends 'course/learning/base.html' %}
+{% load static %}
+{% load course_tags %}
+
+{% block title %}{{ lesson.title }} - Linguify{% endblock %}
+
+{% block extra_css %}
+<style>
+    .lesson-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+    }
+    .content-item {
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+        cursor: pointer;
+    }
+    .content-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+    .content-item.active {
+        border-left: 4px solid #007bff;
+        box-shadow: 0 5px 20px rgba(0,123,255,0.3);
+    }
+    .content-type-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+    .theory-icon { background: #17a2b8; }
+    .vocabulary-icon { background: #28a745; }
+    .exercise-icon { background: #ffc107; }
+    .test-icon { background: #dc3545; }
+    .speaking-icon { background: #6f42c1; }
+    
+    .content-viewer {
+        min-height: 500px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 2rem;
+    }
+    .progress-nav {
+        position: sticky;
+        top: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .completion-check {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #ddd;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .completion-check.completed {
+        background: #28a745;
+        border-color: #28a745;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Lesson Header -->
+<div class="lesson-header mb-4">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center mb-2">
+                <a href="{% url 'learning:unit-detail' lesson.unit.id %}" class="btn btn-light btn-sm me-3">
+                    <i class="fas fa-arrow-left"></i> {{ lesson.unit.title }}
+                </a>
+                <span class="badge bg-light text-dark">{{ lesson.lesson_type }}</span>
+            </div>
+            <h1 class="mb-2">{{ lesson.title }}</h1>
+            <p class="mb-0">{{ lesson.description }}</p>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="mb-2">
+                <h4>{{ lesson.progress|default:0 }}%</h4>
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar" role="progressbar" 
+                         style="width: {{ lesson.progress|default:0 }}%"></div>
+                </div>
+            </div>
+            <p class="mb-0">{{ completed_content }}/{{ total_content }} éléments complétés</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Content Navigation -->
+    <div class="col-lg-4">
+        <div class="progress-nav p-3">
+            <h5 class="mb-3">Contenu de la leçon</h5>
+            
+            {% if content_lessons %}
+                {% for content in content_lessons %}
+                    <div class="content-item card {% if forloop.first %}active{% endif %}" 
+                         data-content-id="{{ content.id }}"
+                         data-content-type="{{ content.content_type|lower }}">
+                        <div class="card-body p-3">
+                            <div class="row align-items-center">
+                                <div class="col-2">
+                                    <div class="content-type-icon {{ content.content_type|lower }}-icon">
+                                        {% if content.content_type == 'Theory' %}
+                                            <i class="fas fa-book"></i>
+                                        {% elif content.content_type == 'Vocabulary' %}
+                                            <i class="fas fa-language"></i>
+                                        {% elif content.content_type == 'Exercise' %}
+                                            <i class="fas fa-pencil-alt"></i>
+                                        {% elif content.content_type == 'Test' %}
+                                            <i class="fas fa-quiz"></i>
+                                        {% elif content.content_type == 'Speaking' %}
+                                            <i class="fas fa-microphone"></i>
+                                        {% else %}
+                                            <i class="fas fa-file"></i>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <h6 class="mb-1">{{ content.title }}</h6>
+                                    <small class="text-muted">{{ content.content_type }}</small>
+                                </div>
+                                <div class="col-2">
+                                    <div class="completion-check {% if content.completed %}completed{% endif %}">
+                                        {% if content.completed %}
+                                            <i class="fas fa-check" style="font-size: 0.7rem;"></i>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-file-alt fa-2x text-muted mb-2"></i>
+                    <p class="text-muted">Aucun contenu disponible</p>
+                </div>
+            {% endif %}
+            
+            <!-- Navigation Buttons -->
+            <div class="mt-4">
+                <div class="d-grid gap-2">
+                    <button id="prevContent" class="btn btn-outline-secondary" disabled>
+                        <i class="fas fa-chevron-left"></i> Précédent
+                    </button>
+                    <button id="nextContent" class="btn btn-primary">
+                        Suivant <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button id="completeLesson" class="btn btn-success" style="display: none;">
+                        <i class="fas fa-check"></i> Terminer la leçon
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Viewer -->
+    <div class="col-lg-8">
+        <div class="content-viewer" id="contentViewer">
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="mt-3 text-muted">Chargement du contenu...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lesson Completion Modal -->
+<div class="modal fade" id="lessonCompletionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-trophy"></i> Félicitations !
+                </h5>
+            </div>
+            <div class="modal-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-medal fa-3x text-warning"></i>
+                </div>
+                <h5>Leçon terminée avec succès !</h5>
+                <p class="text-muted">Vous avez complété "{{ lesson.title }}"</p>
+                <div class="row text-center mt-4">
+                    <div class="col-4">
+                        <h6 class="text-primary">{{ time_spent|default:0 }}</h6>
+                        <small class="text-muted">Minutes</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="text-success">{{ score|default:0 }}%</h6>
+                        <small class="text-muted">Score</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="text-info">+{{ xp_earned|default:0 }}</h6>
+                        <small class="text-muted">XP</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'learning:unit-detail' lesson.unit.id %}" class="btn btn-secondary">
+                    Retour à l'unité
+                </a>
+                {% if next_lesson %}
+                    <a href="{% url 'learning:lesson-detail' next_lesson.id %}" class="btn btn-primary">
+                        Leçon suivante
+                    </a>
+                {% else %}
+                    <a href="{% url 'learning:unit-test' lesson.unit.id %}" class="btn btn-success">
+                        Test final
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentContentIndex = 0;
+    const contentItems = document.querySelectorAll('.content-item');
+    const contentViewer = document.getElementById('contentViewer');
+    const prevBtn = document.getElementById('prevContent');
+    const nextBtn = document.getElementById('nextContent');
+    const completeBtn = document.getElementById('completeLesson');
+    
+    // Initialize with first content
+    if (contentItems.length > 0) {
+        loadContent(0);
+    }
+    
+    // Content item click handlers
+    contentItems.forEach((item, index) => {
+        item.addEventListener('click', function() {
+            loadContent(index);
+        });
+    });
+    
+    // Navigation buttons
+    prevBtn.addEventListener('click', function() {
+        if (currentContentIndex > 0) {
+            loadContent(currentContentIndex - 1);
+        }
+    });
+    
+    nextBtn.addEventListener('click', function() {
+        if (currentContentIndex < contentItems.length - 1) {
+            loadContent(currentContentIndex + 1);
+        } else {
+            // All content completed, show completion button
+            completeBtn.style.display = 'block';
+            nextBtn.style.display = 'none';
+        }
+    });
+    
+    completeBtn.addEventListener('click', function() {
+        completeLesson();
+    });
+    
+    function loadContent(index) {
+        currentContentIndex = index;
+        
+        // Update active state
+        contentItems.forEach(item => item.classList.remove('active'));
+        contentItems[index].classList.add('active');
+        
+        // Update navigation buttons
+        prevBtn.disabled = index === 0;
+        nextBtn.style.display = index === contentItems.length - 1 ? 'none' : 'block';
+        completeBtn.style.display = index === contentItems.length - 1 ? 'block' : 'none';
+        
+        // Get content data
+        const contentId = contentItems[index].dataset.contentId;
+        const contentType = contentItems[index].dataset.contentType;
+        
+        // Show loading
+        contentViewer.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="mt-3 text-muted">Chargement du contenu...</p>
+            </div>
+        `;
+        
+        // Load content based on type
+        loadContentByType(contentId, contentType);
+    }
+    
+    function loadContentByType(contentId, contentType) {
+        let apiUrl;
+        
+        switch(contentType) {
+            case 'theory':
+                apiUrl = `/api/v1/course/theory-content/?content_lesson=${contentId}`;
+                break;
+            case 'vocabulary':
+                apiUrl = `/api/v1/course/vocabulary-list/?content_lesson=${contentId}`;
+                break;
+            case 'exercise':
+                apiUrl = `/api/v1/course/matching/?content_lesson=${contentId}`;
+                break;
+            case 'test':
+                apiUrl = `/api/v1/course/test-recap/?lesson_id={{ lesson.id }}`;
+                break;
+            default:
+                contentViewer.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-exclamation-triangle fa-2x text-warning mb-3"></i>
+                        <h5>Type de contenu non supporté</h5>
+                        <p class="text-muted">Ce type de contenu (${contentType}) n'est pas encore disponible.</p>
+                    </div>
+                `;
+                return;
+        }
+        
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                renderContent(contentType, data);
+            })
+            .catch(error => {
+                console.error('Error loading content:', error);
+                contentViewer.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Erreur lors du chargement du contenu.
+                    </div>
+                `;
+            });
+    }
+    
+    function renderContent(type, data) {
+        switch(type) {
+            case 'theory':
+                renderTheoryContent(data);
+                break;
+            case 'vocabulary':
+                renderVocabularyContent(data);
+                break;
+            case 'exercise':
+                renderExerciseContent(data);
+                break;
+            case 'test':
+                renderTestContent(data);
+                break;
+        }
+    }
+    
+    function renderTheoryContent(data) {
+        if (data && data.length > 0) {
+            const theory = data[0];
+            const lang = '{{ LANGUAGE_CODE }}';
+            const content = theory[`content_${lang}`] || theory.content_en || 'Contenu non disponible';
+            
+            contentViewer.innerHTML = `
+                <div class="theory-content">
+                    <h4><i class="fas fa-book text-info"></i> Théorie</h4>
+                    <div class="content-text">
+                        ${content}
+                    </div>
+                    <div class="mt-4 text-center">
+                        <button class="btn btn-success" onclick="markContentCompleted()">
+                            <i class="fas fa-check"></i> J'ai compris
+                        </button>
+                    </div>
+                </div>
+            `;
+        } else {
+            contentViewer.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-book fa-2x text-muted mb-3"></i>
+                    <p class="text-muted">Aucun contenu théorique disponible.</p>
+                </div>
+            `;
+        }
+    }
+    
+    function renderVocabularyContent(data) {
+        if (data && data.results && data.results.length > 0) {
+            const words = data.results;
+            const lang = '{{ LANGUAGE_CODE }}';
+            
+            let html = `
+                <div class="vocabulary-content">
+                    <h4><i class="fas fa-language text-success"></i> Vocabulaire</h4>
+                    <div class="row">
+            `;
+            
+            words.forEach(word => {
+                const wordText = word[`word_${lang}`] || word.word_en || word.word;
+                const definition = word[`definition_${lang}`] || word.definition_en || word.definition;
+                
+                html += `
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">${wordText}</h6>
+                                <p class="card-text">${definition}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                    <div class="mt-4 text-center">
+                        <button class="btn btn-success" onclick="markContentCompleted()">
+                            <i class="fas fa-check"></i> Vocabulaire appris
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            contentViewer.innerHTML = html;
+        } else {
+            contentViewer.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-language fa-2x text-muted mb-3"></i>
+                    <p class="text-muted">Aucun vocabulaire disponible.</p>
+                </div>
+            `;
+        }
+    }
+    
+    function renderExerciseContent(data) {
+        contentViewer.innerHTML = `
+            <div class="exercise-content">
+                <h4><i class="fas fa-pencil-alt text-warning"></i> Exercice</h4>
+                <div class="text-center py-5">
+                    <i class="fas fa-tools fa-2x text-muted mb-3"></i>
+                    <p class="text-muted">Interface d'exercice en développement...</p>
+                    <button class="btn btn-success" onclick="markContentCompleted()">
+                        <i class="fas fa-check"></i> Exercice terminé
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    function renderTestContent(data) {
+        contentViewer.innerHTML = `
+            <div class="test-content">
+                <h4><i class="fas fa-quiz text-danger"></i> Test</h4>
+                <div class="text-center py-5">
+                    <i class="fas fa-clipboard-check fa-2x text-muted mb-3"></i>
+                    <p class="text-muted">Interface de test en développement...</p>
+                    <button class="btn btn-success" onclick="markContentCompleted()">
+                        <i class="fas fa-check"></i> Test terminé
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    function markContentCompleted() {
+        const currentItem = contentItems[currentContentIndex];
+        const completionCheck = currentItem.querySelector('.completion-check');
+        
+        // Mark as completed visually
+        completionCheck.classList.add('completed');
+        completionCheck.innerHTML = '<i class="fas fa-check" style="font-size: 0.7rem;"></i>';
+        
+        // Move to next content automatically
+        setTimeout(() => {
+            if (currentContentIndex < contentItems.length - 1) {
+                loadContent(currentContentIndex + 1);
+            } else {
+                completeBtn.style.display = 'block';
+                nextBtn.style.display = 'none';
+            }
+        }, 1000);
+    }
+    
+    function completeLesson() {
+        fetch(`/api/v1/course/complete-lesson/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                lesson_id: {{ lesson.id }},
+                time_spent: Math.floor(Math.random() * 30) + 10, // Simulate time
+                score: Math.floor(Math.random() * 20) + 80 // Simulate score
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const modal = new bootstrap.Modal(document.getElementById('lessonCompletionModal'));
+                modal.show();
+            }
+        })
+        .catch(error => {
+            console.error('Error completing lesson:', error);
+        });
+    }
+});
+
+// Add CSRF token to all AJAX requests
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Global function for content completion
+window.markContentCompleted = function() {
+    const currentItem = document.querySelectorAll('.content-item')[window.currentContentIndex || 0];
+    const completionCheck = currentItem.querySelector('.completion-check');
+    
+    completionCheck.classList.add('completed');
+    completionCheck.innerHTML = '<i class="fas fa-check" style="font-size: 0.7rem;"></i>';
+    
+    // Auto-advance to next content
+    setTimeout(() => {
+        const nextBtn = document.getElementById('nextContent');
+        if (nextBtn && nextBtn.style.display !== 'none') {
+            nextBtn.click();
+        }
+    }, 1000);
+};
+</script>
+{% endblock %}

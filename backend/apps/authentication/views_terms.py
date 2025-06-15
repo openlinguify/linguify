@@ -5,7 +5,38 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from drf_spectacular.utils import extend_schema
-from .serializers import TermsAcceptanceSerializer
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+from rest_framework import serializers
+
+User = get_user_model()
+
+# Define the serializer inline to avoid import conflicts
+class TermsAcceptanceSerializer(serializers.Serializer):
+    accept = serializers.BooleanField(required=True)
+    version = serializers.CharField(required=False, default='v1.0')
+
+    def validate_accept(self, value):
+        if not value:
+            raise serializers.ValidationError("You must accept the terms and conditions to continue.")
+        return value
+
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        version = self.validated_data.get('version', 'v1.0')
+
+        print(f"Saving terms acceptance for user: {user.email}")
+
+        try:
+            user.terms_accepted = True
+            user.terms_accepted_at = timezone.now()
+            user.terms_version = version
+            user.save()
+            print(f"Terms acceptance saved successfully for {user.email}")
+            return user
+        except Exception as e:
+            print(f"Error saving terms acceptance: {str(e)}")
+            raise
 
 
 @extend_schema(

@@ -15,6 +15,7 @@ class NotificationType(models.TextChoices):
     ACHIEVEMENT = 'achievement', 'Achievement'
     SYSTEM = 'system', 'System'
     PROGRESS = 'progress', 'Progress'
+    TERMS = 'terms', 'Terms & Conditions'
 
 class NotificationPriority(models.TextChoices):
     LOW = 'low', 'Low'

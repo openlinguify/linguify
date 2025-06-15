@@ -57,6 +57,9 @@ const getNotificationTypeIcon = (type: string) => {
       return <Megaphone className="h-4 w-4 text-purple-500" />;
     case NotificationType.REMINDER:
       return <CalendarClock className="h-4 w-4 text-blue-500" />;
+    case NotificationType.TERMS:
+    case 'terms':
+      return <AlertTriangle className="h-4 w-4 text-red-500" />;
     case 'info':
     case 'success':
     case 'warning':
@@ -142,7 +145,9 @@ export default function NotificationDropdown({ className = "" }: NotificationDro
   );
   const systemNotifications = notifications.filter(n =>
     n.type === NotificationType.SYSTEM ||
-    n.type === NotificationType.ANNOUNCEMENT
+    n.type === NotificationType.ANNOUNCEMENT ||
+    n.type === NotificationType.TERMS ||
+    n.type === 'terms'
   );
 
   // Get notifications based on active tab
@@ -190,6 +195,18 @@ export default function NotificationDropdown({ className = "" }: NotificationDro
   const handleNotificationClick = (notification: Notification) => {
     // Mark as read
     markAsRead(notification.id);
+    
+    // Handle specific notification types
+    if (notification.type === NotificationType.TERMS || notification.type === 'terms') {
+      // Handle terms notification - redirect to terms page
+      if (notification.data?.terms_url) {
+        window.open(notification.data.terms_url, '_blank');
+      } else {
+        router.push('/annexes/legal');
+      }
+      setOpen(false);
+      return;
+    }
     
     // Handle custom click behavior based on notification type
     if (notification.actions && notification.actions.length > 0) {

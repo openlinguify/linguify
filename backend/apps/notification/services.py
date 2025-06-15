@@ -12,7 +12,14 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils import timezone
-from pywebpush import webpush, WebPushException
+# Optional import for web push notifications
+try:
+    from pywebpush import webpush, WebPushException
+    WEBPUSH_AVAILABLE = True
+except ImportError:
+    WEBPUSH_AVAILABLE = False
+    webpush = None
+    WebPushException = Exception
 
 from .models import Notification, NotificationType, NotificationPriority, NotificationSetting, NotificationDevice
 from .serializers import NotificationSerializer
@@ -318,6 +325,11 @@ class NotificationDeliveryService:
         Returns:
             True if notification was delivered to at least one device, False otherwise
         """
+        # Check if webpush is available
+        if not WEBPUSH_AVAILABLE:
+            logger.warning("pywebpush not available, skipping push notification delivery")
+            return False
+            
         # Get user's devices
         devices = NotificationDevice.objects.filter(
             user=notification.user,
@@ -710,3 +722,85 @@ def send_achievement_notification(
         data=data,
         expires_in_days=14  # Expire after 14 days
     )
+
+
+def create_terms_acceptance_notification(user: User) -> Optional[Notification]:
+    """
+    Create a notification reminding the user to accept terms and conditions
+    
+    Args:
+        user: User who needs to accept terms
+        
+    Returns:
+        Created notification instance or None if user has disabled this type
+    """
+    title = "Action requise : Accepter les Conditions d'Utilisation"
+    message = "Veuillez accepter nos conditions d'utilisation mises à jour pour continuer à utiliser Linguify."
+    # Utiliser l'URL de base (production ou développement)
+    base_url = getattr(settings, 'BASE_URL', getattr(settings, 'BACKEND_URL', 'http://localhost:8000'))
+    data = {
+        "action": "accept_terms",
+        "terms_url": f"{base_url}/annexes/terms",
+        "required": True
+    }
+    
+    return NotificationDeliveryService.create_and_deliver(
+        user=user,
+        title=title,
+        message=message,
+        notification_type=NotificationType.TERMS,
+        priority=NotificationPriority.HIGH,  # High priority for terms
+        data=data,
+        expires_in_days=30  # Expire after 30 days
+    )
+
+
+def send_terms_acceptance_email_and_notification(user: User) -> bool:
+    """
+    Send both email and notification for terms acceptance
+    
+    Args:
+        user: User who needs to accept terms
+        
+    Returns:
+        True if at least one delivery method succeeded
+    """
+    success = False
+    
+    try:
+        # Create notification
+        notification = create_terms_acceptance_notification(user)
+        if notification:
+            logger.info(f"Terms notification created for user {user.email}")
+            success = True
+        
+        # Send email if user has email notifications enabled
+        if user.email_notifications:
+            # Utiliser l'URL de base (production ou développement)
+            base_url = getattr(settings, 'BASE_URL', getattr(settings, 'BACKEND_URL', 'http://localhost:8000'))
+            context = {
+                'user': user,
+                'terms_url': f"{base_url}/annexes/terms",
+                'app_name': "Linguify"
+            }
+            
+            subject = "Action requise : Accepter les Conditions d'Utilisation"
+            html_message = render_to_string('emails/terms_reminder.html', context)
+            plain_message = render_to_string('emails/terms_reminder.txt', context)
+            
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_message,
+                fail_silently=False
+            )
+            
+            logger.info(f"Terms acceptance email sent to {user.email}")
+            success = True
+            
+    except Exception as e:
+        logger.error(f"Failed to send terms acceptance notification/email to {user.email}: {str(e)}")
+    
+    return success

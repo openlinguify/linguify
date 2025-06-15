@@ -806,9 +806,7 @@ def debug_profile_endpoint(request):
 # ============================================================================
 
 from .models import CookieConsent, CookieConsentLog
-from rest_framework.views import APIView
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
 from django.db import models
 
 
@@ -1185,3 +1183,381 @@ def debug_cookie_consent(request):
             'Referer': request.META.get('HTTP_REFERER'),
         }
     })
+
+
+# === SETTINGS VIEWS ===
+
+from django.contrib.auth import update_session_auth_hash
+from django.db.models import Avg, Count
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required as django_login_required
+
+
+
+
+@django_login_required
+def settings_stats(request):
+    """Get settings statistics"""
+    try:
+        total_users = User.objects.count()
+        notification_enabled = User.objects.filter(email_notifications=True).count()
+        public_profiles = User.objects.filter(public_profile=True).count()
+        
+        avg_daily_goal = User.objects.aggregate(
+            avg_goal=Avg('daily_goal')
+        )['avg_goal'] or 0
+        
+        # Most common languages and levels
+        most_common_native = User.objects.values('native_language').annotate(
+            count=Count('native_language')
+        ).order_by('-count').first()
+        
+        most_common_target = User.objects.values('target_language').annotate(
+            count=Count('target_language')
+        ).order_by('-count').first()
+        
+        most_common_level = User.objects.values('language_level').annotate(
+            count=Count('language_level')
+        ).order_by('-count').first()
+        
+        stats_data = {
+            'total_users': total_users,
+            'notification_enabled_users': notification_enabled,
+            'public_profile_users': public_profiles,
+            'daily_goal_average': round(avg_daily_goal, 1),
+            'most_common_native_language': most_common_native['native_language'] if most_common_native else 'EN',
+            'most_common_target_language': most_common_target['target_language'] if most_common_target else 'FR',
+            'most_common_level': most_common_level['language_level'] if most_common_level else 'A1'
+        }
+        
+        return JsonResponse(stats_data)
+        
+    except Exception as e:
+        return JsonResponse(
+            {'error': 'Failed to fetch statistics'},
+            status=500
+        )
+
+
+# === DJANGO PROFILE PICTURE VIEWS ===
+
+@csrf_protect
+@django_login_required  
+@require_http_methods(["POST", "DELETE"])
+def manage_profile_picture(request):
+    """Upload or delete profile picture"""
+    user = request.user
+    
+    if request.method == 'POST':
+        # Upload new profile picture
+        if 'profile_picture' not in request.FILES:
+            return JsonResponse({'success': False, 'error': 'No profile picture provided'}, status=400)
+        
+        uploaded_file = request.FILES['profile_picture']
+        
+        # Validate file type
+        if not uploaded_file.name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+            return JsonResponse({'success': False, 'error': 'Invalid file type. Please upload PNG, JPG, JPEG, GIF or WEBP'}, status=400)
+        
+        # Validate file size (5MB limit)
+        if uploaded_file.size > 5 * 1024 * 1024:
+            return JsonResponse({'success': False, 'error': 'File too large. Maximum size is 5MB'}, status=400)
+        
+        try:
+            from .supabase_storage import SupabaseStorageService
+            storage_service = SupabaseStorageService()
+            
+            # Delete existing profile picture from Supabase if any
+            if user.profile_picture_filename:
+                try:
+                    storage_service.delete_profile_picture(user.profile_picture_filename)
+                except Exception as e:
+                    logger.warning(f"Failed to delete old profile picture: {str(e)}")
+            
+            # Upload to Supabase Storage
+            upload_result = storage_service.upload_profile_picture(
+                user_id=str(user.id),
+                file=uploaded_file,
+                original_filename=uploaded_file.name
+            )
+            
+            if not upload_result.get('success'):
+                return JsonResponse({
+                    'success': False, 
+                    'error': upload_result.get('error', 'Failed to upload image')
+                }, status=500)
+            
+            # Update user with Supabase URL and filename
+            user.profile_picture_url = upload_result['public_url']
+            user.profile_picture_filename = upload_result['filename']
+            
+            # Clear old Django storage if exists
+            if user.profile_picture:
+                user.profile_picture = None
+            
+            user.save(update_fields=['profile_picture_url', 'profile_picture_filename', 'profile_picture'])
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Profile picture updated successfully',
+                'picture_url': upload_result['public_url']
+            })
+            
+        except Exception as e:
+            logger.error(f"Error uploading profile picture: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'error': f'Failed to upload profile picture: {str(e)}'
+            }, status=500)
+    
+    elif request.method == 'DELETE':
+        # Delete profile picture
+        try:
+            if user.profile_picture_filename:
+                from .supabase_storage import SupabaseStorageService
+                storage_service = SupabaseStorageService()
+                storage_service.delete_profile_picture(user.profile_picture_filename)
+            
+            # Clear profile picture fields
+            user.profile_picture_url = None
+            user.profile_picture_filename = None
+            if user.profile_picture:
+                user.profile_picture = None
+            
+            user.save(update_fields=['profile_picture_url', 'profile_picture_filename', 'profile_picture'])
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Profile picture deleted successfully'
+            })
+            
+        except Exception as e:
+            logger.error(f"Error deleting profile picture: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'error': f'Failed to delete profile picture: {str(e)}'
+            }, status=500)
+
+
+# === DJANGO SETTINGS VIEWS ===
+
+@csrf_protect
+@django_login_required
+@require_http_methods(["PATCH"])
+def update_user_profile(request):
+    """Update user profile settings"""
+    try:
+        import json
+        data = json.loads(request.body)
+        
+        user = request.user
+        
+        # Update allowed fields
+        allowed_fields = ['first_name', 'last_name', 'username', 'bio']
+        for field in allowed_fields:
+            if field in data:
+                setattr(user, field, data[field])
+        
+        user.save()
+        
+        return JsonResponse({
+            'success': True,
+            'data': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'bio': getattr(user, 'bio', ''),
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Error updating user profile: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@csrf_protect
+@django_login_required
+@require_http_methods(["PATCH"])
+def update_learning_settings(request):
+    """Update learning settings"""
+    try:
+        import json
+        data = json.loads(request.body)
+        
+        user = request.user
+        
+        # Update learning settings
+        allowed_fields = ['native_language', 'target_language', 'language_level', 'daily_goal', 'reminder_time']
+        for field in allowed_fields:
+            if field in data:
+                setattr(user, field, data[field])
+        
+        # Validate languages
+        if hasattr(user, 'native_language') and hasattr(user, 'target_language'):
+            if user.native_language == user.target_language:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Native and target languages cannot be the same'
+                }, status=400)
+        
+        user.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Learning settings updated successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error updating learning settings: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@csrf_protect
+@django_login_required
+@require_http_methods(["POST"])
+def change_user_password(request):
+    """Change user password"""
+    try:
+        import json
+        data = json.loads(request.body)
+        
+        user = request.user
+        
+        # Check old password
+        if not user.check_password(data.get('old_password', '')):
+            return JsonResponse({
+                'success': False,
+                'error': 'Current password is incorrect'
+            }, status=400)
+        
+        # Validate new password
+        new_password = data.get('new_password', '')
+        confirm_password = data.get('confirm_password', '')
+        
+        if new_password != confirm_password:
+            return JsonResponse({
+                'success': False,
+                'error': 'New passwords do not match'
+            }, status=400)
+        
+        if len(new_password) < 8:
+            return JsonResponse({
+                'success': False,
+                'error': 'Password must be at least 8 characters long'
+            }, status=400)
+        
+        # Set new password
+        user.set_password(new_password)
+        user.save()
+        
+        # Update session
+        update_session_auth_hash(request, user)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Password changed successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error changing password: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+# === ADDITIONAL SETTINGS ENDPOINTS ===
+
+@django_login_required
+@require_http_methods(["GET"])
+def export_user_data(request):
+    """Export user data for download"""
+    try:
+        user = request.user
+        
+        # Collect user data
+        user_data = {
+            'profile': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'bio': getattr(user, 'bio', ''),
+                'date_joined': user.date_joined.isoformat(),
+                'last_login': user.last_login.isoformat() if user.last_login else None,
+                'native_language': getattr(user, 'native_language', ''),
+                'target_language': getattr(user, 'target_language', ''),
+                'language_level': getattr(user, 'language_level', ''),
+                'daily_goal': getattr(user, 'daily_goal', 0),
+                'theme': getattr(user, 'theme', 'light'),
+            },
+            'settings': {
+                'email_notifications': getattr(user, 'email_notifications', True),
+                'push_notifications': getattr(user, 'push_notifications', False),
+                'public_profile': getattr(user, 'public_profile', False),
+                'reminder_time': getattr(user, 'reminder_time', None),
+            },
+            'exported_at': timezone.now().isoformat(),
+            'export_version': '1.0',
+        }
+        
+        # Return as downloadable JSON
+        response = JsonResponse(user_data, json_dumps_params={'indent': 2})
+        response['Content-Disposition'] = 'attachment; filename="mes-donnees-linguify.json"'
+        return response
+        
+    except Exception as e:
+        logger.error(f"Error exporting user data: {str(e)}")
+        return JsonResponse(
+            {'error': 'Failed to export data'},
+            status=500
+        )
+
+
+@csrf_protect
+@django_login_required
+@require_http_methods(["POST"])
+def logout_all_devices(request):
+    """Logout user from all devices"""
+    try:
+        user = request.user
+        
+        # Clear all sessions for this user
+        from django.contrib.sessions.models import Session
+        from django.contrib.auth.models import User as AuthUser
+        
+        # Get all sessions and clear those belonging to this user
+        sessions = Session.objects.all()
+        user_sessions = []
+        
+        for session in sessions:
+            session_data = session.get_decoded()
+            if session_data.get('_auth_user_id') == str(user.id):
+                user_sessions.append(session)
+        
+        # Delete user sessions
+        for session in user_sessions:
+            session.delete()
+        
+        # Also logout current session
+        logout(request)
+        
+        return JsonResponse({
+            'message': f'Successfully logged out from {len(user_sessions)} devices'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error logging out all devices: {str(e)}")
+        return JsonResponse(
+            {'error': 'Failed to logout from all devices'},
+            status=500
+        )

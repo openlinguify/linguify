@@ -1,26 +1,27 @@
 # -*- coding: utf-8 -*-
 __manifest__ = {
-    'name': 'Memory',
-    'version': '1.0.0',
+    'name': 'Révision',
+    'version': '2.0.0',
     'category': 'Education/Language Learning',
-    'summary': 'Memory training with spaced repetition (Flashcards)',
+    'summary': 'Système de révision avec répétition espacée (Flashcards)',
     'description': '''
-Memory Module for Linguify
-===========================
+Module de Révision pour Linguify
+=================================
 
-Memory training with spaced repetition and flashcard systems.
+Système de révision avec répétition espacée et flashcards.
 
-Features:
-- Spaced repetition algorithms for optimal memory retention
-- Flashcard creation and management
-- Review scheduling based on memory strength
-- Progress tracking and statistics
-- Multiple review modes (study, quiz, quick review)
-- Integration with vocabulary from learning modules
+Fonctionnalités:
+- Algorithmes de répétition espacée pour une mémorisation optimale
+- Création et gestion de decks de flashcards
+- Planification des révisions basée sur la force de mémorisation
+- Suivi des progrès et statistiques
+- Multiples modes de révision (flashcards, apprentissage, association, révision rapide)
+- Intégration avec le vocabulaire des modules d'apprentissage
+- Interface OWL moderne et réactive
 
 Usage:
-- Access via /api/v1/revision/
-- Frontend available at /memory
+- API: /api/v1/revision/
+- Interface web: /revision/
     ''',
     'author': 'Linguify Team',
     'website': 'https://linguify.com',
@@ -35,10 +36,12 @@ Usage:
     'application': True,
     'sequence': 20,
     'frontend_components': {
-        'main_component': 'FlashcardView',
-        'route': '/flashcard',
-        'icon': 'Brain',
+        'main_component': 'RevisionApp',
+        'route': '/revision',
+        'icon': '🃏',
         'menu_order': 2,
+        'display_name': 'Révision',
+        'description': 'Révisez vos connaissances avec des flashcards'
     },
     'api_endpoints': {
         'base_url': '/api/v1/revision/',
@@ -55,5 +58,7 @@ Usage:
         'models': ['Flashcard', 'FlashcardDeck', 'ReviewSession'],
         'admin_registered': True,
         'rest_framework': True,
+        'has_web_interface': True,
+        'web_url': '/revision/'
     }
 }
