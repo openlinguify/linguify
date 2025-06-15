@@ -6,11 +6,31 @@ Adds SEO headers, structured data, and performance optimizations
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.cache import add_never_cache_headers, patch_cache_control
 from django.conf import settings
-from .seo_meta import SEOMetaGenerator
-from .structured_data import StructuredDataGenerator
+from django.utils import timezone
 import re
 import gzip
 from io import BytesIO
+
+try:
+    from .seo_meta import SEOMetaGenerator
+    from .structured_data import StructuredDataGenerator
+except ImportError:
+    # Fallback if modules not available
+    class SEOMetaGenerator:
+        @staticmethod
+        def generate_base_tags(*args, **kwargs):
+            return {}
+    
+    class StructuredDataGenerator:
+        @staticmethod
+        def organization():
+            return {}
+        @staticmethod
+        def website():
+            return {}
+        @staticmethod
+        def generate_multiple(data):
+            return ""
 
 
 class SEOOptimizationMiddleware(MiddlewareMixin):

@@ -264,6 +264,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'apps.authentication.middleware.JWTMiddleware',  # Disabled - using Supabase now
     'apps.authentication.middleware_terms.TermsAcceptanceMiddleware',  # Check terms acceptance
+    # SEO Optimization Middleware
+    'core.seo_middleware.SEOOptimizationMiddleware',
+    'core.seo_middleware.PreloadMiddleware',
 ]
 
 CORS_ALLOW_METHODS = [
@@ -648,3 +651,56 @@ SPECTACULAR_SETTINGS = {
     'SCHEMA_PATH_PREFIX': r'/api/v[0-9]',
     'SCHEMA_PATH_PREFIX_TRIM': True,
 }
+
+# =====================================================================
+# SEO CONFIGURATION SETTINGS
+# =====================================================================
+
+# Enable SEO optimizations
+SEO_ENABLE_COMPRESSION = True
+SEO_ENABLE_STRUCTURED_DATA = True
+SEO_ENABLE_META_OPTIMIZATION = True
+
+# Domain configuration (consistent with your setup)
+SEO_DOMAIN = 'openlinguify.com'
+SEO_PROTOCOL = 'https'
+SEO_BASE_URL = f'{SEO_PROTOCOL}://{SEO_DOMAIN}'
+
+# Sitemap settings
+SITEMAP_USE_GZIP = True
+SITEMAP_CACHE_TIMEOUT = 3600  # 1 hour
+SITEMAP_PING_GOOGLE = True
+SITEMAP_PING_BING = True
+SITEMAP_PING_YANDEX = True
+
+# Social media settings
+FACEBOOK_APP_ID = env.str('FACEBOOK_APP_ID', default='')
+FACEBOOK_ADMINS = env.str('FACEBOOK_ADMINS', default='')
+TWITTER_HANDLE = '@openlinguify'
+
+# Default SEO meta
+DEFAULT_SEO_TITLE = 'OpenLinguify - Learn Languages Online with AI'
+DEFAULT_SEO_DESCRIPTION = 'Master new languages with OpenLinguify\'s AI-powered lessons, interactive flashcards, and personalized learning paths. Start learning for free today!'
+DEFAULT_SEO_KEYWORDS = 'language learning, learn languages online, AI language tutor, interactive language lessons, language learning app'
+
+# Structured data settings
+STRUCTURED_DATA_ORGANIZATION = {
+    'name': 'OpenLinguify',
+    'url': SEO_BASE_URL,
+    'logo': f'{SEO_BASE_URL}/static/images/logo.png',
+    'description': 'OpenLinguify is the leading AI-powered language learning platform',
+    'foundingDate': '2024',
+    'contactEmail': 'support@openlinguify.com',
+    'sameAs': [
+        'https://www.facebook.com/openlinguify',
+        'https://twitter.com/openlinguify',
+        'https://www.linkedin.com/company/openlinguify',
+        'https://www.youtube.com/openlinguify',
+        'https://www.instagram.com/openlinguify',
+        'https://github.com/openlinguify'
+    ]
+}
+
+# Add 'core' to INSTALLED_APPS for models
+if 'core' not in INSTALLED_APPS:
+    INSTALLED_APPS += ['core']
