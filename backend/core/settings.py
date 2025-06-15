@@ -54,7 +54,7 @@ SUPABASE_SERVICE_ROLE_KEY = env.str('SUPABASE_SERVICE_ROLE_KEY', default='')
 # normally Allowed hosts should be set to the domain name of the website
 # but for development purposes we can set it to all
 # normally, ALLOWED_HOSTS = ['yourdomain.com'] or empty in development mode
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', 'testserver'])
 if not DEBUG and not ALLOWED_HOSTS:
     ALLOWED_HOSTS = ['linguify.onrender.com', 'openlinguify.com', 'www.openlinguify.com']    
 
@@ -72,6 +72,9 @@ INSTALLED_APPS = [
     'django_filters',
     'channels',
     'drf_spectacular',
+
+    # Core project modules
+    'core.apps.CoreConfig',
 
     # Project django_apps
     'apps.authentication',
@@ -255,7 +258,6 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -264,9 +266,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'apps.authentication.middleware.JWTMiddleware',  # Disabled - using Supabase now
     'apps.authentication.middleware_terms.TermsAcceptanceMiddleware',  # Check terms acceptance
-    # SEO Optimization Middleware
-    'core.seo_middleware.SEOOptimizationMiddleware',
-    'core.seo_middleware.PreloadMiddleware',
+    # SEO Optimization Middleware (simplified version)
+    'core.seo.middleware.simple.SimpleSEOMiddleware',
+    # 'core.seo.middleware.optimization.SEOOptimizationMiddleware',  # Disabled temporarily
+    # 'core.seo.middleware.optimization.PreloadMiddleware',
 ]
 
 CORS_ALLOW_METHODS = [
@@ -391,10 +394,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'fr'
+LANGUAGE_CODE = 'en'  # Changed to English to fix Unicode error
 TIME_ZONE = 'Europe/Paris'
 
-USE_I18N = True
+USE_I18N = True  # Re-enabled with English as default
 USE_L10N = True
 USE_TZ = True
 
@@ -701,6 +704,4 @@ STRUCTURED_DATA_ORGANIZATION = {
     ]
 }
 
-# Add 'core' to INSTALLED_APPS for models
-if 'core' not in INSTALLED_APPS:
-    INSTALLED_APPS += ['core']
+# Note: 'core' is now included in INSTALLED_APPS above

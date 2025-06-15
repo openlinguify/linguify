@@ -1,0 +1,94 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='app_manager' %}">App Manager</a>
+    &rsaquo; <a href="{% url 'admin:app_manager_app_changelist' %}">Apps</a>
+    &rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="module aligned">
+    <h1>{{ title }}</h1>
+    
+    <div class="form-row">
+        <div class="help">
+            <p>Cette action va corriger automatiquement les noms et catégories des applications activées.</p>
+            <ul>
+                <li><strong>Notebook</strong> → Catégorie: "Productivité"</li>
+                <li><strong>Révisions</strong> → Catégorie: "Apprentissage"</li>
+                <li><strong>Assistant IA</strong> → Catégorie: "Intelligence IA"</li>
+                <li><strong>Quiz</strong> → Catégorie: "Apprentissage"</li>
+            </ul>
+            <p><em>Note: Les applications en développement (Learning) ne seront pas modifiées.</em></p>
+        </div>
+    </div>
+    
+    <div class="submit-row" style="margin-top: 20px;">
+        <button type="button" id="fix-apps-btn" class="default" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+            🔧 Corriger les Applications
+        </button>
+        <a href="{% url 'admin:app_manager_app_changelist' %}" class="button cancel-link" style="margin-left: 10px;">
+            Retour à la liste
+        </a>
+    </div>
+    
+    <div id="result-message" style="margin-top: 20px; padding: 10px; border-radius: 4px; display: none;"></div>
+</div>
+
+<script>
+document.getElementById('fix-apps-btn').addEventListener('click', function() {
+    const btn = this;
+    const resultDiv = document.getElementById('result-message');
+    
+    btn.disabled = true;
+    btn.textContent = '⏳ Correction en cours...';
+    
+    fetch('{% url "admin:app_manager_app_fix_apps_action" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            resultDiv.style.display = 'block';
+            resultDiv.style.background = '#d4edda';
+            resultDiv.style.color = '#155724';
+            resultDiv.style.border = '1px solid #c3e6cb';
+            resultDiv.textContent = '✅ ' + (data.message || 'Applications corrigées avec succès!');
+            
+            setTimeout(() => {
+                window.location.href = '{% url "admin:app_manager_app_changelist" %}';
+            }, 2000);
+        } else {
+            resultDiv.style.display = 'block';
+            resultDiv.style.background = '#f8d7da';
+            resultDiv.style.color = '#721c24';
+            resultDiv.style.border = '1px solid #f5c6cb';
+            resultDiv.textContent = '❌ ' + (data.message || 'Erreur lors de la correction');
+        }
+    })
+    .catch(error => {
+        resultDiv.style.display = 'block';
+        resultDiv.style.background = '#f8d7da';
+        resultDiv.style.color = '#721c24';
+        resultDiv.style.border = '1px solid #f5c6cb';
+        resultDiv.textContent = '❌ Erreur de communication: ' + error.message;
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.textContent = '🔧 Corriger les Applications';
+    });
+});
+</script>
+
+{% csrf_token %}
+{% endblock %}

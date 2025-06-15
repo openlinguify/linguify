@@ -14,14 +14,7 @@ from drf_spectacular.views import (
 from apps.authentication.views_terms import accept_terms, terms_status
 from test_settings import test_settings
 from django.contrib.sitemaps.views import sitemap, index as sitemap_index
-from .sitemap_views import serve_sitemap, serve_robots_txt
-try:
-    from .advanced_sitemaps import sitemaps
-except ImportError:
-    try:
-        from .sitemaps import sitemaps
-    except ImportError:
-        sitemaps = {}
+from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
 
 
 def redirect_to_admin(request):
@@ -60,7 +53,7 @@ urlpatterns = [
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('api/v1/quizz/', include('apps.quizz.urls', namespace='quizz')),
     
-    # Sitemap URLs - Static file serving (temporary solution)
+    # SEO URLs - Organized sitemap serving
     path('robots.txt', serve_robots_txt, name='robots_txt'),
     path('sitemap.xml', serve_sitemap, {'sitemap_name': 'sitemap'}, name='sitemap_main'),
     path('sitemap-index.xml', serve_sitemap, {'sitemap_name': 'sitemap-index'}, name='sitemap_index'),
@@ -72,4 +65,7 @@ urlpatterns = [
     path('sitemap-fr.xml', serve_sitemap, {'sitemap_name': 'sitemap-fr'}, name='sitemap_fr'),
     path('sitemap-es.xml', serve_sitemap, {'sitemap_name': 'sitemap-es'}, name='sitemap_es'),
     path('sitemap-nl.xml', serve_sitemap, {'sitemap_name': 'sitemap-nl'}, name='sitemap_nl'),
+    
+    # SEO Status and Management
+    path('seo/status/', sitemap_status, name='seo_status'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -72,22 +72,6 @@
             color: var(--gray-900);
         }
         
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.75rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
         .hero-section {
             background: var(--primary-gradient);
             min-height: 100vh;
@@ -283,30 +267,6 @@
             text-align: center;
         }
         
-        .footer {
-            background: #1a1a1a;
-            color: white;
-            padding: 3rem 0 1rem;
-        }
-        
-        .footer-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-        }
-        
-        .footer-link {
-            color: #9ca3af;
-            text-decoration: none;
-            transition: color 0.3s ease;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        
-        .footer-link:hover {
-            color: var(--primary-color);
-        }
         
         @media (max-width: 768px) {
             .hero-title {
@@ -334,76 +294,13 @@
             transform: translateY(0);
         }
     </style>
+    
+    {% include "components/header_styles.html" %}
+    {% include "components/footer_styles.html" %}
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'frontend_web:landing' %}">
-                <i class="bi bi-translate me-2"></i>
-                Linguify
-            </a>
-            
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium" href="#features">{% trans "Features" %}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium" href="#pricing">{% trans "Pricing" %}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium" href="#testimonials">{% trans "Testimonials" %}</a>
-                    </li>
-                </ul>
-                
-                <ul class="navbar-nav">
-                    <!-- Language Selector in Navbar -->
-                    <li class="nav-item dropdown me-3">
-                        <a class="nav-link dropdown-toggle fw-medium" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-globe me-1"></i>
-                            {% if LANGUAGE_CODE == 'fr' %}🇫🇷 FR
-                            {% elif LANGUAGE_CODE == 'en' %}🇬🇧 EN
-                            {% elif LANGUAGE_CODE == 'es' %}🇪🇸 ES
-                            {% elif LANGUAGE_CODE == 'nl' %}🇳🇱 NL
-                            {% endif %}
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'frontend_web:set_language' 'fr' %}">🇫🇷 Français</a></li>
-                            <li><a class="dropdown-item" href="{% url 'frontend_web:set_language' 'en' %}">🇬🇧 English</a></li>
-                            <li><a class="dropdown-item" href="{% url 'frontend_web:set_language' 'es' %}">🇪🇸 Español</a></li>
-                            <li><a class="dropdown-item" href="{% url 'frontend_web:set_language' 'nl' %}">🇳🇱 Nederlands</a></li>
-                        </ul>
-                    </li>
-                    
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link fw-medium" href="/dashboard/">
-                                <i class="bi bi-grid-3x3-gap me-1"></i>
-                                {% trans "Dashboard" %}
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link fw-medium" href="/auth/logout/">{% trans "Logout" %}</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link fw-medium" href="/auth/login/">{% trans "Login" %}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn btn-primary rounded-pill px-4 ms-2 fw-medium" href="/auth/register/">
-                                {% trans "Get Started" %}
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
+    {% include "components/header.html" %}
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -608,60 +505,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <div class="footer-brand">
-                        <i class="bi bi-translate me-2"></i>
-                        Linguify
-                    </div>
-                    <p class="text-muted">
-                        {% trans "AI-powered language learning platform. Learn faster, better and with pleasure." %}
-                    </p>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3 text-white">{% trans "Product" %}</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#features" class="footer-link">{% trans "Features" %}</a></li>
-                        <li><a href="#pricing" class="footer-link">{% trans "Pricing" %}</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3 text-white">{% trans "Support" %}</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link">{% trans "Help Center" %}</a></li>
-                        <li><a href="#" class="footer-link">{% trans "Contact" %}</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3 text-white">{% trans "Legal" %}</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link">{% trans "Privacy" %}</a></li>
-                        <li><a href="#" class="footer-link">{% trans "Terms" %}</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <hr class="my-4" style="border-color: #374151;">
-            
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="text-muted mb-0">
-                        © 2024 Linguify. {% trans "All rights reserved." %}
-                    </p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <span class="text-muted">
-                        {% trans "Made with ❤️ in France" %}
-                    </span>
-                </div>
-            </div>
-        </div>
-    </footer>
+    {% include "components/footer.html" %}
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

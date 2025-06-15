@@ -30,56 +30,110 @@ msgstr "apprentissage langues, IA, intelligence artificielle, cours personnalis�
 msgid "Basculer la navigation"
 msgstr "Basculer la navigation"
 
-msgid "Fonctionnalités"
+msgid "Features"
 msgstr "Fonctionnalités"
 
-msgid "Tarifs"
+msgid "Pricing"
 msgstr "Tarifs"
 
-msgid "Témoignages"
+msgid "Testimonials"
 msgstr "Témoignages"
 
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
-msgid "Déconnexion"
+msgid "Logout"
 msgstr "Déconnexion"
 
-msgid "Connexion"
+msgid "Login"
 msgstr "Connexion"
 
-msgid "Commencer"
+msgid "Get Started"
 msgstr "Commencer"
 
-msgid "Apprenez une nouvelle langue à votre rythme !"
+msgid "Learn a new language at your own pace!"
 msgstr "Apprenez une nouvelle langue à votre rythme !"
 
-msgid "Tout ce dont vous avez besoin pour apprendre une langue étrangère, à votre rythme et où que vous soyez."
+msgid "Everything you need to learn a foreign language, at your own pace and wherever you are."
 msgstr "Tout ce dont vous avez besoin pour apprendre une langue étrangère, à votre rythme et où que vous soyez."
 
-msgid "Commencer gratuitement"
+msgid "Start for Free"
 msgstr "Commencer gratuitement"
 
-msgid "Découvrir nos applications"
+msgid "Discover Our Apps"
 msgstr "Découvrir nos applications"
 
-msgid "Accéder au Dashboard"
+msgid "Access Dashboard"
 msgstr "Accéder au Dashboard"
 
-msgid "Mes Notes"
+msgid "My Notes"
 msgstr "Mes Notes"
 
-msgid "Aperçu de l'application"
+msgid "App Preview"
 msgstr "Aperçu de l'application"
 
-msgid "(Démonstration interactive)"
+msgid "(Interactive Demo)"
 msgstr "(Démonstration interactive)"
 
-msgid "Quelle langue souhaitez-vous apprendre ?"
+msgid "Which language would you like to learn?"
 msgstr "Quelle langue souhaitez-vous apprendre ?"
 
-msgid "Sélection de langue à apprendre"
-msgstr "Sélection de langue à apprendre"
+# Statistiques de la landing page
+msgid "Available Languages"
+msgstr "Langues disponibles"
+
+msgid "Learning Units"
+msgstr "Unités d'apprentissage"
+
+msgid "Interactive Lessons"
+msgstr "Leçons interactives"
+
+msgid "Words and Expressions"
+msgstr "Mots et expressions"
+
+# Section fonctionnalités
+msgid "Why Choose Linguify?"
+msgstr "Pourquoi choisir Linguify ?"
+
+msgid "Interactive Learning"
+msgstr "Apprentissage Interactif"
+
+msgid "Smart Flashcards"
+msgstr "Flashcards Intelligentes"
+
+msgid "Centralized Notebook"
+msgstr "Carnet Centralisé"
+
+msgid "Progress Tracking"
+msgstr "Suivi de Progression"
+
+# Footer
+msgid "Product"
+msgstr "Produit"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Help Center"
+msgstr "Centre d'aide"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Legal"
+msgstr "Légal"
+
+msgid "Privacy"
+msgstr "Confidentialité"
+
+msgid "Terms"
+msgstr "Conditions"
+
+msgid "All rights reserved"
+msgstr "Tous droits réservés"
+
+msgid "Made with ❤️ in France"
+msgstr "Fait avec ❤️ en France"
 
 msgid "Langues disponibles"
 msgstr "Langues disponibles"
@@ -122,6 +176,52 @@ msgstr "Suivi de Progression"
 
 msgid "Visualisez vos progrès et définissez des objectifs réalisables avec des graphiques détaillés."
 msgstr "Visualisez vos progrès et définissez des objectifs réalisables avec des graphiques détaillés."
+
+# Footer navigation
+msgid "Apps"
+msgstr "Applications"
+
+msgid "Roadmap"
+msgstr "Feuille de route"
+
+msgid "Courses"
+msgstr "Cours"
+
+msgid "Revision"
+msgstr "Révision"
+
+msgid "Notebook"
+msgstr "Carnet"
+
+msgid "Quiz Builder"
+msgstr "Créateur de Quiz"
+
+msgid "Language AI"
+msgstr "IA Linguistique"
+
+msgid "Company"
+msgstr "Entreprise"
+
+msgid "About"
+msgstr "À propos"
+
+msgid "Careers"
+msgstr "Carrières"
+
+msgid "Blog"
+msgstr "Blog"
+
+msgid "Press"
+msgstr "Presse"
+
+msgid "Report Bug"
+msgstr "Signaler un Bug"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "Cookies"
+msgstr "Cookies"
 
 msgid "Changer de langue"
 msgstr "Changer de langue"

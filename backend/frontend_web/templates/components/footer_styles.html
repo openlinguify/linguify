@@ -1,0 +1,203 @@
+<!-- Footer Shared Styles -->
+<style>
+    /* Footer Styles - Unified Footer */
+    .footer {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        color: #f9fafb;
+        padding: 4rem 0 2rem;
+        margin-top: 5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .footer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent 0%, #6366f1 50%, transparent 100%);
+    }
+    
+    .footer-brand {
+        font-size: 1.75rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+    }
+    
+    .footer h6 {
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: #f9fafb;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+    
+    .footer h6::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 30px;
+        height: 2px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-radius: 1px;
+    }
+    
+    .footer-link {
+        color: #d1d5db;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin-bottom: 0.75rem;
+        position: relative;
+        padding: 0.25rem 0;
+    }
+    
+    .footer-link:hover {
+        color: #6366f1;
+        transform: translateX(5px);
+    }
+    
+    .footer-link i {
+        font-size: 1.25rem;
+        transition: all 0.3s ease;
+    }
+    
+    .footer-link:hover i {
+        transform: scale(1.2);
+    }
+    
+    /* Social Links */
+    .social-links {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .social-links .footer-link {
+        width: 40px;
+        height: 40px;
+        background: rgba(99, 102, 241, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+    
+    .social-links .footer-link:hover {
+        background: rgba(99, 102, 241, 0.2);
+        border-color: rgba(99, 102, 241, 0.4);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+    }
+    
+    /* Footer list styles */
+    .footer ul {
+        padding-left: 0;
+    }
+    
+    .footer li {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Horizontal rule */
+    .footer hr {
+        border-color: #374151 !important;
+        margin: 3rem 0 2rem;
+        opacity: 0.3;
+    }
+    
+    /* Bottom section */
+    .footer .text-muted {
+        color: #9ca3af !important;
+        font-size: 0.9rem;
+    }
+    
+    .footer .small {
+        font-size: 0.85rem;
+    }
+    
+    /* Inline list for legal links */
+    .list-inline-item:not(:last-child) {
+        margin-right: 1.5rem;
+    }
+    
+    .list-inline-item .footer-link {
+        margin-bottom: 0;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        transition: all 0.2s ease;
+    }
+    
+    .list-inline-item .footer-link:hover {
+        background: rgba(99, 102, 241, 0.1);
+        transform: none;
+    }
+    
+    /* Mobile responsive */
+    @media (max-width: 767.98px) {
+        .footer {
+            padding: 3rem 0 1.5rem;
+            text-align: center;
+        }
+        
+        .footer h6 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer h6:first-of-type {
+            margin-top: 1rem;
+        }
+        
+        .footer h6::after {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .social-links {
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        
+        .footer .row:last-child {
+            text-align: center;
+        }
+        
+        .footer .col-md-6:last-child {
+            text-align: center !important;
+            margin-top: 1rem;
+        }
+        
+        .list-inline {
+            justify-content: center;
+            margin-bottom: 1rem !important;
+        }
+    }
+    
+    /* Animation for footer elements */
+    .footer-link {
+        opacity: 0.8;
+    }
+    
+    .footer-link:hover {
+        opacity: 1;
+    }
+    
+    /* Gradient text effect for headings */
+    .footer h6 {
+        background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+</style>

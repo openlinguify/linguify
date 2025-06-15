@@ -156,3 +156,37 @@ class SearchEngineStatus(models.Model):
     
     def __str__(self):
         return f"{self.get_engine_display()} - {'✓' if self.last_ping_success else '✗'}"
+
+
+class SystemManagement(models.Model):
+    """
+    Virtual model for system management interface in Django admin.
+    This model doesn't actually store data, it's just used to provide
+    an admin interface for system management tasks.
+    """
+    
+    name = models.CharField(max_length=100, default="Gestion Système")
+    description = models.TextField(default="Interface de gestion générale du système")
+    last_updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'core_system_management'
+        verbose_name = 'Gestion Système'
+        verbose_name_plural = 'Gestion Système'
+        # Ensure only one instance exists
+        permissions = [
+            ('can_manage_system', 'Can manage system'),
+            ('can_run_tests', 'Can run tests'),
+            ('can_fix_translations', 'Can fix translations'),
+            ('can_check_auth', 'Can check authentication'),
+        ]
+    
+    def __str__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        # Ensure only one instance exists
+        if not self.pk and SystemManagement.objects.exists():
+            # If trying to create a new instance when one already exists
+            return
+        super().save(*args, **kwargs)

@@ -1,0 +1,304 @@
+{% extends 'frontend/base_page.html' %}
+{% load i18n %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'frontend_web:landing' %}">{% trans "Home" %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'frontend_web:help' %}">{% trans "Help" %}</a></li>
+        <li class="breadcrumb-item active">{% trans "Report Bug" %}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block page_title %}{% trans "Report a Bug" %}{% endblock %}
+{% block page_description %}{% trans "Help us improve Open Linguify by reporting bugs or issues you encounter." %}{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Instructions -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">
+                        <i class="bi bi-info-circle text-primary me-2"></i>
+                        {% trans "Before reporting a bug" %}
+                    </h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">{% trans "1. Check our FAQ" %}</h6>
+                            <p class="text-muted">{% trans "Many issues have already been documented in our help center." %}</p>
+                            <a href="{% url 'frontend_web:help' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-question-circle me-1"></i>
+                                {% trans "Visit Help Center" %}
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">{% trans "2. Check our status" %}</h6>
+                            <p class="text-muted">{% trans "See if we're experiencing any known issues." %}</p>
+                            <a href="{% url 'frontend_web:status' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-activity me-1"></i>
+                                {% trans "Check Status" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bug Report Form -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="bi bi-bug me-2"></i>
+                        {% trans "Bug Report Form" %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Contact Information -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-bold">
+                                    {% trans "Email Address" %} <span class="text-danger">*</span>
+                                </label>
+                                <input type="email" class="form-control" id="email" name="email" required
+                                       placeholder="{% trans 'your.email@example.com' %}"
+                                       {% if user.is_authenticated %}value="{{ user.email }}"{% endif %}>
+                                <div class="form-text">{% trans "We'll use this to follow up on your report." %}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-bold">
+                                    {% trans "Your Name" %}
+                                </label>
+                                <input type="text" class="form-control" id="name" name="name"
+                                       placeholder="{% trans 'John Doe' %}"
+                                       {% if user.is_authenticated %}value="{{ user.first_name }} {{ user.last_name }}"{% endif %}>
+                            </div>
+                        </div>
+
+                        <!-- Bug Category -->
+                        <div class="mb-4">
+                            <label for="category" class="form-label fw-bold">
+                                {% trans "Bug Category" %} <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">{% trans "Select a category" %}</option>
+                                <option value="ui">{% trans "User Interface (UI)" %}</option>
+                                <option value="functionality">{% trans "Functionality Issue" %}</option>
+                                <option value="performance">{% trans "Performance Problem" %}</option>
+                                <option value="data">{% trans "Data Loss/Corruption" %}</option>
+                                <option value="auth">{% trans "Login/Authentication" %}</option>
+                                <option value="mobile">{% trans "Mobile App Issue" %}</option>
+                                <option value="other">{% trans "Other" %}</option>
+                            </select>
+                        </div>
+
+                        <!-- Priority Level -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">{% trans "Priority Level" %}</label>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="priority" id="priority_low" value="low">
+                                        <label class="form-check-label" for="priority_low">
+                                            <span class="badge bg-success">{% trans "Low" %}</span>
+                                            <br><small class="text-muted">{% trans "Minor inconvenience" %}</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="priority" id="priority_medium" value="medium" checked>
+                                        <label class="form-check-label" for="priority_medium">
+                                            <span class="badge bg-warning">{% trans "Medium" %}</span>
+                                            <br><small class="text-muted">{% trans "Affects functionality" %}</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="priority" id="priority_high" value="high">
+                                        <label class="form-check-label" for="priority_high">
+                                            <span class="badge bg-danger">{% trans "High" %}</span>
+                                            <br><small class="text-muted">{% trans "Prevents use" %}</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="priority" id="priority_critical" value="critical">
+                                        <label class="form-check-label" for="priority_critical">
+                                            <span class="badge bg-dark">{% trans "Critical" %}</span>
+                                            <br><small class="text-muted">{% trans "System down" %}</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bug Title -->
+                        <div class="mb-4">
+                            <label for="title" class="form-label fw-bold">
+                                {% trans "Bug Title" %} <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="title" name="title" required
+                                   placeholder="{% trans 'Brief description of the issue' %}"
+                                   maxlength="200">
+                            <div class="form-text">{% trans "Keep it short and descriptive (max 200 characters)" %}</div>
+                        </div>
+
+                        <!-- Detailed Description -->
+                        <div class="mb-4">
+                            <label for="description" class="form-label fw-bold">
+                                {% trans "Detailed Description" %} <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="description" name="description" rows="6" required
+                                      placeholder="{% trans 'Please describe the bug in detail. What happened? What did you expect to happen?' %}"></textarea>
+                            <div class="form-text">
+                                {% trans "Include as much detail as possible. What were you trying to do? What went wrong?" %}
+                            </div>
+                        </div>
+
+                        <!-- Steps to Reproduce -->
+                        <div class="mb-4">
+                            <label for="steps" class="form-label fw-bold">
+                                {% trans "Steps to Reproduce" %}
+                            </label>
+                            <textarea class="form-control" id="steps" name="steps" rows="4"
+                                      placeholder="{% trans '1. Go to...\n2. Click on...\n3. See error...' %}"></textarea>
+                            <div class="form-text">{% trans "Help us reproduce the issue by providing step-by-step instructions." %}</div>
+                        </div>
+
+                        <!-- Environment Information -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="browser" class="form-label fw-bold">{% trans "Browser" %}</label>
+                                <input type="text" class="form-control" id="browser" name="browser"
+                                       placeholder="{% trans 'Chrome 119, Firefox 120, etc.' %}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="device" class="form-label fw-bold">{% trans "Device/OS" %}</label>
+                                <input type="text" class="form-control" id="device" name="device"
+                                       placeholder="{% trans 'Windows 11, macOS 14, iPhone 15, etc.' %}">
+                            </div>
+                        </div>
+
+                        <!-- Screenshot Upload -->
+                        <div class="mb-4">
+                            <label for="screenshot" class="form-label fw-bold">
+                                {% trans "Screenshot (Optional)" %}
+                            </label>
+                            <input type="file" class="form-control" id="screenshot" name="screenshot"
+                                   accept="image/*">
+                            <div class="form-text">
+                                <i class="bi bi-image me-1"></i>
+                                {% trans "A picture is worth a thousand words! Upload a screenshot if it helps explain the issue." %}
+                            </div>
+                        </div>
+
+                        <!-- Agreement -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agreement" name="agreement" required>
+                                <label class="form-check-label" for="agreement">
+                                    {% trans "I agree to provide accurate information and understand that this report may be shared with our development team." %}
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-send me-2"></i>
+                                {% trans "Submit Bug Report" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Help -->
+    <div class="row mt-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5>{% trans "Need immediate help?" %}</h5>
+                    <p class="text-muted">{% trans "For urgent issues or if you need immediate assistance, contact our support team directly." %}</p>
+                    <a href="{% url 'frontend_web:contact' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-chat-dots me-1"></i>
+                        {% trans "Contact Support" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-detect browser and device info
+    document.addEventListener('DOMContentLoaded', function() {
+        const browserField = document.getElementById('browser');
+        const deviceField = document.getElementById('device');
+        
+        // Auto-fill browser info
+        const userAgent = navigator.userAgent;
+        let browserInfo = '';
+        
+        if (userAgent.includes('Chrome')) {
+            const match = userAgent.match(/Chrome\/(\d+)/);
+            browserInfo = `Chrome ${match ? match[1] : 'Unknown'}`;
+        } else if (userAgent.includes('Firefox')) {
+            const match = userAgent.match(/Firefox\/(\d+)/);
+            browserInfo = `Firefox ${match ? match[1] : 'Unknown'}`;
+        } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+            browserInfo = 'Safari';
+        } else if (userAgent.includes('Edge')) {
+            browserInfo = 'Edge';
+        }
+        
+        if (browserInfo && !browserField.value) {
+            browserField.value = browserInfo;
+        }
+        
+        // Auto-fill device info
+        let deviceInfo = '';
+        if (userAgent.includes('Windows')) {
+            deviceInfo = 'Windows';
+        } else if (userAgent.includes('Mac')) {
+            deviceInfo = 'macOS';
+        } else if (userAgent.includes('Linux')) {
+            deviceInfo = 'Linux';
+        } else if (userAgent.includes('iPhone')) {
+            deviceInfo = 'iPhone';
+        } else if (userAgent.includes('Android')) {
+            deviceInfo = 'Android';
+        }
+        
+        if (deviceInfo && !deviceField.value) {
+            deviceField.value = deviceInfo;
+        }
+        
+        // Character counter for title
+        const titleField = document.getElementById('title');
+        const titleCounter = document.createElement('div');
+        titleCounter.className = 'form-text text-end';
+        titleField.parentNode.appendChild(titleCounter);
+        
+        function updateCounter() {
+            const remaining = 200 - titleField.value.length;
+            titleCounter.textContent = `${remaining} characters remaining`;
+            titleCounter.className = remaining < 20 ? 'form-text text-end text-warning' : 'form-text text-end text-muted';
+        }
+        
+        titleField.addEventListener('input', updateCounter);
+        updateCounter();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,256 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+.test-interface {
+    max-width: 800px;
+    margin: 0 auto;
+}
+.test-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 30px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.app-selection {
+    margin: 20px 0;
+}
+.app-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+.app-option {
+    border: 2px solid #ecf0f1;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.app-option:hover {
+    border-color: #3498db;
+    background: #f8f9fa;
+}
+.app-option.selected {
+    border-color: #27ae60;
+    background: #d5f4e6;
+}
+.app-option input[type="radio"] {
+    margin-right: 10px;
+}
+.execute-button {
+    background: #f39c12;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.execute-button:hover {
+    background: #e67e22;
+}
+.execute-button:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+.back-button {
+    background: #3498db;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 4px;
+    display: inline-block;
+    margin-right: 15px;
+}
+.back-button:hover {
+    background: #2980b9;
+    color: white;
+}
+.output-area {
+    background: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+    margin-top: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+    display: none;
+}
+.loading {
+    display: inline-block;
+    margin-left: 10px;
+}
+.test-description {
+    background: #fff3cd;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 15px 0;
+    border-left: 4px solid #f39c12;
+}
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='core' %}">Core</a>
+    &rsaquo; <a href="{% url 'admin:core_systemmanagement_dashboard' %}">Gestion Système</a>
+    &rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="test-interface">
+    <div class="test-card">
+        <h1>🧪 {{ title }}</h1>
+        
+        <div class="test-description">
+            <strong>Description :</strong> {{ description }}<br><br>
+            <strong>ℹ️ Note :</strong> Les tests peuvent échouer pendant le développement. 
+            Ceci est normal pour un projet en cours de développement où certaines fonctionnalités 
+            ne sont pas encore complètement testées ou configurées.
+        </div>
+        
+        <form method="post" id="test-form">
+            {% csrf_token %}
+            
+            <div class="app-selection">
+                <h3>Sélectionnez l'application à tester :</h3>
+                
+                <div class="app-selector">
+                    <!-- Option pour tous les tests -->
+                    <div class="app-option" data-app="">
+                        <label>
+                            <input type="radio" name="app_name" value="" checked>
+                            <strong>🔄 Tous les tests</strong><br>
+                            <small>Lance tous les tests de toutes les applications</small>
+                        </label>
+                    </div>
+                    
+                    <!-- Applications disponibles -->
+                    {% for app in available_apps %}
+                    <div class="app-option" data-app="{{ app.name }}">
+                        <label>
+                            <input type="radio" name="app_name" value="{{ app.name }}">
+                            <strong>📱 {{ app.label }}</strong><br>
+                            <small>{{ app.name }}</small>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <p><strong>Commande à exécuter :</strong> <code id="command-preview">python manage.py test</code></p>
+            </div>
+            
+            <div class="submit-row">
+                <a href="{% url 'admin:core_systemmanagement_dashboard' %}" class="back-button">
+                    ← Retour au Dashboard
+                </a>
+                <button type="submit" id="execute-btn" class="execute-button">
+                    🧪 Lancer les Tests
+                </button>
+                <span id="loading" class="loading" style="display: none;">
+                    ⏳ Tests en cours...
+                </span>
+            </div>
+        </form>
+        
+        <div id="output" class="output-area"></div>
+    </div>
+</div>
+
+<script>
+// Handle app selection
+document.querySelectorAll('.app-option').forEach(option => {
+    option.addEventListener('click', function() {
+        // Remove selected class from all options
+        document.querySelectorAll('.app-option').forEach(opt => opt.classList.remove('selected'));
+        
+        // Add selected class to clicked option
+        this.classList.add('selected');
+        
+        // Check the radio button
+        const radio = this.querySelector('input[type="radio"]');
+        radio.checked = true;
+        
+        // Update command preview
+        const appName = radio.value;
+        const commandPreview = document.getElementById('command-preview');
+        if (appName) {
+            commandPreview.textContent = `python manage.py test ${appName}`;
+        } else {
+            commandPreview.textContent = 'python manage.py test';
+        }
+    });
+});
+
+// Handle form submission
+document.getElementById('test-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('execute-btn');
+    const loading = document.getElementById('loading');
+    const output = document.getElementById('output');
+    
+    // Disable button and show loading
+    btn.disabled = true;
+    loading.style.display = 'inline-block';
+    output.style.display = 'block';
+    output.textContent = 'Démarrage des tests...\n';
+    
+    // Submit form
+    fetch(window.location.href, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new FormData(this)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            output.textContent = '✅ Tests exécutés avec succès!\n\n';
+            if (data.output) {
+                output.textContent += 'Résultats des tests:\n' + data.output + '\n';
+            }
+            if (data.errors) {
+                output.textContent += '\nAvertissements:\n' + data.errors;
+            }
+        } else {
+            output.textContent = '❌ Tests terminés avec des erreurs:\n\n';
+            if (data.output) {
+                output.textContent += 'Sortie des tests:\n' + data.output + '\n';
+            }
+            if (data.errors) {
+                output.textContent += '\nErreurs détaillées:\n' + data.errors + '\n';
+            }
+            output.textContent += '\n💡 Conseil: Ceci est normal pour un projet en développement.\n';
+            output.textContent += 'Les tests peuvent échouer pendant le développement des fonctionnalités.';
+        }
+    })
+    .catch(error => {
+        output.textContent = '❌ Erreur de communication: ' + error.message;
+    })
+    .finally(() => {
+        btn.disabled = false;
+        loading.style.display = 'none';
+    });
+});
+</script>
+{% endblock %}

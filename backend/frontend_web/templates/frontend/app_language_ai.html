@@ -1,0 +1,55 @@
+{% extends "frontend/base_page.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-success">{% trans "Language AI" %}</h1>
+                <p class="lead text-muted">{% trans "Converse with AI to improve your speaking skills" %}</p>
+            </div>
+            
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h3 class="mb-4">{% trans "AI-Powered Conversations" %}</h3>
+                    <p class="mb-4">{% trans "Practice speaking with our advanced AI assistant. Get real-time feedback and improve your pronunciation." %}</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-robot text-success me-3"></i>
+                                <span>{% trans "AI conversations" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-mic text-success me-3"></i>
+                                <span>{% trans "Speech recognition" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-chat-dots text-success me-3"></i>
+                                <span>{% trans "Real-time feedback" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-translate text-success me-3"></i>
+                                <span>{% trans "Multiple languages" %}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'frontend_web:login' %}" class="btn btn-success btn-lg">{% trans "Start Conversation" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

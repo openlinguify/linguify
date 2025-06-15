@@ -25,7 +25,7 @@ def landing_page(request):
     if language and language in ['fr', 'en', 'es', 'nl']:
         from django.utils import translation
         translation.activate(language)
-        request.session[translation.LANGUAGE_SESSION_KEY] = language
+        request.session['django_language'] = language
     
     # Définir les textes traduits pour éviter les problèmes d'apostrophes
     context = {
@@ -46,7 +46,7 @@ def features_page(request):
     if language and language in ['fr', 'en', 'es', 'nl']:
         from django.utils import translation
         translation.activate(language)
-        request.session[translation.LANGUAGE_SESSION_KEY] = language
+        request.session['django_language'] = language
     
     return render(request, 'frontend/features.html')
 
@@ -57,12 +57,28 @@ def set_language(request, language):
     """
     from django.utils import translation
     from django.shortcuts import redirect
+    from django.conf import settings
     
     if language in ['fr', 'en', 'es', 'nl']:
         translation.activate(language)
-        request.session[translation.LANGUAGE_SESSION_KEY] = language
+        # In Django 5.1+, use the session key directly
+        request.session['django_language'] = language
+        
+        # Also set the response language for immediate effect
+        response = redirect(request.META.get('HTTP_REFERER', '/'))
+        response.set_cookie(
+            settings.LANGUAGE_COOKIE_NAME,
+            language,
+            max_age=settings.LANGUAGE_COOKIE_AGE,
+            path=settings.LANGUAGE_COOKIE_PATH,
+            domain=settings.LANGUAGE_COOKIE_DOMAIN,
+            secure=settings.LANGUAGE_COOKIE_SECURE,
+            httponly=settings.LANGUAGE_COOKIE_HTTPONLY,
+            samesite=settings.LANGUAGE_COOKIE_SAMESITE,
+        )
+        return response
     
-    # Rediriger vers la page de référence ou la page d'accueil
+    # If language not supported, redirect without changing language
     next_page = request.META.get('HTTP_REFERER', '/')
     return redirect(next_page)
 
@@ -179,14 +195,116 @@ def dashboard_view(request):
         is_read=False
     ).order_by('-created_at')[:10]  # Limiter à 10 notifications
     
+    # Récupérer les apps installées de l'utilisateur
+    from app_manager.models import App, UserAppSettings
+    user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
+    
+    if created:
+        # Si nouvellement créé, activer les apps par défaut
+        default_apps = App.objects.filter(is_enabled=True, is_default=True)
+        user_settings.enabled_apps.set(default_apps)
+    
+    # Récupérer les apps installées avec leurs détails
+    installed_apps = user_settings.enabled_apps.filter(is_enabled=True).order_by('order', 'display_name')
+    
+    # Formater les apps pour le template
+    apps_data = []
+    for app in installed_apps:
+        # Mapper les icônes
+        icon_mapping = {
+            '📓': 'bi-journal-text',
+            '📚': 'bi-book',
+            '🃏': 'bi-collection',
+            '🤖': 'bi-robot',
+            '📊': 'bi-graph-up',
+            '🎯': 'bi-bullseye',
+            '💬': 'bi-chat-dots',
+            '❓': 'bi-patch-question'
+        }
+        
+        icon = app.manifest_data.get('frontend_components', {}).get('icon', '📱') if app.manifest_data else '📱'
+        bootstrap_icon = icon_mapping.get(icon, 'bi-app')
+        
+        # Couleurs par app
+        color_mapping = {
+            'notebook': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'cours': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+            'révision': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            'revision': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            'ia': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'assistant ia': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'quiz': 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            'quizz': 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            'chat': 'linear-gradient(135deg, #ec4899 0%, #d946ef 100%)'
+        }
+        
+        color = color_mapping.get(app.display_name.lower(), 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)')
+        
+        # URL de l'app
+        app_url = app.manifest_data.get('technical_info', {}).get('web_url', f'/{app.code}/') if app.manifest_data else f'/{app.code}/'
+        
+        apps_data.append({
+            'id': app.id,
+            'code': app.code,
+            'name': app.display_name,
+            'description': app.description,
+            'icon': bootstrap_icon,
+            'color_gradient': color,
+            'url': app_url,
+            'category': app.category
+        })
+    
     context = {
         'stats': stats,
         'user': request.user,
         'notifications': notifications,
-        'unread_count': notifications.count()
+        'unread_count': notifications.count(),
+        'installed_apps': apps_data
     }
     
     return render(request, 'dashboard/dashboard.html', context)
+
+
+@login_required
+def app_store_view(request):
+    """
+    Vue de l'App Store pour gérer les applications
+    """
+    # Récupérer les apps depuis le système d'app manager
+    from app_manager.models import App, UserAppSettings
+    
+    # Récupérer ou créer les paramètres de l'utilisateur
+    user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
+    
+    # Si nouvellement créé, activer les apps par défaut
+    if created:
+        default_apps = App.objects.filter(is_enabled=True, is_default=True)
+        user_settings.enabled_apps.set(default_apps)
+    
+    # Récupérer toutes les apps disponibles
+    all_apps = App.objects.filter(is_enabled=True).order_by('order', 'display_name')
+    enabled_app_ids = user_settings.enabled_apps.values_list('id', flat=True)
+    
+    context = {
+        'page_title': 'App Store',
+        'user': request.user,
+        'all_apps': all_apps,
+        'enabled_app_ids': list(enabled_app_ids),
+    }
+    
+    return render(request, 'frontend/app_store.html', context)
+
+
+@login_required
+def fix_apps_view(request):
+    """
+    Page d'administration pour corriger les applications
+    """
+    # Vérifier que l'utilisateur est admin
+    if not request.user.is_staff:
+        return redirect('frontend_web:dashboard')
+    
+    return render(request, 'admin/fix_apps.html')
 
 
 @login_required
@@ -476,3 +594,217 @@ def accept_terms_view(request):
         messages.error(request, 'Vous devez accepter les conditions d\'utilisation pour continuer.')
     
     return redirect('frontend_web:terms')
+
+
+# =============================================================================
+# PAGES DES APPLICATIONS
+# =============================================================================
+
+def apps_page(request):
+    """Page principale des applications"""
+    from django.utils.translation import gettext as _
+    
+    # Gestion de la langue via paramètre GET
+    language = request.GET.get('language')
+    if language and language in ['fr', 'en', 'es', 'nl']:
+        from django.utils import translation
+        translation.activate(language)
+        request.session['django_language'] = language
+    
+    context = {
+        'page_title': _("Applications - Linguify"),
+        'page_description': _("Découvrez toutes les applications Linguify pour apprendre les langues"),
+    }
+    
+    return render(request, 'frontend/apps.html', context)
+
+def app_courses_page(request):
+    """Page de l'application Courses"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Courses - Linguify"),
+        'page_description': _("Apprenez avec des cours structurés et progressifs"),
+    }
+    
+    return render(request, 'frontend/app_courses.html', context)
+
+def app_revision_page(request):
+    """Page de l'application Revision"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Revision - Linguify"),
+        'page_description': _("Révisez efficacement avec des flashcards intelligentes"),
+    }
+    
+    return render(request, 'frontend/app_revision.html', context)
+
+def app_notebook_page(request):
+    """Page de l'application Notebook"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Notebook - Linguify"),
+        'page_description': _("Organisez vos notes d'apprentissage de manière intelligente"),
+    }
+    
+    return render(request, 'frontend/app_notebook.html', context)
+
+def app_quizz_page(request):
+    """Page de l'application Quiz Builder"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Quiz Builder - Linguify"),
+        'page_description': _("Créez et partagez des quiz pour tester vos connaissances"),
+    }
+    
+    return render(request, 'frontend/app_quizz.html', context)
+
+def app_language_ai_page(request):
+    """Page de l'application Language AI"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Language AI - Linguify"),
+        'page_description': _("Conversez avec l'IA pour améliorer votre expression orale"),
+    }
+    
+    return render(request, 'frontend/app_language_ai.html', context)
+
+
+# =============================================================================
+# PAGES ENTREPRISE
+# =============================================================================
+
+def about_page(request):
+    """Page À propos d'Open Linguify"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("About Open Linguify"),
+        'page_description': _("Découvrez l'histoire et la mission d'Open Linguify"),
+    }
+    
+    return render(request, 'frontend/about.html', context)
+
+def careers_page(request):
+    """Page Carrières"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Careers - Open Linguify"),
+        'page_description': _("Rejoignez notre équipe pour révolutionner l'apprentissage des langues"),
+    }
+    
+    return render(request, 'frontend/careers.html', context)
+
+def blog_page(request):
+    """Page Blog"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Blog - Open Linguify"),
+        'page_description': _("Actualités, conseils et astuces pour apprendre les langues"),
+    }
+    
+    return render(request, 'frontend/blog.html', context)
+
+def press_page(request):
+    """Page Presse"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Press - Open Linguify"),
+        'page_description': _("Ressources presse et communiqués d'Open Linguify"),
+    }
+    
+    return render(request, 'frontend/press.html', context)
+
+def roadmap_page(request):
+    """Page Roadmap"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Roadmap - Open Linguify"),
+        'page_description': _("Découvrez les fonctionnalités à venir sur Open Linguify"),
+    }
+    
+    return render(request, 'frontend/roadmap.html', context)
+
+
+# =============================================================================
+# PAGES SUPPORT
+# =============================================================================
+
+def help_page(request):
+    """Centre d'aide"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Help Center - Open Linguify"),
+        'page_description': _("Trouvez des réponses à vos questions"),
+    }
+    
+    return render(request, 'frontend/help.html', context)
+
+def contact_page(request):
+    """Page Contact"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Contact - Open Linguify"),
+        'page_description': _("Contactez notre équipe support"),
+    }
+    
+    return render(request, 'frontend/contact.html', context)
+
+def bug_report_page(request):
+    """Page de signalement de bugs"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Report Bug - Open Linguify"),
+        'page_description': _("Signalez un problème ou un bug"),
+    }
+    
+    return render(request, 'frontend/bug_report.html', context)
+
+def status_page(request):
+    """Page de statut des services"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Status - Open Linguify"),
+        'page_description': _("Statut en temps réel de nos services"),
+    }
+    
+    return render(request, 'frontend/status.html', context)
+
+
+# =============================================================================
+# PAGES LÉGALES
+# =============================================================================
+
+def privacy_page(request):
+    """Page Politique de confidentialité"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Privacy Policy - Open Linguify"),
+        'page_description': _("Notre politique de confidentialité et protection des données"),
+    }
+    
+    return render(request, 'frontend/privacy.html', context)
+
+def cookies_page(request):
+    """Page Politique des cookies"""
+    from django.utils.translation import gettext as _
+    
+    context = {
+        'page_title': _("Cookie Policy - Open Linguify"),
+        'page_description': _("Notre politique d'utilisation des cookies"),
+    }
+    
+    return render(request, 'frontend/cookies.html', context)

@@ -38,8 +38,9 @@ class SEOOptimizationMiddleware(MiddlewareMixin):
     
     def process_request(self, request):
         """Pre-process request for SEO data"""
+        from django.utils import timezone as tz
         # Store request start time for performance monitoring
-        request._seo_start_time = timezone.now()
+        request._seo_start_time = tz.now()
         
         # Detect search engine bots
         user_agent = request.META.get('HTTP_USER_AGENT', '').lower()
@@ -74,7 +75,7 @@ class SEOOptimizationMiddleware(MiddlewareMixin):
             return response
         
         # Add security headers
-        self._add_security_headers(response)
+        self._add_security_headers(request, response)
         
         # Add SEO headers
         self._add_seo_headers(request, response)
@@ -92,7 +93,7 @@ class SEOOptimizationMiddleware(MiddlewareMixin):
         
         return response
     
-    def _add_security_headers(self, response):
+    def _add_security_headers(self, request, response):
         """Add security headers that also benefit SEO"""
         # Content Security Policy
         if not response.has_header('Content-Security-Policy'):
@@ -156,7 +157,8 @@ class SEOOptimizationMiddleware(MiddlewareMixin):
         
         # Add timing header
         if hasattr(request, '_seo_start_time'):
-            duration = (timezone.now() - request._seo_start_time).total_seconds()
+            from django.utils import timezone as tz
+            duration = (tz.now() - request._seo_start_time).total_seconds()
             response['Server-Timing'] = f'total;dur={duration*1000:.2f}'
         
         # Resource hints
