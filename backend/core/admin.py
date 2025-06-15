@@ -5,7 +5,15 @@ Admin interface for SEO monitoring and management
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
-from .models import SitemapLog, SitemapGenerationReport, SEOPageMetrics, SearchEngineStatus
+from django.urls import path, reverse
+from django.shortcuts import redirect, render
+from django.http import JsonResponse
+from django.contrib import messages
+from django.core.management import call_command
+import subprocess
+import io
+import sys
+from .models import SitemapLog, SitemapGenerationReport, SEOPageMetrics, SearchEngineStatus, SystemManagement
 
 
 @admin.register(SitemapLog)
@@ -183,3 +191,227 @@ def run_seo_analysis_action(modeladmin, request, queryset):
 # Add actions to relevant admin classes
 SitemapLogAdmin.actions = [generate_sitemaps_action]
 SEOPageMetricsAdmin.actions = [run_seo_analysis_action]
+
+
+@admin.register(SystemManagement)
+class SystemManagementAdmin(admin.ModelAdmin):
+    """
+    Admin interface for system management tasks
+    """
+    list_display = ['name', 'description', 'last_updated']
+    readonly_fields = ['last_updated']
+    
+    # Remove add/delete permissions since this is a virtual model for actions
+    def has_add_permission(self, request):
+        # Only allow one instance
+        return not SystemManagement.objects.exists()
+    
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('system-dashboard/', self.admin_site.admin_view(self.system_dashboard_view), name='core_systemmanagement_dashboard'),
+            path('fix-translations/', self.admin_site.admin_view(self.fix_translations_view), name='core_systemmanagement_fix_translations'),
+            path('run-tests/', self.admin_site.admin_view(self.run_tests_view), name='core_systemmanagement_run_tests'),
+            path('check-auth/', self.admin_site.admin_view(self.check_auth_view), name='core_systemmanagement_check_auth'),
+            path('system-info/', self.admin_site.admin_view(self.system_info_view), name='core_systemmanagement_system_info'),
+            path('execute-command/', self.admin_site.admin_view(self.execute_command_view), name='core_systemmanagement_execute_command'),
+        ]
+        return custom_urls + urls
+    
+    def changelist_view(self, request, extra_context=None):
+        """Show system dashboard instead of standard changelist"""
+        return self.system_dashboard_view(request)
+    
+    def system_dashboard_view(self, request):
+        """Main system management dashboard"""
+        context = {
+            'title': 'Gestion Système - Tableau de Bord',
+            'opts': self.model._meta,
+            'has_change_permission': self.has_change_permission(request),
+        }
+        return render(request, 'admin/core/system_dashboard.html', context)
+    
+    def fix_translations_view(self, request):
+        """Fix translations interface"""
+        if request.method == 'POST':
+            return self.execute_command_view(request, 'fix_translations', 
+                                          'Correction des traductions', 
+                                          ['--fix-encoding-only'])
+        
+        context = {
+            'title': 'Corriger les Traductions',
+            'opts': self.model._meta,
+            'command_name': 'fix_translations',
+            'description': 'Corrige les problèmes d\'encodage et compile les traductions',
+        }
+        return render(request, 'admin/core/command_interface.html', context)
+    
+    def run_tests_view(self, request):
+        """Run tests interface"""
+        if request.method == 'POST':
+            app_name = request.POST.get('app_name', '')
+            args = []
+            if app_name:
+                args = [app_name]
+            return self.execute_command_view(request, 'test', 'Tests unitaires', args)
+        
+        # Get list of available apps for testing
+        from django.apps import apps
+        available_apps = []
+        for app_config in apps.get_app_configs():
+            if app_config.name.startswith('apps.') or app_config.name in ['core']:
+                available_apps.append({
+                    'name': app_config.name,
+                    'label': app_config.verbose_name or app_config.label
+                })
+        
+        context = {
+            'title': 'Lancer les Tests',
+            'opts': self.model._meta,
+            'command_name': 'test',
+            'description': 'Lance les tests unitaires pour une app ou toutes les apps',
+            'available_apps': available_apps,
+        }
+        return render(request, 'admin/core/test_interface.html', context)
+    
+    def check_auth_view(self, request):
+        """Check authentication system"""
+        if request.method == 'POST':
+            return self.execute_command_view(request, 'check', 
+                                          'Vérification du système', 
+                                          ['--deploy'])
+        
+        context = {
+            'title': 'Vérifier l\'Authentification',
+            'opts': self.model._meta,
+            'command_name': 'check',
+            'description': 'Vérifie l\'intégrité du système d\'authentification et de la configuration',
+        }
+        return render(request, 'admin/core/command_interface.html', context)
+    
+    def system_info_view(self, request):
+        """Display system information"""
+        try:
+            # Get Django version
+            import django
+            django_version = django.get_version()
+            
+            # Get Python version
+            python_version = sys.version
+            
+            # Get installed apps count
+            from django.apps import apps
+            installed_apps = len(apps.get_app_configs())
+            
+            # Get database info
+            from django.db import connection
+            db_vendor = connection.vendor
+            
+            # Get recent logs
+            recent_logs = SitemapLog.objects.all()[:5]
+            
+            context = {
+                'title': 'Informations Système',
+                'opts': self.model._meta,
+                'django_version': django_version,
+                'python_version': python_version,
+                'installed_apps': installed_apps,
+                'db_vendor': db_vendor,
+                'recent_logs': recent_logs,
+            }
+            return render(request, 'admin/core/system_info.html', context)
+        except Exception as e:
+            messages.error(request, f'Erreur lors de la récupération des informations: {str(e)}')
+            return redirect('admin:core_systemmanagement_dashboard')
+    
+    def execute_command_view(self, request, command_name, command_description, args=None):
+        """Execute a Django management command"""
+        if not self.has_change_permission(request):
+            return JsonResponse({'success': False, 'message': 'Permission refusée'})
+        
+        try:
+            # For test command, use subprocess to avoid threading issues
+            if command_name == 'test':
+                import subprocess
+                from django.conf import settings
+                
+                # Build command
+                cmd = [sys.executable, 'manage.py', 'test']
+                if args:
+                    cmd.extend(args)
+                
+                # Execute with subprocess
+                result = subprocess.run(
+                    cmd,
+                    cwd=settings.BASE_DIR,
+                    capture_output=True,
+                    text=True,
+                    timeout=300  # 5 minute timeout
+                )
+                
+                output_content = result.stdout
+                error_content = result.stderr
+                success = result.returncode == 0
+                
+                if request.headers.get('Accept') == 'application/json':
+                    return JsonResponse({
+                        'success': success,
+                        'message': f'{command_description} exécuté' + (' avec succès' if success else ' avec des erreurs'),
+                        'output': output_content,
+                        'errors': error_content
+                    })
+                else:
+                    if not success:
+                        messages.error(request, f'Erreurs dans les tests: {error_content}')
+                    else:
+                        messages.success(request, f'{command_description} exécuté avec succès!')
+                    if output_content:
+                        messages.info(request, f'Sortie: {output_content[:500]}...' if len(output_content) > 500 else output_content)
+                    return redirect('admin:core_systemmanagement_dashboard')
+            
+            else:
+                # For other commands, use call_command
+                output = io.StringIO()
+                error_output = io.StringIO()
+                
+                # Execute command
+                if args:
+                    call_command(command_name, *args, stdout=output, stderr=error_output)
+                else:
+                    call_command(command_name, stdout=output, stderr=error_output)
+                
+                output_content = output.getvalue()
+                error_content = error_output.getvalue()
+                
+                if request.headers.get('Accept') == 'application/json':
+                    return JsonResponse({
+                        'success': True,
+                        'message': f'{command_description} exécuté avec succès',
+                        'output': output_content,
+                        'errors': error_content
+                    })
+                else:
+                    if error_content:
+                        messages.warning(request, f'Avertissements: {error_content}')
+                    messages.success(request, f'{command_description} exécuté avec succès!')
+                    messages.info(request, f'Sortie: {output_content}')
+                    return redirect('admin:core_systemmanagement_dashboard')
+                
+        except subprocess.TimeoutExpired:
+            error_msg = f'Timeout: {command_description} a pris trop de temps (>5min)'
+            if request.headers.get('Accept') == 'application/json':
+                return JsonResponse({'success': False, 'message': error_msg})
+            else:
+                messages.error(request, error_msg)
+                return redirect('admin:core_systemmanagement_dashboard')
+                
+        except Exception as e:
+            error_msg = f'Erreur lors de l\'exécution de {command_name}: {str(e)}'
+            if request.headers.get('Accept') == 'application/json':
+                return JsonResponse({'success': False, 'message': error_msg})
+            else:
+                messages.error(request, error_msg)
+                return redirect('admin:core_systemmanagement_dashboard')

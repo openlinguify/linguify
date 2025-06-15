@@ -30,23 +30,107 @@ msgstr "talen leren, AI, kunstmatige intelligentie, gepersonaliseerde cursussen,
 msgid "Basculer la navigation"
 msgstr "Navigatie wisselen"
 
-msgid "Fonctionnalités"
+msgid "Features"
 msgstr "Functies"
 
-msgid "Tarifs"
+msgid "Pricing"
 msgstr "Prijzen"
 
-msgid "Témoignages"
+msgid "Testimonials"
 msgstr "Getuigenissen"
 
 msgid "Dashboard"
 msgstr "Dashboard"
 
-msgid "Déconnexion"
+msgid "Logout"
 msgstr "Uitloggen"
 
-msgid "Connexion"
+msgid "Login"
 msgstr "Inloggen"
+
+msgid "Get Started"
+msgstr "Beginnen"
+
+msgid "Learn a new language at your own pace!"
+msgstr "Leer een nieuwe taal op je eigen tempo!"
+
+msgid "Everything you need to learn a foreign language, at your own pace and wherever you are."
+msgstr "Alles wat je nodig hebt om een vreemde taal te leren, op je eigen tempo en waar je ook bent."
+
+msgid "Start for Free"
+msgstr "Gratis Beginnen"
+
+msgid "Discover Our Apps"
+msgstr "Ontdek Onze Apps"
+
+msgid "Access Dashboard"
+msgstr "Ga naar Dashboard"
+
+msgid "My Notes"
+msgstr "Mijn Notities"
+
+msgid "App Preview"
+msgstr "App Voorvertoning"
+
+msgid "(Interactive Demo)"
+msgstr "(Interactieve Demo)"
+
+msgid "Which language would you like to learn?"
+msgstr "Welke taal wil je leren?"
+
+msgid "Available Languages"
+msgstr "Beschikbare Talen"
+
+msgid "Learning Units"
+msgstr "Leereenheden"
+
+msgid "Interactive Lessons"
+msgstr "Interactieve Lessen"
+
+msgid "Words and Expressions"
+msgstr "Woorden en Uitdrukkingen"
+
+msgid "Why Choose Linguify?"
+msgstr "Waarom Linguify kiezen?"
+
+msgid "Interactive Learning"
+msgstr "Interactief Leren"
+
+msgid "Smart Flashcards"
+msgstr "Slimme Flashcards"
+
+msgid "Centralized Notebook"
+msgstr "Gecentraliseerd Notitieboek"
+
+msgid "Progress Tracking"
+msgstr "Voortgang Bijhouden"
+
+msgid "Product"
+msgstr "Product"
+
+msgid "Support"
+msgstr "Ondersteuning"
+
+msgid "Help Center"
+msgstr "Helpcentrum"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Legal"
+msgstr "Juridisch"
+
+msgid "Privacy"
+msgstr "Privacy"
+
+msgid "Terms"
+msgstr "Voorwaarden"
+
+msgid "All rights reserved"
+msgstr "Alle rechten voorbehouden"
+
+msgid "Made with ❤️ in France"
+msgstr "Gemaakt met ❤️ in Frankrijk"
 
 msgid "Commencer"
 msgstr "Beginnen"

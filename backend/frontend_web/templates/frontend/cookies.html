@@ -1,0 +1,55 @@
+{% extends "frontend/base_page.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary">{% trans "Cookie Policy" %}</h1>
+                <p class="lead text-muted">{% trans "How we use cookies to improve your experience" %}</p>
+            </div>
+            
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <h3 class="mb-3">{% trans "What are cookies?" %}</h3>
+                        <p>{% trans "Cookies are small text files stored on your device to help us remember your preferences and improve your experience on our platform." %}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h3 class="mb-3">{% trans "Essential Cookies" %}</h3>
+                        <p>{% trans "These cookies are necessary for the website to function properly. They enable basic features like page navigation and access to secure areas." %}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h3 class="mb-3">{% trans "Analytics Cookies" %}</h3>
+                        <p>{% trans "We use analytics cookies to understand how visitors interact with our website, helping us improve the user experience." %}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h3 class="mb-3">{% trans "Preference Cookies" %}</h3>
+                        <p>{% trans "These cookies remember your choices (like language preferences) to provide a more personalized experience." %}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h3 class="mb-3">{% trans "Managing Cookies" %}</h3>
+                        <p>{% trans "You can control and delete cookies through your browser settings. However, disabling certain cookies may affect website functionality." %}</p>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        {% trans "We respect your privacy and only use cookies that are necessary for providing our services." %}
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'frontend_web:contact' %}" class="btn btn-primary">{% trans "Questions about cookies?" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

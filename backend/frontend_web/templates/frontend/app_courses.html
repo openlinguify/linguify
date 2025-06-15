@@ -1,0 +1,55 @@
+{% extends "frontend/base_page.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary">{% trans "Courses" %}</h1>
+                <p class="lead text-muted">{% trans "Learn with structured and progressive courses" %}</p>
+            </div>
+            
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h3 class="mb-4">{% trans "Interactive Language Courses" %}</h3>
+                    <p class="mb-4">{% trans "Our courses are designed to help you learn languages step by step with engaging content and interactive exercises." %}</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-book-half text-primary me-3"></i>
+                                <span>{% trans "Progressive lessons" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-trophy text-primary me-3"></i>
+                                <span>{% trans "Achievement system" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-people text-primary me-3"></i>
+                                <span>{% trans "Interactive exercises" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-graph-up text-primary me-3"></i>
+                                <span>{% trans "Progress tracking" %}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'frontend_web:login' %}" class="btn btn-primary btn-lg">{% trans "Start Learning" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -30,23 +30,107 @@ msgstr "aprendizaje de idiomas, IA, inteligencia artificial, cursos personalizad
 msgid "Basculer la navigation"
 msgstr "Alternar navegación"
 
-msgid "Fonctionnalités"
+msgid "Features"
 msgstr "Características"
 
-msgid "Tarifs"
+msgid "Pricing"
 msgstr "Precios"
 
-msgid "Témoignages"
+msgid "Testimonials"
 msgstr "Testimonios"
 
 msgid "Dashboard"
 msgstr "Panel de Control"
 
-msgid "Déconnexion"
+msgid "Logout"
 msgstr "Cerrar Sesión"
 
-msgid "Connexion"
+msgid "Login"
 msgstr "Iniciar Sesión"
+
+msgid "Get Started"
+msgstr "Comenzar"
+
+msgid "Learn a new language at your own pace!"
+msgstr "¡Aprende un nuevo idioma a tu ritmo!"
+
+msgid "Everything you need to learn a foreign language, at your own pace and wherever you are."
+msgstr "Todo lo que necesitas para aprender un idioma extranjero, a tu ritmo y donde quieras."
+
+msgid "Start for Free"
+msgstr "Comenzar Gratis"
+
+msgid "Discover Our Apps"
+msgstr "Descubre Nuestras Apps"
+
+msgid "Access Dashboard"
+msgstr "Acceder al Panel"
+
+msgid "My Notes"
+msgstr "Mis Notas"
+
+msgid "App Preview"
+msgstr "Vista Previa de la App"
+
+msgid "(Interactive Demo)"
+msgstr "(Demo Interactiva)"
+
+msgid "Which language would you like to learn?"
+msgstr "¿Qué idioma te gustaría aprender?"
+
+msgid "Available Languages"
+msgstr "Idiomas Disponibles"
+
+msgid "Learning Units"
+msgstr "Unidades de Aprendizaje"
+
+msgid "Interactive Lessons"
+msgstr "Lecciones Interactivas"
+
+msgid "Words and Expressions"
+msgstr "Palabras y Expresiones"
+
+msgid "Why Choose Linguify?"
+msgstr "¿Por qué elegir Linguify?"
+
+msgid "Interactive Learning"
+msgstr "Aprendizaje Interactivo"
+
+msgid "Smart Flashcards"
+msgstr "Flashcards Inteligentes"
+
+msgid "Centralized Notebook"
+msgstr "Cuaderno Centralizado"
+
+msgid "Progress Tracking"
+msgstr "Seguimiento del Progreso"
+
+msgid "Product"
+msgstr "Producto"
+
+msgid "Support"
+msgstr "Soporte"
+
+msgid "Help Center"
+msgstr "Centro de Ayuda"
+
+msgid "Contact"
+msgstr "Contacto"
+
+msgid "Legal"
+msgstr "Legal"
+
+msgid "Privacy"
+msgstr "Privacidad"
+
+msgid "Terms"
+msgstr "Términos"
+
+msgid "All rights reserved"
+msgstr "Todos los derechos reservados"
+
+msgid "Made with ❤️ in France"
+msgstr "Hecho con ❤️ en Francia"
 
 msgid "Commencer"
 msgstr "Comenzar"

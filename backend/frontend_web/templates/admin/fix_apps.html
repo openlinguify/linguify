@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corriger les Applications - Open Linguify</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .btn-fix {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-fix:hover {
+            background: #4f46e5;
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .alert {
+            border-radius: 8px;
+            border: none;
+        }
+        
+        .code {
+            background: #f1f5f9;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-tools me-2"></i>
+                    Correction des Applications Open Linguify
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>État actuel des applications :</h5>
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Conversation AI</strong> 
+                                <span class="code">language_ai</span>
+                                <br><small class="text-muted">Doit être renommé "Assistant IA" avec catégorie "Intelligence IA"</small>
+                            </div>
+                            <span class="badge bg-success">Activé</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Learning</strong> 
+                                <span class="code">course</span>
+                                <br><small class="text-muted">En développement - Restera désactivé</small>
+                            </div>
+                            <span class="badge bg-warning">Désactivé</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Notes</strong> 
+                                <span class="code">notebook</span>
+                                <br><small class="text-muted">Doit être renommé "Notebook" avec catégorie "Productivité"</small>
+                            </div>
+                            <span class="badge bg-success">Activé</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Quiz Interactif</strong> 
+                                <span class="code">quizz</span>
+                                <br><small class="text-muted">Doit être renommé "Quiz" avec catégorie "Apprentissage"</small>
+                            </div>
+                            <span class="badge bg-success">Activé</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Révision</strong> 
+                                <span class="code">revision</span>
+                                <br><small class="text-muted">Doit avoir catégorie "Apprentissage"</small>
+                            </div>
+                            <span class="badge bg-success">Activé</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Cette action va corriger les noms, catégories, descriptions et métadonnées des applications activées uniquement.
+                    L'app "Learning" (course) restera désactivée car elle est en développement.
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-fix" onclick="fixApps()">
+                        <i class="bi bi-wrench me-2"></i>
+                        Corriger les Applications
+                    </button>
+                    
+                    <a href="/admin/app_manager/app/" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Retour à l'Admin
+                    </a>
+                </div>
+                
+                <div id="result" class="mt-4" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        async function fixApps() {
+            const button = document.querySelector('.btn-fix');
+            const result = document.getElementById('result');
+            
+            // Show loading
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Correction en cours...';
+            
+            try {
+                const response = await fetch('/api/v1/app-manager/debug/', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    result.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle me-2"></i>
+                            <strong>Succès !</strong> ${data.message}
+                        </div>
+                    `;
+                    result.style.display = 'block';
+                    
+                    // Reload page after 2 seconds
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    throw new Error(data.message || 'Erreur inconnue');
+                }
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <strong>Erreur :</strong> ${error.message}
+                    </div>
+                `;
+                result.style.display = 'block';
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<i class="bi bi-wrench me-2"></i>Corriger les Applications';
+            }
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>

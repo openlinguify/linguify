@@ -1,0 +1,84 @@
+{% extends "frontend/base_page.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary">{% trans "Service Status" %}</h1>
+                <p class="lead text-muted">{% trans "Real-time status of our services" %}</p>
+            </div>
+            
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <div class="status-indicator bg-success rounded-circle d-inline-block mb-3" style="width: 60px; height: 60px; position: relative;">
+                            <i class="bi bi-check-lg text-white position-absolute top-50 start-50 translate-middle fs-3"></i>
+                        </div>
+                        <h3 class="text-success">{% trans "All Systems Operational" %}</h3>
+                        <p class="text-muted">{% trans "All services are running normally" %}</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+                                <div>
+                                    <h6 class="mb-1">{% trans "Website" %}</h6>
+                                    <small class="text-muted">{% trans "Main platform" %}</small>
+                                </div>
+                                <span class="badge bg-success">{% trans "Operational" %}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+                                <div>
+                                    <h6 class="mb-1">{% trans "API" %}</h6>
+                                    <small class="text-muted">{% trans "Backend services" %}</small>
+                                </div>
+                                <span class="badge bg-success">{% trans "Operational" %}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+                                <div>
+                                    <h6 class="mb-1">{% trans "AI Services" %}</h6>
+                                    <small class="text-muted">{% trans "Language AI" %}</small>
+                                </div>
+                                <span class="badge bg-success">{% trans "Operational" %}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+                                <div>
+                                    <h6 class="mb-1">{% trans "Database" %}</h6>
+                                    <small class="text-muted">{% trans "Data storage" %}</small>
+                                </div>
+                                <span class="badge bg-success">{% trans "Operational" %}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 class="mb-3">{% trans "Recent Incidents" %}</h4>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            {% trans "No recent incidents to report. All systems have been stable." %}
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-2">{% trans "Having issues?" %}</p>
+                        <a href="{% url 'frontend_web:contact' %}" class="btn btn-primary">{% trans "Contact Support" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

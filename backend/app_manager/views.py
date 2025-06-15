@@ -111,12 +111,271 @@ def user_enabled_apps(request):
         'enabled_app_codes': user_settings.get_enabled_app_codes()
     })
 
-@api_view(['GET'])
+@api_view(['GET', 'POST', 'PUT'])
 @permission_classes([IsAuthenticated])
 def debug_apps(request):
     """
-    Debug view to see all app data
+    Debug view to see all app data, add missing apps, and fix existing ones
     """
+    if request.method == 'PUT' and request.user.is_staff:
+        # Corriger seulement les apps activées (ne pas toucher à celles en développement)
+        app_fixes = {
+            'conversation ai': {
+                'display_name': 'Assistant IA',
+                'category': 'Intelligence IA',
+                'description': 'Conversez avec notre IA pour pratiquer la langue et recevoir des corrections personnalisées.',
+                'order': 4,
+                'manifest_data': {
+                    'frontend_components': {
+                        'icon': '🤖',
+                        'description': 'Assistant IA pour l\'apprentissage des langues',
+                        'route': '/language-ai/'
+                    },
+                    'technical_info': {
+                        'web_url': '/language-ai/',
+                        'api_url': '/api/v1/language_ai/'
+                    }
+                }
+            },
+            'notes': {
+                'display_name': 'Notebook',
+                'category': 'Productivité',
+                'description': 'Prenez des notes intelligentes et organisez votre vocabulaire avec des fonctionnalités avancées.',
+                'is_enabled': True,
+                'order': 1,
+                'manifest_data': {
+                    'frontend_components': {
+                        'icon': '📓',
+                        'description': 'Notebook intelligent pour l\'apprentissage',
+                        'route': '/notebook/'
+                    },
+                    'technical_info': {
+                        'web_url': '/notebook/',
+                        'api_url': '/api/v1/notebook/'
+                    }
+                }
+            },
+            'quiz interactif': {
+                'display_name': 'Quiz',
+                'category': 'Apprentissage',
+                'description': 'Créez et participez à des quiz personnalisés pour tester vos connaissances.',
+                'is_enabled': True,
+                'order': 5,
+                'manifest_data': {
+                    'frontend_components': {
+                        'icon': '❓',
+                        'description': 'Quiz interactifs et personnalisés',
+                        'route': '/quiz/'
+                    },
+                    'technical_info': {
+                        'web_url': '/quiz/',
+                        'api_url': '/api/v1/quizz/'
+                    }
+                }
+            },
+            'révision': {
+                'display_name': 'Révisions',
+                'category': 'Apprentissage',
+                'description': 'Système de révision avec répétition espacée (Flashcards).',
+                'is_enabled': True,
+                'order': 3,
+                'manifest_data': {
+                    'frontend_components': {
+                        'icon': '🃏',
+                        'description': 'Révisions et flashcards',
+                        'route': '/revision/'
+                    },
+                    'technical_info': {
+                        'web_url': '/revision/',
+                        'api_url': '/api/v1/revision/'
+                    }
+                }
+            }
+        }
+        
+        updated_count = 0
+        # Ne corriger que les apps activées
+        existing_apps = App.objects.filter(is_enabled=True)
+        
+        for app in existing_apps:
+            app_name_lower = app.display_name.lower()
+            if app_name_lower in app_fixes:
+                fixes = app_fixes[app_name_lower]
+                updated = False
+                
+                for key, value in fixes.items():
+                    current_value = getattr(app, key)
+                    if current_value != value:
+                        setattr(app, key, value)
+                        updated = True
+                
+                if updated:
+                    app.save()
+                    updated_count += 1
+        
+        return Response({
+            'success': True,
+            'message': f'{updated_count} apps mises à jour avec les bonnes données',
+            'updated_count': updated_count
+        })
+    
+    if request.method == 'POST' and request.user.is_staff:
+        # Ajouter toutes les apps essentielles de Linguify
+        missing_apps = [
+            {
+                'code': 'notebook',
+                'display_name': 'Notebook',
+                'description': 'Prenez des notes intelligentes et organisez votre vocabulaire avec des fonctionnalités avancées.',
+                'category': 'Productivité',
+                'is_enabled': True,
+                'is_default': True,
+                'order': 1,
+                'manifest_data': {
+                    'frontend_components': {
+                        'icon': '📓',
+                        'description': 'Notebook intelligent pour l\'apprentissage',
+                        'route': '/notebook/'
+                    },
+                    'technical_info': {
+                        'web_url': '/notebook/',
+                        'api_url': '/api/v1/notebook/'
+                    }
+                }
+            },
+            {
+                'code': 'course',
+                'display_name': 'Cours',
+                'description': 'Accédez à des cours structurés avec des exercices interactifs et des évaluations personnalisées.',
+                'category': 'Apprentissage',
+                'is_enabled': True,
+                'is_default': True,
+                'order': 2,
+                'manifest_data': {
+                    'frontend_components': {
+                        'icon': '📚',
+                        'description': 'Cours structurés et interactifs',
+                        'route': '/course/'
+                    },
+                    'technical_info': {
+                        'web_url': '/course/',
+                        'api_url': '/api/v1/course/'
+                    }
+                }
+            },
+            {
+                'code': 'revision',
+                'display_name': 'Révisions',
+                'description': 'Système de révision avec répétition espacée (Flashcards).',
+                'category': 'Apprentissage',
+                'is_enabled': True,
+                'is_default': True,
+                'order': 3,
+                'manifest_data': {
+                    'frontend_components': {
+                        'icon': '🃏',
+                        'description': 'Révisions et flashcards',
+                        'route': '/revision/'
+                    },
+                    'technical_info': {
+                        'web_url': '/revision/',
+                        'api_url': '/api/v1/revision/'
+                    }
+                }
+            },
+            {
+                'code': 'language_ai',
+                'display_name': 'Assistant IA',
+                'description': 'Conversez avec notre IA pour pratiquer la langue et recevoir des corrections personnalisées.',
+                'category': 'Intelligence IA',
+                'is_enabled': True,
+                'is_default': False,
+                'order': 4,
+                'manifest_data': {
+                    'frontend_components': {
+                        'icon': '🤖',
+                        'description': 'Assistant IA pour l\'apprentissage des langues',
+                        'route': '/language-ai/'
+                    },
+                    'technical_info': {
+                        'web_url': '/language-ai/',
+                        'api_url': '/api/v1/language_ai/'
+                    }
+                }
+            },
+            {
+                'code': 'quizz',
+                'display_name': 'Quiz',
+                'description': 'Créez et participez à des quiz personnalisés pour tester vos connaissances.',
+                'category': 'Apprentissage',
+                'is_enabled': True,
+                'is_default': False,
+                'order': 5,
+                'manifest_data': {
+                    'frontend_components': {
+                        'icon': '❓',
+                        'description': 'Quiz interactifs et personnalisés',
+                        'route': '/quiz/'
+                    },
+                    'technical_info': {
+                        'web_url': '/quiz/',
+                        'api_url': '/api/v1/quizz/'
+                    }
+                }
+            }
+        ]
+        
+        created_count = 0
+        updated_count = 0
+        
+        for app_data in missing_apps:
+            app, created = App.objects.get_or_create(
+                code=app_data['code'],
+                defaults=app_data
+            )
+            if created:
+                created_count += 1
+            else:
+                # Mettre à jour les apps existantes avec les nouvelles données
+                updated = False
+                for key, value in app_data.items():
+                    if key != 'code' and getattr(app, key) != value:
+                        setattr(app, key, value)
+                        updated = True
+                
+                if updated:
+                    app.save()
+                    updated_count += 1
+        
+        # Corriger les catégories des apps existantes qui ne correspondent pas
+        category_fixes = {
+            'conversation ai': {'category': 'Intelligence IA', 'display_name': 'Assistant IA'},
+            'notes': {'category': 'Productivité', 'display_name': 'Notebook'},
+            'quiz interactif': {'category': 'Apprentissage', 'display_name': 'Quiz'},
+            'révision': {'category': 'Apprentissage'}
+        }
+        
+        existing_apps = App.objects.all()
+        for app in existing_apps:
+            app_name_lower = app.display_name.lower()
+            if app_name_lower in category_fixes:
+                fixes = category_fixes[app_name_lower]
+                updated = False
+                for key, value in fixes.items():
+                    if getattr(app, key) != value:
+                        setattr(app, key, value)
+                        updated = True
+                
+                if updated:
+                    app.save()
+                    updated_count += 1
+        
+        return Response({
+            'success': True,
+            'message': f'{created_count} nouvelles apps créées, {updated_count} apps mises à jour',
+            'created_count': created_count,
+            'updated_count': updated_count
+        })
+    
     user_settings, created = UserAppSettings.objects.get_or_create(
         user=request.user
     )
@@ -131,7 +390,8 @@ def debug_apps(request):
             'code': app.code,
             'display_name': app.display_name,
             'is_enabled': app.is_enabled,
-            'user_has_enabled': app in enabled_apps
+            'user_has_enabled': app in enabled_apps,
+            'category': app.category
         })
     
     return Response({
@@ -139,5 +399,6 @@ def debug_apps(request):
         'enabled_by_user': enabled_apps.count(),
         'apps': app_data,
         'enabled_app_codes': user_settings.get_enabled_app_codes(),
-        'user_created': created
+        'user_created': created,
+        'can_add_apps': request.user.is_staff
     })

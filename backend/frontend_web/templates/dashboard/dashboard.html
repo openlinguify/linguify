@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Linguify</title>
+    <title>Open Linguify - Dashboard</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -22,76 +22,56 @@
             --success-color: #10b981;
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
-            --sidebar-width: 280px;
         }
         
         body {
             font-family: 'Inter', sans-serif;
             background: #f8fafc;
+            min-height: 100vh;
+            padding-top: 70px; /* Pour le header fixe */
         }
         
-        .sidebar {
+        /* Header fixe */
+        .fixed-header {
             position: fixed;
             top: 0;
             left: 0;
-            height: 100vh;
-            width: var(--sidebar-width);
-            background: white;
-            border-right: 1px solid #e2e8f0;
+            right: 0;
             z-index: 1000;
-            overflow-y: auto;
-        }
-        
-        .sidebar-header {
-            padding: 1.5rem;
+            background: white;
             border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         
-        .sidebar-nav {
+        .navbar {
             padding: 1rem 0;
         }
         
-        .nav-item {
-            margin: 0.25rem 1rem;
-        }
-        
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            color: #64748b;
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color) !important;
             text-decoration: none;
-            transition: all 0.2s ease;
-        }
-        
-        .nav-link:hover,
-        .nav-link.active {
-            background: #f1f5f9;
-            color: var(--primary-color);
-        }
-        
-        .nav-link i {
-            width: 20px;
-            margin-right: 0.75rem;
-        }
-        
-        .main-content {
-            margin-left: var(--sidebar-width);
-            min-height: 100vh;
-        }
-        
-        .topbar {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
         
         .content-area {
             padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
         }
         
         .app-card {
@@ -101,6 +81,7 @@
             transition: all 0.3s ease;
             overflow: hidden;
             height: 100%;
+            cursor: pointer;
         }
         
         .app-card:hover {
@@ -156,19 +137,14 @@
             letter-spacing: 0.5px;
         }
         
-        .status-active {
+        .status-installed {
             background: #dcfce7;
             color: #166534;
         }
         
-        .status-beta {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        
-        .status-coming {
-            background: #e0e7ff;
-            color: #3730a3;
+        .status-not-installed {
+            background: #f3f4f6;
+            color: #6b7280;
         }
         
         .app-card-footer {
@@ -182,7 +158,7 @@
             border-radius: 16px;
             color: white;
             padding: 2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
             position: relative;
             overflow: hidden;
         }
@@ -192,18 +168,18 @@
             position: absolute;
             top: 0;
             right: 0;
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
             background: rgba(255,255,255,0.1);
             border-radius: 50%;
-            transform: translate(30px, -30px);
+            transform: translate(50px, -50px);
         }
         
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
         }
         
         .stat-card {
@@ -227,362 +203,325 @@
             margin-top: 0.5rem;
         }
         
-        .search-box {
-            position: relative;
-            margin-bottom: 2rem;
+        .app-store-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
-        .search-box input {
-            padding-left: 3rem;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
+        .app-store-btn:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: translateY(-1px);
         }
         
-        .search-box i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
             color: #64748b;
         }
         
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-            
-            .sidebar.show {
-                transform: translateX(0);
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
-            
-            .mobile-menu-btn {
-                display: block !important;
-            }
+        .empty-state i {
+            font-size: 4rem;
+            opacity: 0.3;
+            margin-bottom: 1rem;
         }
         
-        .mobile-menu-btn {
-            display: none;
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 1rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h4 class="mb-0">
-                <i class="bi bi-translate text-primary me-2"></i>
-                Linguify
-            </h4>
-            <small class="text-muted">Tableau de bord</small>
-        </div>
-        
-        <nav class="sidebar-nav">
-            <div class="nav-item">
-                <a href="/dashboard/" class="nav-link active">
-                    <i class="bi bi-grid-3x3-gap"></i>
-                    Dashboard
+    <!-- Header fixe -->
+    <header class="fixed-header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/dashboard/">
+                    Open Linguify
                 </a>
-            </div>
-            
-            <div class="nav-item">
-                <a href="/notebook/" class="nav-link">
-                    <i class="bi bi-journal-text"></i>
-                    Notebook
-                </a>
-            </div>
-            
-            <div class="nav-item">
-                <a href="/course/" class="nav-link">
-                    <i class="bi bi-book"></i>
-                    Cours
-                </a>
-            </div>
-            
-            <div class="nav-item">
-                <a href="/revision/" class="nav-link">
-                    <i class="bi bi-cards"></i>
-                    Révisions
-                </a>
-            </div>
-            
-            <div class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="bi bi-robot"></i>
-                    IA Assistant
-                </a>
-            </div>
-            
-            <div class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="bi bi-graph-up"></i>
-                    Progression
-                </a>
-            </div>
-            
-            <hr class="my-3 mx-3">
-            
-            <div class="nav-item">
-                <a href="{% url 'frontend_web:settings' %}" class="nav-link">
-                    <i class="bi bi-gear"></i>
-                    Paramètres
-                </a>
-            </div>
-            
-            <div class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="bi bi-question-circle"></i>
-                    Aide
-                </a>
-            </div>
-            
-            <div class="nav-item">
-                <a href="/auth/logout/" class="nav-link text-danger">
-                    <i class="bi bi-box-arrow-right"></i>
-                    Déconnexion
-                </a>
-            </div>
-        </nav>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Topbar -->
-        <div class="topbar">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-outline-secondary mobile-menu-btn me-3" onclick="toggleSidebar()">
-                        <i class="bi bi-list"></i>
+                
+                <div class="ms-auto d-flex align-items-center gap-3">
+                    <!-- Notifications -->
+                <div class="dropdown" id="notificationDropdown">
+                    <button class="btn btn-outline-secondary position-relative" type="button" data-bs-toggle="dropdown" id="notificationButton">
+                        <i class="bi bi-bell"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadge" style="display: none;">
+                            0
+                        </span>
                     </button>
-                    <h5 class="mb-0">Tableau de bord</h5>
+                    <ul class="dropdown-menu dropdown-menu-end" style="min-width: 350px; max-height: 400px; overflow-y: auto;" id="notificationsList">
+                        <li class="px-3 py-2 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Notifications</h6>
+                                <button class="btn btn-sm btn-outline-primary" id="markAllReadBtn" style="display: none;">
+                                    Tout marquer comme lu
+                                </button>
+                            </div>
+                        </li>
+                        <li id="noNotifications" class="px-3 py-3 text-center text-muted">
+                            <i class="bi bi-bell-slash mb-2" style="font-size: 2rem; opacity: 0.5;"></i>
+                            <div>Aucune nouvelle notification</div>
+                        </li>
+                    </ul>
                 </div>
                 
-                <div class="d-flex align-items-center gap-3">
-                    <div class="dropdown" id="notificationDropdown">
-                        <button class="btn btn-outline-secondary dropdown-toggle position-relative" type="button" data-bs-toggle="dropdown" id="notificationButton">
-                            <i class="bi bi-bell me-2"></i>
-                            Notifications
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadge" style="display: none;">
-                                0
-                            </span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" style="min-width: 350px; max-height: 400px; overflow-y: auto;" id="notificationsList">
-                            <li class="px-3 py-2 border-bottom">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-0">Notifications</h6>
-                                    <button class="btn btn-sm btn-outline-primary" id="markAllReadBtn" style="display: none;">
-                                        Tout marquer comme lu
-                                    </button>
-                                </div>
-                            </li>
-                            <li id="noNotifications" class="px-3 py-3 text-center text-muted">
-                                <i class="bi bi-bell-slash mb-2" style="font-size: 2rem; opacity: 0.5;"></i>
-                                <div>Aucune nouvelle notification</div>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            {% if user.get_profile_picture_url %}
-                                <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil" style="width: 20px; height: 20px; object-fit: cover; border-radius: 50%; margin-right: 8px;">
-                            {% else %}
-                                <i class="bi bi-person-circle me-2"></i>
-                            {% endif %}
-                            {{ user.username|default:"Utilisateur" }}
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profil</a></li>
-                            <li><a class="dropdown-item" href="{% url 'frontend_web:settings' %}"><i class="bi bi-gear me-2"></i>Paramètres</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="/auth/logout/"><i class="bi bi-box-arrow-right me-2"></i>Déconnexion</a></li>
-                        </ul>
-                    </div>
+                <!-- User Menu -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        {% if user.get_profile_picture_url %}
+                            <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil" style="width: 24px; height: 24px; object-fit: cover; border-radius: 50%; margin-right: 8px;">
+                        {% else %}
+                            <i class="bi bi-person-circle me-2"></i>
+                        {% endif %}
+                        {{ user.username|default:"Utilisateur" }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profil</a></li>
+                        <li><a class="dropdown-item" href="{% url 'frontend_web:settings' %}"><i class="bi bi-gear me-2"></i>Paramètres</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/auth/logout/"><i class="bi bi-box-arrow-right me-2"></i>Déconnexion</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    </header>
+
+    <!-- Content Area -->
+    <div class="content-area">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-2">
+                        Bonjour {{ user.first_name|default:user.username }} ! 👋
+                    </h2>
+                    <p class="mb-0 opacity-90">
+                        Bienvenue sur Open Linguify, votre plateforme d'apprentissage des langues.
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <i class="bi bi-translate" style="font-size: 3rem; opacity: 0.3;"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Content Area -->
-        <div class="content-area">
-            <!-- Welcome Banner -->
-            <div class="welcome-banner">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h2 class="mb-2">
-                            Bonjour {{ user.first_name|default:user.username }} ! 👋
-                        </h2>
-                        <p class="mb-0 opacity-90">
-                            Continuez votre apprentissage avec nos applications intelligentes. 
-                            Vous avez fait d'excellents progrès !
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">{{ stats.lessons_completed|default:"12" }}</span>
+                <div class="stat-label">Leçons terminées</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ stats.study_streak|default:"7" }}</span>
+                <div class="stat-label">Jours consécutifs</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ stats.vocabulary_learned|default:"156" }}</span>
+                <div class="stat-label">Mots appris</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ stats.total_time|default:"24h" }}</span>
+                <div class="stat-label">Temps d'étude</div>
+            </div>
+        </div>
+
+        <!-- Installed Apps Section -->
+        <div class="section-header">
+            <h3 class="section-title">Mes Applications</h3>
+            <a href="/app-store/" class="app-store-btn">
+                <i class="bi bi-shop"></i>
+                App Store
+            </a>
+        </div>
+
+        {% if installed_apps %}
+        <div class="row g-4 mb-5" id="installedApps">
+            {% for app in installed_apps %}
+            <div class="col-lg-4 col-md-6">
+                <div class="app-card">
+                    <div class="app-card-header">
+                        <div class="app-icon" style="background: {{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }};">
+                            <i class="bi {{ app.icon|default:'bi-app' }}"></i>
+                        </div>
+                        <h6 class="app-title">{{ app.name }}</h6>
+                        <p class="app-description">
+                            {{ app.description }}
                         </p>
+                        <span class="app-status status-installed">Installé</span>
                     </div>
-                    <div class="col-md-4 text-end">
-                        <i class="bi bi-rocket-takeoff" style="font-size: 3rem; opacity: 0.3;"></i>
+                    <div class="app-card-footer">
+                        <a href="{{ app.url }}" class="btn btn-primary btn-sm w-100">
+                            <i class="bi bi-arrow-right me-2"></i>
+                            Ouvrir
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state mb-5">
+            <i class="bi bi-app-indicator"></i>
+            <h5 class="mb-3">Aucune application installée</h5>
+            <p class="mb-4">Explorez l'App Store pour découvrir et installer des applications d'apprentissage.</p>
+            <a href="/app-store/" class="app-store-btn">
+                <i class="bi bi-shop"></i>
+                Explorer l'App Store
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Available Apps Section -->
+        <div class="section-header">
+            <h3 class="section-title">Applications Disponibles</h3>
+        </div>
+
+        <div class="row g-4" id="availableApps">
+            <!-- Notebook App -->
+            <div class="col-lg-4 col-md-6">
+                <div class="app-card">
+                    <div class="app-card-header">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="bi bi-journal-text"></i>
+                        </div>
+                        <h6 class="app-title">Notebook</h6>
+                        <p class="app-description">
+                            Prenez des notes intelligentes, organisez votre vocabulaire et révisez efficacement.
+                        </p>
+                        <span class="app-status status-installed">Installé</span>
+                    </div>
+                    <div class="app-card-footer">
+                        <a href="/notebook/" class="btn btn-primary btn-sm w-100">
+                            <i class="bi bi-arrow-right me-2"></i>
+                            Ouvrir
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-number">{{ stats.lessons_completed|default:"12" }}</span>
-                    <div class="stat-label">Leçons terminées</div>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number">{{ stats.study_streak|default:"7" }}</span>
-                    <div class="stat-label">Jours consécutifs</div>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number">{{ stats.vocabulary_learned|default:"156" }}</span>
-                    <div class="stat-label">Mots appris</div>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number">{{ stats.total_time|default:"24h" }}</span>
-                    <div class="stat-label">Temps d'étude</div>
+            <!-- Course App -->
+            <div class="col-lg-4 col-md-6">
+                <div class="app-card">
+                    <div class="app-card-header">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #d97706;">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        <h6 class="app-title">Cours</h6>
+                        <p class="app-description">
+                            Accédez à des cours structurés avec exercices interactifs et évaluations.
+                        </p>
+                        <span class="app-status status-installed">Installé</span>
+                    </div>
+                    <div class="app-card-footer">
+                        <a href="/course/" class="btn btn-primary btn-sm w-100">
+                            <i class="bi bi-arrow-right me-2"></i>
+                            Ouvrir
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <!-- Search -->
-            <div class="search-box">
-                <i class="bi bi-search"></i>
-                <input type="text" class="form-control" placeholder="Rechercher une application..." id="appSearch">
+            <!-- Revision App -->
+            <div class="col-lg-4 col-md-6">
+                <div class="app-card">
+                    <div class="app-card-header">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #059669;">
+                            <i class="bi bi-cards"></i>
+                        </div>
+                        <h6 class="app-title">Révisions</h6>
+                        <p class="app-description">
+                            Révisez avec des flashcards intelligentes et la répétition espacée.
+                        </p>
+                        <span class="app-status status-installed">Installé</span>
+                    </div>
+                    <div class="app-card-footer">
+                        <a href="/revision/" class="btn btn-primary btn-sm w-100">
+                            <i class="bi bi-arrow-right me-2"></i>
+                            Ouvrir
+                        </a>
+                    </div>
+                </div>
             </div>
 
-            <!-- Apps Grid -->
-            <div class="row g-4" id="appsGrid">
-                <!-- Notebook App -->
-                <div class="col-lg-4 col-md-6 app-item" data-category="productivity">
-                    <div class="app-card">
-                        <div class="app-card-header">
-                            <div class="app-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                <i class="bi bi-journal-text"></i>
-                            </div>
-                            <h6 class="app-title">Notebook</h6>
-                            <p class="app-description">
-                                Prenez des notes intelligentes, organisez votre vocabulaire et révisez efficacement avec la répétition espacée.
-                            </p>
-                            <span class="app-status status-active">Actif</span>
+            <!-- AI Assistant -->
+            <div class="col-lg-4 col-md-6">
+                <div class="app-card">
+                    <div class="app-card-header">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="bi bi-robot"></i>
                         </div>
-                        <div class="app-card-footer">
-                            <a href="/notebook/" class="btn btn-primary btn-sm w-100">
-                                <i class="bi bi-arrow-right me-2"></i>
-                                Ouvrir
-                            </a>
-                        </div>
+                        <h6 class="app-title">Assistant IA</h6>
+                        <p class="app-description">
+                            Conversez avec l'IA pour pratiquer et recevoir des corrections.
+                        </p>
+                        <span class="app-status status-not-installed">Non installé</span>
+                    </div>
+                    <div class="app-card-footer">
+                        <button class="btn btn-outline-primary btn-sm w-100" onclick="installApp('ai-assistant')">
+                            <i class="bi bi-download me-2"></i>
+                            Installer
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Course App -->
-                <div class="col-lg-4 col-md-6 app-item" data-category="learning">
-                    <div class="app-card">
-                        <div class="app-card-header">
-                            <div class="app-icon" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #d97706;">
-                                <i class="bi bi-book"></i>
-                            </div>
-                            <h6 class="app-title">Cours</h6>
-                            <p class="app-description">
-                                Accédez à des cours structurés avec exercices interactifs, théorie et évaluations personnalisées.
-                            </p>
-                            <span class="app-status status-active">Actif</span>
+            <!-- Quiz App -->
+            <div class="col-lg-4 col-md-6">
+                <div class="app-card">
+                    <div class="app-card-header">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #059669;">
+                            <i class="bi bi-patch-question"></i>
                         </div>
-                        <div class="app-card-footer">
-                            <a href="/course/" class="btn btn-primary btn-sm w-100">
-                                <i class="bi bi-arrow-right me-2"></i>
-                                Ouvrir
-                            </a>
-                        </div>
+                        <h6 class="app-title">Quiz</h6>
+                        <p class="app-description">
+                            Testez vos connaissances avec des quiz adaptatifs.
+                        </p>
+                        <span class="app-status status-not-installed">Non installé</span>
+                    </div>
+                    <div class="app-card-footer">
+                        <button class="btn btn-outline-primary btn-sm w-100" onclick="installApp('quiz')">
+                            <i class="bi bi-download me-2"></i>
+                            Installer
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Revision App -->
-                <div class="col-lg-4 col-md-6 app-item" data-category="learning">
-                    <div class="app-card">
-                        <div class="app-card-header">
-                            <div class="app-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #059669;">
-                                <i class="bi bi-cards"></i>
-                            </div>
-                            <h6 class="app-title">Révisions</h6>
-                            <p class="app-description">
-                                Révisez votre vocabulaire avec des flashcards intelligentes et un système de répétition optimisé.
+            <!-- More Apps -->
+            <div class="col-lg-4 col-md-6">
+                <div class="app-card" style="background: #f8fafc; border-style: dashed;">
+                    <div class="app-card-header">
+                        <div class="text-center py-4">
+                            <i class="bi bi-plus-circle" style="font-size: 3rem; color: var(--primary-color); opacity: 0.5;"></i>
+                            <h6 class="mt-3 mb-2">Plus d'applications</h6>
+                            <p class="text-muted small mb-0">
+                                Découvrez toutes nos applications d'apprentissage
                             </p>
-                            <span class="app-status status-active">Actif</span>
-                        </div>
-                        <div class="app-card-footer">
-                            <a href="/revision/" class="btn btn-primary btn-sm w-100">
-                                <i class="bi bi-arrow-right me-2"></i>
-                                Ouvrir
-                            </a>
                         </div>
                     </div>
-                </div>
-
-                <!-- AI Assistant -->
-                <div class="col-lg-4 col-md-6 app-item" data-category="ai">
-                    <div class="app-card">
-                        <div class="app-card-header">
-                            <div class="app-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                <i class="bi bi-robot"></i>
-                            </div>
-                            <h6 class="app-title">Assistant IA</h6>
-                            <p class="app-description">
-                                Conversez avec notre IA pour pratiquer, poser des questions et recevoir des corrections personnalisées.
-                            </p>
-                            <span class="app-status status-beta">Bêta</span>
-                        </div>
-                        <div class="app-card-footer">
-                            <a href="#" class="btn btn-primary btn-sm w-100">
-                                <i class="bi bi-arrow-right me-2"></i>
-                                Ouvrir
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Progress App -->
-                <div class="col-lg-4 col-md-6 app-item" data-category="analytics">
-                    <div class="app-card">
-                        <div class="app-card-header">
-                            <div class="app-icon" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #d97706;">
-                                <i class="bi bi-graph-up"></i>
-                            </div>
-                            <h6 class="app-title">Progression</h6>
-                            <p class="app-description">
-                                Suivez vos progrès avec des graphiques détaillés, objectifs et statistiques d'apprentissage.
-                            </p>
-                            <span class="app-status status-active">Actif</span>
-                        </div>
-                        <div class="app-card-footer">
-                            <a href="#" class="btn btn-primary btn-sm w-100">
-                                <i class="bi bi-arrow-right me-2"></i>
-                                Ouvrir
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quiz App -->
-                <div class="col-lg-4 col-md-6 app-item" data-category="learning">
-                    <div class="app-card">
-                        <div class="app-card-header">
-                            <div class="app-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #059669;">
-                                <i class="bi bi-patch-question"></i>
-                            </div>
-                            <h6 class="app-title">Quiz</h6>
-                            <p class="app-description">
-                                Testez vos connaissances avec des quiz adaptatifs et des défis personnalisés à votre niveau.
-                            </p>
-                            <span class="app-status status-coming">Bientôt</span>
-                        </div>
-                        <div class="app-card-footer">
-                            <button class="btn btn-outline-secondary btn-sm w-100" disabled>
-                                <i class="bi bi-clock me-2"></i>
-                                Bientôt disponible
-                            </button>
-                        </div>
+                    <div class="app-card-footer">
+                        <a href="/app-store/" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="bi bi-shop me-2"></i>
+                            Voir l'App Store
+                        </a>
                     </div>
                 </div>
             </div>
@@ -593,39 +532,41 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Toggle sidebar on mobile
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('show');
+        // App installation function
+        function installApp(appId) {
+            // Show loading state
+            const button = event.target.closest('button');
+            const originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Installation...';
+            
+            // Simulate app installation (replace with actual API call)
+            setTimeout(() => {
+                button.innerHTML = '<i class="bi bi-check-circle me-2"></i>Installé';
+                button.classList.remove('btn-outline-primary');
+                button.classList.add('btn-success');
+                
+                // Change to open button after a moment
+                setTimeout(() => {
+                    button.innerHTML = '<i class="bi bi-arrow-right me-2"></i>Ouvrir';
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-primary');
+                    button.onclick = function() {
+                        window.location.href = getAppUrl(appId);
+                    };
+                }, 1000);
+            }, 2000);
         }
         
-        // Search functionality
-        document.getElementById('appSearch').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const appItems = document.querySelectorAll('.app-item');
-            
-            appItems.forEach(item => {
-                const title = item.querySelector('.app-title').textContent.toLowerCase();
-                const description = item.querySelector('.app-description').textContent.toLowerCase();
-                
-                if (title.includes(searchTerm) || description.includes(searchTerm)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-        
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(e) {
-            const sidebar = document.getElementById('sidebar');
-            const menuBtn = document.querySelector('.mobile-menu-btn');
-            
-            if (window.innerWidth <= 768 && 
-                !sidebar.contains(e.target) && 
-                !menuBtn.contains(e.target)) {
-                sidebar.classList.remove('show');
-            }
-        });
+        // Get app URL based on ID
+        function getAppUrl(appId) {
+            const appUrls = {
+                'ai-assistant': '/language-ai/',
+                'quiz': '/quiz/',
+                'progress': '/progress/'
+            };
+            return appUrls[appId] || '#';
+        }
         
         // Notification system
         function loadNotifications() {

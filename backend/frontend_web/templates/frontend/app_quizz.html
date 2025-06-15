@@ -1,0 +1,55 @@
+{% extends "frontend/base_page.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-danger">{% trans "Quiz Builder" %}</h1>
+                <p class="lead text-muted">{% trans "Create and share quizzes to test your knowledge" %}</p>
+            </div>
+            
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h3 class="mb-4">{% trans "Interactive Quiz System" %}</h3>
+                    <p class="mb-4">{% trans "Build custom quizzes to test yourself and others. Share your knowledge with the community." %}</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-patch-question text-danger me-3"></i>
+                                <span>{% trans "Custom quizzes" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-share text-danger me-3"></i>
+                                <span>{% trans "Share with community" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-graph-up text-danger me-3"></i>
+                                <span>{% trans "Performance analytics" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-award text-danger me-3"></i>
+                                <span>{% trans "Scoring system" %}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'frontend_web:login' %}" class="btn btn-danger btn-lg">{% trans "Create Quiz" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

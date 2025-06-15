@@ -1,0 +1,98 @@
+{% extends "frontend/base_page.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary">{% trans "Help Center" %}</h1>
+                <p class="lead text-muted">{% trans "Find answers to your questions" %}</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-question-circle text-primary me-2"></i>
+                                {% trans "Getting Started" %}
+                            </h5>
+                            <p class="card-text">{% trans "Learn how to use Open Linguify and get the most out of your language learning experience." %}</p>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="text-decoration-none">{% trans "Creating your first account" %}</a></li>
+                                <li><a href="#" class="text-decoration-none">{% trans "Choosing your target language" %}</a></li>
+                                <li><a href="#" class="text-decoration-none">{% trans "Starting your first lesson" %}</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-book text-info me-2"></i>
+                                {% trans "Courses & Learning" %}
+                            </h5>
+                            <p class="card-text">{% trans "Everything you need to know about our courses and learning system." %}</p>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="text-decoration-none">{% trans "How courses are structured" %}</a></li>
+                                <li><a href="#" class="text-decoration-none">{% trans "Tracking your progress" %}</a></li>
+                                <li><a href="#" class="text-decoration-none">{% trans "Using the revision system" %}</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-gear text-warning me-2"></i>
+                                {% trans "Account & Settings" %}
+                            </h5>
+                            <p class="card-text">{% trans "Manage your account settings and preferences." %}</p>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="text-decoration-none">{% trans "Profile management" %}</a></li>
+                                <li><a href="#" class="text-decoration-none">{% trans "Privacy settings" %}</a></li>
+                                <li><a href="#" class="text-decoration-none">{% trans "Notification preferences" %}</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-tools text-success me-2"></i>
+                                {% trans "Troubleshooting" %}
+                            </h5>
+                            <p class="card-text">{% trans "Solutions to common problems and technical issues." %}</p>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="text-decoration-none">{% trans "Login problems" %}</a></li>
+                                <li><a href="#" class="text-decoration-none">{% trans "Audio not working" %}</a></li>
+                                <li><a href="#" class="text-decoration-none">{% trans "Browser compatibility" %}</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h4 class="mb-3">{% trans "Can't find what you're looking for?" %}</h4>
+                        <p class="mb-3">{% trans "Our support team is here to help you with any questions." %}</p>
+                        <a href="{% url 'frontend_web:contact' %}" class="btn btn-primary me-3">{% trans "Contact Support" %}</a>
+                        <a href="{% url 'frontend_web:bug_report' %}" class="btn btn-outline-primary">{% trans "Report a Bug" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
