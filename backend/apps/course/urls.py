@@ -28,7 +28,8 @@ app_name = 'course'
 router = DefaultRouter()
 router.register(r'test-recap', TestRecapViewSet, basename='test-recap')
 
-urlpatterns = [
+# API URLs
+api_urlpatterns = [
     path('units/', UnitAPIView.as_view(), name='unit-list'),
     path('lesson/', LessonAPIView.as_view(), name='lesson-list'),
     path('content-lesson/', ContentLessonViewSet.as_view({'get': 'list'}), name='content-lesson-list'),
@@ -66,3 +67,6 @@ urlpatterns = [
     # Include router URLs for TestRecap
     path('', include(router.urls)),
 ]
+
+# Main URL patterns (API only - web interface is handled in core/urls.py)
+urlpatterns = api_urlpatterns

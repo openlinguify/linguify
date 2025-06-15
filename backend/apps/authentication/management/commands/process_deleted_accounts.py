@@ -96,7 +96,7 @@ Your Linguify account is scheduled for deletion in 3 days.
 
 If you wish to keep your account, please log in and restore your account before {user.deletion_date.strftime('%Y-%m-%d %H:%M')}.
 
-To restore your account, visit: {settings.FRONTEND_URL}/account-recovery
+To restore your account, visit: {settings.BASE_URL}/account-recovery
 
 If you do nothing, your account will be permanently deleted on {user.deletion_date.strftime('%Y-%m-%d')}.
 

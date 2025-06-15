@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Simple - Interface d'apprentissage</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .success { color: green; font-size: 18px; }
+        .info { background: #e7f3ff; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .stats { background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1 class="success">✅ Interface d'apprentissage fonctionne !</h1>
+    
+    <div class="info">
+        <h3>Données disponibles :</h3>
+        <div class="stats">
+            <strong>Utilisateur :</strong> {{ user.username|default:"Non connecté" }}
+        </div>
+        <div class="stats">
+            <strong>Nombre d'unités :</strong> {{ total_units|default:0 }}
+        </div>
+        <div class="stats">
+            <strong>Langue cible :</strong> {{ target_language|default:"Non définie" }}
+        </div>
+        <div class="stats">
+            <strong>Niveau actuel :</strong> {{ current_level|default:"Non défini" }}
+        </div>
+    </div>
+    
+    <div class="info">
+        <h3>Unités par niveau :</h3>
+        {% if units_by_level %}
+            {% for level, units in units_by_level.items %}
+                <div class="stats">
+                    <strong>{{ level }} :</strong> {{ units|length }} unité{{ units|length|pluralize }}
+                    {% for unit in units|slice:":3" %}
+                        <br>&nbsp;&nbsp;- {{ unit.title_fr|default:unit.title_en }}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Aucune unité trouvée</p>
+        {% endif %}
+    </div>
+    
+    <div class="info">
+        <h3>Liens de navigation :</h3>
+        <ul>
+            <li><a href="{% url 'learning:learning-dashboard' %}">Dashboard d'apprentissage</a></li>
+            <li><a href="{% url 'learning:units-list' %}">Liste des unités</a></li>
+            <li><a href="{% url 'learning:lessons-list' %}">Liste des leçons</a></li>
+        </ul>
+    </div>
+    
+    <p><strong>✅ Configuration réussie !</strong> L'interface d'apprentissage Django est opérationnelle.</p>
+</body>
+</html>

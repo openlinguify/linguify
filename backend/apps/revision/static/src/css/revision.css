@@ -1,0 +1,664 @@
+/* apps/revision/static/src/css/revision.css */
+
+/* Variables CSS pour le thème revision */
+:root {
+    --revision-primary: #6366f1;
+    --revision-secondary: #8b5cf6;
+    --revision-success: #10b981;
+    --revision-warning: #f59e0b;
+    --revision-danger: #ef4444;
+    --revision-gray-50: #f9fafb;
+    --revision-gray-100: #f3f4f6;
+    --revision-gray-200: #e5e7eb;
+    --revision-gray-300: #d1d5db;
+    --revision-gray-400: #9ca3af;
+    --revision-gray-500: #6b7280;
+    --revision-gray-600: #4b5563;
+    --revision-gray-700: #374151;
+    --revision-gray-800: #1f2937;
+    --revision-gray-900: #111827;
+}
+
+/* Conteneur principal */
+.revision-app {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* En-tête */
+.revision-header {
+    margin-bottom: 30px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid var(--revision-gray-200);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-back {
+    background: var(--revision-gray-100);
+    border: 1px solid var(--revision-gray-300);
+    color: var(--revision-gray-700);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-back:hover {
+    background: var(--revision-gray-200);
+}
+
+.header-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--revision-gray-900);
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Boutons */
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: var(--revision-primary);
+    color: white;
+    border-color: var(--revision-primary);
+}
+
+.btn-primary:hover {
+    background: #4f46e5;
+}
+
+.btn-secondary {
+    background: var(--revision-gray-100);
+    color: var(--revision-gray-700);
+    border-color: var(--revision-gray-300);
+}
+
+.btn-secondary:hover {
+    background: var(--revision-gray-200);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--revision-primary);
+    border-color: var(--revision-primary);
+}
+
+.btn-outline:hover {
+    background: var(--revision-primary);
+    color: white;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.btn-action {
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.btn-action:hover {
+    background: var(--revision-gray-100);
+}
+
+.btn-action.btn-danger:hover {
+    background: var(--revision-danger);
+    color: white;
+}
+
+/* Barre de recherche */
+.search-bar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    border: 1px solid var(--revision-gray-200);
+}
+
+.search-input-container {
+    flex: 1;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--revision-gray-300);
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--revision-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.search-clear {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--revision-gray-400);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+/* États */
+.loading-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--revision-gray-200);
+    border-top: 4px solid var(--revision-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.error-message {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 30px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-message {
+    background: var(--revision-gray-50);
+    border: 2px dashed var(--revision-gray-300);
+    border-radius: 12px;
+    padding: 40px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Liste des decks */
+.deck-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.deck-card {
+    background: white;
+    border: 1px solid var(--revision-gray-200);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.deck-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    border-color: var(--revision-primary);
+}
+
+.deck-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.deck-card-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--revision-gray-900);
+    margin: 0;
+}
+
+.deck-card-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.deck-card:hover .deck-card-actions {
+    opacity: 1;
+}
+
+.deck-card-description p {
+    color: var(--revision-gray-600);
+    margin: 0 0 20px 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.deck-card-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 12px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    color: var(--revision-gray-500);
+    font-weight: 500;
+}
+
+.stat-value {
+    display: block;
+    color: var(--revision-gray-900);
+    font-weight: 600;
+    font-size: 16px;
+    margin-top: 4px;
+}
+
+.deck-progress {
+    margin-bottom: 15px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--revision-gray-200);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--revision-success), var(--revision-primary));
+    transition: width 0.3s ease;
+}
+
+.deck-card-meta {
+    padding-top: 15px;
+    border-top: 1px solid var(--revision-gray-100);
+}
+
+.deck-card-meta small {
+    color: var(--revision-gray-400);
+    font-size: 11px;
+    display: block;
+}
+
+/* États des decks */
+.deck-card.status-new {
+    border-left: 4px solid var(--revision-warning);
+}
+
+.deck-card.status-learning {
+    border-left: 4px solid var(--revision-primary);
+}
+
+.deck-card.status-good {
+    border-left: 4px solid var(--revision-secondary);
+}
+
+.deck-card.status-completed {
+    border-left: 4px solid var(--revision-success);
+}
+
+/* Vue deck */
+.deck-view {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.deck-info {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    border: 1px solid var(--revision-gray-200);
+}
+
+.deck-header h2 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    color: var(--revision-gray-900);
+}
+
+.deck-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    color: var(--revision-gray-600);
+}
+
+.deck-description {
+    margin: 15px 0 0;
+    color: var(--revision-gray-700);
+    line-height: 1.5;
+}
+
+.study-section, .cards-section {
+    margin-bottom: 30px;
+}
+
+.study-section h3, .cards-section h3 {
+    margin: 0 0 20px;
+    font-size: 20px;
+    color: var(--revision-gray-900);
+}
+
+/* Modes d'étude */
+.study-modes {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    border: 1px solid var(--revision-gray-200);
+}
+
+.progress-overview {
+    margin-bottom: 25px;
+    padding: 15px;
+    background: var(--revision-gray-50);
+    border-radius: 8px;
+}
+
+.progress-overview h4 {
+    margin: 0 0 10px;
+    color: var(--revision-gray-900);
+}
+
+.modes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.mode-card {
+    border: 1px solid var(--revision-gray-200);
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.mode-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-color: var(--revision-primary);
+}
+
+.mode-card.mode-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--revision-gray-50);
+}
+
+.mode-card.mode-recommended {
+    border-color: var(--revision-success);
+    background: #f0fdf4;
+}
+
+.mode-icon {
+    font-size: 32px;
+    margin-bottom: 15px;
+}
+
+.mode-title {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--revision-gray-900);
+}
+
+.mode-description {
+    margin: 0 0 15px;
+    font-size: 14px;
+    color: var(--revision-gray-600);
+    line-height: 1.4;
+}
+
+.mode-status {
+    font-size: 12px;
+    color: var(--revision-gray-500);
+}
+
+/* Liste des cartes */
+.revision-card-list {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    border: 1px solid var(--revision-gray-200);
+}
+
+.list-controls {
+    padding: 20px;
+    border-bottom: 1px solid var(--revision-gray-200);
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.filter-tab {
+    padding: 8px 16px;
+    border: 1px solid var(--revision-gray-300);
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.filter-tab:hover {
+    background: var(--revision-gray-50);
+}
+
+.filter-tab.active {
+    background: var(--revision-primary);
+    color: white;
+    border-color: var(--revision-primary);
+}
+
+.filter-count {
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* Table des cartes */
+.cards-table-container {
+    overflow: hidden;
+}
+
+.cards-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cards-table th {
+    background: var(--revision-gray-50);
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--revision-gray-700);
+    border-bottom: 1px solid var(--revision-gray-200);
+    font-size: 14px;
+}
+
+.cards-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--revision-gray-100);
+    vertical-align: middle;
+}
+
+.card-row {
+    transition: background-color 0.2s;
+}
+
+.card-row:hover {
+    background: var(--revision-gray-50);
+}
+
+.card-row.status-learned {
+    background: #f0fdf4;
+}
+
+.card-row.status-new {
+    background: #fffbeb;
+}
+
+.card-row.status-review {
+    background: #fef3f2;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-badge.status-learned {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.status-new {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.status-review {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.col-actions {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: var(--revision-gray-50);
+    border-top: 1px solid var(--revision-gray-200);
+}
+
+.page-info {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--revision-gray-700);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .revision-app {
+        padding: 15px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .search-bar {
+        flex-direction: column;
+    }
+    
+    .deck-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .cards-table-container {
+        overflow-x: auto;
+    }
+    
+    .modes-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .pagination {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

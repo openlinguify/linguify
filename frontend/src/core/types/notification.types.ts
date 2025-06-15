@@ -13,6 +13,7 @@ export enum NotificationType {
   ANNOUNCEMENT = 'announcement',
   STREAK = 'streak',
   INFO = 'info',
+  TERMS = 'terms',
 }
 
 /**

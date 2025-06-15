@@ -31,7 +31,7 @@ def remind_users_to_accept_terms():
             # Prepare email content
             context = {
                 'user': user,
-                'terms_url': f"{settings.FRONTEND_URL}/annexes/legal",
+                'terms_url': f"{settings.BASE_URL}/annexes/terms",
                 'app_name': "Linguify"
             }
             

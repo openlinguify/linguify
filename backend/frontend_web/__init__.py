@@ -1,0 +1,1 @@
+# Frontend web module for Linguify

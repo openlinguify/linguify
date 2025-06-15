@@ -293,7 +293,7 @@ Admin: http://localhost:8000/admin/jobs/jobapplication/{application.id}/change/
                 
                 <div class="footer">
                     <p>📧 Si vous avez des questions, n'hésitez pas à nous contacter à <a href="mailto:linguify.info@gmail.com">linguify.info@gmail.com</a></p>
-                    <p>🌐 Visitez notre site: <a href="http://localhost:3000">linguify.com</a></p>
+                    <p>🌐 Visitez notre site: <a href="https://www.openlinguify.com">openlinguify.com</a></p>
                 </div>
             </body>
             </html>
@@ -325,7 +325,7 @@ Cordialement,
 L'équipe Linguify
 
 📧 Questions? Contactez-nous: linguify.info@gmail.com
-🌐 Site web: http://localhost:3000
+🌐 Site web: https://www.openlinguify.com
             """
             
             confirmation_email = EmailMessage(

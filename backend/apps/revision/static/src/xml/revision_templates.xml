@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <!-- Template principal de l'application Revision -->
+    <t t-name="RevisionApp">
+        <div class="revision-app">
+            <!-- En-tête avec navigation -->
+            <div class="revision-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button t-if="!isMainView" 
+                                class="btn-back" 
+                                t-on-click="goBack">
+                            ← Retour
+                        </button>
+                        <h1 class="header-title" t-esc="pageTitle"/>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button t-if="isMainView" 
+                                class="btn btn-primary" 
+                                t-on-click="onCreateDeck">
+                            ➕ Nouveau deck
+                        </button>
+                        
+                        <button t-if="isDeckView" 
+                                class="btn btn-primary" 
+                                t-on-click="onCreateCard">
+                            ➕ Nouvelle carte
+                        </button>
+                        
+                        <button class="btn btn-secondary" 
+                                t-on-click="onRefresh">
+                            🔄 Actualiser
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenu principal -->
+            <div class="revision-content">
+                <!-- Vue principale: liste des decks -->
+                <div t-if="isMainView" class="main-view">
+                    <!-- Barre de recherche -->
+                    <div t-if="showSearchBar" class="search-bar">
+                        <div class="search-input-container">
+                            <input t-ref="searchInput"
+                                   type="text" 
+                                   class="search-input"
+                                   placeholder="Rechercher dans vos decks..."
+                                   t-att-value="state.searchQuery"
+                                   t-on-input="onSearchInput"/>
+                            <button t-if="state.searchQuery" 
+                                    class="search-clear" 
+                                    t-on-click="clearSearch">
+                                ✕
+                            </button>
+                        </div>
+                        
+                        <button class="btn btn-outline" 
+                                t-on-click="() => goToView('explore')">
+                            🌐 Explorer
+                        </button>
+                    </div>
+
+                    <!-- État de chargement -->
+                    <div t-if="state.isPageLoading" class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Chargement de vos flashcards...</p>
+                    </div>
+
+                    <!-- État d'erreur -->
+                    <div t-if="state.loadError" class="error-state">
+                        <div class="error-message">
+                            <h3>❌ Erreur</h3>
+                            <p t-esc="state.loadError"/>
+                            <button class="btn btn-primary" t-on-click="onRetry">
+                                Réessayer
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Liste des decks -->
+                    <div t-if="!state.isPageLoading and !state.loadError">
+                        <RevisionDeckList decks="state.filteredDecks"
+                                         onDeckSelect.bind="onDeckSelect"
+                                         onDeckDelete.bind="onDeleteDeck"
+                                         onDeckTogglePublic.bind="onToggleDeckPublic"/>
+                        
+                        <!-- Message si aucun deck -->
+                        <div t-if="!hasDecks" class="empty-state">
+                            <div class="empty-message">
+                                <h3>📚 Aucun deck trouvé</h3>
+                                <p t-if="state.searchQuery">
+                                    Aucun deck ne correspond à votre recherche "<strong t-esc="state.searchQuery"/>"
+                                </p>
+                                <p t-else="">
+                                    Vous n'avez pas encore de deck de flashcards. Créez-en un pour commencer !
+                                </p>
+                                <button class="btn btn-primary" t-on-click="onCreateDeck">
+                                    ➕ Créer mon premier deck
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vue d'un deck spécifique -->
+                <div t-if="isDeckView" class="deck-view">
+                    <div t-if="state.isPageLoading" class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Chargement du deck...</p>
+                    </div>
+
+                    <div t-if="state.selectedDeck and !state.isPageLoading" class="deck-content">
+                        <!-- Informations du deck -->
+                        <div class="deck-info">
+                            <div class="deck-header">
+                                <h2 t-esc="state.selectedDeck.name"/>
+                                <div class="deck-meta">
+                                    <span class="deck-visibility">
+                                        <t t-if="state.selectedDeck.is_public">🌐 Public</t>
+                                        <t t-else="">🔒 Privé</t>
+                                    </span>
+                                    <span class="deck-stats">
+                                        <t t-esc="deckStats.total"/> cartes
+                                        • <t t-esc="deckStats.learned"/> apprises
+                                        • <t t-esc="deckStats.toReview"/> à réviser
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <p t-if="state.selectedDeck.description" 
+                               class="deck-description" 
+                               t-esc="state.selectedDeck.description"/>
+                        </div>
+
+                        <!-- Modes d'étude -->
+                        <div t-if="deckStats.total > 0" class="study-section">
+                            <h3>🎯 Modes d'étude</h3>
+                            <RevisionStudyModes deckId="state.selectedDeck.id"
+                                              deckStats="deckStats"
+                                              onModeSelect.bind="onModeSelect"/>
+                        </div>
+
+                        <!-- Liste des cartes -->
+                        <div class="cards-section">
+                            <h3>🃏 Cartes du deck</h3>
+                            <RevisionCardList cards="state.selectedDeck.cards or []"
+                                            deckId="state.selectedDeck.id"
+                                            onCardUpdate.bind="onUpdateCard"
+                                            onCardDelete.bind="onDeleteCard"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vue d'exploration des decks publics -->
+                <div t-if="isExploreView" class="explore-view">
+                    <div class="explore-placeholder">
+                        <h3>🌐 Explorer les decks publics</h3>
+                        <p>Fonctionnalité en cours de développement...</p>
+                        <button class="btn btn-secondary" t-on-click="goBack">
+                            ← Retour à mes decks
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- Templates des composants -->
+    <t t-name="RevisionDeckList">
+        <div class="deck-list">
+            <div t-if="props.decks.length === 0" class="empty-deck-list">
+                <p>Aucun deck disponible</p>
+            </div>
+            
+            <div t-else="" class="deck-grid">
+                <div t-foreach="props.decks" 
+                     t-as="deck" 
+                     t-key="deck.id"
+                     class="deck-card"
+                     t-att-class="getDeckStatusClass(deck)"
+                     t-on-click="() => onDeckClick(deck)">
+                    
+                    <div class="deck-card-header">
+                        <h3 t-esc="deck.name"/>
+                        <div class="deck-card-actions">
+                            <t t-foreach="getAvailableActions(deck)" t-as="action" t-key="action.type">
+                                <button class="btn-action" 
+                                        t-att-class="action.class or ''"
+                                        t-on-click="action.handler"
+                                        t-att-title="action.title">
+                                    <t t-esc="action.icon"/>
+                                </button>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="deck-card-description">
+                        <p t-esc="deck.description or 'Aucune description'"/>
+                    </div>
+
+                    <div class="deck-card-stats">
+                        <div class="stat">
+                            <span class="stat-label">Cartes:</span>
+                            <span class="stat-value" t-esc="getDeckCardCount(deck)"/>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Progression:</span>
+                            <span class="stat-value"><t t-esc="getProgressPercentage(deck)"/>%</span>
+                        </div>
+                    </div>
+
+                    <div class="deck-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" 
+                                 t-att-style="'width: ' + getProgressPercentage(deck) + '%'"/>
+                        </div>
+                    </div>
+
+                    <div class="deck-card-meta">
+                        <small>Créé le <t t-esc="formatDate(deck.created_at)"/></small>
+                        <small t-if="getDeckOwnerInfo(deck)" t-esc="getDeckOwnerInfo(deck)"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="RevisionCardList">
+        <div class="revision-card-list">
+            <div class="list-controls">
+                <div class="filter-tabs">
+                    <button t-foreach="[['all', 'Toutes'], ['new', 'Nouvelles'], ['review', 'À réviser'], ['learned', 'Apprises']]"
+                            t-as="filter"
+                            t-key="filter[0]"
+                            class="filter-tab"
+                            t-att-class="state.filterType === filter[0] ? 'active' : ''"
+                            t-on-click="() => onFilterChange(filter[0])">
+                        <t t-esc="filter[1]"/>
+                        <span class="filter-count">(<t t-esc="getFilterCounts()[filter[0]]"/>)</span>
+                    </button>
+                </div>
+                <div class="search-controls">
+                    <input t-ref="searchInput"
+                           type="text"
+                           class="search-input"
+                           placeholder="Rechercher..."
+                           t-att-value="state.searchQuery"
+                           t-on-input="onSearchInput"/>
+                </div>
+            </div>
+
+            <div t-if="filteredAndSortedCards.length > 0" class="cards-table-container">
+                <table class="cards-table">
+                    <thead>
+                        <tr>
+                            <th>Recto</th>
+                            <th>Verso</th>
+                            <th>État</th>
+                            <th t-if="showEditControls">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="paginatedCards" 
+                            t-as="card" 
+                            t-key="card.id"
+                            class="card-row"
+                            t-att-class="getCardStatusClass(card)">
+                            
+                            <td t-esc="card.front_text"/>
+                            <td t-esc="card.back_text"/>
+                            <td>
+                                <span class="status-badge" t-att-class="getCardStatusClass(card)">
+                                    <t t-esc="getCardStatusText(card)"/>
+                                </span>
+                            </td>
+                            <td t-if="showEditControls" class="col-actions">
+                                <button class="btn-action" 
+                                        t-on-click="(ev) => onToggleLearned(card, ev)"
+                                        t-att-title="card.learned ? 'Marquer comme non apprise' : 'Marquer comme apprise'">
+                                    <t t-if="card.learned">❌</t>
+                                    <t t-else="">✅</t>
+                                </button>
+                                
+                                <button t-if="showDeleteButton"
+                                        class="btn-action btn-danger" 
+                                        t-on-click="(ev) => onDeleteCard(card, ev)"
+                                        title="Supprimer">
+                                    🗑️
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div t-if="totalPages > 1" class="pagination">
+                    <button class="btn btn-sm" 
+                            t-att-disabled="state.currentPage === 1"
+                            t-on-click="prevPage">
+                        ← Précédent
+                    </button>
+                    <span class="page-info">
+                        Page <t t-esc="state.currentPage"/> sur <t t-esc="totalPages"/>
+                    </span>
+                    <button class="btn btn-sm" 
+                            t-att-disabled="state.currentPage === totalPages"
+                            t-on-click="nextPage">
+                        Suivant →
+                    </button>
+                </div>
+            </div>
+
+            <div t-if="filteredAndSortedCards.length === 0" class="empty-cards">
+                <p>Aucune carte trouvée</p>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="RevisionStudyModes">
+        <div class="study-modes">
+            <div t-if="hasCards" class="progress-overview">
+                <h4>📊 Progression: <t t-esc="getProgressInfo().text"/></h4>
+                <div class="progress-bar" t-att-class="progressBarClass">
+                    <div class="progress-fill" 
+                         t-att-style="'width: ' + completionPercentage + '%'"/>
+                </div>
+            </div>
+
+            <div class="modes-grid">
+                <div t-foreach="studyModes" 
+                     t-as="mode" 
+                     t-key="mode.id"
+                     class="mode-card"
+                     t-att-class="getModeStatusClass(mode)"
+                     t-on-click="() => onSelectMode(mode)">
+                    
+                    <div class="mode-icon" t-esc="mode.icon"/>
+                    <div class="mode-content">
+                        <h4 class="mode-title" t-esc="mode.name"/>
+                        <p class="mode-description" t-esc="mode.description"/>
+                        <div class="mode-status">
+                            <small t-esc="getModeStatusText(mode)"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div t-if="!hasCards" class="no-cards-message">
+                <h4>🃏 Aucune carte disponible</h4>
+                <p>Ajoutez des cartes à ce deck pour pouvoir étudier.</p>
+            </div>
+        </div>
+    </t>
+</templates>

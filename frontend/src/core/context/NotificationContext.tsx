@@ -147,52 +147,99 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
   // Initialize notifications (load from storage or service)
   useEffect(() => {
-    try {
-      if (isAuthenticated && user) {
-        // Try to get token from user object
-        const token = (user as any).token || (user as any).access_token;
-        
-        if (token) {
-          // Initialize notification service with user token
-          notificationService.initialize(token);
-
-          // Set up listener for notifications from service
-          const serviceListener = (notification: Notification) => {
-            setNotifications(current => {
-              if (!current.some(n => n.id === notification.id)) {
-                return [notification, ...current];
-              }
-              return current;
+    const initializeNotifications = async () => {
+      try {
+        if (isAuthenticated && user) {
+          setIsLoading(true);
+          
+          // Import and use the notification API
+          const notificationApi = (await import('@/core/api/notificationApi')).default;
+          
+          try {
+            // Load notifications from backend
+            const backendNotifications = await notificationApi.getNotifications({ 
+              is_read: false,
+              page_size: 50 
             });
-          };
-
-          notificationService.addListener(serviceListener);
-
-          // Load notifications from service
-          const storedNotifications = notificationService.getNotifications();
-          setNotifications(storedNotifications);
-
-          return () => {
-            // Clean up listener on unmount
-            notificationService.removeListener(serviceListener);
-          };
+            
+            // Convert backend notifications to frontend format
+            const convertedNotifications: Notification[] = backendNotifications.map(n => ({
+              id: n.id,
+              type: n.type as any,
+              title: n.title,
+              message: n.message,
+              priority: n.priority as any,
+              data: n.data,
+              actions: [], // TODO: Add actions if backend supports them
+              isRead: n.is_read,
+              createdAt: n.created_at,
+              expiresAt: n.expires_at || undefined
+            }));
+            
+            setNotifications(convertedNotifications);
+            console.log('[NotificationContext] Loaded notifications from backend:', convertedNotifications.length);
+          } catch (error) {
+            console.error('[NotificationContext] Error loading from backend, falling back to local storage:', error);
+            // Fall back to local storage if API fails
+            loadNotifications();
+          }
+          
+          setIsLoading(false);
         } else {
-          // Fall back to local storage if no token
+          // Not authenticated, use local storage
           loadNotifications();
         }
-      } else {
-        // Not authenticated, use local storage
-        loadNotifications();
+
+        // Check browser notification permission
+        checkNotificationPermission();
+
+        // Cleanup expired notifications
+        cleanupExpiredNotifications();
+      } catch (error) {
+        console.error('[NotificationContext] Error initializing notifications:', error);
+        setIsLoading(false);
       }
-
-      // Check browser notification permission
-      checkNotificationPermission();
-
-      // Cleanup expired notifications
-      cleanupExpiredNotifications();
-    } catch (error) {
-      console.error('[NotificationContext] Error initializing notifications:', error);
+    };
+    
+    initializeNotifications();
+    
+    // Set up periodic refresh for authenticated users
+    let refreshInterval: NodeJS.Timeout | null = null;
+    
+    if (isAuthenticated && user) {
+      refreshInterval = setInterval(async () => {
+        try {
+          const notificationApi = (await import('@/core/api/notificationApi')).default;
+          const backendNotifications = await notificationApi.getNotifications({ 
+            is_read: false,
+            page_size: 50 
+          });
+          
+          const convertedNotifications: Notification[] = backendNotifications.map(n => ({
+            id: n.id,
+            type: n.type as any,
+            title: n.title,
+            message: n.message,
+            priority: n.priority as any,
+            data: n.data,
+            actions: [],
+            isRead: n.is_read,
+            createdAt: n.created_at,
+            expiresAt: n.expires_at || undefined
+          }));
+          
+          setNotifications(convertedNotifications);
+        } catch (error) {
+          console.error('[NotificationContext] Error refreshing notifications:', error);
+        }
+      }, 30000); // Refresh every 30 seconds
     }
+    
+    return () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+    };
   }, [isAuthenticated, user, cleanupExpiredNotifications]);
 
   // Listen for notification creation events
@@ -361,11 +408,22 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Mark a notification as read
-  const markAsRead = (id: string) => {
-    // Use notification service if authenticated
-    if (isAuthenticated && user?.token) {
-      notificationService.markAsRead(id);
-      // Service will handle state update through listener
+  const markAsRead = async (id: string) => {
+    // Use backend API if authenticated
+    if (isAuthenticated && user) {
+      try {
+        const notificationApi = (await import('@/core/api/notificationApi')).default;
+        await notificationApi.markAsRead(id);
+        
+        // Update local state
+        const updatedNotifications = notifications.map(n =>
+          n.id === id ? { ...n, isRead: true } : n
+        );
+        setNotifications(updatedNotifications);
+        saveNotifications(updatedNotifications);
+      } catch (error) {
+        console.error('[NotificationContext] Error marking notification as read:', error);
+      }
       return;
     }
     
@@ -379,11 +437,20 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Mark all notifications as read
-  const markAllAsRead = () => {
-    // Use notification service if authenticated
-    if (isAuthenticated && user?.token) {
-      notificationService.markAllAsRead();
-      // Service will handle state update through listener
+  const markAllAsRead = async () => {
+    // Use backend API if authenticated
+    if (isAuthenticated && user) {
+      try {
+        const notificationApi = (await import('@/core/api/notificationApi')).default;
+        await notificationApi.markAllAsRead();
+        
+        // Update local state
+        const updatedNotifications = notifications.map(n => ({ ...n, isRead: true }));
+        setNotifications(updatedNotifications);
+        saveNotifications(updatedNotifications);
+      } catch (error) {
+        console.error('[NotificationContext] Error marking all notifications as read:', error);
+      }
       return;
     }
     
