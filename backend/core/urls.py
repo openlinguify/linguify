@@ -13,6 +13,11 @@ from drf_spectacular.views import (
     )
 from apps.authentication.views_terms import accept_terms, terms_status
 from test_settings import test_settings
+from django.contrib.sitemaps.views import sitemap, index as sitemap_index
+try:
+    from .advanced_sitemaps import sitemaps
+except ImportError:
+    from .sitemaps import sitemaps
 
 
 def redirect_to_admin(request):
@@ -50,4 +55,9 @@ urlpatterns = [
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('api/v1/quizz/', include('apps.quizz.urls', namespace='quizz')),
+    
+    # Sitemap URLs
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('sitemap-<section>.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('sitemap-index.xml', sitemap_index, {'sitemaps': sitemaps}, name='sitemap_index'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
