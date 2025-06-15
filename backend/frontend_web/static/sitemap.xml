@@ -6,7 +6,7 @@
   
   <!-- Page d'accueil -->
   <url>
-    <loc>https://linguify.com/</loc>
+    <loc>https://openlinguify.com/</loc>
     <lastmod>2024-12-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -14,14 +14,14 @@
   
   <!-- Pages d'authentification -->
   <url>
-    <loc>https://linguify.com/auth/login/</loc>
+    <loc>https://openlinguify.com/auth/login/</loc>
     <lastmod>2024-12-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://linguify.com/auth/register/</loc>
+    <loc>https://openlinguify.com/auth/register/</loc>
     <lastmod>2024-12-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -30,21 +30,21 @@
   <!-- Pages informatives (à ajouter selon vos besoins) -->
   <!-- 
   <url>
-    <loc>https://linguify.com/features/</loc>
+    <loc>https://openlinguify.com/features/</loc>
     <lastmod>2024-12-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://linguify.com/pricing/</loc>
+    <loc>https://openlinguify.com/pricing/</loc>
     <lastmod>2024-12-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://linguify.com/contact/</loc>
+    <loc>https://openlinguify.com/contact/</loc>
     <lastmod>2024-12-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
