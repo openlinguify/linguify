@@ -217,13 +217,30 @@
                             </div>
                             
                             <div class="mb-3">
+                                <label for="native_language" class="form-label">Votre langue native</label>
+                                <select class="form-control" id="native_language" name="native_language" required>
+                                    <option value="">Choisir votre langue native</option>
+                                    <option value="EN">Anglais</option>
+                                    <option value="ES">Espagnol</option>
+                                    <option value="FR">Français</option>
+                                    <option value="NL">Néerlandais</option>
+                                    <option value="DE">Allemand</option>
+                                    <option value="IT">Italien</option>
+                                    <option value="PT">Portugais</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
                                 <label for="target_language" class="form-label">Langue que vous souhaitez apprendre</label>
                                 <select class="form-control" id="target_language" name="target_language" required>
                                     <option value="">Choisir une langue</option>
-                                    <option value="en">Anglais</option>
-                                    <option value="es">Espagnol</option>
-                                    <option value="fr">Français</option>
-                                    <option value="nl">Néerlandais</option>
+                                    <option value="EN">Anglais</option>
+                                    <option value="ES">Espagnol</option>
+                                    <option value="FR">Français</option>
+                                    <option value="NL">Néerlandais</option>
+                                    <option value="DE">Allemand</option>
+                                    <option value="IT">Italien</option>
+                                    <option value="PT">Portugais</option>
                                 </select>
                             </div>
                             
@@ -281,7 +298,7 @@
     
     <script>
         // Validation du mot de passe en temps réel
-        document.getElementById('password1').addEventListener('input', function() {
+        document.getElementById('id_password1').addEventListener('input', function() {
             const password = this.value;
             const strengthBar = document.getElementById('strengthBar');
             const strengthText = document.getElementById('strengthText');
@@ -328,8 +345,8 @@
         });
         
         // Vérification de la confirmation du mot de passe
-        document.getElementById('password2').addEventListener('input', function() {
-            const password1 = document.getElementById('password1').value;
+        document.getElementById('id_password2').addEventListener('input', function() {
+            const password1 = document.getElementById('id_password1').value;
             const password2 = this.value;
             
             if (password2 && password1 !== password2) {

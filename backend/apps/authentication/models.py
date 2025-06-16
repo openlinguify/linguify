@@ -226,6 +226,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         app_label = 'authentication'
     
+    id = models.AutoField(primary_key=True)
     public_id = models.UUIDField(db_index=True, default=uuid4, editable=False, unique=True)
     username = models.CharField(db_index=True, max_length=255, unique=True, blank=False, null=False)
     first_name = models.CharField(max_length=255, blank=True)
