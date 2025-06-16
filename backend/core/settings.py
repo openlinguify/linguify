@@ -96,8 +96,10 @@ INSTALLED_APPS = [
     'app_manager',
     'apps.quizz',
     
-    # Frontend web
-    'frontend_web',
+    # Web interfaces
+    'public_web',
+    'saas_web',
+    'frontend_web',  # À supprimer après migration complète
     
     # Django REST framework modules
     'rest_framework',
