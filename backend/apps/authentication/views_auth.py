@@ -3,7 +3,8 @@ Django template-based authentication views
 """
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm
+from .forms import CustomUserCreationForm
 from django.contrib import messages
 from django.views.generic import FormView
 from django.urls import reverse_lazy
@@ -46,7 +47,7 @@ class LoginView(FormView):
 class RegisterView(FormView):
     """Register view using Django templates"""
     template_name = 'authentication/register.html'
-    form_class = UserCreationForm
+    form_class = CustomUserCreationForm
     success_url = reverse_lazy('auth:login')
     
     def dispatch(self, request, *args, **kwargs):

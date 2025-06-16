@@ -1,15 +1,15 @@
 {% extends 'public_web/public_base.html' %}
 {% load static %}
 
-{% block title %}Open Linguify - Plateforme open source d'outils pour l'éducation{% endblock %}
+{% block title %}Open Linguify - Plateforme open source d'applications éducatives{% endblock %}
 
-{% block meta_description %}Open Linguify vous aide à apprendre les langues grâce à l'intelligence artificielle. Cours personnalisés, exercices interactifs et suivi de progression.{% endblock %}
+{% block meta_description %}Open Linguify : plateforme open source d'applications éducatives. Système de mémorisation, flashcards, prise de notes, quiz, chat collaboratif, classrooms virtuelles et plus. Révolutionnez votre apprentissage.{% endblock %}
 
-{% block meta_keywords %}open linguify, apprentissage langues, IA, intelligence artificielle, cours personnalisés, flashcards, notebook, open source{% endblock %}
+{% block meta_keywords %}open linguify, applications éducatives, flashcards, mémorisation, prise de notes, quiz, chat collaboratif, classrooms, open source, éducation, apprentissage{% endblock %}
 
-{% block og_title %}Open Linguify - Plateforme open source pour apprendre les langues{% endblock %}
+{% block og_title %}Open Linguify - Plateforme open source d'applications éducatives{% endblock %}
 
-{% block og_description %}Open Linguify vous aide à apprendre les langues grâce à l'intelligence artificielle. Cours personnalisés, exercices interactifs et suivi de progression.{% endblock %}
+{% block og_description %}Découvrez une suite complète d'applications éducatives open source : mémorisation intelligente, flashcards, prise de notes, quiz interactifs, chat collaboratif, classrooms virtuelles et bien plus.{% endblock %}
 
 {% block extra_head %}
 <!-- PWA Manifest -->
@@ -721,11 +721,12 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 hero-content">
                     <h1 class="hero-title animate-on-scroll">
-                        Apprenez une nouvelle langue à votre rythme !
+
+                        Open Source Education Apps
                     </h1>
                     <p class="hero-subtitle animate-on-scroll delay-1">
-                        Tout ce dont vous avez besoin pour apprendre une langue étrangère, 
-                        à votre rythme et où que vous soyez.
+                        Une suite complète d'applications éducatives open source : mémorisation, 
+                        flashcards, prise de notes, quiz, chat collaboratif et bien plus.
                     </p>
                     
                     <div class="d-flex gap-3 flex-wrap animate-on-scroll delay-2">
@@ -750,46 +751,10 @@
                         {% endif %}
                     </div>
                 </div>
-                
-                <div class="col-lg-6 text-center animate-on-scroll delay-3">
-                    <div class="position-relative">
-                        <div class="bg-white p-1 rounded-4 shadow-lg">
-                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height: 300px;">
-                                <div class="text-center text-muted">
-                                    <i class="fas fa-play-circle fa-4x mb-3 opacity-50"></i>
-                                    <p>Aperçu de l'application</p>
-                                    <small>(Démonstration interactive)</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
 
-    <!-- Language Selector -->
-    <section class="language-selector">
-        <div class="container">
-            <div class="text-center animate-on-scroll">
-                <h2 class="h3 mb-4">Quelle langue souhaitez-vous apprendre ?</h2>
-                <div class="d-flex flex-wrap justify-content-center gap-3" id="languageSelector">
-                    <button class="language-btn active" data-lang="spanish">
-                        🇪🇸 <span>Español</span>
-                    </button>
-                    <button class="language-btn" data-lang="english">
-                        🇬🇧 <span>English</span>
-                    </button>
-                    <button class="language-btn" data-lang="french">
-                        🇫🇷 <span>Français</span>
-                    </button>
-                    <button class="language-btn" data-lang="dutch">
-                        🇳🇱 <span>Nederlands</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Stats Section -->
     <section class="stats-section">
@@ -797,26 +762,26 @@
             <div class="row g-4">
                 <div class="col-6 col-md-3 animate-on-scroll">
                     <div class="stat-card">
-                        <span class="stat-number">4</span>
-                        <div class="stat-label">Langues disponibles</div>
+                        <span class="stat-number">5</span>
+                        <div class="stat-label">Applications éducatives</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3 animate-on-scroll delay-1">
                     <div class="stat-card">
-                        <span class="stat-number">100+</span>
-                        <div class="stat-label">Unités d'apprentissage</div>
+                        <span class="stat-number">1000+</span>
+                        <div class="stat-label">Flashcards créées</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3 animate-on-scroll delay-2">
                     <div class="stat-card">
                         <span class="stat-number">500+</span>
-                        <div class="stat-label">Leçons interactives</div>
+                        <div class="stat-label">Quiz générés</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3 animate-on-scroll delay-3">
                     <div class="stat-card">
-                        <span class="stat-number">10k+</span>
-                        <div class="stat-label">Mots et expressions</div>
+                        <span class="stat-number">100%</span>
+                        <div class="stat-label">Open Source</div>
                     </div>
                 </div>
             </div>
@@ -827,58 +792,70 @@
     <section id="features" class="features-section">
         <div class="container">
             <div class="text-center mb-5 animate-on-scroll">
-                <h2 class="display-5 fw-bold mb-4">Pourquoi choisir Linguify ?</h2>
+                <h2 class="display-5 fw-bold mb-4">Nos Applications Éducatives</h2>
                 <p class="lead text-muted">
-                    Notre plateforme a été conçue par des experts en linguistique 
-                    et en pédagogie pour maximiser votre progression.
+                    Découvrez notre suite de 5 applications conçues pour transformer
+                    votre expérience d'apprentissage. Choisissez-en une gratuitement ou accédez à toutes avec Premium.
                 </p>
             </div>
             
             <div class="row g-4">
-                <div class="col-lg-3 col-md-6 animate-on-scroll">
+                <div class="col-lg-4 col-md-6 animate-on-scroll">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-book-open"></i>
                         </div>
-                        <h3 class="feature-title">Apprentissage Interactif</h3>
+                        <h3 class="feature-title">Courses</h3>
                         <p class="feature-description">
-                            Modules d'apprentissage interactifs adaptés à votre rythme et à votre niveau.
+                            Cours structurés avec leçons progressives, exercices interactifs et évaluations personnalisées.
                         </p>
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-md-6 animate-on-scroll delay-1">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-1">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-brain"></i>
                         </div>
-                        <h3 class="feature-title">Flashcards Intelligentes</h3>
+                        <h3 class="feature-title">Revision</h3>
                         <p class="feature-description">
-                            Outils de mémorisation efficaces pour une rétention rapide du vocabulaire.
+                            Système de révision espacée avec flashcards intelligentes pour une mémorisation optimale.
                         </p>
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-md-6 animate-on-scroll delay-2">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-2">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-notebook"></i>
                         </div>
-                        <h3 class="feature-title">Notebook Centralisé</h3>
+                        <h3 class="feature-title">Notebook</h3>
                         <p class="feature-description">
                             Prise de notes centralisée avec organisation intelligente et recherche avancée.
                         </p>
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-md-6 animate-on-scroll delay-3">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-3">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-chart-line"></i>
+                            <i class="fas fa-question-circle"></i>
                         </div>
-                        <h3 class="feature-title">Suivi de Progression</h3>
+                        <h3 class="feature-title">Quiz</h3>
                         <p class="feature-description">
-                            Visualisez vos progrès et définissez des objectifs réalisables avec des graphiques détaillés.
+                            Système de quiz adaptatif pour tester vos connaissances et identifier vos points faibles.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3 class="feature-title">Language AI</h3>
+                        <p class="feature-description">
+                            Assistant IA pour conversations naturelles et corrections intelligentes en temps réel.
                         </p>
                     </div>
                 </div>
@@ -943,84 +920,6 @@
         </div>
     </section>
 
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="testimonials-section">
-        <div class="container">
-            <div class="text-center mb-5 animate-on-scroll">
-                <h2 class="display-5 fw-bold mb-4">Ce que nos utilisateurs disent</h2>
-                <p class="lead text-muted">
-                    Rejoignez des milliers d'apprenants satisfaits qui ont transformé 
-                    leur approche des langues.
-                </p>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-md-4 animate-on-scroll">
-                    <div class="testimonial-card">
-                        <div class="testimonial-avatar">L</div>
-                        <div class="star-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="testimonial-text">
-                            "J'ai toujours eu du mal à apprendre une nouvelle langue, mais Linguify 
-                            a rendu le processus tellement plus facile et amusant."
-                        </p>
-                        <div>
-                            <strong>Louis</strong>
-                            <div class="text-muted small">Customer Service Manager</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4 animate-on-scroll delay-1">
-                    <div class="testimonial-card">
-                        <div class="testimonial-avatar">V</div>
-                        <div class="star-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="testimonial-text">
-                            "J'ai eu beaucoup de mal à trouver une méthode d'apprentissage qui me convienne, 
-                            mais Linguify a vraiment répondu à mes attentes."
-                        </p>
-                        <div>
-                            <strong>Victor</strong>
-                            <div class="text-muted small">Project Director</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4 animate-on-scroll delay-2">
-                    <div class="testimonial-card">
-                        <div class="testimonial-avatar">C</div>
-                        <div class="star-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="testimonial-text">
-                            "Grâce à Linguify, j'ai pu communiquer avec les locaux lors de mon voyage 
-                            à travers l'Espagne. Une expérience incroyable !"
-                        </p>
-                        <div>
-                            <strong>Camille</strong>
-                            <div class="text-muted small">Risk and Strategic Analyst</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Pricing Section -->
     <section id="pricing" class="pricing-section">
         <div class="container">
@@ -1031,7 +930,7 @@
                 </p>
             </div>
             
-            <div class="row g-4">
+            <div class="row g-4 justify-content-center">
                 <div class="col-md-4 animate-on-scroll">
                     <div class="pricing-card">
                         <h3 class="h4 mb-2">Gratuit</h3>
@@ -1039,24 +938,24 @@
                             0€
                             <span class="price-period">pour toujours</span>
                         </div>
-                        <p class="text-muted mb-4">Parfait pour débuter et tester l'application</p>
+                        <p class="text-muted mb-4">Parfait pour découvrir la plateforme</p>
                         
                         <ul class="feature-list mb-4">
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>1 langue au choix</span>
+                                <span>Accès à 1 application au choix</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Accès aux leçons de base</span>
+                                <span>Utilisation complète de l'app choisie</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>5 minutes de chat par jour</span>
+                                <span>Mises à jour gratuites</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Révisions limitées</span>
+                                <span>Support communautaire</span>
                             </li>
                         </ul>
                         
@@ -1071,31 +970,31 @@
                         <div class="popular-badge">Le plus populaire</div>
                         <h3 class="h4 mb-2">Premium</h3>
                         <div class="price-display">
-                            9,99€
+                            19,99€
                             <span class="price-period">par mois</span>
                         </div>
-                        <p class="text-muted mb-4">Notre formule la plus populaire pour progresser</p>
+                        <p class="text-muted mb-4">Accès complet à toutes les applications</p>
                         
                         <ul class="feature-list mb-4">
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Toutes les langues accessibles</span>
+                                <span>Accès à toutes les applications</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Leçons avancées et spécialisées</span>
+                                <span>Courses : leçons structurées</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Chat illimité avec l'IA</span>
+                                <span>Revision : flashcards illimitées</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Système complet de révision</span>
+                                <span>Notebook : notes illimitées</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Coaching hebdomadaire</span>
+                                <span>Quiz & Language AI inclus</span>
                             </li>
                         </ul>
                         
@@ -1105,42 +1004,6 @@
                     </div>
                 </div>
                 
-                <div class="col-md-4 animate-on-scroll delay-2">
-                    <div class="pricing-card">
-                        <h3 class="h4 mb-2">Entreprise</h3>
-                        <div class="price-display">
-                            Sur mesure
-                        </div>
-                        <p class="text-muted mb-4">Solution complète pour les équipes</p>
-                        
-                        <ul class="feature-list mb-4">
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>Formations personnalisées</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>Tableau de bord d'entreprise</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>Suivi des progrès de l'équipe</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>Intégration LMS</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>Support dédié</span>
-                            </li>
-                        </ul>
-                        
-                        <a href="#contact" class="btn btn-outline-primary w-100">
-                            Contacter les ventes
-                        </a>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
@@ -1150,11 +1013,11 @@
         <div class="cta-content">
             <div class="container text-center">
                 <h2 class="display-5 fw-bold mb-4 animate-on-scroll">
-                    Prêt à commencer votre voyage linguistique ?
+                    Prêt à révolutionner votre apprentissage ?
                 </h2>
                 <p class="lead mb-5 animate-on-scroll delay-1" style="color: #e0e7ff;">
-                    Rejoignez notre communauté d'apprenants et commencez à maîtriser 
-                    une nouvelle langue dès aujourd'hui.
+                    Rejoignez notre communauté et accédez à une suite complète 
+                    d'applications éducatives open source.
                 </p>
                 <div class="animate-on-scroll delay-2">
                     {% if not user.is_authenticated %}

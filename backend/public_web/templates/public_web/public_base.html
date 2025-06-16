@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Open Linguify - Plateforme open source d'outils éducatifs : flashcards, quiz, révision, apprentissage collaboratif{% endblock %}</title>
+    <title>{% block title %}Open Linguify - Plateforme open source d'applications éducatives{% endblock %}</title>
 
     <!-- SEO Meta Tags -->
     <meta name="description"
-        content="{% block meta_description %}Open Linguify est une plateforme open source dédiée à l'éducation, proposant des outils pour apprendre, réviser et mémoriser efficacement grâce aux flashcards, quiz, notebooks et fonctionnalités collaboratives.{% endblock %}">
+        content="{% block meta_description %}Open Linguify est une plateforme open source d'applications éducatives : système de mémorisation, flashcards, prise de notes, quiz, chat collaboratif, classrooms et bien plus. Découvrez nos outils pour révolutionner l'apprentissage.{% endblock %}">
 
 
     <meta name="keywords" content="{% block meta_keywords %}
@@ -40,7 +40,7 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
 
     <!-- Open Graph -->
     <meta property="og:title" content="{% block og_title %}Open Linguify - Plateforme open source pour l’éducation moderne{% endblock %}">
-<meta property="og:description" content="{% block og_description %}Accédez à des outils intelligents pour apprendre, réviser, créer des flashcards, des quiz, et collaborer avec d'autres apprenants. 100 % open source et gratuit.{% endblock %}">
+<meta property="og:description" content="{% block og_description %}Découvrez une suite complète d'applications éducatives open source : mémorisation intelligente, flashcards, prise de notes, quiz interactifs, chat collaboratif, classrooms virtuelles et bien plus. Révolutionnez votre façon d'apprendre.{% endblock %}">
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
@@ -60,7 +60,8 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
     {% block extra_css %}{% endblock %}
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/favicon.png' %}">
 
     <style>
         :root {
