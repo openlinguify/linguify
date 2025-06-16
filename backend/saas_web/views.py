@@ -182,17 +182,17 @@ class AppToggleAPI(View):
             app = get_object_or_404(App, id=app_id, is_enabled=True)
             user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
             
-            # Vérifier si l'app est déjà activée
+            # Vérifier si l'app est déjà installée
             if user_settings.enabled_apps.filter(id=app_id).exists():
-                # Désactiver l'app
+                # Désinstaller l'app
                 user_settings.enabled_apps.remove(app)
                 is_enabled = False
-                message = f"{app.display_name} a été désactivée"
+                message = f"{app.display_name} a été désinstallée avec succès"
             else:
-                # Activer l'app
+                # Installer l'app
                 user_settings.enabled_apps.add(app)
                 is_enabled = True
-                message = f"{app.display_name} a été activée"
+                message = f"{app.display_name} a été installée avec succès"
             
             return JsonResponse({
                 'success': True,
