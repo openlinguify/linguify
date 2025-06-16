@@ -24,4 +24,8 @@ urlpatterns = [
     path('apps/notebook/', views.AppNotebookView.as_view(), name='app_notebook'),
     path('apps/quizz/', views.AppQuizzView.as_view(), name='app_quizz'),
     path('apps/language-ai/', views.AppLanguageAIView.as_view(), name='app_language_ai'),
+    
+    # SEO Files
+    path('robots.txt', views.RobotsTxtView.as_view(), name='robots_txt'),
+    path('sitemap.xml', views.SitemapXmlView.as_view(), name='sitemap_xml'),
 ]
