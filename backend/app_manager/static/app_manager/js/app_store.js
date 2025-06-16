@@ -154,6 +154,65 @@ class AppStore {
 
         const card = toggle.closest('.app-card');
         
+        // Si on désinstalle, montrer la modal de confirmation
+        if (!toggle.checked && this.userSettings.includes(appCode)) {
+            this.showUninstallModal(app, appCode, toggle, card);
+            return;
+        }
+        
+        // Sinon, installer directement
+        this.performToggle(appCode, toggle, card, toggle.checked);
+    }
+
+    showUninstallModal(app, appCode, toggle, card) {
+        // Remettre le toggle en position "on" temporairement
+        toggle.checked = true;
+        
+        // Configurer la modal
+        const modal = document.getElementById('uninstallModal');
+        const modalAppName = document.getElementById('modalAppName');
+        const modalAppIcon = document.getElementById('modalAppIcon');
+        const confirmButton = document.getElementById('confirmUninstall');
+        
+        // Mettre à jour le contenu de la modal
+        modalAppName.textContent = app.display_name;
+        const iconMapping = this.getIconMapping();
+        const icon = iconMapping[app.manifest_data?.frontend_components?.icon] || 'bi-app';
+        modalAppIcon.innerHTML = `<i class="bi ${icon}"></i>`;
+        
+        // Couleur de l'icône
+        const colorMapping = this.getColorMapping();
+        const color = colorMapping[app.display_name.toLowerCase()] || 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
+        modalAppIcon.style.background = color;
+        
+        // Gérer la confirmation
+        const handleConfirm = () => {
+            const bootstrapModal = bootstrap.Modal.getInstance(modal);
+            bootstrapModal.hide();
+            this.performToggle(appCode, toggle, card, false);
+            confirmButton.removeEventListener('click', handleConfirm);
+        };
+        
+        // Gérer l'annulation
+        const handleCancel = () => {
+            toggle.checked = true; // Remettre en position "installé"
+            confirmButton.removeEventListener('click', handleConfirm);
+        };
+        
+        confirmButton.addEventListener('click', handleConfirm);
+        modal.addEventListener('hidden.bs.modal', handleCancel, { once: true });
+        
+        // Montrer la modal
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+    }
+
+    async performToggle(appCode, toggle, card, isInstalling) {
+        if (this.isLoading) return;
+        
+        const app = this.apps.find(a => a.code === appCode);
+        if (!app) return;
+        
         // Show loading
         this.showLoading(card);
         this.isLoading = true;
@@ -167,15 +226,18 @@ class AppStore {
                 },
                 body: JSON.stringify({
                     app_code: appCode,
-                    enabled: toggle.checked
+                    enabled: isInstalling
                 })
             });
 
             const data = await response.json();
             
             if (data.success) {
+                // Update toggle state
+                toggle.checked = isInstalling;
+                
                 // Update user settings
-                if (toggle.checked) {
+                if (isInstalling) {
                     if (!this.userSettings.includes(appCode)) {
                         this.userSettings.push(appCode);
                     }
@@ -185,11 +247,11 @@ class AppStore {
 
                 // Update status text
                 const statusText = card.querySelector('.install-status');
-                statusText.textContent = toggle.checked ? 'Installé' : 'Non installé';
-                statusText.classList.toggle('installed', toggle.checked);
+                statusText.textContent = isInstalling ? 'Installée' : 'Non installée';
+                statusText.classList.toggle('installed', isInstalling);
                 
                 // Update card behavior
-                if (toggle.checked && app.manifest_data?.technical_info?.web_url) {
+                if (isInstalling && app.manifest_data?.technical_info?.web_url) {
                     card.style.cursor = 'pointer';
                     card.onclick = (e) => {
                         if (!e.target.closest('.install-toggle')) {
@@ -201,20 +263,23 @@ class AppStore {
                     card.onclick = null;
                 }
                 
-                // Show success message
-                this.showToast(toggle.checked ? 
-                    `${app.display_name} a été installé avec succès` : 
-                    `${app.display_name} a été désinstallé`, 
-                    'success'
-                );
+                // Show success message with data retention info for uninstall
+                let message;
+                if (isInstalling) {
+                    message = `${app.display_name} a été installée avec succès`;
+                } else {
+                    message = `${app.display_name} a été désinstallée. Vos données seront conservées 30 jours.`;
+                }
+                
+                this.showToast(message, 'success');
             } else {
                 // Revert toggle on error
-                toggle.checked = !toggle.checked;
+                toggle.checked = !isInstalling;
                 this.showToast(data.message || 'Une erreur est survenue', 'error');
             }
         } catch (error) {
             console.error('Erreur lors du toggle de l\'app:', error);
-            toggle.checked = !toggle.checked;
+            toggle.checked = !isInstalling;
             this.showToast('Erreur de connexion', 'error');
         } finally {
             this.hideLoading(card);

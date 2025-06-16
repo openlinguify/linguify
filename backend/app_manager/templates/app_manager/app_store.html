@@ -1,0 +1,507 @@
+{% extends 'saas_web/base.html' %}
+{% load static %}
+
+{% block title %}App Store - Open Linguify{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app_manager/css/app_store.css' %}">
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+
+
+<!-- App Store Container -->
+<div class="app-store-container">
+    <!-- Sidebar -->
+    <aside class="app-store-sidebar">
+        <div class="category-list">
+            <h6 class="text-muted text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 600;">Catégories</h6>
+            
+            <button class="category-item active" data-category="all">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-grid-3x3-gap category-icon"></i>
+                    <span>Toutes les apps</span>
+                </div>
+                <span class="category-count" id="count-all">{{ apps|length }}</span>
+            </button>
+            
+            <button class="category-item" data-category="learning">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-book category-icon"></i>
+                    <span>Apprentissage</span>
+                </div>
+                <span class="category-count" id="count-learning">3</span>
+            </button>
+            
+            <button class="category-item" data-category="productivity">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-journal-text category-icon"></i>
+                    <span>Productivité</span>
+                </div>
+                <span class="category-count" id="count-productivity">2</span>
+            </button>
+            
+            <button class="category-item" data-category="ai">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-robot category-icon"></i>
+                    <span>Intelligence IA</span>
+                </div>
+                <span class="category-count" id="count-ai">1</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="app-store-main">
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Rechercher une application..." id="searchInput">
+        </div>
+
+        <!-- Apps Grid -->
+        <div class="apps-grid" id="appsGrid">
+            {% for app in apps %}
+            <div class="app-card" data-category="{{ app.category|default:'other' }}" data-app-id="{{ app.id }}">
+                <!-- App Header -->
+                <div class="app-header">
+                    <div class="app-icon" style="background: {{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}">
+                        <i class="bi {{ app.icon|default:'bi-app' }}"></i>
+                    </div>
+                    <div class="app-info">
+                        <h3 class="app-title">{{ app.display_name }}</h3>
+                        <span class="app-category">{{ app.category|title|default:'Application' }}</span>
+                    </div>
+                    <div class="install-toggle">
+                        <input type="checkbox" id="toggle-{{ app.id }}" 
+                               {% if app.id in enabled_app_ids %}checked{% endif %}
+                               data-app-id="{{ app.id }}">
+                        <label for="toggle-{{ app.id }}" class="install-toggle-slider"></label>
+                    </div>
+                </div>
+
+                <!-- App Description -->
+                <p class="app-description">{{ app.description|default:'Description de l\'application.' }}</p>
+
+                <!-- App Footer -->
+                <div class="app-footer">
+                    <div class="install-status {% if app.id in enabled_app_ids %}installed{% endif %}">
+                        {% if app.id in enabled_app_ids %}
+                            <i class="bi bi-check-circle me-1"></i>Installée
+                        {% else %}
+                            <i class="bi bi-download me-1"></i>Non installée
+                        {% endif %}
+                    </div>
+                    {% if app.id in enabled_app_ids %}
+                    <a href="{{ app.route_path }}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>Ouvrir
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Loading Overlay -->
+                <div class="loading-overlay" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-app-indicator"></i>
+                <h5 class="mb-2">Aucune application disponible</h5>
+                <p>Les applications seront bientôt disponibles.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Empty State (pour les recherches) -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="bi bi-search"></i>
+            <h5 class="mb-2">Aucune application trouvée</h5>
+            <p>Essayez avec d'autres mots-clés</p>
+        </div>
+    </main>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container"></div>
+
+<!-- Confirmation Modal for Uninstall -->
+<div class="modal fade" id="uninstallModal" tabindex="-1" aria-labelledby="uninstallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title" id="uninstallModalLabel">
+                    <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                    Désinstaller l'application
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <div class="app-icon-large mb-3" id="modalAppIcon">
+                        <i class="bi bi-app"></i>
+                    </div>
+                    <h6 class="fw-bold mb-3" id="modalAppName">Nom de l'application</h6>
+                </div>
+                
+                <div class="alert alert-info border-0" style="background: #f0f9ff; color: #0369a1;">
+                    <div class="d-flex">
+                        <i class="bi bi-info-circle me-3 mt-1 flex-shrink-0"></i>
+                        <div>
+                            <p class="mb-2"><strong>Que se passe-t-il lors de la désinstallation ?</strong></p>
+                            <ul class="mb-0 ps-0" style="list-style: none;">
+                                <li class="mb-1"><i class="bi bi-check2 text-primary me-2"></i>L'application disparaîtra de votre dashboard</li>
+                                <li class="mb-1"><i class="bi bi-shield-check text-primary me-2"></i>Vos données seront conservées pendant <strong>30 jours</strong></li>
+                                <li class="mb-1"><i class="bi bi-arrow-clockwise text-primary me-2"></i>Vous pouvez réinstaller à tout moment</li>
+                                <li><i class="bi bi-clock text-muted me-2"></i>Suppression automatique après 30 jours d'inactivité</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-2"></i>Annuler
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmUninstall">
+                    <i class="bi bi-trash me-2"></i>Désinstaller
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements
+    const categoryButtons = document.querySelectorAll('.category-item');
+    const searchInput = document.getElementById('searchInput');
+    const appsGrid = document.getElementById('appsGrid');
+    const emptyState = document.getElementById('emptyState');
+    const toggleInputs = document.querySelectorAll('.install-toggle input[type="checkbox"]');
+    
+    // Current filter
+    let currentCategory = 'all';
+    let currentSearch = '';
+    
+    // Category filtering
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            currentCategory = this.dataset.category;
+            filterApps();
+        });
+    });
+    
+    // Search functionality
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            currentSearch = this.value.toLowerCase();
+            filterApps();
+        });
+    }
+    
+    // Filter apps function
+    function filterApps() {
+        const appCards = document.querySelectorAll('.app-card');
+        let visibleCount = 0;
+        
+        console.log(`=== FILTRAGE CATÉGORIE: ${currentCategory} ===`);
+        
+        appCards.forEach(card => {
+            const category = card.dataset.category || '';
+            const title = card.querySelector('.app-title').textContent;
+            const titleLower = title.toLowerCase();
+            const description = card.querySelector('.app-description').textContent.toLowerCase();
+            
+            // Category matching avec mapping des catégories
+            let matchesCategory = currentCategory === 'all';
+            if (!matchesCategory) {
+                const categoryLower = category.toLowerCase();
+                switch(currentCategory) {
+                    case 'learning':
+                        matchesCategory = categoryLower.includes('apprentissage') || 
+                                        categoryLower.includes('learning') || 
+                                        categoryLower.includes('education');
+                        break;
+                    case 'productivity':
+                        matchesCategory = categoryLower.includes('productivité') || 
+                                        categoryLower.includes('productivity');
+                        break;
+                    case 'ai':
+                        matchesCategory = categoryLower.includes('intelligence') || 
+                                        categoryLower.includes('ia') || 
+                                        categoryLower.includes('ai');
+                        break;
+                    default:
+                        matchesCategory = categoryLower === currentCategory;
+                }
+            }
+            
+            const matchesSearch = currentSearch === '' || 
+                                titleLower.includes(currentSearch) || 
+                                description.includes(currentSearch);
+            
+            const shouldShow = matchesCategory && matchesSearch;
+            
+            // Debug pour productivité
+            if (currentCategory === 'productivity') {
+                console.log(`${title}:`);
+                console.log(`  - Catégorie: "${category}"`);
+                console.log(`  - Catégorie lowercase: "${category.toLowerCase()}"`);
+                console.log(`  - Matches category: ${matchesCategory}`);
+                console.log(`  - Matches search: ${matchesSearch}`);
+                console.log(`  - Should show: ${shouldShow}`);
+            }
+            
+            if (shouldShow) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Show/hide empty state
+        if (visibleCount === 0 && appsGrid) {
+            appsGrid.style.display = 'none';
+            if (emptyState) emptyState.style.display = 'block';
+        } else if (appsGrid) {
+            appsGrid.style.display = 'grid';
+            if (emptyState) emptyState.style.display = 'none';
+        }
+    }
+    
+    // Toggle functionality
+    toggleInputs.forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            const appId = this.dataset.appId;
+            const isInstalling = this.checked;
+            const card = this.closest('.app-card');
+            
+            // Si on désinstalle, montrer la modal de confirmation
+            if (!isInstalling) {
+                showUninstallModal(appId, this, card);
+                return;
+            }
+            
+            // Sinon, installer directement
+            toggleApp(appId, this, card, isInstalling);
+        });
+    });
+    
+    function showUninstallModal(appId, toggle, card) {
+        // Remettre le toggle en position "on" temporairement
+        toggle.checked = true;
+        
+        // Récupérer les infos de l'app
+        const appName = card.querySelector('.app-title').textContent;
+        const appIcon = card.querySelector('.app-icon i').className;
+        const appIconBg = card.querySelector('.app-icon').style.background;
+        
+        // Configurer la modal
+        const modal = document.getElementById('uninstallModal');
+        const modalAppName = document.getElementById('modalAppName');
+        const modalAppIcon = document.getElementById('modalAppIcon');
+        const confirmButton = document.getElementById('confirmUninstall');
+        
+        // Mettre à jour le contenu de la modal
+        modalAppName.textContent = appName;
+        modalAppIcon.innerHTML = `<i class="${appIcon}"></i>`;
+        modalAppIcon.style.background = appIconBg;
+        
+        // Gérer la confirmation
+        const handleConfirm = () => {
+            const bootstrapModal = bootstrap.Modal.getInstance(modal);
+            bootstrapModal.hide();
+            toggleApp(appId, toggle, card, false);
+            confirmButton.removeEventListener('click', handleConfirm);
+        };
+        
+        // Gérer l'annulation
+        const handleCancel = () => {
+            toggle.checked = true; // Remettre en position "installé"
+            confirmButton.removeEventListener('click', handleConfirm);
+        };
+        
+        confirmButton.addEventListener('click', handleConfirm);
+        modal.addEventListener('hidden.bs.modal', handleCancel, { once: true });
+        
+        // Montrer la modal
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+    }
+    
+    function toggleApp(appId, toggleInput, card, isInstalling) {
+        // Show loading
+        const loadingOverlay = card.querySelector('.loading-overlay');
+        const statusDiv = card.querySelector('.install-status');
+        const openButton = card.querySelector('.btn');
+        
+        loadingOverlay.style.display = 'flex';
+        card.classList.add('installing');
+        
+        fetch(`{% url 'saas_web:api_app_toggle' 0 %}`.replace('0', appId), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken(),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update toggle state
+                toggleInput.checked = isInstalling;
+                
+                // Update status
+                statusDiv.className = `install-status ${data.is_enabled ? 'installed' : ''}`;
+                statusDiv.innerHTML = data.is_enabled ? 
+                    '<i class="bi bi-check-circle me-1"></i>Installée' : 
+                    '<i class="bi bi-download me-1"></i>Non installée';
+                
+                // Update open button
+                const footer = card.querySelector('.app-footer');
+                if (data.is_enabled && !openButton) {
+                    footer.innerHTML += `
+                        <a href="#" class="btn btn-primary btn-sm">
+                            <i class="bi bi-box-arrow-up-right me-1"></i>Ouvrir
+                        </a>
+                    `;
+                } else if (!data.is_enabled && openButton) {
+                    openButton.remove();
+                }
+                
+                // Show success message with data retention info for uninstall
+                let message = data.message;
+                if (!isInstalling) {
+                    message += '. Vos données seront conservées 30 jours.';
+                }
+                
+                showToast(message, 'success');
+            } else {
+                // Revert toggle on error
+                toggleInput.checked = !isInstalling;
+                throw new Error(data.error || 'Erreur lors de l\'opération');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toggleInput.checked = !isInstalling;
+            showToast('Erreur lors de l\'opération', 'error');
+        })
+        .finally(() => {
+            loadingOverlay.style.display = 'none';
+            card.classList.remove('installing');
+        });
+    }
+    
+    function getCsrfToken() {
+        const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (csrfInput) return csrfInput.value;
+        
+        const csrfCookie = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
+        if (csrfCookie) return csrfCookie.split('=')[1];
+        
+        return '';
+    }
+    
+    function showToast(message, type) {
+        const toastContainer = document.querySelector('.toast-container');
+        const isSuccess = type === 'success';
+        
+        const toast = document.createElement('div');
+        toast.className = `toast ${isSuccess ? 'bg-success' : 'bg-danger'} text-white`;
+        toast.innerHTML = `
+            <div class="toast-body d-flex align-items-center">
+                <i class="bi ${isSuccess ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill'} me-2"></i>
+                ${message}
+            </div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        
+        // Show toast with Bootstrap
+        if (typeof bootstrap !== 'undefined') {
+            const bsToast = new bootstrap.Toast(toast, {
+                autohide: true,
+                delay: 3000
+            });
+            bsToast.show();
+            
+            // Remove after hiding
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        } else {
+            // Fallback without Bootstrap
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    }
+    
+    // Mettre à jour les compteurs de catégories
+    function updateCategoryCounts() {
+        const appCards = document.querySelectorAll('.app-card');
+        const counts = {
+            all: appCards.length,
+            learning: 0,
+            productivity: 0,
+            ai: 0
+        };
+        
+        appCards.forEach(card => {
+            const category = (card.dataset.category || '').toLowerCase();
+            
+            if (category.includes('apprentissage') || category.includes('learning') || category.includes('education')) {
+                counts.learning++;
+            }
+            if (category.includes('productivité') || category.includes('productivity')) {
+                counts.productivity++;
+            }
+            if (category.includes('intelligence') || category.includes('ia') || category.includes('ai')) {
+                counts.ai++;
+            }
+        });
+        
+        // Mettre à jour les compteurs dans l'interface
+        Object.keys(counts).forEach(cat => {
+            const elem = document.getElementById(`count-${cat}`);
+            if (elem) elem.textContent = counts[cat];
+        });
+    }
+    
+    // Appeler la fonction au chargement
+    updateCategoryCounts();
+    
+    // Debug: afficher les catégories des apps au chargement
+    console.log('=== DEBUG CATÉGORIES ===');
+    document.querySelectorAll('.app-card').forEach(card => {
+        const title = card.querySelector('.app-title').textContent;
+        const category = card.dataset.category;
+        const categoryLower = (category || '').toLowerCase();
+        
+        const isLearning = categoryLower.includes('apprentissage') || categoryLower.includes('learning') || categoryLower.includes('education');
+        const isProductivity = categoryLower.includes('productivité') || categoryLower.includes('productivity');
+        const isAI = categoryLower.includes('intelligence') || categoryLower.includes('ia') || categoryLower.includes('ai');
+        
+        console.log(`${title}:`);
+        console.log(`  - Catégorie brute: "${category}"`);
+        console.log(`  - Catégorie lowercase: "${categoryLower}"`);
+        console.log(`  - Apprentissage: ${isLearning}`);
+        console.log(`  - Productivité: ${isProductivity}`);
+        console.log(`  - IA: ${isAI}`);
+        console.log('---');
+    });
+});
+</script>
+{% endblock %}
