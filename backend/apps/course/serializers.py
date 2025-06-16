@@ -1,4 +1,6 @@
-# course/serializers.py
+# -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
+
 from rest_framework import serializers, generics
 from .models import (
     Unit, 
@@ -12,11 +14,13 @@ from .models import (
     TheoryContent, 
     ExerciseGrammarReordering,
     FillBlankExercise,
-    SpeakingExercise
+    SpeakingExercise,
+    TestRecap,
+    TestRecapQuestion,
+    TestRecapResult
 )
 import logging
 logger = logging.getLogger(__name__)
-
 
 class TargetLanguageMixin:
     """
@@ -27,9 +31,6 @@ class TargetLanguageMixin:
         # Priorité 1: paramètre de requête
         target_language = self.request.query_params.get('target_language')
         
-        # Ajoutez des logs pour déboguer
-        import logging
-        logger = logging.getLogger(__name__)
         logger.info(f"get_target_language - Lang from query params: {target_language}")
         
         # Priorité 2: header Accept-Language 
@@ -57,16 +58,38 @@ class TargetLanguageMixin:
         logger.info(f"get_target_language - Final lang: {target_language}")
         return target_language
     
+    def get_native_language(self):
+        # Priorité 1: paramètre de requête
+        native_language = self.request.query_params.get('native_language')
+        
+        # Log pour déboguer
+        logger.info(f"get_native_language - Lang from query params: {native_language}")
+        
+        # Priorité 2: utilisateur authentifié
+        if not native_language and hasattr(self.request, 'user') and self.request.user.is_authenticated:
+            user_lang = getattr(self.request.user, 'native_language', None)
+            if user_lang:
+                native_language = user_lang
+                logger.info(f"get_native_language - Lang from user profile: {native_language}")
+        
+        # Normaliser
+        if native_language and native_language.upper() in ['EN', 'FR', 'ES', 'NL']:
+            native_language = native_language.lower()
+        
+        # Valeur par défaut
+        if not native_language or native_language.lower() not in ['en', 'fr', 'es', 'nl']:
+            native_language = 'en'
+            
+        logger.info(f"get_native_language - Final lang: {native_language}")
+        return native_language
+    
     def get_serializer_context(self):
         context = super().get_serializer_context()
         target_language = self.get_target_language()
         context['target_language'] = target_language
-        
-        # Log pour déboguer
-        import logging
-        logger = logging.getLogger(__name__)
+        native_language = self.get_native_language()
+        context['native_language'] = native_language
         logger.info(f"get_serializer_context - Adding target_language to context: {target_language}")
-        
         return context  
 
 class UnitSerializer(serializers.ModelSerializer):
@@ -80,15 +103,12 @@ class UnitSerializer(serializers.ModelSerializer):
 
     # Méthode pour récupérer le titre dans la langue de l'utilisateur
     def get_title(self, obj):
-        target_language = self._get_target_language().lower()
-        field_name = f'title_{target_language}'
-        return getattr(obj, field_name, obj.title_en)
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f"title_{native_language}", obj.title_en)
     
     def get_description(self, obj):
-        target_language = self._get_target_language().lower()
-        field_name = f"description_{target_language}"
-        value = getattr(obj, field_name, obj.description_en)
-        return value
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f"description_{native_language}", obj.description_en)
     
     def _get_target_language(self):
         request = self.context.get('request')
@@ -125,32 +145,12 @@ class LessonSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'lesson_type', 'estimated_duration', 'order']
 
     def get_title(self, obj):
-        # Get target language from context
-        target_language = self.context.get('target_language', 'en')
-        
-        # Normalize to lowercase
-        if target_language and target_language.upper() in ['EN', 'FR', 'ES', 'NL']:
-            target_language = target_language.lower()
-        
-        # Get the field name based on language
-        field_name = f'title_{target_language}'
-        
-        # Get the value, fallback to title_en if not found
-        value = getattr(obj, field_name, obj.title_en)
-        
-        # Log for debugging
-        logger.info(f"LessonSerializer - Lesson {obj.id}, target_language: {target_language}, field: {field_name}, value: {value}")
-        
-        return value
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f"title_{native_language}", obj.title_en)
 
     def get_description(self, obj):
-        # Même approche que pour title
-        target_language = self.context.get('target_language', 'en')
-        if target_language.upper() in ['EN', 'FR', 'ES', 'NL']:
-            target_language = target_language.lower()
-        
-        field_name = f'description_{target_language}'
-        return getattr(obj, field_name, obj.description_en)
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f"description_{native_language}", obj.description_en)
 
 class ContentLessonSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
@@ -326,8 +326,8 @@ class MultipleChoiceQuestionSerializer(serializers.ModelSerializer):
         ]
 
     def get_question(self, obj):
-        target_language = self.context.get('target_language', 'en')
-        return getattr(obj, f'question_{target_language}', obj.question_en)
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f'question_{native_language}', obj.question_en)
 
     def get_correct_answer(self, obj):
         target_language = self.context.get('target_language', 'en')
@@ -343,8 +343,8 @@ class MultipleChoiceQuestionSerializer(serializers.ModelSerializer):
         return fake_answers
 
     def get_hint_answer(self, obj):
-        target_language = self.context.get('target_language', 'en')
-        return getattr(obj, f'hint_answer_{target_language}', obj.hint_answer_en)
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f'hint_answer_{native_language}', obj.hint_answer_en)
 
     def to_representation(self, instance):
         """Personnaliser la sortie finale du serializer"""
@@ -424,19 +424,28 @@ class MatchingExerciseSerializer(serializers.ModelSerializer):
             target_language = languages[0] if languages else 'fr'
         
         return obj.get_exercise_data(native_language, target_language)  
-
+'''
+    Serializer for ExerciseGrammarReordering model.
+'''
 class ExerciseGrammarReorderingSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExerciseGrammarReordering
         fields = ['id', 'content_lesson', 'sentence_en', 'sentence_fr', 'sentence_es', 'sentence_nl', 'explanation', 'hint']
 
+'''
+    Serializer for Grammar model.
+    This serializer is designed to handle multiple languages and provide a flexible API response.
+'''
 class GrammarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grammar
         fields = ['title', 'description', 'example']
 
-# Update this section in course/serializers.py
-
+'''
+    Serializer for FillBlankExercise model.
+    This serializer is designed to handle multiple languages and provide a flexible API response.
+    It includes methods to retrieve the content in the target language, as well as direct accessors for each field.
+'''
 class FillBlankExerciseSerializer(serializers.ModelSerializer):
     """
     Serializer for fill in the blank exercises with enhanced API compatibility
@@ -536,3 +545,156 @@ class FillBlankExerciseSerializer(serializers.ModelSerializer):
         
         # Default fallback
         return 'en'
+    
+
+"""
+Serializers for Test Recap functionality in the Linguify course app.
+These serializers handle the TestRecap, TestRecapQuestion, and TestRecapResult models.
+"""
+
+class TestRecapQuestionSerializer(serializers.ModelSerializer):
+    """Serializer for test recap questions with question-specific data."""
+    question_data = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = TestRecapQuestion
+        fields = [
+            'id', 
+            'test_recap', 
+            'question_type',
+            'order',
+            'points',
+            'question_data'
+        ]
+    
+    def get_question_data(self, obj):
+        """
+        Get question content based on the question type.
+        
+        By default, use real data where possible and only use demo data if the
+        'is_demo' parameter is explicitly set to True in the context.
+        """
+        target_language = self.context.get('target_language', 'en')
+        # Force real data by default, unless explicitly set to use demo data
+        force_real_data = not self.context.get('is_demo', False)
+        return obj.get_question_data(language_code=target_language, force_real_data=force_real_data)
+
+
+class TestRecapSerializer(serializers.ModelSerializer):
+    """Serializer for test recaps with localized titles and descriptions."""
+    title = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+    questions = TestRecapQuestionSerializer(many=True, read_only=True)
+    total_points = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = TestRecap
+        fields = [
+            'id',
+            'lesson',
+            'title',
+            'description',
+            'passing_score',
+            'time_limit',
+            'is_active',
+            'created_at',
+            'updated_at',
+            'questions',
+            'total_points'
+        ]
+    
+    def get_title(self, obj):
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f'title_{native_language}', obj.title_en)
+    
+    def get_description(self, obj):
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj, f'description_{native_language}', obj.description_en)
+    
+    def get_total_points(self, obj):
+        return obj.total_points()
+
+
+class TestRecapDetailSerializer(TestRecapSerializer):
+    """Detailed serializer for a specific test recap, including questions."""
+    questions_count = serializers.SerializerMethodField()
+    
+    class Meta(TestRecapSerializer.Meta):
+        fields = TestRecapSerializer.Meta.fields + ['questions_count']
+    
+    def get_questions_count(self, obj):
+        return obj.questions.count()
+
+
+class TestRecapResultSerializer(serializers.ModelSerializer):
+    """Serializer for test recap results."""
+    username = serializers.SerializerMethodField()
+    test_title = serializers.SerializerMethodField()
+    correct_questions = serializers.SerializerMethodField()
+    total_questions = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = TestRecapResult
+        fields = [
+            'id',
+            'user',
+            'username',
+            'test_recap',
+            'test_title',
+            'score',
+            'passed',
+            'time_spent',
+            'completed_at',
+            'correct_questions',
+            'total_questions',
+            'detailed_results'
+        ]
+    
+    def get_username(self, obj):
+        return obj.user.username
+    
+    def get_test_title(self, obj):
+        native_language = self.context.get('native_language', 'en')
+        return getattr(obj.test_recap, f'title_{native_language}', obj.test_recap.title_en)
+    
+    def get_correct_questions(self, obj):
+        return obj.correct_questions
+    
+    def get_total_questions(self, obj):
+        return obj.total_questions
+
+
+class CreateTestRecapResultSerializer(serializers.ModelSerializer):
+    """Serializer for creating test recap results."""
+    
+    class Meta:
+        model = TestRecapResult
+        fields = [
+            'test_recap',
+            'score',
+            'time_spent',
+            'detailed_results'
+        ]
+    
+    def create(self, validated_data):
+        # Get the user from the request context
+        user = self.context['request'].user
+        
+        # Check if user has already completed this test
+        test_recap = validated_data['test_recap']
+        score = validated_data['score']
+        
+        # Automatically calculate if user passed based on passing_score
+        passed = score >= (test_recap.passing_score * 100)
+        
+        # Create the result
+        result = TestRecapResult.objects.create(
+            user=user,
+            test_recap=test_recap,
+            score=score,
+            passed=passed,
+            time_spent=validated_data['time_spent'],
+            detailed_results=validated_data.get('detailed_results', {})
+        )
+        
+        return result

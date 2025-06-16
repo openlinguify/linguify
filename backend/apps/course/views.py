@@ -17,6 +17,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.db.models import Q, Count, Case, When, IntegerField
+from django.db.models.functions import Lower
 
 
 from .models import (
@@ -30,7 +32,10 @@ from .models import (
     MatchingExercise,
     ExerciseGrammarReordering,
     FillBlankExercise,
-    SpeakingExercise
+    SpeakingExercise,
+    TestRecap,
+    TestRecapQuestion,
+    TestRecapResult
 )
 from .serializers import (
     TargetLanguageMixin,
@@ -45,10 +50,15 @@ from .serializers import (
     TheoryContentSerializer,
     ExerciseGrammarReorderingSerializer,
     FillBlankExerciseSerializer,
-    SpeakingExerciseSerializer
+    SpeakingExerciseSerializer,
+    TestRecapSerializer,
+    TestRecapDetailSerializer,
+    TestRecapQuestionSerializer,
+    TestRecapResultSerializer,
+    CreateTestRecapResultSerializer
 )
 from .filters import LessonFilter, VocabularyListFilter
-from authentication.models import User
+from apps.authentication.models import User
 import random
 import django_filters
 from django.db import models
@@ -117,12 +127,23 @@ class ContentLessonViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         lesson_id = self.request.query_params.get('lesson')
+        content_id = self.request.query_params.get('id')
         queryset = ContentLesson.objects.all().order_by('order')
+        
+        # Handle id filtering if provided
+        if content_id:
+            try:
+                return queryset.filter(id=content_id).order_by('order')
+            except ValueError:
+                raise ValidationError({"error": "Invalid content lesson ID"})
+                
+        # Handle lesson filtering if provided
         if lesson_id:
             try:
                 return queryset.filter(lesson_id=lesson_id).order_by('order')
             except ValueError:
                 raise ValidationError({"error": "Invalid lesson ID"})
+                
         return queryset.order_by('order')
     
     def get_serializer_context(self):
@@ -281,7 +302,25 @@ class VocabularyListAPIView(APIView):
     ordering_fields = ['word_en', 'word_fr', 'word_es', 'word_nl']
 
     def get_queryset(self):
-        return VocabularyList.objects.all()
+        queryset = VocabularyList.objects.all()
+        
+        # Apply content_lesson filter directly here for better performance
+        content_lesson = self.request.query_params.get('content_lesson')
+        if content_lesson:
+            queryset = queryset.filter(content_lesson=content_lesson)
+            
+        # Filter by word if requested
+        word_filter = self.request.query_params.get('word')
+        if word_filter:
+            # Query across all languages
+            queryset = queryset.filter(
+                models.Q(word_en__icontains=word_filter) |
+                models.Q(word_fr__icontains=word_filter) |
+                models.Q(word_es__icontains=word_filter) |
+                models.Q(word_nl__icontains=word_filter)
+            )
+        
+        return queryset
 
     def filter_queryset(self, queryset):
         for backend in self.filter_backends:
@@ -302,19 +341,50 @@ class VocabularyListAPIView(APIView):
         return context
 
     def get(self, request):
+        # Start with the base queryset
         queryset = self.get_queryset()
+        
+        # Apply filters
         filtered_queryset = self.filter_queryset(queryset)
         
+        # Apply pagination
+        page_size = request.query_params.get('page_size', 100)
+        try:
+            page_size = int(page_size)
+            # Limit page size for performance reasons
+            page_size = min(max(page_size, 10), 200)
+        except (ValueError, TypeError):
+            page_size = 100
+            
         paginator = self.pagination_class()
+        paginator.page_size = page_size
+        
         page = paginator.paginate_queryset(filtered_queryset, request)
         
+        # Get the total count for statistics
+        total_count = filtered_queryset.count()
+        
+        # Serialize the data
         serializer = self.serializer_class(
             page, 
             many=True, 
             context=self.get_serializer_context()
         )
         
-        return paginator.get_paginated_response(serializer.data)
+        # Get the paginated response
+        response = paginator.get_paginated_response(serializer.data)
+        
+        # Add extra metadata
+        response.data['meta'] = {
+            'total_count': total_count,
+            'page_size': page_size,
+            'filters_applied': {
+                'content_lesson': request.query_params.get('content_lesson'),
+                'word': request.query_params.get('word')
+            }
+        }
+        
+        return response
 
 class NumbersViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -605,7 +675,9 @@ class MultipleChoiceQuestionAPIView(APIView):
     def get(self, request, *args, **kwargs):
         content_lesson = request.query_params.get('content_lesson')
         target_language = request.query_params.get('target_language', 'en')
-
+        native_language = request.query_params.get('native_language', 'en')
+        
+        print(f"Native language received: {native_language}")  # Pour debug
 
         queryset = self.get_queryset()
         if content_lesson:
@@ -614,7 +686,11 @@ class MultipleChoiceQuestionAPIView(APIView):
         serializer = self.serializer_class(
             queryset,
             many=True,
-            context={'target_language': target_language, 'request': request}
+            context={
+                'target_language': target_language, 
+                'native_language': native_language,
+                'request': request
+            }
         )
 
         return Response(serializer.data)
@@ -850,16 +926,12 @@ class LessonsByContentView(TargetLanguageMixin, generics.ListAPIView):
         # Récupérer le type de contenu depuis les paramètres de requête
         content_type = self.request.query_params.get('content_type')
         
-        # MODIFICATION: Ne pas lever d'exception si content_type est absent
-        # Traiter l'absence comme une demande pour tous les types de contenu
-        if not content_type:
-            # Construire le queryset pour tous les types de contenu
-            queryset = Lesson.objects.all().distinct().select_related('unit')
-        else:
-            # Construire le queryset filtré par type de contenu
-            queryset = Lesson.objects.filter(
-                content_lessons__content_type__iexact=content_type
-            ).distinct().select_related('unit')
+        # Construire le queryset de base
+        queryset = Lesson.objects.all().distinct().select_related('unit')
+        
+        # Filtrer par lesson_type si spécifié
+        if content_type and content_type != "all":
+            queryset = queryset.filter(lesson_type__iexact=content_type)
         
         # Filtrer davantage par niveau si spécifié
         level = self.request.query_params.get('level')
@@ -884,17 +956,16 @@ class LessonsByContentView(TargetLanguageMixin, generics.ListAPIView):
                 ]
             
             def get_unit_title(self, obj):
-                target_language = self.context.get('target_language', 'en')
-                field_name = f'title_{target_language}'
+                native_language = self.context.get('native_language', 'en')
+                field_name = f'title_{native_language}'
                 return getattr(obj.unit, field_name, obj.unit.title_en)
             
             def get_unit_level(self, obj):
                 return obj.unit.level
                 
             def get_content_count(self, obj):
-                """Renvoie le nombre de contenus du type demandé dans cette leçon"""
-                content_type = self.context.get('request').query_params.get('content_type')
-                return obj.content_lessons.filter(content_type__iexact=content_type).count()
+                """Renvoie le nombre de contenus dans cette leçon"""
+                return obj.content_lessons.count()
         
         return EnhancedLessonSerializer
     
@@ -916,9 +987,12 @@ class LessonsByContentView(TargetLanguageMixin, generics.ListAPIView):
         target_language = self.get_target_language()
         
         # Obtenir les niveaux disponibles pour ce type de contenu
-        available_levels = Lesson.objects.filter(
-            content_lessons__content_type__iexact=content_type
-        ).values_list('unit__level', flat=True).distinct().order_by('unit__level')
+        if content_type and content_type != "all":
+            available_levels = Lesson.objects.filter(
+                lesson_type__iexact=content_type
+            ).values_list('unit__level', flat=True).distinct().order_by('unit__level')
+        else:
+            available_levels = Lesson.objects.values_list('unit__level', flat=True).distinct().order_by('unit__level')
         
         # Ajouter des métadonnées à la réponse
         response.data = {
@@ -1012,3 +1086,517 @@ class SpeakingExerciseViewSet(viewsets.ModelViewSet):
                 return user_language.lower()
                 
         return 'en'
+    
+    
+class TestRecapViewSet(TargetLanguageMixin, viewsets.ModelViewSet):
+    """
+    API endpoint for Test Recap functionality.
+    Provides CRUD operations for test recaps and related functionality.
+    """
+    permission_classes = [AllowAny]  # Change to [IsAuthenticated] in production
+    
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return TestRecapDetailSerializer
+        elif self.action == 'submit':
+            return CreateTestRecapResultSerializer
+        elif self.action == 'questions':
+            return TestRecapQuestionSerializer
+        return TestRecapSerializer
+        
+    def get_queryset(self):
+        queryset = TestRecap.objects.all()
+        
+        # Filter by lesson ID if provided
+        lesson_id = self.request.query_params.get('lesson_id')
+        if lesson_id:
+            queryset = queryset.filter(lesson_id=lesson_id)
+            
+        # Only show active tests by default
+        if not self.request.query_params.get('show_inactive'):
+            queryset = queryset.filter(is_active=True)
+            
+        return queryset
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['target_language'] = self.get_target_language()
+        return context
+    
+    @action(detail=False, methods=['get'])
+    def for_content_lesson(self, request):
+        """
+        Get the appropriate TestRecap for a given ContentLesson.
+        
+        This endpoint implements the logic to find the correct TestRecap
+        for any ContentLesson, handling various relationships and fallback mechanisms.
+        
+        Query Parameters:
+        - content_lesson_id: ID of the ContentLesson to find a TestRecap for
+        """
+        content_lesson_id = request.query_params.get('content_lesson_id')
+        
+        if not content_lesson_id:
+            return Response({"error": "content_lesson_id parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            # Try to find the ContentLesson
+            content_lesson = ContentLesson.objects.get(id=content_lesson_id)
+            
+            # Log the content lesson info for debugging
+            logger.info(f"Looking for TestRecap for ContentLesson ID {content_lesson_id}: {content_lesson.title_en}")
+            
+            # APPROACH 1: If it's a TestRecap type content itself
+            if content_lesson.content_type == 'Test Recap':
+                logger.info(f"ContentLesson {content_lesson_id} is a Test Recap type")
+                
+                # 1A: If it has a title, try to match by title
+                if content_lesson.title_en and content_lesson.title_en.startswith('Test Recap: '):
+                    lesson_name = content_lesson.title_en.replace('Test Recap: ', '').strip()
+                    logger.info(f"Extracted lesson name: '{lesson_name}' from title")
+                    
+                    # Try to find a test recap with matching title
+                    test_recap = TestRecap.objects.filter(title__icontains=lesson_name).first()
+                    if test_recap:
+                        logger.info(f"Found TestRecap ID {test_recap.id} by title match")
+                        serializer = self.get_serializer(test_recap)
+                        return Response(serializer.data)
+                
+                # 1B: If it has a parent lesson, find TestRecap for that lesson
+                if content_lesson.lesson:
+                    logger.info(f"ContentLesson has parent lesson ID: {content_lesson.lesson.id}")
+                    test_recap = TestRecap.objects.filter(lesson=content_lesson.lesson).first()
+                    if test_recap:
+                        logger.info(f"Found TestRecap ID {test_recap.id} via parent lesson")
+                        serializer = self.get_serializer(test_recap)
+                        return Response(serializer.data)
+            
+            # APPROACH 2: For any ContentLesson, try to find TestRecap through parent lesson
+            if content_lesson.lesson:
+                logger.info(f"Using parent lesson ID {content_lesson.lesson.id} to find TestRecap")
+                test_recap = TestRecap.objects.filter(lesson=content_lesson.lesson).first()
+                if test_recap:
+                    logger.info(f"Found TestRecap ID {test_recap.id} via parent lesson relationship")
+                    serializer = self.get_serializer(test_recap)
+                    return Response(serializer.data)
+                
+                # Try to find by lesson title
+                if content_lesson.lesson.title_en:
+                    logger.info(f"Looking for TestRecap with title containing '{content_lesson.lesson.title_en}'")
+                    test_recap = TestRecap.objects.filter(title__icontains=content_lesson.lesson.title_en).first()
+                    if test_recap:
+                        logger.info(f"Found TestRecap ID {test_recap.id} via lesson title match")
+                        serializer = self.get_serializer(test_recap)
+                        return Response(serializer.data)
+            
+            # APPROACH 3: Try to find TestRecap for content lessons in the same lesson
+            if content_lesson.lesson:
+                logger.info(f"Looking for TestRecap through sibling content lessons")
+                related_content_lessons = ContentLesson.objects.filter(
+                    lesson=content_lesson.lesson,
+                    content_type='Test Recap'
+                )
+                
+                for related in related_content_lessons:
+                    if related.title_en and related.title_en.startswith('Test Recap: '):
+                        lesson_name = related.title_en.replace('Test Recap: ', '').strip()
+                        test_recap = TestRecap.objects.filter(title__icontains=lesson_name).first()
+                        if test_recap:
+                            logger.info(f"Found TestRecap ID {test_recap.id} via sibling content lesson's title")
+                            serializer = self.get_serializer(test_recap)
+                            return Response(serializer.data)
+            
+            # APPROACH 4: Last resort - return any TestRecap in the same unit rather than no content
+            if content_lesson.lesson and content_lesson.lesson.unit:
+                logger.info(f"Last resort: Looking for any TestRecap in unit {content_lesson.lesson.unit.id}")
+                unit_lessons = Lesson.objects.filter(unit=content_lesson.lesson.unit)
+                test_recap = TestRecap.objects.filter(lesson__in=unit_lessons).first()
+                if test_recap:
+                    logger.info(f"Found TestRecap ID {test_recap.id} in the same unit as a last resort")
+                    serializer = self.get_serializer(test_recap)
+                    return Response(serializer.data)
+            
+            # Don't fallback to random TestRecap - return 404 if no valid content is found
+            logger.info("No appropriate TestRecap found for this ContentLesson")
+            return Response({"error": "No TestRecap found for this ContentLesson"}, status=status.HTTP_404_NOT_FOUND)
+            
+        except ContentLesson.DoesNotExist:
+            return Response({"error": f"ContentLesson with id {content_lesson_id} not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Error finding TestRecap for ContentLesson {content_lesson_id}: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    @action(detail=True, methods=['get'])
+    def questions(self, request, pk=None):
+        """
+        Get all questions for a specific test recap.
+        """
+        test_recap = self.get_object()
+        questions = test_recap.questions.all().order_by('order')
+        
+        context = self.get_serializer_context()
+        
+        serializer = self.get_serializer(
+            questions, 
+            many=True, 
+            context=context
+        )
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def submit(self, request, pk=None):
+        """Submit answers for a test and get results."""
+        test_recap = self.get_object()
+        
+        # Regular submission flow
+        serializer = self.get_serializer(
+            data=request.data,
+            context={
+                'request': request,
+                'test_recap': test_recap,
+                'target_language': self.get_target_language()
+            }
+        )
+        
+        if serializer.is_valid():
+            # Add test_recap to validated data
+            serializer.validated_data['test_recap'] = test_recap
+            result = serializer.save()
+            
+            # Return the result
+            result_serializer = TestRecapResultSerializer(result)
+            return Response(result_serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=True, methods=['get'])
+    def results(self, request, pk=None):
+        """Get all results for a specific test recap."""
+        test_recap = self.get_object()
+        
+        # Only allow authenticated users to see results
+        if not request.user.is_authenticated:
+            return Response(
+                {"error": "Authentication required to view results"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+            
+        # Get results for this user and test
+        results = TestRecapResult.objects.filter(
+            test_recap=test_recap,
+            user=request.user
+        ).order_by('-completed_at')
+        
+        serializer = TestRecapResultSerializer(results, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'])
+    def latest_result(self, request, pk=None):
+        """Get the most recent result for this test and user."""
+        test_recap = self.get_object()
+        
+        # Only allow authenticated users to see results
+        if not request.user.is_authenticated:
+            return Response(
+                {"error": "Authentication required to view results"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+            
+        # Get the most recent result
+        try:
+            result = TestRecapResult.objects.filter(
+                test_recap=test_recap,
+                user=request.user
+            ).latest('completed_at')
+            
+            serializer = TestRecapResultSerializer(result)
+            return Response(serializer.data)
+        except TestRecapResult.DoesNotExist:
+            return Response(
+                {"message": "No results found for this test"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class EnhancedCourseSearchView(TargetLanguageMixin, generics.ListAPIView):
+    """
+    API de recherche et filtrage unifiée pour les cours.
+    
+    Paramètres supportés:
+    - search: recherche textuelle sur titre, description, type
+    - content_type: filtre par type de contenu (vocabulary, theory, matching, etc.)
+    - level: filtre par niveau (A1, A2, B1, etc.)
+    - target_language: langue cible (par défaut depuis le profil utilisateur)
+    - view_type: 'units' ou 'lessons' pour le type de vue
+    - limit: nombre de résultats par page (défaut: 20)
+    - offset: décalage pour la pagination
+    """
+    permission_classes = [AllowAny]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    search_fields = ['title_en', 'title_fr', 'title_es', 'title_nl', 'description_en', 'description_fr', 'description_es', 'description_nl']
+    ordering_fields = ['order', 'level', 'created_at']
+    
+    def get_queryset(self):
+        """Construire un queryset optimisé basé sur les paramètres de filtrage"""
+        
+        # Paramètres de requête
+        search_query = self.request.query_params.get('search', '').strip()
+        content_type = self.request.query_params.get('content_type', '').strip()
+        level = self.request.query_params.get('level', '').strip()
+        view_type = self.request.query_params.get('view_type', 'units').strip()
+        target_language = self.get_target_language()
+        
+        if view_type == 'lessons':
+            # Mode leçons : retourner les leçons filtrées
+            queryset = self._get_lessons_queryset(search_query, content_type, level, target_language)
+        else:
+            # Mode unités : retourner les unités filtrées  
+            queryset = self._get_units_queryset(search_query, content_type, level, target_language)
+            
+        return queryset
+    
+    def _get_units_queryset(self, search_query, content_type, level, target_language):
+        """Construire un queryset pour les unités avec filtres appliqués"""
+        
+        queryset = Unit.objects.all().select_related().prefetch_related(
+            'lessons__content_lessons'
+        )
+        
+        # Filtre par niveau
+        if level and level != 'all':
+            queryset = queryset.filter(level=level)
+            
+        # Filtre par recherche textuelle sur les unités
+        if search_query:
+            search_q = Q()
+            for field in ['title_en', 'title_fr', 'title_es', 'title_nl', 'description']:
+                search_q |= Q(**{f'{field}__icontains': search_query})
+            queryset = queryset.filter(search_q)
+        
+        # Si un type de contenu spécifique est demandé, filtrer les unités qui ont ce type
+        if content_type and content_type != 'all':
+            queryset = queryset.filter(
+                lessons__lesson_type__iexact=content_type
+            ).distinct()
+            
+        return queryset.order_by('order')
+    
+    def _get_lessons_queryset(self, search_query, content_type, level, target_language):
+        """Construire un queryset pour les leçons avec filtres appliqués"""
+        
+        queryset = Lesson.objects.all().select_related('unit').prefetch_related(
+            'content_lessons'
+        )
+        
+        # Filtre par niveau (via l'unité)
+        if level and level != 'all':
+            queryset = queryset.filter(unit__level=level)
+            
+        # Filtre par type de contenu (utiliser lesson_type au lieu de content_type)
+        if content_type and content_type != 'all':
+            queryset = queryset.filter(
+                lesson_type__iexact=content_type
+            ).distinct()
+            
+        # Filtre par recherche textuelle sur les leçons
+        if search_query:
+            search_q = Q()
+            # Recherche dans les titres de leçons
+            for field in ['title_en', 'title_fr', 'title_es', 'title_nl']:
+                search_q |= Q(**{f'{field}__icontains': search_query})
+            # Recherche dans les titres d'unités parentes
+            for field in ['title_en', 'title_fr', 'title_es', 'title_nl']:
+                search_q |= Q(**{f'unit__{field}__icontains': search_query})
+            # Recherche dans les types de leçons
+            search_q |= Q(lesson_type__icontains=search_query)
+            
+            queryset = queryset.filter(search_q)
+            
+        return queryset.order_by('unit__order', 'order')
+    
+    def get_serializer_class(self):
+        """Retourner le bon serializer selon le type de vue"""
+        view_type = self.request.query_params.get('view_type', 'units')
+        
+        if view_type == 'lessons':
+            return self._get_enhanced_lesson_serializer()
+        else:
+            return self._get_enhanced_unit_serializer()
+    
+    def _get_enhanced_unit_serializer(self):
+        """Serializer enrichi pour les unités"""
+        class EnhancedUnitSerializer(UnitSerializer):
+            lessons_count = serializers.SerializerMethodField()
+            matching_content_count = serializers.SerializerMethodField()
+            
+            class Meta(UnitSerializer.Meta):
+                fields = UnitSerializer.Meta.fields + ['lessons_count', 'matching_content_count']
+            
+            def get_lessons_count(self, obj):
+                content_type = self.context.get('request').query_params.get('content_type', '')
+                if content_type and content_type != 'all':
+                    return obj.lessons.filter(
+                        content_lessons__content_type__iexact=content_type
+                    ).distinct().count()
+                return obj.lessons.count()
+            
+            def get_matching_content_count(self, obj):
+                content_type = self.context.get('request').query_params.get('content_type', '')
+                if content_type and content_type != 'all':
+                    return obj.lessons.filter(
+                        content_lessons__content_type__iexact=content_type
+                    ).aggregate(
+                        count=Count('content_lessons', filter=Q(content_lessons__content_type__iexact=content_type))
+                    )['count'] or 0
+                return 0
+                
+        return EnhancedUnitSerializer
+    
+    def _get_enhanced_lesson_serializer(self):
+        """Serializer enrichi pour les leçons"""
+        class EnhancedLessonSerializer(LessonSerializer):
+            unit_title = serializers.SerializerMethodField()
+            unit_level = serializers.SerializerMethodField()
+            unit_id = serializers.IntegerField(source='unit.id')
+            matching_content_count = serializers.SerializerMethodField()
+            
+            class Meta(LessonSerializer.Meta):
+                fields = LessonSerializer.Meta.fields + [
+                    'unit_title', 'unit_level', 'unit_id', 'matching_content_count'
+                ]
+            
+            def get_unit_title(self, obj):
+                target_language = self.context.get('target_language', 'en')
+                field_name = f'title_{target_language}'
+                return getattr(obj.unit, field_name, obj.unit.title_en)
+            
+            def get_unit_level(self, obj):
+                return obj.unit.level
+                
+            def get_matching_content_count(self, obj):
+                content_type = self.context.get('request').query_params.get('content_type', '')
+                if content_type and content_type != 'all':
+                    return obj.content_lessons.filter(content_type__iexact=content_type).count()
+                return obj.content_lessons.count()
+                
+        return EnhancedLessonSerializer
+    
+    def get_serializer_context(self):
+        """Ajouter des informations de contexte au serializer"""
+        context = super().get_serializer_context()
+        context['target_language'] = self.get_target_language()
+        return context
+    
+    def list(self, request, *args, **kwargs):
+        """Personnaliser la réponse avec des métadonnées enrichies"""
+        
+        # Exécuter la logique de liste standard
+        response = super().list(request, *args, **kwargs)
+        
+        # Paramètres pour les métadonnées
+        search_query = request.query_params.get('search', '').strip()
+        content_type = request.query_params.get('content_type', '').strip()
+        level = request.query_params.get('level', '').strip()
+        view_type = request.query_params.get('view_type', 'units')
+        target_language = self.get_target_language()
+        
+        # Calculer les métadonnées
+        metadata = {
+            'search_query': search_query,
+            'content_type': content_type,
+            'level': level,
+            'view_type': view_type,
+            'target_language': target_language,
+            'total_results': len(response.data),
+            'available_levels': self._get_available_levels(content_type),
+            'available_content_types': self._get_available_content_types(level),
+            'filters_applied': {
+                'has_search': bool(search_query),
+                'has_content_filter': bool(content_type and content_type != 'all'),
+                'has_level_filter': bool(level and level != 'all'),
+            }
+        }
+        
+        # Restructurer la réponse
+        enhanced_response = {
+            'results': response.data,
+            'metadata': metadata
+        }
+        
+        response.data = enhanced_response
+        return response
+    
+    def _get_available_levels(self, content_type):
+        """Obtenir les niveaux disponibles pour un type de contenu"""
+        if content_type and content_type != 'all':
+            return list(Unit.objects.filter(
+                lessons__content_lessons__content_type__iexact=content_type
+            ).values_list('level', flat=True).distinct().order_by('level'))
+        return list(Unit.objects.values_list('level', flat=True).distinct().order_by('level'))
+    
+    def _get_available_content_types(self, level):
+        """Obtenir les types de contenu disponibles pour un niveau"""
+        queryset = ContentLesson.objects.all()
+        if level and level != 'all':
+            queryset = queryset.filter(lesson__unit__level=level)
+        
+        return list(queryset.values_list('content_type', flat=True).distinct().order_by('content_type'))
+
+
+@api_view(['POST'])
+def complete_lesson(request):
+    """
+    API endpoint to mark a lesson as completed.
+    
+    Expected payload:
+    {
+        "lesson_id": 8,
+        "content_type": "vocabulary",
+        "score": 95,
+        "time_spent": 300
+    }
+    """
+    try:
+        lesson_id = request.data.get('lesson_id')
+        content_type = request.data.get('content_type', 'lesson')
+        score = request.data.get('score', 100)
+        time_spent = request.data.get('time_spent', 0)
+        
+        if not lesson_id:
+            return Response(
+                {"error": "lesson_id is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Verify the lesson exists
+        try:
+            if content_type == 'content_lesson':
+                lesson = ContentLesson.objects.get(id=lesson_id)
+                lesson_title = lesson.title_en or f"Content Lesson {lesson_id}"
+            else:
+                lesson = Lesson.objects.get(id=lesson_id)
+                lesson_title = lesson.title_en or f"Lesson {lesson_id}"
+        except (Lesson.DoesNotExist, ContentLesson.DoesNotExist):
+            return Response(
+                {"error": f"Lesson with id {lesson_id} not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Log the completion for now (in a real app, you'd save to a progress model)
+        logger.info(f"Lesson completed: {lesson_title} (ID: {lesson_id}) - Score: {score}% - Time: {time_spent}s")
+        
+        return Response({
+            "message": "Lesson completed successfully",
+            "lesson_id": lesson_id,
+            "lesson_title": lesson_title,
+            "score": score,
+            "time_spent": time_spent,
+            "status": "completed"
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        logger.error(f"Error completing lesson: {str(e)}")
+        return Response(
+            {"error": "Failed to complete lesson"}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

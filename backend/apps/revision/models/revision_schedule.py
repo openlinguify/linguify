@@ -18,6 +18,7 @@ class RevisionSession(models.Model):
     success_rate = models.FloatField(null=True, blank=True)
     
     class Meta:
+        app_label = 'revision'
         ordering = ['scheduled_date']
 
     def __str__(self):

@@ -1,0 +1,356 @@
+{% extends 'saas_web/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Open Linguify{% endblock %}
+
+{% block extra_css %}
+<style>
+        
+        
+        .content-area {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+        
+        .app-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .app-card-header {
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .app-card-body {
+            padding: 0 1.5rem 1.5rem;
+        }
+        
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .app-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+        
+        .app-description {
+            color: #64748b;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+        
+        .app-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-installed {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-not-installed {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        
+        .app-card-footer {
+            padding: 1rem 1.5rem;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 16px;
+            color: white;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transform: translate(50px, -50px);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .app-store-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .app-store-btn:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #64748b;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+        
+        .app-card-simple {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            height: 100%;
+        }
+        
+        .app-card-simple:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .app-icon-simple {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin: 0 auto 0.75rem;
+        }
+        
+        .app-name-simple {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 1rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <!-- Content Area -->
+    <div class="content-area">
+        <!-- Quick Actions Banner -->
+        <div class="welcome-banner">
+            <div class="row align-items-center justify-content-center">
+                <div class="col-md-8 text-center">
+                    <div class="d-flex justify-content-center align-items-center gap-5">
+                        <div class="text-center">
+                            <div class="h4 mb-1">{{ user.native_language|default:"🏠" }}</div>
+                            <small class="opacity-75">Langue native</small>
+                        </div>
+                        <div class="text-center">
+                            <i class="bi bi-arrow-right" style="font-size: 1.5rem; opacity: 0.7;"></i>
+                        </div>
+                        <div class="text-center">
+                            <div class="h4 mb-1">{{ user.target_language|default:"🌍" }}</div>
+                            <small class="opacity-75">Langue cible</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Installed Apps Section -->
+        <div class="section-header">
+            <h3 class="section-title">Mes Applications</h3>
+            <a href="{% url 'saas_web:app_store' %}" class="app-store-btn">
+                <i class="bi bi-shop"></i>
+                App Store
+            </a>
+        </div>
+
+        {% if installed_apps %}
+        <div class="row g-3 mb-5 justify-content-center" id="installedApps">
+            {% for app in installed_apps %}
+            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                <a href="{{ app.url }}" class="text-decoration-none">
+                    <div class="app-card-simple">
+                        <div class="app-icon-simple" data-gradient="{{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}">
+                            <i class="bi {{ app.icon|default:'bi-app' }}"></i>
+                        </div>
+                        <h6 class="app-name-simple">{{ app.display_name|default:app.name }}</h6>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state mb-5">
+            <i class="bi bi-app-indicator"></i>
+            <h5 class="mb-3">Aucune application installée</h5>
+            <p class="mb-4">Explorez l'App Store pour découvrir et installer des applications d'apprentissage.</p>
+            <a href="{% url 'saas_web:app_store' %}" class="app-store-btn">
+                <i class="bi bi-shop"></i>
+                Explorer l'App Store
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+        // Apply app icon gradients from data attributes
+        document.addEventListener('DOMContentLoaded', function() {
+            const appIcons = document.querySelectorAll('.app-icon[data-gradient], .app-icon-simple[data-gradient]');
+            appIcons.forEach(icon => {
+                const gradient = icon.getAttribute('data-gradient');
+                if (gradient) {
+                    icon.style.background = gradient;
+                }
+            });
+        });
+        
+        // App installation function
+        function installApp(appId) {
+            // Show loading state
+            const button = event.target.closest('button');
+            const originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Installation...';
+            
+            // Simulate app installation (replace with actual API call)
+            setTimeout(() => {
+                button.innerHTML = '<i class="bi bi-check-circle me-2"></i>Installé';
+                button.classList.remove('btn-outline-primary');
+                button.classList.add('btn-success');
+                
+                // Change to open button after a moment
+                setTimeout(() => {
+                    button.innerHTML = '<i class="bi bi-arrow-right me-2"></i>Ouvrir';
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-primary');
+                    button.onclick = function() {
+                        window.location.href = getAppUrl(appId);
+                    };
+                }, 1000);
+            }, 2000);
+        }
+        
+        // Get app URL based on ID
+        function getAppUrl(appId) {
+            const appUrls = {
+                'ai-assistant': '/language-ai/',
+                'quiz': '/quiz/',
+                'progress': '/progress/'
+            };
+            return appUrls[appId] || '#';
+        }
+</script>
+{% endblock %}

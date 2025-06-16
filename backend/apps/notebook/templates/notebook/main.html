@@ -1,0 +1,706 @@
+{% extends "notebook/base.html" %}
+
+{% block page_title %}Notebook{% endblock %}
+
+{% block header_content %}
+<!-- Actions du header -->
+<div class="d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-2">
+        <!-- Bouton toggle sidebar mobile -->
+        <button id="toggleSidebar" class="btn btn-outline-custom d-md-none">
+            <i class="bi bi-list"></i>
+        </button>
+        
+        <!-- Refresh -->
+        <button id="refreshNotes" class="btn btn-outline-custom">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span class="d-none d-md-inline ms-1">Actualiser</span>
+        </button>
+    </div>
+    
+    <div class="d-flex gap-2">
+        <!-- Stats -->
+        <div class="d-none d-md-flex align-items-center text-muted me-3">
+            <span id="notesCount">0 notes</span>
+        </div>
+        
+        <!-- Nouvelle note -->
+        <button id="createNote" class="btn btn-gradient">
+            <i class="bi bi-plus-lg"></i>
+            <span class="d-none d-md-inline ms-1">Nouvelle note</span>
+        </button>
+    </div>
+</div>
+
+<!-- Filtres de recherche -->
+<div class="search-filters">
+    <div class="row g-2">
+        <div class="col-md-6">
+            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher dans vos notes...">
+        </div>
+        <div class="col-md-3">
+            <select id="languageFilter" class="form-select form-control">
+                <option value="">Toutes les langues</option>
+                <option value="fr">Français</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+                <option value="de">Deutsch</option>
+                <option value="it">Italiano</option>
+                <option value="pt">Português</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select id="sortFilter" class="form-select form-control">
+                <option value="updated_desc">Modifiées récemment</option>
+                <option value="updated_asc">Anciennes en premier</option>
+                <option value="created_desc">Créées récemment</option>
+                <option value="created_asc">Créées en premier</option>
+                <option value="title_asc">Titre A-Z</option>
+                <option value="title_desc">Titre Z-A</option>
+            </select>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Sidebar -->
+<div id="notebookSidebar" class="notebook-sidebar">
+    <div class="sidebar-content">
+        <!-- Loading state -->
+        <div id="notesLoading" class="d-flex justify-content-center align-items-center p-4">
+            <div class="loading-spinner"></div>
+            <span class="ms-2">Chargement des notes...</span>
+        </div>
+        
+        <!-- Notes list -->
+        <ul id="notesList" class="note-list" style="display: none;"></ul>
+        
+        <!-- Empty state -->
+        <div id="notesEmpty" class="empty-state" style="display: none;">
+            <i class="bi bi-journal-plus empty-state-icon"></i>
+            <div class="empty-state-title">Aucune note</div>
+            <div class="empty-state-description">Créez votre première note pour commencer</div>
+            <button class="btn btn-gradient create-note-btn">
+                <i class="bi bi-plus-lg me-1"></i>
+                Créer une note
+            </button>
+        </div>
+        
+        <!-- Load more -->
+        <div id="loadMoreContainer" class="p-3 text-center" style="display: none;">
+            <button id="loadMoreBtn" class="btn btn-outline-custom">
+                <i class="bi bi-arrow-down-circle me-1"></i>
+                Charger plus
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Editor Area -->
+<div class="notebook-editor">
+    <!-- Welcome state -->
+    <div id="welcomeState" class="empty-state">
+        <i class="bi bi-journal-text empty-state-icon"></i>
+        <div class="empty-state-title">Bienvenue dans votre Notebook</div>
+        <div class="empty-state-description">
+            Sélectionnez une note dans la liste ou créez-en une nouvelle pour commencer
+        </div>
+        <button class="btn btn-gradient create-note-btn">
+            <i class="bi bi-plus-lg me-1"></i>
+            Créer une nouvelle note
+        </button>
+    </div>
+    
+    <!-- Note Editor -->
+    <div id="noteEditor" style="display: none;">
+        <!-- Editor Header -->
+        <div class="editor-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <button id="backToList" class="btn btn-outline-custom btn-sm d-md-none">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                    <input type="text" id="noteTitle" class="form-control border-0 bg-transparent fs-5 fw-bold" placeholder="Titre de la note">
+                </div>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Language selector -->
+                    <select id="noteLanguage" class="form-select form-select-sm">
+                        <option value="fr">Français</option>
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="de">Deutsch</option>
+                        <option value="it">Italiano</option>
+                        <option value="pt">Português</option>
+                    </select>
+                    
+                    <!-- Actions -->
+                    <button id="saveNote" class="btn btn-outline-custom btn-sm">
+                        <i class="bi bi-check-lg"></i>
+                        <span class="d-none d-md-inline ms-1">Sauvegarder</span>
+                    </button>
+                    
+                    <div class="dropdown">
+                        <button class="btn btn-outline-custom btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" id="shareNote">
+                                <i class="bi bi-share me-2"></i>Partager
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" id="exportNote">
+                                <i class="bi bi-download me-2"></i>Exporter
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" id="deleteNote">
+                                <i class="bi bi-trash me-2"></i>Supprimer
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Editor Content -->
+        <div class="editor-content">
+            <div class="row h-100 g-0">
+                <!-- Content Editor -->
+                <div class="col-md-6 border-end">
+                    <div class="p-3 h-100">
+                        <label class="form-label">Contenu</label>
+                        <textarea id="noteContent" class="form-control h-100 border-0 resize-none" 
+                                  placeholder="Écrivez votre note ici..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Translation -->
+                <div class="col-md-6">
+                    <div class="p-3 h-100">
+                        <label class="form-label">Traduction</label>
+                        <textarea id="noteTranslation" class="form-control h-100 border-0 resize-none" 
+                                  placeholder="Traduction (optionnelle)..."></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional fields -->
+            <div class="border-top p-3">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Exemples de phrases</label>
+                        <textarea id="noteExamples" class="form-control" rows="2" 
+                                  placeholder="Exemples d'utilisation..."></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Mots liés</label>
+                        <input type="text" id="noteRelatedWords" class="form-control" 
+                               placeholder="Mots séparés par des virgules...">
+                    </div>
+                </div>
+                
+                <div class="row g-3 mt-2">
+                    <div class="col-md-6">
+                        <label class="form-label">Difficulté</label>
+                        <select id="noteDifficulty" class="form-select">
+                            <option value="easy">Facile</option>
+                            <option value="medium">Moyen</option>
+                            <option value="hard">Difficile</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tags</label>
+                        <input type="text" id="noteTags" class="form-control" 
+                               placeholder="Tags séparés par des virgules...">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create Note Form -->
+    <div id="createNoteForm" style="display: none;">
+        <div class="editor-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Créer une nouvelle note</h5>
+                <button id="cancelCreate" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-x-lg"></i>
+                    Annuler
+                </button>
+            </div>
+        </div>
+        
+        <div class="editor-content p-4">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label class="form-label">Titre <span class="text-danger">*</span></label>
+                    <input type="text" id="newNoteTitle" class="form-control" placeholder="Titre de la note" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Langue</label>
+                    <select id="newNoteLanguage" class="form-select">
+                        <option value="fr">Français</option>
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="de">Deutsch</option>
+                        <option value="it">Italiano</option>
+                        <option value="pt">Português</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button id="submitCreate" class="btn btn-gradient me-2">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    Créer la note
+                </button>
+                <button id="cancelCreateAlt" class="btn btn-outline-custom">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// État global de l'application
+let appState = {
+    notes: [],
+    filteredNotes: [],
+    selectedNote: null,
+    isLoading: false,
+    currentPage: 1,
+    hasMore: true,
+    filters: {
+        search: '',
+        language: '',
+        sort: 'updated_desc'
+    }
+};
+
+// API Service
+const notebookAPI = {
+    async getNotes(page = 1, filters = {}) {
+        const params = new URLSearchParams({
+            page: page,
+            ...filters
+        });
+        
+        return await window.apiService.request(`/api/v1/notebook/notes/?${params}`);
+    },
+    
+    async getNote(id) {
+        return await window.apiService.request(`/api/v1/notebook/notes/${id}/`);
+    },
+    
+    async createNote(data) {
+        return await window.apiService.request('/api/v1/notebook/notes/', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+    
+    async updateNote(id, data) {
+        return await window.apiService.request(`/api/v1/notebook/notes/${id}/`, {
+            method: 'PATCH',
+            body: JSON.stringify(data)
+        });
+    },
+    
+    async deleteNote(id) {
+        return await window.apiService.request(`/api/v1/notebook/notes/${id}/`, {
+            method: 'DELETE'
+        });
+    }
+};
+
+// Utility functions
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function truncateText(text, maxLength = 100) {
+    if (!text) return '';
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+}
+
+// DOM elements
+const elements = {
+    // Sidebar
+    sidebar: document.getElementById('notebookSidebar'),
+    toggleSidebar: document.getElementById('toggleSidebar'),
+    notesList: document.getElementById('notesList'),
+    notesLoading: document.getElementById('notesLoading'),
+    notesEmpty: document.getElementById('notesEmpty'),
+    loadMoreContainer: document.getElementById('loadMoreContainer'),
+    loadMoreBtn: document.getElementById('loadMoreBtn'),
+    
+    // Filters
+    searchInput: document.getElementById('searchInput'),
+    languageFilter: document.getElementById('languageFilter'),
+    sortFilter: document.getElementById('sortFilter'),
+    
+    // Editor
+    welcomeState: document.getElementById('welcomeState'),
+    noteEditor: document.getElementById('noteEditor'),
+    createNoteForm: document.getElementById('createNoteForm'),
+    
+    // Note fields
+    noteTitle: document.getElementById('noteTitle'),
+    noteLanguage: document.getElementById('noteLanguage'),
+    noteContent: document.getElementById('noteContent'),
+    noteTranslation: document.getElementById('noteTranslation'),
+    noteExamples: document.getElementById('noteExamples'),
+    noteRelatedWords: document.getElementById('noteRelatedWords'),
+    noteDifficulty: document.getElementById('noteDifficulty'),
+    noteTags: document.getElementById('noteTags'),
+    
+    // Create form
+    newNoteTitle: document.getElementById('newNoteTitle'),
+    newNoteLanguage: document.getElementById('newNoteLanguage'),
+    
+    // Buttons
+    createNote: document.getElementById('createNote'),
+    refreshNotes: document.getElementById('refreshNotes'),
+    saveNote: document.getElementById('saveNote'),
+    deleteNote: document.getElementById('deleteNote'),
+    backToList: document.getElementById('backToList'),
+    submitCreate: document.getElementById('submitCreate'),
+    cancelCreate: document.getElementById('cancelCreate'),
+    cancelCreateAlt: document.getElementById('cancelCreateAlt'),
+    
+    // Stats
+    notesCount: document.getElementById('notesCount')
+};
+
+// Event listeners
+function setupEventListeners() {
+    // Sidebar toggle
+    elements.toggleSidebar?.addEventListener('click', toggleSidebar);
+    
+    // Search and filters
+    elements.searchInput?.addEventListener('input', debounce(handleSearch, 300));
+    elements.languageFilter?.addEventListener('change', handleLanguageFilter);
+    elements.sortFilter?.addEventListener('change', handleSortFilter);
+    
+    // Buttons
+    elements.createNote?.addEventListener('click', showCreateForm);
+    elements.refreshNotes?.addEventListener('click', loadNotes);
+    elements.saveNote?.addEventListener('click', saveCurrentNote);
+    elements.deleteNote?.addEventListener('click', deleteCurrentNote);
+    elements.backToList?.addEventListener('click', backToList);
+    
+    // Create form
+    elements.submitCreate?.addEventListener('click', createNewNote);
+    elements.cancelCreate?.addEventListener('click', hideCreateForm);
+    elements.cancelCreateAlt?.addEventListener('click', hideCreateForm);
+    
+    // Create note buttons
+    document.querySelectorAll('.create-note-btn').forEach(btn => {
+        btn.addEventListener('click', showCreateForm);
+    });
+    
+    // Load more
+    elements.loadMoreBtn?.addEventListener('click', loadMoreNotes);
+    
+    // Auto-save
+    const autoSaveFields = [elements.noteTitle, elements.noteContent, elements.noteTranslation];
+    autoSaveFields.forEach(field => {
+        if (field) {
+            field.addEventListener('input', debounce(autoSave, 2000));
+        }
+    });
+}
+
+// Core functions
+async function loadNotes(reset = true) {
+    try {
+        if (reset) {
+            appState.currentPage = 1;
+            appState.notes = [];
+            elements.notesLoading.style.display = 'block';
+            elements.notesList.style.display = 'none';
+            elements.notesEmpty.style.display = 'none';
+        }
+        
+        appState.isLoading = true;
+        
+        const response = await notebookAPI.getNotes(appState.currentPage, appState.filters);
+        
+        if (reset) {
+            appState.notes = response.results || [];
+        } else {
+            appState.notes = [...appState.notes, ...(response.results || [])];
+        }
+        
+        appState.hasMore = !!response.next;
+        appState.currentPage = response.next ? appState.currentPage + 1 : appState.currentPage;
+        
+        renderNotesList();
+        updateNotesCount();
+        
+    } catch (error) {
+        console.error('Error loading notes:', error);
+        window.notificationService.error('Erreur lors du chargement des notes');
+    } finally {
+        appState.isLoading = false;
+        elements.notesLoading.style.display = 'none';
+    }
+}
+
+function renderNotesList() {
+    if (appState.notes.length === 0) {
+        elements.notesList.style.display = 'none';
+        elements.notesEmpty.style.display = 'block';
+        elements.loadMoreContainer.style.display = 'none';
+        return;
+    }
+    
+    elements.notesEmpty.style.display = 'none';
+    elements.notesList.style.display = 'block';
+    
+    elements.notesList.innerHTML = appState.notes.map(note => `
+        <li class="note-item ${appState.selectedNote?.id === note.id ? 'active' : ''}" 
+            onclick="selectNote(${note.id})">
+            <div class="note-title">${note.title || 'Sans titre'}</div>
+            <div class="note-preview">${truncateText(note.content)}</div>
+            <div class="note-meta">
+                ${note.language ? `<span class="note-language">${note.language.toUpperCase()}</span>` : ''}
+                <span>${formatDate(note.updated_at)}</span>
+            </div>
+        </li>
+    `).join('');
+    
+    // Load more button
+    elements.loadMoreContainer.style.display = appState.hasMore ? 'block' : 'none';
+}
+
+async function selectNote(noteId) {
+    try {
+        const note = await notebookAPI.getNote(noteId);
+        appState.selectedNote = note;
+        
+        // Hide welcome state and show editor
+        elements.welcomeState.style.display = 'none';
+        elements.noteEditor.style.display = 'block';
+        elements.createNoteForm.style.display = 'none';
+        
+        // Populate editor fields
+        elements.noteTitle.value = note.title || '';
+        elements.noteLanguage.value = note.language || 'fr';
+        elements.noteContent.value = note.content || '';
+        elements.noteTranslation.value = note.translation || '';
+        elements.noteExamples.value = Array.isArray(note.example_sentences) ? 
+            note.example_sentences.join('\n') : (note.example_sentences || '');
+        elements.noteRelatedWords.value = Array.isArray(note.related_words) ? 
+            note.related_words.join(', ') : (note.related_words || '');
+        elements.noteDifficulty.value = note.difficulty || 'medium';
+        elements.noteTags.value = Array.isArray(note.tags) ? 
+            note.tags.join(', ') : (note.tags || '');
+        
+        // Update notes list visual state
+        renderNotesList();
+        
+        // Hide sidebar on mobile
+        if (window.innerWidth < 768) {
+            elements.sidebar.classList.remove('show');
+        }
+        
+    } catch (error) {
+        console.error('Error loading note:', error);
+        window.notificationService.error('Erreur lors du chargement de la note');
+    }
+}
+
+function showCreateForm() {
+    elements.welcomeState.style.display = 'none';
+    elements.noteEditor.style.display = 'none';
+    elements.createNoteForm.style.display = 'block';
+    
+    // Clear form
+    elements.newNoteTitle.value = '';
+    elements.newNoteLanguage.value = 'fr';
+    
+    // Focus on title input
+    elements.newNoteTitle.focus();
+}
+
+function hideCreateForm() {
+    elements.createNoteForm.style.display = 'none';
+    
+    if (appState.selectedNote) {
+        elements.noteEditor.style.display = 'block';
+    } else {
+        elements.welcomeState.style.display = 'block';
+    }
+}
+
+async function createNewNote() {
+    const title = elements.newNoteTitle.value.trim();
+    const language = elements.newNoteLanguage.value;
+    
+    if (!title) {
+        window.notificationService.error('Le titre est requis');
+        return;
+    }
+    
+    try {
+        const noteData = {
+            title: title,
+            language: language,
+            content: '',
+            translation: '',
+            example_sentences: [],
+            related_words: []
+        };
+        
+        const newNote = await notebookAPI.createNote(noteData);
+        
+        window.notificationService.success('Note créée avec succès');
+        
+        // Reload notes and select the new one
+        await loadNotes();
+        await selectNote(newNote.id);
+        
+    } catch (error) {
+        console.error('Error creating note:', error);
+        window.notificationService.error('Erreur lors de la création de la note');
+    }
+}
+
+async function saveCurrentNote() {
+    if (!appState.selectedNote) return;
+    
+    try {
+        const data = {
+            title: elements.noteTitle.value,
+            language: elements.noteLanguage.value,
+            content: elements.noteContent.value,
+            translation: elements.noteTranslation.value,
+            example_sentences: elements.noteExamples.value.split('\n').filter(s => s.trim()),
+            related_words: elements.noteRelatedWords.value.split(',').map(w => w.trim()).filter(w => w),
+            difficulty: elements.noteDifficulty.value,
+            tags: elements.noteTags.value.split(',').map(t => t.trim()).filter(t => t)
+        };
+        
+        const updatedNote = await notebookAPI.updateNote(appState.selectedNote.id, data);
+        appState.selectedNote = updatedNote;
+        
+        window.notificationService.success('Note sauvegardée');
+        
+        // Update the note in the list
+        const noteIndex = appState.notes.findIndex(n => n.id === updatedNote.id);
+        if (noteIndex !== -1) {
+            appState.notes[noteIndex] = updatedNote;
+            renderNotesList();
+        }
+        
+    } catch (error) {
+        console.error('Error saving note:', error);
+        window.notificationService.error('Erreur lors de la sauvegarde');
+    }
+}
+
+async function deleteCurrentNote() {
+    if (!appState.selectedNote) return;
+    
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) {
+        return;
+    }
+    
+    try {
+        await notebookAPI.deleteNote(appState.selectedNote.id);
+        
+        window.notificationService.success('Note supprimée');
+        
+        // Remove from list and reset editor
+        appState.notes = appState.notes.filter(n => n.id !== appState.selectedNote.id);
+        appState.selectedNote = null;
+        
+        renderNotesList();
+        updateNotesCount();
+        
+        elements.noteEditor.style.display = 'none';
+        elements.welcomeState.style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error deleting note:', error);
+        window.notificationService.error('Erreur lors de la suppression');
+    }
+}
+
+function autoSave() {
+    if (appState.selectedNote && elements.noteTitle.value.trim()) {
+        saveCurrentNote();
+    }
+}
+
+// Filter functions
+function handleSearch() {
+    appState.filters.search = elements.searchInput.value;
+    loadNotes();
+}
+
+function handleLanguageFilter() {
+    appState.filters.language = elements.languageFilter.value;
+    loadNotes();
+}
+
+function handleSortFilter() {
+    appState.filters.sort = elements.sortFilter.value;
+    loadNotes();
+}
+
+function loadMoreNotes() {
+    if (!appState.isLoading && appState.hasMore) {
+        loadNotes(false);
+    }
+}
+
+// UI functions
+function toggleSidebar() {
+    elements.sidebar.classList.toggle('show');
+}
+
+function backToList() {
+    elements.sidebar.classList.add('show');
+}
+
+function updateNotesCount() {
+    if (elements.notesCount) {
+        const count = appState.notes.length;
+        elements.notesCount.textContent = `${count} note${count !== 1 ? 's' : ''}`;
+    }
+}
+
+// Initialize app
+document.addEventListener('DOMContentLoaded', function() {
+    setupEventListeners();
+    loadNotes();
+});
+
+// Global functions for inline event handlers
+window.selectNote = selectNote;
+</script>
+{% endblock %}

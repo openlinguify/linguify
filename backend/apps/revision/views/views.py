@@ -8,11 +8,11 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.utils import timezone
 from django.db.models import Q
 from django.db import transaction
-import pandas as pd
+# import pandas as pd  # Temporarily disabled due to C extension issues
 import logging
 
-from revision.models import RevisionSession, VocabularyWord, VocabularyList, Flashcard
-from revision.serializers import RevisionSessionSerializer, VocabularyWordSerializer, VocabularyListSerializer
+from apps.revision.models import RevisionSession, VocabularyWord, VocabularyList, Flashcard
+from apps.revision.serializers import RevisionSessionSerializer, VocabularyWordSerializer, VocabularyListSerializer
 
 logger = logging.getLogger(__name__)
 

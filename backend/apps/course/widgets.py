@@ -1,4 +1,6 @@
-# backend/course/widgets.py
+# -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
+
 from django import forms
 from django.contrib.admin.widgets import AdminTextareaWidget
 from django.utils.safestring import mark_safe
@@ -6,8 +8,8 @@ from .models import FillBlankExercise
 
 class JSONMultilingualWidget(AdminTextareaWidget):
     """
-    Widget personnalisé pour éditer les champs JSON multilingues
-    avec boutons pour ajouter rapidement différentes langues
+    Custom widget to edit multilingual JSON fields
+    with buttons to quickly add different languages.
     """
     template_name = 'admin/widgets/json_multilingual_widget.html'
 
@@ -17,9 +19,9 @@ class JSONMultilingualWidget(AdminTextareaWidget):
         context['available_languages'] = self.get_available_languages()
         context['field_name'] = name
         return context
-    
+
     def get_available_languages(self):
-        """Liste des langues disponibles avec leurs noms complets"""
+        """List of available languages with their full names."""
         return [
             {'code': 'en', 'name': 'English'},
             {'code': 'fr', 'name': 'French'},
@@ -28,12 +30,11 @@ class JSONMultilingualWidget(AdminTextareaWidget):
             {'code': 'de', 'name': 'German'},
             {'code': 'it', 'name': 'Italian'},
             {'code': 'pt', 'name': 'Portuguese'},
-            # Ajoutez d'autres langues selon vos besoins
+            # Add more languages as needed
         ]
 
-
 class AdminJSONFormField(forms.JSONField):
-    """Champ de formulaire JSON personnalisé pour l'administration"""
+    """Custom JSON form field for the admin site."""
     
     def __init__(self, **kwargs):
         if 'widget' not in kwargs:
@@ -41,7 +42,7 @@ class AdminJSONFormField(forms.JSONField):
         super().__init__(**kwargs)
 
 
-# Ajouter au fichier admin.py après la classe FillBlankExerciseAdmin
+# Add to admin.py after the FillBlankExerciseAdmin class
 
 # Remplacer le formulaire standard par un formulaire personnalisé
 from django import forms
@@ -91,6 +92,3 @@ class FillBlankExerciseAdminForm(forms.ModelForm):
     class Meta:
         model = FillBlankExercise
         fields = '__all__'
-        
-# Dans la classe FillBlankExerciseAdmin, ajoutez:
-# form = FillBlankExerciseAdminForm

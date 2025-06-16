@@ -3,7 +3,9 @@
 Configuration spéciale pour les tests de base de données.
 Ce fichier peut être importé dans vos tests ou dans conftest.py
 """
+import environ
 
+env = environ.Env()
 # Configuration de la base de données de test
 TEST_DB = {
     'default': {
@@ -31,8 +33,8 @@ SQLITE_MEMORY_DB = {
 # Configuration avec les paramètres Auth0/Okta
 AUTH0_SETTINGS = {
     'AUTH0_DOMAIN': 'dev-7qe275o831ebkhbj.eu.auth0.com',
-    'AUTH0_CLIENT_ID': 'ctNt07qaUrHRnWtHkXoA7QFd3jodpXNu',
-    'AUTH0_CLIENT_SECRET': 'IfdLQfxjTpLviHxUWwfjvoUBW7kcmJ9_y0IDy3ASoDnqy0diI9MEaiqej7JUKecG',
+    'AUTH0_CLIENT_ID': '3e0iFOwYLe3h2QkrqrxtSu8h3gGah2ml',
+    'AUTH0_CLIENT_SECRET': env('AUTH0_CLIENT_SECRET'),
     'AUTH0_AUDIENCE': 'https://linguify-api',
     'FRONTEND_URL': 'http://localhost:3000',
     'FRONTEND_CALLBACK_URL': 'http://localhost:3000/callback',

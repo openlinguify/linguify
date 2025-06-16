@@ -1,0 +1,830 @@
+{% extends "revision/base_new.html" %}
+
+{% block page_title %}Mes Flashcards{% endblock %}
+
+{% block header_content %}
+<!-- Actions du header -->
+<div class="d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-2">
+        <!-- Bouton toggle sidebar mobile -->
+        <button id="toggleSidebar" class="btn btn-outline-custom d-md-none">
+            <i class="bi bi-list"></i>
+        </button>
+        
+        <!-- Refresh -->
+        <button id="refreshDecks" class="btn btn-outline-custom">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span class="d-none d-md-inline ms-1">Actualiser</span>
+        </button>
+    </div>
+    
+    <div class="d-flex gap-2">
+        <!-- Stats rapides -->
+        <div class="d-none d-lg-flex align-items-center text-muted me-3">
+            <span id="decksCount">0 decks</span>
+            <span class="mx-2">•</span>
+            <span id="cardsCount">0 cartes</span>
+        </div>
+        
+        <!-- Import -->
+        <button id="importDeck" class="btn btn-outline-custom">
+            <i class="bi bi-upload"></i>
+            <span class="d-none d-md-inline ms-1">Importer</span>
+        </button>
+        
+        <!-- Nouveau deck -->
+        <button id="createDeck" class="btn btn-gradient">
+            <i class="bi bi-plus-lg"></i>
+            <span class="d-none d-md-inline ms-1">Nouveau deck</span>
+        </button>
+    </div>
+</div>
+
+<!-- Statistiques et filtres -->
+<div class="stats-grid d-none d-md-grid">
+    <div class="stat-card">
+        <div class="stat-value" id="totalDecks">0</div>
+        <div class="stat-label">Decks</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" id="totalCards">0</div>
+        <div class="stat-label">Cartes</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" id="totalLearned">0</div>
+        <div class="stat-label">Apprises</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" id="completionRate">0%</div>
+        <div class="stat-label">Progression</div>
+    </div>
+</div>
+
+<!-- Filtres de recherche -->
+<div class="search-filters">
+    <div class="row g-2">
+        <div class="col-md-6">
+            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher dans vos decks...">
+        </div>
+        <div class="col-md-3">
+            <select id="statusFilter" class="form-select form-control">
+                <option value="">Tous les statuts</option>
+                <option value="active">Actifs</option>
+                <option value="archived">Archivés</option>
+                <option value="public">Publics</option>
+                <option value="private">Privés</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select id="sortFilter" class="form-select form-control">
+                <option value="updated_desc">Modifiés récemment</option>
+                <option value="updated_asc">Anciens en premier</option>
+                <option value="created_desc">Créés récemment</option>
+                <option value="created_asc">Créés en premier</option>
+                <option value="name_asc">Nom A-Z</option>
+                <option value="name_desc">Nom Z-A</option>
+                <option value="progress_desc">Plus de progrès</option>
+                <option value="progress_asc">Moins de progrès</option>
+            </select>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Sidebar -->
+<div id="revisionSidebar" class="revision-sidebar">
+    <div class="sidebar-content">
+        <!-- Loading state -->
+        <div id="decksLoading" class="d-flex justify-content-center align-items-center p-4">
+            <div class="loading-spinner"></div>
+            <span class="ms-2">Chargement des decks...</span>
+        </div>
+        
+        <!-- Decks list -->
+        <ul id="decksList" class="deck-list" style="display: none;"></ul>
+        
+        <!-- Empty state -->
+        <div id="decksEmpty" class="empty-state" style="display: none;">
+            <i class="bi bi-stack empty-state-icon"></i>
+            <div class="empty-state-title">Aucun deck</div>
+            <div class="empty-state-description">Créez votre premier deck de flashcards pour commencer à réviser</div>
+            <button class="btn btn-gradient create-deck-btn">
+                <i class="bi bi-plus-lg me-1"></i>
+                Créer un deck
+            </button>
+        </div>
+        
+        <!-- Load more -->
+        <div id="loadMoreContainer" class="p-3 text-center" style="display: none;">
+            <button id="loadMoreBtn" class="btn btn-outline-custom">
+                <i class="bi bi-arrow-down-circle me-1"></i>
+                Charger plus
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Study Area -->
+<div class="revision-study">
+    <!-- Welcome state -->
+    <div id="welcomeState" class="empty-state">
+        <i class="bi bi-lightning-charge empty-state-icon"></i>
+        <div class="empty-state-title">Bienvenue dans votre espace de révision</div>
+        <div class="empty-state-description">
+            Sélectionnez un deck dans la liste ou créez-en un nouveau pour commencer à réviser avec les flashcards
+        </div>
+        <div class="d-flex gap-2 justify-content-center">
+            <button class="btn btn-gradient create-deck-btn">
+                <i class="bi bi-plus-lg me-1"></i>
+                Créer un deck
+            </button>
+            <a href="{% url 'revision_web:explore' %}" class="btn btn-outline-custom">
+                <i class="bi bi-globe2 me-1"></i>
+                Explorer les decks publics
+            </a>
+        </div>
+    </div>
+    
+    <!-- Deck Details -->
+    <div id="deckDetails" style="display: none;">
+        <!-- Deck Header -->
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <button id="backToList" class="btn btn-outline-custom btn-sm d-md-none">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                    <div>
+                        <h4 id="deckName" class="mb-0">Nom du deck</h4>
+                        <small id="deckDescription" class="text-muted">Description du deck</small>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Progression -->
+                    <div class="d-flex align-items-center gap-2 me-3 d-none d-md-flex">
+                        <span id="deckProgress" class="badge deck-badge">0/0</span>
+                        <div class="progress-bar-custom">
+                            <div id="deckProgressBar" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <button id="addCard" class="btn btn-outline-custom btn-sm">
+                        <i class="bi bi-plus-lg"></i>
+                        <span class="d-none d-md-inline ms-1">Ajouter carte</span>
+                    </button>
+                    
+                    <div class="dropdown">
+                        <button class="btn btn-outline-custom btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" id="editDeck">
+                                <i class="bi bi-pencil me-2"></i>Modifier le deck
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" id="exportDeck">
+                                <i class="bi bi-download me-2"></i>Exporter
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" id="shareDeck">
+                                <i class="bi bi-share me-2"></i>Partager
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="archiveDeck">
+                                <i class="bi bi-archive me-2"></i>Archiver
+                            </a></li>
+                            <li><a class="dropdown-item text-danger" href="#" id="deleteDeck">
+                                <i class="bi bi-trash me-2"></i>Supprimer
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Study Modes -->
+        <div class="study-content">
+            <div class="study-modes">
+                <a href="#" class="study-mode-card" id="studyFlashcards">
+                    <span class="study-mode-icon">🔄</span>
+                    <div class="study-mode-title">Flashcards</div>
+                    <div class="study-mode-description">
+                        Révisez avec les cartes traditionnelles. Idéal pour mémoriser le vocabulaire et les concepts.
+                    </div>
+                </a>
+                
+                <a href="#" class="study-mode-card" id="studyLearn">
+                    <span class="study-mode-icon">🎯</span>
+                    <div class="study-mode-title">Apprendre</div>
+                    <div class="study-mode-description">
+                        Mode questionnaire à choix multiples pour tester vos connaissances de façon interactive.
+                    </div>
+                </a>
+                
+                <a href="#" class="study-mode-card" id="studyMatch">
+                    <span class="study-mode-icon">🧩</span>
+                    <div class="study-mode-title">Associer</div>
+                    <div class="study-mode-description">
+                        Jeu de mémoire pour associer les termes et définitions. Parfait pour s'amuser en apprenant.
+                    </div>
+                </a>
+                
+                <a href="#" class="study-mode-card" id="studyReview">
+                    <span class="study-mode-icon">⚡</span>
+                    <div class="study-mode-title">Révision rapide</div>
+                    <div class="study-mode-description">
+                        Révision éclair des cartes que vous devez revoir selon l'algorithme de répétition espacée.
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Quick actions -->
+            <div class="p-3 border-top">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <button id="viewAllCards" class="btn btn-outline-custom w-100">
+                            <i class="bi bi-list-ul me-1"></i>
+                            Voir toutes les cartes
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button id="practiceWeak" class="btn btn-outline-custom w-100">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Réviser les difficiles
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button id="resetProgress" class="btn btn-outline-custom w-100">
+                            <i class="bi bi-arrow-clockwise me-1"></i>
+                            Réinitialiser progrès
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create Deck Form -->
+    <div id="createDeckForm" style="display: none;">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Créer un nouveau deck</h5>
+                <button id="cancelCreate" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-x-lg"></i>
+                    Annuler
+                </button>
+            </div>
+        </div>
+        
+        <div class="study-content p-4">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label class="form-label">Nom du deck <span class="text-danger">*</span></label>
+                    <input type="text" id="newDeckName" class="form-control" placeholder="Ex: Vocabulaire anglais niveau B2" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Visibilité</label>
+                    <select id="newDeckVisibility" class="form-select">
+                        <option value="private">Privé</option>
+                        <option value="public">Public</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <label class="form-label">Description</label>
+                <textarea id="newDeckDescription" class="form-control" rows="3" 
+                          placeholder="Décrivez brièvement le contenu de ce deck..."></textarea>
+            </div>
+            
+            <div class="mt-4">
+                <button id="submitCreate" class="btn btn-gradient me-2">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    Créer le deck
+                </button>
+                <button id="cancelCreateAlt" class="btn btn-outline-custom">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Import Deck Form -->
+    <div id="importDeckForm" style="display: none;">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Importer un deck</h5>
+                <button id="cancelImport" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-x-lg"></i>
+                    Annuler
+                </button>
+            </div>
+        </div>
+        
+        <div class="study-content p-4">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                Vous pouvez importer des fichiers CSV ou Excel avec les colonnes : <strong>Terme</strong>, <strong>Définition</strong>, <strong>Exemple (optionnel)</strong>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Fichier à importer</label>
+                <input type="file" id="importFile" class="form-control" accept=".csv,.xlsx,.xls">
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Nom du deck</label>
+                <input type="text" id="importDeckName" class="form-control" placeholder="Nom pour le deck importé">
+            </div>
+            
+            <div class="mt-4">
+                <button id="submitImport" class="btn btn-gradient me-2">
+                    <i class="bi bi-upload me-1"></i>
+                    Importer le deck
+                </button>
+                <button id="cancelImportAlt" class="btn btn-outline-custom">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// État global de l'application
+let appState = {
+    decks: [],
+    filteredDecks: [],
+    selectedDeck: null,
+    isLoading: false,
+    currentPage: 1,
+    hasMore: true,
+    stats: {
+        totalDecks: 0,
+        totalCards: 0,
+        totalLearned: 0,
+        completionRate: 0
+    },
+    filters: {
+        search: '',
+        status: '',
+        sort: 'updated_desc'
+    }
+};
+
+// API Service
+const revisionAPI = {
+    async getDecks(page = 1, filters = {}) {
+        const params = new URLSearchParams({
+            page: page,
+            ...filters
+        });
+        
+        return await window.apiService.request(`/api/v1/revision/decks/?${params}`);
+    },
+    
+    async getDeck(id) {
+        return await window.apiService.request(`/api/v1/revision/decks/${id}/`);
+    },
+    
+    async createDeck(data) {
+        return await window.apiService.request('/api/v1/revision/decks/', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+    
+    async updateDeck(id, data) {
+        return await window.apiService.request(`/api/v1/revision/decks/${id}/`, {
+            method: 'PATCH',
+            body: JSON.stringify(data)
+        });
+    },
+    
+    async deleteDeck(id) {
+        return await window.apiService.request(`/api/v1/revision/decks/${id}/`, {
+            method: 'DELETE'
+        });
+    },
+    
+    async getStats() {
+        return await window.apiService.request('/api/v1/revision/stats/');
+    },
+    
+    async importDeck(formData) {
+        return await window.apiService.request('/api/v1/revision/import/', {
+            method: 'POST',
+            body: formData,
+            headers: {} // Let browser set Content-Type for FormData
+        });
+    }
+};
+
+// Utility functions
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+}
+
+function calculateProgress(deck) {
+    if (!deck.cards_count || deck.cards_count === 0) return 0;
+    return Math.round((deck.learned_count || 0) / deck.cards_count * 100);
+}
+
+// DOM elements
+const elements = {
+    // Sidebar
+    sidebar: document.getElementById('revisionSidebar'),
+    toggleSidebar: document.getElementById('toggleSidebar'),
+    decksList: document.getElementById('decksList'),
+    decksLoading: document.getElementById('decksLoading'),
+    decksEmpty: document.getElementById('decksEmpty'),
+    loadMoreContainer: document.getElementById('loadMoreContainer'),
+    loadMoreBtn: document.getElementById('loadMoreBtn'),
+    
+    // Filters
+    searchInput: document.getElementById('searchInput'),
+    statusFilter: document.getElementById('statusFilter'),
+    sortFilter: document.getElementById('sortFilter'),
+    
+    // Study area
+    welcomeState: document.getElementById('welcomeState'),
+    deckDetails: document.getElementById('deckDetails'),
+    createDeckForm: document.getElementById('createDeckForm'),
+    importDeckForm: document.getElementById('importDeckForm'),
+    
+    // Deck details
+    deckName: document.getElementById('deckName'),
+    deckDescription: document.getElementById('deckDescription'),
+    deckProgress: document.getElementById('deckProgress'),
+    deckProgressBar: document.getElementById('deckProgressBar'),
+    
+    // Create form
+    newDeckName: document.getElementById('newDeckName'),
+    newDeckDescription: document.getElementById('newDeckDescription'),
+    newDeckVisibility: document.getElementById('newDeckVisibility'),
+    
+    // Import form
+    importFile: document.getElementById('importFile'),
+    importDeckName: document.getElementById('importDeckName'),
+    
+    // Buttons
+    createDeck: document.getElementById('createDeck'),
+    importDeck: document.getElementById('importDeck'),
+    refreshDecks: document.getElementById('refreshDecks'),
+    backToList: document.getElementById('backToList'),
+    submitCreate: document.getElementById('submitCreate'),
+    cancelCreate: document.getElementById('cancelCreate'),
+    cancelCreateAlt: document.getElementById('cancelCreateAlt'),
+    submitImport: document.getElementById('submitImport'),
+    cancelImport: document.getElementById('cancelImport'),
+    cancelImportAlt: document.getElementById('cancelImportAlt'),
+    
+    // Stats
+    decksCount: document.getElementById('decksCount'),
+    cardsCount: document.getElementById('cardsCount'),
+    totalDecks: document.getElementById('totalDecks'),
+    totalCards: document.getElementById('totalCards'),
+    totalLearned: document.getElementById('totalLearned'),
+    completionRate: document.getElementById('completionRate')
+};
+
+// Event listeners
+function setupEventListeners() {
+    // Sidebar toggle
+    elements.toggleSidebar?.addEventListener('click', toggleSidebar);
+    
+    // Search and filters
+    elements.searchInput?.addEventListener('input', debounce(handleSearch, 300));
+    elements.statusFilter?.addEventListener('change', handleStatusFilter);
+    elements.sortFilter?.addEventListener('change', handleSortFilter);
+    
+    // Buttons
+    elements.createDeck?.addEventListener('click', showCreateForm);
+    elements.importDeck?.addEventListener('click', showImportForm);
+    elements.refreshDecks?.addEventListener('click', loadDecks);
+    elements.backToList?.addEventListener('click', backToList);
+    
+    // Create form
+    elements.submitCreate?.addEventListener('click', createNewDeck);
+    elements.cancelCreate?.addEventListener('click', hideCreateForm);
+    elements.cancelCreateAlt?.addEventListener('click', hideCreateForm);
+    
+    // Import form
+    elements.submitImport?.addEventListener('click', importNewDeck);
+    elements.cancelImport?.addEventListener('click', hideImportForm);
+    elements.cancelImportAlt?.addEventListener('click', hideImportForm);
+    
+    // Create deck buttons
+    document.querySelectorAll('.create-deck-btn').forEach(btn => {
+        btn.addEventListener('click', showCreateForm);
+    });
+    
+    // Load more
+    elements.loadMoreBtn?.addEventListener('click', loadMoreDecks);
+}
+
+// Core functions
+async function loadDecks(reset = true) {
+    try {
+        if (reset) {
+            appState.currentPage = 1;
+            appState.decks = [];
+            elements.decksLoading.style.display = 'block';
+            elements.decksList.style.display = 'none';
+            elements.decksEmpty.style.display = 'none';
+        }
+        
+        appState.isLoading = true;
+        
+        const [decksResponse, statsResponse] = await Promise.all([
+            revisionAPI.getDecks(appState.currentPage, appState.filters),
+            revisionAPI.getStats()
+        ]);
+        
+        if (reset) {
+            appState.decks = decksResponse.results || [];
+        } else {
+            appState.decks = [...appState.decks, ...(decksResponse.results || [])];
+        }
+        
+        appState.hasMore = !!decksResponse.next;
+        appState.currentPage = decksResponse.next ? appState.currentPage + 1 : appState.currentPage;
+        appState.stats = statsResponse;
+        
+        renderDecksList();
+        updateStats();
+        
+    } catch (error) {
+        console.error('Error loading decks:', error);
+        window.notificationService.error('Erreur lors du chargement des decks');
+    } finally {
+        appState.isLoading = false;
+        elements.decksLoading.style.display = 'none';
+    }
+}
+
+function renderDecksList() {
+    if (appState.decks.length === 0) {
+        elements.decksList.style.display = 'none';
+        elements.decksEmpty.style.display = 'block';
+        elements.loadMoreContainer.style.display = 'none';
+        return;
+    }
+    
+    elements.decksEmpty.style.display = 'none';
+    elements.decksList.style.display = 'block';
+    
+    elements.decksList.innerHTML = appState.decks.map(deck => {
+        const progress = calculateProgress(deck);
+        return `
+        <li class="deck-item ${appState.selectedDeck?.id === deck.id ? 'active' : ''}" 
+            onclick="selectDeck(${deck.id})">
+            <div class="deck-header">
+                <div class="deck-name">${deck.name || 'Sans nom'}</div>
+                <div class="deck-stats">
+                    <span class="deck-badge">${deck.cards_count || 0}</span>
+                    ${deck.is_public ? '<i class="bi bi-globe2" title="Public"></i>' : ''}
+                    ${deck.is_archived ? '<i class="bi bi-archive" title="Archivé"></i>' : ''}
+                </div>
+            </div>
+            <div class="deck-description">${deck.description || 'Aucune description'}</div>
+            <div class="deck-meta">
+                <div class="deck-progress">
+                    <span>${deck.learned_count || 0}/${deck.cards_count || 0}</span>
+                    <div class="progress-bar-custom">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                    <span>${progress}%</span>
+                </div>
+                <span>${formatDate(deck.updated_at)}</span>
+            </div>
+        </li>
+    `;
+    }).join('');
+    
+    // Load more button
+    elements.loadMoreContainer.style.display = appState.hasMore ? 'block' : 'none';
+}
+
+async function selectDeck(deckId) {
+    try {
+        const deck = await revisionAPI.getDeck(deckId);
+        appState.selectedDeck = deck;
+        
+        // Hide welcome state and show deck details
+        elements.welcomeState.style.display = 'none';
+        elements.deckDetails.style.display = 'block';
+        elements.createDeckForm.style.display = 'none';
+        elements.importDeckForm.style.display = 'none';
+        
+        // Populate deck details
+        elements.deckName.textContent = deck.name || 'Sans nom';
+        elements.deckDescription.textContent = deck.description || 'Aucune description';
+        
+        const progress = calculateProgress(deck);
+        elements.deckProgress.textContent = `${deck.learned_count || 0}/${deck.cards_count || 0}`;
+        elements.deckProgressBar.style.width = `${progress}%`;
+        
+        // Update decks list visual state
+        renderDecksList();
+        
+        // Hide sidebar on mobile
+        if (window.innerWidth < 768) {
+            elements.sidebar.classList.remove('show');
+        }
+        
+    } catch (error) {
+        console.error('Error loading deck:', error);
+        window.notificationService.error('Erreur lors du chargement du deck');
+    }
+}
+
+function showCreateForm() {
+    elements.welcomeState.style.display = 'none';
+    elements.deckDetails.style.display = 'none';
+    elements.createDeckForm.style.display = 'block';
+    elements.importDeckForm.style.display = 'none';
+    
+    // Clear form
+    elements.newDeckName.value = '';
+    elements.newDeckDescription.value = '';
+    elements.newDeckVisibility.value = 'private';
+    
+    // Focus on name input
+    elements.newDeckName.focus();
+}
+
+function hideCreateForm() {
+    elements.createDeckForm.style.display = 'none';
+    
+    if (appState.selectedDeck) {
+        elements.deckDetails.style.display = 'block';
+    } else {
+        elements.welcomeState.style.display = 'block';
+    }
+}
+
+function showImportForm() {
+    elements.welcomeState.style.display = 'none';
+    elements.deckDetails.style.display = 'none';
+    elements.createDeckForm.style.display = 'none';
+    elements.importDeckForm.style.display = 'block';
+    
+    // Clear form
+    elements.importFile.value = '';
+    elements.importDeckName.value = '';
+}
+
+function hideImportForm() {
+    elements.importDeckForm.style.display = 'none';
+    
+    if (appState.selectedDeck) {
+        elements.deckDetails.style.display = 'block';
+    } else {
+        elements.welcomeState.style.display = 'block';
+    }
+}
+
+async function createNewDeck() {
+    const name = elements.newDeckName.value.trim();
+    const description = elements.newDeckDescription.value.trim();
+    const isPublic = elements.newDeckVisibility.value === 'public';
+    
+    if (!name) {
+        window.notificationService.error('Le nom du deck est requis');
+        return;
+    }
+    
+    try {
+        const deckData = {
+            name: name,
+            description: description,
+            is_public: isPublic
+        };
+        
+        const newDeck = await revisionAPI.createDeck(deckData);
+        
+        window.notificationService.success('Deck créé avec succès');
+        
+        // Reload decks and select the new one
+        await loadDecks();
+        await selectDeck(newDeck.id);
+        
+    } catch (error) {
+        console.error('Error creating deck:', error);
+        window.notificationService.error('Erreur lors de la création du deck');
+    }
+}
+
+async function importNewDeck() {
+    const file = elements.importFile.files[0];
+    const name = elements.importDeckName.value.trim();
+    
+    if (!file) {
+        window.notificationService.error('Veuillez sélectionner un fichier');
+        return;
+    }
+    
+    if (!name) {
+        window.notificationService.error('Le nom du deck est requis');
+        return;
+    }
+    
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('name', name);
+        
+        const newDeck = await revisionAPI.importDeck(formData);
+        
+        window.notificationService.success('Deck importé avec succès');
+        
+        // Reload decks and select the new one
+        await loadDecks();
+        await selectDeck(newDeck.id);
+        
+    } catch (error) {
+        console.error('Error importing deck:', error);
+        window.notificationService.error('Erreur lors de l\'importation du deck');
+    }
+}
+
+// Filter functions
+function handleSearch() {
+    appState.filters.search = elements.searchInput.value;
+    loadDecks();
+}
+
+function handleStatusFilter() {
+    appState.filters.status = elements.statusFilter.value;
+    loadDecks();
+}
+
+function handleSortFilter() {
+    appState.filters.sort = elements.sortFilter.value;
+    loadDecks();
+}
+
+function loadMoreDecks() {
+    if (!appState.isLoading && appState.hasMore) {
+        loadDecks(false);
+    }
+}
+
+// UI functions
+function toggleSidebar() {
+    elements.sidebar.classList.toggle('show');
+}
+
+function backToList() {
+    elements.sidebar.classList.add('show');
+}
+
+function updateStats() {
+    const stats = appState.stats;
+    
+    // Header stats
+    if (elements.decksCount) {
+        elements.decksCount.textContent = `${stats.totalDecks} deck${stats.totalDecks !== 1 ? 's' : ''}`;
+    }
+    if (elements.cardsCount) {
+        elements.cardsCount.textContent = `${stats.totalCards} carte${stats.totalCards !== 1 ? 's' : ''}`;
+    }
+    
+    // Detailed stats
+    if (elements.totalDecks) elements.totalDecks.textContent = stats.totalDecks;
+    if (elements.totalCards) elements.totalCards.textContent = stats.totalCards;
+    if (elements.totalLearned) elements.totalLearned.textContent = stats.totalLearned;
+    if (elements.completionRate) elements.completionRate.textContent = `${stats.completionRate}%`;
+}
+
+// Initialize app
+document.addEventListener('DOMContentLoaded', function() {
+    setupEventListeners();
+    loadDecks();
+});
+
+// Global functions for inline event handlers
+window.selectDeck = selectDeck;
+</script>
+{% endblock %}

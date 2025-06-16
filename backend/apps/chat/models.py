@@ -1,5 +1,5 @@
 from django.db import models
-from authentication.models import User
+from apps.authentication.models import User
 import uuid
 # Create your models here.
 

@@ -1,0 +1,167 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+.command-interface {
+    max-width: 800px;
+    margin: 0 auto;
+}
+.command-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 30px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.execute-button {
+    background: #27ae60;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.execute-button:hover {
+    background: #229954;
+}
+.execute-button:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+.back-button {
+    background: #3498db;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 4px;
+    display: inline-block;
+    margin-right: 15px;
+}
+.back-button:hover {
+    background: #2980b9;
+    color: white;
+}
+.output-area {
+    background: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+    margin-top: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+}
+.loading {
+    display: inline-block;
+    margin-left: 10px;
+}
+.command-description {
+    background: #ecf0f1;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 15px 0;
+    border-left: 4px solid #3498db;
+}
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='core' %}">Core</a>
+    &rsaquo; <a href="{% url 'admin:core_systemmanagement_dashboard' %}">Gestion Système</a>
+    &rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="command-interface">
+    <div class="command-card">
+        <h1>{{ title }}</h1>
+        
+        <div class="command-description">
+            <strong>Description :</strong> {{ description }}
+        </div>
+        
+        <form method="post" id="command-form">
+            {% csrf_token %}
+            
+            <div style="margin: 20px 0;">
+                <p><strong>Commande à exécuter :</strong> <code>python manage.py {{ command_name }}</code></p>
+            </div>
+            
+            <div class="submit-row">
+                <a href="{% url 'admin:core_systemmanagement_dashboard' %}" class="back-button">
+                    ← Retour au Dashboard
+                </a>
+                <button type="submit" id="execute-btn" class="execute-button">
+                    🚀 Exécuter la Commande
+                </button>
+                <span id="loading" class="loading" style="display: none;">
+                    ⏳ Exécution en cours...
+                </span>
+            </div>
+        </form>
+        
+        <div id="output" class="output-area"></div>
+    </div>
+</div>
+
+<script>
+document.getElementById('command-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('execute-btn');
+    const loading = document.getElementById('loading');
+    const output = document.getElementById('output');
+    
+    // Disable button and show loading
+    btn.disabled = true;
+    loading.style.display = 'inline-block';
+    output.style.display = 'block';
+    output.textContent = 'Démarrage de la commande...\n';
+    
+    // Submit form
+    fetch(window.location.href, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new FormData(this)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            output.textContent = '✅ Commande exécutée avec succès!\n\n';
+            if (data.output) {
+                output.textContent += 'Sortie:\n' + data.output + '\n';
+            }
+            if (data.errors) {
+                output.textContent += '\nAvertissements:\n' + data.errors;
+            }
+        } else {
+            output.textContent = '❌ Erreur lors de l\'exécution:\n' + data.message;
+        }
+    })
+    .catch(error => {
+        output.textContent = '❌ Erreur de communication: ' + error.message;
+    })
+    .finally(() => {
+        btn.disabled = false;
+        loading.style.display = 'none';
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,246 @@
+{% extends 'course/learning/base.html' %}
+{% load static %}
+{% load course_tags %}
+
+{% block title %}Dashboard - Linguify{% endblock %}
+
+{% block extra_css %}
+<style>
+    .progress-card {
+        transition: transform 0.2s;
+    }
+    .progress-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .level-badge {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+    .language-selector {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Language Selection & Progress Overview -->
+    <div class="col-12 mb-4">
+        <div class="language-selector">
+            <h2 class="mb-3">Bienvenue dans votre parcours d'apprentissage</h2>
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <p class="mb-2">Langue cible: <strong>{{ target_language|default:"Français" }}</strong></p>
+                    <p class="mb-0">Niveau actuel: <span class="badge bg-light text-dark">{{ current_level|default:"A1" }}</span></p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="{% url 'learning:language-settings' %}" class="btn btn-light">
+                        <i class="fas fa-cog"></i> Paramètres
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="col-12 mb-4">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card text-center progress-card">
+                    <div class="card-body">
+                        <h5 class="text-primary">{{ total_units|default:0 }}</h5>
+                        <p class="card-text text-muted">Unités disponibles</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card text-center progress-card">
+                    <div class="card-body">
+                        <h5 class="text-success">{{ completed_lessons|default:0 }}</h5>
+                        <p class="card-text text-muted">Leçons complétées</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card text-center progress-card">
+                    <div class="card-body">
+                        <h5 class="text-warning">{{ vocabulary_learned|default:0 }}</h5>
+                        <p class="card-text text-muted">Mots appris</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card text-center progress-card">
+                    <div class="card-body">
+                        <h5 class="text-info">{{ streak_days|default:0 }}</h5>
+                        <p class="card-text text-muted">Jours consécutifs</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Continue Learning Section -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Continuer l'apprentissage</h5>
+            </div>
+            <div class="card-body">
+                {% if current_lesson %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ current_lesson.title }}</h6>
+                            <p class="text-muted mb-2">{{ current_lesson.unit.title }} - {{ current_lesson.unit.level }}</p>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {{ current_lesson.progress|default:0 }}%"></div>
+                            </div>
+                        </div>
+                        <div class="ms-3">
+                            <a href="{% url 'learning:lesson-detail' current_lesson.id %}" 
+                               class="btn btn-primary">Continuer</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <h6>Commencez votre apprentissage</h6>
+                        <p class="text-muted">Choisissez une unité pour commencer</p>
+                        <a href="{% url 'learning:units-list' %}" class="btn btn-primary">Explorer les unités</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Units -->
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Unités par niveau</h5>
+                <a href="{% url 'learning:units-list' %}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+            </div>
+            <div class="card-body">
+                {% if units_by_level %}
+                    {% for level, units in units_by_level.items %}
+                        <div class="mb-4">
+                            <h6 class="text-muted">Niveau {{ level }}</h6>
+                            <div class="row">
+                                {% for unit in units|slice:":3" %}
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card progress-card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <h6 class="card-title">{{ unit.title }}</h6>
+                                                    <span class="badge bg-secondary level-badge">{{ unit.level }}</span>
+                                                </div>
+                                                <p class="card-text text-muted small">{{ unit.description|truncatewords:10 }}</p>
+                                                <div class="progress mb-2" style="height: 6px;">
+                                                    <div class="progress-bar" role="progressbar" 
+                                                         style="width: {{ unit.progress|default:0 }}%"></div>
+                                                </div>
+                                                <small class="text-muted">{{ unit.lesson_count|default:0 }} leçons</small>
+                                            </div>
+                                            <div class="card-footer bg-transparent">
+                                                <a href="{% url 'learning:unit-detail' unit.id %}" 
+                                                   class="btn btn-sm btn-outline-primary w-100">Continuer</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <p class="text-muted">Aucune unité disponible pour le moment.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Daily Goal -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6>Objectif quotidien</h6>
+            </div>
+            <div class="card-body text-center">
+                <div class="progress-circle mb-3">
+                    <div class="progress mx-auto" style="width: 100px; height: 100px;">
+                        <div class="progress-bar progress-bar-striped" role="progressbar" 
+                             style="width: {{ daily_progress|default:0 }}%"></div>
+                    </div>
+                </div>
+                <p class="mb-2">{{ daily_lessons_completed|default:0 }} / {{ daily_goal|default:3 }} leçons</p>
+                <small class="text-muted">Vous pouvez le faire!</small>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6>Actions rapides</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'learning:vocabulary-practice' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-book"></i> Réviser le vocabulaire
+                    </a>
+                    <a href="{% url 'learning:grammar-practice' %}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-language"></i> Pratiquer la grammaire
+                    </a>
+                    <a href="{% url 'learning:speaking-practice' %}" class="btn btn-outline-warning btn-sm">
+                        <i class="fas fa-microphone"></i> Exercices de prononciation
+                    </a>
+                    <a href="{% url 'learning:test-recap' %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-quiz"></i> Tests de révision
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Achievements -->
+        <div class="card">
+            <div class="card-header">
+                <h6>Réussites récentes</h6>
+            </div>
+            <div class="card-body">
+                {% if recent_achievements %}
+                    {% for achievement in recent_achievements %}
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="badge bg-{{ achievement.color }} me-2">
+                                <i class="{{ achievement.icon }}"></i>
+                            </div>
+                            <small>{{ achievement.description }}</small>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <small class="text-muted">Aucune réussite récente.</small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation pour les cartes de progression
+        const cards = document.querySelectorAll('.progress-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
+{% endblock %}

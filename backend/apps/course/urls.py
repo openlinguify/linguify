@@ -1,5 +1,7 @@
-# backend/course/urls.py
-from django.urls import path
+# -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import (
     UnitAPIView,
     LessonAPIView,
@@ -15,15 +17,23 @@ from .views import (
     SearchVocabularyAPIView,
     LessonsByContentView,
     SpeakingExerciseViewSet,
+    TestRecapViewSet,
+    EnhancedCourseSearchView,
+    complete_lesson,
 )
 
 app_name = 'course'
 
-urlpatterns = [
+# Setup the router for ViewSets
+router = DefaultRouter()
+router.register(r'test-recap', TestRecapViewSet, basename='test-recap')
+
+# API URLs
+api_urlpatterns = [
     path('units/', UnitAPIView.as_view(), name='unit-list'),
     path('lesson/', LessonAPIView.as_view(), name='lesson-list'),
     path('content-lesson/', ContentLessonViewSet.as_view({'get': 'list'}), name='content-lesson-list'),
-    path('content-lesson/<int:lesson_id>/', ContentLessonViewSet.as_view({'get': 'retrieve'})),
+    path('content-lesson/<int:pk>/', ContentLessonViewSet.as_view({'get': 'retrieve'}), name='content-lesson-detail'),
     path('theory-content/', TheoryContentViewSet.as_view({'get': 'list'}), name='theory-content-list'),
     # Vocabulary
     path('vocabulary-list/', VocabularyListAPIView.as_view(), name='vocabulary-list'),
@@ -47,4 +57,16 @@ urlpatterns = [
     path('lessons-by-content/', LessonsByContentView.as_view(), name='lessons-by-content'),
     path('speaking-exercise/', SpeakingExerciseViewSet.as_view({'get': 'list'}), name='speaking-exercise-list'),
     path('speaking-exercise/vocabulary/', SpeakingExerciseViewSet.as_view({'get': 'get_vocabulary'}), name='speaking-exercise-vocabulary'),
+    
+    # Enhanced search and filtering API
+    path('search/', EnhancedCourseSearchView.as_view(), name='enhanced-course-search'),
+    
+    # Lesson completion endpoint
+    path('complete-lesson/', complete_lesson, name='complete-lesson'),
+    
+    # Include router URLs for TestRecap
+    path('', include(router.urls)),
 ]
+
+# Main URL patterns (API only - web interface is handled in core/urls.py)
+urlpatterns = api_urlpatterns

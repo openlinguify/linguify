@@ -1,0 +1,11 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block object-tools-items %}
+  <li>
+    <a href="{% url 'admin:matchingexercise_quick_create' %}" class="addlink">
+      Création rapide d'exercice
+    </a>
+  </li>
+  {{ block.super }}
+{% endblock %}

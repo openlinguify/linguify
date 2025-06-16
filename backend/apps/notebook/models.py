@@ -1,6 +1,6 @@
 # backend/notebook/models.py
 from django.db import models
-from authentication.models import User
+from apps.authentication.models import User
 from django.conf import settings
 
 class NoteCategory(models.Model):
@@ -52,13 +52,26 @@ class Note(models.Model):
         ('IMAGE', 'Image'),
         ('VIDEO', 'Video')
     ]
+    DIFFICULTY_CHOICES = [
+        ('BEGINNER', 'Beginner'),
+        ('INTERMEDIATE', 'Intermediate'),
+        ('ADVANCED', 'Advanced'),
+    ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notes')
     title = models.CharField(max_length=255)
-    content = models.TextField()
+    content = models.TextField(blank=True, default="") # Make content optional with default empty string
     category = models.ForeignKey(NoteCategory, on_delete=models.SET_NULL, blank=True, null=True)
     tags = models.ManyToManyField(Tag, blank=True)
     note_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='NOTE')
+    
+    # Language learning specific fields
+    language = models.CharField(max_length=50, blank=True, null=True)
+    translation = models.TextField(blank=True, null=True)
+    pronunciation = models.CharField(max_length=255, blank=True, null=True)
+    example_sentences = models.JSONField(default=list, blank=True, null=True)
+    related_words = models.JSONField(default=list, blank=True, null=True)
+    difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES, blank=True, null=True)
 
     # Metadata fields
     created_at = models.DateTimeField(auto_now_add=True)
@@ -76,6 +89,11 @@ class Note(models.Model):
         indexes = [
             models.Index(fields=['user', 'category']),
             models.Index(fields=['-updated_at']),
+            models.Index(fields=['user', 'is_archived']),
+            models.Index(fields=['user', 'is_pinned']),
+            models.Index(fields=['user', 'last_reviewed_at']),
+            models.Index(fields=['user', 'note_type']),
+            models.Index(fields=['language']),
         ]
 
     def __str__(self):
@@ -83,19 +101,18 @@ class Note(models.Model):
     
     def mark_reviewed(self):
         from django.utils import timezone
-        self.last_reviewed_at = timezone.now()
+        now = timezone.now()
+        self.last_reviewed_at = now
         self.review_count += 1
         self.save()
-
-    @property
-    def needs_review(self):
-        """Détermine si la note doit être révisée basé sur la dernière révision"""
-        if not self.last_reviewed_at:
-            return True
-        
+    
+    def _calculate_next_review_date(self, from_date=None):
         from django.utils import timezone
         from datetime import timedelta
         
+        if from_date is None:
+            from_date = timezone.now()
+            
         # Intervalle de révision basé sur le nombre de révisions
         intervals = {
             0: timedelta(days=1),
@@ -107,7 +124,21 @@ class Note(models.Model):
         }
         
         review_level = min(self.review_count, 5)
-        return timezone.now() > (self.last_reviewed_at + intervals[review_level])
+        return from_date + intervals[review_level]
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    @property
+    def needs_review(self):
+        """Détermine si la note doit être révisée basé sur la dernière révision"""
+        from django.utils import timezone
+        
+        if not self.last_reviewed_at:
+            return True
+            
+        next_review = self._calculate_next_review_date(self.last_reviewed_at)
+        return timezone.now() >= next_review
     
 class SharedNote(models.Model):
     """Modèle pour le partage de notes entre utilisateurs"""

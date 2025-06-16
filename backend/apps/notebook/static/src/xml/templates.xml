@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <!-- Template principal de l'application Notebook -->
+    <template id="notebook.NotebookApp">
+        <div class="notebook-app d-flex h-100">
+            <!-- Sidebar avec la liste des notes -->
+            <NotebookSidebar 
+                notes="filteredNotes"
+                selectedNoteId="state.selectedNoteId"
+                searchQuery="state.searchQuery"
+                selectedTags="state.selectedTags"
+                onSelectNote.bind="selectNote"
+                onCreateNote.bind="createNote"
+                onSearchChange.bind="(query) => state.searchQuery = query"
+                onTagsChange.bind="(tags) => state.selectedTags = tags"
+            />
+            
+            <!-- Zone principale d'édition -->
+            <div class="notebook-main flex-grow-1">
+                <t t-if="state.loading">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                </t>
+                
+                <t t-elif="selectedNote">
+                    <NoteEditor
+                        note="selectedNote"
+                        onSave.bind="saveNote"
+                        onDelete.bind="deleteNote"
+                    />
+                </t>
+                
+                <t t-else="">
+                    <div class="empty-state text-center p-5">
+                        <i class="bi bi-journal-text display-1 text-muted mb-3"></i>
+                        <h3 class="text-muted">Aucune note sélectionnée</h3>
+                        <p class="text-muted">
+                            Sélectionnez une note dans la liste ou créez-en une nouvelle
+                        </p>
+                        <button class="btn btn-primary" t-on-click="createNote">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Nouvelle note
+                        </button>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </template>
+
+    <!-- Template pour la sidebar -->
+    <template id="notebook.NotebookSidebar">
+        <div class="notebook-sidebar bg-light border-end">
+            <!-- En-tête avec recherche -->
+            <div class="sidebar-header p-3 border-bottom">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Mes Notes</h5>
+                    <button class="btn btn-sm btn-primary" t-on-click="onCreateNote">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>
+                
+                <!-- Barre de recherche -->
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        placeholder="Rechercher..."
+                        t-model="searchQuery"
+                        t-on-input="(ev) => onSearchChange(ev.target.value)"
+                    />
+                </div>
+            </div>
+            
+            <!-- Liste des notes -->
+            <div class="sidebar-content">
+                <NoteList
+                    notes="notes"
+                    selectedNoteId="selectedNoteId"
+                    onSelectNote="onSelectNote"
+                />
+            </div>
+        </div>
+    </template>
+
+    <!-- Template pour la liste des notes -->
+    <template id="notebook.NoteList">
+        <div class="note-list">
+            <t t-if="notes.length === 0">
+                <div class="text-center text-muted p-4">
+                    <i class="bi bi-inbox display-4"></i>
+                    <p class="mt-2">Aucune note trouvée</p>
+                </div>
+            </t>
+            
+            <t t-foreach="notes" t-as="note" t-key="note.id">
+                <div 
+                    class="note-item p-3 border-bottom cursor-pointer"
+                    t-att-class="{ 'active bg-primary-subtle': note.id === selectedNoteId }"
+                    t-on-click="() => onSelectNote(note.id)"
+                >
+                    <h6 class="mb-1 text-truncate">
+                        <t t-esc="note.title || 'Sans titre'"/>
+                    </h6>
+                    <p class="mb-1 small text-muted text-truncate">
+                        <t t-esc="note.content"/>
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <t t-esc="formatDate(note.updated_at)"/>
+                        </small>
+                        <div class="tags">
+                            <t t-foreach="note.tags" t-as="tag" t-key="tag">
+                                <span class="badge bg-secondary me-1">
+                                    <t t-esc="tag"/>
+                                </span>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </template>
+
+    <!-- Template pour l'éditeur de notes -->
+    <template id="notebook.NoteEditor">
+        <div class="note-editor h-100 d-flex flex-column">
+            <!-- Barre d'outils -->
+            <div class="editor-toolbar bg-white border-bottom p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <input 
+                        type="text" 
+                        class="form-control form-control-lg border-0 flex-grow-1"
+                        placeholder="Titre de la note"
+                        t-model="note.title"
+                        t-on-blur="() => onSave(note)"
+                    />
+                    
+                    <div class="toolbar-actions d-flex gap-2">
+                        <button 
+                            class="btn btn-sm btn-outline-secondary"
+                            t-on-click="shareNote"
+                            title="Partager"
+                        >
+                            <i class="bi bi-share"></i>
+                        </button>
+                        <button 
+                            class="btn btn-sm btn-outline-danger"
+                            t-on-click="() => onDelete(note.id)"
+                            title="Supprimer"
+                        >
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Tags -->
+                <div class="mt-2">
+                    <t t-foreach="note.tags" t-as="tag" t-key="tag">
+                        <span class="badge bg-primary me-1">
+                            <t t-esc="tag"/>
+                            <button 
+                                type="button" 
+                                class="btn-close btn-close-white ms-1"
+                                t-on-click="() => removeTag(tag)"
+                            ></button>
+                        </span>
+                    </t>
+                    <button class="btn btn-sm btn-outline-primary" t-on-click="addTag">
+                        <i class="bi bi-tag-fill me-1"></i>
+                        Ajouter un tag
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Zone d'édition -->
+            <div class="editor-content flex-grow-1 p-4">
+                <textarea 
+                    class="form-control h-100 border-0"
+                    placeholder="Commencez à écrire..."
+                    t-model="note.content"
+                    t-on-blur="() => onSave(note)"
+                ></textarea>
+            </div>
+            
+            <!-- Barre de statut -->
+            <div class="editor-status bg-light border-top px-3 py-2">
+                <small class="text-muted">
+                    Dernière modification: <t t-esc="formatDate(note.updated_at)"/>
+                </small>
+            </div>
+        </div>
+    </template>
+</templates>

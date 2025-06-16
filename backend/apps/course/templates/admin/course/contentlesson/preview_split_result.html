@@ -1,0 +1,242 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify list_extras %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+  <style>
+    .field-box {
+      margin-bottom: 15px;
+    }
+    .help-text {
+      color: #666;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+    .stats-box {
+      background-color: #f8f8f8;
+      border: 1px solid #ddd;
+      padding: 10px 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    .stats-item {
+      margin-bottom: 8px;
+    }
+    .stats-label {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    .important-note {
+      margin: 20px 0;
+      padding: 10px;
+      background-color: #fff8e1;
+      border-left: 5px solid #ffc107;
+    }
+    .preview-section {
+      margin-bottom: 30px;
+    }
+    .preview-unit {
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+    }
+    .preview-lesson {
+      margin-left: 20px;
+      padding: 10px;
+      border-left: 3px solid #0073aa;
+    }
+    .preview-content-lesson {
+      margin-left: 20px;
+      padding: 5px 10px;
+    }
+    .preview-words {
+      margin-left: 20px;
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+    .preview-word {
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .preview-word:last-child {
+      border-bottom: none;
+    }
+    .lesson-title {
+      font-weight: bold;
+      color: #0073aa;
+    }
+    .unit-title {
+      font-weight: bold;
+      color: #333;
+    }
+    .warning-badge {
+      display: inline-block;
+      background-color: #f0ad4e;
+      color: white;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-left: 5px;
+    }
+    .info-badge {
+      display: inline-block;
+      background-color: #5bc0de;
+      color: white;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-left: 5px;
+    }
+    .operations-section {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .operation-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #ddd;
+    }
+    .operation-item:last-child {
+      border-bottom: none;
+    }
+    .operation-icon {
+      margin-right: 8px;
+      color: #0073aa;
+    }
+  </style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; <a href="{% url 'admin:course_contentlesson_changelist' %}">Content Lessons</a>
+&rsaquo; <a href="{% url 'admin:course_contentlesson_split-vocabulary' content_lesson.id %}">Diviser {{ content_lesson.title_en }}</a>
+&rsaquo; Prévisualisation
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <h1>Prévisualisation de la division</h1>
+  
+  <div class="stats-box">
+    <h3>Résumé de la division</h3>
+    <div class="stats-item">
+      <span class="stats-label">Leçon originale:</span> {{ content_lesson.title_en }} ({{ vocabulary_items|length }} mots)
+    </div>
+    <div class="stats-item">
+      <span class="stats-label">Division en:</span> {{ parts }} parties
+    </div>
+    <div class="stats-item">
+      <span class="stats-label">Mode:</span> {% if manual_selection %}Sélection manuelle{% else %}Division automatique{% endif %}
+    </div>
+    <div class="stats-item">
+      <span class="stats-label">Simulation:</span> {% if dry_run %}Oui{% else %}Non{% endif %}
+    </div>
+  </div>
+  
+  {% if dry_run %}
+  <div class="important-note">
+    <p><strong>Mode simulation :</strong> Aucune modification ne sera appliquée à la base de données. Pour effectuer réellement la division, désactivez l'option "Mode simulation" dans le formulaire précédent.</p>
+  </div>
+  {% else %}
+  <div class="important-note" style="background-color: #f8d7da; border-color: #dc3545;">
+    <p><strong>Attention :</strong> Vous êtes sur le point d'effectuer des modifications réelles dans la base de données. Cette action ne peut pas être annulée automatiquement.</p>
+  </div>
+  {% endif %}
+  
+  <div class="operations-section">
+    <h3>Opérations qui seront effectuées</h3>
+    <div class="operation-item">
+      <span class="operation-icon">🔄</span>
+      <strong>Renommer</strong> la leçon "{{ current_lesson_title }}" en "{{ new_lesson_titles.0 }}"
+    </div>
+    {% for idx in new_parts_indices %}
+    <div class="operation-item">
+      <span class="operation-icon">➕</span>
+      <strong>Créer</strong> une nouvelle leçon "{{ new_lesson_titles|get_item:idx }}" dans l'unité {{ target_units|get_item:idx }}
+    </div>
+    {% endfor %}
+    
+    {% for idx in parts_range %}
+    <div class="operation-item">
+      <span class="operation-icon">📋</span>
+      <strong>Déplacer</strong> {{ word_counts|get_item:idx|default:"0" }} mots vers la partie {{ idx }}
+    </div>
+    {% endfor %}
+    
+    {% if create_matching %}
+    <div class="operation-item">
+      <span class="operation-icon">🔄</span>
+      <strong>Créer</strong> des exercices de matching pour chaque nouvelle leçon
+    </div>
+    {% endif %}
+  </div>
+  
+  <div class="preview-section">
+    <h3>Structure après division</h3>
+    
+    {% for unit_info in preview_structure %}
+    <div class="preview-unit">
+      <div class="unit-title">Unité {{ unit_info.unit.level }}-{{ unit_info.unit.order }}: {{ unit_info.unit.title_en }}</div>
+      
+      {% for lesson_info in unit_info.lessons %}
+      <div class="preview-lesson">
+        <div class="lesson-title">
+          {{ lesson_info.title }}
+          {% if lesson_info.is_new %}
+          <span class="info-badge">Nouvelle</span>
+          {% endif %}
+          {% if lesson_info.is_renamed %}
+          <span class="info-badge">Renommée</span>
+          {% endif %}
+        </div>
+        
+        <div class="preview-content-lesson">
+          ContentLesson: {{ lesson_info.content_lesson_title }}
+          <span class="stats-label">({{ lesson_info.word_count }} mots)</span>
+        </div>
+        
+        <div class="preview-words">
+          {% for word in lesson_info.words|slice:":5" %}
+          <div class="preview-word">
+            <strong>{{ word.word_en }}</strong>: {{ word.definition_en|truncatechars:80 }}
+          </div>
+          {% endfor %}
+          {% if lesson_info.words|length > 5 %}
+          <div class="preview-word">
+            ... et {{ lesson_info.words|length|add:"-5" }} autres mots
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  
+  <form action="" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="confirmation_submitted" value="1">
+    {% for param, value in params.items %}
+      <input type="hidden" name="{{ param }}" value="{{ value }}">
+    {% endfor %}
+    
+    {% for word_id, part in word_assignments.items %}
+      <input type="hidden" name="word_{{ word_id }}" value="{{ part }}">
+    {% endfor %}
+    
+    <div class="submit-row">
+      <input type="submit" value="{% if dry_run %}Simuler la division{% else %}Exécuter la division{% endif %}" class="default" name="_save">
+      <a href="{% url 'admin:course_contentlesson_split-vocabulary' content_lesson.id %}" class="closelink">Annuler</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "public_web/public_base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-warning">{% trans "Revision" %}</h1>
+                <p class="lead text-muted">{% trans "Review efficiently with smart flashcards" %}</p>
+            </div>
+            
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h3 class="mb-4">{% trans "Smart Flashcard System" %}</h3>
+                    <p class="mb-4">{% trans "Our revision system uses spaced repetition to help you memorize vocabulary and concepts efficiently." %}</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-collection text-warning me-3"></i>
+                                <span>{% trans "Smart flashcards" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-clock text-warning me-3"></i>
+                                <span>{% trans "Spaced repetition" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-brain text-warning me-3"></i>
+                                <span>{% trans "Memory optimization" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-bar-chart text-warning me-3"></i>
+                                <span>{% trans "Performance tracking" %}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'auth:login' %}" class="btn btn-warning btn-lg">{% trans "Start Reviewing" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

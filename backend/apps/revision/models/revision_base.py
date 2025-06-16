@@ -19,6 +19,8 @@ class RevisionManager(models.Manager):
 
 # Main Revision model
 class Revision(models.Model):
+    class Meta:
+        app_label = 'revision'
     revision_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=100)
     know = models.BooleanField(default=False)
@@ -49,6 +51,8 @@ class UserRevisionProgressManager(models.Manager):
 
 # Model to track user progress in revisions
 class UserRevisionProgress(models.Model):
+    class Meta:
+        app_label = 'revision'
     STATUT_CHOICES = [
         ('Not started', 'Not started'),
         ('In progress', 'In progress'),

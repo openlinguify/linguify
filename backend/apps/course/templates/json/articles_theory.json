@@ -1,0 +1,30 @@
+{
+  "en": {
+    "content": "Articles in English are small words that come before nouns to indicate whether we are referring to something specific or something general. There are two types: definite articles (the) and indefinite articles (a, an).",
+    "explanation": "Articles help clarify whether we're talking about a specific item that both the speaker and listener know about (definite) or any item of that type (indefinite). The choice of 'a' or 'an' depends on the sound that follows.",
+    "formula": "Definite article: THE (for specific items)\nIndefinite articles: A (before consonant sounds), AN (before vowel sounds)",
+    "example": "Definite: THE book on the table (we both know which book)\nIndefinite: A book (any book), AN apple (any apple)\n\nSound-based choice:\n- A university (starts with 'yu' sound)\n- AN hour (silent 'h', starts with vowel sound)",
+    "exception": "Zero article (no article) is used with:\n- Plural general nouns: Cats are independent (cats in general)\n- Uncountable nouns: Water is essential\n- Abstract nouns: Love is important\n- Proper nouns: John lives in London\n- Meals, languages, sports: I play tennis, speak English, eat breakfast"
+  },
+  "fr": {
+    "content": "Les articles en français sont des mots qui précèdent les noms pour indiquer leur genre (masculin/féminin), leur nombre (singulier/pluriel) et s'ils sont définis ou indéfinis. Il existe deux types : articles définis (le, la, les) et articles indéfinis (un, une, des).",
+    "explanation": "Les articles définis désignent quelque chose de précis et connu, tandis que les articles indéfinis désignent quelque chose d'imprécis ou de non spécifique. Le choix dépend du genre et du nombre du nom.",
+    "formula": "Articles définis: LE (masc. sing.), LA (fém. sing.), LES (pluriel)\nArticles indéfinis: UN (masc. sing.), UNE (fém. sing.), DES (pluriel)",
+    "example": "Définis: LE livre (le livre spécifique), LA table, LES enfants\nIndéfinis: UN livre (n'importe quel livre), UNE pomme, DES amis\n\nAccord en genre:\n- LE garçon (masculin)\n- LA fille (féminin)",
+    "exception": "Contractions obligatoires:\n- À + LE = AU (au restaurant)\n- À + LES = AUX (aux enfants)\n- DE + LE = DU (du pain)\n- DE + LES = DES (des étudiants)\n\nArticles partitifs: DU, DE LA, DE L', DES (pour quantités non précises)"
+  },
+  "es": {
+    "content": "Los artículos en español son palabras que preceden a los sustantivos para indicar su género (masculino/femenino), número (singular/plural) y si son definidos o indefinidos. Hay dos tipos: artículos definidos (el, la, los, las) e indefinidos (un, una, unos, unas).",
+    "explanation": "Los artículos definidos se refieren a algo específico y conocido, mientras que los indefinidos se refieren a algo no específico. La elección depende del género y número del sustantivo.",
+    "formula": "Artículos definidos: EL (masc. sing.), LA (fem. sing.), LOS (masc. pl.), LAS (fem. pl.)\nArtículos indefinidos: UN (masc. sing.), UNA (fem. sing.), UNOS (masc. pl.), UNAS (fem. pl.)",
+    "example": "Definidos: EL libro (el libro específico), LA mesa, LOS niños, LAS casas\nIndefinidos: UN libro (cualquier libro), UNA manzana, UNOS amigos, UNAS flores\n\nConcordancia de género:\n- EL chico (masculino)\n- LA chica (femenino)",
+    "exception": "Contracciones obligatorias:\n- A + EL = AL (voy al cine)\n- DE + EL = DEL (vengo del trabajo)\n\nCasos especiales:\n- Sustantivos femeninos con A/HA tónica inicial: EL agua, EL hacha (pero: la agua fría)\n- Sin artículo: nombres propios, después de SER con profesiones (es médico)"
+  },
+  "nl": {
+    "content": "Lidwoorden in het Nederlands zijn kleine woorden die voor zelfstandige naamwoorden komen. Er zijn twee soorten: bepaalde lidwoorden (de, het) en het onbepaald lidwoord (een). Het juiste lidwoord hangt af van het geslacht van het zelfstandig naamwoord.",
+    "explanation": "Bepaalde lidwoorden gebruiken we voor specifieke dingen die bekend zijn, het onbepaald lidwoord voor niet-specifieke dingen. Nederlands heeft twee geslachten: de-woorden (mannelijk/vrouwelijk) en het-woorden (onzijdig).",
+    "formula": "Bepaald lidwoord: DE (de-woorden), HET (het-woorden)\nOnbepaald lidwoord: EEN (voor alle woorden)",
+    "example": "Bepaald: DE man (de-woord), HET kind (het-woord), DE boeken (meervoud altijd DE)\nOnbepaald: EEN man, EEN kind\n\nMeervoud: altijd DE\n- DE mannen, DE kinderen",
+    "exception": "Geen lidwoord bij:\n- Onbepaald meervoud: Ik zie kinderen (niet: een kinderen)\n- Stofnamen: Water is belangrijk\n- Abstracte begrippen: Liefde is mooi\n- Na werkwoorden als 'hebben', 'zijn' met beroepen: Hij is leraar\n\nVerkleinwoorden: altijd HET\n- HET boekje, HET huisje"
+  }
+}
