@@ -227,6 +227,8 @@ CACHES = {
     }
 }
 
+#by default, we use LocMemCache for development
+
 # in production, we can use redis for caching
 # install redis and django-redis
 
