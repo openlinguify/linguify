@@ -3,6 +3,7 @@ from django.views import View
 from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.http import HttpResponse
 
 
 class LandingView(View):
@@ -144,3 +145,48 @@ class AppQuizzView(AppDetailView):
 class AppLanguageAIView(AppDetailView):
     template_name = 'public_web/apps/language_ai.html'
     app_name = 'Language AI'
+
+
+class RobotsTxtView(View):
+    """Vue pour robots.txt"""
+    def get(self, request):
+        content = """User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://www.openlinguify.com/sitemap.xml
+
+# Favicon
+Allow: /static/images/favicon.png
+"""
+        return HttpResponse(content, content_type='text/plain')
+
+
+class SitemapXmlView(View):
+    """Vue pour sitemap.xml simple"""
+    def get(self, request):
+        urls = [
+            'https://www.openlinguify.com/',
+            'https://www.openlinguify.com/features/',
+            'https://www.openlinguify.com/about/',
+            'https://www.openlinguify.com/contact/',
+            'https://www.openlinguify.com/apps/',
+            'https://www.openlinguify.com/apps/courses/',
+            'https://www.openlinguify.com/apps/revision/',
+            'https://www.openlinguify.com/apps/notebook/',
+            'https://www.openlinguify.com/apps/quizz/',
+            'https://www.openlinguify.com/apps/language-ai/',
+            'https://www.openlinguify.com/privacy/',
+            'https://www.openlinguify.com/terms/',
+            'https://www.openlinguify.com/cookies/',
+        ]
+        
+        xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
+        xml_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        
+        for url in urls:
+            xml_content += f'  <url>\n    <loc>{url}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n'
+        
+        xml_content += '</urlset>'
+        
+        return HttpResponse(xml_content, content_type='application/xml')

@@ -19,8 +19,13 @@
     <link rel="stylesheet" href="{% static 'saas_web/css/main.css' %}">
     {% block extra_css %}{% endblock %}
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+    <!-- Favicon - High quality PNG -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon.png' %}">
+    <link rel="shortcut icon" href="{% static 'images/favicon.png' %}">
     
     <style>
         :root {
