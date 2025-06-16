@@ -3,7 +3,11 @@ from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
+from django.views import View
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
 from .models import App, UserAppSettings
 from .serializers import AppSerializer, UserAppSettingsSerializer, AppToggleSerializer
 
@@ -402,3 +406,37 @@ def debug_apps(request):
         'user_created': created,
         'can_add_apps': request.user.is_staff
     })
+
+
+@method_decorator(login_required, name='dispatch')
+class AppStoreView(View):
+    """Vue de l'App Store pour gérer les applications"""
+    def get(self, request):
+        # Récupérer toutes les apps disponibles
+        apps = App.objects.filter(is_enabled=True)
+        
+        # Récupérer les settings utilisateur ou les créer
+        user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
+        enabled_app_ids = user_settings.enabled_apps.values_list('id', flat=True)
+        
+        available_apps = []
+        for app in apps:
+            available_apps.append({
+                'id': app.id,
+                'name': app.code,
+                'display_name': app.display_name,
+                'description': app.description,
+                'icon': app.icon_name or 'bi-app',
+                'color_gradient': f'linear-gradient(135deg, {app.color} 0%, {app.color}80 100%)',
+                'category': app.category,
+                'route_path': app.route_path,
+                'is_installed': app.id in enabled_app_ids,
+                'installable': app.installable,
+            })
+        
+        context = {
+            'title': _('App Store - Open Linguify'),
+            'apps': available_apps,
+            'enabled_app_ids': list(enabled_app_ids),
+        }
+        return render(request, 'app_manager/app_store.html', context)

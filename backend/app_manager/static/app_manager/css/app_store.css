@@ -288,6 +288,51 @@
     }
 }
 
+/* Modal styles */
+.modal-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.app-icon-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: white;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.modal-header h5 {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.modal-footer .btn {
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+}
+
+.modal-footer .btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: none;
+}
+
+.modal-footer .btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.modal-footer .btn-outline-secondary:hover {
+    transform: translateY(-1px);
+}
+
 /* Animation keyframes */
 @keyframes slideIn {
     from {

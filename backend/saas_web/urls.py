@@ -1,12 +1,13 @@
 from django.urls import path
 from . import views
+from app_manager.views import AppStoreView
 
 app_name = 'saas_web'
 
 urlpatterns = [
     # Dashboard et pages principales
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
-    path('app-store/', views.AppStoreView.as_view(), name='app_store'),
+    path('app-store/', AppStoreView.as_view(), name='app_store'),
     path('profile/', views.UserProfileView.as_view(), name='profile'),
     path('settings/', views.UserSettingsView.as_view(), name='settings'),
     
