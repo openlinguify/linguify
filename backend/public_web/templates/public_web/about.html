@@ -1,0 +1,250 @@
+{% extends 'public_web/public_base.html' %}
+{% load i18n %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'public_web:landing' %}">{% trans "Home" %}</a></li>
+        <li class="breadcrumb-item active">{% trans "About" %}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block page_title %}{% trans "About Open Linguify" %}{% endblock %}
+{% block page_description %}{% trans "Learn about our mission to make language learning accessible to everyone through innovative AI technology." %}{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <!-- Mission Statement -->
+    <section class="mb-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="display-5 fw-bold mb-4">{% trans "Our Mission" %}</h2>
+                <p class="lead">
+                    {% trans "We believe that language should never be a barrier to human connection, education, or opportunity." %}
+                </p>
+                <p>
+                    {% trans "Open Linguify is dedicated to making language learning accessible, effective, and enjoyable for everyone, regardless of their background, location, or resources." %}
+                </p>
+                <p>
+                    {% trans "Through cutting-edge AI technology and innovative learning methodologies, we're building the future of language education." %}
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="card bg-primary text-white">
+                    <div class="card-body p-5 text-center">
+                        <i class="fas fa-globe fa-4x mb-3"></i>
+                        <h3>{% trans "4 Languages" %}</h3>
+                        <p class="mb-0">{% trans "Currently supporting English, French, Spanish, and Dutch" %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Story -->
+    <section class="mb-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-body p-5">
+                        <h2 class="card-title text-center mb-4">{% trans "Our Story" %}</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>{% trans "The Beginning" %}</h4>
+                                <p>
+                                    {% trans "Open Linguify was born from a simple observation: traditional language learning methods weren't keeping up with the digital age." %}
+                                </p>
+                                <p>
+                                    {% trans "Founded in 2024, we set out to create a platform that combines the best of human expertise with artificial intelligence." %}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>{% trans "The Vision" %}</h4>
+                                <p>
+                                    {% trans "We envision a world where anyone can learn any language, anywhere, at any time, with personalized instruction that adapts to their unique learning style." %}
+                                </p>
+                                <p>
+                                    {% trans "Our open-source approach ensures that quality education remains accessible to all." %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Values -->
+    <section class="mb-5">
+        <h2 class="text-center mb-5">{% trans "Our Core Values" %}</h2>
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-heart fa-2x"></i>
+                        </div>
+                        <h4 class="card-title">{% trans "Accessibility" %}</h4>
+                        <p class="card-text">
+                            {% trans "Quality language education should be available to everyone, regardless of economic background or geographic location." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-lightbulb fa-2x"></i>
+                        </div>
+                        <h4 class="card-title">{% trans "Innovation" %}</h4>
+                        <p class="card-text">
+                            {% trans "We constantly push the boundaries of what's possible in language learning through AI and modern technology." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                        <h4 class="card-title">{% trans "Community" %}</h4>
+                        <p class="card-text">
+                            {% trans "Language learning is a social experience. We foster connections between learners worldwide." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Stack -->
+    <section class="mb-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card bg-light">
+                    <div class="card-body p-5">
+                        <h2 class="text-center mb-4">{% trans "Powered by Modern Technology" %}</h2>
+                        <div class="row text-center">
+                            <div class="col-md-3 mb-3">
+                                <i class="fab fa-python fa-3x text-primary mb-2"></i>
+                                <h6>Django</h6>
+                                <small class="text-muted">{% trans "Backend Framework" %}</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <i class="fab fa-react fa-3x text-info mb-2"></i>
+                                <h6>Next.js</h6>
+                                <small class="text-muted">{% trans "Frontend Framework" %}</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <i class="fas fa-robot fa-3x text-success mb-2"></i>
+                                <h6>AI Models</h6>
+                                <small class="text-muted">{% trans "Language Processing" %}</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <i class="fab fa-github fa-3x text-dark mb-2"></i>
+                                <h6>Open Source</h6>
+                                <small class="text-muted">{% trans "Transparent & Free" %}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Highlight -->
+    <section class="mb-5">
+        <h2 class="text-center mb-5">{% trans "What Makes Us Different" %}</h2>
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5>{% trans "AI-Powered Personalization" %}</h5>
+                        <p class="text-muted">
+                            {% trans "Our AI adapts to your learning style, pace, and preferences to create a truly personalized experience." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5>{% trans "Expert-Designed Curriculum" %}</h5>
+                        <p class="text-muted">
+                            {% trans "Our courses are designed by language experts and linguists to ensure effective learning outcomes." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5>{% trans "Progress Tracking" %}</h5>
+                        <p class="text-muted">
+                            {% trans "Detailed analytics help you understand your learning progress and identify areas for improvement." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5>{% trans "Cross-Platform Access" %}</h5>
+                        <p class="text-muted">
+                            {% trans "Learn anywhere with our responsive web platform and mobile apps for iOS and Android." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section>
+        <div class="card bg-primary text-white">
+            <div class="card-body p-5 text-center">
+                <h2 class="card-title">{% trans "Join the Language Learning Revolution" %}</h2>
+                <p class="lead">
+                    {% trans "Start your journey with Open Linguify today and experience the future of language education." %}
+                </p>
+                <div class="mt-4">
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'auth:register' %}" class="btn btn-light btn-lg me-3">
+                            <i class="fas fa-rocket me-2"></i>
+                            {% trans "Get Started Free" %}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'public_web:apps' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-th-large me-2"></i>
+                        {% trans "Explore Our Apps" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

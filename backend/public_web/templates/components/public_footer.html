@@ -1,0 +1,90 @@
+<!-- Footer public -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <h5 class="text-white mb-3">Open Linguify</h5>
+                <p class="text-light">
+                    Plateforme open source pour apprendre les langues de manière interactive et moderne.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="#" class="text-light fs-5">
+                        <i class="bi bi-github"></i>
+                    </a>
+                    <a href="#" class="text-light fs-5">
+                        <i class="bi bi-twitter"></i>
+                    </a>
+                    <a href="#" class="text-light fs-5">
+                        <i class="bi bi-linkedin"></i>
+                    </a>
+                    <a href="#" class="text-light fs-5">
+                        <i class="bi bi-discord"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-2 col-md-4 mb-4">
+                <h6 class="text-white mb-3">Produit</h6>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'public_web:features' %}">Fonctionnalités</a></li>
+                    <li><a href="{% url 'public_web:apps' %}">Applications</a></li>
+                    <li><a href="#">Tarifs</a></li>
+                    <li><a href="#">Roadmap</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-2 col-md-4 mb-4">
+                <h6 class="text-white mb-3">Ressources</h6>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'public_web:blog' %}">Blog</a></li>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">API</a></li>
+                    <li><a href="#">Communauté</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-2 col-md-4 mb-4">
+                <h6 class="text-white mb-3">Entreprise</h6>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'public_web:about' %}">À propos</a></li>
+                    <li><a href="{% url 'public_web:careers' %}">Carrières</a></li>
+                    <li><a href="#">Presse</a></li>
+                    <li><a href="{% url 'public_web:contact' %}">Contact</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-2 col-md-4 mb-4">
+                <h6 class="text-white mb-3">Support</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#">Centre d'aide</a></li>
+                    <li><a href="#">Statut</a></li>
+                    <li><a href="#">Signaler un bug</a></li>
+                    <li><a href="{% url 'public_web:contact' %}">Nous contacter</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <hr class="my-4 border-secondary">
+        
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="mb-0 text-light">
+                    © 2024 Open Linguify. Tous droits réservés.
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item">
+                        <a href="{% url 'public_web:privacy' %}">Confidentialité</a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="{% url 'public_web:terms' %}">CGU</a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="#">Cookies</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>

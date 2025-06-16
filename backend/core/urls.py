@@ -21,8 +21,18 @@ def redirect_to_admin(request):
     return redirect('admin/')
 
 urlpatterns = [
-    # Frontend web (remplace la redirection vers admin)
-    path('', include('frontend_web.urls')),
+    # Public website (landing, marketing)
+    path('', include('public_web.urls')),
+    
+    # SaaS application (protected routes)
+    path('', include('saas_web.urls')),
+    
+    # Authentication (login/register pages)
+    path('auth/', include('apps.authentication.urls_auth')),
+    
+    # Legacy frontend web (à supprimer après migration complète)
+    # path('legacy/', include('frontend_web.urls')),
+    
     path('admin/', admin.site.urls),
     # Add admin dashboard
     path('admin/stats/users/', include('apps.authentication.enhanced_admin.urls')),
