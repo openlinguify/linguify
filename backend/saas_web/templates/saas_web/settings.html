@@ -1,45 +1,10 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paramètres - Linguify</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    {% load static %}
-    
-    <style>
-        :root {
-            --primary-color: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary-color: #8b5cf6;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc;
-            padding-top: 70px; /* Pour le header fixe */
-            min-height: 100vh;
-        }
-        
-        .main-content {
-            min-height: 100vh;
-        }
-        
-        .content-area {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+{% extends 'saas_web/base.html' %}
+{% load static %}
+
+{% block title %}Paramètres - Open Linguify{% endblock %}
+
+{% block extra_css %}
+<style>
         
         .settings-card {
             background: white;
@@ -192,14 +157,10 @@
         .tab-content.active {
             display: block;
         }
-    </style>
-</head>
-<body>
-    <!-- Include reusable header -->
-    {% include 'components/app_header.html' %}
+</style>
+{% endblock %}
 
-    <!-- Main Content -->
-    <div class="main-content">
+{% block content %}
 
         <!-- Content Area -->
         <div class="content-area">
@@ -588,12 +549,10 @@
                 </div>
             </div>
         </div>
-    </div>
+{% endblock %}
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
+{% block extra_js %}
+<script>
         // Get CSRF token
         function getCsrfToken() {
             return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
@@ -939,6 +898,5 @@
                 });
             }
         });
-    </script>
-</body>
-</html>
+</script>
+{% endblock %}
