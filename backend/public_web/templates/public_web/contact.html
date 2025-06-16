@@ -1,0 +1,52 @@
+{% extends 'public_web/public_base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary">{% trans "Contact" %}</h1>
+                <p class="lead text-muted">{% trans "Get in touch with our support team" %}</p>
+            </div>
+            
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h3 class="mb-4">{% trans "Contact Information" %}</h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-envelope text-primary me-3 fs-4"></i>
+                                <div>
+                                    <h5 class="mb-1">{% trans "Email" %}</h5>
+                                    <p class="mb-0">support@openlinguify.org</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-github text-primary me-3 fs-4"></i>
+                                <div>
+                                    <h5 class="mb-1">{% trans "GitHub" %}</h5>
+                                    <p class="mb-0">github.com/openlinguify</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 class="mb-3">{% trans "Send us a message" %}</h4>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            {% trans "Contact form coming soon! For now, please reach out via email." %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

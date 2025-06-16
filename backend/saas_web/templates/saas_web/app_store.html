@@ -1,0 +1,453 @@
+{% extends 'saas_web/base.html' %}
+{% load static %}
+
+{% block title %}App Store - Open Linguify{% endblock %}
+
+{% block extra_css %}
+<!-- App Store Styles -->
+<link rel="stylesheet" href="{% static 'app_manager/css/app_store.css' %}">
+
+<style>
+    .app-store-container {
+        display: flex;
+        gap: 2rem;
+        padding: 2rem 0;
+    }
+    
+    .app-store-sidebar {
+        width: 250px;
+        flex-shrink: 0;
+    }
+    
+    .category-list {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    .category-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: none;
+        background: none;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        text-align: left;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .category-item:hover {
+        background: #f8fafc;
+    }
+    
+    .category-item.active {
+        background: #6366f1;
+        color: white;
+    }
+    
+    .category-item .category-icon {
+        margin-right: 0.75rem;
+        font-size: 1.1rem;
+    }
+    
+    .category-count {
+        background: rgba(0,0,0,0.1);
+        color: inherit;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .category-item.active .category-count {
+        background: rgba(255,255,255,0.2);
+    }
+    
+    .app-store-main {
+        flex: 1;
+    }
+    
+    .search-bar {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    
+    .search-bar .bi-search {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        z-index: 2;
+    }
+    
+    .search-bar input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: border-color 0.2s ease;
+    }
+    
+    .search-bar input:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .apps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6b7280;
+    }
+    
+    .empty-state .bi {
+        font-size: 3rem;
+        opacity: 0.5;
+        margin-bottom: 1rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .app-store-container {
+            flex-direction: column;
+        }
+        
+        .app-store-sidebar {
+            width: 100%;
+        }
+        
+        .category-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .category-item {
+            flex: 1;
+            min-width: 120px;
+            margin-bottom: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<div class="content-area">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <h1 class="page-title">App Store</h1>
+                <p class="page-subtitle">Découvrez et installez de nouvelles applications pour enrichir votre apprentissage</p>
+            </div>
+            <div>
+                <a href="{% url 'saas_web:dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Retour
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Store Content -->
+    <div class="app-store-container">
+        <!-- Sidebar -->
+        <aside class="app-store-sidebar">
+            <div class="category-list">
+                <h6 class="text-muted text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 0.05em;">Catégories</h6>
+                
+                <button class="category-item active" data-category="all">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-grid-3x3-gap category-icon"></i>
+                        <span>Toutes les apps</span>
+                    </div>
+                    <span class="category-count" id="count-all">{{ apps|length }}</span>
+                </button>
+                
+                <button class="category-item" data-category="learning">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-book category-icon"></i>
+                        <span>Apprentissage</span>
+                    </div>
+                    <span class="category-count" id="count-learning">3</span>
+                </button>
+                
+                <button class="category-item" data-category="productivity">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-journal-text category-icon"></i>
+                        <span>Productivité</span>
+                    </div>
+                    <span class="category-count" id="count-productivity">2</span>
+                </button>
+                
+                <button class="category-item" data-category="ai">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-robot category-icon"></i>
+                        <span>Intelligence IA</span>
+                    </div>
+                    <span class="category-count" id="count-ai">1</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-store-main">
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Rechercher une application..." id="searchInput">
+            </div>
+
+            <!-- Apps Grid -->
+            <div class="apps-grid" id="appsGrid">
+                {% for app in apps %}
+                <div class="app-store-card" data-category="{{ app.category|default:'other' }}">
+                    <div class="app-store-card-header">
+                        <div class="d-flex align-items-center">
+                            <div class="app-icon" style="background: {{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}">
+                                <i class="bi {{ app.icon|default:'bi-app' }}"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h5 class="mb-0">{{ app.display_name }}</h5>
+                                <small class="text-muted">{{ app.category|title|default:'Application' }}</small>
+                            </div>
+                        </div>
+                        {% if app.id in enabled_app_ids %}
+                            <button class="btn btn-success btn-sm toggle-btn" data-app-id="{{ app.id }}" data-enabled="true">
+                                <i class="bi bi-check-circle me-1"></i>Activée
+                            </button>
+                        {% else %}
+                            <button class="btn btn-outline-primary btn-sm toggle-btn" data-app-id="{{ app.id }}" data-enabled="false">
+                                <i class="bi bi-plus-circle me-1"></i>Activer
+                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="app-store-card-body">
+                        <p class="app-description">{{ app.description|default:'Description de l\'application.' }}</p>
+                        <div class="app-features">
+                            {% if app.features %}
+                                {% for feature in app.features %}
+                                <span class="feature-tag">{{ feature }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="app-store-card-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="app-rating">
+                                {% for i in "12345" %}
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                {% endfor %}
+                                <span class="ms-2 text-muted">4.8</span>
+                            </div>
+                            {% if app.id in enabled_app_ids %}
+                            <a href="{{ app.route_path }}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Ouvrir
+                            </a>
+                            {% else %}
+                            <button class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-info-circle me-1"></i>En savoir plus
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="bi bi-app-indicator"></i>
+                        <h5 class="mb-2">Aucune application disponible</h5>
+                        <p>Les applications seront bientôt disponibles.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Empty State (pour les recherches) -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <i class="bi bi-search"></i>
+                <h5 class="mb-2">Aucune application trouvée</h5>
+                <p>Essayez avec d'autres mots-clés</p>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- App Store JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements
+    const categoryButtons = document.querySelectorAll('.category-item');
+    const searchInput = document.getElementById('searchInput');
+    const appsGrid = document.getElementById('appsGrid');
+    const emptyState = document.getElementById('emptyState');
+    const toggleButtons = document.querySelectorAll('.toggle-btn');
+    
+    // Current filter
+    let currentCategory = 'all';
+    let currentSearch = '';
+    
+    // Category filtering
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Update active button
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update filter
+            currentCategory = this.dataset.category;
+            filterApps();
+        });
+    });
+    
+    // Search functionality
+    searchInput.addEventListener('input', function() {
+        currentSearch = this.value.toLowerCase();
+        filterApps();
+    });
+    
+    // Filter apps function
+    function filterApps() {
+        const appCards = document.querySelectorAll('.app-store-card');
+        let visibleCount = 0;
+        
+        appCards.forEach(card => {
+            const category = card.dataset.category || 'other';
+            const title = card.querySelector('h5').textContent.toLowerCase();
+            const description = card.querySelector('.app-description').textContent.toLowerCase();
+            
+            const matchesCategory = currentCategory === 'all' || category === currentCategory;
+            const matchesSearch = currentSearch === '' || 
+                                title.includes(currentSearch) || 
+                                description.includes(currentSearch);
+            
+            if (matchesCategory && matchesSearch) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Show/hide empty state
+        if (visibleCount === 0) {
+            appsGrid.style.display = 'none';
+            emptyState.style.display = 'block';
+        } else {
+            appsGrid.style.display = 'grid';
+            emptyState.style.display = 'none';
+        }
+    }
+    
+    // Toggle app functionality
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const appId = this.dataset.appId;
+            const isEnabled = this.dataset.enabled === 'true';
+            toggleApp(appId, button, isEnabled);
+        });
+    });
+    
+    function toggleApp(appId, button, isCurrentlyEnabled) {
+        const originalHTML = button.innerHTML;
+        const originalClass = button.className;
+        
+        button.disabled = true;
+        button.innerHTML = '<i class="bi bi-arrow-repeat spin me-2"></i>Traitement...';
+        
+        fetch(`{% url 'saas_web:api_app_toggle' 0 %}`.replace('0', appId), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken(),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update button state
+                if (data.is_enabled) {
+                    button.className = 'btn btn-success btn-sm toggle-btn';
+                    button.innerHTML = '<i class="bi bi-check-circle me-1"></i>Activée';
+                    button.dataset.enabled = 'true';
+                } else {
+                    button.className = 'btn btn-outline-primary btn-sm toggle-btn';
+                    button.innerHTML = '<i class="bi bi-plus-circle me-1"></i>Activer';
+                    button.dataset.enabled = 'false';
+                }
+                
+                // Update footer button
+                const card = button.closest('.app-store-card');
+                const footerBtn = card.querySelector('.app-store-card-footer .btn');
+                if (data.is_enabled) {
+                    footerBtn.outerHTML = '<a href="#" class="btn btn-primary btn-sm"><i class="bi bi-box-arrow-up-right me-1"></i>Ouvrir</a>';
+                } else {
+                    footerBtn.outerHTML = '<button class="btn btn-outline-secondary btn-sm"><i class="bi bi-info-circle me-1"></i>En savoir plus</button>';
+                }
+                
+                button.disabled = false;
+                showToast(data.message, 'success');
+            } else {
+                throw new Error(data.error || 'Erreur lors du changement d\'état');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            button.disabled = false;
+            button.innerHTML = originalHTML;
+            button.className = originalClass;
+            showToast('Erreur lors du changement d\'état de l\'application', 'error');
+        });
+    }
+    
+    function getCsrfToken() {
+        const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (csrfInput) return csrfInput.value;
+        
+        const csrfCookie = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
+        if (csrfCookie) return csrfCookie.split('=')[1];
+        
+        return '';
+    }
+    
+    function showToast(message, type) {
+        // Simple toast notification (you can enhance this)
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed`;
+        toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999;';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+});
+
+// Add spinning animation for loading
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    .spin { animation: spin 1s linear infinite; }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

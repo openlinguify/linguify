@@ -1,0 +1,55 @@
+{% extends "public_web/public_base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-info">{% trans "Notebook" %}</h1>
+                <p class="lead text-muted">{% trans "Organize your learning notes intelligently" %}</p>
+            </div>
+            
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h3 class="mb-4">{% trans "Smart Note Organization" %}</h3>
+                    <p class="mb-4">{% trans "Keep track of your language learning journey with our intelligent notebook system." %}</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-journal-text text-info me-3"></i>
+                                <span>{% trans "Rich text editor" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-tags text-info me-3"></i>
+                                <span>{% trans "Smart categorization" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-search text-info me-3"></i>
+                                <span>{% trans "Quick search" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-item">
+                                <i class="bi bi-cloud text-info me-3"></i>
+                                <span>{% trans "Cloud sync" %}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'auth:login' %}" class="btn btn-info btn-lg">{% trans "Start Taking Notes" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
