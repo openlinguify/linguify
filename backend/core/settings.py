@@ -96,8 +96,9 @@ INSTALLED_APPS = [
     'app_manager',
     'apps.quizz',
     
-    # Frontend web
-    'frontend_web',
+    # Web interfaces
+    'public_web',
+    'saas_web',
     
     # Django REST framework modules
     'rest_framework',
