@@ -75,7 +75,7 @@ class PrivacyView(View):
         context = {
             'title': _('Politique de confidentialité - Open Linguify'),
         }
-        return render(request, 'public_web/privacy.html', context)
+        return render(request, 'public_web/legal/privacy.html', context)
 
 
 class TermsView(View):
@@ -85,6 +85,15 @@ class TermsView(View):
             'title': _('Conditions d\'utilisation - Open Linguify'),
         }
         return render(request, 'public_web/legal/terms.html', context)
+
+
+class CookiesView(View):
+    """Page politique des cookies"""
+    def get(self, request):
+        context = {
+            'title': _('Politique des Cookies - Open Linguify'),
+        }
+        return render(request, 'public_web/legal/cookies.html', context)
 
 
 # Views pour les pages de présentation des apps

@@ -248,9 +248,9 @@
                                 <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
                                 <label class="form-check-label" for="terms">
                                     J'accepte les 
-                                    <a href="#" class="text-primary">conditions d'utilisation</a> 
+                                    <a href="{% url 'public_web:terms' %}" target="_blank" class="text-primary">conditions d'utilisation</a> 
                                     et la 
-                                    <a href="#" class="text-primary">politique de confidentialité</a>
+                                    <a href="{% url 'public_web:privacy' %}" target="_blank" class="text-primary">politique de confidentialité</a>
                                 </label>
                             </div>
                             
@@ -285,6 +285,12 @@
                                 <a href="/auth/login/" class="text-primary text-decoration-none fw-semibold">
                                     Se connecter
                                 </a>
+                            </p>
+                            <p class="text-muted mt-2">
+                                <small>
+                                    En vous inscrivant, vous acceptez notre 
+                                    <a href="{% url 'public_web:cookies' %}" target="_blank" class="text-secondary">politique des cookies</a>
+                                </small>
                             </p>
                         </div>
                     </div>

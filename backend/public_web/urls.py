@@ -15,6 +15,7 @@ urlpatterns = [
     # Pages légales
     path('privacy/', views.PrivacyView.as_view(), name='privacy'),
     path('terms/', views.TermsView.as_view(), name='terms'),
+    path('cookies/', views.CookiesView.as_view(), name='cookies'),
     
     # Présentation des applications
     path('apps/', views.AppsView.as_view(), name='apps'),
