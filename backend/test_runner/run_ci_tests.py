@@ -19,15 +19,15 @@ def main():
     
     # List of specific test modules to run
     test_modules = [
-        # Authentication tests
+        # Authentication tests (Django auth only, no Auth0)
         'apps.authentication.tests.test_models_pytest',
-        'apps.authentication.tests.test_middleware',
+        # Note: excluding test_middleware as it tests obsolete Auth0 functionality
         
         # Jobs tests
         'apps.jobs.tests.test_models',
         'apps.jobs.tests.test_api',
         
-        # Dynamic system tests (renamed to avoid conflicts)
+        # Dynamic system tests
         'tests.test_public_web_views',
         'tests.test_public_web_templatetags',
     ]

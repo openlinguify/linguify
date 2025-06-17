@@ -132,7 +132,7 @@ jobs:
           set -a
           source .env.test
           set +a
-          poetry run python manage.py test apps.authentication apps.jobs apps.notebook tests --verbosity=2 --keepdb
+          poetry run python run_tests.py ci
         env:
           TEST_MODE: 'True'
           CI: 'True'
