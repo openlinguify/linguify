@@ -1,6 +1,18 @@
 """
 Django settings for testing
 """
+import os
+
+# Set required environment variables for testing BEFORE importing settings
+os.environ.setdefault('SECRET_KEY', 'test-secret-key-for-testing-only')
+os.environ.setdefault('DEBUG', 'True')
+os.environ.setdefault('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+os.environ.setdefault('DB_NAME', 'test_db')
+os.environ.setdefault('DB_USER', 'postgres')
+os.environ.setdefault('DB_PASSWORD', 'postgres')
+os.environ.setdefault('DB_HOST', 'localhost')
+os.environ.setdefault('DB_PORT', '5432')
+
 from .settings import *
 
 # Use in-memory SQLite for tests to avoid PostgreSQL issues

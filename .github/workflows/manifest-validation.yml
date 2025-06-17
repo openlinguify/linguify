@@ -49,6 +49,14 @@ jobs:
           echo "=========================="
           
           export DJANGO_SETTINGS_MODULE=core.settings_test
+          export SECRET_KEY='test-secret-key-for-ci'
+          export DEBUG=True
+          export ALLOWED_HOSTS=localhost,127.0.0.1
+          export DB_NAME=test_db
+          export DB_USER=postgres
+          export DB_PASSWORD=postgres
+          export DB_HOST=localhost
+          export DB_PORT=5432
           
           # Create validation script
           cat > validate_manifests.py << 'EOF'
@@ -58,6 +66,14 @@ jobs:
           from pathlib import Path
           
           os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings_test')
+          os.environ.setdefault('SECRET_KEY', 'test-secret-key-for-ci')
+          os.environ.setdefault('DEBUG', 'True')
+          os.environ.setdefault('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+          os.environ.setdefault('DB_NAME', 'test_db')
+          os.environ.setdefault('DB_USER', 'postgres')
+          os.environ.setdefault('DB_PASSWORD', 'postgres')
+          os.environ.setdefault('DB_HOST', 'localhost')
+          os.environ.setdefault('DB_PORT', '5432')
           django.setup()
           
           from public_web.utils import AppManifestParser
@@ -130,6 +146,14 @@ jobs:
           poetry run python validate_manifests.py
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
+          SECRET_KEY: 'test-secret-key-for-ci'
+          DEBUG: 'True'
+          ALLOWED_HOSTS: 'localhost,127.0.0.1'
+          DB_NAME: 'test_db'
+          DB_USER: 'postgres'
+          DB_PASSWORD: 'postgres'
+          DB_HOST: 'localhost'
+          DB_PORT: '5432'
 
       - name: Check manifest file syntax
         run: |
@@ -151,12 +175,28 @@ jobs:
           echo "🔍 Testing App Discovery"
           
           export DJANGO_SETTINGS_MODULE=core.settings_test
+          export SECRET_KEY='test-secret-key-for-ci'
+          export DEBUG=True
+          export ALLOWED_HOSTS=localhost,127.0.0.1
+          export DB_NAME=test_db
+          export DB_USER=postgres
+          export DB_PASSWORD=postgres
+          export DB_HOST=localhost
+          export DB_PORT=5432
           
           cat > test_discovery.py << 'EOF'
           import os
           import django
           
           os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings_test')
+          os.environ.setdefault('SECRET_KEY', 'test-secret-key-for-ci')
+          os.environ.setdefault('DEBUG', 'True')
+          os.environ.setdefault('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+          os.environ.setdefault('DB_NAME', 'test_db')
+          os.environ.setdefault('DB_USER', 'postgres')
+          os.environ.setdefault('DB_PASSWORD', 'postgres')
+          os.environ.setdefault('DB_HOST', 'localhost')
+          os.environ.setdefault('DB_PORT', '5432')
           django.setup()
           
           from public_web.utils import manifest_parser
@@ -185,6 +225,14 @@ jobs:
           poetry run python test_discovery.py
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
+          SECRET_KEY: 'test-secret-key-for-ci'
+          DEBUG: 'True'
+          ALLOWED_HOSTS: 'localhost,127.0.0.1'
+          DB_NAME: 'test_db'
+          DB_USER: 'postgres'
+          DB_PASSWORD: 'postgres'
+          DB_HOST: 'localhost'
+          DB_PORT: '5432'
 
   notify-manifest-issues:
     name: Notify on manifest issues
