@@ -13,6 +13,32 @@ os.environ.setdefault('DB_PASSWORD', 'postgres')
 os.environ.setdefault('DB_HOST', 'localhost')
 os.environ.setdefault('DB_PORT', '5432')
 
+# Supabase test configuration
+os.environ.setdefault('SUPABASE_URL', 'https://test.supabase.co')
+os.environ.setdefault('SUPABASE_ANON_KEY', 'test-anon-key')
+os.environ.setdefault('SUPABASE_SERVICE_ROLE_KEY', 'test-service-role-key')
+os.environ.setdefault('SUPABASE_PROJECT_ID', 'test-project-id')
+os.environ.setdefault('SUPABASE_JWT_SECRET', 'test-jwt-secret')
+
+# Auth0 test configuration
+os.environ.setdefault('AUTH0_DOMAIN', 'test.auth0.com')
+os.environ.setdefault('AUTH0_CLIENT_ID', 'test-client-id')
+os.environ.setdefault('AUTH0_CLIENT_SECRET', 'test-client-secret')
+os.environ.setdefault('AUTH0_AUDIENCE', 'https://test-api')
+
+# Other optional environment variables
+os.environ.setdefault('REDIS_URL', 'redis://localhost:6379/1')
+os.environ.setdefault('OPENAI_API_KEY', 'test-openai-key')
+os.environ.setdefault('STRIPE_PUBLIC_KEY', 'pk_test_123')
+os.environ.setdefault('STRIPE_SECRET_KEY', 'sk_test_123')
+os.environ.setdefault('EMAIL_HOST', 'localhost')
+os.environ.setdefault('EMAIL_PORT', '587')
+os.environ.setdefault('EMAIL_HOST_USER', 'test@example.com')
+os.environ.setdefault('EMAIL_HOST_PASSWORD', 'test-password')
+os.environ.setdefault('DEFAULT_FROM_EMAIL', 'noreply@test.com')
+os.environ.setdefault('FRONTEND_URL', 'http://localhost:3000')
+os.environ.setdefault('BACKEND_URL', 'http://localhost:8000')
+
 from .settings import *
 
 # Use in-memory SQLite for tests to avoid PostgreSQL issues
