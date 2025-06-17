@@ -100,7 +100,7 @@ msgid "Spaced repetition system with smart flashcards for optimal memorization."
 msgstr "Système de répétition espacée avec flashcards intelligentes pour une mémorisation optimale."
 
 msgid "Notebook"
-msgstr "Carnet"
+msgstr "Notes"
 
 msgid "Centralized note-taking with intelligent organization and advanced search."
 msgstr "Prise de notes centralisée avec organisation intelligente et recherche avancée."

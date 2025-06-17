@@ -92,36 +92,9 @@
                         {% elif LANGUAGE_CODE == 'en' %}<img src="{% static 'img/country_flags/gb.png' %}" alt="United Kingdom" style="width: 20px; height: auto;" class="me-1">
                         {% elif LANGUAGE_CODE == 'es' %}<img src="{% static 'img/country_flags/es.png' %}" alt="Spain" style="width: 20px; height: auto;" class="me-1">
                         {% elif LANGUAGE_CODE == 'nl' %}<img src="{% static 'img/country_flags/nl.png' %}" alt="Netherlands" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'en-au' %}<img src="{% static 'img/country_flags/au.png' %}" alt="Australia" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'en-nz' %}<img src="{% static 'img/country_flags/nz.png' %}" alt="New Zealand" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'es-419' %}<img src="{% static 'img/country_flags/419.png' %}" alt="Latin America" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'pt-br' %}<img src="{% static 'img/country_flags/br.png' %}" alt="Brazil" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'fr-ca' %}<img src="{% static 'img/country_flags/ca.png' %}" alt="Canada" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'zh-hans' %}<img src="{% static 'img/country_flags/cn.png' %}" alt="China" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'ja' %}<img src="{% static 'img/country_flags/jp.png' %}" alt="Japan" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'ko' %}<img src="{% static 'img/country_flags/kr.png' %}" alt="South Korea" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'hi' %}<img src="{% static 'img/country_flags/in.png' %}" alt="India" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'de' %}<img src="{% static 'img/country_flags/de.png' %}" alt="Germany" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'it' %}<img src="{% static 'img/country_flags/it.png' %}" alt="Italy" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'pt' %}<img src="{% static 'img/country_flags/pt.png' %}" alt="Portugal" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'ru' %}<img src="{% static 'img/country_flags/ru.png' %}" alt="Russia" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'pl' %}<img src="{% static 'img/country_flags/pl.png' %}" alt="Poland" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'tr' %}<img src="{% static 'img/country_flags/tr.png' %}" alt="Turkey" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'sv' %}<img src="{% static 'img/country_flags/se.png' %}" alt="Sweden" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'no' %}<img src="{% static 'img/country_flags/no.png' %}" alt="Norway" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'el' %}<img src="{% static 'img/country_flags/gr.png' %}" alt="Greece" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'uk' %}<img src="{% static 'img/country_flags/ua.png' %}" alt="Ukraine" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'ro' %}<img src="{% static 'img/country_flags/ro.png' %}" alt="Romania" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'hu' %}<img src="{% static 'img/country_flags/hu.png' %}" alt="Hungary" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'cs' %}<img src="{% static 'img/country_flags/cz.png' %}" alt="Czech Republic" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'fi' %}<img src="{% static 'img/country_flags/fi.png' %}" alt="Finland" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'da' %}<img src="{% static 'img/country_flags/dk.png' %}" alt="Denmark" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'af' %}<img src="{% static 'img/country_flags/za.png' %}" alt="South Africa" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'ar' %}<img src="{% static 'img/country_flags/sa.png' %}" alt="Saudi Arabia" style="width: 20px; height: auto;" class="me-1">
                         {% else %}<img src="{% static 'img/country_flags/gb.png' %}" alt="United Kingdom" style="width: 20px; height: auto;" class="me-1">{% endif %}
                     </button>
                     <ul class="dropdown-menu language-dropdown">
-                        <!-- Main languages -->
                         <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">
                             <img src="{% static 'img/country_flags/gb.png' %}" alt="UK" style="width: 20px; height: auto;" class="me-2"> English
                         </a></li>
@@ -133,95 +106,6 @@
                         </a></li>
                         <li><a class="dropdown-item" href="#" onclick="setLanguage('nl')">
                             <img src="{% static 'img/country_flags/nl.png' %}" alt="Netherlands" style="width: 20px; height: auto;" class="me-2"> Nederlands
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <!-- English variants -->
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('en-au')">
-                            <img src="{% static 'img/country_flags/au.png' %}" alt="Australia" style="width: 20px; height: auto;" class="me-2"> English (Australia)
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('en-nz')">
-                            <img src="{% static 'img/country_flags/nz.png' %}" alt="New Zealand" style="width: 20px; height: auto;" class="me-2"> English (New Zealand)
-                        </a></li>
-                        <!-- Spanish variants -->
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('es-419')">
-                            <img src="{% static 'img/country_flags/419.png' %}" alt="Latin America" style="width: 20px; height: auto;" class="me-2"> Español (América Latina)
-                        </a></li>
-                        <!-- Portuguese -->
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('pt-br')">
-                            <img src="{% static 'img/country_flags/br.png' %}" alt="Brazil" style="width: 20px; height: auto;" class="me-2"> Português (Brasil)
-                        </a></li>
-                        <!-- French variants -->
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('fr-ca')">
-                            <img src="{% static 'img/country_flags/ca.png' %}" alt="Canada" style="width: 20px; height: auto;" class="me-2"> Français (Canada)
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <!-- Asian languages -->
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('zh-hans')">
-                            <img src="{% static 'img/country_flags/cn.png' %}" alt="China" style="width: 20px; height: auto;" class="me-2"> 中文 (简体)
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">
-                            <img src="{% static 'img/country_flags/jp.png' %}" alt="Japan" style="width: 20px; height: auto;" class="me-2"> 日本語
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('ko')">
-                            <img src="{% static 'img/country_flags/kr.png' %}" alt="South Korea" style="width: 20px; height: auto;" class="me-2"> 한국어
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('hi')">
-                            <img src="{% static 'img/country_flags/in.png' %}" alt="India" style="width: 20px; height: auto;" class="me-2"> हिन्दी
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <!-- European languages -->
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('de')">
-                            <img src="{% static 'img/country_flags/de.png' %}" alt="Germany" style="width: 20px; height: auto;" class="me-2"> Deutsch
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('it')">
-                            <img src="{% static 'img/country_flags/it.png' %}" alt="Italy" style="width: 20px; height: auto;" class="me-2"> Italiano
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('pt')">
-                            <img src="{% static 'img/country_flags/pt.png' %}" alt="Portugal" style="width: 20px; height: auto;" class="me-2"> Português
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('ru')">
-                            <img src="{% static 'img/country_flags/ru.png' %}" alt="Russia" style="width: 20px; height: auto;" class="me-2"> Русский
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('pl')">
-                            <img src="{% static 'img/country_flags/pl.png' %}" alt="Poland" style="width: 20px; height: auto;" class="me-2"> Polski
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('tr')">
-                            <img src="{% static 'img/country_flags/tr.png' %}" alt="Turkey" style="width: 20px; height: auto;" class="me-2"> Türkçe
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('sv')">
-                            <img src="{% static 'img/country_flags/se.png' %}" alt="Sweden" style="width: 20px; height: auto;" class="me-2"> Svenska
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('no')">
-                            <img src="{% static 'img/country_flags/no.png' %}" alt="Norway" style="width: 20px; height: auto;" class="me-2"> Norsk
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('el')">
-                            <img src="{% static 'img/country_flags/gr.png' %}" alt="Greece" style="width: 20px; height: auto;" class="me-2"> Ελληνικά
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('uk')">
-                            <img src="{% static 'img/country_flags/ua.png' %}" alt="Ukraine" style="width: 20px; height: auto;" class="me-2"> Українська
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('ro')">
-                            <img src="{% static 'img/country_flags/ro.png' %}" alt="Romania" style="width: 20px; height: auto;" class="me-2"> Română
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('hu')">
-                            <img src="{% static 'img/country_flags/hu.png' %}" alt="Hungary" style="width: 20px; height: auto;" class="me-2"> Magyar
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('cs')">
-                            <img src="{% static 'img/country_flags/cz.png' %}" alt="Czech Republic" style="width: 20px; height: auto;" class="me-2"> Čeština
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('fi')">
-                            <img src="{% static 'img/country_flags/fi.png' %}" alt="Finland" style="width: 20px; height: auto;" class="me-2"> Suomi
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('da')">
-                            <img src="{% static 'img/country_flags/dk.png' %}" alt="Denmark" style="width: 20px; height: auto;" class="me-2"> Dansk
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <!-- African/Middle Eastern languages -->
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('af')">
-                            <img src="{% static 'img/country_flags/za.png' %}" alt="South Africa" style="width: 20px; height: auto;" class="me-2"> Afrikaans
-                        </a></li>
-                        <li><a class="dropdown-item" href="#" onclick="setLanguage('ar')">
-                            <img src="{% static 'img/country_flags/sa.png' %}" alt="Saudi Arabia" style="width: 20px; height: auto;" class="me-2"> العربية
                         </a></li>
                     </ul>
                 </div>

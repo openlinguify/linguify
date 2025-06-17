@@ -405,30 +405,12 @@ USE_I18N = True  # Re-enabled with English as default
 USE_L10N = True
 USE_TZ = True
 
-# Supported languages
+# Supported languages - Focus on business value with 4 main languages
 LANGUAGES = [
-    # Main languages
     ('en', 'English'),
     ('fr', 'Français'),
     ('es', 'Español'),
     ('nl', 'Nederlands'),
-    # English variants
-    ('en-au', 'English (Australia)'),
-    ('en-nz', 'English (New Zealand)'),
-    # Spanish variants
-    ('es-419', 'Español (América Latina)'),
-    # Portuguese
-    ('pt-br', 'Português (Brasil)'),
-    # French variants
-    ('fr-ca', 'Français (Canada)'),
-    # Asian languages
-    ('zh-hans', 'Chinese (Simplified)'),
-    ('ja', '日本語'),
-    ('ko', '한국어'),
-    ('hi', 'हिन्दी'),
-    # African languages
-    ('af', 'Afrikaans'),
-    ('ar', 'العربية'),
 ]
 
 # Locale paths - Each app has its own i18n folder (app-specific translations have priority)
@@ -495,6 +477,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'public_web', 'static'),
+    os.path.join(BASE_DIR, 'saas_web', 'static'),
 ]
 
 STATICFILES_FINDERS = [
@@ -742,5 +726,3 @@ STRUCTURED_DATA_ORGANIZATION = {
         'https://github.com/openlinguify'
     ]
 }
-
-# Note: 'core' is now included in INSTALLED_APPS above
