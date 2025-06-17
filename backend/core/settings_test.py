@@ -28,11 +28,11 @@ os.environ.setdefault('SUPABASE_DB_PASSWORD', 'test-password')
 os.environ.setdefault('SUPABASE_DB_HOST', 'localhost')
 os.environ.setdefault('SUPABASE_DB_PORT', '6543')
 
-# Auth0 test configuration
-os.environ.setdefault('AUTH0_DOMAIN', 'test.auth0.com')
-os.environ.setdefault('AUTH0_CLIENT_ID', 'test-client-id')
-os.environ.setdefault('AUTH0_CLIENT_SECRET', 'test-client-secret')
-os.environ.setdefault('AUTH0_AUDIENCE', 'https://test-api')
+# DEPRECATED: Auth0 test configuration (REMOVED - now using Django+Supabase)
+# os.environ.setdefault('AUTH0_DOMAIN', 'test.auth0.com')
+# os.environ.setdefault('AUTH0_CLIENT_ID', 'test-client-id')
+# os.environ.setdefault('AUTH0_CLIENT_SECRET', 'test-client-secret')
+# os.environ.setdefault('AUTH0_AUDIENCE', 'https://test-api')
 
 # Other optional environment variables
 os.environ.setdefault('REDIS_URL', 'redis://localhost:6379/1')

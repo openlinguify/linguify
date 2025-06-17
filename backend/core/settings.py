@@ -194,31 +194,31 @@ if DEBUG:
     # print("WARNING: Authentication bypass is enabled for development!")
     # print("This should NEVER be used in production!")
 
-# Legacy Auth0 Configuration (for migration purposes)
-AUTH0_DOMAIN = env('AUTH0_DOMAIN', default='')
-AUTH0_CLIENT_ID = env('AUTH0_CLIENT_ID', default='')
-AUTH0_CLIENT_SECRET = env('AUTH0_CLIENT_SECRET', default='')
-AUTH0_AUDIENCE = env('AUTH0_AUDIENCE', default='')
-AUTH0_CALLBACK_URL = f"{BACKEND_URL}/api/auth/callback/"
-# DEPRECATED: Ces variables seront supprimées avec le frontend Next.js
-FRONTEND_CALLBACK_URL = f"{BASE_URL}/auth/login/"  # Redirection vers le login Django
-FRONTEND_LOGOUT_REDIRECT = f"{BASE_URL}/"  # Redirection vers la landing page Django
-AUTH0_ALGORITHM = 'RS256'
+# DEPRECATED: Auth0 Configuration (REMOVED - now using Django + Supabase authentication)
+# AUTH0_DOMAIN = env('AUTH0_DOMAIN', default='')
+# AUTH0_CLIENT_ID = env('AUTH0_CLIENT_ID', default='')
+# AUTH0_CLIENT_SECRET = env('AUTH0_CLIENT_SECRET', default='')
+# AUTH0_AUDIENCE = env('AUTH0_AUDIENCE', default='')
+# AUTH0_CALLBACK_URL = f"{BACKEND_URL}/api/auth/callback/"
+# FRONTEND_CALLBACK_URL = f"{BASE_URL}/auth/login/"
+# FRONTEND_LOGOUT_REDIRECT = f"{BASE_URL}/"  # Redirection vers la landing page Django
+# AUTH0_ALGORITHM = 'RS256'
 
-JWT_AUTH = {
-    'JWT_PAYLOAD_GET_USERNAME_HANDLER':
-        'apps.authentication.utils.jwt_get_username_from_payload_handler',
-    'JWT_DECODE_HANDLER':
-        'apps.authentication.utils.jwt_decode_token',
-    'JWT_ALGORITHM': 'RS256',
-    'JWT_AUDIENCE': AUTH0_AUDIENCE,
-    'JWT_ISSUER': f'https://{AUTH0_DOMAIN}/',
-    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-    'JWT_VERIFY_EXPIRATION': False, 
-    'JWT_ALLOW_REFRESH': True,
-    'JWT_EXPIRATION_DELTA': timedelta(days=7),
-    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
-}
+# DEPRECATED: JWT_AUTH configuration (REMOVED - now using Django sessions + Supabase)
+# JWT_AUTH = {
+#     'JWT_PAYLOAD_GET_USERNAME_HANDLER':
+#         'apps.authentication.utils.jwt_get_username_from_payload_handler',
+#     'JWT_DECODE_HANDLER':
+#         'apps.authentication.utils.jwt_decode_token',
+#     'JWT_ALGORITHM': 'RS256',
+#     'JWT_AUDIENCE': AUTH0_AUDIENCE,
+#     'JWT_ISSUER': f'https://{AUTH0_DOMAIN}/',
+#     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+#     'JWT_VERIFY_EXPIRATION': False, 
+#     'JWT_ALLOW_REFRESH': True,
+#     'JWT_EXPIRATION_DELTA': timedelta(days=7),
+#     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
+# }
 
 CACHES = {
     'default': {

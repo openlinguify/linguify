@@ -13,7 +13,7 @@ from drf_spectacular.views import (
     SpectacularRedocView
     )
 from apps.authentication.views_terms import accept_terms, terms_status
-from test_settings import test_settings
+from tests.test_settings import test_settings
 from django.contrib.sitemaps.views import sitemap, index as sitemap_index
 from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
 
