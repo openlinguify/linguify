@@ -17,13 +17,16 @@ urlpatterns = [
     path('terms/', views.TermsView.as_view(), name='terms'),
     path('cookies/', views.CookiesView.as_view(), name='cookies'),
     
-    # Présentation des applications
-    path('apps/', views.AppsView.as_view(), name='apps'),
+    # Présentation des applications (legacy)
+    path('apps/', views.DynamicAppsListView.as_view(), name='apps'),
     path('apps/courses/', views.AppCoursesView.as_view(), name='app_courses'),
     path('apps/revision/', views.AppRevisionView.as_view(), name='app_revision'),
     path('apps/notebook/', views.AppNotebookView.as_view(), name='app_notebook'),
     path('apps/quizz/', views.AppQuizzView.as_view(), name='app_quizz'),
     path('apps/language-ai/', views.AppLanguageAIView.as_view(), name='app_language_ai'),
+    
+    # Dynamic app routes (new system)
+    path('apps/<str:app_slug>/', views.DynamicAppDetailView.as_view(), name='dynamic_app_detail'),
     
     # SEO Files
     path('robots.txt', views.RobotsTxtView.as_view(), name='robots_txt'),

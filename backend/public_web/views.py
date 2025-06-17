@@ -3,7 +3,8 @@ from django.views import View
 from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
+from .utils import manifest_parser
 
 
 class LandingView(View):
@@ -123,27 +124,27 @@ class AppDetailView(View):
 
 # Vues spécifiques pour chaque app
 class AppCoursesView(AppDetailView):
-    template_name = 'public_web/apps/courses.html'
+    template_name = 'public_web/apps/app_courses.html'
     app_name = 'Courses'
 
 
 class AppRevisionView(AppDetailView):
-    template_name = 'public_web/apps/revision.html'
+    template_name = 'public_web/apps/app_revision.html'
     app_name = 'Revision'
 
 
 class AppNotebookView(AppDetailView):
-    template_name = 'public_web/apps/notebook.html'
+    template_name = 'public_web/apps/app_notebook.html'
     app_name = 'Notebook'
 
 
 class AppQuizzView(AppDetailView):
-    template_name = 'public_web/apps/quizz.html'
+    template_name = 'public_web/apps/app_quizz.html'
     app_name = 'Quiz'
 
 
 class AppLanguageAIView(AppDetailView):
-    template_name = 'public_web/apps/language_ai.html'
+    template_name = 'public_web/apps/app_language_ai.html'
     app_name = 'Language AI'
 
 
@@ -190,3 +191,46 @@ class SitemapXmlView(View):
         xml_content += '</urlset>'
         
         return HttpResponse(xml_content, content_type='application/xml')
+
+
+# Dynamic App Views
+class DynamicAppsListView(View):
+    """Dynamic view for listing all available apps"""
+    def get(self, request):
+        apps = manifest_parser.get_public_apps()
+        context = {
+            'title': _('Applications - Open Linguify'),
+            'meta_description': _('Découvrez toutes les applications Open Linguify'),
+            'apps': apps,
+        }
+        return render(request, 'public_web/apps/apps_list.html', context)
+
+
+class DynamicAppDetailView(View):
+    """Dynamic view for individual app pages"""
+    def get(self, request, app_slug):
+        app = manifest_parser.get_app_by_slug(app_slug)
+        if not app:
+            raise Http404("Application not found")
+        
+        # Try to use specific template first, fallback to generic
+        template_candidates = [
+            f'public_web/apps/app_{app_slug}.html',
+            'public_web/apps/app_detail.html',
+        ]
+        
+        context = {
+            'title': f'{app["name"]} - Open Linguify',
+            'meta_description': f'Découvrez {app["name"]} sur Open Linguify - {app["summary"]}',
+            'app': app,
+        }
+        
+        # Try each template until we find one that exists
+        for template in template_candidates:
+            try:
+                return render(request, template, context)
+            except:
+                continue
+        
+        # If no template found, use the generic one
+        return render(request, 'public_web/apps/app_detail.html', context)

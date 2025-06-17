@@ -1,5 +1,6 @@
 {% extends 'public_web/public_base.html' %}
 {% load static %}
+{% load app_tags %}
 
 {% block title %}Fonctionnalités - Open Linguify{% endblock %}
 
@@ -63,6 +64,11 @@
                         <li><i class="bi bi-check text-success me-2"></i>Tests de compréhension</li>
                         <li><i class="bi bi-check text-success me-2"></i>Suivi de progression</li>
                     </ul>
+                    <div class="mt-3">
+                        <a href="{% url 'public_web:app_courses' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -83,6 +89,11 @@
                         <li><i class="bi bi-check text-success me-2"></i>Statistiques détaillées</li>
                         <li><i class="bi bi-check text-success me-2"></i>Import/Export de decks</li>
                     </ul>
+                    <div class="mt-3">
+                        <a href="{% url 'public_web:app_revision' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -103,6 +114,11 @@
                         <li><i class="bi bi-check text-success me-2"></i>Recherche full-text</li>
                         <li><i class="bi bi-check text-success me-2"></i>Partage de notes</li>
                     </ul>
+                    <div class="mt-3">
+                        <a href="{% url 'public_web:app_notebook' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -123,6 +139,11 @@
                         <li><i class="bi bi-check text-success me-2"></i>Analyses détaillées</li>
                         <li><i class="bi bi-check text-success me-2"></i>Recommandations</li>
                     </ul>
+                    <div class="mt-3">
+                        <a href="{% url 'public_web:app_quizz' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -143,6 +164,11 @@
                         <li><i class="bi bi-check text-success me-2"></i>Suggestions contextuelles</li>
                         <li><i class="bi bi-check text-success me-2"></i>Exercices personnalisés</li>
                     </ul>
+                    <div class="mt-3">
+                        <a href="{% url 'public_web:app_language_ai' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
+                        </a>
+                    </div>
                 </div>
             </div>
 
