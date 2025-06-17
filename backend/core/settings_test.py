@@ -20,6 +20,14 @@ os.environ.setdefault('SUPABASE_SERVICE_ROLE_KEY', 'test-service-role-key')
 os.environ.setdefault('SUPABASE_PROJECT_ID', 'test-project-id')
 os.environ.setdefault('SUPABASE_JWT_SECRET', 'test-jwt-secret')
 
+# Supabase Database test configuration
+os.environ.setdefault('USE_SUPABASE_DB', 'False')  # Force SQLite for tests
+os.environ.setdefault('SUPABASE_DB_NAME', 'postgres')
+os.environ.setdefault('SUPABASE_DB_USER', 'test-user')
+os.environ.setdefault('SUPABASE_DB_PASSWORD', 'test-password')
+os.environ.setdefault('SUPABASE_DB_HOST', 'localhost')
+os.environ.setdefault('SUPABASE_DB_PORT', '6543')
+
 # Auth0 test configuration
 os.environ.setdefault('AUTH0_DOMAIN', 'test.auth0.com')
 os.environ.setdefault('AUTH0_CLIENT_ID', 'test-client-id')
