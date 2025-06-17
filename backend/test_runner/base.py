@@ -28,8 +28,8 @@ class BaseTestRunner(ABC):
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         sys.path.append(project_root)
         
-        # Set the Django settings module
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
+        # Set the Django settings module to test settings
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings_test')
         
         # Set minimum required environment variables for testing
         os.environ.setdefault('SECRET_KEY', 'test-secret-key-for-linguify-tests')
