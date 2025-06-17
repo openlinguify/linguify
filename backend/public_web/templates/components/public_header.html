@@ -1,6 +1,7 @@
 <!-- Header public pour le site marketing -->
 {% load i18n %}
 {% load static %}
+{% load app_tags %}
 
 <style>
 /* Styles supprimés - on utilise maintenant les images PNG */
@@ -55,21 +56,7 @@
                             {% trans "Apps" %}
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'public_web:app_courses' %}">
-                                <i class="bi bi-book me-2"></i>Courses
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'public_web:app_revision' %}">
-                                <i class="bi bi-cards me-2"></i>Revision
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'public_web:app_notebook' %}">
-                                <i class="bi bi-journal-text me-2"></i>Notebook
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'public_web:app_quizz' %}">
-                                <i class="bi bi-question-circle me-2"></i>Quiz
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'public_web:app_language_ai' %}">
-                                <i class="bi bi-robot me-2"></i>Language AI
-                            </a></li>
+                            {% dynamic_apps_dropdown %}
                         </ul>
                     </li>
                     <li class="nav-item">

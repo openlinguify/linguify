@@ -1,0 +1,181 @@
+name: Dynamic System Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/public_web/**'
+      - 'backend/tests/test_public_web_*.py'
+      - 'backend/core/settings_test.py'
+      - '.github/workflows/dynamic-system-tests.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/public_web/**'
+      - 'backend/tests/test_public_web_*.py'
+      - 'backend/core/settings_test.py'
+      - '.github/workflows/dynamic-system-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  test-dynamic-system:
+    name: Test Dynamic App Management System
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./backend
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12"]
+        test-group: [
+          "manifest_parser",
+          "views", 
+          "templatetags",
+          "integration"
+        ]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v4
+        with:
+          poetry-version: '1.7.1'
+
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.create false
+
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      - name: Install dependencies
+        run: |
+          poetry install
+          poetry add --group dev pytest-django pytest-mock
+
+      - name: Setup test environment
+        run: |
+          echo "Setting up test environment for dynamic system tests"
+          export DJANGO_SETTINGS_MODULE=core.settings_test
+        env:
+          DJANGO_SETTINGS_MODULE: 'core.settings_test'
+
+      - name: Run manifest parser tests
+        if: matrix.test-group == 'manifest_parser'
+        run: |
+          echo "🧪 Testing Manifest Parser"
+          export DJANGO_SETTINGS_MODULE=core.settings_test
+          poetry run python manage.py test tests.test_public_web_dynamic_system.AppManifestParserTest --verbosity=2
+        env:
+          DJANGO_SETTINGS_MODULE: 'core.settings_test'
+
+      - name: Run views tests
+        if: matrix.test-group == 'views'
+        run: |
+          echo "🧪 Testing Dynamic Views"
+          export DJANGO_SETTINGS_MODULE=core.settings_test
+          poetry run python manage.py test tests.test_public_web_views --verbosity=2
+        env:
+          DJANGO_SETTINGS_MODULE: 'core.settings_test'
+
+      - name: Run templatetags tests
+        if: matrix.test-group == 'templatetags'
+        run: |
+          echo "🧪 Testing Template Tags"
+          export DJANGO_SETTINGS_MODULE=core.settings_test
+          poetry run python manage.py test tests.test_public_web_templatetags --verbosity=2
+        env:
+          DJANGO_SETTINGS_MODULE: 'core.settings_test'
+
+      - name: Run integration tests
+        if: matrix.test-group == 'integration'
+        run: |
+          echo "🧪 Testing System Integration"
+          export DJANGO_SETTINGS_MODULE=core.settings_test
+          poetry run python manage.py test tests.test_public_web_integration --verbosity=2
+        env:
+          DJANGO_SETTINGS_MODULE: 'core.settings_test'
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.test-group }}-${{ matrix.python-version }}
+          path: backend/test-results/
+
+  test-summary:
+    name: Dynamic System Test Summary
+    needs: test-dynamic-system
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check test results
+        run: |
+          echo "🎯 Dynamic System Test Summary"
+          echo "============================="
+          if [[ "${{ needs.test-dynamic-system.result }}" == "success" ]]; then
+            echo "✅ All dynamic system tests passed!"
+            echo "📊 Test Coverage:"
+            echo "  ✓ Manifest Parser"
+            echo "  ✓ Dynamic Views"
+            echo "  ✓ Template Tags"
+            echo "  ✓ System Integration"
+          else
+            echo "❌ Some dynamic system tests failed"
+            exit 1
+          fi
+
+  notify:
+    name: Notify on failure
+    needs: [test-dynamic-system]
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    
+    steps:
+      - name: Create issue on test failure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowName = "Dynamic System Tests";
+            const runId = "${{ github.run_id }}";
+            const branch = "${{ github.ref_name }}";
+            const repo = context.repo;
+            const issueTitle = `🚨 Dynamic System Tests Failed on ${branch}`;
+            const issueBody = `The **${workflowName}** workflow failed on the \`${branch}\` branch.
+
+            **Failed Components**:
+            - Manifest Parser Tests
+            - Dynamic Views Tests  
+            - Template Tags Tests
+            - Integration Tests
+
+            **Run URL**: [View Failed Run](https://github.com/${repo.owner}/${repo.repo}/actions/runs/${runId})
+
+            **Time**: ${new Date().toISOString()}
+
+            The dynamic app management system requires immediate attention. Please investigate and fix the failing tests.`;
+
+            await github.rest.issues.create({
+              owner: repo.owner,
+              repo: repo.repo,
+              title: issueTitle,
+              body: issueBody,
+              labels: ["bug", "CI", "dynamic-system", "tests"]
+            });

@@ -127,7 +127,7 @@ jobs:
         env:
           TEST_MODE: 'True'
 
-      - name: Run tests
+      - name: Run main tests
         run: |
           set -a
           source .env.test
@@ -136,6 +136,22 @@ jobs:
         env:
           TEST_MODE: 'True'
           CI: 'True'
+      
+      - name: Run dynamic system tests
+        run: |
+          set -a
+          source .env.test
+          set +a
+          export DJANGO_SETTINGS_MODULE=core.settings_test
+          echo "🚀 Running Dynamic App Management System Tests"
+          poetry run python manage.py test tests.test_public_web_dynamic_system --verbosity=2
+          poetry run python manage.py test tests.test_public_web_views --verbosity=2  
+          poetry run python manage.py test tests.test_public_web_templatetags --verbosity=2
+          poetry run python manage.py test tests.test_public_web_integration --verbosity=2
+        env:
+          TEST_MODE: 'True'
+          CI: 'True'
+          DJANGO_SETTINGS_MODULE: 'core.settings_test'
       
       # Pas de génération de rapport pour simplifier la configuration CI
 

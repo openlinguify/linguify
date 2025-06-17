@@ -66,3 +66,59 @@ msgstr "Blog"
 
 msgid "Contact"
 msgstr "Contact"
+
+# App names
+msgid "Courses"
+msgstr "Courses"
+
+msgid "Revision"
+msgstr "Revision"
+
+msgid "Notebook" 
+msgstr "Notebook"
+
+msgid "Quiz"
+msgstr "Quiz"
+
+msgid "Language AI"
+msgstr "Language AI"
+
+# Dynamic system translations
+msgid "No apps available"
+msgstr "No apps available"
+
+msgid "Learn more"
+msgstr "Learn more"
+
+msgid "Our Applications"
+msgstr "Our Applications"
+
+msgid "Discover all Open Linguify applications"
+msgstr "Discover all Open Linguify applications"
+
+msgid "Discover our complete suite of educational applications designed to enhance your learning experience."
+msgstr "Discover our complete suite of educational applications designed to enhance your learning experience."
+
+msgid "No applications available"
+msgstr "No applications available"
+
+msgid "Applications will appear here once they are configured."
+msgstr "Applications will appear here once they are configured."
+
+msgid "Ready to start learning?"
+msgstr "Ready to start learning?"
+
+msgid "Join our community and access all these amazing educational applications."
+msgstr "Join our community and access all these amazing educational applications."
+
+msgid "Ready to try"
+msgstr "Ready to try"
+
+msgid "Start using this application now and discover how it can enhance your learning experience."
+msgstr "Start using this application now and discover how it can enhance your learning experience."
+
+msgid "This application is part of the Open Linguify educational suite."
+msgstr "This application is part of the Open Linguify educational suite."
+
+msgid "Explore App Store"
+msgstr "Explore App Store"
