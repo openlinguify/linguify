@@ -1,14 +1,15 @@
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Open Linguify - Plateforme open source d'applications éducatives{% endblock %}</title>
+    <title>{% block title %}{% trans "Open Linguify - Open source educational apps platform" %}{% endblock %}</title>
 
     <!-- SEO Meta Tags -->
     <meta name="description"
-        content="{% block meta_description %}Open Linguify est une plateforme open source d'applications éducatives : système de mémorisation, flashcards, prise de notes, quiz, chat collaboratif, classrooms et bien plus. Découvrez nos outils pour révolutionner l'apprentissage.{% endblock %}">
+        content="{% block meta_description %}{% trans 'Open Linguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning.' %}{% endblock %}">
 
 
     <meta name="keywords" content="{% block meta_keywords %}
@@ -39,8 +40,8 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
     <meta name="author" content="Open Linguify Team">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="{% block og_title %}Open Linguify - Plateforme open source pour l’éducation moderne{% endblock %}">
-<meta property="og:description" content="{% block og_description %}Découvrez une suite complète d'applications éducatives open source : mémorisation intelligente, flashcards, prise de notes, quiz interactifs, chat collaboratif, classrooms virtuelles et bien plus. Révolutionnez votre façon d'apprendre.{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}{% trans 'Open Linguify - Open source platform for modern education' %}{% endblock %}">
+<meta property="og:description" content="{% block og_description %}{% trans 'Discover a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn.' %}{% endblock %}">
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
@@ -48,8 +49,8 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{% block twitter_title %}Open Linguify - Plateforme open source pour l'éducation moderne{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_description %}Suite complète d'applications éducatives open source : mémorisation, flashcards, notes, quiz, chat collaboratif et bien plus.{% endblock %}">
+    <meta name="twitter:title" content="{% block twitter_title %}{% trans 'Open Linguify - Open source platform for modern education' %}{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}{% trans 'Complete suite of open source educational apps: memorization, flashcards, notes, quizzes, collaborative chat and much more.' %}{% endblock %}">
     <meta name="twitter:image" content="{% static 'public_web/images/og-image.png' %}">
     
     <!-- Additional SEO -->
@@ -186,6 +187,41 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
 
     <!-- Custom JS -->
     <script src="{% static 'public_web/js/main.js' %}"></script>
+    
+    <!-- Language switching -->
+    <script>
+    function setLanguage(lang) {
+        // Create form to submit language change
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/i18n/setlang/';
+        
+        // Add CSRF token
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = '{{ csrf_token }}';
+        form.appendChild(csrfInput);
+        
+        // Add language
+        const langInput = document.createElement('input');
+        langInput.type = 'hidden';
+        langInput.name = 'language';
+        langInput.value = lang;
+        form.appendChild(langInput);
+        
+        // Add next URL
+        const nextInput = document.createElement('input');
+        nextInput.type = 'hidden';
+        nextInput.name = 'next';
+        nextInput.value = window.location.pathname;
+        form.appendChild(nextInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+    </script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 

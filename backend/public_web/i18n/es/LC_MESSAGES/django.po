@@ -1,0 +1,291 @@
+# SPANISH TRANSLATION FOR PUBLIC_WEB
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify Public Web\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-17 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# SEO Meta Tags
+msgid "Open Linguify - Open source educational apps platform"
+msgstr "Open Linguify - Plataforma open source de aplicaciones educativas"
+
+msgid "Open Linguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning."
+msgstr "Open Linguify es una plataforma open source de aplicaciones educativas: sistema de memorización, flashcards, toma de notas, cuestionarios, chat colaborativo, aulas y mucho más. Descubre nuestras herramientas para revolucionar el aprendizaje."
+
+msgid "Open Linguify - Open source platform for modern education"
+msgstr "Open Linguify - Plataforma open source para la educación moderna"
+
+msgid "Discover a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn."
+msgstr "Descubre una suite completa de aplicaciones educativas open source: memorización inteligente, flashcards, toma de notas, cuestionarios interactivos, chat colaborativo, aulas virtuales y mucho más. Revoluciona tu forma de aprender."
+
+msgid "Complete suite of open source educational apps: memorization, flashcards, notes, quizzes, collaborative chat and much more."
+msgstr "Suite completa de aplicaciones educativas open source: memorización, flashcards, notas, cuestionarios, chat colaborativo y mucho más."
+
+# Landing page content
+msgid "Open Source Education Apps"
+msgstr "Aplicaciones Educativas Open Source"
+
+msgid "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more."
+msgstr "Una suite completa de aplicaciones educativas open source: memorización, flashcards, toma de notas, cuestionarios, chat colaborativo y mucho más."
+
+msgid "Start for free"
+msgstr "Comenzar gratis"
+
+msgid "Discover our apps"
+msgstr "Descubrir nuestras aplicaciones"
+
+msgid "Access Dashboard"
+msgstr "Acceder al Dashboard"
+
+msgid "open linguify, educational apps, flashcards, memorization, note-taking, quizzes, collaborative chat, classrooms, open source, education, learning"
+msgstr "open linguify, aplicaciones educativas, flashcards, memorización, toma de notas, cuestionarios, chat colaborativo, aulas, open source, educación, aprendizaje"
+
+# Header navigation
+msgid "Features"
+msgstr "Características"
+
+msgid "Apps"
+msgstr "Aplicaciones"
+
+msgid "About"
+msgstr "Acerca de"
+
+msgid "Blog"
+msgstr "Blog"
+
+msgid "Contact"
+msgstr "Contacto"
+
+# Stats section
+msgid "Educational Apps"
+msgstr "Aplicaciones Educativas"
+
+msgid "Flashcards Created"
+msgstr "Flashcards Creadas"
+
+msgid "Quizzes Generated"
+msgstr "Cuestionarios Generados"
+
+msgid "Open Source"
+msgstr "Código Abierto"
+
+# Features section
+msgid "Our Educational Apps"
+msgstr "Nuestras Aplicaciones Educativas"
+
+msgid "Discover our suite of 5 apps designed to transform your learning experience. Choose one for free or access all with Premium."
+msgstr "Descubre nuestra suite de 5 aplicaciones diseñadas para transformar tu experiencia de aprendizaje. Elige una gratis o accede a todas con Premium."
+
+msgid "Courses"
+msgstr "Cursos"
+
+msgid "Structured courses with progressive lessons, interactive exercises and personalized assessments."
+msgstr "Cursos estructurados con lecciones progresivas, ejercicios interactivos y evaluaciones personalizadas."
+
+msgid "Revision"
+msgstr "Revisión"
+
+msgid "Spaced repetition system with smart flashcards for optimal memorization."
+msgstr "Sistema de repetición espaciada con flashcards inteligentes para una memorización óptima."
+
+msgid "Notebook"
+msgstr "Cuaderno"
+
+msgid "Centralized note-taking with intelligent organization and advanced search."
+msgstr "Toma de notas centralizada con organización inteligente y búsqueda avanzada."
+
+msgid "Quiz"
+msgstr "Cuestionario"
+
+msgid "Adaptive quiz system to test your knowledge and identify weak points."
+msgstr "Sistema de cuestionarios adaptativos para evaluar tus conocimientos e identificar puntos débiles."
+
+msgid "Language AI"
+msgstr "IA de Idiomas"
+
+msgid "AI assistant for natural conversations and intelligent real-time corrections."
+msgstr "Asistente de IA para conversaciones naturales y correcciones inteligentes en tiempo real."
+
+# New apps section
+msgid "New Educational Apps Coming Soon"
+msgstr "Nuevas Aplicaciones Educativas Próximamente"
+
+msgid "Our teams are actively working on innovative new educational apps to enrich our learning ecosystem. These upcoming tools will offer even more ways to master languages."
+msgstr "Nuestros equipos están trabajando activamente en nuevas aplicaciones educativas innovadoras para enriquecer nuestro ecosistema de aprendizaje. Estas próximas herramientas ofrecerán aún más formas de dominar idiomas."
+
+msgid "AI Writing Assistant"
+msgstr "Asistente de IA para Escritura"
+
+msgid "Pronunciation Trainer"
+msgstr "Entrenador de Pronunciación"
+
+msgid "Cultural Immersion"
+msgstr "Inmersión Cultural"
+
+msgid "Grammar Checker"
+msgstr "Verificador de Gramática"
+
+msgid "Join the waiting list"
+msgstr "Unirse a la lista de espera"
+
+msgid "Coming in 2025"
+msgstr "Próximamente en 2025"
+
+msgid "Neuroscience-based language acquisition"
+msgstr "Adquisición de idiomas basada en neurociencia"
+
+msgid "Native speaker community"
+msgstr "Comunidad de hablantes nativos"
+
+msgid "Industry-recognized certifications"
+msgstr "Certificaciones reconocidas por la industria"
+
+# Pricing section
+msgid "Plans adapted to your needs"
+msgstr "Planes adaptados a tus necesidades"
+
+msgid "Choose the offer that matches your goals and learning pace."
+msgstr "Elige la oferta que se adapte a tus objetivos y ritmo de aprendizaje."
+
+msgid "Free"
+msgstr "Gratis"
+
+msgid "forever"
+msgstr "para siempre"
+
+msgid "Perfect for discovering the platform"
+msgstr "Perfecto para descubrir la plataforma"
+
+msgid "Access to 1 app of your choice"
+msgstr "Acceso a 1 aplicación de tu elección"
+
+msgid "Full use of the chosen app"
+msgstr "Uso completo de la aplicación elegida"
+
+msgid "Free updates"
+msgstr "Actualizaciones gratuitas"
+
+msgid "Community support"
+msgstr "Soporte de la comunidad"
+
+msgid "Most popular"
+msgstr "Más popular"
+
+msgid "Premium"
+msgstr "Premium"
+
+msgid "per month"
+msgstr "por mes"
+
+msgid "Full access to all applications"
+msgstr "Acceso completo a todas las aplicaciones"
+
+msgid "Access to all applications"
+msgstr "Acceso a todas las aplicaciones"
+
+msgid "Courses: structured lessons"
+msgstr "Cursos: lecciones estructuradas"
+
+msgid "Revision: unlimited flashcards"
+msgstr "Revisión: flashcards ilimitadas"
+
+msgid "Notebook: unlimited notes"
+msgstr "Cuaderno: notas ilimitadas"
+
+msgid "Quiz & Language AI included"
+msgstr "Cuestionario e IA de Idiomas incluidos"
+
+msgid "7-day free trial"
+msgstr "Prueba gratuita de 7 días"
+
+# CTA section
+msgid "Ready to revolutionize your learning?"
+msgstr "¿Listo para revolucionar tu aprendizaje?"
+
+msgid "Join our community and access a complete suite of open source educational apps."
+msgstr "Únete a nuestra comunidad y accede a una suite completa de aplicaciones educativas open source."
+
+msgid "Go to Dashboard"
+msgstr "Ir al Dashboard"
+
+msgid "My Notes"
+msgstr "Mis Notas"
+
+# Footer content
+msgid "Open source educational apps platform: memorization, flashcards, notes, quizzes and collaborative chat."
+msgstr "Plataforma de aplicaciones educativas open source: memorización, flashcards, notas, cuestionarios y chat colaborativo."
+
+msgid "Product"
+msgstr "Producto"
+
+msgid "Pricing"
+msgstr "Precios"
+
+msgid "Roadmap"
+msgstr "Hoja de ruta"
+
+msgid "Resources"
+msgstr "Recursos"
+
+msgid "Documentation"
+msgstr "Documentación"
+
+msgid "API"
+msgstr "API"
+
+msgid "Community"
+msgstr "Comunidad"
+
+msgid "Company"
+msgstr "Empresa"
+
+msgid "Careers"
+msgstr "Carreras"
+
+msgid "Press"
+msgstr "Prensa"
+
+msgid "Support"
+msgstr "Soporte"
+
+msgid "Help Center"
+msgstr "Centro de ayuda"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Report a bug"
+msgstr "Reportar un error"
+
+msgid "Contact us"
+msgstr "Contáctanos"
+
+msgid "© 2025 Open Linguify. All rights reserved."
+msgstr "© 2025 Open Linguify. Todos los derechos reservados."
+
+msgid "Privacy"
+msgstr "Privacidad"
+
+msgid "Terms"
+msgstr "Términos"
+
+msgid "Cookies"
+msgstr "Cookies"
+
+# Views content
+msgid "Open Linguify - Learn languages"
+msgstr "Open Linguify - Aprende idiomas"
+
+msgid "Open source platform for learning languages"
+msgstr "Plataforma open source para aprender idiomas"

@@ -1,0 +1,41 @@
+# JAPANESE TRANSLATION FOR PUBLIC_WEB
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify Public Web\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-17 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Open Linguify - Open source educational apps platform"
+msgstr "Open Linguify - オープンソース教育アプリプラットフォーム"
+
+msgid "Open Source Education Apps"
+msgstr "オープンソース教育アプリ"
+
+msgid "Start for free"
+msgstr "無料で始める"
+
+msgid "Discover our apps"
+msgstr "アプリを探索"
+
+msgid "Features"
+msgstr "機能"
+
+msgid "Apps"
+msgstr "アプリ"
+
+msgid "About"
+msgstr "私たちについて"
+
+msgid "Contact"
+msgstr "お問い合わせ"

@@ -2,7 +2,7 @@
  * Vue principale de l'application Notebook
  */
 
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart } from "@openlinguify/owl";
 import { NoteList } from "../components/NoteList";
 import { NoteEditor } from "../components/NoteEditor";
 import { NotebookSidebar } from "../components/NotebookSidebar";

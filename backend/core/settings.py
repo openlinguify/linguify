@@ -261,6 +261,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # Language detection
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -406,19 +407,44 @@ USE_TZ = True
 
 # Supported languages
 LANGUAGES = [
-    ('fr', 'Français'),
+    # Main languages
     ('en', 'English'),
-    ('es', 'Español'), 
+    ('fr', 'Français'),
+    ('es', 'Español'),
     ('nl', 'Nederlands'),
+    # English variants
+    ('en-au', 'English (Australia)'),
+    ('en-nz', 'English (New Zealand)'),
+    # Spanish variants
+    ('es-419', 'Español (América Latina)'),
+    # Portuguese
+    ('pt-br', 'Português (Brasil)'),
+    # French variants
+    ('fr-ca', 'Français (Canada)'),
+    # Asian languages
+    ('zh-hans', 'Chinese (Simplified)'),
+    ('ja', '日本語'),
+    ('ko', '한국어'),
+    ('hi', 'हिन्दी'),
+    # African languages
+    ('af', 'Afrikaans'),
+    ('ar', 'العربية'),
 ]
 
-# Locale paths
+# Locale paths - Each app has its own i18n folder (app-specific translations have priority)
 LOCALE_PATHS = [
-    os.path.join(BASE_DIR, 'locale'),
+    os.path.join(BASE_DIR, 'public_web/i18n'),
+    os.path.join(BASE_DIR, 'saas_web/i18n'),
+    os.path.join(BASE_DIR, 'apps/authentication/i18n'),
+    os.path.join(BASE_DIR, 'apps/course/i18n'),
+    os.path.join(BASE_DIR, 'apps/revision/i18n'),
+    os.path.join(BASE_DIR, 'apps/notebook/i18n'),
+    os.path.join(BASE_DIR, 'apps/quizz/i18n'),
+    os.path.join(BASE_DIR, 'apps/language_ai/i18n'),
+    # os.path.join(BASE_DIR, 'locale'),  # Deprecated global translations
 ]
 
-# Translation middleware
-MIDDLEWARE.insert(1, 'django.middleware.locale.LocaleMiddleware')
+# Translation middleware already added in MIDDLEWARE list
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -694,9 +720,19 @@ STRUCTURED_DATA_ORGANIZATION = {
     'name': 'OpenLinguify',
     'url': SEO_BASE_URL,
     'logo': f'{SEO_BASE_URL}/static/images/logo.png',
-    'description': 'OpenLinguify is the leading AI-powered language learning platform',
+    'description': 'OpenLinguify is an open source educational platform dedicated to language learning with specialized apps for interactive education, AI-powered lessons, and personalized learning experiences.',
     'foundingDate': '2024',
     'contactEmail': 'support@openlinguify.com',
+    'educationalOrganization': True,
+    'category': [
+        'Educational Technology',
+        'Productivity',
+        'Language Learning',
+        'AI Education',
+        'E-Learning'
+    ],
+    'applicationCategory': 'Education',
+    'operatingSystem': 'Web-based',
     'sameAs': [
         'https://www.facebook.com/openlinguify',
         'https://twitter.com/openlinguify',

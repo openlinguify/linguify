@@ -35,7 +35,7 @@ class StructuredDataGenerator:
                 "@type": "Person",
                 "name": "OpenLinguify Team"
             },
-            "foundingDate": "2024",
+            "foundingDate": "2025",
             "sameAs": [
                 "https://www.facebook.com/openlinguify",
                 "https://twitter.com/openlinguify",
@@ -234,7 +234,7 @@ class StructuredDataGenerator:
                 "Offline mode"
             ],
             "softwareVersion": "2.0",
-            "datePublished": "2024-01-01",
+            "datePublished": "2025-01-01",
             "dateModified": timezone.now().isoformat()
         }
     

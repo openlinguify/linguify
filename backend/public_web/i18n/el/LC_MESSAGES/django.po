@@ -1,0 +1,239 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-17 10:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: el\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# SEO Meta Tags
+msgid "Learn Languages with AI - Interactive Language Learning Platform"
+msgstr "Μάθετε Γλώσσες με AI - Διαδραστική Πλατφόρμα Εκμάθησης Γλωσσών"
+
+msgid "Master new languages with our AI-powered interactive platform. Personalized lessons, real-time feedback, and engaging exercises for effective language learning."
+msgstr "Κατακτήστε νέες γλώσσες με την διαδραστική μας πλατφόρμα AI. Εξατομικευμένα μαθήματα, ανατροφοδότηση σε πραγματικό χρόνο και συναρπαστικές ασκήσεις για αποτελεσματική εκμάθηση γλωσσών."
+
+msgid "language learning, AI, interactive, personalized, lessons, multilingual, education"
+msgstr "εκμάθηση γλωσσών, AI, διαδραστικό, εξατομικευμένο, μαθήματα, πολυγλωσσικό, εκπαίδευση"
+
+# Navigation
+msgid "Home"
+msgstr "Αρχική"
+
+msgid "Features"
+msgstr "Χαρακτηριστικά"
+
+msgid "Pricing"
+msgstr "Τιμολόγιο"
+
+msgid "About"
+msgstr "Σχετικά"
+
+msgid "Contact"
+msgstr "Επικοινωνία"
+
+msgid "Get Started"
+msgstr "Ξεκινήστε"
+
+msgid "Sign In"
+msgstr "Σύνδεση"
+
+msgid "Language"
+msgstr "Γλώσσα"
+
+# Hero Section
+msgid "Master Languages with AI"
+msgstr "Κατακτήστε Γλώσσες με AI"
+
+msgid "Experience the future of language learning with our AI-powered platform. Personalized lessons, real-time feedback, and interactive exercises designed just for you."
+msgstr "Ζήστε το μέλλον της εκμάθησης γλωσσών με την πλατφόρμα AI. Εξατομικευμένα μαθήματα, ανατροφοδότηση σε πραγματικό χρόνο και διαδραστικές ασκήσεις σχεδιασμένες αποκλειστικά για εσάς."
+
+msgid "Start Learning Now"
+msgstr "Ξεκινήστε τη Μάθηση Τώρα"
+
+msgid "Watch Demo"
+msgstr "Παρακολουθήστε Demo"
+
+# Stats Section
+msgid "Active Learners"
+msgstr "Ενεργοί Μαθητές"
+
+msgid "Languages Available"
+msgstr "Διαθέσιμες Γλώσσες"
+
+msgid "Lessons Completed"
+msgstr "Ολοκληρωμένα Μαθήματα"
+
+msgid "Success Rate"
+msgstr "Ποσοστό Επιτυχίας"
+
+# Features Section
+msgid "Why Choose Our Platform?"
+msgstr "Γιατί να Επιλέξετε την Πλατφόρμά μας;"
+
+msgid "AI-Powered Learning"
+msgstr "Μάθηση με AI"
+
+msgid "Our advanced AI adapts to your learning style and pace, providing personalized recommendations and feedback."
+msgstr "Το προηγμένο AI μας προσαρμόζεται στο στυλ και ρυθμό εκμάθησής σας, παρέχοντας εξατομικευμένες συστάσεις και ανατροφοδότηση."
+
+msgid "Interactive Exercises"
+msgstr "Διαδραστικές Ασκήσεις"
+
+msgid "Engage with dynamic exercises including speaking practice, listening comprehension, and writing challenges."
+msgstr "Συμμετέχετε σε δυναμικές ασκήσεις που περιλαμβάνουν εξάσκηση ομιλίας, κατανόηση ακρόασης και προκλήσεις γραφής."
+
+msgid "Progress Tracking"
+msgstr "Παρακολούθηση Προόδου"
+
+msgid "Monitor your learning journey with detailed analytics and progress reports to stay motivated."
+msgstr "Παρακολουθήστε το μαθησιακό σας ταξίδι με λεπτομερή αναλυτική και αναφορές προόδου για να παραμείνετε κινητοποιημένοι."
+
+msgid "Multi-Device Access"
+msgstr "Πρόσβαση σε Πολλαπλές Συσκευές"
+
+msgid "Learn anywhere, anytime with seamless synchronization across all your devices."
+msgstr "Μαθαίνετε οπουδήποτε, οποτεδήποτε με απρόσκοπτη συγχρονισμό σε όλες τις συσκευές σας."
+
+msgid "Expert Content"
+msgstr "Περιεχόμενο Ειδικών"
+
+msgid "Curriculum designed by language experts and native speakers for authentic learning experiences."
+msgstr "Πρόγραμμα σπουδών σχεδιασμένο από ειδικούς γλωσσών και φυσικούς ομιλητές για αυθεντικές εμπειρίες εκμάθησης."
+
+msgid "Community Support"
+msgstr "Υποστήριξη Κοινότητας"
+
+msgid "Join a vibrant community of learners and get support from fellow students and instructors."
+msgstr "Ενταχθείτε σε μια ζωντανή κοινότητα μαθητών και λάβετε υποστήριξη από συναδέλφους φοιτητές και εκπαιδευτές."
+
+# Pricing Section
+msgid "Choose Your Plan"
+msgstr "Επιλέξτε το Πλάνο σας"
+
+msgid "Start your language learning journey with the plan that fits your needs."
+msgstr "Ξεκινήστε το μαθησιακό σας ταξίδι με το πλάνο που ταιριάζει στις ανάγκες σας."
+
+msgid "Free"
+msgstr "Δωρεάν"
+
+msgid "Perfect for getting started"
+msgstr "Τέλειο για να ξεκινήσετε"
+
+msgid "Access to basic lessons"
+msgstr "Πρόσβαση σε βασικά μαθήματα"
+
+msgid "Limited AI features"
+msgstr "Περιορισμένα χαρακτηριστικά AI"
+
+msgid "Community support"
+msgstr "Υποστήριξη κοινότητας"
+
+msgid "Start Free"
+msgstr "Ξεκινήστε Δωρεάν"
+
+msgid "Pro"
+msgstr "Pro"
+
+msgid "month"
+msgstr "μήνα"
+
+msgid "Best for serious learners"
+msgstr "Καλύτερο για σοβαρούς μαθητές"
+
+msgid "Unlimited lessons"
+msgstr "Απεριόριστα μαθήματα"
+
+msgid "Full AI-powered features"
+msgstr "Πλήρη χαρακτηριστικά AI"
+
+msgid "Priority support"
+msgstr "Προτεραιότητα υποστήριξης"
+
+msgid "Offline access"
+msgstr "Πρόσβαση εκτός σύνδεσης"
+
+msgid "Choose Pro"
+msgstr "Επιλέξτε Pro"
+
+msgid "Enterprise"
+msgstr "Επιχείρηση"
+
+msgid "For teams and organizations"
+msgstr "Για ομάδες και οργανισμούς"
+
+msgid "Custom solutions"
+msgstr "Προσαρμοσμένες λύσεις"
+
+msgid "Advanced analytics"
+msgstr "Προηγμένη αναλυτική"
+
+msgid "Dedicated support"
+msgstr "Αφιερωμένη υποστήριξη"
+
+msgid "Contact Sales"
+msgstr "Επικοινωνία με τις Πωλήσεις"
+
+# Footer
+msgid "Ready to start your language learning journey?"
+msgstr "Έτοιμοι να ξεκινήσετε το μαθησιακό σας ταξίδι;"
+
+msgid "Join thousands of learners who have already transformed their language skills with our AI-powered platform."
+msgstr "Ενταχθείτε σε χιλιάδες μαθητών που έχουν ήδη μετασχηματίσει τις γλωσσικές τους δεξιότητες με την πλατφόρμά μας AI."
+
+msgid "Product"
+msgstr "Προϊόν"
+
+msgid "Courses"
+msgstr "Μάθηματα"
+
+msgid "Mobile App"
+msgstr "Εφαρμογή Κινητού"
+
+msgid "API"
+msgstr "API"
+
+msgid "Company"
+msgstr "Εταιρία"
+
+msgid "Blog"
+msgstr "Blog"
+
+msgid "Careers"
+msgstr "Καριέρα"
+
+msgid "Press"
+msgstr "Τύπος"
+
+msgid "Support"
+msgstr "Υποστήριξη"
+
+msgid "Help Center"
+msgstr "Κέντρο Βοήθειας"
+
+msgid "Privacy Policy"
+msgstr "Πολιτική Απορρήτου"
+
+msgid "Terms of Service"
+msgstr "Όροι Υπηρεσίας"
+
+msgid "Legal"
+msgstr "Νομικά"
+
+msgid "Cookie Policy"
+msgstr "Πολιτική Cookies"
+
+msgid "All rights reserved."
+msgstr "Όλα τα δικαιώματα διατηρούνται."
