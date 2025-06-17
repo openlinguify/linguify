@@ -14,8 +14,8 @@ class LandingView(View):
             return redirect('saas_web:dashboard')
             
         context = {
-            'title': _('Open Linguify - Apprenez les langues'),
-            'meta_description': _('Plateforme open source pour apprendre les langues'),
+            'title': _('Open Linguify - Learn languages'),
+            'meta_description': _('Open source platform for learning languages'),
         }
         return render(request, 'public_web/landing.html', context)
 

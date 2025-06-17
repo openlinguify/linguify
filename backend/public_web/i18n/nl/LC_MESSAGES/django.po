@@ -1,0 +1,291 @@
+# DUTCH TRANSLATION FOR PUBLIC_WEB
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify Public Web\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-17 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: Dutch\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# SEO Meta Tags
+msgid "Open Linguify - Open source educational apps platform"
+msgstr "Open Linguify - Open source educatieve apps platform"
+
+msgid "Open Linguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning."
+msgstr "Open Linguify is een open source educatieve apps platform: memorisatiesysteem, flashcards, notities maken, quizzen, collaboratieve chat, klaslokalen en veel meer. Ontdek onze tools om het leren te revolutioneren."
+
+msgid "Open Linguify - Open source platform for modern education"
+msgstr "Open Linguify - Open source platform voor modern onderwijs"
+
+msgid "Discover a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn."
+msgstr "Ontdek een complete suite van open source educatieve apps: slimme memorisatie, flashcards, notities maken, interactieve quizzen, collaboratieve chat, virtuele klaslokalen en veel meer. Revolutioneer de manier waarop je leert."
+
+msgid "Complete suite of open source educational apps: memorization, flashcards, notes, quizzes, collaborative chat and much more."
+msgstr "Complete suite van open source educatieve apps: memorisatie, flashcards, notities, quizzen, collaboratieve chat en veel meer."
+
+# Landing page content
+msgid "Open Source Education Apps"
+msgstr "Open Source Educatieve Apps"
+
+msgid "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more."
+msgstr "Een complete suite van open source educatieve apps: memorisatie, flashcards, notities maken, quizzen, collaboratieve chat en veel meer."
+
+msgid "Start for free"
+msgstr "Gratis beginnen"
+
+msgid "Discover our apps"
+msgstr "Ontdek onze apps"
+
+msgid "Access Dashboard"
+msgstr "Toegang tot Dashboard"
+
+msgid "open linguify, educational apps, flashcards, memorization, note-taking, quizzes, collaborative chat, classrooms, open source, education, learning"
+msgstr "open linguify, educatieve apps, flashcards, memorisatie, notities maken, quizzen, collaboratieve chat, klaslokalen, open source, onderwijs, leren"
+
+# Header navigation
+msgid "Features"
+msgstr "Functies"
+
+msgid "Apps"
+msgstr "Apps"
+
+msgid "About"
+msgstr "Over ons"
+
+msgid "Blog"
+msgstr "Blog"
+
+msgid "Contact"
+msgstr "Contact"
+
+# Stats section
+msgid "Educational Apps"
+msgstr "Educatieve Apps"
+
+msgid "Flashcards Created"
+msgstr "Flashcards Gemaakt"
+
+msgid "Quizzes Generated"
+msgstr "Quizzen Gegenereerd"
+
+msgid "Open Source"
+msgstr "Open Source"
+
+# Features section
+msgid "Our Educational Apps"
+msgstr "Onze Educatieve Apps"
+
+msgid "Discover our suite of 5 apps designed to transform your learning experience. Choose one for free or access all with Premium."
+msgstr "Ontdek onze suite van 5 apps ontworpen om je leerervaring te transformeren. Kies er één gratis of krijg toegang tot alle met Premium."
+
+msgid "Courses"
+msgstr "Cursussen"
+
+msgid "Structured courses with progressive lessons, interactive exercises and personalized assessments."
+msgstr "Gestructureerde cursussen met progressieve lessen, interactieve oefeningen en gepersonaliseerde beoordelingen."
+
+msgid "Revision"
+msgstr "Herhaling"
+
+msgid "Spaced repetition system with smart flashcards for optimal memorization."
+msgstr "Herhalingssysteem met slimme flashcards voor optimale memorisatie."
+
+msgid "Notebook"
+msgstr "Notitieboek"
+
+msgid "Centralized note-taking with intelligent organization and advanced search."
+msgstr "Gecentraliseerde notities met intelligente organisatie en geavanceerd zoeken."
+
+msgid "Quiz"
+msgstr "Quiz"
+
+msgid "Adaptive quiz system to test your knowledge and identify weak points."
+msgstr "Adaptief quizsysteem om je kennis te testen en zwakke punten te identificeren."
+
+msgid "Language AI"
+msgstr "Taal AI"
+
+msgid "AI assistant for natural conversations and intelligent real-time corrections."
+msgstr "AI-assistent voor natuurlijke gesprekken en intelligente realtime correcties."
+
+# New apps section
+msgid "New Educational Apps Coming Soon"
+msgstr "Nieuwe Educatieve Apps Binnenkort Beschikbaar"
+
+msgid "Our teams are actively working on innovative new educational apps to enrich our learning ecosystem. These upcoming tools will offer even more ways to master languages."
+msgstr "Onze teams werken actief aan innovatieve nieuwe educatieve apps om ons leerecosysteem te verrijken. Deze aankomende tools bieden nog meer manieren om talen onder de knie te krijgen."
+
+msgid "AI Writing Assistant"
+msgstr "AI Schrijfassistent"
+
+msgid "Pronunciation Trainer"
+msgstr "Uitspraaktrainer"
+
+msgid "Cultural Immersion"
+msgstr "Culturele Onderdompeling"
+
+msgid "Grammar Checker"
+msgstr "Grammaticacontrole"
+
+msgid "Join the waiting list"
+msgstr "Doe mee met de wachtlijst"
+
+msgid "Coming in 2025"
+msgstr "Komend in 2025"
+
+msgid "Neuroscience-based language acquisition"
+msgstr "Neurowetenschappelijke taalverwerving"
+
+msgid "Native speaker community"
+msgstr "Gemeenschap van moedertaalsprekers"
+
+msgid "Industry-recognized certifications"
+msgstr "Door de industrie erkende certificeringen"
+
+# Pricing section
+msgid "Plans adapted to your needs"
+msgstr "Plannen aangepast aan je behoeften"
+
+msgid "Choose the offer that matches your goals and learning pace."
+msgstr "Kies het aanbod dat past bij je doelen en leertempo."
+
+msgid "Free"
+msgstr "Gratis"
+
+msgid "forever"
+msgstr "voor altijd"
+
+msgid "Perfect for discovering the platform"
+msgstr "Perfect om het platform te ontdekken"
+
+msgid "Access to 1 app of your choice"
+msgstr "Toegang tot 1 app naar keuze"
+
+msgid "Full use of the chosen app"
+msgstr "Volledig gebruik van de gekozen app"
+
+msgid "Free updates"
+msgstr "Gratis updates"
+
+msgid "Community support"
+msgstr "Gemeenschapsondersteuning"
+
+msgid "Most popular"
+msgstr "Meest populair"
+
+msgid "Premium"
+msgstr "Premium"
+
+msgid "per month"
+msgstr "per maand"
+
+msgid "Full access to all applications"
+msgstr "Volledige toegang tot alle applicaties"
+
+msgid "Access to all applications"
+msgstr "Toegang tot alle applicaties"
+
+msgid "Courses: structured lessons"
+msgstr "Cursussen: gestructureerde lessen"
+
+msgid "Revision: unlimited flashcards"
+msgstr "Herhaling: onbeperkte flashcards"
+
+msgid "Notebook: unlimited notes"
+msgstr "Notitieboek: onbeperkte notities"
+
+msgid "Quiz & Language AI included"
+msgstr "Quiz & Taal AI inbegrepen"
+
+msgid "7-day free trial"
+msgstr "7 dagen gratis proefperiode"
+
+# CTA section
+msgid "Ready to revolutionize your learning?"
+msgstr "Klaar om je leren te revolutioneren?"
+
+msgid "Join our community and access a complete suite of open source educational apps."
+msgstr "Sluit je aan bij onze gemeenschap en krijg toegang tot een complete suite van open source educatieve apps."
+
+msgid "Go to Dashboard"
+msgstr "Ga naar Dashboard"
+
+msgid "My Notes"
+msgstr "Mijn Notities"
+
+# Footer content
+msgid "Open source educational apps platform: memorization, flashcards, notes, quizzes and collaborative chat."
+msgstr "Open source educatieve apps platform: memorisatie, flashcards, notities, quizzen en collaboratieve chat."
+
+msgid "Product"
+msgstr "Product"
+
+msgid "Pricing"
+msgstr "Prijzen"
+
+msgid "Roadmap"
+msgstr "Roadmap"
+
+msgid "Resources"
+msgstr "Bronnen"
+
+msgid "Documentation"
+msgstr "Documentatie"
+
+msgid "API"
+msgstr "API"
+
+msgid "Community"
+msgstr "Gemeenschap"
+
+msgid "Company"
+msgstr "Bedrijf"
+
+msgid "Careers"
+msgstr "Carrières"
+
+msgid "Press"
+msgstr "Pers"
+
+msgid "Support"
+msgstr "Ondersteuning"
+
+msgid "Help Center"
+msgstr "Helpcentrum"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Report a bug"
+msgstr "Rapporteer een bug"
+
+msgid "Contact us"
+msgstr "Neem contact op"
+
+msgid "© 2025 Open Linguify. All rights reserved."
+msgstr "© 2025 Open Linguify. Alle rechten voorbehouden."
+
+msgid "Privacy"
+msgstr "Privacy"
+
+msgid "Terms"
+msgstr "Voorwaarden"
+
+msgid "Cookies"
+msgstr "Cookies"
+
+# Views content
+msgid "Open Linguify - Learn languages"
+msgstr "Open Linguify - Leer talen"
+
+msgid "Open source platform for learning languages"
+msgstr "Open source platform voor het leren van talen"

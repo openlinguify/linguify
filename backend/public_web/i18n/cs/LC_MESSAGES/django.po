@@ -1,0 +1,239 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-17 10:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1)?0:(n>=2 && n<=4)?1:2;\n"
+
+# SEO Meta Tags
+msgid "Learn Languages with AI - Interactive Language Learning Platform"
+msgstr "Učte se jazyky s AI - Interaktivní platforma pro učení jazyků"
+
+msgid "Master new languages with our AI-powered interactive platform. Personalized lessons, real-time feedback, and engaging exercises for effective language learning."
+msgstr "Zvládněte nové jazyky s naší interaktivní platformou pohaněnou AI. Personalizované lekce, zpětnou vazbu v reálném čase a poutavé cvičení pro efektivní učení jazyků."
+
+msgid "language learning, AI, interactive, personalized, lessons, multilingual, education"
+msgstr "učení jazyků, AI, interaktivní, personalizované, lekce, vícejazyčné, vzdělání"
+
+# Navigation
+msgid "Home"
+msgstr "Domů"
+
+msgid "Features"
+msgstr "Funkce"
+
+msgid "Pricing"
+msgstr "Ceny"
+
+msgid "About"
+msgstr "O nás"
+
+msgid "Contact"
+msgstr "Kontakt"
+
+msgid "Get Started"
+msgstr "Začít"
+
+msgid "Sign In"
+msgstr "Přihlásit se"
+
+msgid "Language"
+msgstr "Jazyk"
+
+# Hero Section
+msgid "Master Languages with AI"
+msgstr "Zvládněte jazyky s AI"
+
+msgid "Experience the future of language learning with our AI-powered platform. Personalized lessons, real-time feedback, and interactive exercises designed just for you."
+msgstr "Zažijte budoucnost učení jazyků s naší AI platformou. Personalizované lekce, zpětnou vazbu v reálném čase a interaktivní cvičení navržená přísně pro vás."
+
+msgid "Start Learning Now"
+msgstr "Začněte se učit teď"
+
+msgid "Watch Demo"
+msgstr "Sledovat demo"
+
+# Stats Section
+msgid "Active Learners"
+msgstr "Aktivní studenti"
+
+msgid "Languages Available"
+msgstr "Dostupné jazyky"
+
+msgid "Lessons Completed"
+msgstr "Dokončené lekce"
+
+msgid "Success Rate"
+msgstr "Úspěšnost"
+
+# Features Section
+msgid "Why Choose Our Platform?"
+msgstr "Proč si vybrat naši platformu?"
+
+msgid "AI-Powered Learning"
+msgstr "Učení pohaněné AI"
+
+msgid "Our advanced AI adapts to your learning style and pace, providing personalized recommendations and feedback."
+msgstr "Naše pokročilá AI se přizpůsobuje vašemu stylu a tempu učení a poskytuje personalizovaná doporučení a zpětnou vazbu."
+
+msgid "Interactive Exercises"
+msgstr "Interaktivní cvičení"
+
+msgid "Engage with dynamic exercises including speaking practice, listening comprehension, and writing challenges."
+msgstr "Zapojte se do dynamických cvičení včetně nácvikem mluvení, poslechového porozumění a pisících výzev."
+
+msgid "Progress Tracking"
+msgstr "Sledování pokroku"
+
+msgid "Monitor your learning journey with detailed analytics and progress reports to stay motivated."
+msgstr "Sledujte svou vzdělávací cestu s podrobnými analytickými údaji a zprávami o pokroku, abyste zůstali motivováni."
+
+msgid "Multi-Device Access"
+msgstr "Přístup z více zařízení"
+
+msgid "Learn anywhere, anytime with seamless synchronization across all your devices."
+msgstr "Učte se kdekoli, kdykoli s bezproblémovou synchronizací ve všech vašich zařízeních."
+
+msgid "Expert Content"
+msgstr "Odborný obsah"
+
+msgid "Curriculum designed by language experts and native speakers for authentic learning experiences."
+msgstr "Kurikulum navržené jazykovými experty a rozenými mluvčími pro autentické vzdělávací zážitky."
+
+msgid "Community Support"
+msgstr "Podpora komunity"
+
+msgid "Join a vibrant community of learners and get support from fellow students and instructors."
+msgstr "Připojte se k živé komunitě studentů a získejte podporu od spolužáků a instruktorů."
+
+# Pricing Section
+msgid "Choose Your Plan"
+msgstr "Vyberte si svůj plán"
+
+msgid "Start your language learning journey with the plan that fits your needs."
+msgstr "Začněte svou cestu učení jazyka s plánem, který vyhovuje vašim potřebám."
+
+msgid "Free"
+msgstr "Zdarma"
+
+msgid "Perfect for getting started"
+msgstr "Ideální pro začátky"
+
+msgid "Access to basic lessons"
+msgstr "Přístup k základním lekcím"
+
+msgid "Limited AI features"
+msgstr "Omezené AI funkce"
+
+msgid "Community support"
+msgstr "Podpora komunity"
+
+msgid "Start Free"
+msgstr "Začít zdarma"
+
+msgid "Pro"
+msgstr "Pro"
+
+msgid "month"
+msgstr "měsíc"
+
+msgid "Best for serious learners"
+msgstr "Nejlepší pro vážné studenty"
+
+msgid "Unlimited lessons"
+msgstr "Neomezené lekce"
+
+msgid "Full AI-powered features"
+msgstr "Plné AI funkce"
+
+msgid "Priority support"
+msgstr "Prioritní podpora"
+
+msgid "Offline access"
+msgstr "Offline přístup"
+
+msgid "Choose Pro"
+msgstr "Vyberte Pro"
+
+msgid "Enterprise"
+msgstr "Podnikový"
+
+msgid "For teams and organizations"
+msgstr "Pro týmy a organizace"
+
+msgid "Custom solutions"
+msgstr "Vlastní řešení"
+
+msgid "Advanced analytics"
+msgstr "Pokročilé analytiky"
+
+msgid "Dedicated support"
+msgstr "Věnovaná podpora"
+
+msgid "Contact Sales"
+msgstr "Kontaktovat prodej"
+
+# Footer
+msgid "Ready to start your language learning journey?"
+msgstr "Připraveni začít svou cestu učení jazyka?"
+
+msgid "Join thousands of learners who have already transformed their language skills with our AI-powered platform."
+msgstr "Připojte se k tisícům studentů, kteří již transformovali své jazykové dovednosti s naší AI platformou."
+
+msgid "Product"
+msgstr "Produkt"
+
+msgid "Courses"
+msgstr "Kurzy"
+
+msgid "Mobile App"
+msgstr "Mobilní aplikace"
+
+msgid "API"
+msgstr "API"
+
+msgid "Company"
+msgstr "Společnost"
+
+msgid "Blog"
+msgstr "Blog"
+
+msgid "Careers"
+msgstr "Kariéra"
+
+msgid "Press"
+msgstr "Tisk"
+
+msgid "Support"
+msgstr "Podpora"
+
+msgid "Help Center"
+msgstr "Centrum nápovědy"
+
+msgid "Privacy Policy"
+msgstr "Zásady ochrany osobních údajů"
+
+msgid "Terms of Service"
+msgstr "Podmínky služby"
+
+msgid "Legal"
+msgstr "Právní"
+
+msgid "Cookie Policy"
+msgstr "Zásady cookies"
+
+msgid "All rights reserved."
+msgstr "Všechna práva vyhrazena."

@@ -153,6 +153,42 @@
     
     <!-- Custom JS -->
     <script src="{% static 'saas_web/js/main.js' %}"></script>
+    
+    <!-- Language switching -->
+    <script>
+    function setLanguage(lang) {
+        // Create form to submit language change
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/i18n/setlang/';
+        
+        // Add CSRF token
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = '{{ csrf_token }}';
+        form.appendChild(csrfInput);
+        
+        // Add language
+        const langInput = document.createElement('input');
+        langInput.type = 'hidden';
+        langInput.name = 'language';
+        langInput.value = lang;
+        form.appendChild(langInput);
+        
+        // Add next URL
+        const nextInput = document.createElement('input');
+        nextInput.type = 'hidden';
+        nextInput.name = 'next';
+        nextInput.value = window.location.pathname;
+        form.appendChild(nextInput);
+        
+        // Submit form
+        document.body.appendChild(form);
+        form.submit();
+    }
+    </script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>

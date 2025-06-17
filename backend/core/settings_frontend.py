@@ -1,5 +1,5 @@
 # Configuration pour l'intégration du frontend OWL dans Django
-# Similaire à l'architecture Odoo
+# Similaire à l'architecture openlinguify
 
 import os
 from pathlib import Path
@@ -40,7 +40,7 @@ COMPRESS_JS_FILTERS = [
 OWL_ASSETS = {
     'owl': {
         'js': [
-            'https://cdn.jsdelivr.net/npm/@odoo/owl@2.1.1/dist/owl.iife.js',
+            'https://cdn.jsdelivr.net/npm/@openlinguify/owl@2.1.1/dist/owl.iife.js',
         ],
         'css': [],
     }

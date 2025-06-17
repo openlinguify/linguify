@@ -1,15 +1,16 @@
 {% extends 'public_web/public_base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Open Linguify - Plateforme open source d'applications éducatives{% endblock %}
+{% block title %}{% trans "Open Linguify - Open source educational apps platform" %}{% endblock %}
 
-{% block meta_description %}Open Linguify : plateforme open source d'applications éducatives. Système de mémorisation, flashcards, prise de notes, quiz, chat collaboratif, classrooms virtuelles et plus. Révolutionnez votre apprentissage.{% endblock %}
+{% block meta_description %}{% trans "Open Linguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning." %}{% endblock %}
 
-{% block meta_keywords %}open linguify, applications éducatives, flashcards, mémorisation, prise de notes, quiz, chat collaboratif, classrooms, open source, éducation, apprentissage{% endblock %}
+{% block meta_keywords %}{% trans "open linguify, educational apps, flashcards, memorization, note-taking, quizzes, collaborative chat, classrooms, open source, education, learning" %}{% endblock %}
 
-{% block og_title %}Open Linguify - Plateforme open source d'applications éducatives{% endblock %}
+{% block og_title %}{% trans "Open Linguify - Open source platform for modern education" %}{% endblock %}
 
-{% block og_description %}Découvrez une suite complète d'applications éducatives open source : mémorisation intelligente, flashcards, prise de notes, quiz interactifs, chat collaboratif, classrooms virtuelles et bien plus.{% endblock %}
+{% block og_description %}{% trans "Discover a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn." %}{% endblock %}
 
 {% block extra_head %}
 <!-- PWA Manifest -->
@@ -721,32 +722,30 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 hero-content">
                     <h1 class="hero-title animate-on-scroll">
-
-                        Open Source Education Apps
+                        {% trans "Open Source Education Apps" %}
                     </h1>
                     <p class="hero-subtitle animate-on-scroll delay-1">
-                        Une suite complète d'applications éducatives open source : mémorisation, 
-                        flashcards, prise de notes, quiz, chat collaboratif et bien plus.
+                        {% trans "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more." %}
                     </p>
                     
                     <div class="d-flex gap-3 flex-wrap animate-on-scroll delay-2">
                         {% if not user.is_authenticated %}
                             <a href="{% url 'auth:register' %}" class="btn-hero primary">
                                 <i class="fas fa-rocket"></i>
-                                Commencer gratuitement
+                                {% trans "Start for free" %}
                             </a>
                             <a href="#features" class="btn-hero secondary">
                                 <i class="fas fa-globe"></i>
-                                Découvrir nos applications
+                                {% trans "Discover our apps" %}
                             </a>
                         {% else %}
                             <a href="/dashboard/" class="btn-hero primary">
                                 <i class="bi bi-grid-3x3-gap"></i>
-                                Accéder au Dashboard
+                                {% trans "Access Dashboard" %}
                             </a>
                             <a href="/notebook/" class="btn-hero secondary">
                                 <i class="bi bi-journal-text"></i>
-                                Mes Notes
+                                {% trans "My Notes" %}
                             </a>
                         {% endif %}
                     </div>
@@ -763,25 +762,25 @@
                 <div class="col-6 col-md-3 animate-on-scroll">
                     <div class="stat-card">
                         <span class="stat-number">5</span>
-                        <div class="stat-label">Applications éducatives</div>
+                        <div class="stat-label">{% trans "Educational Apps" %}</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3 animate-on-scroll delay-1">
                     <div class="stat-card">
                         <span class="stat-number">1000+</span>
-                        <div class="stat-label">Flashcards créées</div>
+                        <div class="stat-label">{% trans "Flashcards Created" %}</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3 animate-on-scroll delay-2">
                     <div class="stat-card">
                         <span class="stat-number">500+</span>
-                        <div class="stat-label">Quiz générés</div>
+                        <div class="stat-label">{% trans "Quizzes Generated" %}</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3 animate-on-scroll delay-3">
                     <div class="stat-card">
                         <span class="stat-number">100%</span>
-                        <div class="stat-label">Open Source</div>
+                        <div class="stat-label">{% trans "Open Source" %}</div>
                     </div>
                 </div>
             </div>
@@ -792,10 +791,9 @@
     <section id="features" class="features-section">
         <div class="container">
             <div class="text-center mb-5 animate-on-scroll">
-                <h2 class="display-5 fw-bold mb-4">Nos Applications Éducatives</h2>
+                <h2 class="display-5 fw-bold mb-4">{% trans "Our Educational Apps" %}</h2>
                 <p class="lead text-muted">
-                    Découvrez notre suite de 5 applications conçues pour transformer
-                    votre expérience d'apprentissage. Choisissez-en une gratuitement ou accédez à toutes avec Premium.
+                    {% trans "Discover our suite of 5 apps designed to transform your learning experience. Choose one for free or access all with Premium." %}
                 </p>
             </div>
             
@@ -805,9 +803,9 @@
                         <div class="feature-icon">
                             <i class="fas fa-book-open"></i>
                         </div>
-                        <h3 class="feature-title">Courses</h3>
+                        <h3 class="feature-title">{% trans "Courses" %}</h3>
                         <p class="feature-description">
-                            Cours structurés avec leçons progressives, exercices interactifs et évaluations personnalisées.
+                            {% trans "Structured courses with progressive lessons, interactive exercises and personalized assessments." %}
                         </p>
                     </div>
                 </div>
@@ -817,9 +815,9 @@
                         <div class="feature-icon">
                             <i class="fas fa-brain"></i>
                         </div>
-                        <h3 class="feature-title">Revision</h3>
+                        <h3 class="feature-title">{% trans "Revision" %}</h3>
                         <p class="feature-description">
-                            Système de révision espacée avec flashcards intelligentes pour une mémorisation optimale.
+                            {% trans "Spaced repetition system with smart flashcards for optimal memorization." %}
                         </p>
                     </div>
                 </div>
@@ -829,9 +827,9 @@
                         <div class="feature-icon">
                             <i class="fas fa-notebook"></i>
                         </div>
-                        <h3 class="feature-title">Notebook</h3>
+                        <h3 class="feature-title">{% trans "Notebook" %}</h3>
                         <p class="feature-description">
-                            Prise de notes centralisée avec organisation intelligente et recherche avancée.
+                            {% trans "Centralized note-taking with intelligent organization and advanced search." %}
                         </p>
                     </div>
                 </div>
@@ -841,9 +839,9 @@
                         <div class="feature-icon">
                             <i class="fas fa-question-circle"></i>
                         </div>
-                        <h3 class="feature-title">Quiz</h3>
+                        <h3 class="feature-title">{% trans "Quiz" %}</h3>
                         <p class="feature-description">
-                            Système de quiz adaptatif pour tester vos connaissances et identifier vos points faibles.
+                            {% trans "Adaptive quiz system to test your knowledge and identify weak points." %}
                         </p>
                     </div>
                 </div>
@@ -853,9 +851,9 @@
                         <div class="feature-icon">
                             <i class="fas fa-robot"></i>
                         </div>
-                        <h3 class="feature-title">Language AI</h3>
+                        <h3 class="feature-title">{% trans "Language AI" %}</h3>
                         <p class="feature-description">
-                            Assistant IA pour conversations naturelles et corrections intelligentes en temps réel.
+                            {% trans "AI assistant for natural conversations and intelligent real-time corrections." %}
                         </p>
                     </div>
                 </div>
@@ -869,49 +867,47 @@
             <div class="new-info-card animate-on-scroll">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h2 class="h3 mb-4">Nouvelles Applications Éducatives à Venir</h2>
+                        <h2 class="h3 mb-4">{% trans "New Educational Apps Coming Soon" %}</h2>
                         <p class="mb-4 text-muted">
-                            Nos équipes travaillent activement sur de nouvelles applications éducatives 
-                            innovantes pour enrichir notre écosystème d'apprentissage. Ces outils à venir 
-                            offriront encore plus de moyens pour maîtriser les langues.
+                            {% trans "Our teams are actively working on innovative new educational apps to enrich our learning ecosystem. These upcoming tools will offer even more ways to master languages." %}
                         </p>
                         
                         <div class="mb-4">
-                            <span class="app-tag ai">Assistant IA d'Écriture</span>
-                            <span class="app-tag pronunciation">Entraîneur de Prononciation</span>
-                            <span class="app-tag cultural">Immersion Culturelle</span>
-                            <span class="app-tag grammar">Vérificateur de Grammaire</span>
+                            <span class="app-tag ai">{% trans "AI Writing Assistant" %}</span>
+                            <span class="app-tag pronunciation">{% trans "Pronunciation Trainer" %}</span>
+                            <span class="app-tag cultural">{% trans "Cultural Immersion" %}</span>
+                            <span class="app-tag grammar">{% trans "Grammar Checker" %}</span>
                         </div>
                         
                         <a href="#contact" class="btn btn-outline-primary">
-                            Rejoindre la liste d'attente
+                            {% trans "Join the waiting list" %}
                             <i class="fas fa-chevron-right ms-2"></i>
                         </a>
                     </div>
                     
                     <div class="col-md-4">
                         <div class="highlights-box">
-                            <h4 class="mb-3">À venir en 2025</h4>
+                            <h4 class="mb-3">{% trans "Coming in 2025" %}</h4>
                             
                             <div class="highlight-item">
                                 <div class="highlight-icon">
                                     <i class="fas fa-brain"></i>
                                 </div>
-                                <span>Acquisition linguistique basée sur la neuroscience</span>
+                                <span>{% trans "Neuroscience-based language acquisition" %}</span>
                             </div>
                             
                             <div class="highlight-item">
                                 <div class="highlight-icon">
                                     <i class="fas fa-users"></i>
                                 </div>
-                                <span>Communauté de locuteurs natifs</span>
+                                <span>{% trans "Native speaker community" %}</span>
                             </div>
                             
                             <div class="highlight-item">
                                 <div class="highlight-icon">
                                     <i class="fas fa-award"></i>
                                 </div>
-                                <span>Certifications reconnues par l'industrie</span>
+                                <span>{% trans "Industry-recognized certifications" %}</span>
                             </div>
                         </div>
                     </div>
@@ -924,82 +920,82 @@
     <section id="pricing" class="pricing-section">
         <div class="container">
             <div class="text-center mb-5 animate-on-scroll">
-                <h2 class="display-5 fw-bold mb-4">Des forfaits adaptés à vos besoins</h2>
+                <h2 class="display-5 fw-bold mb-4">{% trans "Plans adapted to your needs" %}</h2>
                 <p class="lead text-muted">
-                    Choisissez l'offre qui correspond à vos objectifs et à votre rythme d'apprentissage.
+                    {% trans "Choose the offer that matches your goals and learning pace." %}
                 </p>
             </div>
             
             <div class="row g-4 justify-content-center">
                 <div class="col-md-4 animate-on-scroll">
                     <div class="pricing-card">
-                        <h3 class="h4 mb-2">Gratuit</h3>
+                        <h3 class="h4 mb-2">{% trans "Free" %}</h3>
                         <div class="price-display">
                             0€
-                            <span class="price-period">pour toujours</span>
+                            <span class="price-period">{% trans "forever" %}</span>
                         </div>
-                        <p class="text-muted mb-4">Parfait pour découvrir la plateforme</p>
+                        <p class="text-muted mb-4">{% trans "Perfect for discovering the platform" %}</p>
                         
                         <ul class="feature-list mb-4">
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Accès à 1 application au choix</span>
+                                <span>{% trans "Access to 1 app of your choice" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Utilisation complète de l'app choisie</span>
+                                <span>{% trans "Full use of the chosen app" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Mises à jour gratuites</span>
+                                <span>{% trans "Free updates" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Support communautaire</span>
+                                <span>{% trans "Community support" %}</span>
                             </li>
                         </ul>
                         
                         <a href="{% url 'auth:register' %}" class="btn btn-outline-primary w-100">
-                            Commencer gratuitement
+                            {% trans "Start for free" %}
                         </a>
                     </div>
                 </div>
                 
                 <div class="col-md-4 animate-on-scroll delay-1">
                     <div class="pricing-card popular">
-                        <div class="popular-badge">Le plus populaire</div>
-                        <h3 class="h4 mb-2">Premium</h3>
+                        <div class="popular-badge">{% trans "Most popular" %}</div>
+                        <h3 class="h4 mb-2">{% trans "Premium" %}</h3>
                         <div class="price-display">
                             19,99€
-                            <span class="price-period">par mois</span>
+                            <span class="price-period">{% trans "per month" %}</span>
                         </div>
-                        <p class="text-muted mb-4">Accès complet à toutes les applications</p>
+                        <p class="text-muted mb-4">{% trans "Full access to all applications" %}</p>
                         
                         <ul class="feature-list mb-4">
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Accès à toutes les applications</span>
+                                <span>{% trans "Access to all applications" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Courses : leçons structurées</span>
+                                <span>{% trans "Courses: structured lessons" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Revision : flashcards illimitées</span>
+                                <span>{% trans "Revision: unlimited flashcards" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Notebook : notes illimitées</span>
+                                <span>{% trans "Notebook: unlimited notes" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Quiz & Language AI inclus</span>
+                                <span>{% trans "Quiz & Language AI included" %}</span>
                             </li>
                         </ul>
                         
                         <a href="{% url 'auth:register' %}" class="btn btn-primary w-100">
-                            Essai gratuit de 7 jours
+                            {% trans "7-day free trial" %}
                         </a>
                     </div>
                 </div>
@@ -1013,22 +1009,21 @@
         <div class="cta-content">
             <div class="container text-center">
                 <h2 class="display-5 fw-bold mb-4 animate-on-scroll">
-                    Prêt à révolutionner votre apprentissage ?
+                    {% trans "Ready to revolutionize your learning?" %}
                 </h2>
                 <p class="lead mb-5 animate-on-scroll delay-1" style="color: #e0e7ff;">
-                    Rejoignez notre communauté et accédez à une suite complète 
-                    d'applications éducatives open source.
+                    {% trans "Join our community and access a complete suite of open source educational apps." %}
                 </p>
                 <div class="animate-on-scroll delay-2">
                     {% if not user.is_authenticated %}
                         <a href="{% url 'auth:register' %}" class="btn-hero primary">
                             <i class="fas fa-rocket"></i>
-                            Commencer gratuitement
+                            {% trans "Start for free" %}
                         </a>
                     {% else %}
                         <a href="/dashboard/" class="btn-hero primary">
                             <i class="bi bi-grid-3x3-gap"></i>
-                            Aller au Dashboard
+                            {% trans "Go to Dashboard" %}
                         </a>
                     {% endif %}
                 </div>

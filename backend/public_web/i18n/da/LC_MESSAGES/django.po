@@ -1,0 +1,239 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-17 10:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# SEO Meta Tags
+msgid "Learn Languages with AI - Interactive Language Learning Platform"
+msgstr "Lær sprog med AI - Interaktiv sprogindlæringsplatform"
+
+msgid "Master new languages with our AI-powered interactive platform. Personalized lessons, real-time feedback, and engaging exercises for effective language learning."
+msgstr "Mestrer nye sprog med vores AI-drevne interaktive platform. Personlige lektioner, realtids feedback og engagerende øvelser til effektiv sprogindlæring."
+
+msgid "language learning, AI, interactive, personalized, lessons, multilingual, education"
+msgstr "sprogindlæring, AI, interaktiv, personlig, lektioner, flersproget, uddannelse"
+
+# Navigation
+msgid "Home"
+msgstr "Hjem"
+
+msgid "Features"
+msgstr "Funktioner"
+
+msgid "Pricing"
+msgstr "Priser"
+
+msgid "About"
+msgstr "Om"
+
+msgid "Contact"
+msgstr "Kontakt"
+
+msgid "Get Started"
+msgstr "Kom i gang"
+
+msgid "Sign In"
+msgstr "Log ind"
+
+msgid "Language"
+msgstr "Sprog"
+
+# Hero Section
+msgid "Master Languages with AI"
+msgstr "Mestrer sprog med AI"
+
+msgid "Experience the future of language learning with our AI-powered platform. Personalized lessons, real-time feedback, and interactive exercises designed just for you."
+msgstr "Oplev fremtiden for sprogindlæring med vores AI-drevne platform. Personlige lektioner, realtids feedback og interaktive øvelser designet lige til dig."
+
+msgid "Start Learning Now"
+msgstr "Start indlæring nu"
+
+msgid "Watch Demo"
+msgstr "Se demo"
+
+# Stats Section
+msgid "Active Learners"
+msgstr "Aktive lærende"
+
+msgid "Languages Available"
+msgstr "Tilgængelige sprog"
+
+msgid "Lessons Completed"
+msgstr "Afsluttede lektioner"
+
+msgid "Success Rate"
+msgstr "Succesrate"
+
+# Features Section
+msgid "Why Choose Our Platform?"
+msgstr "Hvorfor vælge vores platform?"
+
+msgid "AI-Powered Learning"
+msgstr "AI-drevet indlæring"
+
+msgid "Our advanced AI adapts to your learning style and pace, providing personalized recommendations and feedback."
+msgstr "Vores avancerede AI tilpasser sig din indlæringsstil og tempo, og giver personlige anbefalinger og feedback."
+
+msgid "Interactive Exercises"
+msgstr "Interaktive øvelser"
+
+msgid "Engage with dynamic exercises including speaking practice, listening comprehension, and writing challenges."
+msgstr "Deltag i dynamiske øvelser inkluderet taleøvelser, lyttefornemmelse og skriveutfordringer."
+
+msgid "Progress Tracking"
+msgstr "Fremgangssporing"
+
+msgid "Monitor your learning journey with detailed analytics and progress reports to stay motivated."
+msgstr "Overvåg din indlæringsrejse med detaljeret analyse og fremskridt rapporter for at forblive motiveret."
+
+msgid "Multi-Device Access"
+msgstr "Multi-enhedsadgang"
+
+msgid "Learn anywhere, anytime with seamless synchronization across all your devices."
+msgstr "Lær hvor som helst, når som helst med sømløs synkronisering på tværs af alle dine enheder."
+
+msgid "Expert Content"
+msgstr "Ekspertindhold"
+
+msgid "Curriculum designed by language experts and native speakers for authentic learning experiences."
+msgstr "Læseplan designet af sprogeksperter og indretalere for autentiske indlæringsoplevelser."
+
+msgid "Community Support"
+msgstr "Fællesskabsstøtte"
+
+msgid "Join a vibrant community of learners and get support from fellow students and instructors."
+msgstr "Tilslut dig et levende fællesskab af lærende og få støtte fra medstuderende og instruktører."
+
+# Pricing Section
+msgid "Choose Your Plan"
+msgstr "Vælg din plan"
+
+msgid "Start your language learning journey with the plan that fits your needs."
+msgstr "Start din sprogindlæringsrejse med planen, der passer til dine behov."
+
+msgid "Free"
+msgstr "Gratis"
+
+msgid "Perfect for getting started"
+msgstr "Perfekt til at komme i gang"
+
+msgid "Access to basic lessons"
+msgstr "Adgang til grundlæggende lektioner"
+
+msgid "Limited AI features"
+msgstr "Begrænsede AI-funktioner"
+
+msgid "Community support"
+msgstr "Fællesskabsstøtte"
+
+msgid "Start Free"
+msgstr "Start gratis"
+
+msgid "Pro"
+msgstr "Pro"
+
+msgid "month"
+msgstr "måned"
+
+msgid "Best for serious learners"
+msgstr "Bedst til seriøse lærende"
+
+msgid "Unlimited lessons"
+msgstr "Ubegrænsede lektioner"
+
+msgid "Full AI-powered features"
+msgstr "Fulde AI-drevne funktioner"
+
+msgid "Priority support"
+msgstr "Prioriteret støtte"
+
+msgid "Offline access"
+msgstr "Offline adgang"
+
+msgid "Choose Pro"
+msgstr "Vælg Pro"
+
+msgid "Enterprise"
+msgstr "Virksomhed"
+
+msgid "For teams and organizations"
+msgstr "Til teams og organisationer"
+
+msgid "Custom solutions"
+msgstr "Tilpassede løsninger"
+
+msgid "Advanced analytics"
+msgstr "Avanceret analyse"
+
+msgid "Dedicated support"
+msgstr "Dedikeret støtte"
+
+msgid "Contact Sales"
+msgstr "Kontakt salg"
+
+# Footer
+msgid "Ready to start your language learning journey?"
+msgstr "Klar til at starte din sprogindlæringsrejse?"
+
+msgid "Join thousands of learners who have already transformed their language skills with our AI-powered platform."
+msgstr "Tilslut dig tusindvis af lærende, der allerede har transformeret deres sprogfærdigheder med vores AI-drevne platform."
+
+msgid "Product"
+msgstr "Produkt"
+
+msgid "Courses"
+msgstr "Kurser"
+
+msgid "Mobile App"
+msgstr "Mobilapp"
+
+msgid "API"
+msgstr "API"
+
+msgid "Company"
+msgstr "Virksomhed"
+
+msgid "Blog"
+msgstr "Blog"
+
+msgid "Careers"
+msgstr "Karrierer"
+
+msgid "Press"
+msgstr "Presse"
+
+msgid "Support"
+msgstr "Støtte"
+
+msgid "Help Center"
+msgstr "Hjælpecenter"
+
+msgid "Privacy Policy"
+msgstr "Privatlivspolitik"
+
+msgid "Terms of Service"
+msgstr "Servicevilkår"
+
+msgid "Legal"
+msgstr "Juridisk"
+
+msgid "Cookie Policy"
+msgstr "Cookiepolitik"
+
+msgid "All rights reserved."
+msgstr "Alle rettigheder forbeholdes."

@@ -1,0 +1,69 @@
+# ITALIAN TRANSLATION FOR PUBLIC_WEB
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify Public Web\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-17 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: Italian\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# SEO Meta Tags
+msgid "Open Linguify - Open source educational apps platform"
+msgstr "Open Linguify - Piattaforma open source di app educative"
+
+msgid "Open Linguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning."
+msgstr "Open Linguify è una piattaforma open source di app educative: sistema di memorizzazione, flashcard, presa di appunti, quiz, chat collaborativa, aule e molto altro. Scopri i nostri strumenti per rivoluzionare l'apprendimento."
+
+msgid "Open Linguify - Open source platform for modern education"
+msgstr "Open Linguify - Piattaforma open source per l'educazione moderna"
+
+msgid "Discover a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn."
+msgstr "Scopri una suite completa di app educative open source: memorizzazione intelligente, flashcard, presa di appunti, quiz interattivi, chat collaborativa, aule virtuali e molto altro. Rivoluziona il tuo modo di imparare."
+
+msgid "Complete suite of open source educational apps: memorization, flashcards, notes, quizzes, collaborative chat and much more."
+msgstr "Suite completa di app educative open source: memorizzazione, flashcard, appunti, quiz, chat collaborativa e molto altro."
+
+# Landing page content
+msgid "Open Source Education Apps"
+msgstr "App Educative Open Source"
+
+msgid "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more."
+msgstr "Una suite completa di app educative open source: memorizzazione, flashcard, presa di appunti, quiz, chat collaborativa e molto altro."
+
+msgid "Start for free"
+msgstr "Inizia gratis"
+
+msgid "Discover our apps"
+msgstr "Scopri le nostre app"
+
+msgid "Access Dashboard"
+msgstr "Accedi alla Dashboard"
+
+# Navigation
+msgid "Features"
+msgstr "Funzionalità"
+
+msgid "Apps"
+msgstr "App"
+
+msgid "About"
+msgstr "Chi siamo"
+
+msgid "Blog"
+msgstr "Blog"
+
+msgid "Contact"
+msgstr "Contatti"
+
+# Keywords
+msgid "open linguify, educational apps, flashcards, memorization, note-taking, quizzes, collaborative chat, classrooms, open source, education, learning"
+msgstr "open linguify, app educative, flashcard, memorizzazione, appunti, quiz, chat collaborativa, aule, open source, educazione, apprendimento"

@@ -2,6 +2,7 @@
 from django.shortcuts import redirect
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.i18n import i18n_patterns
 from . import utils
 from . import views
 from django.conf import settings
@@ -20,14 +21,15 @@ from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
 def redirect_to_admin(request):
     return redirect('admin/')
 
+# URLs without language prefix (for compatibility)
 urlpatterns = [
-    # Public website (landing, marketing)
-    path('', include('public_web.urls')),
+    # Language switching
+    path('i18n/', include('django.conf.urls.i18n')),
     
-    # SaaS application (protected routes)
+    # SaaS application (protected routes) - no language prefix
     path('', include('saas_web.urls')),
     
-    # Authentication (login/register pages)
+    # Authentication (login/register pages) - no language prefix  
     path('auth/', include('apps.authentication.urls_auth')),
     
     # Legacy frontend web (à supprimer après migration complète)
@@ -78,4 +80,13 @@ urlpatterns = [
     
     # SEO Status and Management
     path('seo/status/', sitemap_status, name='seo_status'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+# URLs with language prefix (for public website)
+urlpatterns += i18n_patterns(
+    # Public website (landing, marketing) - with language prefix
+    path('', include('public_web.urls')),
+    prefix_default_language=True,  # Add language prefix even for default language
+)
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

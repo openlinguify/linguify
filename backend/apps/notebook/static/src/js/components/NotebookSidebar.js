@@ -2,7 +2,7 @@
  * Composant pour la sidebar de l'application Notebook
  */
 
-import { Component } from "@odoo/owl";
+import { Component } from "@openlinguify/owl";
 
 export class NotebookSidebar extends Component {
     static template = "notebook.NotebookSidebar";

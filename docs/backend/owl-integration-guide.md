@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-Cette documentation explique comment intégrer le framework OWL (utilisé par Odoo) dans le backend Django de Linguify pour créer des interfaces utilisateur riches côté serveur.
+Cette documentation explique comment intégrer le framework OWL (utilisé par openlinguify) dans le backend Django de Linguify pour créer des interfaces utilisateur riches côté serveur.
 
 ## Architecture
 
@@ -61,7 +61,7 @@ COMPRESS_CSS_FILTERS = [
 
 `static/src/js/app.js` :
 ```javascript
-import { mount, whenReady } from "@odoo/owl";
+import { mount, whenReady } from "@openlinguify/owl";
 import { MyApp } from "./views/MyApp";
 
 whenReady(async () => {
@@ -74,7 +74,7 @@ whenReady(async () => {
 
 `static/src/js/views/MyApp.js` :
 ```javascript
-import { Component, useState } from "@odoo/owl";
+import { Component, useState } from "@openlinguify/owl";
 
 export class MyApp extends Component {
     static template = "myapp.MyApp";
@@ -124,7 +124,7 @@ def app_view(request):
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/@odoo/owl@2.1.1/dist/owl.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openlinguify/owl@2.1.1/dist/owl.iife.js"></script>
 {% compress js %}
     <script type="module" src="{% static 'myapp/src/js/app.js' %}"></script>
 {% endcompress %}
@@ -162,7 +162,7 @@ export class ApiService {
 2. **Réutilisabilité** : Composants OWL réutilisables
 3. **Performance** : Moins de requêtes réseau, rendu côté serveur
 4. **Intégration Django** : Utilise les templates et l'authentification Django
-5. **Développement rapide** : Structure similaire à Odoo
+5. **Développement rapide** : Structure similaire à openlinguify
 
 ## Migration progressive
 

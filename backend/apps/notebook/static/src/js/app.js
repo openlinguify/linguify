@@ -1,6 +1,6 @@
 /**
  * Notebook App - Point d'entrée OWL
- * Architecture similaire à Odoo
+ * Architecture similaire à openlinguify
  */
 
 import { NotebookApp } from "./views/NotebookApp.js";

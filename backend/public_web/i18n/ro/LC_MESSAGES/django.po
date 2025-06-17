@@ -1,0 +1,239 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-17 10:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
+
+# SEO Meta Tags
+msgid "Learn Languages with AI - Interactive Language Learning Platform"
+msgstr "Învățați Limbi cu AI - Platformă Interactivă de Învățare a Limbilor"
+
+msgid "Master new languages with our AI-powered interactive platform. Personalized lessons, real-time feedback, and engaging exercises for effective language learning."
+msgstr "Stăpâniți limbi noi cu platforma noastră interactivă bazată pe AI. Lecții personalizate, feedback în timp real și exerciții captivante pentru învățarea eficientă a limbilor."
+
+msgid "language learning, AI, interactive, personalized, lessons, multilingual, education"
+msgstr "învățarea limbilor, AI, interactiv, personalizat, lecții, multilingv, educație"
+
+# Navigation
+msgid "Home"
+msgstr "Acasă"
+
+msgid "Features"
+msgstr "Caracteristici"
+
+msgid "Pricing"
+msgstr "Prețuri"
+
+msgid "About"
+msgstr "Despre"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Get Started"
+msgstr "Începeți"
+
+msgid "Sign In"
+msgstr "Autentificare"
+
+msgid "Language"
+msgstr "Limbă"
+
+# Hero Section
+msgid "Master Languages with AI"
+msgstr "Stăpâniți Limbile cu AI"
+
+msgid "Experience the future of language learning with our AI-powered platform. Personalized lessons, real-time feedback, and interactive exercises designed just for you."
+msgstr "Experimențați viitorul învățării limbilor cu platforma noastră bazată pe AI. Lecții personalizate, feedback în timp real și exerciții interactive concepute special pentru voi."
+
+msgid "Start Learning Now"
+msgstr "Începeți să Învățați Acum"
+
+msgid "Watch Demo"
+msgstr "Urmăriți Demo-ul"
+
+# Stats Section
+msgid "Active Learners"
+msgstr "Cursanti Activi"
+
+msgid "Languages Available"
+msgstr "Limbi Disponibile"
+
+msgid "Lessons Completed"
+msgstr "Lecții Finalizate"
+
+msgid "Success Rate"
+msgstr "Rata de Succes"
+
+# Features Section
+msgid "Why Choose Our Platform?"
+msgstr "De ce să Alegeți Platforma Noastră?"
+
+msgid "AI-Powered Learning"
+msgstr "Învățare Bazată pe AI"
+
+msgid "Our advanced AI adapts to your learning style and pace, providing personalized recommendations and feedback."
+msgstr "AI-ul nostru avansat se adaptează stilului și ritmului vostru de învățare, oferind recomandări personalizate și feedback."
+
+msgid "Interactive Exercises"
+msgstr "Exerciții Interactive"
+
+msgid "Engage with dynamic exercises including speaking practice, listening comprehension, and writing challenges."
+msgstr "Implicați-vă în exerciții dinamice care includ practica vorbirii, înțelegerea auditivă și provocări de scriere."
+
+msgid "Progress Tracking"
+msgstr "Urmarea Progresului"
+
+msgid "Monitor your learning journey with detailed analytics and progress reports to stay motivated."
+msgstr "Monitorizați-vă călătoria de învățare cu analitici detaliate și rapoarte de progres pentru a rămâne motivați."
+
+msgid "Multi-Device Access"
+msgstr "Acces pe Multiple Dispozitive"
+
+msgid "Learn anywhere, anytime with seamless synchronization across all your devices."
+msgstr "Învățați oriunde, oricând cu sincronizare perfectă pe toate dispozitivele voastre."
+
+msgid "Expert Content"
+msgstr "Conținut de Expert"
+
+msgid "Curriculum designed by language experts and native speakers for authentic learning experiences."
+msgstr "Curriculum conceput de experți în limbi și vorbitori nativi pentru experiențe autentice de învățare."
+
+msgid "Community Support"
+msgstr "Suport Comunitar"
+
+msgid "Join a vibrant community of learners and get support from fellow students and instructors."
+msgstr "Alăturați-vă unei comunități vibrante de cursanti și primiți suport de la colegii studenți și instructori."
+
+# Pricing Section
+msgid "Choose Your Plan"
+msgstr "Alegeți-vă Planul"
+
+msgid "Start your language learning journey with the plan that fits your needs."
+msgstr "Începeți călătoria de învățare a limbii cu planul care se potrivește nevoilor voastre."
+
+msgid "Free"
+msgstr "Gratuit"
+
+msgid "Perfect for getting started"
+msgstr "Perfect pentru început"
+
+msgid "Access to basic lessons"
+msgstr "Acces la lecții de bază"
+
+msgid "Limited AI features"
+msgstr "Caracteristici AI limitate"
+
+msgid "Community support"
+msgstr "Suport comunitar"
+
+msgid "Start Free"
+msgstr "Începeți Gratuit"
+
+msgid "Pro"
+msgstr "Pro"
+
+msgid "month"
+msgstr "lună"
+
+msgid "Best for serious learners"
+msgstr "Cel mai bun pentru cursantii serioși"
+
+msgid "Unlimited lessons"
+msgstr "Lecții nelimitate"
+
+msgid "Full AI-powered features"
+msgstr "Caracteristici complete bazate pe AI"
+
+msgid "Priority support"
+msgstr "Suport prioritar"
+
+msgid "Offline access"
+msgstr "Acces offline"
+
+msgid "Choose Pro"
+msgstr "Alegeți Pro"
+
+msgid "Enterprise"
+msgstr "Enterprise"
+
+msgid "For teams and organizations"
+msgstr "Pentru echipe și organizații"
+
+msgid "Custom solutions"
+msgstr "Soluții personalizate"
+
+msgid "Advanced analytics"
+msgstr "Analitici avansate"
+
+msgid "Dedicated support"
+msgstr "Suport dedicat"
+
+msgid "Contact Sales"
+msgstr "Contactați Vânzările"
+
+# Footer
+msgid "Ready to start your language learning journey?"
+msgstr "Pregătiți să vă începeți călătoria de învățare a limbii?"
+
+msgid "Join thousands of learners who have already transformed their language skills with our AI-powered platform."
+msgstr "Alăturați-vă miilor de cursanti care și-au transformat deja competențele lingvistice cu platforma noastră bazată pe AI."
+
+msgid "Product"
+msgstr "Produs"
+
+msgid "Courses"
+msgstr "Cursuri"
+
+msgid "Mobile App"
+msgstr "Aplicație Mobilă"
+
+msgid "API"
+msgstr "API"
+
+msgid "Company"
+msgstr "Companie"
+
+msgid "Blog"
+msgstr "Blog"
+
+msgid "Careers"
+msgstr "Cariere"
+
+msgid "Press"
+msgstr "Presă"
+
+msgid "Support"
+msgstr "Suport"
+
+msgid "Help Center"
+msgstr "Centru de Ajutor"
+
+msgid "Privacy Policy"
+msgstr "Politica de Confidențialitate"
+
+msgid "Terms of Service"
+msgstr "Termenii Serviciului"
+
+msgid "Legal"
+msgstr "Legal"
+
+msgid "Cookie Policy"
+msgstr "Politica Cookie-urilor"
+
+msgid "All rights reserved."
+msgstr "Toate drepturile rezervate."
