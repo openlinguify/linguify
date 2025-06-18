@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# Part of Open Linguify. See LICENSE file for full copyright and licensing details.
 """
 Vues Django pour l'interface web du Notebook
 """

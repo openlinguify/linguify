@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# Part of Open Linguify. See LICENSE file for full copyright and licensing details.
 from rest_framework import serializers
 from django.utils import timezone
 from .models import Note, NoteCategory, Tag, SharedNote
