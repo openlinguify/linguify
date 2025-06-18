@@ -1,12 +1,11 @@
 <p align="center">
-  <a href="https://www.linguify.com" target="_blank">
-    <img src="https://github.com/openlinguify/linguify/blob/develop/frontend/public/logo/circle-svg%20(2).svg" alt="Linguify" width="200" />
+  <a href="https://www.openlinguify.com" target="_blank">
+    <img src="backend/static/images/Linguify (2).png" alt="OpenLinguify" width="200" />
   </a>
 </p>
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Backend CI Status](https://github.com/linguify/linguify/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/linguify/linguify/actions/workflows/backend-ci.yml)
-[![Deploy Status](https://github.com/linguify/linguify/workflows/Deploy%20Linguify/badge.svg)](https://github.com/linguify/linguify/actions/workflows/deploy.yml)
+[![CI/CD Pipeline](https://github.com/openlinguify/linguify/actions/workflows/ci-cd-pipeline.yml/badge.svg)](https://github.com/openlinguify/linguify/actions/workflows/ci-cd-pipeline.yml)
 [![Languages: 4](https://img.shields.io/badge/Languages-4-green.svg)](https://github.com/linguify/linguify)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/linguify/linguify/blob/main/CONTRIBUTING.md)
 [![Contributors Welcome](https://img.shields.io/badge/contributors-welcome-orange.svg)](https://github.com/linguify/linguify/discussions)

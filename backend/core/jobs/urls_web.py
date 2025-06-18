@@ -43,4 +43,7 @@ urlpatterns = [
     
     # Candidature pour un poste
     path('apply/<int:position_id>/', views_web.JobApplicationView.as_view(), name='apply'),
+    
+    # Candidature spontanée
+    path('apply-spontaneous/', views_web.SpontaneousApplicationView.as_view(), name='apply_spontaneous'),
 ]

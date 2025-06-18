@@ -48,6 +48,9 @@ class JobPositionDetailSerializer(serializers.ModelSerializer):
 
 
 class JobApplicationCreateSerializer(serializers.ModelSerializer):
+    # Custom field for resume file upload
+    resume_file = serializers.FileField(required=False, write_only=True)
+    
     class Meta:
         model = JobApplication
         fields = [
@@ -70,11 +73,12 @@ class JobApplicationCreateSerializer(serializers.ModelSerializer):
 class JobApplicationSerializer(serializers.ModelSerializer):
     position_title = serializers.CharField(source='position.title', read_only=True)
     full_name = serializers.CharField(read_only=True)
+    has_resume = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = JobApplication
         fields = [
             'id', 'position_title', 'full_name', 'email', 'phone',
-            'cover_letter', 'resume_file', 'resume_url', 'portfolio_url', 'linkedin_url',
+            'cover_letter', 'has_resume', 'resume_url', 'portfolio_url', 'linkedin_url',
             'status', 'applied_at'
         ]

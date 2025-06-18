@@ -5,6 +5,24 @@ from django.utils.safestring import mark_safe
 from core.jobs.models import Department, JobPosition, JobApplication
 
 
+class ApplicationTypeFilter(admin.SimpleListFilter):
+    title = 'Type de candidature'
+    parameter_name = 'application_type'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('spontaneous', 'Candidatures spontanées'),
+            ('position', 'Candidatures pour un poste'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'spontaneous':
+            return queryset.filter(position__isnull=True)
+        if self.value() == 'position':
+            return queryset.filter(position__isnull=False)
+        return queryset
+
+
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
     list_display = ['name', 'position_count', 'created_at']
@@ -151,15 +169,16 @@ class JobPositionAdmin(admin.ModelAdmin):
 class JobApplicationAdmin(admin.ModelAdmin):
     list_display = [
         'full_name', 
-        'position', 
+        'position_display', 
         'email', 
         'status_badge', 
+        'resume_status',
         'email_status',
         'applied_at'
     ]
-    list_filter = ['status', 'position__department', 'applied_at']
+    list_filter = ['status', ApplicationTypeFilter, 'position__department', 'applied_at']
     search_fields = ['first_name', 'last_name', 'email', 'position__title']
-    readonly_fields = ['applied_at', 'updated_at']
+    readonly_fields = ['applied_at', 'updated_at', 'resume_download_link']
     
     fieldsets = (
         ('Application Details', {
@@ -169,7 +188,7 @@ class JobApplicationAdmin(admin.ModelAdmin):
             'fields': ('first_name', 'last_name', 'email', 'phone')
         }),
         ('Application Materials', {
-            'fields': ('cover_letter', 'resume_file', 'resume_url', 'portfolio_url', 'linkedin_url')
+            'fields': ('cover_letter', 'resume_download_link', 'resume_url', 'portfolio_url', 'linkedin_url')
         }),
         ('Internal Notes', {
             'fields': ('notes',),
@@ -280,3 +299,40 @@ class JobApplicationAdmin(admin.ModelAdmin):
                 count += 1
         self.message_user(request, f'{count} application(s) marked as withdrawn.')
     mark_withdrawn.short_description = 'Mark as withdrawn'
+    
+    def resume_download_link(self, obj):
+        """Display secure download link for resume"""
+        if not obj.has_resume():
+            return format_html('<span style="color: #666;">No resume uploaded</span>')
+        
+        download_url = reverse('jobs:download-resume', args=[obj.id])
+        return format_html(
+            '<a href="{}" target="_blank" style="color: #0066cc; text-decoration: none; padding: 5px 10px; border: 1px solid #0066cc; border-radius: 3px; font-size: 12px;">'
+            '📄 Download Resume ({})</a><br/>'
+            '<small style="color: #666;">Original filename: {}</small>',
+            download_url,
+            obj.resume_content_type or 'Unknown type',
+            obj.resume_original_filename or 'Unknown'
+        )
+    resume_download_link.short_description = 'Resume File'
+    
+    def resume_status(self, obj):
+        """Display resume status in list view"""
+        if obj.has_resume():
+            return format_html('<span style="color: green;">✅ CV</span>')
+        else:
+            return format_html('<span style="color: #ccc;">❌ No CV</span>')
+    resume_status.short_description = 'CV'
+    
+    def position_display(self, obj):
+        """Display position or 'Spontaneous' if no position"""
+        if obj.position:
+            return obj.position.title
+        else:
+            return format_html('<span style="color: #e67e22; font-weight: bold;">🎯 Candidature spontanée</span>')
+    position_display.short_description = 'Poste'
+    
+    def get_queryset(self, request):
+        """Override to show spontaneous applications prominently"""
+        qs = super().get_queryset(request)
+        return qs.select_related('position', 'position__department')

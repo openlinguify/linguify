@@ -10,4 +10,7 @@ urlpatterns = [
     path('positions/<int:pk>/', views.JobPositionDetailView.as_view(), name='position-detail'),
     path('apply/', views.JobApplicationCreateView.as_view(), name='application-create'),
     path('stats/', views.job_stats, name='job-stats'),
+    
+    # Admin-only endpoints
+    path('admin/applications/<int:application_id>/download-resume/', views.download_resume, name='download-resume'),
 ]

@@ -1,2 +1,0 @@
-# This file ensures the media directory structure is preserved in git
-# while keeping all actual media files ignored for security

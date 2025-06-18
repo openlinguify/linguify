@@ -510,8 +510,183 @@
         }
     }
 
+    // Open Spontaneous Application Modal
+    function openSpontaneousApplicationModal() {
+        const modal = document.getElementById('applicationModal');
+        const modalTitle = document.querySelector('.modal-header h3');
+        const modalBody = document.querySelector('.modal-body');
+        
+        if (modalTitle) {
+            modalTitle.textContent = 'Candidature spontanée';
+        }
+        
+        // Show modal immediately
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Show loading state
+        if (modalBody) {
+            modalBody.innerHTML = `
+                <div class="loading-skeleton" style="text-align: center; padding: 2rem;">
+                    <div class="skeleton-text"></div>
+                    <div class="skeleton-text"></div>
+                    <div class="skeleton-text"></div>
+                </div>`;
+            
+            // Get the correct URL for spontaneous applications
+            const currentLang = document.documentElement.lang || 'fr';
+            const spontaneousUrl = `/${currentLang}/careers/apply-spontaneous/`;
+            
+            fetch(spontaneousUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        modalBody.innerHTML = data.html;
+                        initializeApplicationForm();
+                        attachSpontaneousFormSubmitHandler();
+                    } else {
+                        modalBody.innerHTML = `
+                            <div class="alert alert-error">
+                                <h4>Erreur de chargement</h4>
+                                <p>${data.error || 'Erreur lors du chargement du formulaire.'}</p>
+                                ${data.code ? `<small>Code d'erreur: ${data.code}</small>` : ''}
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    modalBody.innerHTML = `
+                        <div class="alert alert-error">
+                            <h4>Erreur de connexion</h4>
+                            <p>Impossible de charger le formulaire. Veuillez réessayer.</p>
+                            <small>Détails: ${error.message}</small>
+                        </div>
+                    `;
+                    console.error('Error loading spontaneous form:', error);
+                });
+        }
+    }
+
+    // Form Submission Handler for Spontaneous Applications
+    function attachSpontaneousFormSubmitHandler() {
+        const form = document.getElementById('applicationForm');
+        if (!form) return;
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = submitBtn.querySelector('.submit-text');
+            const submitLoading = submitBtn.querySelector('.submit-loading');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitText.style.display = 'none';
+            submitLoading.style.display = 'flex';
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.classList.remove('show');
+            });
+            document.querySelectorAll('.form-control').forEach(el => {
+                el.classList.remove('error');
+            });
+            
+            // Submit form with proper CSRF handling
+            const formData = new FormData(form);
+            const csrfToken = formData.get('csrfmiddlewaretoken') || document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+            
+            const currentLang = document.documentElement.lang || 'fr';
+            const spontaneousUrl = `/${currentLang}/careers/apply-spontaneous/`;
+            
+            fetch(spontaneousUrl, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    const modalBody = document.querySelector('.modal-body');
+                    modalBody.innerHTML = `
+                        <div class="alert alert-success">
+                            <h4>Candidature spontanée envoyée avec succès!</h4>
+                            <p>${data.message}</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 2rem;">
+                            <button type="button" class="btn-primary" onclick="closeApplicationModal()">
+                                Fermer
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    // Show validation errors
+                    if (data.errors) {
+                        Object.keys(data.errors).forEach(field => {
+                            const errorElement = document.getElementById(`error-${field}`);
+                            const inputElement = document.querySelector(`[name="${field}"]`);
+                            
+                            if (errorElement && data.errors[field]) {
+                                errorElement.textContent = data.errors[field];
+                                errorElement.classList.add('show');
+                            }
+                            
+                            if (inputElement) {
+                                inputElement.classList.add('error');
+                            }
+                        });
+                    }
+                    
+                    // Show general error message
+                    if (data.error) {
+                        const modalBody = document.querySelector('.modal-body');
+                        modalBody.insertAdjacentHTML('afterbegin', `
+                            <div class="alert alert-error">
+                                ${data.error}
+                            </div>
+                        `);
+                    }
+                    
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    submitText.style.display = 'inline';
+                    submitLoading.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting spontaneous form:', error);
+                
+                // Show generic error
+                const modalBody = document.querySelector('.modal-body');
+                modalBody.insertAdjacentHTML('afterbegin', `
+                    <div class="alert alert-error">
+                        Une erreur s'est produite. Veuillez réessayer.
+                    </div>
+                `);
+                
+                // Reset button state
+                submitBtn.disabled = false;
+                submitText.style.display = 'inline';
+                submitLoading.style.display = 'none';
+            });
+        });
+    }
+
     // Make functions global for template access
     window.openApplicationModal = openApplicationModal;
+    window.openSpontaneousApplicationModal = openSpontaneousApplicationModal;
     window.closeApplicationModal = closeApplicationModal;
     window.scrollToPositions = scrollToPositions;
 
