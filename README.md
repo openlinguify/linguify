@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://www.linguify.com" target="_blank">
-    <img src="https://github.com/lp-linguify/linguify/blob/develop/frontend/public/logo/circle-svg%20(2).svg" alt="Linguify" width="200" />
+    <img src="https://github.com/openlinguify/linguify/blob/develop/frontend/public/logo/circle-svg%20(2).svg" alt="Linguify" width="200" />
   </a>
 </p>
 
