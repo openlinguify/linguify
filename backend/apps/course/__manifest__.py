@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
 __manifest__ = {
     'name': 'Learning',
     'version': '1.0.0',
