@@ -1,0 +1,65 @@
+services:
+  - type: web
+    name: linguify-backend
+    env: python
+    region: frankfurt  # ou oregon
+    plan: starter  # ou standard
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DEBUG
+        value: False
+      - key: DJANGO_ENV
+        value: production
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 5432
+      - key: USE_SUPABASE_DB
+        value: True
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_PROJECT_ID
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_PORT
+        value: 587
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: EMAIL_USE_TLS
+        value: True
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
+      - key: BACKEND_URL
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+
+  - type: redis
+    name: linguify-redis
+    region: frankfurt
+    plan: starter
+    maxmemoryPolicy: allkeys-lru

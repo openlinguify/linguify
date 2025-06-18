@@ -1,0 +1,331 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ develop, staging, main ]
+  pull_request:
+    branches: [ develop, staging, main ]
+  workflow_dispatch:
+
+jobs:
+  # Tests automatiques sur push vers develop
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' || github.event_name == 'pull_request'
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db_linguify
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    defaults:
+      run:
+        working-directory: ./backend
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v4
+        with:
+          poetry-version: '1.7.1'
+
+      - name: Configure Poetry
+        run: poetry config virtualenvs.create false
+
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      - name: Install dependencies
+        run: |
+          poetry install
+          poetry add --group dev pytest-django pytest-mock flake8
+
+      - name: Setup test environment
+        run: |
+          cp .env.example .env.test
+          sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env.test
+          sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env.test
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env.test
+          sed -i 's/DB_HOST=.*/DB_HOST=localhost/g' .env.test
+          sed -i 's/DB_PORT=.*/DB_PORT=5432/g' .env.test
+          sed -i 's/DEBUG=.*/DEBUG=True/g' .env.test
+          sed -i 's/SECRET_KEY=.*/SECRET_KEY=test_secret_key_for_ci_environment/g' .env.test
+          sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env.test
+          echo "TESTING=True" >> .env.test
+          echo "ALLOWED_HOSTS=*" >> .env.test
+
+      - name: Run migrations
+        run: |
+          set -a
+          source .env.test
+          set +a
+          poetry run python manage.py migrate
+        env:
+          TEST_MODE: 'True'
+
+      - name: Run All Tests
+        run: |
+          set -a
+          source .env.test
+          set +a
+          echo "🚀 Running Complete Test Suite"
+          poetry run python run_tests.py ci
+        env:
+          TEST_MODE: 'True'
+          CI: 'True'
+      
+      - name: Run Jobs Tests Specifically
+        run: |
+          set -a
+          source .env.test
+          set +a
+          echo "🎯 Running Jobs Tests (including rejection email functionality)"
+          poetry run python manage.py test core.jobs.tests -v 2 --settings=core.settings_test
+        env:
+          TEST_MODE: 'True'
+          CI: 'True'
+
+  # Auto-merge develop vers staging si les tests passent
+  auto-merge-to-staging:
+    name: Auto-merge to Staging
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' && success()
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Merge develop into staging
+        run: |
+          git checkout staging
+          git merge origin/develop --no-ff -m "Auto-merge develop into staging after successful tests"
+          git push origin staging
+
+  # Tests avant merge vers main
+  test-staging:
+    name: Test Staging Branch
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging'
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db_linguify
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    defaults:
+      run:
+        working-directory: ./backend
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v4
+        with:
+          poetry-version: '1.7.1'
+
+      - name: Configure Poetry
+        run: poetry config virtualenvs.create false
+
+      - name: Install dependencies
+        run: |
+          poetry install
+          poetry add --group dev pytest-django pytest-mock flake8
+
+      - name: Setup test environment
+        run: |
+          cp .env.example .env.test
+          sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env.test
+          sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env.test
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env.test
+          sed -i 's/DB_HOST=.*/DB_HOST=localhost/g' .env.test
+          sed -i 's/DB_PORT=.*/DB_PORT=5432/g' .env.test
+          sed -i 's/DEBUG=.*/DEBUG=True/g' .env.test
+          sed -i 's/SECRET_KEY=.*/SECRET_KEY=test_secret_key_for_ci_environment/g' .env.test
+          sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env.test
+          echo "TESTING=True" >> .env.test
+          echo "ALLOWED_HOSTS=*" >> .env.test
+
+      - name: Run migrations
+        run: |
+          set -a
+          source .env.test
+          set +a
+          poetry run python manage.py migrate
+        env:
+          TEST_MODE: 'True'
+
+      - name: Run Complete Test Suite for Staging
+        run: |
+          set -a
+          source .env.test
+          set +a
+          echo "🔥 Running FULL Test Suite for Staging"
+          poetry run python run_tests.py ci
+          echo "🎯 Running Jobs Tests"
+          poetry run python manage.py test core.jobs.tests -v 2 --settings=core.settings_test
+        env:
+          TEST_MODE: 'True'
+          CI: 'True'
+
+  # Deploy vers Staging (Render)
+  deploy-staging:
+    name: Deploy to Staging
+    needs: test-staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging' && success()
+    environment: staging
+    
+    steps:
+      - name: Deploy to Render Staging
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_STAGING_SERVICE_ID }}
+          api-key: rnd_sTW1YJFvnzWxHWfGWdMBKtmwiZfi
+          
+      - name: Staging Deployment Status
+        run: echo "✅ Staging deployment triggered successfully on Render"
+
+  # Auto-merge staging vers main si deploy staging réussi
+  auto-merge-to-main:
+    name: Auto-merge to Main
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging' && success()
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Merge staging into main
+        run: |
+          git checkout main
+          git merge origin/staging --no-ff -m "Auto-merge staging into main after successful staging deployment"
+          git push origin main
+
+  # Deploy vers Production
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+      - name: Deploy to Render Production
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: srv-d149ag49c44c73d2f27g
+          api-key: rnd_LYvNUTDvyHgmiPbryBLPTUl7qyHI
+          
+      - name: Production Deployment Status
+        run: echo "🚀 Production deployment triggered successfully on Render"
+
+  # Notification en cas d'échec
+  notify-failure:
+    name: Notify on Failure
+    needs: [test, test-staging, deploy-staging, deploy-production]
+    if: failure()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Create issue on failure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowName = "CI/CD Pipeline";
+            const runId = "${{ github.run_id }}";
+            const branch = "${{ github.ref_name }}";
+            const repo = context.repo;
+            const issueTitle = `🚨 CI/CD Failed: ${workflowName} on ${branch}`;
+            const issueBody = `The CI/CD pipeline **${workflowName}** failed on the \`${branch}\` branch.
+
+            **Run URL**: [View Failed Run](https://github.com/${repo.owner}/${repo.repo}/actions/runs/${runId})
+
+            **Time**: ${new Date().toISOString()}
+
+            **Possible causes:**
+            - Test failures (including jobs email functionality)
+            - Deployment issues
+            - Environment configuration problems
+
+            Please investigate the issue and fix the failing components.`;
+
+            await github.rest.issues.create({
+              owner: repo.owner,
+              repo: repo.repo,
+              title: issueTitle,
+              body: issueBody,
+              labels: ["bug", "CI/CD", "urgent"]
+            });
