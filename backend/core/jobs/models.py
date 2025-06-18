@@ -9,6 +9,7 @@ class Department(models.Model):
     
     class Meta:
         ordering = ['name']
+        db_table = 'jobs_department'
     
     def __str__(self):
         return self.name
@@ -64,6 +65,7 @@ class JobPosition(models.Model):
     
     class Meta:
         ordering = ['-posted_date', '-is_featured']
+        db_table = 'jobs_jobposition'
         indexes = [
             models.Index(fields=['is_active', 'posted_date']),
             models.Index(fields=['department', 'is_active']),
@@ -127,6 +129,7 @@ class JobApplication(models.Model):
     
     class Meta:
         ordering = ['-applied_at']
+        db_table = 'jobs_jobapplication'
         unique_together = ['position', 'email']  # Prevent duplicate applications
     
     def __str__(self):

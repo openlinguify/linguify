@@ -41,15 +41,6 @@ class AboutView(View):
         return render(request, 'public_web/about.html', context)
 
 
-class CareersView(View):
-    """Page carrières"""
-    def get(self, request):
-        context = {
-            'title': _('Carrières - Open Linguify'),
-            'meta_description': _('Rejoignez l\'équipe Open Linguify'),
-        }
-        return render(request, 'public_web/careers.html', context)
-
 
 class BlogView(View):
     """Page blog"""

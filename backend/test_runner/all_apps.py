@@ -31,7 +31,7 @@ class AllAppsTestRunner(BaseTestRunner):
             'apps.authentication.tests',
             
             # Jobs (standalone, well-tested)
-            'apps.jobs.tests',
+            'core.jobs.tests',
             
             # Course (core learning functionality)
             'apps.course.tests',

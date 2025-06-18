@@ -75,6 +75,7 @@ INSTALLED_APPS = [
 
     # Core project modules
     'core.apps.CoreConfig',
+    'core.jobs',
 
     # Project django_apps
     'apps.authentication',
@@ -84,7 +85,6 @@ INSTALLED_APPS = [
     'apps.course',
     'apps.data',
     # 'apps.flashcard',
-    'apps.jobs',
     'apps.language_ai',
     # 'apps.payments',
     # 'apps.quiz',

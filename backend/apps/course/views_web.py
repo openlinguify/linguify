@@ -27,70 +27,74 @@ from apps.authentication.models import User
 
 class LearningDashboardView(LoginRequiredMixin, TemplateView):
     """Vue principale du dashboard d'apprentissage"""
-    template_name = 'course/learning/dashboard.html'
+    template_name = 'course/main.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         
-        # Statistiques générales
-        total_units = Unit.objects.count()
+        # Récupérer toutes les unités
         units = Unit.objects.all().order_by('level', 'order')
         
-        # Grouper les unités par niveau
-        units_by_level = {}
+        # Préparer les données des unités pour le JSON
+        units_data = []
         for unit in units:
-            if unit.level not in units_by_level:
-                units_by_level[unit.level] = []
+            lessons_data = []
+            for lesson in unit.lessons.all().order_by('order'):
+                lessons_data.append({
+                    'id': lesson.id,
+                    'title': lesson.title_fr or lesson.title_en,
+                    'description': lesson.description_fr or lesson.description_en or '',
+                    'estimated_duration': lesson.estimated_duration,
+                    'xp_reward': 10,  # Simulé
+                    'is_completed': False,  # TODO: Vérifier vraie progression
+                })
             
-            # Ajouter des informations de progression simulées
-            unit.progress = 0  # TODO: Calculer la vraie progression
-            unit.lesson_count = unit.lessons.count()
-            units_by_level[unit.level].append(unit)
+            units_data.append({
+                'id': unit.id,
+                'title': unit.title_fr or unit.title_en,
+                'description': unit.description_fr or unit.description_en or '',
+                'level': unit.level,
+                'lessons': lessons_data,
+                'progress_percentage': 0,  # TODO: Calculer vraie progression
+                'estimated_duration': sum(l.estimated_duration or 30 for l in unit.lessons.all()),
+            })
         
-        # Langue cible de l'utilisateur
-        target_language = getattr(user, 'target_language', 'fr')
-        current_level = getattr(user, 'current_level', 'A1')
+        # Statistiques utilisateur simulées
+        user_stats = {
+            'streak_days': 3,
+            'total_xp': 150,
+            'level': 1,
+            'completed_lessons': 5,
+            'time_spent': 120,
+        }
         
-        # Leçon actuelle (simulée)
-        current_lesson = None
-        lessons = Lesson.objects.all().order_by('unit__order', 'order')
-        if lessons.exists():
-            current_lesson = lessons.first()
-            current_lesson.progress = 45  # Progression simulée
+        # Activités récentes simulées
+        from django.utils import timezone
+        from datetime import timedelta
         
-        # Objectifs quotidiens simulés
-        daily_goal = 3
-        daily_lessons_completed = 1
-        daily_progress = (daily_lessons_completed / daily_goal) * 100
-        
-        # Réussites récentes simulées
-        recent_achievements = [
+        recent_activities = [
             {
-                'description': 'Première leçon complétée',
-                'icon': 'fas fa-star',
-                'color': 'success'
+                'title': 'Vocabulaire de base complété',
+                'description': 'Vous avez appris 10 nouveaux mots',
+                'date': timezone.now() - timedelta(hours=2),
+                'xp': 20
             },
             {
-                'description': '10 mots de vocabulaire appris',
-                'icon': 'fas fa-language',
-                'color': 'info'
+                'title': 'Grammaire française - leçon 1',
+                'description': 'Maîtrise des articles définis',
+                'date': timezone.now() - timedelta(days=1),
+                'xp': 15
             }
         ]
         
         context.update({
-            'total_units': total_units,
-            'units_by_level': units_by_level,
-            'target_language': target_language,
-            'current_level': current_level,
-            'current_lesson': current_lesson,
-            'completed_lessons': 5,  # Simulé
-            'vocabulary_learned': 25,  # Simulé
-            'streak_days': 3,  # Simulé
-            'daily_goal': daily_goal,
-            'daily_lessons_completed': daily_lessons_completed,
-            'daily_progress': daily_progress,
-            'recent_achievements': recent_achievements,
+            'page_title': 'Tableau de bord - Cours',
+            'units': units,
+            'units_json': json.dumps(units_data),
+            'user_stats': user_stats,
+            'recent_activities': recent_activities,
+            'debug': self.request.GET.get('debug', 'false').lower() == 'true',
         })
         
         return context
@@ -145,7 +149,7 @@ class UnitsListView(LoginRequiredMixin, ListView):
 class UnitDetailView(LoginRequiredMixin, DetailView):
     """Vue détaillée d'une unité"""
     model = Unit
-    template_name = 'course/learning/unit_detail.html'
+    template_name = 'course/unit_detail.html'
     context_object_name = 'unit'
     
     def get_context_data(self, **kwargs):
@@ -215,7 +219,7 @@ class UnitDetailView(LoginRequiredMixin, DetailView):
 class LessonDetailView(LoginRequiredMixin, DetailView):
     """Vue détaillée d'une leçon"""
     model = Lesson
-    template_name = 'course/learning/lesson_detail.html'
+    template_name = 'course/lesson_detail.html'
     context_object_name = 'lesson'
     
     def get_context_data(self, **kwargs):
@@ -339,36 +343,68 @@ def language_settings_view(request):
 
 @login_required
 @require_http_methods(["GET"])
-def vocabulary_practice_view(request):
+def vocabulary_practice_view(request, pk=None):
     """Vue de pratique du vocabulaire"""
-    vocabulary_items = VocabularyList.objects.all()[:20]  # Limiter à 20 éléments
-    
-    context = {
-        'vocabulary_items': vocabulary_items,
-        'total_items': vocabulary_items.count(),
-    }
+    if pk:
+        # Pratique pour une leçon spécifique
+        lesson = get_object_or_404(Lesson, pk=pk)
+        vocabulary_items = VocabularyList.objects.filter(content_lesson__lesson=lesson)[:20]
+        context = {
+            'lesson': lesson,
+            'vocabulary_items': vocabulary_items,
+            'total_items': vocabulary_items.count(),
+            'lesson_specific': True,
+        }
+    else:
+        # Pratique générale
+        vocabulary_items = VocabularyList.objects.all()[:20]  # Limiter à 20 éléments
+        context = {
+            'vocabulary_items': vocabulary_items,
+            'total_items': vocabulary_items.count(),
+            'lesson_specific': False,
+        }
     return render(request, 'course/learning/vocabulary_practice.html', context)
 
 
 @login_required
 @require_http_methods(["GET"])
-def grammar_practice_view(request):
+def grammar_practice_view(request, pk=None):
     """Vue de pratique de la grammaire"""
-    # TODO: Implémenter la logique de pratique de grammaire
-    context = {
-        'message': 'Pratique de grammaire en développement'
-    }
-    return render(request, 'course/learning/grammar_practice.html', context)
+    if pk:
+        # Pratique pour une leçon spécifique
+        lesson = get_object_or_404(Lesson, pk=pk)
+        context = {
+            'lesson': lesson,
+            'message': f'Pratique de grammaire pour la leçon: {lesson.title}',
+            'lesson_specific': True,
+        }
+    else:
+        # Pratique générale
+        context = {
+            'message': 'Pratique de grammaire en développement',
+            'lesson_specific': False,
+        }
+    return render(request, 'course/learning/grammar_practice_new.html', context)
 
 
 @login_required
 @require_http_methods(["GET"])
-def speaking_practice_view(request):
+def speaking_practice_view(request, pk=None):
     """Vue de pratique de la prononciation"""
-    # TODO: Implémenter la logique de pratique de prononciation
-    context = {
-        'message': 'Pratique de prononciation en développement'
-    }
+    if pk:
+        # Pratique pour une leçon spécifique
+        lesson = get_object_or_404(Lesson, pk=pk)
+        context = {
+            'lesson': lesson,
+            'message': f'Pratique de prononciation pour la leçon: {lesson.title}',
+            'lesson_specific': True,
+        }
+    else:
+        # Pratique générale
+        context = {
+            'message': 'Pratique de prononciation en développement',
+            'lesson_specific': False,
+        }
     return render(request, 'course/learning/speaking_practice.html', context)
 
 
@@ -463,15 +499,15 @@ def unit_details_ajax(request, pk):
         
         unit_data = {
             'id': unit.id,
-            'title': unit.title_fr,  # TODO: Utiliser la langue de l'utilisateur
-            'description': unit.description_fr,
+            'title': unit.title_fr or unit.title_en,
+            'description': unit.description_fr or unit.description_en,
             'level': unit.level,
             'lesson_count': lessons.count(),
             'progress': 0,  # TODO: Calculer la vraie progression
             'lessons': [
                 {
                     'id': lesson.id,
-                    'title': lesson.title_fr,
+                    'title': lesson.title_fr or lesson.title_en,
                     'estimated_duration': lesson.estimated_duration,
                     'lesson_type': lesson.lesson_type,
                 }

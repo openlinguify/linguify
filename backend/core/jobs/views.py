@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from django.db.models import Q
 from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
-from .models import Department, JobPosition, JobApplication
-from .serializers import (
+from core.jobs.models import Department, JobPosition, JobApplication
+from core.jobs.serializers import (
     DepartmentSerializer, JobPositionListSerializer, 
     JobPositionDetailSerializer, JobApplicationCreateSerializer,
     JobApplicationSerializer

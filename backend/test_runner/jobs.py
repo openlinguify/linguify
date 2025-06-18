@@ -14,11 +14,11 @@ class JobsTestRunner(BaseTestRunner):
     def get_test_modules(self) -> List[str]:
         """Return Jobs test modules"""
         return [
-            'apps.jobs.tests.test_models',
-            'apps.jobs.tests.test_api', 
-            'apps.jobs.tests.test_admin',
-            'apps.jobs.tests.test_email_system',
-            'apps.jobs.tests.test_utils',
+            'core.jobs.tests.test_models',
+            'core.jobs.tests.test_api', 
+            'core.jobs.tests.test_admin',
+            'core.jobs.tests.test_email_system',
+            'core.jobs.tests.test_utils',
         ]
     
     def get_runner_name(self) -> str:

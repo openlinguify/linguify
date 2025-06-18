@@ -24,8 +24,8 @@ def main():
         # Note: excluding test_middleware as it tests obsolete Auth0 functionality
         
         # Jobs tests
-        'apps.jobs.tests.test_models',
-        'apps.jobs.tests.test_api',
+        'core.jobs.tests.test_models',
+        'core.jobs.tests.test_api',
         
         # Dynamic system tests
         'tests.test_public_web_views',

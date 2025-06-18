@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Department, JobPosition, JobApplication
+from core.jobs.models import Department, JobPosition, JobApplication
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
