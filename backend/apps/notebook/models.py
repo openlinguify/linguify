@@ -1,4 +1,5 @@
-# backend/notebook/models.py
+# -*- coding: utf-8 -*-
+# Part of Open Linguify. See LICENSE file for full copyright and licensing details.
 from django.db import models
 from apps.authentication.models import User
 from django.conf import settings

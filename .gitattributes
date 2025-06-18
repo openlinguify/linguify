@@ -1,0 +1,39 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Force Unix line endings for shell scripts and env files
+*.sh text eol=lf
+*.env text eol=lf
+*.env.* text eol=lf
+.env* text eol=lf
+
+# Force Unix line endings for Python files
+*.py text eol=lf
+requirements.txt text eol=lf
+requirements*.txt text eol=lf
+
+# Force Unix line endings for YAML files
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Force Unix line endings for Dockerfiles
+Dockerfile* text eol=lf
+docker-compose*.yml text eol=lf
+
+# Binary files
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.tgz binary
+*.jar binary
+*.pyc binary
+*.pyo binary
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
