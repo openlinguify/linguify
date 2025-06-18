@@ -1,0 +1,624 @@
+{% extends 'public_web/public_base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block page_title %}{% trans "About Open Linguify" %}{% endblock %}
+{% block meta_description %}{% trans "Discover Open Linguify's mission to democratize language learning through AI technology, open-source education, and innovative learning tools." %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Section */
+    .about-hero {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        padding: 120px 0 80px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .about-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: pulse 15s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1) rotate(0deg); }
+        50% { transform: scale(1.1) rotate(180deg); }
+    }
+    
+    /* Stats Cards */
+    .stat-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0;
+    }
+    
+    /* Value Cards */
+    .value-card {
+        height: 100%;
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+    
+    .value-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+    
+    .value-icon {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        border-radius: 20px;
+        font-size: 2rem;
+    }
+    
+    /* Timeline */
+    .timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 100%;
+        background: #e5e7eb;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding: 30px 0;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 20px;
+        background: #6366f1;
+        border-radius: 50%;
+        border: 4px solid white;
+        box-shadow: 0 0 0 4px #f3f4f6;
+    }
+    
+    /* Feature Grid */
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-top: 50px;
+    }
+    
+    .feature-item {
+        text-align: center;
+        padding: 30px;
+        border-radius: 20px;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-item:hover {
+        background: white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    /* Animations */
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .about-hero {
+            padding: 80px 0 60px;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+        }
+        
+        .timeline::before {
+            left: 30px;
+        }
+        
+        .timeline-marker {
+            left: 30px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="about-hero">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-3 fw-bold mb-4 fade-in-up">{% trans "Democratizing Language Learning" %}</h1>
+                <p class="lead fs-4 mb-5 fade-in-up" style="animation-delay: 0.2s;">
+                    {% trans "Open Linguify is on a mission to break down language barriers worldwide through innovative AI technology and open-source education." %}
+                </p>
+                <div class="fade-in-up" style="animation-delay: 0.4s;">
+                    <a href="#our-story" class="btn btn-light btn-lg px-4 py-3 me-3">
+                        <i class="bi bi-arrow-down-circle me-2"></i>{% trans "Discover Our Story" %}
+                    </a>
+                    <a href="https://github.com/openlinguify" class="btn btn-outline-light btn-lg px-4 py-3" target="_blank">
+                        <i class="bi bi-github me-2"></i>{% trans "View on GitHub" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5" style="margin-top: -50px;">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3 col-6">
+                <div class="stat-card">
+                    <h2 class="stat-number">50K+</h2>
+                    <p class="text-muted mb-0">{% trans "Active Learners" %}</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card">
+                    <h2 class="stat-number">4</h2>
+                    <p class="text-muted mb-0">{% trans "Languages Supported" %}</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card">
+                    <h2 class="stat-number">100%</h2>
+                    <p class="text-muted mb-0">{% trans "Open Source" %}</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card">
+                    <h2 class="stat-number">24/7</h2>
+                    <p class="text-muted mb-0">{% trans "AI Support" %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Story -->
+<section id="our-story" class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold mb-4">{% trans "Our Story" %}</h2>
+                <p class="lead text-muted">
+                    {% trans "From a simple idea to a global movement - discover how Open Linguify is revolutionizing language education." %}
+                </p>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body p-4">
+                                <h4 class="text-primary mb-3">{% trans "The Vision" %} 🌟</h4>
+                                <p class="mb-3">
+                                    {% trans "Open Linguify was born from a simple observation: traditional language learning methods weren't keeping up with the digital age." %}
+                                </p>
+                                <p class="text-muted mb-0">
+                                    {% trans "We envisioned a world where AI could make personalized language learning accessible to everyone, regardless of their background or resources." %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 order-md-first">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                                <i class="bi bi-lightbulb-fill" style="font-size: 3rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="text-center">
+                            <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                                <i class="bi bi-rocket-takeoff-fill" style="font-size: 3rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body p-4">
+                                <h4 class="text-success mb-3">{% trans "The Launch" %} 🚀</h4>
+                                <p class="mb-3">
+                                    {% trans "Founded in 2024, we launched with a commitment to open-source development and community-driven innovation." %}
+                                </p>
+                                <p class="text-muted mb-0">
+                                    {% trans "Our platform combines cutting-edge AI technology with proven pedagogical methods to create an effective learning experience." %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body p-4">
+                                <h4 class="text-warning mb-3">{% trans "The Growth" %} 📈</h4>
+                                <p class="mb-3">
+                                    {% trans "Today, we support multiple languages and serve thousands of learners worldwide, with our community growing every day." %}
+                                </p>
+                                <p class="text-muted mb-0">
+                                    {% trans "Our open-source approach has attracted contributors from around the globe, making language learning truly collaborative." %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 order-md-first">
+                        <div class="text-center">
+                            <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                                <i class="bi bi-graph-up-arrow" style="font-size: 3rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Core Values -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold mb-4">{% trans "Our Core Values" %}</h2>
+                <p class="lead text-muted">
+                    {% trans "The principles that guide everything we do at Open Linguify." %}
+                </p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="value-card card text-center">
+                    <div class="card-body p-4">
+                        <div class="value-icon bg-primary text-white">
+                            <i class="bi bi-heart-fill"></i>
+                        </div>
+                        <h4 class="card-title mb-3">{% trans "Accessibility" %}</h4>
+                        <p class="card-text text-muted">
+                            {% trans "Quality language education should be available to everyone, regardless of economic background or geographic location." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="value-card card text-center">
+                    <div class="card-body p-4">
+                        <div class="value-icon bg-success text-white">
+                            <i class="bi bi-lightbulb-fill"></i>
+                        </div>
+                        <h4 class="card-title mb-3">{% trans "Innovation" %}</h4>
+                        <p class="card-text text-muted">
+                            {% trans "We constantly push the boundaries of what's possible in language learning through AI and modern technology." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="value-card card text-center">
+                    <div class="card-body p-4">
+                        <div class="value-icon bg-warning text-white">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h4 class="card-title mb-3">{% trans "Community" %}</h4>
+                        <p class="card-text text-muted">
+                            {% trans "Language learning is a social experience. We foster connections between learners worldwide." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Technology Stack -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold mb-4">{% trans "Powered by Modern Technology" %}</h2>
+                <p class="lead text-muted">
+                    {% trans "Built with cutting-edge technologies to deliver the best learning experience." %}
+                </p>
+            </div>
+        </div>
+        
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-code-square" style="font-size: 2rem;"></i>
+                </div>
+                <h5 class="fw-bold mb-3">Django</h5>
+                <p class="text-muted small mb-0">{% trans "Robust backend framework for scalable applications" %}</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-window-desktop" style="font-size: 2rem;"></i>
+                </div>
+                <h5 class="fw-bold mb-3">Next.js</h5>
+                <p class="text-muted small mb-0">{% trans "Modern frontend framework for fast, interactive experiences" %}</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-robot" style="font-size: 2rem;"></i>
+                </div>
+                <h5 class="fw-bold mb-3">{% trans "AI Models" %}</h5>
+                <p class="text-muted small mb-0">{% trans "Advanced language processing for personalized learning" %}</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="bg-dark text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-github" style="font-size: 2rem;"></i>
+                </div>
+                <h5 class="fw-bold mb-3">{% trans "Open Source" %}</h5>
+                <p class="text-muted small mb-0">{% trans "Transparent development, community-driven innovation" %}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Highlight -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold mb-4">{% trans "What Makes Us Different" %}</h2>
+                <p class="lead text-muted">
+                    {% trans "Discover the innovative features that set Open Linguify apart from traditional language learning platforms." %}
+                </p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="d-flex align-items-start p-4 bg-light rounded-4 h-100">
+                    <div class="flex-shrink-0 me-4">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-brain" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="fw-bold mb-3">{% trans "AI-Powered Personalization" %}</h5>
+                        <p class="text-muted mb-0">
+                            {% trans "Our AI adapts to your learning style, pace, and preferences to create a truly personalized experience that evolves with you." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="d-flex align-items-start p-4 bg-light rounded-4 h-100">
+                    <div class="flex-shrink-0 me-4">
+                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-mortarboard" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="fw-bold mb-3">{% trans "Expert-Designed Curriculum" %}</h5>
+                        <p class="text-muted mb-0">
+                            {% trans "Our courses are designed by language experts and linguists using proven pedagogical methods for effective learning outcomes." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="d-flex align-items-start p-4 bg-light rounded-4 h-100">
+                    <div class="flex-shrink-0 me-4">
+                        <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-graph-up" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="fw-bold mb-3">{% trans "Advanced Progress Tracking" %}</h5>
+                        <p class="text-muted mb-0">
+                            {% trans "Detailed analytics and insights help you understand your learning progress and identify areas for improvement with precision." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="d-flex align-items-start p-4 bg-light rounded-4 h-100">
+                    <div class="flex-shrink-0 me-4">
+                        <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-phone" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="fw-bold mb-3">{% trans "Cross-Platform Learning" %}</h5>
+                        <p class="text-muted mb-0">
+                            {% trans "Seamlessly learn anywhere with our responsive web platform that works perfectly on desktop, tablet, and mobile devices." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold mb-4">{% trans "Built by Language Enthusiasts" %}</h2>
+                <p class="lead text-muted">
+                    {% trans "Our diverse team combines expertise in linguistics, technology, and education to create the ultimate learning experience." %}
+                </p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                    <i class="bi bi-translate" style="font-size: 2.5rem;"></i>
+                </div>
+                <h5 class="fw-bold">{% trans "Linguists & Educators" %}</h5>
+                <p class="text-muted">{% trans "Language experts who understand how people learn" %}</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                    <i class="bi bi-code-slash" style="font-size: 2.5rem;"></i>
+                </div>
+                <h5 class="fw-bold">{% trans "Developers & Engineers" %}</h5>
+                <p class="text-muted">{% trans "Tech experts building scalable, user-friendly platforms" %}</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                    <i class="bi bi-heart-fill" style="font-size: 2.5rem;"></i>
+                </div>
+                <h5 class="fw-bold">{% trans "Community Contributors" %}</h5>
+                <p class="text-muted">{% trans "Passionate volunteers from around the world" %}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- User Impact -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2 class="display-5 fw-bold mb-4">{% trans "Making a Real Impact" %}</h2>
+                <p class="lead mb-4">
+                    {% trans "Every day, thousands of learners use Open Linguify to break down language barriers and connect with the world." %}
+                </p>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="border-start border-primary border-4 ps-3">
+                            <h4 class="fw-bold text-primary mb-1">85%</h4>
+                            <small class="text-muted">{% trans "Completion Rate" %}</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border-start border-success border-4 ps-3">
+                            <h4 class="fw-bold text-success mb-1">4.8★</h4>
+                            <small class="text-muted">{% trans "User Rating" %}</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border-start border-warning border-4 ps-3">
+                            <h4 class="fw-bold text-warning mb-1">50+</h4>
+                            <small class="text-muted">{% trans "Countries" %}</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border-start border-info border-4 ps-3">
+                            <h4 class="fw-bold text-info mb-1">24/7</h4>
+                            <small class="text-muted">{% trans "AI Tutoring" %}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="bg-light rounded-4 p-5 text-center">
+                    <i class="bi bi-quote text-primary" style="font-size: 3rem;"></i>
+                    <blockquote class="blockquote mt-3">
+                        <p class="mb-3 fs-5">
+                            {% trans "Open Linguify has transformed how I learn languages. The AI personalization is incredible, and being open-source means I can trust the platform completely." %}
+                        </p>
+                        <footer class="blockquote-footer">
+                            <cite title="Source Title">{% trans "Maria, Language Learner from Spain" %}</cite>
+                        </footer>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5">
+    <div class="container">
+        <div class="card bg-gradient border-0 text-white" style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);">
+            <div class="card-body p-5 text-center">
+                <h2 class="display-6 fw-bold mb-4">{% trans "Ready to Start Your Language Journey?" %}</h2>
+                <p class="lead mb-4">
+                    {% trans "Join thousands of learners worldwide and experience the future of language education with Open Linguify." %}
+                </p>
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'auth:register' %}" class="btn btn-light btn-lg px-4 py-3">
+                            <i class="bi bi-rocket-takeoff me-2"></i>
+                            {% trans "Start Learning Free" %}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'public_web:apps' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="bi bi-grid-3x3-gap me-2"></i>
+                        {% trans "Explore Our Apps" %}
+                    </a>
+                    <a href="https://github.com/openlinguify" class="btn btn-outline-light btn-lg px-4 py-3" target="_blank">
+                        <i class="bi bi-github me-2"></i>
+                        {% trans "View Source Code" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

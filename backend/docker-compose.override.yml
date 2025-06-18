@@ -1,0 +1,12 @@
+# Override file pour extensions futures
+# Ce fichier est utilisé pour ajouter des services supplémentaires
+# Pour l'instant, nous gardons seulement les services de base
+
+# Pour ajouter des tâches programmées plus tard, décommentez :
+# services:
+#   scheduled-tasks:
+#     image: python:3.12
+#     command: echo "Scheduled tasks placeholder"
+#     depends_on:
+#       - db
+#       - redis

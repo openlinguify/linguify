@@ -1,6 +1,6 @@
 # consumers.py
 from channels.generic.websocket import AsyncWebsocketConsumer
-from authentication.models import User
+from apps.authentication.models import User
 import json
 
 class StatusConsumer(AsyncWebsocketConsumer):

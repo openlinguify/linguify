@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+                            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  
+  <!-- Learning Modules -->
+  
+  <!-- Course Module -->
+  <url>
+    <loc>https://openlinguify.com/course/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://openlinguify.com/en/course/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://openlinguify.com/fr/course/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://openlinguify.com/es/course/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://openlinguify.com/nl/course/"/>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Notebook Module -->
+  <url>
+    <loc>https://openlinguify.com/notebook/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://openlinguify.com/en/notebook/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://openlinguify.com/fr/notebook/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://openlinguify.com/es/notebook/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://openlinguify.com/nl/notebook/"/>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Revision Module -->
+  <url>
+    <loc>https://openlinguify.com/revision/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://openlinguify.com/en/revision/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://openlinguify.com/fr/revision/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://openlinguify.com/es/revision/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://openlinguify.com/nl/revision/"/>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Quizz Module -->
+  <url>
+    <loc>https://openlinguify.com/quizz/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://openlinguify.com/en/quizz/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://openlinguify.com/fr/quizz/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://openlinguify.com/es/quizz/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://openlinguify.com/nl/quizz/"/>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Language AI Module -->
+  <url>
+    <loc>https://openlinguify.com/language-ai/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://openlinguify.com/en/language-ai/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://openlinguify.com/fr/language-ai/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://openlinguify.com/es/language-ai/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://openlinguify.com/nl/language-ai/"/>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+</urlset>

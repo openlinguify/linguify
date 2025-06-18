@@ -1,0 +1,294 @@
+name: App Manifest Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/apps/*/__manifest__.py'
+      - '.github/workflows/manifest-validation.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/apps/*/__manifest__.py'
+      - '.github/workflows/manifest-validation.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-manifests:
+    name: Validate App Manifests
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./backend
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v4
+        with:
+          poetry-version: '1.7.1'
+
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.create false
+
+      - name: Install dependencies
+        run: |
+          poetry install
+
+      - name: Validate manifest structure
+        run: |
+          echo "🔍 Validating App Manifests"
+          echo "=========================="
+          
+          export DJANGO_SETTINGS_MODULE=core.settings_test
+          export SECRET_KEY='test-secret-key-for-ci'
+          export DEBUG=True
+          export ALLOWED_HOSTS=localhost,127.0.0.1
+          export DB_NAME=test_db
+          export DB_USER=postgres
+          export DB_PASSWORD=postgres
+          export DB_HOST=localhost
+          export DB_PORT=5432
+          
+          # Create validation script
+          cat > validate_manifests.py << 'EOF'
+          import os
+          import sys
+          import django
+          from pathlib import Path
+          
+          os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings_test')
+          os.environ.setdefault('SECRET_KEY', 'test-secret-key-for-ci')
+          os.environ.setdefault('DEBUG', 'True')
+          os.environ.setdefault('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+          os.environ.setdefault('DB_NAME', 'test_db')
+          os.environ.setdefault('DB_USER', 'postgres')
+          os.environ.setdefault('DB_PASSWORD', 'postgres')
+          os.environ.setdefault('DB_HOST', 'localhost')
+          os.environ.setdefault('DB_PORT', '5432')
+          django.setup()
+          
+          from public_web.utils import AppManifestParser
+          
+          def validate_manifests():
+              parser = AppManifestParser()
+              errors = []
+              warnings = []
+              
+              try:
+                  manifests = parser.get_all_manifests()
+                  public_apps = parser.get_public_apps()
+                  
+                  print(f"✅ Found {len(manifests)} total manifests")
+                  print(f"✅ Found {len(public_apps)} public apps")
+                  
+                  # Validate each manifest
+                  for app_name, app_data in manifests.items():
+                      manifest = app_data['manifest']
+                      
+                      # Required fields validation
+                      required_fields = ['name', 'version', 'category', 'summary']
+                      for field in required_fields:
+                          if field not in manifest:
+                              errors.append(f"{app_name}: Missing required field '{field}'")
+                      
+                      # Frontend components validation
+                      if manifest.get('application', False):
+                          if 'frontend_components' not in manifest:
+                              warnings.append(f"{app_name}: Application should have frontend_components")
+                          else:
+                              fc = manifest['frontend_components']
+                              if 'icon' not in fc:
+                                  warnings.append(f"{app_name}: Missing icon in frontend_components")
+                              if 'menu_order' not in fc:
+                                  warnings.append(f"{app_name}: Missing menu_order in frontend_components")
+                      
+                      # Version format validation
+                      version = manifest.get('version', '')
+                      if not version or len(version.split('.')) != 3:
+                          warnings.append(f"{app_name}: Version should follow semver format (x.y.z)")
+                      
+                      print(f"  ✓ {app_name}: {manifest.get('name', 'Unknown')}")
+                  
+                  # Print results
+                  if errors:
+                      print("\n❌ ERRORS:")
+                      for error in errors:
+                          print(f"  - {error}")
+                  
+                  if warnings:
+                      print("\n⚠️ WARNINGS:")
+                      for warning in warnings:
+                          print(f"  - {warning}")
+                  
+                  if not errors and not warnings:
+                      print("\n🎉 All manifests are valid!")
+                  
+                  return len(errors) == 0
+                  
+              except Exception as e:
+                  print(f"❌ Error during validation: {e}")
+                  return False
+          
+          if __name__ == '__main__':
+              success = validate_manifests()
+              sys.exit(0 if success else 1)
+          EOF
+          
+          poetry run python validate_manifests.py
+        env:
+          DJANGO_SETTINGS_MODULE: 'core.settings_test'
+          SECRET_KEY: 'test-secret-key-for-ci'
+          DEBUG: 'True'
+          ALLOWED_HOSTS: 'localhost,127.0.0.1'
+          DB_NAME: 'test_db'
+          DB_USER: 'postgres'
+          DB_PASSWORD: 'postgres'
+          DB_HOST: 'localhost'
+          DB_PORT: '5432'
+
+      - name: Check manifest file syntax
+        run: |
+          echo "🔍 Checking Python syntax in manifest files"
+          
+          find apps -name "__manifest__.py" -type f | while read manifest_file; do
+            echo "Checking $manifest_file"
+            python -m py_compile "$manifest_file"
+            if [ $? -eq 0 ]; then
+              echo "  ✅ Syntax OK"
+            else
+              echo "  ❌ Syntax Error"
+              exit 1
+            fi
+          done
+
+      - name: Verify app discovery
+        run: |
+          echo "🔍 Testing App Discovery"
+          
+          export DJANGO_SETTINGS_MODULE=core.settings_test
+          export SECRET_KEY='test-secret-key-for-ci'
+          export DEBUG=True
+          export ALLOWED_HOSTS=localhost,127.0.0.1
+          export DB_NAME=test_db
+          export DB_USER=postgres
+          export DB_PASSWORD=postgres
+          export DB_HOST=localhost
+          export DB_PORT=5432
+          
+          cat > test_discovery.py << 'EOF'
+          import os
+          import django
+          
+          os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings_test')
+          os.environ.setdefault('SECRET_KEY', 'test-secret-key-for-ci')
+          os.environ.setdefault('DEBUG', 'True')
+          os.environ.setdefault('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+          os.environ.setdefault('DB_NAME', 'test_db')
+          os.environ.setdefault('DB_USER', 'postgres')
+          os.environ.setdefault('DB_PASSWORD', 'postgres')
+          os.environ.setdefault('DB_HOST', 'localhost')
+          os.environ.setdefault('DB_PORT', '5432')
+          django.setup()
+          
+          from public_web.utils import manifest_parser
+          
+          try:
+              # Test app discovery
+              apps = manifest_parser.get_public_apps()
+              
+              print(f"📱 Discovered {len(apps)} public apps:")
+              for app in apps:
+                  print(f"  - {app['name']} (slug: {app['slug']}, order: {app['menu_order']})")
+              
+              # Test URL generation
+              from public_web.templatetags.app_tags import get_app_url
+              for app in apps:
+                  url = get_app_url(app['slug'])
+                  print(f"  URL for {app['slug']}: {url}")
+              
+              print("\n✅ App discovery working correctly!")
+              
+          except Exception as e:
+              print(f"❌ App discovery failed: {e}")
+              exit(1)
+          EOF
+          
+          poetry run python test_discovery.py
+        env:
+          DJANGO_SETTINGS_MODULE: 'core.settings_test'
+          SECRET_KEY: 'test-secret-key-for-ci'
+          DEBUG: 'True'
+          ALLOWED_HOSTS: 'localhost,127.0.0.1'
+          DB_NAME: 'test_db'
+          DB_USER: 'postgres'
+          DB_PASSWORD: 'postgres'
+          DB_HOST: 'localhost'
+          DB_PORT: '5432'
+
+  notify-manifest-issues:
+    name: Notify on manifest issues
+    needs: [validate-manifests]
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    
+    steps:
+      - name: Create issue on validation failure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowName = "App Manifest Validation";
+            const runId = "${{ github.run_id }}";
+            const branch = "${{ github.ref_name }}";
+            const repo = context.repo;
+            const issueTitle = `🚨 App Manifest Validation Failed on ${branch}`;
+            const issueBody = `The **${workflowName}** workflow failed on the \`${branch}\` branch.
+
+            **Issues Found**:
+            - Invalid manifest structure
+            - Missing required fields
+            - Syntax errors in __manifest__.py files
+            - App discovery problems
+
+            **Run URL**: [View Failed Run](https://github.com/${repo.owner}/${repo.repo}/actions/runs/${runId})
+
+            **Time**: ${new Date().toISOString()}
+
+            Please check your app manifest files and ensure they follow the required structure.
+
+            **Required Manifest Structure**:
+            \`\`\`python
+            __manifest__ = {
+                'name': 'App Name',
+                'version': '1.0.0',
+                'category': 'Category',
+                'summary': 'Short description',
+                'description': 'Detailed description',
+                'author': 'Author Name',
+                'installable': True,
+                'application': True,
+                'frontend_components': {
+                    'icon': 'icon-name',
+                    'route': '/app-route',
+                    'menu_order': 1,
+                }
+            }
+            \`\`\``;
+
+            await github.rest.issues.create({
+              owner: repo.owner,
+              repo: repo.repo,
+              title: issueTitle,
+              body: issueBody,
+              labels: ["bug", "CI", "manifest", "validation"]
+            });

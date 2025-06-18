@@ -5,9 +5,11 @@
 </p>
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-![Languages: 4](https://img.shields.io/badge/Languages-4-green.svg)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
-![Contributors Welcome](https://img.shields.io/badge/contributors-welcome-orange.svg)
+[![Backend CI Status](https://github.com/linguify/linguify/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/linguify/linguify/actions/workflows/backend-ci.yml)
+[![Deploy Status](https://github.com/linguify/linguify/workflows/Deploy%20Linguify/badge.svg)](https://github.com/linguify/linguify/actions/workflows/deploy.yml)
+[![Languages: 4](https://img.shields.io/badge/Languages-4-green.svg)](https://github.com/linguify/linguify)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/linguify/linguify/blob/main/CONTRIBUTING.md)
+[![Contributors Welcome](https://img.shields.io/badge/contributors-welcome-orange.svg)](https://github.com/linguify/linguify/discussions)
 
 ## Vision
 
@@ -34,10 +36,12 @@ Linguify offers a comprehensive language learning experience:
 - **Interactive Learning Paths** – Carefully designed progression through our four core languages
 - **Smart Vocabulary Builder** – Context-based word acquisition with native-speaker audio
 - **Adaptive Grammar System** – Exercises that adjust to your learning pace
+- **AI Conversation Practice** – Practice your language skills with AI-powered conversation partners
 - **Spaced Repetition Flashcards** – Science-backed memory optimization techniques
 - **Personal Language Notebook** – Capture and organize your own learning materials
-- **Progress Dashboard** – Data-driven insights to track your language journey.
+- **Progress Dashboard** – Data-driven insights to track your language journey
 - **Gamification Elements** – Stay motivated with achievements and streaks
+- **GDPR Compliance** – Full account management with 30-day grace period for deletion
 
 ## 🛠️ Technology Stack
 
@@ -46,7 +50,7 @@ Our modern tech stack offers plenty of opportunities to enhance your skills:
 - **Frontend**: React, Next.js, TypeScript, Tailwind CSS
 - **Backend**: Django, Python, RESTful APIs
 - **Database**: PostgreSQL
-- **Authentication**: Auth0, JWT
+- **Authentication**: Auth0, JWT with GDPR-compliant account management
 - **UI/UX**: Figma designs, accessibility-focused components
 - **DevOps**: GitHub Actions, Docker
 - **Testing**: Jest, Pytest
@@ -54,6 +58,12 @@ Our modern tech stack offers plenty of opportunities to enhance your skills:
 ## 🔥 How You Can Contribute
 
 We welcome contributions of all types and sizes! Here's how to get started:
+
+### Prerequisites
+
+For the backend:
+ - Docker [install guide](https://docs.docker.com/get-docker/)
+ - Poetry: [install guide](https://python-poetry.org/docs/)
 
 ### Code Contributions
 
@@ -67,9 +77,8 @@ We welcome contributions of all types and sizes! Here's how to get started:
    npm run dev
    # Backend setup (in a separate terminal)
    cd backend
-   pip install -r requirements.txt
-   python manage.py migrate
-   python manage.py runserver
+   poetry run python manage.py migrate
+   poetry run python manage.py runserver
    ```
 
 2. **Find your first issue**:

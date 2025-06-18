@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load profile_helpers %}
+
+{% block title %}{% trans "Manage Profile Picture" %}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h4 mb-0">{% trans "Profile Picture" %}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6 text-center">
+                            <h3 class="h5 mb-3">{% trans "Current Profile Picture" %}</h3>
+                            <div class="profile-picture-container mb-3">
+                                {% render_profile_picture user "large" "img-thumbnail" %}
+                            </div>
+                            
+                            {% if user.profile_picture %}
+                            <form action="{% url 'delete_profile_picture' %}" method="post" 
+                                  onsubmit="return confirm('{% trans "Are you sure you want to delete your profile picture?" %}')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i> {% trans "Delete" %}
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h3 class="h5 mb-3">{% trans "Upload New Picture" %}</h3>
+                            <form action="{% url 'upload_profile_picture' %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                
+                                <div class="mb-3">
+                                    <label for="profile_picture" class="form-label">{% trans "Choose an image" %}</label>
+                                    <input type="file" name="profile_picture" id="profile_picture" class="form-control" 
+                                           accept="image/jpeg,image/png,image/gif,image/webp" required>
+                                    <div class="form-text">
+                                        {% trans "Maximum size: 5MB. Recommended size: at least 200x200 pixels." %}
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-upload"></i> {% trans "Upload" %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    {% if profile_urls and not profile_urls.is_default %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h3 class="h5 mb-3">{% trans "Available Sizes" %}</h3>
+                            <div class="row text-center">
+                                <div class="col-md-4 mb-3">
+                                    <h4 class="h6">{% trans "Small" %}</h4>
+                                    <img src="{{ profile_urls.small }}" alt="{% trans 'Small profile picture' %}" 
+                                         class="img-thumbnail profile-preview">
+                                    <div class="mt-2">
+                                        <small>50x50px</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <h4 class="h6">{% trans "Medium" %}</h4>
+                                    <img src="{{ profile_urls.medium }}" alt="{% trans 'Medium profile picture' %}" 
+                                         class="img-thumbnail profile-preview">
+                                    <div class="mt-2">
+                                        <small>150x150px</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <h4 class="h6">{% trans "Large" %}</h4>
+                                    <img src="{{ profile_urls.large }}" alt="{% trans 'Large profile picture' %}" 
+                                         class="img-thumbnail profile-preview">
+                                    <div class="mt-2">
+                                        <small>300x300px</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if profile_urls.original %}
+                            <div class="text-center mt-3">
+                                <a href="{{ profile_urls.original }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-download"></i> {% trans "View Original" %}
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="card-footer">
+                    <div class="text-muted small">
+                        <p class="mb-0">
+                            {% trans "Your profile picture will be visible to others in the application." %}
+                            {% if profile_urls.legacy %}
+                            <br>
+                            <span class="text-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {% trans "Your profile picture is using the legacy format. Upload a new picture to benefit from optimized sizes." %}
+                            </span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user.is_staff %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-secondary text-white">
+                    <h2 class="h4 mb-0">{% trans "Admin Tools" %}</h2>
+                </div>
+                <div class="card-body">
+                    <h3 class="h5 mb-3">{% trans "Migrate Legacy Pictures" %}</h3>
+                    <p>{% trans "Migrate profile pictures from the legacy format to the new optimized format." %}</p>
+                    
+                    <form action="{% url 'migrate_all_profile_pictures' %}" method="post" class="mb-4">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-sync-alt"></i> {% trans "Migrate All Pictures" %}
+                        </button>
+                    </form>
+                    
+                    <h3 class="h5 mb-3">{% trans "Clean Old Versions" %}</h3>
+                    <p>{% trans "Remove old versions of profile pictures to save disk space." %}</p>
+                    
+                    <form action="{% url 'cleanup_profile_pictures' %}" method="post">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <input type="number" name="max_versions" class="form-control" 
+                                   value="5" min="1" max="20">
+                            <button type="submit" class="btn btn-secondary">
+                                <i class="fas fa-broom"></i> {% trans "Clean Up" %}
+                            </button>
+                        </div>
+                        <div class="form-text">
+                            {% trans "Keep this many versions per user. Default: 5" %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+.profile-picture-container {
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-picture-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-preview {
+    width: 100%;
+    height: auto;
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: cover;
+}
+
+.profile-picture-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 72px;
+    color: #fff;
+    background-color: #6c757d;
+}
+</style>
+{% endblock %}

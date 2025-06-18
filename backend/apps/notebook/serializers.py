@@ -62,7 +62,10 @@ class NoteCategorySerializer(serializers.ModelSerializer):
 
     def get_notes(self, obj):
         """Retourne les 5 dernières notes de la catégorie"""
-        notes = obj.note_set.all()[:5]
+        if hasattr(obj, 'recent_notes'):
+            notes = obj.recent_notes
+        else:
+            notes = obj.note_set.order_by('-created_at').all()[:5]
         from .serializers import NoteListSerializer
         return NoteListSerializer(notes, many=True, context=self.context).data
 
@@ -102,6 +105,7 @@ class NoteListSerializer(serializers.ModelSerializer):
         ]
 
     def get_is_due_for_review(self, obj):
+        # Utiliser la propriété needs_review qui fait le calcul sur place
         return obj.needs_review
 
 class NoteSerializer(serializers.ModelSerializer):
@@ -118,12 +122,29 @@ class NoteSerializer(serializers.ModelSerializer):
             'id', 'title', 'content', 'category', 'category_name',
             'category_path', 'tags', 'note_type', 'created_at', 'updated_at',
             'last_reviewed_at', 'review_count', 'is_pinned', 'is_archived',
-            'priority', 'is_shared', 'is_due_for_review', 'time_until_review'
+            'priority', 'is_shared', 'is_due_for_review', 'time_until_review',
+            # Language learning fields
+            'language', 'translation', 'pronunciation', 'example_sentences', 
+            'related_words', 'difficulty'
         ]
         read_only_fields = [
             'created_at', 'updated_at', 'last_reviewed_at',
             'review_count', 'is_shared', 'is_due_for_review'
         ]
+        
+    def to_internal_value(self, data):
+        # Make a copy of data to avoid modifying the original
+        data_copy = data.copy() if hasattr(data, 'copy') else dict(data)
+        
+        # No longer try to decode content - let it pass through as is
+        # This avoids potential encoding/decoding issues
+        
+        # Ensure JSON fields are properly handled
+        for field in ['example_sentences', 'related_words']:
+            if field in data_copy and data_copy[field] is None:
+                data_copy[field] = []
+                
+        return super().to_internal_value(data_copy)
 
     def get_category_path(self, obj):
         if not obj.category:
@@ -134,23 +155,15 @@ class NoteSerializer(serializers.ModelSerializer):
         return obj.sharednote_set.exists()
 
     def get_is_due_for_review(self, obj):
+        # Utiliser la propriété needs_review qui fait le calcul sur place
         return obj.needs_review
 
     def get_time_until_review(self, obj):
         if not obj.last_reviewed_at:
             return "Due now"
         
-        from datetime import timedelta
-        intervals = {
-            0: timedelta(days=1),
-            1: timedelta(days=3),
-            2: timedelta(days=7),
-            3: timedelta(days=14),
-            4: timedelta(days=30),
-            5: timedelta(days=60)
-        }
-        review_level = min(obj.review_count, 5)
-        next_review = obj.last_reviewed_at + intervals[review_level]
+        # Utiliser la méthode _calculate_next_review_date pour cohérence
+        next_review = obj._calculate_next_review_date(obj.last_reviewed_at)
         
         if next_review <= timezone.now():
             return "Due now"
@@ -183,12 +196,12 @@ class NoteSerializer(serializers.ModelSerializer):
         return note
 
     def update(self, instance, validated_data):
-        tags_data = self.context.get('tags')
+        tags_data = self.context.get('tags', [])
         note = super().update(instance, validated_data)
         
-        if tags_data is not None:
-            tags = Tag.objects.filter(id__in=tags_data, user=instance.user)
-            note.tags.set(tags)
+        # Always update tags, using an empty list if tags_data is None
+        tags = Tag.objects.filter(id__in=tags_data or [], user=instance.user)
+        note.tags.set(tags)
         
         return note
 

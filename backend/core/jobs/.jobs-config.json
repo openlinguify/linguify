@@ -1,0 +1,95 @@
+{
+  "module": {
+    "name": "jobs",
+    "version": "1.0.0",
+    "description": "Complete careers and recruitment management system",
+    "type": "core_module",
+    "location": "core/jobs"
+  },
+  "assets": {
+    "source_directory": "static/src/",
+    "export_target": "../../public_web/",
+    "files": {
+      "css": {
+        "source": "static/src/css/careers.css",
+        "target": "static/src/css/careers.css"
+      },
+      "js": {
+        "source": "static/src/js/careers.js", 
+        "target": "static/src/js/careers.js"
+      },
+      "templates": {
+        "careers.html": {
+          "source": "static/src/templates/careers.html",
+          "target": "templates/public_web/careers.html"
+        },
+        "careers_position_detail.html": {
+          "source": "static/src/templates/careers_position_detail.html", 
+          "target": "templates/public_web/careers_position_detail.html"
+        },
+        "careers_position_not_found.html": {
+          "source": "static/src/templates/careers_position_not_found.html",
+          "target": "templates/public_web/careers_position_not_found.html"
+        },
+        "careers_position_closed.html": {
+          "source": "static/src/templates/careers_position_closed.html",
+          "target": "templates/public_web/careers_position_closed.html"
+        }
+      }
+    }
+  },
+  "api": {
+    "namespace": "jobs",
+    "base_url": "/api/v1/jobs/",
+    "endpoints": [
+      "departments/",
+      "positions/", 
+      "positions/{id}/",
+      "apply/",
+      "stats/"
+    ]
+  },
+  "public_routes": {
+    "base_url": "/careers/",
+    "routes": [
+      "",
+      "positions/{id}/",
+      "api/positions/",
+      "api/apply/",
+      "sitemap.xml"
+    ]
+  },
+  "database": {
+    "tables": [
+      "jobs_department",
+      "jobs_jobposition", 
+      "jobs_jobapplication"
+    ],
+    "migrations_location": "migrations/"
+  },
+  "features": {
+    "job_listing": true,
+    "application_system": true,
+    "email_notifications": true,
+    "admin_interface": true,
+    "api_endpoints": true,
+    "seo_optimization": true,
+    "multilingual": true,
+    "responsive_design": true
+  },
+  "build": {
+    "export_script": "export_assets.py",
+    "build_script": "build.py",
+    "test_command": "python manage.py test core.jobs",
+    "sample_data_command": "python manage.py create_sample_jobs"
+  },
+  "development": {
+    "watch_directories": [
+      "static/src/css/",
+      "static/src/js/",
+      "static/src/templates/"
+    ],
+    "auto_export_on_change": true,
+    "hot_reload_support": false
+  }
+}

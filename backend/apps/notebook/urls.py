@@ -12,6 +12,7 @@ router.register(r'shared-notes', SharedNoteViewSet, basename='shared-note')
 
 
 urlpatterns = [
+    # API REST endpoints
     path('', include(router.urls)),
 ]
 

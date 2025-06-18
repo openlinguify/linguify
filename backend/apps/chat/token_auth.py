@@ -3,19 +3,20 @@ from django.contrib.auth.models import AnonymousUser
 from channels.db import database_sync_to_async
 from channels.middleware import BaseMiddleware
 
-from rest_framework_simplejwt.tokens import AccessToken
+# REMOVED: rest_framework_simplejwt - Using Django+Supabase authentication now
+# from rest_framework_simplejwt.tokens import AccessToken
 
-from authentication.models import User
+from apps.authentication.models import User
 
 
 @database_sync_to_async
 def get_user(token_key):
-    try:
-        token = AccessToken(token_key)
-        user_id = token.payload['user_id']
-        return User.objects.get(pk=user_id)
-    except Exception as e:
-        return AnonymousUser
+    """
+    DEPRECATED: JWT token authentication disabled - Using Django+Supabase now
+    Returns AnonymousUser for now until Supabase WebSocket auth is implemented
+    """
+    # TODO: Implement Supabase token validation for WebSocket connections
+    return AnonymousUser
 
 
 class TokenAuthMiddleware(BaseMiddleware):

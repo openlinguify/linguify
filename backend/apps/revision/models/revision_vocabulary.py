@@ -24,6 +24,7 @@ class VocabularyWord(models.Model):
     mastery_level = models.PositiveIntegerField(default=0)  # 0-5 par exemple
 
     class Meta:
+        app_label = 'revision'
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['user', 'source_language', 'target_language']),
@@ -51,6 +52,7 @@ class VocabularyList(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        app_label = 'revision'
         ordering = ['-created_at']
 
     def __str__(self):

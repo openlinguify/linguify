@@ -1,0 +1,69 @@
+{% extends "course/base.html" %}
+
+{% block page_title %}Pratique de grammaire - Cours{% endblock %}
+
+{% block header_content %}
+<div class="d-flex align-items-center justify-content-between">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'learning:dashboard' %}">Tableau de bord</a></li>
+                {% if lesson_specific %}
+                <li class="breadcrumb-item"><a href="{% url 'learning:unit-detail' lesson.unit.pk %}">{{ lesson.unit.title }}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'learning:lesson-detail' lesson.pk %}">{{ lesson.title }}</a></li>
+                {% endif %}
+                <li class="breadcrumb-item active">Pratique de grammaire</li>
+            </ol>
+        </nav>
+    </div>
+    <a href="{% if lesson_specific %}{% url 'learning:lesson-detail' lesson.pk %}{% else %}{% url 'learning:dashboard' %}{% endif %}" class="btn btn-outline-custom">
+        <i class="bi bi-arrow-left"></i> Retour
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="course-content" style="width: 100%;">
+    <div class="content-header">
+        <h4>Pratique de grammaire</h4>
+        {% if lesson_specific %}
+        <p class="text-muted">Exercices de grammaire pour la leçon : {{ lesson.title }}</p>
+        {% else %}
+        <p class="text-muted">Exercices de grammaire générale</p>
+        {% endif %}
+    </div>
+    
+    <div class="content-body">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="exercise-card">
+                    <div class="text-center py-5">
+                        <i class="bi bi-pencil-square" style="font-size: 3rem; color: #6366f1;"></i>
+                        <h5 class="mt-3">{{ message }}</h5>
+                        <p class="text-muted">Les exercices de grammaire seront bientôt disponibles pour améliorer votre apprentissage.</p>
+                        
+                        {% if lesson_specific %}
+                        <div class="mt-4">
+                            <p><strong>Leçon :</strong> {{ lesson.title }}</p>
+                            <p><strong>Type :</strong> {{ lesson.get_lesson_type_display }}</p>
+                            <p><strong>Durée estimée :</strong> {{ lesson.estimated_duration }} minutes</p>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mt-4">
+                            {% if lesson_specific %}
+                            <a href="{% url 'learning:lesson-detail' lesson.pk %}" class="btn btn-gradient me-2">
+                                <i class="bi bi-arrow-left"></i> Retour à la leçon
+                            </a>
+                            {% endif %}
+                            <a href="{% url 'learning:dashboard' %}" class="btn btn-outline-custom">
+                                <i class="bi bi-house"></i> Tableau de bord
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

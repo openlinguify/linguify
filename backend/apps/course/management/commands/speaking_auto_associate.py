@@ -1,6 +1,6 @@
 # backend/apps/course/management/commands/speaking_auto_associate.py
 from django.core.management.base import BaseCommand
-from course.models import ContentLesson, SpeakingExercise, VocabularyList
+from apps.course.models import ContentLesson, SpeakingExercise, VocabularyList
 
 class Command(BaseCommand):
     help = 'Automatically associates vocabulary items with speaking exercises'

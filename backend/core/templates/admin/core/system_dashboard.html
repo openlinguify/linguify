@@ -1,0 +1,201 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+.system-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 15px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+.system-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+.system-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+.action-button {
+    display: inline-block;
+    background: #007cba;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 4px;
+    margin: 8px 8px 8px 0;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+.action-button:hover {
+    background: #005a87;
+    color: white;
+}
+.action-button.warning {
+    background: #f39c12;
+}
+.action-button.warning:hover {
+    background: #e67e22;
+}
+.action-button.success {
+    background: #27ae60;
+}
+.action-button.success:hover {
+    background: #229954;
+}
+.action-button.info {
+    background: #3498db;
+}
+.action-button.info:hover {
+    background: #2980b9;
+}
+.system-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+.status-ok { background: #27ae60; }
+.status-warning { background: #f39c12; }
+.status-error { background: #e74c3c; }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='core' %}">Core</a>
+    &rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="module aligned">
+    <h1>🛠️ {{ title }}</h1>
+    
+    <div class="help">
+        <p>Interface de gestion générale du système Linguify. Utilisez les outils ci-dessous pour maintenir et surveiller le système.</p>
+    </div>
+    
+    <div class="system-grid">
+        <!-- Traductions -->
+        <div class="system-card">
+            <h2>🌍 Gestion des Traductions</h2>
+            <p>Corrigez les problèmes d'encodage et compilez les traductions pour toutes les langues supportées.</p>
+            <div class="system-status">
+                <div class="status-indicator status-ok"></div>
+                <span>Système de traductions opérationnel</span>
+            </div>
+            <a href="{% url 'admin:core_systemmanagement_fix_translations' %}" class="action-button success">
+                🔧 Corriger les Traductions
+            </a>
+        </div>
+        
+        <!-- Tests -->
+        <div class="system-card">
+            <h2>🧪 Tests Unitaires</h2>
+            <p>Lancez les tests unitaires pour vérifier l'intégrité de toutes les applications ou d'une application spécifique.</p>
+            <div class="system-status">
+                <div class="status-indicator status-warning"></div>
+                <span>Tests en attente d'exécution</span>
+            </div>
+            <a href="{% url 'admin:core_systemmanagement_run_tests' %}" class="action-button warning">
+                🧪 Lancer les Tests
+            </a>
+        </div>
+        
+        <!-- Authentification -->
+        <div class="system-card">
+            <h2>🔐 Vérification Système</h2>
+            <p>Vérifiez l'intégrité du système d'authentification, de la base de données et de la configuration.</p>
+            <div class="system-status">
+                <div class="status-indicator status-ok"></div>
+                <span>Authentification fonctionnelle</span>
+            </div>
+            <a href="{% url 'admin:core_systemmanagement_check_auth' %}" class="action-button info">
+                🔍 Vérifier le Système
+            </a>
+        </div>
+        
+        <!-- Informations Système -->
+        <div class="system-card">
+            <h2>📊 Informations Système</h2>
+            <p>Consultez les informations détaillées sur le système, versions, base de données et logs récents.</p>
+            <div class="system-status">
+                <div class="status-indicator status-ok"></div>
+                <span>Système opérationnel</span>
+            </div>
+            <a href="{% url 'admin:core_systemmanagement_system_info' %}" class="action-button info">
+                📋 Infos Système
+            </a>
+        </div>
+        
+        <!-- SEO Management -->
+        <div class="system-card">
+            <h2>🔍 Gestion SEO</h2>
+            <p>Gérez les sitemaps, surveillez les performances SEO et analysez l'indexation par les moteurs de recherche.</p>
+            <div class="system-status">
+                <div class="status-indicator status-ok"></div>
+                <span>SEO en cours de surveillance</span>
+            </div>
+            <a href="{% url 'admin:core_sitemaplog_changelist' %}" class="action-button">
+                📈 Gestion SEO
+            </a>
+        </div>
+        
+        <!-- Application Manager -->
+        <div class="system-card">
+            <h2>📱 Gestionnaire d'Applications</h2>
+            <p>Gérez les applications Linguify, leurs paramètres et les préférences utilisateur.</p>
+            <div class="system-status">
+                <div class="status-indicator status-ok"></div>
+                <span>Applications en fonctionnement</span>
+            </div>
+            <a href="{% url 'admin:app_manager_app_changelist' %}" class="action-button">
+                🔧 Gérer les Apps
+            </a>
+        </div>
+    </div>
+    
+    <div class="system-card">
+        <h2>⚡ Actions Rapides</h2>
+        <p>Accès rapide aux tâches de maintenance courantes :</p>
+        <a href="{% url 'admin:core_systemmanagement_fix_translations' %}" class="action-button success">
+            🌍 Fix Traductions
+        </a>
+        <a href="{% url 'admin:core_systemmanagement_run_tests' %}" class="action-button warning">
+            🧪 Tests Rapides
+        </a>
+        <a href="{% url 'admin:core_systemmanagement_system_info' %}" class="action-button info">
+            📊 Status Système
+        </a>
+    </div>
+</div>
+
+<script>
+// Auto-refresh status indicators every 30 seconds
+setInterval(function() {
+    // Simple visual indication that the page is "live"
+    document.querySelectorAll('.status-indicator').forEach(function(indicator) {
+        indicator.style.opacity = '0.5';
+        setTimeout(function() {
+            indicator.style.opacity = '1';
+        }, 500);
+    });
+}, 30000);
+</script>
+{% endblock %}

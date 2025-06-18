@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres - Linguify</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS depuis le template -->
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --accent-color: #ec4899;
+            --sidebar-width: 280px;
+            --sidebar-width-mobile: 100%;
+            --header-height: 80px;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        
+        .settings-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Header fixe */
+        .settings-header {
+            height: var(--header-height);
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            z-index: 1000;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+        }
+        
+        .header-content {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        /* Navigation */
+        .settings-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        
+        .nav-logo {
+            width: 28px;
+            height: 28px;
+        }
+        
+        /* Main content */
+        .settings-main {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+        }
+        
+        /* Sidebar */
+        .settings-sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem 1rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: #fafbfc;
+            text-align: center;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0 auto 1rem;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .user-info {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .user-email {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        
+        /* Navigation tabs */
+        .nav-tabs-vertical {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-tab {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            color: #64748b;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .nav-tab:hover {
+            background: #f8fafc;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .nav-tab.active {
+            background: linear-gradient(135deg, #f0f4ff 0%, #fdf2f8 100%);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .nav-icon {
+            font-size: 1.125rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Content area */
+        .settings-content {
+            flex: 1;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .content-header {
+            padding: 2rem 2rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: #fafbfc;
+        }
+        
+        .content-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .content-title h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+        
+        .content-description {
+            color: #64748b;
+            margin: 0;
+        }
+        
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        /* Form styles */
+        .settings-section {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+        
+        .btn-gradient {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <!-- Header -->
+        <div class="settings-header">
+            <div class="header-content">
+                <div class="settings-nav">
+                    <a href="#" class="nav-brand">
+                        <i class="bi bi-gear nav-logo"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </div>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i>
+                            testuser
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="settings-main">
+            <!-- Sidebar -->
+            <div class="settings-sidebar">
+                <div class="sidebar-header">
+                    <!-- User Avatar -->
+                    <div class="user-avatar">
+                        <span>TU</span>
+                    </div>
+                    
+                    <!-- User Info -->
+                    <div class="user-info">
+                        <div class="user-name">Test User</div>
+                        <div class="user-email">test@example.com</div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-content p-3">
+                    <nav class="nav-tabs-vertical">
+                        <a href="#" class="nav-tab active" onclick="switchTab('profile')">
+                            <i class="bi bi-person nav-icon"></i>
+                            Profil
+                        </a>
+                        <a href="#" class="nav-tab" onclick="switchTab('language')">
+                            <i class="bi bi-globe nav-icon"></i>
+                            Langues
+                        </a>
+                        <a href="#" class="nav-tab" onclick="switchTab('appearance')">
+                            <i class="bi bi-palette nav-icon"></i>
+                            Apparence
+                        </a>
+                        <a href="#" class="nav-tab" onclick="switchTab('notifications')">
+                            <i class="bi bi-bell nav-icon"></i>
+                            Notifications
+                        </a>
+                        <a href="#" class="nav-tab" onclick="switchTab('learning')">
+                            <i class="bi bi-book nav-icon"></i>
+                            Apprentissage
+                        </a>
+                        <a href="#" class="nav-tab" onclick="switchTab('security')">
+                            <i class="bi bi-shield-lock nav-icon"></i>
+                            Sécurité
+                        </a>
+                        <a href="#" class="nav-tab" onclick="switchTab('privacy')">
+                            <i class="bi bi-eye-slash nav-icon"></i>
+                            Confidentialité
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="settings-content">
+                <!-- Profile Section -->
+                <div id="profileSection" class="tab-content active">
+                    <div class="content-header">
+                        <div class="content-title">
+                            <i class="bi bi-person"></i>
+                            <h1>Informations du profil</h1>
+                        </div>
+                        <p class="content-description">Gérez vos informations personnelles et votre profil public</p>
+                    </div>
+                    
+                    <div class="content-body">
+                        <div class="settings-section">
+                            <div class="section-header">
+                                <i class="bi bi-info-circle"></i>
+                                <h3 class="section-title">Informations de base</h3>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Prénom</label>
+                                        <input type="text" class="form-control" value="Test">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nom</label>
+                                        <input type="text" class="form-control" value="User">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-gradient">
+                                Sauvegarder les modifications
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Language Section -->
+                <div id="languageSection" class="tab-content">
+                    <div class="content-header">
+                        <div class="content-title">
+                            <i class="bi bi-globe"></i>
+                            <h1>Paramètres de langue</h1>
+                        </div>
+                        <p class="content-description">Configurez vos langues d'apprentissage</p>
+                    </div>
+                    
+                    <div class="content-body">
+                        <div class="settings-section">
+                            <div class="section-header">
+                                <i class="bi bi-translate"></i>
+                                <h3 class="section-title">Langues d'apprentissage</h3>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Langue maternelle</label>
+                                        <select class="form-control">
+                                            <option>English</option>
+                                            <option>Français</option>
+                                            <option>Español</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Langue cible</label>
+                                        <select class="form-control">
+                                            <option>Français</option>
+                                            <option>English</option>
+                                            <option>Español</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-gradient">
+                                Sauvegarder les modifications
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function switchTab(tabName) {
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.closest('.nav-tab').classList.add('active');
+            
+            // Update active content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + 'Section').classList.add('active');
+        }
+    </script>
+</body>
+</html>

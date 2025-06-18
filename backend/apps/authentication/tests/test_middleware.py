@@ -6,7 +6,7 @@ import json
 import sys
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from backend.apps.authentication.middleware import JWTMiddleware, get_user_info
+from apps.authentication.middleware import JWTMiddleware, get_user_info
 
 # Force use of SQLite in memory for all tests
 if 'test' in sys.argv:
@@ -43,7 +43,7 @@ class JWTMiddlewareTests(SimpleTestCase):
             ]
         }
     
-    @patch('backend.apps.authentication.middleware.requests.get')
+    @patch('apps.authentication.middleware.requests.get')
     def test_fetch_jwks(self, mock_get):
         """Test that the middleware correctly retrieves JWKS keys"""
         # Configure the mock
@@ -54,7 +54,7 @@ class JWTMiddlewareTests(SimpleTestCase):
         
         # Set up Auth0 domain if needed
         from django.test import override_settings
-        with override_settings(AUTH0_DOMAIN='dev-7qe275o831ebkhbj.eu.auth0.com'):
+        with override_settings(AUTH0_DOMAIN='test.auth0.com'):
             # Create a fresh middleware instance for this test
             middleware = JWTMiddleware(lambda req: req)
             
@@ -70,9 +70,9 @@ class JWTMiddlewareTests(SimpleTestCase):
             # Verify the result
             self.assertEqual(jwks, self.mock_jwks)
     
-    @patch('backend.apps.authentication.middleware.jwt.decode')
-    @patch('backend.apps.authentication.middleware.jwt.get_unverified_header')
-    @patch('backend.apps.authentication.middleware.JWTMiddleware.fetch_jwks')
+    @patch('apps.authentication.middleware.jwt.decode')
+    @patch('apps.authentication.middleware.jwt.get_unverified_header')
+    @patch('apps.authentication.middleware.JWTMiddleware.fetch_jwks')
     def test_authenticate_token_valid(self, mock_fetch_jwks, mock_get_header, mock_decode):
         """Test que le middleware authentifie correctement un token valide"""
         # Configurer les mocks
@@ -80,9 +80,9 @@ class JWTMiddlewareTests(SimpleTestCase):
         mock_get_header.return_value = {'kid': 'test-kid', 'alg': 'RS256'}
         
         expected_payload = {
-            'iss': 'https://dev-7qe275o831ebkhbj.eu.auth0.com/',
+            'iss': 'https://test.auth0.com/',
             'sub': 'auth0|5f1ed88771c1f0019f038af',
-            'aud': ['https://linguify-api', 'https://dev-7qe275o831ebkhbj.eu.auth0.com/userinfo'],
+            'aud': ['https://test-api', 'https://test.auth0.com/userinfo'],
             'email': 'test@example.com'
         }
         mock_decode.return_value = expected_payload
@@ -98,10 +98,10 @@ class JWTMiddlewareTests(SimpleTestCase):
         args, kwargs = mock_decode.call_args
         self.assertEqual(args[0], self.test_token)
         self.assertEqual(kwargs['algorithms'], ['RS256'])
-        self.assertEqual(kwargs['audience'], 'https://linguify-api')
-        self.assertEqual(kwargs['issuer'], 'https://dev-7qe275o831ebkhbj.eu.auth0.com/')
+        self.assertEqual(kwargs['audience'], 'https://test-api')
+        self.assertEqual(kwargs['issuer'], 'https://test.auth0.com/')
     
-    @patch('backend.apps.authentication.middleware.jwt.get_unverified_header')
+    @patch('apps.authentication.middleware.jwt.get_unverified_header')
     def test_authenticate_token_invalid_kid(self, mock_get_header):
         """Test que le middleware rejette un token avec un 'kid' invalide"""
         # Configurer les mocks
@@ -114,9 +114,9 @@ class JWTMiddlewareTests(SimpleTestCase):
         # Vérifier que le token est rejeté
         self.assertIsNone(payload)
     
-    @patch('backend.apps.authentication.middleware.jwt.decode')
-    @patch('backend.apps.authentication.middleware.jwt.get_unverified_header')
-    @patch('backend.apps.authentication.middleware.JWTMiddleware.fetch_jwks')
+    @patch('apps.authentication.middleware.jwt.decode')
+    @patch('apps.authentication.middleware.jwt.get_unverified_header')
+    @patch('apps.authentication.middleware.JWTMiddleware.fetch_jwks')
     def test_authenticate_token_invalid_signature(self, mock_fetch_jwks, mock_get_header, mock_decode):
         """Test que le middleware rejette un token avec une signature invalide"""
         # Configurer les mocks
@@ -130,7 +130,7 @@ class JWTMiddlewareTests(SimpleTestCase):
         # Vérifier que le token est rejeté
         self.assertIsNone(payload)
     
-    @patch('backend.apps.authentication.middleware.requests.get')
+    @patch('apps.authentication.middleware.requests.get')
     def test_get_user_info_success(self, mock_get):
         """Test que la fonction get_user_info récupère correctement les informations de l'utilisateur"""
         # Configurer le mock
@@ -150,7 +150,7 @@ class JWTMiddlewareTests(SimpleTestCase):
         
         # Vérifier la requête - updated to include timeout
         mock_get.assert_called_once_with(
-            'https://dev-7qe275o831ebkhbj.eu.auth0.com/userinfo',
+            'https://test.auth0.com/userinfo',
             headers={'Authorization': f'Bearer {self.test_token}'},
             timeout=5
         )
@@ -159,7 +159,7 @@ class JWTMiddlewareTests(SimpleTestCase):
         self.assertEqual(result, user_info)
         self.assertFalse(rate_limited)
     
-    @patch('backend.apps.authentication.middleware.requests.get')
+    @patch('apps.authentication.middleware.requests.get')
     def test_get_user_info_failure(self, mock_get):
         """Test que la fonction get_user_info gère correctement les erreurs"""
         # Configurer le mock pour une erreur
@@ -188,7 +188,7 @@ class JWTMiddlewareTests(SimpleTestCase):
         # Vérifier que l'utilisateur n'est pas associé à la requête
         self.assertIsNone(request.user)
     
-    @patch('backend.apps.authentication.middleware.JWTMiddleware.authenticate_token')
+    @patch('apps.authentication.middleware.JWTMiddleware.authenticate_token')
     def test_middleware_call_with_invalid_token(self, mock_authenticate):
         """Test que le middleware ne modifie pas la requête avec un token invalide"""
         # Configurer les mocks

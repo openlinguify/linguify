@@ -1,0 +1,102 @@
+# FRENCH TRANSLATION FOR AUTHENTICATION
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify Authentication\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-17 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+# Login page
+msgid "Login"
+msgstr "Connexion"
+
+msgid "Email or username"
+msgstr "Email ou nom d'utilisateur"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Remember me"
+msgstr "Se souvenir de moi"
+
+msgid "Forgot password?"
+msgstr "Mot de passe oublié ?"
+
+msgid "Don't have an account?"
+msgstr "Pas encore de compte ?"
+
+msgid "Create an account"
+msgstr "Créer un compte"
+
+# Login messages
+msgid "Welcome, %(username)s!"
+msgstr "Bienvenue, %(username)s !"
+
+msgid "Invalid username or password."
+msgstr "Nom d'utilisateur ou mot de passe incorrect."
+
+msgid "Sign in to your account"
+msgstr "Connectez-vous à votre compte"
+
+msgid "or"
+msgstr "ou"
+
+msgid "Back to home"
+msgstr "Retour à l'accueil"
+
+# Register page
+msgid "Sign up"
+msgstr "S'inscrire"
+
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "First name"
+msgstr "Prénom"
+
+msgid "Last name"
+msgstr "Nom"
+
+msgid "Native language"
+msgstr "Langue maternelle"
+
+msgid "Target language"
+msgstr "Langue cible"
+
+msgid "I agree to the"
+msgstr "J'accepte les"
+
+msgid "Terms and Conditions"
+msgstr "Conditions d'utilisation"
+
+msgid "Privacy Policy"
+msgstr "Politique de confidentialité"
+
+msgid "Already have an account?"
+msgstr "Déjà un compte ?"
+
+# Error messages
+msgid "Invalid username or password"
+msgstr "Nom d'utilisateur ou mot de passe invalide"
+
+msgid "This email is already registered"
+msgstr "Cet email est déjà enregistré"
+
+msgid "This username is already taken"
+msgstr "Ce nom d'utilisateur est déjà pris"
+
+msgid "Passwords do not match"
+msgstr "Les mots de passe ne correspondent pas"

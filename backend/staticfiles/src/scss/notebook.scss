@@ -1,0 +1,191 @@
+// Styles SCSS pour l'application Notebook
+// Architecture similaire à Odoo
+
+// Variables
+$sidebar-width: 300px;
+$primary-color: #0d6efd;
+$border-color: #dee2e6;
+$hover-bg: #f8f9fa;
+
+// Layout principal
+.notebook-app {
+    height: 100vh;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+// Sidebar
+.notebook-sidebar {
+    width: $sidebar-width;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #fafbfc;
+    
+    .sidebar-header {
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .sidebar-content {
+        flex: 1;
+        overflow-y: auto;
+    }
+}
+
+// Liste des notes
+.note-list {
+    .note-item {
+        transition: all 0.2s ease;
+        cursor: pointer;
+        
+        &:hover {
+            background-color: $hover-bg;
+        }
+        
+        &.active {
+            background-color: rgba($primary-color, 0.1);
+            border-left: 3px solid $primary-color;
+        }
+        
+        h6 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .tags {
+            .badge {
+                font-size: 0.75rem;
+                font-weight: normal;
+            }
+        }
+    }
+}
+
+// Zone principale
+.notebook-main {
+    background-color: white;
+    overflow: hidden;
+}
+
+// Éditeur de notes
+.note-editor {
+    .editor-toolbar {
+        background-color: #fafbfc;
+        
+        input[type="text"] {
+            font-size: 1.5rem;
+            font-weight: 600;
+            
+            &:focus {
+                outline: none;
+                box-shadow: none;
+            }
+        }
+        
+        .toolbar-actions {
+            .btn {
+                border-radius: 4px;
+                padding: 0.25rem 0.5rem;
+            }
+        }
+    }
+    
+    .editor-content {
+        background-color: white;
+        
+        textarea {
+            resize: none;
+            font-size: 1rem;
+            line-height: 1.6;
+            
+            &:focus {
+                outline: none;
+                box-shadow: none;
+            }
+        }
+    }
+    
+    .editor-status {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+}
+
+// État vide
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    
+    i {
+        color: #dee2e6;
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .notebook-sidebar {
+        position: absolute;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        
+        &.show {
+            transform: translateX(0);
+        }
+    }
+    
+    .notebook-main {
+        width: 100%;
+    }
+}
+
+// Animations
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.note-item {
+    animation: fadeIn 0.3s ease;
+}
+
+// Utilitaires
+.cursor-pointer {
+    cursor: pointer;
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+    .notebook-app {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+    
+    .notebook-sidebar {
+        background-color: #2d2d2d;
+        border-color: #3d3d3d;
+    }
+    
+    .note-editor {
+        .editor-toolbar,
+        .editor-content {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        input, textarea {
+            background-color: transparent;
+            color: #e0e0e0;
+        }
+    }
+}
