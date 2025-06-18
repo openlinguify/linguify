@@ -10,6 +10,7 @@ from django.views.generic import FormView
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.conf import settings
+from django.utils.translation import gettext as _
 
 
 class LoginView(FormView):
@@ -31,7 +32,7 @@ class LoginView(FormView):
         
         if user is not None:
             login(self.request, user)
-            messages.success(self.request, f'Bienvenue, {user.username}!')
+            messages.success(self.request, _('Welcome, %(username)s!') % {'username': user.username})
             
             # Redirect to next page if specified
             next_page = self.request.GET.get('next')
@@ -40,7 +41,10 @@ class LoginView(FormView):
             
             return super().form_valid(form)
         else:
-            messages.error(self.request, 'Nom d\'utilisateur ou mot de passe incorrect.')
+            # Add error to the form itself
+            error_message = _('Invalid username or password.')
+            form.add_error(None, error_message)
+            messages.error(self.request, error_message)
             return self.form_invalid(form)
 
 

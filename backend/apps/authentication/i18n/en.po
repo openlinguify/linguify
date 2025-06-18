@@ -38,6 +38,22 @@ msgstr "Don't have an account?"
 msgid "Create an account"
 msgstr "Create an account"
 
+# Login messages
+msgid "Welcome, %(username)s!"
+msgstr "Welcome, %(username)s!"
+
+msgid "Invalid username or password."
+msgstr "Invalid username or password."
+
+msgid "Sign in to your account"
+msgstr "Sign in to your account"
+
+msgid "or"
+msgstr "or"
+
+msgid "Back to home"
+msgstr "Back to home"
+
 # Register page
 msgid "Sign up"
 msgstr "Sign up"

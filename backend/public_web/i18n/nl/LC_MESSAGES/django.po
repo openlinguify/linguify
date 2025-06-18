@@ -289,3 +289,40 @@ msgstr "Open Linguify - Leer talen"
 
 msgid "Open source platform for learning languages"
 msgstr "Open source platform voor het leren van talen"
+
+# Authentication translations
+msgid "Back to home"
+msgstr "Terug naar startpagina"
+
+msgid "Sign in to your account"
+msgstr "Meld je aan bij je account"
+
+msgid "Login"
+msgstr "Inloggen"
+
+msgid "Email or username"
+msgstr "E-mail of gebruikersnaam"
+
+msgid "Password"
+msgstr "Wachtwoord"
+
+msgid "Remember me"
+msgstr "Onthoud mij"
+
+msgid "Forgot password?"
+msgstr "Wachtwoord vergeten?"
+
+msgid "Don't have an account?"
+msgstr "Nog geen account?"
+
+msgid "Create an account"
+msgstr "Account aanmaken"
+
+msgid "or"
+msgstr "of"
+
+msgid "Invalid username or password."
+msgstr "Ongeldige gebruikersnaam of wachtwoord."
+
+msgid "Welcome, %(username)s!"
+msgstr "Welkom, %(username)s!"

@@ -29,9 +29,6 @@ urlpatterns = [
     # SaaS application (protected routes) - no language prefix
     path('', include('saas_web.urls')),
     
-    # Authentication (login/register pages) - no language prefix  
-    path('auth/', include('apps.authentication.urls_auth')),
-    
     # Legacy frontend web (à supprimer après migration complète)
     # path('legacy/', include('frontend_web.urls')),
     
@@ -52,6 +49,9 @@ urlpatterns = [
     path('notebook/', include('apps.notebook.urls_web', namespace='notebook_web')),
     path('revision/', include('apps.revision.urls_web', namespace='revision_web')),
     path('course/', include('apps.course.urls_web', namespace='learning')),
+    path('learning/', include('apps.course.urls_web', namespace='learning_alias')),
+    path('quizz/', include('apps.quizz.urls_web', namespace='quizz_web')),
+    path('language_ai/', include('apps.language_ai.urls_web', namespace='language_ai_web')),
     path('api/contact/', views.contact_view, name='contact'),
     path('api/v1/notifications/', include('apps.notification.urls', namespace='notification')),
     path('api/v1/language_ai/', include('apps.language_ai.urls', namespace='language_ai')),
@@ -84,8 +84,11 @@ urlpatterns = [
     path('seo/status/', sitemap_status, name='seo_status'),
 ]
 
-# URLs with language prefix (for public website)
+# URLs with language prefix (for public website and authentication)
 urlpatterns += i18n_patterns(
+    # Authentication (login/register pages) - with language prefix
+    path('auth/', include('apps.authentication.urls_auth')),
+    
     # Public website (landing, marketing) - with language prefix
     path('', include('public_web.urls')),
     prefix_default_language=True,  # Add language prefix even for default language

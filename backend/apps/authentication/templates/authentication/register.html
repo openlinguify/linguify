@@ -1,9 +1,10 @@
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créer un compte - Linguify</title>
+    <title>{% trans "Sign up" %} - Linguify</title>
     
     <!-- Favicon - High quality PNG -->
     {% load static %}
@@ -156,7 +157,7 @@
 <body>
     <a href="/" class="back-to-home">
         <i class="bi bi-arrow-left me-2"></i>
-        Retour à l'accueil
+        {% trans "Back to home" %}
     </a>
     
     <div class="container">

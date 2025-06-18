@@ -122,3 +122,40 @@ msgstr "This application is part of the Open Linguify educational suite."
 
 msgid "Explore App Store"
 msgstr "Explore App Store"
+
+# Authentication translations
+msgid "Back to home"
+msgstr "Back to home"
+
+msgid "Sign in to your account"
+msgstr "Sign in to your account"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Email or username"
+msgstr "Email or username"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Remember me"
+msgstr "Remember me"
+
+msgid "Forgot password?"
+msgstr "Forgot password?"
+
+msgid "Don't have an account?"
+msgstr "Don't have an account?"
+
+msgid "Create an account"
+msgstr "Create an account"
+
+msgid "or"
+msgstr "or"
+
+msgid "Invalid username or password."
+msgstr "Invalid username or password."
+
+msgid "Welcome, %(username)s!"
+msgstr "Welcome, %(username)s!"
