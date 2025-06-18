@@ -14,6 +14,8 @@ def serve_sitemap(request, sitemap_name='main'):
         'sitemap-index': 'index',
         'sitemap-static': 'static',
         'sitemap-courses': 'courses',
+        'sitemap-learning': 'learning',
+        'sitemap-ugc': 'ugc',
         'sitemap-images': 'images',
         'sitemap-videos': 'videos',
         'sitemap-en': 'en',

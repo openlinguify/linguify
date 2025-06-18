@@ -24,7 +24,6 @@ Disallow: /*.json$
 Disallow: /*?*sort=
 Disallow: /*?*filter=
 Disallow: /*?*page=
-Crawl-delay: 1
 
 # Googlebot specific rules
 User-agent: Googlebot
@@ -126,15 +125,20 @@ Crawl-delay: 10
 
 # AI/ML Crawlers (Optional - remove if you want AI training)
 User-agent: GPTBot
+Disallow: /
+
 User-agent: ChatGPT-User
+Disallow: /
+
 User-agent: CCBot
+Disallow: /
+
 User-agent: anthropic-ai
+Disallow: /
+
 User-agent: Claude-Web
 Disallow: /
 
 # Sitemap files
 Sitemap: https://openlinguify.com/sitemap.xml
 Sitemap: https://openlinguify.com/sitemap-index.xml
-
-# Host directive (optional, helps with canonicalization)
-Host: https://openlinguify.com

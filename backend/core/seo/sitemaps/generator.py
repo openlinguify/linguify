@@ -18,6 +18,8 @@ class SitemapGenerator:
         'main': 'sitemap.xml',
         'static': 'sitemap-static.xml',
         'courses': 'sitemap-courses.xml',
+        'learning': 'sitemap-learning.xml',
+        'ugc': 'sitemap-ugc.xml',
         'images': 'sitemap-images.xml',
         'videos': 'sitemap-videos.xml',
         'en': 'sitemap-en.xml',
