@@ -112,6 +112,69 @@ class LessonAPIView(TargetLanguageMixin, generics.ListAPIView):
                 raise ValidationError({"error": "Invalid unit ID"})
         return Lesson.objects.all().order_by('order')
     
+    def get(self, request, *args, **kwargs):
+        # Check if this is a detail request (has pk in URL)
+        if 'pk' in kwargs:
+            return self.retrieve(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
+    
+    def retrieve(self, request, *args, **kwargs):
+        """Handle individual lesson retrieval"""
+        try:
+            lesson_id = kwargs.get('pk')
+            lesson = get_object_or_404(Lesson, pk=lesson_id)
+            
+            # Add content lessons and other related data
+            content_lessons = lesson.content_lessons.all().order_by('order')
+            
+            # Prepare lesson data with additional fields for the frontend
+            lesson_data = {
+                'id': lesson.id,
+                'title': lesson.title_fr or lesson.title_en,
+                'description': lesson.description_fr or lesson.description_en,
+                'estimated_duration': lesson.estimated_duration,
+                'lesson_type': lesson.lesson_type,
+                'unit': {
+                    'id': lesson.unit.id,
+                    'title': lesson.unit.title_fr or lesson.unit.title_en,
+                },
+                'content_type': lesson.lesson_type,
+                'vocabulary_items': [],
+                'grammar_rules': None,
+                'theory_content': None,
+                'examples': []
+            }
+            
+            # Add content based on lesson type
+            if lesson.lesson_type == 'vocabulary':
+                vocabulary_lists = VocabularyList.objects.filter(content_lesson__lesson=lesson)
+                lesson_data['vocabulary_items'] = [
+                    {
+                        'word': vocab.word_fr or vocab.word_en,
+                        'translation': vocab.definition_fr or vocab.definition_en,
+                        'example': vocab.example_sentence_fr or vocab.example_sentence_en
+                    }
+                    for vocab in vocabulary_lists[:10]  # Limit to 10 items
+                ]
+            elif lesson.lesson_type == 'grammar':
+                # Add grammar content if available
+                lesson_data['grammar_rules'] = lesson.description_fr or lesson.description_en
+                lesson_data['examples'] = [
+                    {
+                        'sentence': 'Exemple de phrase',
+                        'translation': 'Example sentence'
+                    }
+                ]
+            else:
+                # Theory or other content
+                lesson_data['theory_content'] = lesson.description_fr or lesson.description_en
+            
+            return Response(lesson_data)
+            
+        except Exception as e:
+            logger.error(f"Error retrieving lesson {kwargs.get('pk')}: {str(e)}")
+            return Response({'error': 'Lesson not found'}, status=404)
+    
     # Méthode explicite pour s'assurer que le contexte contient la langue cible
     def get_serializer_context(self):
         context = super().get_serializer_context()

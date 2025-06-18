@@ -3,7 +3,7 @@ from rest_framework import serializers
 import logging
 
 logger = logging.getLogger(__name__)
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+# REMOVED: rest_framework_simplejwt - Using Django+Supabase authentication now
 from .models import CoachProfile, Review, UserFeedback, CookieConsent, CookieConsentLog
 from django.contrib.auth import get_user_model
 

@@ -41,12 +41,12 @@
                                 <li><a class="dropdown-item" href="#">Profil</a></li>
                                 <li><a class="dropdown-item" href="#">Paramètres</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'frontend_web:logout' %}">Déconnexion</a></li>
+                                <li><a class="dropdown-item" href="{% url 'auth:logout' %}">Déconnexion</a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'frontend_web:login' %}">Connexion</a>
+                            <a class="nav-link" href="{% url 'auth:login' %}">Connexion</a>
                         </li>
                     {% endif %}
                 </ul>

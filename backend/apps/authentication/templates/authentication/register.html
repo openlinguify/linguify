@@ -1,9 +1,19 @@
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créer un compte - Linguify</title>
+    <title>{% trans "Sign up" %} - Linguify</title>
+    
+    <!-- Favicon - High quality PNG -->
+    {% load static %}
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon.png' %}">
+    <link rel="shortcut icon" href="{% static 'images/favicon.png' %}">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -147,7 +157,7 @@
 <body>
     <a href="/" class="back-to-home">
         <i class="bi bi-arrow-left me-2"></i>
-        Retour à l'accueil
+        {% trans "Back to home" %}
     </a>
     
     <div class="container">
@@ -217,13 +227,30 @@
                             </div>
                             
                             <div class="mb-3">
+                                <label for="native_language" class="form-label">Votre langue native</label>
+                                <select class="form-control" id="native_language" name="native_language" required>
+                                    <option value="">Choisir votre langue native</option>
+                                    <option value="EN">Anglais</option>
+                                    <option value="ES">Espagnol</option>
+                                    <option value="FR">Français</option>
+                                    <option value="NL">Néerlandais</option>
+                                    <option value="DE">Allemand</option>
+                                    <option value="IT">Italien</option>
+                                    <option value="PT">Portugais</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
                                 <label for="target_language" class="form-label">Langue que vous souhaitez apprendre</label>
                                 <select class="form-control" id="target_language" name="target_language" required>
                                     <option value="">Choisir une langue</option>
-                                    <option value="en">Anglais</option>
-                                    <option value="es">Espagnol</option>
-                                    <option value="fr">Français</option>
-                                    <option value="nl">Néerlandais</option>
+                                    <option value="EN">Anglais</option>
+                                    <option value="ES">Espagnol</option>
+                                    <option value="FR">Français</option>
+                                    <option value="NL">Néerlandais</option>
+                                    <option value="DE">Allemand</option>
+                                    <option value="IT">Italien</option>
+                                    <option value="PT">Portugais</option>
                                 </select>
                             </div>
                             
@@ -231,9 +258,9 @@
                                 <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
                                 <label class="form-check-label" for="terms">
                                     J'accepte les 
-                                    <a href="#" class="text-primary">conditions d'utilisation</a> 
+                                    <a href="{% url 'public_web:terms' %}" target="_blank" class="text-primary">conditions d'utilisation</a> 
                                     et la 
-                                    <a href="#" class="text-primary">politique de confidentialité</a>
+                                    <a href="{% url 'public_web:privacy' %}" target="_blank" class="text-primary">politique de confidentialité</a>
                                 </label>
                             </div>
                             
@@ -269,6 +296,12 @@
                                     Se connecter
                                 </a>
                             </p>
+                            <p class="text-muted mt-2">
+                                <small>
+                                    En vous inscrivant, vous acceptez notre 
+                                    <a href="{% url 'public_web:cookies' %}" target="_blank" class="text-secondary">politique des cookies</a>
+                                </small>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -281,7 +314,7 @@
     
     <script>
         // Validation du mot de passe en temps réel
-        document.getElementById('password1').addEventListener('input', function() {
+        document.getElementById('id_password1').addEventListener('input', function() {
             const password = this.value;
             const strengthBar = document.getElementById('strengthBar');
             const strengthText = document.getElementById('strengthText');
@@ -328,8 +361,8 @@
         });
         
         // Vérification de la confirmation du mot de passe
-        document.getElementById('password2').addEventListener('input', function() {
-            const password1 = document.getElementById('password1').value;
+        document.getElementById('id_password2').addEventListener('input', function() {
+            const password1 = document.getElementById('id_password1').value;
             const password2 = this.value;
             
             if (password2 && password1 !== password2) {

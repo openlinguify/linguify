@@ -1,15 +1,16 @@
 {% extends 'public_web/public_base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Open Linguify - Plateforme open source pour apprendre les langues{% endblock %}
+{% block title %}{% trans "OpenLinguify - Open source educational apps platform" %}{% endblock %}
 
-{% block meta_description %}Open Linguify vous aide à apprendre les langues grâce à l'intelligence artificielle. Cours personnalisés, exercices interactifs et suivi de progression.{% endblock %}
+{% block meta_description %}{% trans "OpenLinguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning." %}{% endblock %}
 
-{% block meta_keywords %}open linguify, apprentissage langues, IA, intelligence artificielle, cours personnalisés, flashcards, notebook, open source{% endblock %}
+{% block meta_keywords %}{% trans "openlinguify, open linguify, educational apps, flashcards, memorization, note-taking, quizzes, collaborative chat, classrooms, open source, education, learning" %}{% endblock %}
 
-{% block og_title %}Open Linguify - Plateforme open source pour apprendre les langues{% endblock %}
+{% block og_title %}{% trans "OpenLinguify - Open source platform for modern education" %}{% endblock %}
 
-{% block og_description %}Open Linguify vous aide à apprendre les langues grâce à l'intelligence artificielle. Cours personnalisés, exercices interactifs et suivi de progression.{% endblock %}
+{% block og_description %}{% trans "Discover OpenLinguify, a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn." %}{% endblock %}
 
 {% block extra_head %}
 <!-- PWA Manifest -->
@@ -17,7 +18,7 @@
 
 <!-- Apple PWA -->
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Open Linguify">
+<meta name="apple-mobile-web-app-title" content="OpenLinguify">
 
 <!-- Additional fonts and icons for this page -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -721,75 +722,38 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 hero-content">
                     <h1 class="hero-title animate-on-scroll">
-                        Apprenez une nouvelle langue à votre rythme !
+                        {% trans "Open Source Education Apps" %}
                     </h1>
                     <p class="hero-subtitle animate-on-scroll delay-1">
-                        Tout ce dont vous avez besoin pour apprendre une langue étrangère, 
-                        à votre rythme et où que vous soyez.
+                        {% trans "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more." %}
                     </p>
                     
                     <div class="d-flex gap-3 flex-wrap animate-on-scroll delay-2">
                         {% if not user.is_authenticated %}
                             <a href="{% url 'auth:register' %}" class="btn-hero primary">
                                 <i class="fas fa-rocket"></i>
-                                Commencer gratuitement
+                                {% trans "Start for free" %}
                             </a>
                             <a href="#features" class="btn-hero secondary">
                                 <i class="fas fa-globe"></i>
-                                Découvrir nos applications
+                                {% trans "Discover our apps" %}
                             </a>
                         {% else %}
                             <a href="/dashboard/" class="btn-hero primary">
                                 <i class="bi bi-grid-3x3-gap"></i>
-                                Accéder au Dashboard
+                                {% trans "Access Dashboard" %}
                             </a>
                             <a href="/notebook/" class="btn-hero secondary">
                                 <i class="bi bi-journal-text"></i>
-                                Mes Notes
+                                {% trans "My Notes" %}
                             </a>
                         {% endif %}
-                    </div>
-                </div>
-                
-                <div class="col-lg-6 text-center animate-on-scroll delay-3">
-                    <div class="position-relative">
-                        <div class="bg-white p-1 rounded-4 shadow-lg">
-                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height: 300px;">
-                                <div class="text-center text-muted">
-                                    <i class="fas fa-play-circle fa-4x mb-3 opacity-50"></i>
-                                    <p>Aperçu de l'application</p>
-                                    <small>(Démonstration interactive)</small>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Language Selector -->
-    <section class="language-selector">
-        <div class="container">
-            <div class="text-center animate-on-scroll">
-                <h2 class="h3 mb-4">Quelle langue souhaitez-vous apprendre ?</h2>
-                <div class="d-flex flex-wrap justify-content-center gap-3" id="languageSelector">
-                    <button class="language-btn active" data-lang="spanish">
-                        🇪🇸 <span>Español</span>
-                    </button>
-                    <button class="language-btn" data-lang="english">
-                        🇬🇧 <span>English</span>
-                    </button>
-                    <button class="language-btn" data-lang="french">
-                        🇫🇷 <span>Français</span>
-                    </button>
-                    <button class="language-btn" data-lang="dutch">
-                        🇳🇱 <span>Nederlands</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Stats Section -->
     <section class="stats-section">
@@ -797,26 +761,26 @@
             <div class="row g-4">
                 <div class="col-6 col-md-3 animate-on-scroll">
                     <div class="stat-card">
-                        <span class="stat-number">4</span>
-                        <div class="stat-label">Langues disponibles</div>
+                        <span class="stat-number">5</span>
+                        <div class="stat-label">{% trans "Educational Apps" %}</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3 animate-on-scroll delay-1">
                     <div class="stat-card">
-                        <span class="stat-number">100+</span>
-                        <div class="stat-label">Unités d'apprentissage</div>
+                        <span class="stat-number">1000+</span>
+                        <div class="stat-label">{% trans "Flashcards Created" %}</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3 animate-on-scroll delay-2">
                     <div class="stat-card">
                         <span class="stat-number">500+</span>
-                        <div class="stat-label">Leçons interactives</div>
+                        <div class="stat-label">{% trans "Quizzes Generated" %}</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3 animate-on-scroll delay-3">
                     <div class="stat-card">
-                        <span class="stat-number">10k+</span>
-                        <div class="stat-label">Mots et expressions</div>
+                        <span class="stat-number">100%</span>
+                        <div class="stat-label">{% trans "Open Source" %}</div>
                     </div>
                 </div>
             </div>
@@ -827,58 +791,69 @@
     <section id="features" class="features-section">
         <div class="container">
             <div class="text-center mb-5 animate-on-scroll">
-                <h2 class="display-5 fw-bold mb-4">Pourquoi choisir Linguify ?</h2>
+                <h2 class="display-5 fw-bold mb-4">{% trans "Our Educational Apps" %}</h2>
                 <p class="lead text-muted">
-                    Notre plateforme a été conçue par des experts en linguistique 
-                    et en pédagogie pour maximiser votre progression.
+                    {% trans "Discover our suite of 5 apps designed to transform your learning experience. Choose one for free or access all with Premium." %}
                 </p>
             </div>
             
             <div class="row g-4">
-                <div class="col-lg-3 col-md-6 animate-on-scroll">
+                <div class="col-lg-4 col-md-6 animate-on-scroll">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-book-open"></i>
                         </div>
-                        <h3 class="feature-title">Apprentissage Interactif</h3>
+                        <h3 class="feature-title">{% trans "Courses" %}</h3>
                         <p class="feature-description">
-                            Modules d'apprentissage interactifs adaptés à votre rythme et à votre niveau.
+                            {% trans "Structured courses with progressive lessons, interactive exercises and personalized assessments." %}
                         </p>
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-md-6 animate-on-scroll delay-1">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-1">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-brain"></i>
                         </div>
-                        <h3 class="feature-title">Flashcards Intelligentes</h3>
+                        <h3 class="feature-title">{% trans "Revision" %}</h3>
                         <p class="feature-description">
-                            Outils de mémorisation efficaces pour une rétention rapide du vocabulaire.
+                            {% trans "Spaced repetition system with smart flashcards for optimal memorization." %}
                         </p>
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-md-6 animate-on-scroll delay-2">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-2">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-notebook"></i>
                         </div>
-                        <h3 class="feature-title">Notebook Centralisé</h3>
+                        <h3 class="feature-title">{% trans "Notebook" %}</h3>
                         <p class="feature-description">
-                            Prise de notes centralisée avec organisation intelligente et recherche avancée.
+                            {% trans "Centralized note-taking with intelligent organization and advanced search." %}
                         </p>
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-md-6 animate-on-scroll delay-3">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-3">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-chart-line"></i>
+                            <i class="fas fa-question-circle"></i>
                         </div>
-                        <h3 class="feature-title">Suivi de Progression</h3>
+                        <h3 class="feature-title">{% trans "Quiz" %}</h3>
                         <p class="feature-description">
-                            Visualisez vos progrès et définissez des objectifs réalisables avec des graphiques détaillés.
+                            {% trans "Adaptive quiz system to test your knowledge and identify weak points." %}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3 class="feature-title">{% trans "Language AI" %}</h3>
+                        <p class="feature-description">
+                            {% trans "AI assistant for natural conversations and intelligent real-time corrections." %}
                         </p>
                     </div>
                 </div>
@@ -892,128 +867,48 @@
             <div class="new-info-card animate-on-scroll">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h2 class="h3 mb-4">Nouvelles Applications Éducatives à Venir</h2>
+                        <h2 class="h3 mb-4">{% trans "New Educational Apps Coming Soon" %}</h2>
                         <p class="mb-4 text-muted">
-                            Nos équipes travaillent activement sur de nouvelles applications éducatives 
-                            innovantes pour enrichir notre écosystème d'apprentissage. Ces outils à venir 
-                            offriront encore plus de moyens pour maîtriser les langues.
+                            {% trans "Our teams are actively working on innovative new educational apps to enrich our learning ecosystem. These upcoming tools will offer even more ways to master languages." %}
                         </p>
                         
                         <div class="mb-4">
-                            <span class="app-tag ai">Assistant IA d'Écriture</span>
-                            <span class="app-tag pronunciation">Entraîneur de Prononciation</span>
-                            <span class="app-tag cultural">Immersion Culturelle</span>
-                            <span class="app-tag grammar">Vérificateur de Grammaire</span>
+                            <span class="app-tag ai">{% trans "AI Writing Assistant" %}</span>
+                            <span class="app-tag pronunciation">{% trans "Pronunciation Trainer" %}</span>
+                            <span class="app-tag cultural">{% trans "Cultural Immersion" %}</span>
+                            <span class="app-tag grammar">{% trans "Grammar Checker" %}</span>
                         </div>
                         
                         <a href="#contact" class="btn btn-outline-primary">
-                            Rejoindre la liste d'attente
+                            {% trans "Join the waiting list" %}
                             <i class="fas fa-chevron-right ms-2"></i>
                         </a>
                     </div>
                     
                     <div class="col-md-4">
                         <div class="highlights-box">
-                            <h4 class="mb-3">À venir en 2025</h4>
+                            <h4 class="mb-3">{% trans "Coming in 2025" %}</h4>
                             
                             <div class="highlight-item">
                                 <div class="highlight-icon">
                                     <i class="fas fa-brain"></i>
                                 </div>
-                                <span>Acquisition linguistique basée sur la neuroscience</span>
+                                <span>{% trans "Neuroscience-based language acquisition" %}</span>
                             </div>
                             
                             <div class="highlight-item">
                                 <div class="highlight-icon">
                                     <i class="fas fa-users"></i>
                                 </div>
-                                <span>Communauté de locuteurs natifs</span>
+                                <span>{% trans "Native speaker community" %}</span>
                             </div>
                             
                             <div class="highlight-item">
                                 <div class="highlight-icon">
                                     <i class="fas fa-award"></i>
                                 </div>
-                                <span>Certifications reconnues par l'industrie</span>
+                                <span>{% trans "Industry-recognized certifications" %}</span>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="testimonials-section">
-        <div class="container">
-            <div class="text-center mb-5 animate-on-scroll">
-                <h2 class="display-5 fw-bold mb-4">Ce que nos utilisateurs disent</h2>
-                <p class="lead text-muted">
-                    Rejoignez des milliers d'apprenants satisfaits qui ont transformé 
-                    leur approche des langues.
-                </p>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-md-4 animate-on-scroll">
-                    <div class="testimonial-card">
-                        <div class="testimonial-avatar">L</div>
-                        <div class="star-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="testimonial-text">
-                            "J'ai toujours eu du mal à apprendre une nouvelle langue, mais Linguify 
-                            a rendu le processus tellement plus facile et amusant."
-                        </p>
-                        <div>
-                            <strong>Louis</strong>
-                            <div class="text-muted small">Customer Service Manager</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4 animate-on-scroll delay-1">
-                    <div class="testimonial-card">
-                        <div class="testimonial-avatar">V</div>
-                        <div class="star-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="testimonial-text">
-                            "J'ai eu beaucoup de mal à trouver une méthode d'apprentissage qui me convienne, 
-                            mais Linguify a vraiment répondu à mes attentes."
-                        </p>
-                        <div>
-                            <strong>Victor</strong>
-                            <div class="text-muted small">Project Director</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4 animate-on-scroll delay-2">
-                    <div class="testimonial-card">
-                        <div class="testimonial-avatar">C</div>
-                        <div class="star-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="testimonial-text">
-                            "Grâce à Linguify, j'ai pu communiquer avec les locaux lors de mon voyage 
-                            à travers l'Espagne. Une expérience incroyable !"
-                        </p>
-                        <div>
-                            <strong>Camille</strong>
-                            <div class="text-muted small">Risk and Strategic Analyst</div>
                         </div>
                     </div>
                 </div>
@@ -1025,122 +920,86 @@
     <section id="pricing" class="pricing-section">
         <div class="container">
             <div class="text-center mb-5 animate-on-scroll">
-                <h2 class="display-5 fw-bold mb-4">Des forfaits adaptés à vos besoins</h2>
+                <h2 class="display-5 fw-bold mb-4">{% trans "Plans adapted to your needs" %}</h2>
                 <p class="lead text-muted">
-                    Choisissez l'offre qui correspond à vos objectifs et à votre rythme d'apprentissage.
+                    {% trans "Choose the offer that matches your goals and learning pace." %}
                 </p>
             </div>
             
-            <div class="row g-4">
+            <div class="row g-4 justify-content-center">
                 <div class="col-md-4 animate-on-scroll">
                     <div class="pricing-card">
-                        <h3 class="h4 mb-2">Gratuit</h3>
+                        <h3 class="h4 mb-2">{% trans "Free" %}</h3>
                         <div class="price-display">
                             0€
-                            <span class="price-period">pour toujours</span>
+                            <span class="price-period">{% trans "forever" %}</span>
                         </div>
-                        <p class="text-muted mb-4">Parfait pour débuter et tester l'application</p>
+                        <p class="text-muted mb-4">{% trans "Perfect for discovering the platform" %}</p>
                         
                         <ul class="feature-list mb-4">
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>1 langue au choix</span>
+                                <span>{% trans "Access to 1 app of your choice" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Accès aux leçons de base</span>
+                                <span>{% trans "Full use of the chosen app" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>5 minutes de chat par jour</span>
+                                <span>{% trans "Free updates" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Révisions limitées</span>
+                                <span>{% trans "Community support" %}</span>
                             </li>
                         </ul>
                         
                         <a href="{% url 'auth:register' %}" class="btn btn-outline-primary w-100">
-                            Commencer gratuitement
+                            {% trans "Start for free" %}
                         </a>
                     </div>
                 </div>
                 
                 <div class="col-md-4 animate-on-scroll delay-1">
                     <div class="pricing-card popular">
-                        <div class="popular-badge">Le plus populaire</div>
-                        <h3 class="h4 mb-2">Premium</h3>
+                        <div class="popular-badge">{% trans "Most popular" %}</div>
+                        <h3 class="h4 mb-2">{% trans "Premium" %}</h3>
                         <div class="price-display">
-                            9,99€
-                            <span class="price-period">par mois</span>
+                            19,99€
+                            <span class="price-period">{% trans "per month" %}</span>
                         </div>
-                        <p class="text-muted mb-4">Notre formule la plus populaire pour progresser</p>
+                        <p class="text-muted mb-4">{% trans "Full access to all applications" %}</p>
                         
                         <ul class="feature-list mb-4">
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Toutes les langues accessibles</span>
+                                <span>{% trans "Access to all applications" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Leçons avancées et spécialisées</span>
+                                <span>{% trans "Courses: structured lessons" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Chat illimité avec l'IA</span>
+                                <span>{% trans "Revision: unlimited flashcards" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Système complet de révision</span>
+                                <span>{% trans "Notebook: unlimited notes" %}</span>
                             </li>
                             <li>
                                 <i class="fas fa-check feature-check"></i>
-                                <span>Coaching hebdomadaire</span>
+                                <span>{% trans "Quiz & Language AI included" %}</span>
                             </li>
                         </ul>
                         
                         <a href="{% url 'auth:register' %}" class="btn btn-primary w-100">
-                            Essai gratuit de 7 jours
+                            {% trans "7-day free trial" %}
                         </a>
                     </div>
                 </div>
                 
-                <div class="col-md-4 animate-on-scroll delay-2">
-                    <div class="pricing-card">
-                        <h3 class="h4 mb-2">Entreprise</h3>
-                        <div class="price-display">
-                            Sur mesure
-                        </div>
-                        <p class="text-muted mb-4">Solution complète pour les équipes</p>
-                        
-                        <ul class="feature-list mb-4">
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>Formations personnalisées</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>Tableau de bord d'entreprise</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>Suivi des progrès de l'équipe</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>Intégration LMS</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>Support dédié</span>
-                            </li>
-                        </ul>
-                        
-                        <a href="#contact" class="btn btn-outline-primary w-100">
-                            Contacter les ventes
-                        </a>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
@@ -1150,22 +1009,21 @@
         <div class="cta-content">
             <div class="container text-center">
                 <h2 class="display-5 fw-bold mb-4 animate-on-scroll">
-                    Prêt à commencer votre voyage linguistique ?
+                    {% trans "Ready to revolutionize your learning?" %}
                 </h2>
                 <p class="lead mb-5 animate-on-scroll delay-1" style="color: #e0e7ff;">
-                    Rejoignez notre communauté d'apprenants et commencez à maîtriser 
-                    une nouvelle langue dès aujourd'hui.
+                    {% trans "Join our community and access a complete suite of open source educational apps." %}
                 </p>
                 <div class="animate-on-scroll delay-2">
                     {% if not user.is_authenticated %}
                         <a href="{% url 'auth:register' %}" class="btn-hero primary">
                             <i class="fas fa-rocket"></i>
-                            Commencer gratuitement
+                            {% trans "Start for free" %}
                         </a>
                     {% else %}
                         <a href="/dashboard/" class="btn-hero primary">
                             <i class="bi bi-grid-3x3-gap"></i>
-                            Aller au Dashboard
+                            {% trans "Go to Dashboard" %}
                         </a>
                     {% endif %}
                 </div>
@@ -1173,6 +1031,18 @@
         </div>
     </section>
 
+    <!-- SEO Content Section for openlinguify -->
+    <section class="py-4 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="text-muted small">
+                        {% trans "OpenLinguify (also known as openlinguify) is your comprehensive open source educational platform. Whether you search for 'openlinguify' or 'open linguify', you'll find the same powerful learning tools designed to revolutionize education." %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
 {% endblock %}
 
@@ -1181,8 +1051,8 @@
 <div id="pwaInstallPrompt" class="pwa-install-prompt">
     <div class="d-flex justify-content-between align-items-center">
         <div>
-            <strong>📱 Installer Open Linguify</strong>
-            <div class="small">Accédez rapidement à Open Linguify depuis votre écran d'accueil</div>
+            <strong>📱 Installer OpenLinguify</strong>
+            <div class="small">Accédez rapidement à OpenLinguify depuis votre écran d'accueil</div>
         </div>
         <div>
             <button class="btn btn-light btn-sm me-2" onclick="installPWA()">Installer</button>
@@ -1367,7 +1237,7 @@
         // Preload critical resources
         function preloadCriticalResources() {
             const criticalImages = [
-                '{% static "images/favicon.svg" %}',
+                '{% static "images/favicon.png" %}',
             ];
             
             criticalImages.forEach(src => {
@@ -1394,7 +1264,7 @@
         });
 
         // Console welcome message
-        console.log('%c🚀 Bienvenue sur Open Linguify!', 'color: #6366f1; font-size: 20px; font-weight: bold;');
+        console.log('%c🚀 Bienvenue sur OpenLinguify!', 'color: #6366f1; font-size: 20px; font-weight: bold;');
         console.log('%cMigré avec succès vers la nouvelle architecture! ✨', 'color: #10b981; font-size: 14px;');
         console.log('%c📱 Support PWA activé', 'color: #8b5cf6; font-size: 12px;');
 </script>

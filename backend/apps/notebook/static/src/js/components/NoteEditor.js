@@ -2,7 +2,7 @@
  * Composant pour l'édition d'une note
  */
 
-import { Component, useState, useRef, onMounted } from "@odoo/owl";
+import { Component, useState, useRef, onMounted } from "@openlinguify/owl";
 
 export class NoteEditor extends Component {
     static template = "notebook.NoteEditor";

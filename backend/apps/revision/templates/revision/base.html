@@ -7,7 +7,7 @@
     <title>{{ page_title }} - Linguify</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
     
     <!-- Meta tags -->
     <meta name="description" content="Interface de révision pour l'apprentissage des langues avec Linguify">
@@ -25,7 +25,7 @@
     <!-- Navigation -->
     <nav class="revision-nav">
         <div class="nav-content">
-            <a href="{% url 'frontend_web:dashboard' %}" class="nav-brand">
+            <a href="{% url 'saas_web:dashboard' %}" class="nav-brand">
                 <img src="{% static 'images/favicon.svg' %}" alt="Linguify" class="nav-logo">
                 <span>Linguify</span>
             </a>
@@ -44,10 +44,10 @@
                 {% if user.is_authenticated %}
                     <div class="nav-user">
                         <span>👤 {{ user.username }}</span>
-                        <a href="{% url 'frontend_web:logout' %}" class="nav-link-logout">Déconnexion</a>
+                        <a href="{% url 'auth:logout' %}" class="nav-link-logout">Déconnexion</a>
                     </div>
                 {% else %}
-                    <a href="{% url 'frontend_web:login' %}" class="nav-link">Connexion</a>
+                    <a href="{% url 'auth:login' %}" class="nav-link">Connexion</a>
                 {% endif %}
             </div>
         </div>

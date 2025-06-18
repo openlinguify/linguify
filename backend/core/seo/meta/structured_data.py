@@ -20,7 +20,7 @@ class StructuredDataGenerator:
             "@type": "Organization",
             "@id": "https://www.openlinguify.com/#organization",
             "name": "OpenLinguify",
-            "alternateName": "Open Linguify",
+            "alternateName": ["Open Linguify", "openlinguify", "OPENLINGUIFY"],
             "url": "https://www.openlinguify.com/",
             "logo": {
                 "@type": "ImageObject",
@@ -30,12 +30,12 @@ class StructuredDataGenerator:
                 "caption": "OpenLinguify Logo"
             },
             "image": "https://www.openlinguify.com/static/images/og-image.png",
-            "description": "OpenLinguify is the leading AI-powered language learning platform",
+            "description": "OpenLinguify (also known as openlinguify) is the leading open source AI-powered language learning platform",
             "founder": {
                 "@type": "Person",
                 "name": "OpenLinguify Team"
             },
-            "foundingDate": "2024",
+            "foundingDate": "2025",
             "sameAs": [
                 "https://www.facebook.com/openlinguify",
                 "https://twitter.com/openlinguify",
@@ -234,7 +234,7 @@ class StructuredDataGenerator:
                 "Offline mode"
             ],
             "softwareVersion": "2.0",
-            "datePublished": "2024-01-01",
+            "datePublished": "2025-01-01",
             "dateModified": timezone.now().isoformat()
         }
     

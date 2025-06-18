@@ -49,7 +49,12 @@ urlpatterns = [
     path('lessons/', LessonsListView.as_view(), name='lessons-list'),
     path('lesson/<int:pk>/', LessonDetailView.as_view(), name='lesson-detail'),
     
-    # Pratique et exercices
+    # Exercices spécifiques aux leçons
+    path('lesson/<int:pk>/vocabulary-practice/', vocabulary_practice_view, name='lesson-vocabulary-practice'),
+    path('lesson/<int:pk>/grammar-exercises/', grammar_practice_view, name='lesson-grammar-exercises'),
+    path('lesson/<int:pk>/speaking-exercises/', speaking_practice_view, name='lesson-speaking-exercises'),
+    
+    # Pratique et exercices généraux
     path('vocabulary-practice/', vocabulary_practice_view, name='vocabulary-practice'),
     path('grammar-practice/', grammar_practice_view, name='grammar-practice'),
     path('speaking-practice/', speaking_practice_view, name='speaking-practice'),

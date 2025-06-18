@@ -1,5 +1,6 @@
-# Robots.txt for OpenLinguify
-# Last updated: 2025-01-15
+# Robots.txt for OpenLinguify (openlinguify.com)
+# Last updated: 2025-01-18
+# Brand names: OpenLinguify, openlinguify, Open Linguify
 
 # Default crawler rules
 User-agent: *
@@ -10,6 +11,8 @@ Allow: /features/
 Allow: /course/
 Allow: /notebook/
 Allow: /revision/
+Allow: /quizz/
+Allow: /language_ai/
 Allow: /annexes/terms/
 Disallow: /admin/
 Disallow: /api/auth/
@@ -18,13 +21,14 @@ Disallow: /dashboard/
 Disallow: /profile/
 Disallow: /settings/
 Disallow: /media/
+Allow: /media/images/
+Allow: /media/screenshots/
 Disallow: /static/admin/
 Disallow: /test-settings/
 Disallow: /*.json$
 Disallow: /*?*sort=
 Disallow: /*?*filter=
 Disallow: /*?*page=
-Crawl-delay: 1
 
 # Googlebot specific rules
 User-agent: Googlebot
@@ -35,6 +39,8 @@ Allow: /features/
 Allow: /course/
 Allow: /notebook/
 Allow: /revision/
+Allow: /quizz/
+Allow: /language_ai/
 Allow: /annexes/terms/
 Allow: /api/docs/
 Allow: /api/redoc/
@@ -69,6 +75,8 @@ Allow: /features/
 Allow: /course/
 Allow: /notebook/
 Allow: /revision/
+Allow: /quizz/
+Allow: /language_ai/
 Allow: /annexes/terms/
 Disallow: /admin/
 Disallow: /api/
@@ -126,15 +134,20 @@ Crawl-delay: 10
 
 # AI/ML Crawlers (Optional - remove if you want AI training)
 User-agent: GPTBot
+Disallow: /
+
 User-agent: ChatGPT-User
+Disallow: /
+
 User-agent: CCBot
+Disallow: /
+
 User-agent: anthropic-ai
+Disallow: /
+
 User-agent: Claude-Web
 Disallow: /
 
 # Sitemap files
 Sitemap: https://openlinguify.com/sitemap.xml
 Sitemap: https://openlinguify.com/sitemap-index.xml
-
-# Host directive (optional, helps with canonicalization)
-Host: https://openlinguify.com

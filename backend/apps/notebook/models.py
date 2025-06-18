@@ -3,6 +3,10 @@ from django.db import models
 from apps.authentication.models import User
 from django.conf import settings
 
+
+def default_list():
+    return []
+
 class NoteCategory(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
@@ -69,14 +73,14 @@ class Note(models.Model):
     language = models.CharField(max_length=50, blank=True, null=True)
     translation = models.TextField(blank=True, null=True)
     pronunciation = models.CharField(max_length=255, blank=True, null=True)
-    example_sentences = models.JSONField(default=list, blank=True, null=True)
-    related_words = models.JSONField(default=list, blank=True, null=True)
+    example_sentences = models.JSONField(default=default_list, blank=True)
+    related_words = models.JSONField(default=default_list, blank=True)
     difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES, blank=True, null=True)
 
     # Metadata fields
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    last_reviewed_at = models.DateTimeField(auto_now=True, blank=True)
+    last_reviewed_at = models.DateTimeField(blank=True, null=True)
     review_count = models.IntegerField(default=0)
 
     # organization fields

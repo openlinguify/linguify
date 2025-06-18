@@ -1,0 +1,161 @@
+# ENGLISH TRANSLATION FOR PUBLIC_WEB
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify Public Web\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-17 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# SEO Meta Tags
+msgid "Open Linguify - Open source educational apps platform"
+msgstr "Open Linguify - Open source educational apps platform"
+
+msgid "Open Linguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning."
+msgstr "Open Linguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning."
+
+msgid "Open Linguify - Open source platform for modern education"
+msgstr "Open Linguify - Open source platform for modern education"
+
+msgid "Discover a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn."
+msgstr "Discover a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn."
+
+msgid "Complete suite of open source educational apps: memorization, flashcards, notes, quizzes, collaborative chat and much more."
+msgstr "Complete suite of open source educational apps: memorization, flashcards, notes, quizzes, collaborative chat and much more."
+
+# Landing page content
+msgid "Open Source Education Apps"
+msgstr "Open Source Education Apps"
+
+msgid "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more."
+msgstr "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more."
+
+msgid "Start for free"
+msgstr "Start for free"
+
+msgid "Discover our apps"
+msgstr "Discover our apps"
+
+msgid "Access Dashboard"
+msgstr "Access Dashboard"
+
+msgid "open linguify, educational apps, flashcards, memorization, note-taking, quizzes, collaborative chat, classrooms, open source, education, learning"
+msgstr "open linguify, educational apps, flashcards, memorization, note-taking, quizzes, collaborative chat, classrooms, open source, education, learning"
+
+# Header navigation
+msgid "Features"
+msgstr "Features"
+
+msgid "Apps"
+msgstr "Apps"
+
+msgid "About"
+msgstr "About"
+
+msgid "Blog"
+msgstr "Blog"
+
+msgid "Contact"
+msgstr "Contact"
+
+# App names
+msgid "Courses"
+msgstr "Courses"
+
+msgid "Revision"
+msgstr "Revision"
+
+msgid "Notebook" 
+msgstr "Notebook"
+
+msgid "Quiz"
+msgstr "Quiz"
+
+msgid "Language AI"
+msgstr "Language AI"
+
+# Dynamic system translations
+msgid "No apps available"
+msgstr "No apps available"
+
+msgid "Learn more"
+msgstr "Learn more"
+
+msgid "Our Applications"
+msgstr "Our Applications"
+
+msgid "Discover all Open Linguify applications"
+msgstr "Discover all Open Linguify applications"
+
+msgid "Discover our complete suite of educational applications designed to enhance your learning experience."
+msgstr "Discover our complete suite of educational applications designed to enhance your learning experience."
+
+msgid "No applications available"
+msgstr "No applications available"
+
+msgid "Applications will appear here once they are configured."
+msgstr "Applications will appear here once they are configured."
+
+msgid "Ready to start learning?"
+msgstr "Ready to start learning?"
+
+msgid "Join our community and access all these amazing educational applications."
+msgstr "Join our community and access all these amazing educational applications."
+
+msgid "Ready to try"
+msgstr "Ready to try"
+
+msgid "Start using this application now and discover how it can enhance your learning experience."
+msgstr "Start using this application now and discover how it can enhance your learning experience."
+
+msgid "This application is part of the Open Linguify educational suite."
+msgstr "This application is part of the Open Linguify educational suite."
+
+msgid "Explore App Store"
+msgstr "Explore App Store"
+
+# Authentication translations
+msgid "Back to home"
+msgstr "Back to home"
+
+msgid "Sign in to your account"
+msgstr "Sign in to your account"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Email or username"
+msgstr "Email or username"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Remember me"
+msgstr "Remember me"
+
+msgid "Forgot password?"
+msgstr "Forgot password?"
+
+msgid "Don't have an account?"
+msgstr "Don't have an account?"
+
+msgid "Create an account"
+msgstr "Create an account"
+
+msgid "or"
+msgstr "or"
+
+msgid "Invalid username or password."
+msgstr "Invalid username or password."
+
+msgid "Welcome, %(username)s!"
+msgstr "Welcome, %(username)s!"

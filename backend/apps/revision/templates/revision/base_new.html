@@ -7,7 +7,7 @@
     <title>{{ page_title|default:"Révision" }} - Linguify</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
     
     <!-- Meta tags -->
     <meta name="description" content="Interface de révision par flashcards pour l'apprentissage des langues avec Linguify">
@@ -602,7 +602,7 @@
             <div class="header-content">
                 <div class="header-top">
                     <div class="revision-nav">
-                        <a href="{% url 'frontend_web:dashboard' %}" class="nav-brand">
+                        <a href="{% url 'saas_web:dashboard' %}" class="nav-brand">
                             <i class="bi bi-lightning-charge nav-logo"></i>
                             <span>Révision</span>
                         </a>
@@ -629,14 +629,14 @@
                                     {{ user.username }}
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{% url 'frontend_web:profile' %}">Profil</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'frontend_web:dashboard' %}">Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'saas_web:profile' %}">Profil</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'saas_web:dashboard' %}">Dashboard</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="{% url 'frontend_web:logout' %}">Déconnexion</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'auth:logout' %}">Déconnexion</a></li>
                                 </ul>
                             </div>
                         {% else %}
-                            <a href="{% url 'frontend_web:login' %}" class="btn btn-outline-custom">Connexion</a>
+                            <a href="{% url 'auth:login' %}" class="btn btn-outline-custom">Connexion</a>
                         {% endif %}
                     </div>
                 </div>

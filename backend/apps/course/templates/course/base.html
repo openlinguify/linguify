@@ -1,0 +1,595 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title|default:"Cours" }} - Linguify</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    
+    <!-- Meta tags -->
+    <meta name="description" content="Interface d'apprentissage des langues avec Linguify">
+    <meta name="author" content="Linguify">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS spécifique aux cours -->
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --sidebar-width: 320px;
+            --sidebar-width-mobile: 100%;
+            --header-height: 120px;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+        
+        .course-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Header fixe */
+        .course-header {
+            height: var(--header-height);
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            z-index: 1000;
+            flex-shrink: 0;
+        }
+        
+        .header-content {
+            padding: 1rem 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        /* Navigation */
+        .course-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        
+        .nav-logo {
+            width: 32px;
+            height: 32px;
+        }
+        
+        /* Buttons */
+        .btn-gradient {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+            color: white;
+        }
+        
+        .btn-outline-custom {
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-outline-custom:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: #f8fafc;
+        }
+        
+        /* Main content */
+        .course-main {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+        }
+        
+        /* Sidebar */
+        .course-sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+        
+        /* Unit/Lesson list */
+        .unit-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .unit-item {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+        
+        .unit-item:hover {
+            background: #f8fafc;
+        }
+        
+        .unit-item.active {
+            background: #f0f7ff;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .unit-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+        
+        .unit-description {
+            color: #64748b;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .unit-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+        
+        .unit-progress {
+            background: #e2e8f0;
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .unit-progress-bar {
+            background: var(--primary-gradient);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        /* Content area */
+        .course-content {
+            flex: 1;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .content-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: #fafbfc;
+        }
+        
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state-description {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Stats cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-gradient);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        
+        /* Loading states */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 100%;
+                --header-height: 100px;
+            }
+            
+            .course-sidebar {
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                z-index: 100;
+                transform: translateX(-100%);
+            }
+            
+            .course-sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .course-content {
+                width: 100%;
+            }
+            
+            .header-content {
+                padding: 0.75rem 1rem;
+                gap: 0.75rem;
+            }
+            
+            .btn-sm {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.75rem;
+            }
+        }
+        
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 2000;
+            max-width: 400px;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.success {
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+        
+        .notification.error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+        
+        .notification.info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+        }
+        
+        /* Form styles */
+        .form-control {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        /* Exercise styles */
+        .exercise-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .exercise-card:hover {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .exercise-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .exercise-content {
+            color: #475569;
+            line-height: 1.6;
+        }
+        
+        /* Progress bar */
+        .progress-container {
+            background: #e2e8f0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .progress-bar {
+            background: var(--primary-gradient);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="course-container">
+        <!-- Header -->
+        <div class="course-header">
+            <div class="header-content">
+                <div class="header-top">
+                    <div class="course-nav">
+                        <a href="{% url 'saas_web:dashboard' %}" class="nav-brand">
+                            <i class="bi bi-book nav-logo"></i>
+                            <span>Cours</span>
+                        </a>
+                    </div>
+                    
+                    <div class="header-actions">
+                        {% if user.is_authenticated %}
+                            <div class="dropdown">
+                                <button class="btn btn-outline-custom dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-person-circle"></i>
+                                    {{ user.username }}
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{% url 'saas_web:profile' %}">Profil</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'saas_web:dashboard' %}">Dashboard</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'auth:logout' %}">Déconnexion</a></li>
+                                </ul>
+                            </div>
+                        {% else %}
+                            <a href="{% url 'auth:login' %}" class="btn btn-outline-custom">Connexion</a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% block header_content %}{% endblock %}
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="course-main">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Configuration globale -->
+    <script>
+        window.DEBUG = {{ debug|yesno:"true,false" }};
+        window.API_BASE_URL = "{{ request.scheme }}://{{ request.get_host }}";
+        window.USER_DATA = {
+            id: {{ request.user.id|default:"null" }},
+            username: "{{ request.user.username|default:'' }}",
+            email: "{{ request.user.email|default:'' }}",
+            is_authenticated: {{ user.is_authenticated|yesno:"true,false" }}
+        };
+        
+        // Service de notifications global
+        window.notificationService = {
+            success: function(message) {
+                this.show(message, 'success');
+            },
+            
+            error: function(message) {
+                this.show(message, 'error');
+            },
+            
+            info: function(message) {
+                this.show(message, 'info');
+            },
+            
+            show: function(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">${message}</div>
+                        <button type="button" class="btn-close ms-2" onclick="this.parentElement.parentElement.remove()"></button>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 5000);
+            }
+        };
+        
+        // Service API simplifié
+        window.apiService = {
+            async request(url, options = {}) {
+                const defaultOptions = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCSRFToken(),
+                    },
+                };
+                
+                const response = await fetch(url, { ...defaultOptions, ...options });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                return response.json();
+            },
+            
+            getCSRFToken() {
+                return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+            }
+        };
+        
+        console.log('Configuration cours:', {
+            debug: window.DEBUG,
+            apiBaseUrl: window.API_BASE_URL,
+            user: window.USER_DATA
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

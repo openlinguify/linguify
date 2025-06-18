@@ -2,7 +2,7 @@
  * Composant pour afficher la liste des notes
  */
 
-import { Component } from "@odoo/owl";
+import { Component } from "@openlinguify/owl";
 
 export class NoteList extends Component {
     static template = "notebook.NoteList";

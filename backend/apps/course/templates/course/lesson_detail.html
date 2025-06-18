@@ -1,0 +1,101 @@
+{% extends "course/base.html" %}
+
+{% block page_title %}{{ lesson.title }} - Cours{% endblock %}
+
+{% block header_content %}
+<div class="d-flex align-items-center justify-content-between">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'learning:dashboard' %}">Tableau de bord</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'learning:unit-detail' lesson.unit.pk %}">{{ lesson.unit.title }}</a></li>
+                <li class="breadcrumb-item active">{{ lesson.title }}</li>
+            </ol>
+        </nav>
+    </div>
+    <a href="{% url 'learning:unit-detail' lesson.unit.pk %}" class="btn btn-outline-custom">
+        <i class="bi bi-arrow-left"></i> Retour à l'unité
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="course-content" style="width: 100%;">
+    <div class="content-header">
+        <h4>{{ lesson.title }}</h4>
+        <p class="text-muted">{{ lesson.description|default:"" }}</p>
+        <div class="d-flex gap-3 text-muted small">
+            <span><i class="bi bi-clock"></i> ~{{ lesson.estimated_duration|default:15 }} minutes</span>
+            <span><i class="bi bi-lightning"></i> {{ xp_earned|default:0 }}/{{ lesson.xp_reward|default:50 }} XP gagnés</span>
+        </div>
+    </div>
+    
+    <div class="content-body">
+        <div class="progress-container mb-4">
+            <div class="progress-bar" style="width: {{ lesson_progress }}%"></div>
+        </div>
+        
+        <h5 class="mb-3">Contenu de la leçon</h5>
+        
+        {% if content_lessons %}
+            <div class="list-group">
+                {% for content in content_lessons %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">
+                                {% if content.content_type == 'theory' %}
+                                    <i class="bi bi-book text-primary"></i> Théorie
+                                {% elif content.content_type == 'vocabulary' %}
+                                    <i class="bi bi-translate text-success"></i> Vocabulaire
+                                {% elif content.content_type == 'grammar' %}
+                                    <i class="bi bi-pen text-warning"></i> Grammaire
+                                {% elif content.content_type == 'exercises' %}
+                                    <i class="bi bi-pencil-square text-info"></i> Exercices
+                                {% else %}
+                                    <i class="bi bi-file-text"></i> {{ content.get_content_type_display }}
+                                {% endif %}
+                            </h6>
+                            <p class="mb-0 text-muted">{{ content.description|default:"Contenu de la leçon" }}</p>
+                        </div>
+                        
+                        <div>
+                            {% if content.completed %}
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle"></i> Complété
+                            </span>
+                            {% else %}
+                            <a href="#" class="btn btn-sm btn-gradient" onclick="startContent({{ content.id }})">
+                                <i class="bi bi-play-fill"></i> Commencer
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="bi bi-journal-x empty-state-icon"></i>
+                <div class="empty-state-title">Aucun contenu disponible</div>
+                <div class="empty-state-description">Le contenu de cette leçon sera bientôt disponible</div>
+            </div>
+        {% endif %}
+        
+        {% if next_lesson %}
+        <div class="text-center mt-5">
+            <a href="{% url 'learning:lesson-detail' next_lesson.pk %}" class="btn btn-outline-custom me-2">
+                Leçon suivante <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function startContent(contentId) {
+    // TODO: Implémenter la navigation vers le contenu
+    window.notificationService.info('Ouverture du contenu...');
+}
+</script>
+{% endblock %}

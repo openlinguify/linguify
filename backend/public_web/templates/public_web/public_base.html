@@ -1,38 +1,89 @@
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Open Linguify - Plateforme open source pour apprendre les langues{% endblock %}</title>
-    
+    <title>{% block title %}{% trans "OpenLinguify - Open source educational apps platform" %}{% endblock %}</title>
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="{% block meta_description %}Open Linguify est une plateforme open source pour apprendre les langues avec des cours interactifs, des quiz et un suivi de progression.{% endblock %}">
-    <meta name="keywords" content="{% block meta_keywords %}open linguify, apprentissage langues, cours en ligne, quiz, flashcards, open source{% endblock %}">
-    <meta name="author" content="Open Linguify Team">
-    
+    <meta name="description"
+        content="{% block meta_description %}{% trans 'OpenLinguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning.' %}{% endblock %}">
+
+
+    <meta name="keywords" content="{% block meta_keywords %}
+openlinguify, open linguify, apprentissage, éducation en ligne, outils éducatifs, flashcards, quiz, révision, mémoire, cours en ligne, application éducative, carnet de notes, IA éducative, social learning, apprentissage collaboratif,
+
+learning, online education, educational tools, flashcards, quizzes, study, memory, spaced repetition, online courses, study tools, learning app, smart education, revision tools, AI learning, digital notebook, collaborative learning,
+
+aprendizaje, educación en línea, herramientas educativas, tarjetas didácticas, cuestionarios, repaso, memoria, cursos online, aprendizaje colaborativo, aplicación de estudio, repetición espaciada,
+
+lernen, Online-Bildung, Lernwerkzeuge, Karteikarten, Quiz, Wiederholung, Gedächtnis, Online-Kurse, Lernplattform, KI-Lernen, Notizbuch online, gemeinsames Lernen,
+
+apprendimento, istruzione online, strumenti educativi, flashcard, quiz, studio, memoria, corsi online, intelligenza artificiale per l’istruzione, apprendimento collaborativo, app didattica,
+
+aprendizagem, educação online, ferramentas educacionais, flashcards, questionários, estudo, memória, cursos online, repetição espaçada, aplicação educativa, caderno digital, aprendizagem colaborativa,
+
+leren, online onderwijs, educatieve tools, flashcards, quizzen, studeren, geheugen, online cursussen, leertools, digitaal notitieboek, samenwerken leren,
+
+nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamięć, kursy online, aplikacja edukacyjna, inteligentna nauka, nauczanie wspólne,
+
+التعلم, التعليم الإلكتروني, أدوات تعليمية, بطاقات تعليمية, اختبارات, مراجعة, ذاكرة, تطبيق تعليمي, دفاتر ملاحظات رقمية, التعلم الجماعي, الذكاء الاصطناعي في التعليم,
+
+学習, オンライン教育, 教育ツール, フラッシュカード, クイズ, 復習, 記憶, スマート学習, オンラインコース, ノートアプリ, AI学習, 協働学習,
+
+学习, 在线教育, 教育工具, 闪卡, 测验, 复习, 记忆, 在线课程, 学习工具, 智能学习, 数字笔记本, 协作学习, 教育AI,
+
+शिक्षा, ऑनलाइन शिक्षा, शैक्षणिक उपकरण, फ्लैशकार्ड, क्विज़, अध्ययन, मेमोरी, ऑनलाइन कोर्स, शिक्षण ऐप, पुनरावृत्ति, एआई शिक्षा, सहयोगी शिक्षा
+{% endblock %}">
+    <meta name="author" content="OpenLinguify Team">
+
     <!-- Open Graph -->
-    <meta property="og:title" content="{% block og_title %}{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}{% trans 'OpenLinguify - Open source platform for modern education' %}{% endblock %}">
+<meta property="og:description" content="{% block og_description %}{% trans 'Discover OpenLinguify, a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn.' %}{% endblock %}">
+
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:image" content="{% load static %}{% static 'public_web/images/og-image.png' %}">
     
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}{% trans 'OpenLinguify - Open source platform for modern education' %}{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}{% trans 'OpenLinguify: Complete suite of open source educational apps: memorization, flashcards, notes, quizzes, collaborative chat and much more.' %}{% endblock %}">
+    <meta name="twitter:image" content="{% static 'public_web/images/og-image.png' %}">
+    
+    <!-- Additional SEO -->
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#6366f1">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     {% load static %}
-    
+
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'public_web/css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'src/css/main.css' %}">
     {% block extra_css %}{% endblock %}
+
+    <!-- Favicon - High quality PNG preferred -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/favicon.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon.png' %}">
+    <link rel="shortcut icon" href="{% static 'images/favicon.png' %}">
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
-    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+
     <style>
         :root {
             --primary-color: #6366f1;
@@ -42,33 +93,33 @@
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
         }
-        
+
         body {
             font-family: 'Inter', sans-serif;
             line-height: 1.6;
         }
-        
+
         .navbar-brand {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary-color) !important;
             text-decoration: none;
         }
-        
+
         .btn-primary {
             background: var(--primary-color);
             border-color: var(--primary-color);
         }
-        
+
         .btn-primary:hover {
             background: var(--primary-dark);
             border-color: var(--primary-dark);
         }
-        
+
         .text-primary {
             color: var(--primary-color) !important;
         }
-        
+
         /* Header public */
         .public-header {
             background: rgba(255, 255, 255, 0.95);
@@ -80,65 +131,102 @@
             right: 0;
             z-index: 1000;
         }
-        
+
         .main-content {
             padding-top: 80px;
         }
-        
+
         /* Footer */
         .footer {
             background: #1e293b;
             color: white;
             padding: 3rem 0 1rem;
         }
-        
+
         .footer a {
             color: #cbd5e1;
             text-decoration: none;
         }
-        
+
         .footer a:hover {
             color: white;
         }
-        
+
         /* Hero section */
         .hero-section {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             padding: 6rem 0;
         }
-        
+
         /* Responsive */
         @media (max-width: 768px) {
             .main-content {
                 padding-top: 70px;
             }
-            
+
             .hero-section {
                 padding: 4rem 0;
             }
         }
     </style>
-    
+
     {% block extra_head %}{% endblock %}
 </head>
+
 <body>
     <!-- Include public header -->
     {% include 'components/public_header.html' %}
-    
+
     <!-- Main content -->
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
-    
+
     <!-- Include public footer -->
     {% include 'components/public_footer.html' %}
-    
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Custom JS -->
-    <script src="{% static 'public_web/js/main.js' %}"></script>
+    <script src="{% static 'src/js/main.js' %}"></script>
+    
+    <!-- Language switching -->
+    <script>
+    function setLanguage(lang) {
+        // Create form to submit language change
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/i18n/setlang/';
+        
+        // Add CSRF token
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = '{{ csrf_token }}';
+        form.appendChild(csrfInput);
+        
+        // Add language
+        const langInput = document.createElement('input');
+        langInput.type = 'hidden';
+        langInput.name = 'language';
+        langInput.value = lang;
+        form.appendChild(langInput);
+        
+        // Add next URL
+        const nextInput = document.createElement('input');
+        nextInput.type = 'hidden';
+        nextInput.name = 'next';
+        nextInput.value = window.location.pathname;
+        form.appendChild(nextInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+    </script>
+    
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>

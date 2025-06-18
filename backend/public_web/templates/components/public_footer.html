@@ -1,65 +1,60 @@
 <!-- Footer public -->
+{% load i18n %}
 <footer class="footer">
     <div class="container">
         <div class="row">
             <div class="col-lg-4 mb-4">
                 <h5 class="text-white mb-3">Open Linguify</h5>
                 <p class="text-light">
-                    Plateforme open source pour apprendre les langues de manière interactive et moderne.
+                    {% trans "Open source educational apps platform: memorization, flashcards, notes, quizzes and collaborative chat." %}
                 </p>
                 <div class="d-flex gap-3">
-                    <a href="#" class="text-light fs-5">
+                    <a href="https://github.com/openlinguify/linguify" class="text-light fs-5" target="_blank">
                         <i class="bi bi-github"></i>
                     </a>
-                    <a href="#" class="text-light fs-5">
-                        <i class="bi bi-twitter"></i>
-                    </a>
-                    <a href="#" class="text-light fs-5">
+                    <a href="https://www.linkedin.com/company/openlinguify/" class="text-light fs-5" target="_blank">
                         <i class="bi bi-linkedin"></i>
-                    </a>
-                    <a href="#" class="text-light fs-5">
-                        <i class="bi bi-discord"></i>
                     </a>
                 </div>
             </div>
             
             <div class="col-lg-2 col-md-4 mb-4">
-                <h6 class="text-white mb-3">Produit</h6>
+                <h6 class="text-white mb-3">{% trans "Product" %}</h6>
                 <ul class="list-unstyled">
-                    <li><a href="{% url 'public_web:features' %}">Fonctionnalités</a></li>
-                    <li><a href="{% url 'public_web:apps' %}">Applications</a></li>
-                    <li><a href="#">Tarifs</a></li>
-                    <li><a href="#">Roadmap</a></li>
+                    <li><a href="{% url 'public_web:features' %}">{% trans "Features" %}</a></li>
+                    <li><a href="{% url 'public_web:apps' %}">{% trans "Apps" %}</a></li>
+                    <li><a href="#">{% trans "Pricing" %}</a></li>
+                    <li><a href="#">{% trans "Roadmap" %}</a></li>
                 </ul>
             </div>
             
             <div class="col-lg-2 col-md-4 mb-4">
-                <h6 class="text-white mb-3">Ressources</h6>
+                <h6 class="text-white mb-3">{% trans "Resources" %}</h6>
                 <ul class="list-unstyled">
-                    <li><a href="{% url 'public_web:blog' %}">Blog</a></li>
-                    <li><a href="#">Documentation</a></li>
-                    <li><a href="#">API</a></li>
-                    <li><a href="#">Communauté</a></li>
+                    <li><a href="{% url 'public_web:blog' %}">{% trans "Blog" %}</a></li>
+                    <li><a href="#">{% trans "Documentation" %}</a></li>
+                    <li><a href="#">{% trans "API" %}</a></li>
+                    <li><a href="#">{% trans "Community" %}</a></li>
                 </ul>
             </div>
             
             <div class="col-lg-2 col-md-4 mb-4">
-                <h6 class="text-white mb-3">Entreprise</h6>
+                <h6 class="text-white mb-3">{% trans "Company" %}</h6>
                 <ul class="list-unstyled">
-                    <li><a href="{% url 'public_web:about' %}">À propos</a></li>
-                    <li><a href="{% url 'public_web:careers' %}">Carrières</a></li>
-                    <li><a href="#">Presse</a></li>
-                    <li><a href="{% url 'public_web:contact' %}">Contact</a></li>
+                    <li><a href="{% url 'public_web:about' %}">{% trans "About" %}</a></li>
+                    <li><a href="/careers/">{% trans "Careers" %}</a></li>
+                    <li><a href="#">{% trans "Press" %}</a></li>
+                    <li><a href="{% url 'public_web:contact' %}">{% trans "Contact" %}</a></li>
                 </ul>
             </div>
             
             <div class="col-lg-2 col-md-4 mb-4">
-                <h6 class="text-white mb-3">Support</h6>
+                <h6 class="text-white mb-3">{% trans "Support" %}</h6>
                 <ul class="list-unstyled">
-                    <li><a href="#">Centre d'aide</a></li>
-                    <li><a href="#">Statut</a></li>
-                    <li><a href="#">Signaler un bug</a></li>
-                    <li><a href="{% url 'public_web:contact' %}">Nous contacter</a></li>
+                    <li><a href="#">{% trans "Help Center" %}</a></li>
+                    <li><a href="#">{% trans "Status" %}</a></li>
+                    <li><a href="#">{% trans "Report a bug" %}</a></li>
+                    <li><a href="{% url 'public_web:contact' %}">{% trans "Contact us" %}</a></li>
                 </ul>
             </div>
         </div>
@@ -69,19 +64,19 @@
         <div class="row align-items-center">
             <div class="col-md-6">
                 <p class="mb-0 text-light">
-                    © 2024 Open Linguify. Tous droits réservés.
+                    {% trans "© 2025 Open Linguify. All rights reserved." %}
                 </p>
             </div>
             <div class="col-md-6 text-md-end">
                 <ul class="list-inline mb-0">
                     <li class="list-inline-item">
-                        <a href="{% url 'public_web:privacy' %}">Confidentialité</a>
+                        <a href="{% url 'public_web:privacy' %}">{% trans "Privacy" %}</a>
                     </li>
                     <li class="list-inline-item">
-                        <a href="{% url 'public_web:terms' %}">CGU</a>
+                        <a href="{% url 'public_web:terms' %}">{% trans "Terms" %}</a>
                     </li>
                     <li class="list-inline-item">
-                        <a href="#">Cookies</a>
+                        <a href="{% url 'public_web:cookies' %}">{% trans "Cookies" %}</a>
                     </li>
                 </ul>
             </div>

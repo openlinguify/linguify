@@ -107,6 +107,16 @@ class Unit(models.Model):
                 return self.title_en
             case _:
                 return "Language not supported"
+    
+    @property
+    def title(self):
+        """Property pour compatibilité avec les templates - retourne le titre en français par défaut"""
+        return self.title_fr or self.title_en
+    
+    @property
+    def description(self):
+        """Property pour compatibilité avec les templates - retourne la description en français par défaut"""
+        return self.description_fr or self.description_en
 
  
     def update_unit_descriptions(self, save_immediately=True):
@@ -414,6 +424,16 @@ class Lesson(models.Model):
     def get_description(self, target_language: str) -> str | None:
         """Récupère la description dans la langue spécifiée"""
         return getattr(self, f'description_{target_language}', self.description_en)
+    
+    @property
+    def title(self):
+        """Property pour compatibilité avec les templates - retourne le titre en français par défaut"""
+        return self.title_fr or self.title_en
+    
+    @property
+    def description(self):
+        """Property pour compatibilité avec les templates - retourne la description en français par défaut"""
+        return self.description_fr or self.description_en
     
     def calculate_duration_lesson(self):
         """

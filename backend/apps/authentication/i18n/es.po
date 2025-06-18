@@ -1,0 +1,102 @@
+# SPANISH TRANSLATION FOR AUTHENTICATION
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify Authentication\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-17 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Login page
+msgid "Login"
+msgstr "Iniciar sesión"
+
+msgid "Email or username"
+msgstr "Email o nombre de usuario"
+
+msgid "Password"
+msgstr "Contraseña"
+
+msgid "Remember me"
+msgstr "Recordarme"
+
+msgid "Forgot password?"
+msgstr "¿Olvidaste tu contraseña?"
+
+msgid "Don't have an account?"
+msgstr "¿No tienes una cuenta?"
+
+msgid "Create an account"
+msgstr "Crear una cuenta"
+
+# Login messages
+msgid "Welcome, %(username)s!"
+msgstr "¡Bienvenido, %(username)s!"
+
+msgid "Invalid username or password."
+msgstr "Nombre de usuario o contraseña incorrectos."
+
+msgid "Sign in to your account"
+msgstr "Inicia sesión en tu cuenta"
+
+msgid "or"
+msgstr "o"
+
+msgid "Back to home"
+msgstr "Volver al inicio"
+
+# Register page
+msgid "Sign up"
+msgstr "Registrarse"
+
+msgid "Username"
+msgstr "Nombre de usuario"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "First name"
+msgstr "Nombre"
+
+msgid "Last name"
+msgstr "Apellido"
+
+msgid "Native language"
+msgstr "Idioma nativo"
+
+msgid "Target language"
+msgstr "Idioma objetivo"
+
+msgid "I agree to the"
+msgstr "Acepto los"
+
+msgid "Terms and Conditions"
+msgstr "Términos y Condiciones"
+
+msgid "Privacy Policy"
+msgstr "Política de Privacidad"
+
+msgid "Already have an account?"
+msgstr "¿Ya tienes una cuenta?"
+
+# Error messages
+msgid "Invalid username or password"
+msgstr "Nombre de usuario o contraseña incorrectos"
+
+msgid "This email is already registered"
+msgstr "Este email ya está registrado"
+
+msgid "This username is already taken"
+msgstr "Este nombre de usuario ya está en uso"
+
+msgid "Passwords do not match"
+msgstr "Las contraseñas no coinciden"

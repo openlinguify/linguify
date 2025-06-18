@@ -1,0 +1,395 @@
+/* Styles pour l'administration VocabularyList */
+
+/* Améliorer l'affichage de la liste */
+.model-vocabularylist .changelist-results table {
+    font-size: 12px;
+    table-layout: fixed;
+    width: 100%;
+}
+
+/* Largeurs des colonnes optimisées */
+.model-vocabularylist .field-id {
+    width: 60px;
+    text-align: center;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.model-vocabularylist .field-get_words_display {
+    width: 200px;
+    max-width: 200px;
+    min-width: 180px;
+}
+
+.model-vocabularylist .field-get_definitions_display {
+    width: 250px;
+    max-width: 250px;
+    min-width: 200px;
+}
+
+.model-vocabularylist .field-get_word_type_display {
+    width: 100px;
+    text-align: center;
+}
+
+.model-vocabularylist .field-get_content_lesson_display {
+    width: 280px;
+    max-width: 280px;
+    min-width: 250px;
+}
+
+.model-vocabularylist .field-get_unit_display {
+    width: 80px;
+    text-align: center;
+}
+
+.model-vocabularylist .field-get_level_display {
+    width: 70px;
+    text-align: center;
+}
+
+/* Assurer que le contenu ne déborde pas */
+.model-vocabularylist .changelist-results td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: top;
+    padding: 8px 4px;
+}
+
+/* Exception pour la colonne Content Lesson pour permettre l'affichage multi-ligne */
+.model-vocabularylist .field-get_content_lesson_display {
+    overflow: visible;
+    white-space: normal;
+}
+
+/* Styles pour le contenu Content Lesson */
+.model-vocabularylist .field-get_content_lesson_display a div {
+    border: 1px solid #28a745;
+    transition: all 0.2s ease;
+}
+
+.model-vocabularylist .field-get_content_lesson_display a:hover div {
+    background-color: #28a745 !important;
+    color: white !important;
+    transform: scale(1.02);
+}
+
+.model-vocabularylist .field-get_content_lesson_display a:hover div span {
+    color: white !important;
+}
+
+/* Styles pour les badges de niveau */
+.level-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 11px;
+    color: white;
+}
+
+/* Styles pour les liens de navigation */
+.vocab-link {
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.vocab-link:hover {
+    transform: scale(1.05);
+    text-decoration: none;
+}
+
+/* Layout tableau horizontal comme un spreadsheet */
+.model-vocabularylist .horizontal-table {
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 20px 0;
+    overflow-x: auto;
+}
+
+/* Créer un vrai tableau horizontal */
+.model-vocabularylist .horizontal-table .form-row {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+}
+
+/* Headers du tableau */
+.model-vocabularylist .horizontal-table::before {
+    content: "";
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+/* Transformation en cellules de tableau */
+.model-vocabularylist .horizontal-table .form-row > div {
+    display: table-cell;
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    vertical-align: top;
+    background-color: white;
+    width: calc(100% / 24); /* 24 champs au total */
+    min-width: 120px;
+}
+
+/* Alternance des couleurs par groupe de 4 (langues) */
+.model-vocabularylist .horizontal-table .form-row > div:nth-child(4n+1) {
+    background-color: #fff3cd; /* EN - jaune clair */
+}
+.model-vocabularylist .horizontal-table .form-row > div:nth-child(4n+2) {
+    background-color: #d4edda; /* FR - vert clair */
+}
+.model-vocabularylist .horizontal-table .form-row > div:nth-child(4n+3) {
+    background-color: #d1ecf1; /* ES - bleu clair */
+}
+.model-vocabularylist .horizontal-table .form-row > div:nth-child(4n) {
+    background-color: #f8d7da; /* NL - rouge clair */
+}
+
+/* Effet hover sur les cellules */
+.model-vocabularylist .horizontal-table .form-row > div:hover {
+    background-color: #e3f2fd !important;
+    transform: scale(1.02);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Styles pour les champs dans le tableau horizontal */
+.model-vocabularylist .horizontal-table input[type="text"],
+.model-vocabularylist .horizontal-table textarea {
+    width: 100%;
+    border: none;
+    padding: 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    box-sizing: border-box;
+    background-color: transparent;
+    transition: all 0.2s ease;
+}
+
+.model-vocabularylist .horizontal-table input[type="text"]:focus,
+.model-vocabularylist .horizontal-table textarea:focus {
+    border: 2px solid #007bff;
+    background-color: white;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: 0;
+}
+
+.model-vocabularylist .horizontal-table textarea {
+    min-height: 60px;
+    max-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* Labels compacts dans le tableau */
+.model-vocabularylist .horizontal-table label {
+    font-size: 10px;
+    font-weight: bold;
+    margin-bottom: 3px;
+    display: block;
+    color: #495057;
+    text-align: center;
+    padding: 2px;
+    border-radius: 2px;
+}
+
+/* Couleurs des labels par langue */
+.model-vocabularylist .horizontal-table .form-row > div:nth-child(4n+1) label {
+    background-color: #ffc107;
+    color: #212529;
+}
+.model-vocabularylist .horizontal-table .form-row > div:nth-child(4n+2) label {
+    background-color: #28a745;
+    color: white;
+}
+.model-vocabularylist .horizontal-table .form-row > div:nth-child(4n+3) label {
+    background-color: #17a2b8;
+    color: white;
+}
+.model-vocabularylist .horizontal-table .form-row > div:nth-child(4n) label {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Styles spécifiques par type de champ */
+.model-vocabularylist .horizontal-table input[name*="word_"] {
+    font-weight: bold;
+    font-size: 13px;
+    border-bottom: 2px solid #007bff;
+}
+
+.model-vocabularylist .horizontal-table input[name*="word_type_"] {
+    font-style: italic;
+    background-color: rgba(233, 236, 239, 0.5);
+}
+
+/* Scroll horizontal pour les petits écrans */
+@media (max-width: 1400px) {
+    .model-vocabularylist .horizontal-table {
+        overflow-x: scroll;
+        white-space: nowrap;
+    }
+    
+    .model-vocabularylist .horizontal-table .form-row > div {
+        min-width: 150px;
+    }
+}
+
+/* Styles pour la zone d'information contextuelle */
+.model-vocabularylist .vocab-context-info a {
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.model-vocabularylist .vocab-context-info a:hover {
+    text-decoration: underline;
+    transform: scale(1.05);
+}
+
+/* Boutons de navigation rapide */
+.model-vocabularylist .vocab-context-info a[style*="background-color"] {
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.model-vocabularylist .vocab-context-info a[style*="background-color"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    text-decoration: none;
+}
+
+/* Styles pour les labels */
+.model-vocabularylist label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Styles pour les sections pliables */
+.model-vocabularylist .collapse {
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.model-vocabularylist .collapse h2 {
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 10px 15px;
+    border-bottom: 1px solid #e0e0e0;
+    cursor: pointer;
+}
+
+.model-vocabularylist .collapse h2:hover {
+    background-color: #e9ecef;
+}
+
+/* Zone d'informations contextuelles */
+.vocab-context-info {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.vocab-context-info h4 {
+    color: #007bff;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.vocab-context-info p {
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+/* Améliorer les filtres */
+.model-vocabularylist #changelist-filter {
+    width: 240px;
+}
+
+.model-vocabularylist #changelist-filter h3 {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 12px;
+    margin: 0;
+    font-size: 13px;
+}
+
+/* Actions en lot */
+.model-vocabularylist .actions {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+/* Pagination */
+.model-vocabularylist .paginator {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.model-vocabularylist .paginator a,
+.model-vocabularylist .paginator .this-page {
+    padding: 8px 12px;
+    margin: 0 2px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.model-vocabularylist .paginator a:hover {
+    background-color: #e9ecef;
+}
+
+.model-vocabularylist .paginator .this-page {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+/* Navigation buttons styling */
+.model-vocabularylist .field-get_vocab_info a[style*="background-color: #28a745"],
+.model-vocabularylist .field-get_vocab_info a[style*="background-color: #6f42c1"] {
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.model-vocabularylist .field-get_vocab_info a[style*="background-color: #28a745"]:hover {
+    background-color: #218838 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.model-vocabularylist .field-get_vocab_info a[style*="background-color: #6f42c1"]:hover {
+    background-color: #5a32a3 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .model-vocabularylist .form-row.wide {
+        flex-direction: column;
+    }
+    
+    .model-vocabularylist .form-row.wide > div {
+        min-width: 100%;
+    }
+    
+    .model-vocabularylist .field-get_words_display {
+        min-width: auto;
+        max-width: none;
+    }
+}

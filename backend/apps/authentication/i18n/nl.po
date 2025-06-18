@@ -1,0 +1,102 @@
+# DUTCH TRANSLATION FOR AUTHENTICATION
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify Authentication\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-17 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: Dutch\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Login page
+msgid "Login"
+msgstr "Inloggen"
+
+msgid "Email or username"
+msgstr "E-mail of gebruikersnaam"
+
+msgid "Password"
+msgstr "Wachtwoord"
+
+msgid "Remember me"
+msgstr "Onthoud mij"
+
+msgid "Forgot password?"
+msgstr "Wachtwoord vergeten?"
+
+msgid "Don't have an account?"
+msgstr "Nog geen account?"
+
+msgid "Create an account"
+msgstr "Account aanmaken"
+
+# Login messages
+msgid "Welcome, %(username)s!"
+msgstr "Welkom, %(username)s!"
+
+msgid "Invalid username or password."
+msgstr "Ongeldige gebruikersnaam of wachtwoord."
+
+msgid "Sign in to your account"
+msgstr "Meld je aan bij je account"
+
+msgid "or"
+msgstr "of"
+
+msgid "Back to home"
+msgstr "Terug naar startpagina"
+
+# Register page
+msgid "Sign up"
+msgstr "Registreren"
+
+msgid "Username"
+msgstr "Gebruikersnaam"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "First name"
+msgstr "Voornaam"
+
+msgid "Last name"
+msgstr "Achternaam"
+
+msgid "Native language"
+msgstr "Moedertaal"
+
+msgid "Target language"
+msgstr "Doeltaal"
+
+msgid "I agree to the"
+msgstr "Ik ga akkoord met de"
+
+msgid "Terms and Conditions"
+msgstr "Algemene Voorwaarden"
+
+msgid "Privacy Policy"
+msgstr "Privacybeleid"
+
+msgid "Already have an account?"
+msgstr "Al een account?"
+
+# Error messages
+msgid "Invalid username or password"
+msgstr "Ongeldige gebruikersnaam of wachtwoord"
+
+msgid "This email is already registered"
+msgstr "Dit e-mailadres is al geregistreerd"
+
+msgid "This username is already taken"
+msgstr "Deze gebruikersnaam is al bezet"
+
+msgid "Passwords do not match"
+msgstr "Wachtwoorden komen niet overeen"

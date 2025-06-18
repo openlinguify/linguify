@@ -15,6 +15,18 @@ def make_mo(po_file_path, mo_file_path):
     Basé sur la spécification du format .mo de GNU gettext
     """
     
+    # Déterminer la langue depuis le chemin du fichier
+    lang_code = "en"  # par défaut
+    if "/pt/" in po_file_path or "pt.po" in po_file_path:
+        lang_code = "pt"
+    elif "/fr/" in po_file_path or "fr.po" in po_file_path:
+        lang_code = "fr"
+    elif "/es/" in po_file_path or "es.po" in po_file_path:
+        lang_code = "es"
+    elif "/de/" in po_file_path or "de.po" in po_file_path:
+        lang_code = "de"
+    # Ajouter d'autres langues si nécessaire
+    
     def parse_po_file(po_file):
         """Parse un fichier .po et retourne un dictionnaire de traductions"""
         translations = {}
@@ -66,9 +78,9 @@ def make_mo(po_file_path, mo_file_path):
         
         # Ajouter l'en-tête avec les métadonnées
         metadata = {
-            "": "Content-Type: text/plain; charset=UTF-8\n"
-                "Content-Transfer-Encoding: 8bit\n"
-                "Language: fr\n"
+            "": f"Content-Type: text/plain; charset=UTF-8\n"
+                f"Content-Transfer-Encoding: 8bit\n"
+                f"Language: {lang_code}\n"
         }
         
         # Combiner métadonnées et traductions
@@ -155,7 +167,7 @@ def make_mo(po_file_path, mo_file_path):
 
 def compile_all_translations():
     """Compile toutes les traductions dans le projet"""
-    locale_dir = os.path.join(os.path.dirname(__file__), 'locale')
+    base_dir = os.path.dirname(__file__)
     
     print("🔨 Compilation manuelle des traductions Django")
     print("=" * 50)
@@ -163,30 +175,85 @@ def compile_all_translations():
     success_count = 0
     error_count = 0
     
-    for lang_dir in os.listdir(locale_dir):
-        lang_path = os.path.join(locale_dir, lang_dir)
-        if not os.path.isdir(lang_path):
-            continue
+    # 1. Compiler les traductions globales dans locale/
+    locale_dir = os.path.join(base_dir, 'locale')
+    if os.path.exists(locale_dir):
+        print("\n📁 Traductions globales (locale/):")
+        for lang_dir in os.listdir(locale_dir):
+            lang_path = os.path.join(locale_dir, lang_dir)
+            if not os.path.isdir(lang_path):
+                continue
+                
+            lc_messages_path = os.path.join(lang_path, 'LC_MESSAGES')
+            if not os.path.exists(lc_messages_path):
+                continue
+                
+            po_file = os.path.join(lc_messages_path, 'django.po')
+            mo_file = os.path.join(lc_messages_path, 'django.mo')
             
-        lc_messages_path = os.path.join(lang_path, 'LC_MESSAGES')
-        if not os.path.exists(lc_messages_path):
-            continue
-            
-        po_file = os.path.join(lc_messages_path, 'django.po')
-        mo_file = os.path.join(lc_messages_path, 'django.mo')
-        
-        if os.path.exists(po_file):
-            print(f"🔄 Compilation {lang_dir}...")
-            success, result = make_mo(po_file, mo_file)
-            
-            if success:
-                print(f"  ✅ {lang_dir}: {result} traductions compilées")
-                success_count += 1
+            if os.path.exists(po_file):
+                print(f"🔄 Compilation {lang_dir}...")
+                success, result = make_mo(po_file, mo_file)
+                
+                if success:
+                    print(f"  ✅ {lang_dir}: {result} traductions compilées")
+                    success_count += 1
+                else:
+                    print(f"  ❌ {lang_dir}: Erreur - {result}")
+                    error_count += 1
             else:
-                print(f"  ❌ {lang_dir}: Erreur - {result}")
-                error_count += 1
-        else:
-            print(f"  ⚠️ {lang_dir}: Fichier .po introuvable")
+                print(f"  ⚠️ {lang_dir}: Fichier .po introuvable")
+    
+    # 2. Compiler les traductions des apps (*/i18n/*.po)
+    print("\n📁 Traductions des apps (*/i18n/):")
+    for root, dirs, files in os.walk(base_dir):
+        # Chercher les dossiers i18n
+        if 'i18n' in dirs:
+            i18n_path = os.path.join(root, 'i18n')
+            app_name = os.path.basename(root)
+            
+            print(f"\n📦 App: {app_name}")
+            
+            # Structure 1: Fichiers .po directement dans i18n/ (lang.po)
+            for file in os.listdir(i18n_path):
+                if file.endswith('.po'):
+                    lang_code = file[:-3]  # Remove .po extension
+                    po_file = os.path.join(i18n_path, file)
+                    mo_file = os.path.join(i18n_path, f"{lang_code}.mo")
+                    
+                    print(f"🔄 Compilation {app_name}/{lang_code}...")
+                    success, result = make_mo(po_file, mo_file)
+                    
+                    if success:
+                        print(f"  ✅ {app_name}/{lang_code}: {result} traductions compilées")
+                        success_count += 1
+                    else:
+                        print(f"  ❌ {app_name}/{lang_code}: Erreur - {result}")
+                        error_count += 1
+            
+            # Structure 2: Dossiers langue avec LC_MESSAGES (lang/LC_MESSAGES/django.po)
+            for lang_dir in os.listdir(i18n_path):
+                lang_path = os.path.join(i18n_path, lang_dir)
+                if not os.path.isdir(lang_path):
+                    continue
+                    
+                lc_messages_path = os.path.join(lang_path, 'LC_MESSAGES')
+                if not os.path.exists(lc_messages_path):
+                    continue
+                    
+                po_file = os.path.join(lc_messages_path, 'django.po')
+                mo_file = os.path.join(lc_messages_path, 'django.mo')
+                
+                if os.path.exists(po_file):
+                    print(f"🔄 Compilation {app_name}/{lang_dir}...")
+                    success, result = make_mo(po_file, mo_file)
+                    
+                    if success:
+                        print(f"  ✅ {app_name}/{lang_dir}: {result} traductions compilées")
+                        success_count += 1
+                    else:
+                        print(f"  ❌ {app_name}/{lang_dir}: Erreur - {result}")
+                        error_count += 1
     
     print(f"\n📊 Résultats:")
     print(f"  ✅ Réussies: {success_count}")

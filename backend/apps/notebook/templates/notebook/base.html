@@ -7,7 +7,7 @@
     <title>{{ page_title|default:"Notebook" }} - Linguify</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
     
     <!-- Meta tags -->
     <meta name="description" content="Interface de prise de notes pour l'apprentissage des langues avec Linguify">
@@ -19,6 +19,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS personnalisé pour le notebook -->
+    <link rel="stylesheet" href="{% static 'css/notebook.css' %}">
     
     <!-- CSS spécifique au notebook -->
     <style>
@@ -406,7 +409,7 @@
             <div class="header-content">
                 <div class="header-top">
                     <div class="notebook-nav">
-                        <a href="{% url 'frontend_web:dashboard' %}" class="nav-brand">
+                        <a href="{% url 'saas_web:dashboard' %}" class="nav-brand">
                             <i class="bi bi-journal-text nav-logo"></i>
                             <span>Notebook</span>
                         </a>
@@ -420,14 +423,14 @@
                                     {{ user.username }}
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{% url 'frontend_web:profile' %}">Profil</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'frontend_web:dashboard' %}">Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'saas_web:profile' %}">Profil</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'saas_web:dashboard' %}">Dashboard</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="{% url 'frontend_web:logout' %}">Déconnexion</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'auth:logout' %}">Déconnexion</a></li>
                                 </ul>
                             </div>
                         {% else %}
-                            <a href="{% url 'frontend_web:login' %}" class="btn btn-outline-custom">Connexion</a>
+                            <a href="{% url 'auth:login' %}" class="btn btn-outline-custom">Connexion</a>
                         {% endif %}
                     </div>
                 </div>
@@ -449,6 +452,7 @@
     <script>
         window.DEBUG = {{ debug|yesno:"true,false" }};
         window.API_BASE_URL = "{{ request.scheme }}://{{ request.get_host }}";
+        window.csrfToken = "{{ csrf_token }}";
         window.USER_DATA = {
             id: {{ request.user.id|default:"null" }},
             username: "{{ request.user.username|default:'' }}",
@@ -493,16 +497,27 @@
         // Service API simplifié
         window.apiService = {
             async request(url, options = {}) {
+                const csrfToken = this.getCSRFToken();
+                console.log('CSRF Token:', csrfToken); // Debug
+                
                 const defaultOptions = {
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': this.getCSRFToken(),
+                        'X-CSRFToken': csrfToken,
                     },
                 };
                 
-                const response = await fetch(url, { ...defaultOptions, ...options });
+                const mergedOptions = { ...defaultOptions, ...options };
+                if (options.headers) {
+                    mergedOptions.headers = { ...defaultOptions.headers, ...options.headers };
+                }
+                
+                console.log('Request:', url, mergedOptions); // Debug
+                
+                const response = await fetch(url, mergedOptions);
                 
                 if (!response.ok) {
+                    console.error('API Error:', response.status, response.statusText); // Debug
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
@@ -510,7 +525,11 @@
             },
             
             getCSRFToken() {
-                return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+                const token = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                            document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || 
+                            window.csrfToken || '';
+                console.log('Getting CSRF token:', token); // Debug
+                return token;
             }
         };
         

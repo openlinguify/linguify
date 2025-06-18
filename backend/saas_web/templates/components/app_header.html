@@ -1,5 +1,6 @@
 <!-- Header fixe réutilisable pour les applications Open Linguify -->
 {% load static %}
+{% load i18n %}
 
 <!-- Header Styles -->
 <style>
@@ -45,6 +46,32 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 }
+
+/* Language dropdown styling */
+.language-dropdown {
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #6c757d #f8f9fa;
+}
+
+.language-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.language-dropdown::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 3px;
+}
+
+.language-dropdown::-webkit-scrollbar-thumb {
+    background: #6c757d;
+    border-radius: 3px;
+}
+
+.language-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #495057;
+}
 </style>
 
 <header class="fixed-header">
@@ -76,6 +103,33 @@
                 <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                
+                <!-- Language selector -->
+                {% load i18n %}
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% if LANGUAGE_CODE == 'fr' %}<img src="{% static 'img/country_flags/fr.png' %}" alt="France" style="width: 20px; height: auto;" class="me-1">
+                        {% elif LANGUAGE_CODE == 'en' %}<img src="{% static 'img/country_flags/gb.png' %}" alt="United Kingdom" style="width: 20px; height: auto;" class="me-1">
+                        {% elif LANGUAGE_CODE == 'es' %}<img src="{% static 'img/country_flags/es.png' %}" alt="Spain" style="width: 20px; height: auto;" class="me-1">
+                        {% elif LANGUAGE_CODE == 'nl' %}<img src="{% static 'img/country_flags/nl.png' %}" alt="Netherlands" style="width: 20px; height: auto;" class="me-1">
+                        {% else %}<img src="{% static 'img/country_flags/gb.png' %}" alt="United Kingdom" style="width: 20px; height: auto;" class="me-1">{% endif %}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end language-dropdown">
+                        <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">
+                            <img src="{% static 'img/country_flags/gb.png' %}" alt="UK" style="width: 20px; height: auto;" class="me-2"> English
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="setLanguage('fr')">
+                            <img src="{% static 'img/country_flags/fr.png' %}" alt="France" style="width: 20px; height: auto;" class="me-2"> Français
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="setLanguage('es')">
+                            <img src="{% static 'img/country_flags/es.png' %}" alt="Spain" style="width: 20px; height: auto;" class="me-2"> Español
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="setLanguage('nl')">
+                            <img src="{% static 'img/country_flags/nl.png' %}" alt="Netherlands" style="width: 20px; height: auto;" class="me-2"> Nederlands
+                        </a></li>
+                    </ul>
+                </div>
                 
                 <!-- Notifications -->
                 <div class="dropdown" id="notificationDropdown">
