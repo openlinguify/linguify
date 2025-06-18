@@ -2,15 +2,15 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}{% trans "Open Linguify - Open source educational apps platform" %}{% endblock %}
+{% block title %}{% trans "OpenLinguify - Open source educational apps platform" %}{% endblock %}
 
-{% block meta_description %}{% trans "Open Linguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning." %}{% endblock %}
+{% block meta_description %}{% trans "OpenLinguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning." %}{% endblock %}
 
-{% block meta_keywords %}{% trans "open linguify, educational apps, flashcards, memorization, note-taking, quizzes, collaborative chat, classrooms, open source, education, learning" %}{% endblock %}
+{% block meta_keywords %}{% trans "openlinguify, open linguify, educational apps, flashcards, memorization, note-taking, quizzes, collaborative chat, classrooms, open source, education, learning" %}{% endblock %}
 
-{% block og_title %}{% trans "Open Linguify - Open source platform for modern education" %}{% endblock %}
+{% block og_title %}{% trans "OpenLinguify - Open source platform for modern education" %}{% endblock %}
 
-{% block og_description %}{% trans "Discover a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn." %}{% endblock %}
+{% block og_description %}{% trans "Discover OpenLinguify, a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn." %}{% endblock %}
 
 {% block extra_head %}
 <!-- PWA Manifest -->
@@ -18,7 +18,7 @@
 
 <!-- Apple PWA -->
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Open Linguify">
+<meta name="apple-mobile-web-app-title" content="OpenLinguify">
 
 <!-- Additional fonts and icons for this page -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1031,6 +1031,18 @@
         </div>
     </section>
 
+    <!-- SEO Content Section for openlinguify -->
+    <section class="py-4 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="text-muted small">
+                        {% trans "OpenLinguify (also known as openlinguify) is your comprehensive open source educational platform. Whether you search for 'openlinguify' or 'open linguify', you'll find the same powerful learning tools designed to revolutionize education." %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
 {% endblock %}
 
@@ -1039,8 +1051,8 @@
 <div id="pwaInstallPrompt" class="pwa-install-prompt">
     <div class="d-flex justify-content-between align-items-center">
         <div>
-            <strong>📱 Installer Open Linguify</strong>
-            <div class="small">Accédez rapidement à Open Linguify depuis votre écran d'accueil</div>
+            <strong>📱 Installer OpenLinguify</strong>
+            <div class="small">Accédez rapidement à OpenLinguify depuis votre écran d'accueil</div>
         </div>
         <div>
             <button class="btn btn-light btn-sm me-2" onclick="installPWA()">Installer</button>
@@ -1252,7 +1264,7 @@
         });
 
         // Console welcome message
-        console.log('%c🚀 Bienvenue sur Open Linguify!', 'color: #6366f1; font-size: 20px; font-weight: bold;');
+        console.log('%c🚀 Bienvenue sur OpenLinguify!', 'color: #6366f1; font-size: 20px; font-weight: bold;');
         console.log('%cMigré avec succès vers la nouvelle architecture! ✨', 'color: #10b981; font-size: 14px;');
         console.log('%c📱 Support PWA activé', 'color: #8b5cf6; font-size: 12px;');
 </script>

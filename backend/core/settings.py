@@ -56,7 +56,11 @@ SUPABASE_SERVICE_ROLE_KEY = env.str('SUPABASE_SERVICE_ROLE_KEY', default='')
 # normally, ALLOWED_HOSTS = ['yourdomain.com'] or empty in development mode
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', 'testserver'])
 if not DEBUG and not ALLOWED_HOSTS:
-    ALLOWED_HOSTS = ['linguify.onrender.com', 'openlinguify.com', 'www.openlinguify.com']    
+    ALLOWED_HOSTS = ['linguify.onrender.com', 'openlinguify.com', 'www.openlinguify.com']
+
+# SEO Settings - Prevent automatic www prepending
+PREPEND_WWW = False
+APPEND_SLASH = True    
 
 # Application definition
 
@@ -270,6 +274,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'apps.authentication.middleware.JWTMiddleware',  # Disabled - using Supabase now
     'apps.authentication.middleware_terms.TermsAcceptanceMiddleware',  # Check terms acceptance
+    'core.jobs.middleware.JobsErrorHandlingMiddleware',  # Jobs error handling
     # SEO Optimization Middleware (simplified version)
     'core.seo.middleware.simple.SimpleSEOMiddleware',
     # 'core.seo.middleware.optimization.SEOOptimizationMiddleware',  # Disabled temporarily

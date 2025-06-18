@@ -6,6 +6,8 @@ app_name = 'public_web'
 urlpatterns = [
     # Landing et pages principales
     path('', views.LandingView.as_view(), name='landing'),
+    # SEO aliases for brand variations
+    path('openlinguify/', views.LandingView.as_view(), name='openlinguify'),
     path('features/', views.FeaturesView.as_view(), name='features'),
     path('about/', views.AboutView.as_view(), name='about'),
     path('blog/', views.BlogView.as_view(), name='blog'),
@@ -15,6 +17,19 @@ urlpatterns = [
     path('privacy/', views.PrivacyView.as_view(), name='privacy'),
     path('terms/', views.TermsView.as_view(), name='terms'),
     path('cookies/', views.CookiesView.as_view(), name='cookies'),
+    
+    # Annexes (legacy URLs for SEO) - redirect to legal/
+    path('annexes/terms/', views.TermsView.as_view(), name='annexes_terms'),
+    path('annexes/privacy/', views.PrivacyView.as_view(), name='annexes_privacy'),
+    path('annexes/cookies/', views.CookiesView.as_view(), name='annexes_cookies'),
+    
+    # Legal pages (current structure)
+    path('legal/terms/', views.TermsView.as_view(), name='legal_terms'),
+    path('legal/privacy/', views.PrivacyView.as_view(), name='legal_privacy'),
+    path('legal/cookies/', views.CookiesView.as_view(), name='legal_cookies'),
+    
+    # SEO brand page
+    path('brand/', views.BrandView.as_view(), name='brand'),
     
     # Présentation des applications (legacy)
     path('apps/', views.DynamicAppsListView.as_view(), name='apps'),
