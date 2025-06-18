@@ -75,6 +75,9 @@ jobs:
       - name: Setup test environment
         run: |
           cp .env.example .env.test
+          # Convert to Unix line endings
+          sed -i 's/\r$//' .env.test
+          # Update configuration
           sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env.test
           sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env.test
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env.test
@@ -203,6 +206,9 @@ jobs:
       - name: Setup test environment
         run: |
           cp .env.example .env.test
+          # Convert to Unix line endings
+          sed -i 's/\r$//' .env.test
+          # Update configuration
           sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env.test
           sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env.test
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env.test
