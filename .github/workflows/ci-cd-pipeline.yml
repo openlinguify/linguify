@@ -252,7 +252,7 @@ jobs:
     
     steps:
       - name: Deploy to Render Staging
-        uses: johnbeynon/render-deploy-action@v0.0.8
+        uses: johnbeynon/render-deploy-action@v0.0.9
         with:
           service-id: ${{ secrets.RENDER_STAGING_SERVICE_ID }}
           api-key: rnd_sTW1YJFvnzWxHWfGWdMBKtmwiZfi
@@ -296,7 +296,7 @@ jobs:
     
     steps:
       - name: Deploy to Render Production
-        uses: johnbeynon/render-deploy-action@v0.0.8
+        uses: johnbeynon/render-deploy-action@v0.0.9
         with:
           service-id: srv-d149ag49c44c73d2f27g
           api-key: rnd_LYvNUTDvyHgmiPbryBLPTUl7qyHI
