@@ -62,7 +62,7 @@ class AdminInterfaceTests(TestCase):
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Job Management")
+        self.assertContains(response, "Jobs and Careers")
         self.assertContains(response, "Departments")
         self.assertContains(response, "Job positions")
         self.assertContains(response, "Job applications")

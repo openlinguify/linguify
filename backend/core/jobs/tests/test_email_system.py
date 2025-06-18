@@ -224,7 +224,7 @@ startxref
         self.assertIn("François", email.body)
         # Cover letter is not included in candidate confirmation email, only in HR email
     
-    @patch('apps.jobs.views.EmailMessage')
+    @patch('core.jobs.views.EmailMessage')
     def test_email_error_handling(self, mock_email):
         """Test email error handling"""
         # Configure mock to raise exception
@@ -408,7 +408,7 @@ class EmailContentTests(TestCase):
         self.assertIn("linguify.info@gmail.com", email.body)
         
         # Check website link
-        self.assertIn("localhost:3000", email.body)  # Development URL
+        self.assertIn("openlinguify.com", email.body)  # Production URL
         
         # Check proper mailto and href formatting
         self.assertIn("mailto:", email.body)

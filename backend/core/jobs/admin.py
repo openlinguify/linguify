@@ -15,7 +15,7 @@ class DepartmentAdmin(admin.ModelAdmin):
     def position_count(self, obj):
         count = obj.positions.filter(is_active=True).count()
         if count > 0:
-            url = reverse('admin:core_jobposition_changelist') + f'?department__id__exact={obj.id}'
+            url = reverse('admin:jobs_jobposition_changelist') + f'?department__id__exact={obj.id}'
             return format_html('<a href="{}">{} active positions</a>', url, count)
         return '0 positions'
     position_count.short_description = 'Active Positions'
@@ -109,7 +109,7 @@ class JobPositionAdmin(admin.ModelAdmin):
     def application_count(self, obj):
         count = obj.applications.count()
         if count > 0:
-            url = reverse('admin:core_jobapplication_changelist') + f'?position__id__exact={obj.id}'
+            url = reverse('admin:jobs_jobapplication_changelist') + f'?position__id__exact={obj.id}'
             return format_html('<a href="{}">{} applications</a>', url, count)
         return '0 applications'
     application_count.short_description = 'Applications'
@@ -154,6 +154,7 @@ class JobApplicationAdmin(admin.ModelAdmin):
         'position', 
         'email', 
         'status_badge', 
+        'email_status',
         'applied_at'
     ]
     list_filter = ['status', 'position__department', 'applied_at']
@@ -197,19 +198,85 @@ class JobApplicationAdmin(admin.ModelAdmin):
         )
     status_badge.short_description = 'Status'
     
-    actions = ['mark_reviewed', 'mark_interview', 'mark_rejected']
+    def email_status(self, obj):
+        """Show email notification status based on application status"""
+        email_statuses = {
+            'submitted': '📧 Confirmation sent',
+            'reviewed': '👀 Review notification sent', 
+            'interview': '🎯 Interview invite sent',
+            'offer': '🎉 Offer email sent',
+            'hired': '✅ Welcome email sent',
+            'rejected': '📨 Rejection email sent',
+            'withdrawn': '📤 Withdrawal confirmed',
+        }
+        
+        if obj.status in email_statuses:
+            return format_html(
+                '<span style="color: #059669; font-size: 12px;">{}</span>',
+                email_statuses[obj.status]
+            )
+        return '-'
+    email_status.short_description = 'Email Status'
+    
+    actions = ['mark_reviewed', 'mark_interview', 'mark_offer', 'mark_hired', 'mark_rejected', 'mark_withdrawn']
     
     def mark_reviewed(self, request, queryset):
-        updated = queryset.update(status='reviewed')
-        self.message_user(request, f'{updated} application(s) marked as under review.')
+        # Update each instance individually to trigger signals
+        count = 0
+        for application in queryset:
+            if application.status != 'reviewed':
+                application.status = 'reviewed'
+                application.save()
+                count += 1
+        self.message_user(request, f'{count} application(s) marked as under review. Email notifications sent.')
     mark_reviewed.short_description = 'Mark as under review'
     
     def mark_interview(self, request, queryset):
-        updated = queryset.update(status='interview')
-        self.message_user(request, f'{updated} application(s) moved to interview stage.')
+        count = 0
+        for application in queryset:
+            if application.status != 'interview':
+                application.status = 'interview'
+                application.save()
+                count += 1
+        self.message_user(request, f'{count} application(s) moved to interview stage. Email notifications sent.')
     mark_interview.short_description = 'Move to interview stage'
     
+    def mark_offer(self, request, queryset):
+        count = 0
+        for application in queryset:
+            if application.status != 'offer':
+                application.status = 'offer'
+                application.save()
+                count += 1
+        self.message_user(request, f'{count} application(s) marked with job offer. Email notifications sent.')
+    mark_offer.short_description = 'Extend job offer'
+    
+    def mark_hired(self, request, queryset):
+        count = 0
+        for application in queryset:
+            if application.status != 'hired':
+                application.status = 'hired'
+                application.save()
+                count += 1
+        self.message_user(request, f'{count} application(s) marked as hired. Email notifications sent.')
+    mark_hired.short_description = 'Mark as hired'
+    
     def mark_rejected(self, request, queryset):
-        updated = queryset.update(status='rejected')
-        self.message_user(request, f'{updated} application(s) marked as rejected.')
+        count = 0
+        for application in queryset:
+            if application.status != 'rejected':
+                application.status = 'rejected'
+                application.save()
+                count += 1
+        self.message_user(request, f'{count} application(s) marked as rejected. Email notifications sent.')
     mark_rejected.short_description = 'Mark as rejected'
+    
+    def mark_withdrawn(self, request, queryset):
+        count = 0
+        for application in queryset:
+            if application.status != 'withdrawn':
+                application.status = 'withdrawn'
+                application.save()
+                count += 1
+        self.message_user(request, f'{count} application(s) marked as withdrawn.')
+    mark_withdrawn.short_description = 'Mark as withdrawn'

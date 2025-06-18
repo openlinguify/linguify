@@ -73,12 +73,16 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.MD5PasswordHasher',
 ]
 
-# Disable caching for tests
+# Use locmem cache for tests to support sessions
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'test-cache',
     }
 }
+
+# Use database session backend for tests
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 # Disable email backend for tests
 EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
@@ -106,6 +110,12 @@ LOGGING = {
 # Disable i18n for faster tests
 USE_I18N = False
 USE_L10N = False
+
+# Remove whitenoise middleware for tests to avoid import errors
+MIDDLEWARE = [m for m in MIDDLEWARE if 'whitenoise' not in m.lower()]
+
+# Simplified static files configuration for tests
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Test specific settings
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
