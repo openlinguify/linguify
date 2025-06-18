@@ -1,0 +1,63 @@
+{% extends 'public_web/public_base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "OpenLinguify Brand Information - openlinguify" %}{% endblock %}
+
+{% block meta_description %}{% trans "Learn about OpenLinguify (openlinguify), the open source educational platform. Whether you search for openlinguify or Open Linguify, discover our innovative learning tools." %}{% endblock %}
+
+{% block meta_keywords %}{% trans "openlinguify, OpenLinguify, Open Linguify, brand information, educational platform" %}{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="display-4 text-center mb-4">OpenLinguify</h1>
+                <p class="lead text-center text-muted mb-5">
+                    {% trans "Also known as: openlinguify, Open Linguify" %}
+                </p>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="h4 mb-3">{% trans "About Our Brand" %}</h2>
+                        <p>
+                            {% trans "OpenLinguify (commonly searched as 'openlinguify') is an innovative open source educational platform designed to revolutionize how people learn. Our platform is accessible at openlinguify.com." %}
+                        </p>
+                        <p>
+                            {% trans "Whether you type 'openlinguify' as one word or 'Open Linguify' as two words, you'll find the same powerful learning ecosystem that includes:" %}
+                        </p>
+                        <ul>
+                            <li>{% trans "AI-powered language learning" %}</li>
+                            <li>{% trans "Interactive flashcards and spaced repetition" %}</li>
+                            <li>{% trans "Comprehensive note-taking system" %}</li>
+                            <li>{% trans "Adaptive quizzes and assessments" %}</li>
+                            <li>{% trans "Collaborative learning features" %}</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="h4 mb-3">{% trans "Search Variations" %}</h2>
+                        <p>{% trans "People find us using different search terms:" %}</p>
+                        <ul>
+                            <li><strong>openlinguify</strong> - {% trans "Single word, lowercase" %}</li>
+                            <li><strong>OpenLinguify</strong> - {% trans "CamelCase, our official branding" %}</li>
+                            <li><strong>Open Linguify</strong> - {% trans "Two words, common search variation" %}</li>
+                            <li><strong>OPENLINGUIFY</strong> - {% trans "All caps variation" %}</li>
+                        </ul>
+                        <p>{% trans "All these variations lead to the same platform: openlinguify.com" %}</p>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-5">
+                    <a href="{% url 'public_web:landing' %}" class="btn btn-primary btn-lg">
+                        {% trans "Discover OpenLinguify" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -11,12 +11,13 @@ class LandingView(View):
     """Page d'accueil publique"""
     def get(self, request):
         # Rediriger vers le dashboard si l'utilisateur est connecté
-        if request.user.is_authenticated:
+        if hasattr(request.user, 'is_authenticated') and request.user.is_authenticated:
             return redirect('saas_web:dashboard')
             
         context = {
-            'title': _('Open Linguify - Learn languages'),
-            'meta_description': _('Open source platform for learning languages'),
+            'title': _('OpenLinguify - Learn languages'),
+            'meta_description': _('OpenLinguify (openlinguify) - Open source platform for learning languages'),
+            'meta_keywords': _('openlinguify, open linguify, language learning platform'),
         }
         return render(request, 'public_web/landing.html', context)
 
@@ -87,6 +88,17 @@ class CookiesView(View):
             'title': _('Politique des Cookies - Open Linguify'),
         }
         return render(request, 'public_web/legal/cookies.html', context)
+
+
+class BrandView(View):
+    """Page d'information sur la marque pour le SEO"""
+    def get(self, request):
+        context = {
+            'title': _('OpenLinguify Brand - openlinguify'),
+            'meta_description': _('Learn about OpenLinguify (openlinguify), the open source educational platform.'),
+            'meta_keywords': _('openlinguify, OpenLinguify, Open Linguify, brand information'),
+        }
+        return render(request, 'public_web/brand.html', context)
 
 
 # Views pour les pages de présentation des apps

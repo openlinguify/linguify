@@ -9,7 +9,47 @@
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'src/css/careers.css' %}">
+<!-- Critical CSS inline for fastest loading -->
+<style>
+/* Hero Section */
+.careers-hero {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 5rem 0;
+}
+.careers-hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+.simple-message {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin: 2rem 0;
+}
+.simple-message h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+.simple-message p {
+    color: #64748b;
+    line-height: 1.6;
+}
+</style>
+<!-- Non-critical CSS loaded asynchronously -->
+<link rel="preload" href="{% static 'src/css/careers.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="{% static 'src/css/careers.css' %}"></noscript>
+<!-- Preload JavaScript -->
+<link rel="preload" href="{% static 'src/js/careers.js' %}" as="script">
 {% endblock %}
 
 {% block content %}
@@ -19,12 +59,12 @@
         <h1>{% trans "Rejoignez l'équipe Linguify" %}</h1>
         <p>{% trans "Construisons ensemble l'avenir de l'apprentissage des langues" %}</p>
         <div class="hero-buttons">
-            <a href="#positions" class="btn-primary">
+            <button type="button" onclick="scrollToPositions()" class="btn-primary">
                 {% trans "Voir les postes ouverts" %}
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
-            </a>
+            </button>
             <a href="mailto:careers@linguify.com" class="btn-secondary">
                 {% trans "Candidature spontanée" %}
             </a>
@@ -104,6 +144,12 @@
 
             <!-- Job positions list -->
             <div class="positions-grid" id="positions-grid">
+                {% if show_simple_message %}
+                <div class="simple-message">
+                    <h3>{% trans "Nous recrutons activement !" %}</h3>
+                    <p>{% trans "Nous développons actuellement notre équipe. Pour découvrir nos opportunités ou envoyer une candidature spontanée, contactez-nous à" %} <a href="mailto:careers@openlinguify.com">careers@openlinguify.com</a></p>
+                </div>
+                {% else %}
                 {% for position in positions %}
                 <div class="position-card" data-department="{{ position.department.id }}">
                     <div class="position-content">
@@ -163,19 +209,20 @@
                     
                     <!-- Apply Button -->
                     <div class="position-actions">
-                        <a href="#" 
+                        <button type="button"
                            data-position-id="{{ position.id }}" 
                            data-position-title="{{ position.title }}" 
-                           onclick="openApplicationModal(this); return false;"
+                           onclick="openApplicationModal(this)"
                            class="btn-primary">
                             {% trans "Postuler" %}
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                             </svg>
-                        </a>
+                        </button>
                     </div>
                 </div>
                 {% endfor %}
+                {% endif %}
             </div>
         {% else %}
             <!-- No Positions Available -->
@@ -217,44 +264,11 @@
 <div id="applicationModal" class="careers-modal hidden">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 class="text-lg font-medium text-gray-900" id="modalTitle">
-                {% trans "Postuler" %}
-            </h3>
+            <h3>{% trans "Postuler" %}</h3>
         </div>
         
         <div class="modal-body">
-            <p class="text-gray-600 mb-4">
-                {% trans "Pour postuler à cette offre, envoyez votre candidature par email à" %} :
-            </p>
-            
-            <div class="bg-gray-50 rounded-md p-4 mb-4 flex items-center justify-between">
-                <a href="mailto:careers@linguify.com" class="text-indigo-600 hover:text-indigo-800 font-medium">
-                    careers@linguify.com
-                </a>
-                <button onclick="CareersUtils.copyEmailToClipboard()" 
-                        class="text-gray-500 hover:text-gray-700 ml-2"
-                        title="{% trans 'Copier l\'email' %}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                    </svg>
-                </button>
-            </div>
-            
-            <p class="text-sm text-gray-600">
-                {% trans "N'oubliez pas d'inclure" %} :
-            </p>
-            <ul class="mt-2 text-sm text-gray-600 space-y-1">
-                <li>• {% trans "Le titre du poste dans l'objet de l'email" %}</li>
-                <li>• {% trans "Votre CV à jour" %}</li>
-                <li>• {% trans "Une lettre de motivation" %}</li>
-                <li>• {% trans "Votre portfolio ou liens vers vos travaux (si applicable)" %}</li>
-            </ul>
-        </div>
-        
-        <div class="modal-footer">
-            <button type="button" id="closeModal" class="btn-secondary w-full justify-center">
-                {% trans "Fermer" %}
-            </button>
+            <!-- Content will be loaded dynamically -->
         </div>
     </div>
 </div>

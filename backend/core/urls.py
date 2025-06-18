@@ -90,7 +90,7 @@ urlpatterns += i18n_patterns(
     path('auth/', include('apps.authentication.urls_auth')),
     
     # Careers/Jobs pages - with language prefix (public-facing)
-    path('careers/', include('core.jobs.urls_web', namespace='jobs')),
+    path('careers/', include('core.jobs.urls_web', namespace='jobs_web')),
     
     # Public website (landing, marketing) - with language prefix
     path('', include('public_web.urls')),
