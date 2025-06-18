@@ -23,9 +23,8 @@ def main():
         'apps.authentication.tests.test_models_pytest',
         # Note: excluding test_middleware as it tests obsolete Auth0 functionality
         
-        # Jobs tests
-        'core.jobs.tests.test_models',
-        'core.jobs.tests.test_api',
+        # Jobs tests - full suite
+        'core.jobs.tests',
         
         # Dynamic system tests
         'tests.test_public_web_views',
