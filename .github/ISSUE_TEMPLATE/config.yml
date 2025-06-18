@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Issues
-    url: https://github.com/lp-linguify/linguify/issues
+    url: https://github.com/openlinguify/linguify/issues
     about: Please fill your issue here
