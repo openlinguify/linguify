@@ -413,11 +413,11 @@ LANGUAGES = [
     ('nl', 'Nederlands'),
 ]
 
-# Locale paths - Each app has its own i18n folder (app-specific translations have priority)
+# Locale paths - public_web as central hub for consistent translations
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'public_web/i18n'),
-    os.path.join(BASE_DIR, 'saas_web/i18n'),
     os.path.join(BASE_DIR, 'apps/authentication/i18n'),
+    os.path.join(BASE_DIR, 'saas_web/i18n'),
     os.path.join(BASE_DIR, 'apps/course/i18n'),
     os.path.join(BASE_DIR, 'apps/revision/i18n'),
     os.path.join(BASE_DIR, 'apps/notebook/i18n'),

@@ -406,7 +406,7 @@
             <div class="header-content">
                 <div class="header-top">
                     <div class="notebook-nav">
-                        <a href="{% url 'frontend_web:dashboard' %}" class="nav-brand">
+                        <a href="{% url 'saas_web:dashboard' %}" class="nav-brand">
                             <i class="bi bi-journal-text nav-logo"></i>
                             <span>Notebook</span>
                         </a>
@@ -420,14 +420,14 @@
                                     {{ user.username }}
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{% url 'frontend_web:profile' %}">Profil</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'frontend_web:dashboard' %}">Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'saas_web:profile' %}">Profil</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'saas_web:dashboard' %}">Dashboard</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="{% url 'frontend_web:logout' %}">Déconnexion</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'auth:logout' %}">Déconnexion</a></li>
                                 </ul>
                             </div>
                         {% else %}
-                            <a href="{% url 'frontend_web:login' %}" class="btn btn-outline-custom">Connexion</a>
+                            <a href="{% url 'auth:login' %}" class="btn btn-outline-custom">Connexion</a>
                         {% endif %}
                     </div>
                 </div>

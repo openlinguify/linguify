@@ -289,3 +289,40 @@ msgstr "Open Linguify - Aprende idiomas"
 
 msgid "Open source platform for learning languages"
 msgstr "Plataforma open source para aprender idiomas"
+
+# Authentication translations
+msgid "Back to home"
+msgstr "Volver al inicio"
+
+msgid "Sign in to your account"
+msgstr "Inicia sesión en tu cuenta"
+
+msgid "Login"
+msgstr "Iniciar sesión"
+
+msgid "Email or username"
+msgstr "Email o nombre de usuario"
+
+msgid "Password"
+msgstr "Contraseña"
+
+msgid "Remember me"
+msgstr "Recordarme"
+
+msgid "Forgot password?"
+msgstr "¿Olvidaste tu contraseña?"
+
+msgid "Don't have an account?"
+msgstr "¿No tienes una cuenta?"
+
+msgid "Create an account"
+msgstr "Crear una cuenta"
+
+msgid "or"
+msgstr "o"
+
+msgid "Invalid username or password."
+msgstr "Nombre de usuario o contraseña incorrectos."
+
+msgid "Welcome, %(username)s!"
+msgstr "¡Bienvenido, %(username)s!"
