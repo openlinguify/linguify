@@ -31,7 +31,10 @@ router.register(r'test-recap', TestRecapViewSet, basename='test-recap')
 # API URLs
 api_urlpatterns = [
     path('units/', UnitAPIView.as_view(), name='unit-list'),
-    path('lesson/', LessonAPIView.as_view(), name='lesson-list'),
+    path('units/<int:pk>/', UnitAPIView.as_view(), name='unit-detail'),
+    path('lessons/', LessonAPIView.as_view(), name='lesson-list'),
+    path('lessons/<int:pk>/', LessonAPIView.as_view(), name='lesson-detail'),
+    path('lessons/<int:pk>/complete/', complete_lesson, name='lesson-complete'),
     path('content-lesson/', ContentLessonViewSet.as_view({'get': 'list'}), name='content-lesson-list'),
     path('content-lesson/<int:pk>/', ContentLessonViewSet.as_view({'get': 'retrieve'}), name='content-lesson-detail'),
     path('theory-content/', TheoryContentViewSet.as_view({'get': 'list'}), name='theory-content-list'),

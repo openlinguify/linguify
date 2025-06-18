@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page_title|default:"Notebook" }} - Linguify</title>
+    <title>{{ page_title|default:"Cours" }} - Linguify</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
     
     <!-- Meta tags -->
-    <meta name="description" content="Interface de prise de notes pour l'apprentissage des langues avec Linguify">
+    <meta name="description" content="Interface d'apprentissage des langues avec Linguify">
     <meta name="author" content="Linguify">
     
     <!-- Bootstrap CSS -->
@@ -20,10 +20,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- CSS personnalisé pour le notebook -->
-    <link rel="stylesheet" href="{% static 'css/notebook.css' %}">
-    
-    <!-- CSS spécifique au notebook -->
+    <!-- CSS spécifique aux cours -->
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
@@ -47,7 +44,7 @@
             background-color: #f8fafc;
         }
         
-        .notebook-container {
+        .course-container {
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -55,7 +52,7 @@
         }
         
         /* Header fixe */
-        .notebook-header {
+        .course-header {
             height: var(--header-height);
             background: white;
             border-bottom: 1px solid #e2e8f0;
@@ -85,7 +82,7 @@
         }
         
         /* Navigation */
-        .notebook-nav {
+        .course-nav {
             display: flex;
             align-items: center;
             gap: 1rem;
@@ -135,14 +132,14 @@
         }
         
         /* Main content */
-        .notebook-main {
+        .course-main {
             flex: 1;
             overflow: hidden;
             display: flex;
         }
         
         /* Sidebar */
-        .notebook-sidebar {
+        .course-sidebar {
             width: var(--sidebar-width);
             background: white;
             border-right: 1px solid #e2e8f0;
@@ -164,14 +161,14 @@
             padding: 0;
         }
         
-        /* Note list */
-        .note-list {
+        /* Unit/Lesson list */
+        .unit-list {
             list-style: none;
             padding: 0;
             margin: 0;
         }
         
-        .note-item {
+        .unit-item {
             padding: 1rem;
             border-bottom: 1px solid #f1f5f9;
             cursor: pointer;
@@ -179,23 +176,23 @@
             background: white;
         }
         
-        .note-item:hover {
+        .unit-item:hover {
             background: #f8fafc;
         }
         
-        .note-item.active {
+        .unit-item.active {
             background: #f0f7ff;
             border-left: 3px solid var(--primary-color);
         }
         
-        .note-title {
+        .unit-title {
             font-weight: 600;
             color: #1e293b;
             margin-bottom: 0.25rem;
             font-size: 0.875rem;
         }
         
-        .note-preview {
+        .unit-description {
             color: #64748b;
             font-size: 0.75rem;
             line-height: 1.4;
@@ -205,7 +202,7 @@
             overflow: hidden;
         }
         
-        .note-meta {
+        .unit-meta {
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -214,17 +211,22 @@
             color: #94a3b8;
         }
         
-        .note-language {
+        .unit-progress {
             background: #e2e8f0;
-            color: #64748b;
-            padding: 0.125rem 0.375rem;
-            border-radius: 0.25rem;
-            font-size: 0.625rem;
-            font-weight: 500;
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
         }
         
-        /* Editor area */
-        .notebook-editor {
+        .unit-progress-bar {
+            background: var(--primary-gradient);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        /* Content area */
+        .course-content {
             flex: 1;
             background: white;
             display: flex;
@@ -232,17 +234,16 @@
             overflow: hidden;
         }
         
-        .editor-header {
+        .content-header {
             padding: 1rem 1.5rem;
             border-bottom: 1px solid #e2e8f0;
             background: #fafbfc;
         }
         
-        .editor-content {
+        .content-body {
             flex: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            overflow-y: auto;
+            padding: 2rem;
         }
         
         /* Empty state */
@@ -275,26 +276,50 @@
             margin-bottom: 1.5rem;
         }
         
-        /* Search filters */
-        .search-filters {
-            background: #f8fafc;
-            padding: 0.75rem;
-            border-bottom: 1px solid #e2e8f0;
+        /* Stats cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
         
-        .search-input {
+        .stat-card {
+            background: white;
             border: 1px solid #e2e8f0;
             border-radius: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            width: 100%;
-            font-size: 0.875rem;
+            padding: 1.5rem;
             transition: all 0.2s ease;
         }
         
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        .stat-card:hover {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-gradient);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-size: 0.875rem;
         }
         
         /* Loading states */
@@ -319,7 +344,7 @@
                 --header-height: 100px;
             }
             
-            .notebook-sidebar {
+            .course-sidebar {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -328,11 +353,11 @@
                 transform: translateX(-100%);
             }
             
-            .notebook-sidebar.show {
+            .course-sidebar.show {
                 transform: translateX(0);
             }
             
-            .notebook-editor {
+            .course-content {
                 width: 100%;
             }
             
@@ -398,20 +423,61 @@
             margin-bottom: 0.5rem;
             display: block;
         }
+        
+        /* Exercise styles */
+        .exercise-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .exercise-card:hover {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .exercise-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .exercise-content {
+            color: #475569;
+            line-height: 1.6;
+        }
+        
+        /* Progress bar */
+        .progress-container {
+            background: #e2e8f0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .progress-bar {
+            background: var(--primary-gradient);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
     </style>
     
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <div class="notebook-container">
+    <div class="course-container">
         <!-- Header -->
-        <div class="notebook-header">
+        <div class="course-header">
             <div class="header-content">
                 <div class="header-top">
-                    <div class="notebook-nav">
+                    <div class="course-nav">
                         <a href="{% url 'saas_web:dashboard' %}" class="nav-brand">
-                            <i class="bi bi-journal-text nav-logo"></i>
-                            <span>Notebook</span>
+                            <i class="bi bi-book nav-logo"></i>
+                            <span>Cours</span>
                         </a>
                     </div>
                     
@@ -440,7 +506,7 @@
         </div>
         
         <!-- Main Content -->
-        <div class="notebook-main">
+        <div class="course-main">
             {% block content %}{% endblock %}
         </div>
     </div>
@@ -452,7 +518,6 @@
     <script>
         window.DEBUG = {{ debug|yesno:"true,false" }};
         window.API_BASE_URL = "{{ request.scheme }}://{{ request.get_host }}";
-        window.csrfToken = "{{ csrf_token }}";
         window.USER_DATA = {
             id: {{ request.user.id|default:"null" }},
             username: "{{ request.user.username|default:'' }}",
@@ -497,27 +562,16 @@
         // Service API simplifié
         window.apiService = {
             async request(url, options = {}) {
-                const csrfToken = this.getCSRFToken();
-                console.log('CSRF Token:', csrfToken); // Debug
-                
                 const defaultOptions = {
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken,
+                        'X-CSRFToken': this.getCSRFToken(),
                     },
                 };
                 
-                const mergedOptions = { ...defaultOptions, ...options };
-                if (options.headers) {
-                    mergedOptions.headers = { ...defaultOptions.headers, ...options.headers };
-                }
-                
-                console.log('Request:', url, mergedOptions); // Debug
-                
-                const response = await fetch(url, mergedOptions);
+                const response = await fetch(url, { ...defaultOptions, ...options });
                 
                 if (!response.ok) {
-                    console.error('API Error:', response.status, response.statusText); // Debug
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
@@ -525,15 +579,11 @@
             },
             
             getCSRFToken() {
-                const token = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                            document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || 
-                            window.csrfToken || '';
-                console.log('Getting CSRF token:', token); // Debug
-                return token;
+                return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
             }
         };
         
-        console.log('Configuration notebook:', {
+        console.log('Configuration cours:', {
             debug: window.DEBUG,
             apiBaseUrl: window.API_BASE_URL,
             user: window.USER_DATA

@@ -55,7 +55,7 @@ urlpatterns = [
     path('api/contact/', views.contact_view, name='contact'),
     path('api/v1/notifications/', include('apps.notification.urls', namespace='notification')),
     path('api/v1/language_ai/', include('apps.language_ai.urls', namespace='language_ai')),
-    path('api/v1/jobs/', include('apps.jobs.urls', namespace='jobs')),
+    path('api/v1/jobs/', include('core.jobs.urls', namespace='jobs')),
     path('api/v1/app-manager/', include('app_manager.urls', namespace='app_manager')),
     # path('api/v1/flashcard/', include('flashcard.urls', namespace='flashcard')),
     # path('api/v1/task/', include('task.urls', namespace='task')),
@@ -88,6 +88,9 @@ urlpatterns = [
 urlpatterns += i18n_patterns(
     # Authentication (login/register pages) - with language prefix
     path('auth/', include('apps.authentication.urls_auth')),
+    
+    # Careers/Jobs pages - with language prefix (public-facing)
+    path('careers/', include('core.jobs.urls_web', namespace='jobs')),
     
     # Public website (landing, marketing) - with language prefix
     path('', include('public_web.urls')),

@@ -16,7 +16,7 @@ def main():
     # Run Django tests with basic apps that are known to work
     test_apps = [
         'apps.authentication',
-        'apps.jobs', 
+        'core.jobs', 
         'apps.notebook',
         'tests',  # Dynamic system tests
     ]

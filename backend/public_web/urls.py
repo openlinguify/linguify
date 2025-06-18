@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 app_name = 'public_web'
@@ -8,7 +8,6 @@ urlpatterns = [
     path('', views.LandingView.as_view(), name='landing'),
     path('features/', views.FeaturesView.as_view(), name='features'),
     path('about/', views.AboutView.as_view(), name='about'),
-    path('careers/', views.CareersView.as_view(), name='careers'),
     path('blog/', views.BlogView.as_view(), name='blog'),
     path('contact/', views.ContactView.as_view(), name='contact'),
     

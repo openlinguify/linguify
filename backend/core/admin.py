@@ -14,6 +14,7 @@ import subprocess
 import io
 import sys
 from .models import SitemapLog, SitemapGenerationReport, SEOPageMetrics, SearchEngineStatus, SystemManagement
+from .jobs.admin import *  # Import jobs admin configurations
 
 
 @admin.register(SitemapLog)

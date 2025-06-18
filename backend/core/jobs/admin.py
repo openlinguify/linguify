@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Department, JobPosition, JobApplication
+from core.jobs.models import Department, JobPosition, JobApplication
 
 
 @admin.register(Department)
@@ -15,7 +15,7 @@ class DepartmentAdmin(admin.ModelAdmin):
     def position_count(self, obj):
         count = obj.positions.filter(is_active=True).count()
         if count > 0:
-            url = reverse('admin:jobs_jobposition_changelist') + f'?department__id__exact={obj.id}'
+            url = reverse('admin:core_jobposition_changelist') + f'?department__id__exact={obj.id}'
             return format_html('<a href="{}">{} active positions</a>', url, count)
         return '0 positions'
     position_count.short_description = 'Active Positions'
@@ -109,7 +109,7 @@ class JobPositionAdmin(admin.ModelAdmin):
     def application_count(self, obj):
         count = obj.applications.count()
         if count > 0:
-            url = reverse('admin:jobs_jobapplication_changelist') + f'?position__id__exact={obj.id}'
+            url = reverse('admin:core_jobapplication_changelist') + f'?position__id__exact={obj.id}'
             return format_html('<a href="{}">{} applications</a>', url, count)
         return '0 applications'
     application_count.short_description = 'Applications'

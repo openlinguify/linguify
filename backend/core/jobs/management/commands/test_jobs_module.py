@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from apps.jobs.models import Department, JobPosition
+from core.jobs.models import Department, JobPosition
 
 
 class Command(BaseCommand):
