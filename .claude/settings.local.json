@@ -70,7 +70,9 @@
       "Bash(./venv/Scripts/python.exe manage.py test core.jobs.tests.test_status_notifications -v 2 --settings=core.settings_test)",
       "Bash(./venv/Scripts/python.exe manage.py test core.jobs.tests.test_status_notifications.StatusNotificationTests.test_rejected_email_no_status_badge -v 2 --settings=core.settings_test)",
       "Bash(./venv/Scripts/python.exe manage.py test core.jobs.tests.test_status_notifications -v 1 --settings=core.settings_test)",
-      "Bash(./venv/Scripts/python.exe manage.py test core.jobs.tests -v 2 --settings=core.settings_test)"
+      "Bash(./venv/Scripts/python.exe manage.py test core.jobs.tests -v 2 --settings=core.settings_test)",
+      "Bash(poetry search:*)",
+      "Bash(poetry update:*)"
     ],
     "deny": []
   }

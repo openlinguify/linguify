@@ -103,7 +103,7 @@ INSTALLED_APPS = [
     # Web interfaces
     'public_web',
     'saas_web',
-    
+    # 'admin_tools',  # Admin tools for managing the platform
     # Django REST framework modules
     'rest_framework',
     'rest_framework.authtoken',
