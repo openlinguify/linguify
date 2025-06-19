@@ -50,6 +50,8 @@ FRONTEND_URL = env.str('FRONTEND_URL', default=BASE_URL)
 SUPABASE_URL = env.str('SUPABASE_URL', default='')
 SUPABASE_ANON_KEY = env.str('SUPABASE_ANON_KEY', default='')
 SUPABASE_SERVICE_ROLE_KEY = env.str('SUPABASE_SERVICE_ROLE_KEY', default='')
+SUPABASE_PROJECT_ID = env.str('SUPABASE_PROJECT_ID', default='')
+SUPABASE_JWT_SECRET = env.str('SUPABASE_JWT_SECRET', default='')
 
 # normally Allowed hosts should be set to the domain name of the website
 # but for development purposes we can set it to all
@@ -103,7 +105,7 @@ INSTALLED_APPS = [
     # Web interfaces
     'public_web',
     'saas_web',
-    
+    # 'admin_tools',  # Admin tools for managing the platform
     # Django REST framework modules
     'rest_framework',
     'rest_framework.authtoken',
@@ -184,12 +186,6 @@ if DEBUG:
     SESSION_COOKIE_HTTPONLY = True
 
 
-# Supabase Configuration
-SUPABASE_URL = env('SUPABASE_URL')
-SUPABASE_ANON_KEY = env('SUPABASE_ANON_KEY')
-SUPABASE_SERVICE_ROLE_KEY = env('SUPABASE_SERVICE_ROLE_KEY')
-SUPABASE_PROJECT_ID = env('SUPABASE_PROJECT_ID')
-SUPABASE_JWT_SECRET = env('SUPABASE_JWT_SECRET')
 
 # TEMPORARY: Enable auth bypass for development debugging
 # REMOVE THIS IN PRODUCTION!

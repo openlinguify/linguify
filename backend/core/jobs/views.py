@@ -1,7 +1,8 @@
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from django.http import HttpResponseRedirect, Http404
 from django.db.models import Q
 from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
@@ -98,15 +99,16 @@ class JobApplicationCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         application = serializer.save()
         
+        # Resume file upload is now handled in serializer.create()
+        
         # Send notification email to HR
         try:
             print(f"[DEBUG] Starting email process for application ID {application.id}")
             print(f"[DEBUG] Sending to linguify.info@gmail.com")
-            print(f"[DEBUG] Resume file exists: {bool(application.resume_file)}")
-            if application.resume_file:
-                print(f"[DEBUG] Resume file path: {application.resume_file.path}")
-                print(f"[DEBUG] Resume file name: {application.resume_file.name}")
-                print(f"[DEBUG] Resume file size: {application.resume_file.size} bytes")
+            print(f"[DEBUG] Resume file exists: {application.has_resume()}")
+            if application.has_resume():
+                print(f"[DEBUG] Resume file path: {application.resume_file_path}")
+                print(f"[DEBUG] Resume original filename: {application.resume_original_filename}")
             subject = f"🚀 Nouvelle candidature: {application.position.title} - {application.first_name} {application.last_name}"
             
             # Create HTML message
@@ -158,7 +160,7 @@ class JobApplicationCreateView(generics.CreateAPIView):
                     <div class="info-section">
                         <h3>📅 Détails de la candidature</h3>
                         <p><span class="info-label">Date de candidature:</span> {application.applied_at.strftime('%d/%m/%Y à %H:%M')}</p>
-                        <p><span class="info-label">CV fourni:</span> {'✅ Oui (en pièce jointe)' if application.resume_file else '❌ Non'}</p>
+                        <p><span class="info-label">CV fourni:</span> {'✅ Oui (stocké de manière sécurisée)' if application.has_resume() else '❌ Non'}</p>
                     </div>
                 </div>
                 
@@ -191,7 +193,7 @@ LinkedIn: {application.linkedin_url or 'Non fourni'}
 
 📅 DÉTAILS
 Date de candidature: {application.applied_at.strftime('%d/%m/%Y à %H:%M')}
-CV fourni: {'Oui (en pièce jointe)' if application.resume_file else 'Non'}
+CV fourni: {'Oui (stocké de manière sécurisée)' if application.has_resume() else 'Non'}
 
 Admin: http://localhost:8000/admin/jobs/jobapplication/{application.id}/change/
             """
@@ -209,13 +211,8 @@ Admin: http://localhost:8000/admin/jobs/jobapplication/{application.id}/change/
             email.content_subtype = 'html'
             email.body = html_message
             
-            # Attach resume file if provided
-            if application.resume_file:
-                try:
-                    email.attach_file(application.resume_file.path)
-                except Exception as attach_error:
-                    print(f"Failed to attach resume file: {attach_error}")
-                    # Continue without attachment
+            # Note: CVs are now stored securely in Supabase and won't be attached to emails
+            # HR team can access them through the admin interface with secure download URLs
             
             # Send email
             print(f"[DEBUG] About to send email...")
@@ -357,3 +354,31 @@ def job_stats(request):
         'departments': departments,
         'featured_positions': featured_positions,
     })
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def download_resume(request, application_id):
+    """
+    Generate a secure download URL for a resume file
+    Only accessible by authenticated admin users
+    """
+    try:
+        application = JobApplication.objects.get(id=application_id)
+    except JobApplication.DoesNotExist:
+        raise Http404("Application not found")
+    
+    if not application.has_resume():
+        raise Http404("No resume file found for this application")
+    
+    # Generate secure download URL
+    download_url = application.get_resume_download_url(expires_in=300)  # 5 minutes
+    
+    if not download_url:
+        return Response(
+            {'error': 'Failed to generate download URL'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
+    # Return redirect to the signed URL
+    return HttpResponseRedirect(download_url)

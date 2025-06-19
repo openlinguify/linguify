@@ -244,8 +244,8 @@ class JobAPITestCase(APITestCase):
         
         # Verify file was saved
         application = JobApplication.objects.get(id=response.data['application_id'])
-        self.assertTrue(application.resume_file)
-        self.assertIn('test_resume', application.resume_file.name)
+        self.assertTrue(application.has_resume())
+        self.assertIn('test_resume', application.resume_original_filename)
     
     def test_get_job_stats(self):
         """Test getting job statistics"""

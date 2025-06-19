@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# Part of Open Linguify. See LICENSE file for full copyright and licensing details.
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import NoteViewSet, NoteCategoryViewSet, TagViewSet, SharedNoteViewSet

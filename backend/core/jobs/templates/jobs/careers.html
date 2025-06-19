@@ -65,9 +65,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
             </button>
-            <a href="mailto:careers@linguify.com" class="btn-secondary">
+            <button type="button" onclick="openSpontaneousApplicationModal()" class="btn-secondary">
                 {% trans "Candidature spontanée" %}
-            </a>
+            </button>
         </div>
     </div>
 </section>
@@ -232,9 +232,9 @@
                 </svg>
                 <h3>{% trans "Aucun poste disponible pour le moment" %}</h3>
                 <p>{% trans "Revenez bientôt pour découvrir de nouvelles opportunités !" %}</p>
-                <a href="mailto:careers@linguify.com" class="btn-primary">
+                <button type="button" onclick="openSpontaneousApplicationModal()" class="btn-primary">
                     {% trans "Envoyer une candidature spontanée" %}
-                </a>
+                </button>
             </div>
         {% endif %}
     </div>
@@ -250,12 +250,12 @@
             <p class="text-lg text-gray-600 mb-8">
                 {% trans "Même si aucun poste ne correspond exactement à votre profil, n'hésitez pas à nous envoyer votre candidature spontanée." %}
             </p>
-            <a href="mailto:careers@linguify.com" class="btn-primary">
+            <button type="button" onclick="openSpontaneousApplicationModal()" class="btn-primary">
                 {% trans "Envoyer ma candidature" %}
                 <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                 </svg>
-            </a>
+            </button>
         </div>
     </div>
 </section>

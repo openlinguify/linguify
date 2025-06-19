@@ -75,6 +75,9 @@ jobs:
       - name: Setup test environment
         run: |
           cp .env.example .env.test
+          # Convert to Unix line endings
+          sed -i 's/\r$//' .env.test
+          # Update configuration
           sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env.test
           sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env.test
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env.test
@@ -123,11 +126,14 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop' && success()
+    permissions:
+      contents: write
+      pull-requests: write
     
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
       
       - name: Configure Git
@@ -200,6 +206,9 @@ jobs:
       - name: Setup test environment
         run: |
           cp .env.example .env.test
+          # Convert to Unix line endings
+          sed -i 's/\r$//' .env.test
+          # Update configuration
           sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env.test
           sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env.test
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env.test
@@ -243,7 +252,7 @@ jobs:
     
     steps:
       - name: Deploy to Render Staging
-        uses: johnbeynon/render-deploy-action@v0.0.8
+        uses: johnbeynon/render-deploy-action@v0.0.9
         with:
           service-id: ${{ secrets.RENDER_STAGING_SERVICE_ID }}
           api-key: rnd_sTW1YJFvnzWxHWfGWdMBKtmwiZfi
@@ -257,11 +266,14 @@ jobs:
     needs: deploy-staging
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/staging' && success()
+    permissions:
+      contents: write
+      pull-requests: write
     
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
       
       - name: Configure Git
@@ -284,7 +296,7 @@ jobs:
     
     steps:
       - name: Deploy to Render Production
-        uses: johnbeynon/render-deploy-action@v0.0.8
+        uses: johnbeynon/render-deploy-action@v0.0.9
         with:
           service-id: srv-d149ag49c44c73d2f27g
           api-key: rnd_LYvNUTDvyHgmiPbryBLPTUl7qyHI
@@ -298,6 +310,8 @@ jobs:
     needs: [test, test-staging, deploy-staging, deploy-production]
     if: failure()
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     
     steps:
       - name: Create issue on failure

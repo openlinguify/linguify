@@ -71,7 +71,8 @@ def send_hr_status_notification(application, old_status):
         }
         
         emoji = status_emojis.get(application.status, '📋')
-        subject = f"{emoji} Status Update: {application.position.title} - {application.full_name}"
+        position_title = application.position.title if application.position else "Candidature spontanée"
+        subject = f"{emoji} Status Update: {position_title} - {application.full_name}"
         
         context = {
             'application': application,
@@ -106,18 +107,20 @@ def send_hr_status_notification(application, old_status):
 def send_candidate_status_notification(application, old_status):
     """Send notification to candidate about their application status change"""
     try:
+        position_title = application.position.title if application.position else "candidature spontanée"
+        
         status_subjects = {
-            'reviewed': f"📋 Your application is under review - {application.position.title}",
-            'interview': f"🎯 Interview invitation - {application.position.title} at Linguify",
-            'offer': f"🎉 Job offer - {application.position.title} at Linguify",
-            'hired': f"✅ Welcome to Linguify! - {application.position.title}",
-            'rejected': f"Application update - {application.position.title} at Linguify",
-            'withdrawn': f"Application withdrawn - {application.position.title}"
+            'reviewed': f"📋 Your application is under review - {position_title}",
+            'interview': f"🎯 Interview invitation - {position_title} at Linguify",
+            'offer': f"🎉 Job offer - {position_title} at Linguify",
+            'hired': f"✅ Welcome to Linguify! - {position_title}",
+            'rejected': f"Application update - {position_title} at Linguify",
+            'withdrawn': f"Application withdrawn - {position_title}"
         }
         
         subject = status_subjects.get(
             application.status, 
-            f"Application update - {application.position.title} at Linguify"
+            f"Application update - {position_title} at Linguify"
         )
         
         context = {

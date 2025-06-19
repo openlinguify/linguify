@@ -96,6 +96,13 @@ backend/media/*
 backend/static/admin/
 backend/static/rest_framework/
 
+# === SENSITIVE FILES - CVs and resumes should NOT be in git ===
+backend/media/resumes/
+**/resumes/
+*.pdf
+*.doc
+*.docx
+
 # === BUILD DIRECTORIES ===
 build/
 dist/
