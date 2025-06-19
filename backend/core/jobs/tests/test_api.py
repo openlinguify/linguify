@@ -234,7 +234,8 @@ class JobAPITestCase(APITestCase):
             'last_name': 'Doe',
             'email': 'john.doe@example.com',
             'phone': '0123456789',
-            'cover_letter': 'I am interested'
+            'cover_letter': 'I am interested',
+            'resume_file': resume_file
         }
         
         response = self.client.post(url, data, format='multipart')
@@ -243,8 +244,8 @@ class JobAPITestCase(APITestCase):
         
         # Verify file was saved
         application = JobApplication.objects.get(id=response.data['application_id'])
-        self.assertTrue(application.resume_file)
-        self.assertIn('test_resume', application.resume_file.name)
+        self.assertTrue(application.has_resume())
+        self.assertIn('test_resume', application.resume_original_filename)
     
     def test_get_job_stats(self):
         """Test getting job statistics"""
