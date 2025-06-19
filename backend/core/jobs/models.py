@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from .storage import jobs_supabase_storage
+from .storage import get_jobs_supabase_storage
 import logging
 
 logger = logging.getLogger(__name__)
@@ -161,7 +161,12 @@ class JobApplication(models.Model):
             if not original_filename:
                 original_filename = getattr(file, 'name', 'resume.pdf')
             
-            result = jobs_supabase_storage.upload_resume(
+            storage = get_jobs_supabase_storage()
+            if not storage:
+                logger.warning("Supabase storage not available for resume upload")
+                return False
+                
+            result = storage.upload_resume(
                 str(self.id),
                 file,
                 original_filename
@@ -195,7 +200,11 @@ class JobApplication(models.Model):
         if not self.resume_file_path:
             return None
             
-        return jobs_supabase_storage.get_resume_download_url(
+        storage = get_jobs_supabase_storage()
+        if not storage:
+            return None
+            
+        return storage.get_resume_download_url(
             self.resume_file_path,
             expires_in
         )
@@ -208,7 +217,12 @@ class JobApplication(models.Model):
         """Supprime le CV de Supabase Storage"""
         if self.resume_file_path:
             try:
-                success = jobs_supabase_storage.delete_resume(self.resume_file_path)
+                storage = get_jobs_supabase_storage()
+                if not storage:
+                    logger.warning("Supabase storage not available for resume deletion")
+                    return False
+                    
+                success = storage.delete_resume(self.resume_file_path)
                 if success:
                     self.resume_file_path = None
                     self.resume_original_filename = None
@@ -225,5 +239,7 @@ class JobApplication(models.Model):
         """Override delete pour supprimer les fichiers associés"""
         # Supprimer les fichiers avant de supprimer l'enregistrement
         if self.resume_file_path:
-            jobs_supabase_storage.delete_application_files(str(self.id))
+            storage = get_jobs_supabase_storage()
+            if storage:
+                storage.delete_application_files(str(self.id))
         super().delete(*args, **kwargs)

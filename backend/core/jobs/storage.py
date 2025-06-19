@@ -223,5 +223,17 @@ class JobsSupabaseStorageService:
             return False
 
 
-# Instance globale du service
-jobs_supabase_storage = JobsSupabaseStorageService()
+# Instance globale du service (initialisation différée)
+jobs_supabase_storage = None
+
+def get_jobs_supabase_storage():
+    """Obtient l'instance du service Supabase avec initialisation différée"""
+    global jobs_supabase_storage
+    if jobs_supabase_storage is None:
+        try:
+            jobs_supabase_storage = JobsSupabaseStorageService()
+        except Exception as e:
+            logger.warning(f"Supabase storage not available: {str(e)}")
+            # En mode test/dev sans Supabase, retourner un mock
+            return None
+    return jobs_supabase_storage
