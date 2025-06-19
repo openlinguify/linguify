@@ -50,6 +50,8 @@ FRONTEND_URL = env.str('FRONTEND_URL', default=BASE_URL)
 SUPABASE_URL = env.str('SUPABASE_URL', default='')
 SUPABASE_ANON_KEY = env.str('SUPABASE_ANON_KEY', default='')
 SUPABASE_SERVICE_ROLE_KEY = env.str('SUPABASE_SERVICE_ROLE_KEY', default='')
+SUPABASE_PROJECT_ID = env.str('SUPABASE_PROJECT_ID', default='')
+SUPABASE_JWT_SECRET = env.str('SUPABASE_JWT_SECRET', default='')
 
 # normally Allowed hosts should be set to the domain name of the website
 # but for development purposes we can set it to all
@@ -184,9 +186,6 @@ if DEBUG:
     SESSION_COOKIE_HTTPONLY = True
 
 
-# Supabase Configuration (additional fields)
-SUPABASE_PROJECT_ID = env.str('SUPABASE_PROJECT_ID', default='')
-SUPABASE_JWT_SECRET = env.str('SUPABASE_JWT_SECRET', default='')
 
 # TEMPORARY: Enable auth bypass for development debugging
 # REMOVE THIS IN PRODUCTION!

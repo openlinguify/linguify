@@ -169,8 +169,7 @@ startxref
             last_name="Doe",
             email="john.doe@example.com",
             phone="0123456789",
-            cover_letter="I am interested in this position",
-            resume_file=test_resume
+            cover_letter="I am interested in this position"
         )
         
         # Create email with attachment

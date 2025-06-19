@@ -234,8 +234,7 @@ class JobAPITestCase(APITestCase):
             'last_name': 'Doe',
             'email': 'john.doe@example.com',
             'phone': '0123456789',
-            'cover_letter': 'I am interested',
-            'resume_file': resume_file
+            'cover_letter': 'I am interested'
         }
         
         response = self.client.post(url, data, format='multipart')
