@@ -224,8 +224,8 @@ class JobApplicationModelTests(TestCase):
         
         self.assertEqual(application.full_name, "Jean-Claude Van Damme")
     
-    def test_unique_constraint_position_email(self):
-        """Test the unique constraint on position + email"""
+    def test_multiple_applications_allowed(self):
+        """Test that multiple applications are allowed (unique constraint removed)"""
         # First application
         JobApplication.objects.create(
             position=self.position,
@@ -234,14 +234,17 @@ class JobApplicationModelTests(TestCase):
             email="john.doe@example.com"
         )
         
-        # Attempt to create duplicate application
-        with self.assertRaises(IntegrityError):
-            JobApplication.objects.create(
-                position=self.position,
-                first_name="Jane",
-                last_name="Smith",
-                email="john.doe@example.com"  # Same email
-            )
+        # Second application with same email should be allowed (for spontaneous applications)
+        second_application = JobApplication.objects.create(
+            position=self.position,
+            first_name="Jane",
+            last_name="Smith",
+            email="john.doe@example.com"  # Same email
+        )
+        
+        # Verify both applications exist
+        self.assertEqual(JobApplication.objects.filter(email="john.doe@example.com").count(), 2)
+        self.assertIsNotNone(second_application.id)
     
     def test_application_ordering(self):
         """Test that applications are ordered by applied_at descending"""

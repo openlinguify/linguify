@@ -305,7 +305,7 @@ class JobApplicationAdminTests(TestCase):
         url = reverse('admin:jobs_jobapplication_change', args=[self.application.id])
         response = self.client.get(url)
         
-        self.assertContains(response, "Resume file")
+        self.assertContains(response, "Resume File")
         self.assertContains(response, "Resume url")
     
     def test_application_status_badge(self):

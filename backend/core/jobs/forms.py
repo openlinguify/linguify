@@ -4,11 +4,17 @@ from .models import JobApplication, JobPosition
 
 
 class JobApplicationForm(forms.ModelForm):
+    # Custom field for resume file upload
+    resume_file = forms.FileField(
+        required=False,
+        help_text='Téléchargez votre CV (formats acceptés: PDF, DOC, DOCX, max 5MB)'
+    )
+    
     class Meta:
         model = JobApplication
         fields = [
             'first_name', 'last_name', 'email', 'phone',
-            'cover_letter', 'resume_file', 'resume_url',
+            'cover_letter', 'resume_url',
             'portfolio_url', 'linkedin_url'
         ]
         widgets = {
@@ -113,9 +119,31 @@ class JobApplicationForm(forms.ModelForm):
 
     def save(self, commit=True):
         application = super().save(commit=False)
-        if self.position:
+        
+        # Only set position if it's a real JobPosition (not virtual for spontaneous applications)
+        if self.position and hasattr(self.position, 'id') and self.position.id != 0:
             application.position = self.position
+        else:
+            application.position = None  # Spontaneous application
+            
         application.status = 'submitted'
+        
         if commit:
             application.save()
+            
+            # Handle resume file upload to Supabase after saving (need ID)
+            resume_file = self.cleaned_data.get('resume_file')
+            if resume_file:
+                try:
+                    success = application.upload_resume(resume_file, resume_file.name)
+                    if not success:
+                        # Log error but don't fail the application submission
+                        import logging
+                        logger = logging.getLogger(__name__)
+                        logger.error(f"Failed to upload resume for application {application.id}")
+                except Exception as e:
+                    import logging
+                    logger = logging.getLogger(__name__)
+                    logger.error(f"Error uploading resume for application {application.id}: {str(e)}")
+                    
         return application

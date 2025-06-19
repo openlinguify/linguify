@@ -36,7 +36,8 @@ def send_application_confirmation_email(application):
         text_content = text_template.render(context)
         
         # Send email
-        subject = f'Application Confirmation - {application.position.title} at Open Linguify'
+        position_title = application.position.title if application.position else "Candidature spontanée"
+        subject = f'Application Confirmation - {position_title} at Open Linguify'
         from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'careers@openlinguify.com')
         recipient_list = [application.email]
         
@@ -125,6 +126,110 @@ class CareersPositionDetailView(View):
                 'position_id': position_id,
             }
             return render(request, 'jobs/careers_position_not_found.html', context)
+
+
+@method_decorator(ensure_csrf_cookie, name='dispatch')
+class SpontaneousApplicationView(View):
+    """Vue pour gérer les candidatures spontanées"""
+    
+    def get(self, request):
+        """Afficher le formulaire de candidature spontanée"""
+        try:
+            # Créer un "poste" virtuel pour les candidatures spontanées
+            virtual_position = type('obj', (object,), {
+                'id': 0,
+                'title': _('Candidature spontanée'),
+                'department': type('obj', (object,), {'name': _('Général')})(),
+                'location': _('À déterminer'),
+                'is_active': True
+            })()
+            
+            form = JobApplicationForm(position=virtual_position)
+            
+            context = {
+                'form': form,
+                'position': virtual_position,
+                'is_spontaneous': True,
+                'csrf_token': request.META.get('CSRF_COOKIE', ''),
+            }
+            
+            html_content = render_to_string('jobs/application_form.html', context, request=request)
+            
+            return JsonResponse({
+                'success': True,
+                'html': html_content,
+                'position_title': virtual_position.title,
+                'is_spontaneous': True
+            })
+            
+        except Exception as e:
+            logger.error(f'Error in SpontaneousApplicationView.get: {e}', exc_info=True)
+            return JsonResponse({
+                'success': False,
+                'error': _('Une erreur inattendue s\'est produite.'),
+                'code': 'UNEXPECTED_ERROR'
+            }, status=500)
+    
+    def post(self, request):
+        """Traiter une candidature spontanée"""
+        try:
+            # Créer le même "poste" virtuel
+            virtual_position = type('obj', (object,), {
+                'id': 0,
+                'title': _('Candidature spontanée'),
+                'department': type('obj', (object,), {'name': _('Général')})(),
+                'location': _('À déterminer'),
+                'is_active': True
+            })()
+            
+            form = JobApplicationForm(request.POST, request.FILES, position=virtual_position)
+            
+            if form.is_valid():
+                try:
+                    # Le formulaire gère automatiquement la logique spontanée
+                    application = form.save()
+                    
+                    # Envoyer email de confirmation
+                    email_sent = send_application_confirmation_email(application)
+                    
+                    if email_sent:
+                        message = _('Votre candidature spontanée a été envoyée avec succès! Un email de confirmation a été envoyé à votre adresse.')
+                    else:
+                        message = _('Votre candidature spontanée a été envoyée avec succès! Nous vous contacterons bientôt.')
+                    
+                    return JsonResponse({
+                        'success': True,
+                        'message': message,
+                        'application_id': application.id,
+                        'email_sent': email_sent,
+                        'is_spontaneous': True
+                    })
+                    
+                except Exception as e:
+                    logger.error(f'Error saving spontaneous application: {e}')
+                    return JsonResponse({
+                        'success': False,
+                        'error': _('Une erreur s\'est produite lors de l\'envoi de votre candidature. Veuillez réessayer.')
+                    })
+            else:
+                # Erreurs de validation du formulaire
+                errors = {}
+                for field, field_errors in form.errors.items():
+                    errors[field] = field_errors[0] if field_errors else ''
+                
+                return JsonResponse({
+                    'success': False,
+                    'errors': errors,
+                    'message': _('Veuillez corriger les erreurs dans le formulaire.')
+                })
+                
+        except Exception as e:
+            logger.error(f'Error in SpontaneousApplicationView.post: {e}', exc_info=True)
+            return JsonResponse({
+                'success': False,
+                'error': _('Une erreur inattendue s\'est produite.'),
+                'code': 'UNEXPECTED_ERROR'
+            }, status=500)
 
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
