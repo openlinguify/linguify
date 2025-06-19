@@ -51,6 +51,10 @@ class JobApplicationCreateSerializer(serializers.ModelSerializer):
     # Custom field for resume file upload
     resume_file = serializers.FileField(required=False, write_only=True)
     
+    def __init__(self, *args, **kwargs):
+        print("[DEBUG] JobApplicationCreateSerializer initialized")
+        super().__init__(*args, **kwargs)
+    
     class Meta:
         model = JobApplication
         fields = [
@@ -68,6 +72,30 @@ class JobApplicationCreateSerializer(serializers.ModelSerializer):
                 "You have already applied for this position."
             )
         return value
+    
+    def create(self, validated_data):
+        """Create JobApplication instance, handling resume_file separately"""
+        print(f"[DEBUG] JobApplicationCreateSerializer.create() called with: {list(validated_data.keys())}")
+        
+        # Remove resume_file from validated_data since it's not a model field
+        resume_file = validated_data.pop('resume_file', None)
+        print(f"[DEBUG] Extracted resume_file: {resume_file is not None}")
+        print(f"[DEBUG] Remaining validated_data keys: {list(validated_data.keys())}")
+        
+        # Create the application instance
+        application = JobApplication.objects.create(**validated_data)
+        print(f"[DEBUG] Created application with ID: {application.id}")
+        
+        # Handle resume file upload if provided
+        if resume_file:
+            try:
+                success = application.upload_resume(resume_file, resume_file.name)
+                if not success:
+                    print(f"[WARNING] Failed to upload resume for application {application.id}")
+            except Exception as e:
+                print(f"[ERROR] Error uploading resume for application {application.id}: {str(e)}")
+        
+        return application
 
 
 class JobApplicationSerializer(serializers.ModelSerializer):

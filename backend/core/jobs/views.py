@@ -99,15 +99,7 @@ class JobApplicationCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         application = serializer.save()
         
-        # Handle resume file upload to Supabase if provided
-        resume_file = self.request.FILES.get('resume_file')
-        if resume_file:
-            try:
-                success = application.upload_resume(resume_file, resume_file.name)
-                if not success:
-                    print(f"[WARNING] Failed to upload resume for application {application.id}")
-            except Exception as e:
-                print(f"[ERROR] Error uploading resume: {str(e)}")
+        # Resume file upload is now handled in serializer.create()
         
         # Send notification email to HR
         try:
