@@ -169,7 +169,11 @@ startxref
             last_name="Doe",
             email="john.doe@example.com",
             phone="0123456789",
-            cover_letter="I am interested in this position"
+            cover_letter="I am interested in this position",
+            # Simulate uploaded resume for testing
+            resume_file_path="test/path/resume.pdf",
+            resume_original_filename="test_resume.pdf",
+            resume_content_type="application/pdf"
         )
         
         # Create email with attachment
@@ -180,12 +184,13 @@ startxref
             to=["linguify.info@gmail.com"],
         )
         
-        # Attach CV file
-        if application.resume_file:
-            application.resume_file.seek(0)
+        # Attach CV file (test simulation - in real implementation this would use Supabase storage)
+        if application.has_resume():
+            # For testing purposes, attach the test resume
+            test_resume.seek(0)
             email.attach(
-                application.resume_file.name,
-                application.resume_file.read(),
+                'test_resume.pdf',
+                test_resume.read(),
                 'application/pdf'
             )
         
