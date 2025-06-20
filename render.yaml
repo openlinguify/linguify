@@ -29,6 +29,16 @@ services:
         value: 5432
       - key: USE_SUPABASE_DB
         value: True
+      - key: SUPABASE_DB_NAME
+        sync: false
+      - key: SUPABASE_DB_USER
+        sync: false
+      - key: SUPABASE_DB_PASSWORD
+        sync: false
+      - key: SUPABASE_DB_HOST
+        sync: false
+      - key: SUPABASE_DB_PORT
+        value: 5432
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_ANON_KEY
