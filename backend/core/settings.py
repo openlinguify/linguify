@@ -352,8 +352,8 @@ if database_url:
     }
     print("Using Render PostgreSQL (Cloud)")
     
-elif django_env == 'production' or is_render:
-    # PRODUCTION : Toujours Supabase PostgreSQL
+elif django_env == 'production' or django_env == 'staging' or is_render:
+    # PRODUCTION/STAGING : Toujours Supabase PostgreSQL
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -367,7 +367,7 @@ elif django_env == 'production' or is_render:
             },
         }
     }
-    print("Using PRODUCTION Supabase PostgreSQL")
+    print(f"Using SUPABASE PostgreSQL for {django_env.upper()}")
     
 elif django_env == 'development':
     # DEVELOPMENT : PostgreSQL local uniquement
