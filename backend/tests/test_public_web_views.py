@@ -19,6 +19,9 @@ class PublicWebViewsTest(TestCase):
             email='test@example.com',
             password='testpass123'
         )
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
     
     def test_landing_view(self):
         """Test the landing page view"""
@@ -54,7 +57,7 @@ class PublicWebViewsTest(TestCase):
             {
                 'name': 'Learning',
                 'slug': 'course',
-                'summary': 'Interactive language lessons',
+                'summary': 'Interactive language lessons and exercises',
                 'category': 'Education',
                 'version': '1.0.0',
                 'icon': 'book',
@@ -72,12 +75,16 @@ class PublicWebViewsTest(TestCase):
         ]
         mock_get_apps.return_value = mock_apps
         
+        # Clear any cached data that might interfere
+        from django.core.cache import cache
+        cache.clear()
+        
         response = self.client.get(reverse('public_web:apps'))
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Learning')
         self.assertContains(response, 'Revision')
-        self.assertContains(response, 'Interactive language lessons')
+        self.assertContains(response, 'Interactive language lessons and exercises')
     
     @patch('public_web.views.manifest_parser.get_app_by_slug')
     def test_dynamic_app_detail_view_success(self, mock_get_app):
@@ -85,7 +92,7 @@ class PublicWebViewsTest(TestCase):
         mock_app = {
             'name': 'Learning',
             'slug': 'course',
-            'summary': 'Interactive language lessons',
+            'summary': 'Interactive language lessons and exercises',
             'description': 'Comprehensive language learning with interactive exercises.',
             'category': 'Education/Language Learning',
             'version': '1.0.0',
@@ -98,7 +105,7 @@ class PublicWebViewsTest(TestCase):
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Learning')
-        self.assertContains(response, 'Interactive language lessons')
+        self.assertContains(response, 'Interactive language lessons and exercises')
         self.assertContains(response, 'Comprehensive language learning')
     
     @patch('public_web.views.manifest_parser.get_app_by_slug')
@@ -145,6 +152,9 @@ class PublicWebContextTest(TestCase):
     
     def setUp(self):
         self.client = Client()
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
     
     @patch('public_web.views.manifest_parser.get_public_apps')
     def test_apps_list_context(self, mock_get_apps):
@@ -193,6 +203,9 @@ class PublicWebLanguageTest(TestCase):
     
     def setUp(self):
         self.client = Client()
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
     
     def test_features_view_with_language(self):
         """Test features view with different languages"""

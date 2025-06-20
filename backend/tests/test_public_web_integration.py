@@ -17,6 +17,9 @@ class URLRoutingIntegrationTest(TestCase):
     
     def setUp(self):
         self.client = Client()
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
     
     def test_url_patterns_exist(self):
         """Test that all expected URL patterns exist"""
@@ -75,6 +78,9 @@ class FullSystemIntegrationTest(TestCase):
     
     def setUp(self):
         self.client = Client()
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
         
         # Create realistic mock app data
         self.mock_apps = [
@@ -111,6 +117,10 @@ class FullSystemIntegrationTest(TestCase):
         """Test the complete apps list page"""
         mock_get_apps.return_value = self.mock_apps
         
+        # Clear cache to ensure fresh data
+        from django.core.cache import cache
+        cache.clear()
+        
         response = self.client.get(reverse('public_web:apps'))
         
         self.assertEqual(response.status_code, 200)
@@ -128,6 +138,10 @@ class FullSystemIntegrationTest(TestCase):
         """Test the complete app detail page"""
         test_app = self.mock_apps[0]
         mock_get_app.return_value = test_app
+        
+        # Clear cache to ensure fresh data
+        from django.core.cache import cache
+        cache.clear()
         
         response = self.client.get(reverse('public_web:dynamic_app_detail', kwargs={'app_slug': 'course'}))
         
@@ -240,6 +254,9 @@ class ErrorHandlingIntegrationTest(TestCase):
     
     def setUp(self):
         self.client = Client()
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
     
     @patch('public_web.views.manifest_parser.get_app_by_slug')
     def test_404_for_nonexistent_app(self, mock_get_app):
@@ -264,10 +281,14 @@ class ErrorHandlingIntegrationTest(TestCase):
             # If it does raise an exception, that's acceptable for this test
             pass
     
-    @patch('public_web.templatetags.app_tags.manifest_parser.get_public_apps')
+    @patch('public_web.views.manifest_parser.get_public_apps')
     def test_empty_apps_list_handling(self, mock_get_apps):
         """Test handling when no apps are available"""
         mock_get_apps.return_value = []
+        
+        # Clear cache to ensure fresh data
+        from django.core.cache import cache
+        cache.clear()
         
         response = self.client.get(reverse('public_web:apps'))
         
@@ -377,6 +398,9 @@ class RealWorldIntegrationTest(TestCase):
     
     def setUp(self):
         self.client = Client()
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
         
         # Create realistic manifest data based on existing apps
         self.realistic_manifests = {
