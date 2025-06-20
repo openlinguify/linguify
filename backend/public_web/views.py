@@ -284,7 +284,8 @@ class DynamicAppsListView(View):
     """Dynamic view for listing all available apps with caching"""
     
     def get(self, request):
-        cache_key = f'apps_list_{request.LANGUAGE_CODE}'
+        language_code = getattr(request, 'LANGUAGE_CODE', 'en')
+        cache_key = f'apps_list_{language_code}'
         cached_data = cache.get(cache_key)
         
         if cached_data:
@@ -314,7 +315,8 @@ class DynamicAppDetailView(View):
     """Dynamic view for individual app pages with improved error handling"""
     
     def get(self, request, app_slug):
-        cache_key = f'app_detail_{app_slug}_{request.LANGUAGE_CODE}'
+        language_code = getattr(request, 'LANGUAGE_CODE', 'en')
+        cache_key = f'app_detail_{app_slug}_{language_code}'
         cached_data = cache.get(cache_key)
         
         if cached_data:
