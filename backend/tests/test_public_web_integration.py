@@ -17,6 +17,9 @@ class URLRoutingIntegrationTest(TestCase):
     
     def setUp(self):
         self.client = Client()
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
     
     def test_url_patterns_exist(self):
         """Test that all expected URL patterns exist"""
@@ -29,7 +32,7 @@ class URLRoutingIntegrationTest(TestCase):
         self.assertEqual(url, '/apps/')
         
         # Test legacy URLs still exist
-        url = reverse('public_web:app_courses')
+        url = reverse('public_web:legacy_courses_redirect')
         self.assertEqual(url, '/apps/courses/')
     
     def test_url_resolution(self):
@@ -75,6 +78,9 @@ class FullSystemIntegrationTest(TestCase):
     
     def setUp(self):
         self.client = Client()
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
         
         # Create realistic mock app data
         self.mock_apps = [
@@ -111,6 +117,10 @@ class FullSystemIntegrationTest(TestCase):
         """Test the complete apps list page"""
         mock_get_apps.return_value = self.mock_apps
         
+        # Clear cache to ensure fresh data
+        from django.core.cache import cache
+        cache.clear()
+        
         response = self.client.get(reverse('public_web:apps'))
         
         self.assertEqual(response.status_code, 200)
@@ -128,6 +138,10 @@ class FullSystemIntegrationTest(TestCase):
         """Test the complete app detail page"""
         test_app = self.mock_apps[0]
         mock_get_app.return_value = test_app
+        
+        # Clear cache to ensure fresh data
+        from django.core.cache import cache
+        cache.clear()
         
         response = self.client.get(reverse('public_web:dynamic_app_detail', kwargs={'app_slug': 'course'}))
         
@@ -158,20 +172,65 @@ class FullSystemIntegrationTest(TestCase):
         for app in self.mock_apps:
             self.assertContains(response, app['name'])
     
-    def test_legacy_compatibility(self):
+    @patch('public_web.views.manifest_parser.get_app_by_slug')
+    def test_legacy_compatibility(self, mock_get_app):
         """Test that legacy URLs still work alongside dynamic system"""
+        # Mock apps that the redirects point to
+        def mock_app_by_slug(slug):
+            apps = {
+                'course': {
+                    'name': 'Learning',
+                    'slug': 'course',
+                    'summary': 'Interactive language lessons',
+                    'category': 'Education',
+                    'version': '1.0.0'
+                },
+                'revision': {
+                    'name': 'Revision',
+                    'slug': 'revision', 
+                    'summary': 'Spaced repetition flashcards',
+                    'category': 'Education',
+                    'version': '1.0.0'
+                },
+                'notebook': {
+                    'name': 'Notebook',
+                    'slug': 'notebook',
+                    'summary': 'Note-taking application',
+                    'category': 'Productivity', 
+                    'version': '1.0.0'
+                },
+                'quizz': {
+                    'name': 'Quiz',
+                    'slug': 'quizz',
+                    'summary': 'Interactive quizzes',
+                    'category': 'Education',
+                    'version': '1.0.0'
+                },
+                'language_ai': {
+                    'name': 'Language AI',
+                    'slug': 'language_ai',
+                    'summary': 'AI-powered language assistance',
+                    'category': 'Education',
+                    'version': '1.0.0'
+                }
+            }
+            return apps.get(slug)
+        
+        mock_get_app.side_effect = mock_app_by_slug
+        
         # Test legacy app URLs
         legacy_urls = [
-            'public_web:app_courses',
-            'public_web:app_revision',
-            'public_web:app_notebook',
-            'public_web:app_quizz',
-            'public_web:app_language_ai'
+            'public_web:legacy_courses_redirect',
+            'public_web:legacy_revision_redirect',
+            'public_web:legacy_notebook_redirect',
+            'public_web:legacy_quizz_redirect',
+            'public_web:legacy_language_ai_redirect'
         ]
         
         for url_name in legacy_urls:
             response = self.client.get(reverse(url_name))
-            self.assertEqual(response.status_code, 200)
+            # Legacy URLs should redirect (301) to new dynamic system
+            self.assertEqual(response.status_code, 301)
     
     @patch('public_web.views.manifest_parser.get_app_by_slug')
     def test_template_fallback_system(self, mock_get_app):
@@ -239,6 +298,9 @@ class ErrorHandlingIntegrationTest(TestCase):
     
     def setUp(self):
         self.client = Client()
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
     
     @patch('public_web.views.manifest_parser.get_app_by_slug')
     def test_404_for_nonexistent_app(self, mock_get_app):
@@ -263,10 +325,14 @@ class ErrorHandlingIntegrationTest(TestCase):
             # If it does raise an exception, that's acceptable for this test
             pass
     
-    @patch('public_web.templatetags.app_tags.manifest_parser.get_public_apps')
+    @patch('public_web.views.manifest_parser.get_public_apps')
     def test_empty_apps_list_handling(self, mock_get_apps):
         """Test handling when no apps are available"""
         mock_get_apps.return_value = []
+        
+        # Clear cache to ensure fresh data
+        from django.core.cache import cache
+        cache.clear()
         
         response = self.client.get(reverse('public_web:apps'))
         
@@ -376,6 +442,9 @@ class RealWorldIntegrationTest(TestCase):
     
     def setUp(self):
         self.client = Client()
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
         
         # Create realistic manifest data based on existing apps
         self.realistic_manifests = {

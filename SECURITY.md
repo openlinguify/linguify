@@ -2,20 +2,42 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+We actively support security updates for the following versions of Linguify:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| Latest  | :white_check_mark: |
+| Beta    | :white_check_mark: |
+| < Beta  | :x:                |
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+We take security seriously. If you discover a security vulnerability in Linguify, please report it responsibly:
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+### How to Report
+
+1. **Email**: Send details to [dev@openlinguify.com]
+2. **GitHub Issues**: For non-sensitive issues, create a GitHub issue
+3. **Private Contact**: For sensitive vulnerabilities, contact the maintainers directly
+
+### What to Include
+
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested mitigation (if any)
+
+### Response Timeline
+
+- **Initial Response**: Within 48 hours
+- **Status Updates**: Weekly until resolved
+- **Resolution**: Target 30 days for critical issues
+
+### Security Measures
+
+Linguify implements:
+- Django security best practices
+- Secure authentication with Auth0/Supabase
+- Input validation and sanitization
+- HTTPS enforcement
+- Regular dependency updates

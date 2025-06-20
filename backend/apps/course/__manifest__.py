@@ -30,9 +30,9 @@ Usage:
         'authentication',  # Core authentication system
         'app_manager',     # App management system
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
-    'application': True,
+    'application': False,
     'sequence': 10,
     'frontend_components': {
         'main_component': 'LearningView',

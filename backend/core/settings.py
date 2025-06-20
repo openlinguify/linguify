@@ -87,7 +87,7 @@ INSTALLED_APPS = [
     'apps.authentication',
     # 'apps.chat',
     # 'apps.coaching',
-    # 'apps.community',
+    'apps.community',
     'apps.course',
     'apps.data',
     # 'apps.flashcard',
@@ -329,56 +329,109 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
-# Database
+# Database - PostgreSQL ONLY
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-if os.environ.get('TEST_MODE') == 'True':
-    # Use SQLite for testing
+
+# Configuration automatique basée sur DJANGO_ENV
+django_env = env('DJANGO_ENV', default='development')
+
+# Check for Render Database URL first (automatically provided in cloud)
+database_url = env('DATABASE_URL', default=None)
+
+# Check if we're in Render environment (production)
+is_render = env('RENDER', default=False, cast=bool)
+if is_render and not django_env == 'test':
+    django_env = 'production'
+    print("Detected Render environment - setting django_env to production")
+
+if database_url:
+    # Use Render PostgreSQL (automatically configured)
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.parse(database_url)
+    }
+    print("Using Render PostgreSQL (Cloud)")
+    
+elif django_env == 'production' or django_env == 'staging' or is_render:
+    # PRODUCTION/STAGING : Toujours Supabase PostgreSQL
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('SUPABASE_DB_NAME', default='postgres'),
+            'USER': env('SUPABASE_DB_USER'),
+            'PASSWORD': env('SUPABASE_DB_PASSWORD'),
+            'HOST': env('SUPABASE_DB_HOST'),
+            'PORT': env('SUPABASE_DB_PORT', default='5432'),
+            'OPTIONS': {
+                'sslmode': 'require',
+            },
         }
     }
-else:
-    # Check for Render Database URL first (automatically provided)
-    database_url = env('DATABASE_URL', default=None)
+    print(f"Using SUPABASE PostgreSQL for {django_env.upper()}")
     
-    if database_url:
-        # Use Render PostgreSQL (automatically configured)
-        import dj_database_url
-        DATABASES = {
-            'default': dj_database_url.parse(database_url)
+elif django_env == 'development':
+    # DEVELOPMENT : PostgreSQL local uniquement
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DEV_DB_NAME', default='db_linguify_dev'),
+            'USER': env('DEV_DB_USER', default='postgres'),
+            'PASSWORD': env('DEV_DB_PASSWORD', default='azerty'),
+            'HOST': env('DEV_DB_HOST', default='localhost'),
+            'PORT': env('DEV_DB_PORT', default='5432'),
         }
+    }
+    print("Using PostgreSQL local for development")
+    
+elif os.environ.get('TEST_MODE') == 'True' or django_env == 'test':
+    # Tests : PostgreSQL temporaire en mémoire
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME', default='test_linguify'),
+            'USER': env('DB_USER', default='postgres'),
+            'PASSWORD': env('DB_PASSWORD', default='postgres'),
+            'HOST': env('DB_HOST', default='localhost'),
+            'PORT': env('DB_PORT', default='5432'),
+            'TEST': {
+                'NAME': 'test_linguify_temp',
+            },
+        }
+    }
+    print("Using PostgreSQL for testing")
+    
+else:
+    # FALLBACK : Vérifier si des variables Supabase sont présentes
+    supabase_host = env('SUPABASE_DB_HOST', default=None)
+    if supabase_host and not DEBUG:
+        # Production avec Supabase
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': env('SUPABASE_DB_NAME', default='postgres'),
+                'USER': env('SUPABASE_DB_USER'),
+                'PASSWORD': env('SUPABASE_DB_PASSWORD'),
+                'HOST': supabase_host,
+                'PORT': env('SUPABASE_DB_PORT', default='5432'),
+                'OPTIONS': {
+                    'sslmode': 'require',
+                },
+            }
+        }
+        print("Using Supabase PostgreSQL (fallback production)")
     else:
-        # Use Supabase PostgreSQL for development
-        use_supabase_db = env.bool('USE_SUPABASE_DB', default=True)
-        
-        if use_supabase_db:
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.postgresql',
-                    'NAME': env('SUPABASE_DB_NAME', default='postgres'),
-                    'USER': env('SUPABASE_DB_USER'),
-                    'PASSWORD': env('SUPABASE_DB_PASSWORD'),
-                    'HOST': env('SUPABASE_DB_HOST'),
-                    'PORT': env('SUPABASE_DB_PORT', default='6543'),
-                    'OPTIONS': {
-                        'sslmode': 'require',
-                    },
-                }
+        # FALLBACK : PostgreSQL local avec anciennes variables
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': env('DB_NAME', default='db_linguify_dev'),
+                'USER': env('DB_USER', default='postgres'),
+                'PASSWORD': env('DB_PASSWORD', default='azerty'),
+                'HOST': env('DB_HOST', default='localhost'),
+                'PORT': env('DB_PORT', default='5432'),
             }
-        else:
-            # Use local PostgreSQL for development
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.postgresql',
-                    'NAME': env('DB_NAME'),
-                    'USER': env('DB_USER'),
-                    'PASSWORD': env('DB_PASSWORD'),
-                    'HOST': env('DB_HOST', default='localhost'),
-                    'PORT': env('DB_PORT', default='5432'),
-                }
-            }
+        }
+        print("Using local PostgreSQL (fallback development)")
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [

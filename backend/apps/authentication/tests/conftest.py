@@ -1,74 +1,86 @@
+# backend/apps/authentication/tests/conftest.py
 """
-Fichier de configuration pytest pour les tests du module Authentication.
-Ce fichier définit les fixtures partagées par les différents tests.
+Configuration for pytest.
+This file will be automatically recognized by pytest and
+applied to all tests using pytest.
 """
+import os
+import sys
 import pytest
-import datetime
-from decimal import Decimal
-from django.contrib.auth import get_user_model
+from django.conf import settings
 
-User = get_user_model()
+# Add the project path to allow imports
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(BASE_DIR)
 
+# Import the test settings
+from .test_settings import SQLITE_MEMORY_DB
 
-@pytest.fixture
-def create_user():
+@pytest.fixture(scope='session')
+def django_db_setup():
     """
-    Fixture pour créer un utilisateur de test.
+    Database test configuration for pytest.
+    This fixture will be used automatically by tests using the database.
+    """
+    # Use SQLite in-memory for tests
+    settings.DATABASES = SQLITE_MEMORY_DB
     
-    Retourne une fonction factory qui peut être utilisée pour créer des utilisateurs
-    avec des attributs personnalisés.
-    """
-    def _create_user(**kwargs):
-        user_data = {
-            'username': 'testuser',
-            'email': 'test@example.com',
-            'password': 'password123',
-            'first_name': 'Test',
-            'last_name': 'User',
-            'native_language': 'EN',
-            'target_language': 'FR',
-            'language_level': 'A2',
-            'objectives': 'Travel',
-            'terms_accepted': False,
-            'terms_version': 'v1.0'
-        }
-        user_data.update(kwargs)
-        
-        return User.objects.create_user(**user_data)
+    # Ensure migrations are applied
+    from django.core.management import call_command
+    call_command('migrate')
+
+# Other useful fixtures for tests
+@pytest.fixture
+def create_user(db):
+    """Fixture to create a test user"""
+    from apps.authentication.models import User
+    
+    def _create_user(username='testuser', email='test@example.com', password='password123', **kwargs):
+        return User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            **kwargs
+        )
     
     return _create_user
 
-
 @pytest.fixture
-def create_coach():
-    """
-    Fixture pour créer un profil de coach de test.
+def create_coach(db, create_user):
+    """Fixture to create a test coach"""
+    from apps.authentication.models import CoachProfile
+    from decimal import Decimal
     
-    Retourne une fonction factory qui peut être utilisée pour créer des profils de coach
-    avec des attributs personnalisés.
-    """
-    def _create_coach(**kwargs):
-        from ..models import CoachProfile
-        
-        # Créer l'utilisateur coach si non fourni
-        if 'user' not in kwargs:
-            user = User.objects.create_user(
-                username='coachuser',
-                email='coach@example.com',
-                password='password123',
-                is_coach=True
-            )
-            kwargs['user'] = user
+    def _create_coach(user=None, **kwargs):
+        if user is None:
+            user = create_user(username='coachuser', email='coach@example.com', is_coach=True)
         
         coach_data = {
             'coaching_languages': 'EN',
             'price_per_hour': Decimal('50.00'),
             'availability': 'Monday to Friday, 9am to 5pm',
             'description': 'Experienced language coach',
-            'commission_rate': Decimal('5.00')
         }
         coach_data.update(kwargs)
         
-        return CoachProfile.objects.create(**coach_data)
+        return CoachProfile.objects.create(user=user, **coach_data)
     
     return _create_coach
+
+@pytest.fixture
+def api_client():
+    """Fixture to create a test API client"""
+    from rest_framework.test import APIClient
+    return APIClient()
+
+@pytest.fixture
+def authenticated_client(create_user, api_client):
+    """Fixture to create an authenticated API client"""
+    def _get_authenticated_client(user=None):
+        if user is None:
+            user = create_user()
+        
+        api_client.force_authenticate(user=user)
+        return api_client
+    
+    return _get_authenticated_client

@@ -52,6 +52,7 @@ urlpatterns = [
     path('learning/', include('apps.course.urls_web', namespace='learning_alias')),
     path('quizz/', include('apps.quizz.urls_web', namespace='quizz_web')),
     path('language_ai/', include('apps.language_ai.urls_web', namespace='language_ai_web')),
+    path('community/', include('apps.community.urls', namespace='community')),
     path('api/contact/', views.contact_view, name='contact'),
     path('api/v1/notifications/', include('apps.notification.urls', namespace='notification')),
     path('api/v1/language_ai/', include('apps.language_ai.urls', namespace='language_ai')),

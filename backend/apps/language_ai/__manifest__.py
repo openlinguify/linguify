@@ -2,7 +2,7 @@
 __manifest__ = {
     'name': 'Conversation AI',
     'version': '1.0.0',
-    'category': 'Communication',
+    'category': 'Intelligence IA',
     'summary': 'Practice conversations with AI',
     'description': '''
 Conversation AI Module for Linguify
@@ -28,9 +28,9 @@ Usage:
         'authentication',  # Core authentication system
         'app_manager',     # App management system
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
-    'application': True,
+    'application': False,
     'sequence': 40,
     'frontend_components': {
         'main_component': 'LanguageAIView',
