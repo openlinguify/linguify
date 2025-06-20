@@ -171,7 +171,8 @@ class FullSystemIntegrationTest(TestCase):
         
         for url_name in legacy_urls:
             response = self.client.get(reverse(url_name))
-            self.assertEqual(response.status_code, 200)
+            # Legacy URLs should redirect (301) to new dynamic system
+            self.assertEqual(response.status_code, 301)
     
     @patch('public_web.views.manifest_parser.get_app_by_slug')
     def test_template_fallback_system(self, mock_get_app):
