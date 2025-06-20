@@ -112,7 +112,7 @@ jobs:
 
       - name: Run main tests
         run: |
-          poetry run python test_runner/run_ci_tests.py
+          poetry run python manage.py test --verbosity=2
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
       
