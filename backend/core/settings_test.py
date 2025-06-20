@@ -65,6 +65,10 @@ DATABASES = {
     }
 }
 
+# Ensure ATOMIC_REQUESTS is set for all databases
+for db_config in DATABASES.values():
+    db_config.setdefault('ATOMIC_REQUESTS', True)
+
 # Keep migrations enabled for PostgreSQL tests to ensure proper schema
 
 # Speed up password hashing for tests

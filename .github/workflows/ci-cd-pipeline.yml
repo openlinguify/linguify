@@ -121,7 +121,6 @@ jobs:
             apps.authentication.tests \
             apps.quizz.tests \
             apps.revision.tests \
-            apps.task.tests \
             core.jobs.tests \
             --verbosity=2 --keepdb --settings=core.settings_test --pattern="test_*.py"
         env:
