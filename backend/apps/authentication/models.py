@@ -550,6 +550,22 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def name(self):
         return f"{self.first_name} {self.last_name}"
+    
+    @property
+    def age(self):
+        """Calculate age from birthday"""
+        if not self.birthday:
+            return None
+        
+        from datetime import date
+        today = date.today()
+        age = today.year - self.birthday.year
+        
+        # Check if birthday hasn't occurred yet this year
+        if (today.month, today.day) < (self.birthday.month, self.birthday.day):
+            age -= 1
+            
+        return age
 
     def get_profile_picture_urls(self):
         """

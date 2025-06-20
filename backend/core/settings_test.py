@@ -3,13 +3,16 @@ Django settings for testing
 """
 import os
 
+# Set DJANGO_ENV to 'test' to avoid fallback configuration
+os.environ.setdefault('DJANGO_ENV', 'test')
+
 # Set required environment variables for testing BEFORE importing settings
 os.environ.setdefault('SECRET_KEY', 'test-secret-key-for-testing-only')
 os.environ.setdefault('DEBUG', 'True')
-os.environ.setdefault('ALLOWED_HOSTS', 'localhost,127.0.0.1')
-os.environ.setdefault('DB_NAME', 'test_db')
+os.environ.setdefault('ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver')
+os.environ.setdefault('DB_NAME', 'db_linguify_test')
 os.environ.setdefault('DB_USER', 'postgres')
-os.environ.setdefault('DB_PASSWORD', 'postgres')
+os.environ.setdefault('DB_PASSWORD', 'azerty')
 os.environ.setdefault('DB_HOST', 'localhost')
 os.environ.setdefault('DB_PORT', '5432')
 
@@ -28,11 +31,7 @@ os.environ.setdefault('SUPABASE_DB_PASSWORD', 'test-password')
 os.environ.setdefault('SUPABASE_DB_HOST', 'localhost')
 os.environ.setdefault('SUPABASE_DB_PORT', '6543')
 
-# DEPRECATED: Auth0 test configuration (REMOVED - now using Django+Supabase)
-# os.environ.setdefault('AUTH0_DOMAIN', 'test.auth0.com')
-# os.environ.setdefault('AUTH0_CLIENT_ID', 'test-client-id')
-# os.environ.setdefault('AUTH0_CLIENT_SECRET', 'test-client-secret')
-# os.environ.setdefault('AUTH0_AUDIENCE', 'https://test-api')
+# Auth0 configuration removed - using Django authentication only
 
 # Other optional environment variables
 os.environ.setdefault('REDIS_URL', 'redis://localhost:6379/1')
@@ -50,23 +49,27 @@ os.environ.setdefault('BACKEND_URL', 'http://localhost:8000')
 
 from .settings import *
 
-# Use in-memory SQLite for tests to avoid PostgreSQL issues
+# Use PostgreSQL for tests to match production environment
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'db_linguify_test'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'azerty'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
+        'ATOMIC_REQUESTS': True,
+        'TEST': {
+            'NAME': 'test_linguify_temp',
+        },
     }
 }
 
-# Disable migrations for faster tests
-class DisableMigrations:
-    def __contains__(self, item):
-        return True
+# Ensure ATOMIC_REQUESTS is set for all databases
+for db_config in DATABASES.values():
+    db_config.setdefault('ATOMIC_REQUESTS', True)
 
-    def __getitem__(self, item):
-        return None
-
-MIGRATION_MODULES = DisableMigrations()
+# Keep migrations enabled for PostgreSQL tests to ensure proper schema
 
 # Speed up password hashing for tests
 PASSWORD_HASHERS = [

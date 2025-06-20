@@ -19,6 +19,9 @@ class PublicWebViewsTest(TestCase):
             email='test@example.com',
             password='testpass123'
         )
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
     
     def test_landing_view(self):
         """Test the landing page view"""
@@ -54,7 +57,7 @@ class PublicWebViewsTest(TestCase):
             {
                 'name': 'Learning',
                 'slug': 'course',
-                'summary': 'Interactive language lessons',
+                'summary': 'Interactive language lessons and exercises',
                 'category': 'Education',
                 'version': '1.0.0',
                 'icon': 'book',
@@ -72,12 +75,16 @@ class PublicWebViewsTest(TestCase):
         ]
         mock_get_apps.return_value = mock_apps
         
+        # Clear any cached data that might interfere
+        from django.core.cache import cache
+        cache.clear()
+        
         response = self.client.get(reverse('public_web:apps'))
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Learning')
         self.assertContains(response, 'Revision')
-        self.assertContains(response, 'Interactive language lessons')
+        self.assertContains(response, 'Interactive language lessons and exercises')
     
     @patch('public_web.views.manifest_parser.get_app_by_slug')
     def test_dynamic_app_detail_view_success(self, mock_get_app):
@@ -85,7 +92,7 @@ class PublicWebViewsTest(TestCase):
         mock_app = {
             'name': 'Learning',
             'slug': 'course',
-            'summary': 'Interactive language lessons',
+            'summary': 'Interactive language lessons and exercises',
             'description': 'Comprehensive language learning with interactive exercises.',
             'category': 'Education/Language Learning',
             'version': '1.0.0',
@@ -98,7 +105,7 @@ class PublicWebViewsTest(TestCase):
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Learning')
-        self.assertContains(response, 'Interactive language lessons')
+        self.assertContains(response, 'Interactive language lessons and exercises')
         self.assertContains(response, 'Comprehensive language learning')
     
     @patch('public_web.views.manifest_parser.get_app_by_slug')
@@ -110,19 +117,49 @@ class PublicWebViewsTest(TestCase):
         
         self.assertEqual(response.status_code, 404)
     
-    def test_legacy_app_views_still_work(self):
+    @patch('public_web.views.manifest_parser.get_app_by_slug')
+    def test_legacy_app_views_still_work(self, mock_get_app):
         """Test that legacy app views still work"""
-        # Test courses app view
-        response = self.client.get(reverse('public_web:app_courses'))
-        self.assertEqual(response.status_code, 200)
+        # Mock apps that the redirects point to
+        def mock_app_by_slug(slug):
+            apps = {
+                'course': {
+                    'name': 'Learning',
+                    'slug': 'course',
+                    'summary': 'Interactive language lessons',
+                    'category': 'Education',
+                    'version': '1.0.0'
+                },
+                'revision': {
+                    'name': 'Revision',
+                    'slug': 'revision', 
+                    'summary': 'Spaced repetition flashcards',
+                    'category': 'Education',
+                    'version': '1.0.0'
+                },
+                'notebook': {
+                    'name': 'Notebook',
+                    'slug': 'notebook',
+                    'summary': 'Note-taking application',
+                    'category': 'Productivity', 
+                    'version': '1.0.0'
+                }
+            }
+            return apps.get(slug)
         
-        # Test revision app view
-        response = self.client.get(reverse('public_web:app_revision'))
-        self.assertEqual(response.status_code, 200)
+        mock_get_app.side_effect = mock_app_by_slug
         
-        # Test notebook app view
-        response = self.client.get(reverse('public_web:app_notebook'))
-        self.assertEqual(response.status_code, 200)
+        # Test courses app view (redirect)
+        response = self.client.get(reverse('public_web:legacy_courses_redirect'))
+        self.assertEqual(response.status_code, 301)  # Redirect
+        
+        # Test revision app view (redirect)
+        response = self.client.get(reverse('public_web:legacy_revision_redirect'))
+        self.assertEqual(response.status_code, 301)  # Redirect
+        
+        # Test notebook app view (redirect)
+        response = self.client.get(reverse('public_web:legacy_notebook_redirect'))
+        self.assertEqual(response.status_code, 301)  # Redirect
     
     def test_robots_txt_view(self):
         """Test robots.txt view"""
@@ -145,6 +182,9 @@ class PublicWebContextTest(TestCase):
     
     def setUp(self):
         self.client = Client()
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
     
     @patch('public_web.views.manifest_parser.get_public_apps')
     def test_apps_list_context(self, mock_get_apps):
@@ -193,6 +233,9 @@ class PublicWebLanguageTest(TestCase):
     
     def setUp(self):
         self.client = Client()
+        # Clear cache to prevent test interference
+        from django.core.cache import cache
+        cache.clear()
     
     def test_features_view_with_language(self):
         """Test features view with different languages"""

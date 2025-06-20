@@ -232,7 +232,11 @@ def ensure_profile_directories(user_id: Union[int, str] = 'temp') -> Dict[str, s
     
     for path_name, path in paths.items():
         if not os.path.exists(path):
-            os.makedirs(path, exist_ok=True)
+            try:
+                os.makedirs(path, exist_ok=True)
+            except OSError as e:
+                logger.error(f"Failed to create directory {path}: {e}")
+                # Continue with other directories, don't fail completely
     
     return paths
 

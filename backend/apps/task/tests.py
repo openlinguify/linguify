@@ -3,8 +3,8 @@ from django.urls import reverse
 from rest_framework import status, test
 from rest_framework.authtoken.models import Token
 
-from task.apps import TaskConfig
-from task.models import Item
+from apps.task.apps import TaskConfig
+from apps.task.models import Item
 
 User = get_user_model()
 

@@ -8,7 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from ..models import Department, JobPosition, JobApplication
+from core.jobs.models import Department, JobPosition, JobApplication
 
 
 class JobAPITestCase(APITestCase):

@@ -11,8 +11,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core import mail
 from django.core.mail import EmailMessage
 
-from ..models import Department, JobPosition, JobApplication
-from ..views import JobApplicationCreateView
+from core.jobs.models import Department, JobPosition, JobApplication
+from core.jobs.views import JobApplicationCreateView
 
 
 @override_settings(

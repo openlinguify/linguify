@@ -303,17 +303,38 @@ class JobApplicationAdmin(admin.ModelAdmin):
     def resume_download_link(self, obj):
         """Display secure download link for resume"""
         if not obj.has_resume():
-            return format_html('<span style="color: #666;">No resume uploaded</span>')
+            return format_html('<span style="color: #666;">❌ No resume uploaded</span>')
         
-        download_url = reverse('jobs:download-resume', args=[obj.id])
-        return format_html(
-            '<a href="{}" target="_blank" style="color: #0066cc; text-decoration: none; padding: 5px 10px; border: 1px solid #0066cc; border-radius: 3px; font-size: 12px;">'
-            '📄 Download Resume ({})</a><br/>'
-            '<small style="color: #666;">Original filename: {}</small>',
-            download_url,
-            obj.resume_content_type or 'Unknown type',
-            obj.resume_original_filename or 'Unknown'
-        )
+        try:
+            download_url = reverse('jobs:download-resume', args=[obj.id])
+            # File size info
+            file_size = ""
+            if hasattr(obj.resume_file, 'size') and obj.resume_file.size:
+                size_mb = obj.resume_file.size / (1024 * 1024)
+                file_size = f" ({size_mb:.1f}MB)"
+            
+            return format_html(
+                '<div style="margin-bottom: 8px;">'
+                '<a href="{}" target="_blank" style="color: #0066cc; text-decoration: none; padding: 8px 12px; border: 1px solid #0066cc; border-radius: 4px; font-size: 13px; background: #f8f9fa;">'
+                '📄 Télécharger CV{}</a>'
+                '</div>'
+                '<div style="font-size: 11px; color: #666;">'
+                '<strong>Type:</strong> {}<br/>'
+                '<strong>Nom original:</strong> {}<br/>'
+                '<strong>Uploadé le:</strong> {}'
+                '</div>',
+                download_url,
+                file_size,
+                obj.resume_content_type or 'Inconnu',
+                obj.resume_original_filename or 'Inconnu',
+                obj.applied_at.strftime('%d/%m/%Y %H:%M') if obj.applied_at else 'N/A'
+            )
+        except Exception as e:
+            return format_html(
+                '<span style="color: #dc3545;">⚠️ Erreur d\'accès au fichier</span><br/>'
+                '<small style="color: #666;">Erreur: {}</small>',
+                str(e)
+            )
     resume_download_link.short_description = 'Resume File'
     
     def resume_status(self, obj):
