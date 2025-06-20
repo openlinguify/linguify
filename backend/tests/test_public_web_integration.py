@@ -29,7 +29,7 @@ class URLRoutingIntegrationTest(TestCase):
         self.assertEqual(url, '/apps/')
         
         # Test legacy URLs still exist
-        url = reverse('public_web:app_courses')
+        url = reverse('public_web:legacy_courses_redirect')
         self.assertEqual(url, '/apps/courses/')
     
     def test_url_resolution(self):
@@ -162,11 +162,11 @@ class FullSystemIntegrationTest(TestCase):
         """Test that legacy URLs still work alongside dynamic system"""
         # Test legacy app URLs
         legacy_urls = [
-            'public_web:app_courses',
-            'public_web:app_revision',
-            'public_web:app_notebook',
-            'public_web:app_quizz',
-            'public_web:app_language_ai'
+            'public_web:legacy_courses_redirect',
+            'public_web:legacy_revision_redirect',
+            'public_web:legacy_notebook_redirect',
+            'public_web:legacy_quizz_redirect',
+            'public_web:legacy_language_ai_redirect'
         ]
         
         for url_name in legacy_urls:

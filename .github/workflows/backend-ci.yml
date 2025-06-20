@@ -95,65 +95,26 @@ jobs:
           # Ignorer les erreurs de flake8 pour le moment - à corriger ultérieurement
           echo "Linting check skipped - will be fixed in future PRs"
       
-      - name: Setup test environment
-        run: |
-          cp .env.example .env.test
-          # Convert to Unix line endings
-          sed -i 's/\r$//' .env.test
-          # Update configuration
-          sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env.test
-          sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env.test
-          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env.test
-          sed -i 's/DB_HOST=.*/DB_HOST=localhost/g' .env.test
-          sed -i 's/DB_PORT=.*/DB_PORT=5432/g' .env.test
-          sed -i 's/DEBUG=.*/DEBUG=True/g' .env.test
-          sed -i 's/DJANGO_ENV=.*/DJANGO_ENV=test/g' .env.test
-          sed -i 's/AUTH0_DOMAIN=.*/AUTH0_DOMAIN=test.auth0.com/g' .env.test
-          sed -i 's/AUTH0_CLIENT_ID=.*/AUTH0_CLIENT_ID=test_client_id/g' .env.test
-          sed -i 's/AUTH0_CLIENT_SECRET=.*/AUTH0_CLIENT_SECRET=test_client_secret/g' .env.test
-          sed -i 's/AUTH0_AUDIENCE=.*/AUTH0_AUDIENCE=https:\/\/test-api/g' .env.test
-          sed -i 's/SECRET_KEY=.*/SECRET_KEY=test_secret_key_for_ci_environment/g' .env.test
-          sed -i 's/AI_PROVIDER=.*/AI_PROVIDER=simulator/g' .env.test
-          sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env.test
-          sed -i 's/REDIS_PASSWORD=.*/REDIS_PASSWORD=/g' .env.test
-          # Add testing-specific settings
-          echo "TESTING=True" >> .env.test
-          echo "ALLOWED_HOSTS=*" >> .env.test
-          echo "CORS_ALLOWED_ORIGINS=http://localhost:3000" >> .env.test
-
       - name: Run migrations
         run: |
-          set -a
-          source .env.test
-          set +a
-          poetry run python manage.py migrate
+          poetry run python manage.py migrate --verbosity=2
         env:
-          TEST_MODE: 'True'
+          DJANGO_SETTINGS_MODULE: 'core.settings_test'
 
       - name: Run main tests
         run: |
-          set -a
-          source .env.test
-          set +a
-          poetry run python run_tests.py ci
+          poetry run python test_runner/run_ci_tests.py
         env:
-          TEST_MODE: 'True'
-          CI: 'True'
+          DJANGO_SETTINGS_MODULE: 'core.settings_test'
       
       - name: Run dynamic system tests
         run: |
-          set -a
-          source .env.test
-          set +a
-          export DJANGO_SETTINGS_MODULE=core.settings_test
           echo "🚀 Running Dynamic App Management System Tests"
           poetry run python manage.py test tests.test_public_web_dynamic_system --verbosity=2
           poetry run python manage.py test tests.test_public_web_views --verbosity=2  
           poetry run python manage.py test tests.test_public_web_templatetags --verbosity=2
           poetry run python manage.py test tests.test_public_web_integration --verbosity=2
         env:
-          TEST_MODE: 'True'
-          CI: 'True'
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
       
       # Pas de génération de rapport pour simplifier la configuration CI
