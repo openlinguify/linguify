@@ -74,33 +74,27 @@ jobs:
 
       - name: Setup test environment
         run: |
-          cp .env.example .env.test
+          cp .env.example .env
           # Convert to Unix line endings
-          sed -i 's/\r$//' .env.test
-          # Update configuration for TEST_MODE
-          sed -i 's/DEV_DB_NAME=.*/DEV_DB_NAME=test_db_linguify/g' .env.test
-          sed -i 's/DEV_DB_USER=.*/DEV_DB_USER=postgres/g' .env.test
-          sed -i 's/DEV_DB_PASSWORD=.*/DEV_DB_PASSWORD=postgres/g' .env.test
-          sed -i 's/DEV_DB_HOST=.*/DEV_DB_HOST=localhost/g' .env.test
-          sed -i 's/DEV_DB_PORT=.*/DEV_DB_PORT=5432/g' .env.test
-          # Also set regular DB_ variables as fallback
-          sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env.test
-          sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env.test
-          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env.test
-          sed -i 's/DB_HOST=.*/DB_HOST=localhost/g' .env.test
-          sed -i 's/DB_PORT=.*/DB_PORT=5432/g' .env.test
-          sed -i 's/DEBUG=.*/DEBUG=True/g' .env.test
-          sed -i 's/SECRET_KEY=.*/SECRET_KEY=test_secret_key_for_ci_environment/g' .env.test
-          sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env.test
-          echo "TESTING=True" >> .env.test
-          echo "TEST_MODE=True" >> .env.test
-          echo "DJANGO_ENV=ci" >> .env.test
-          echo "ALLOWED_HOSTS=*" >> .env.test
+          sed -i 's/\r$//' .env
+          # Update DB configuration for CI
+          sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env
+          sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env
+          sed -i 's/DB_HOST=.*/DB_HOST=localhost/g' .env
+          sed -i 's/DB_PORT=.*/DB_PORT=5432/g' .env
+          sed -i 's/DEBUG=.*/DEBUG=True/g' .env
+          sed -i 's/SECRET_KEY=.*/SECRET_KEY=test_secret_key_for_ci_environment/g' .env
+          sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env
+          echo "TESTING=True" >> .env
+          echo "TEST_MODE=True" >> .env
+          echo "DJANGO_ENV=ci" >> .env
+          echo "ALLOWED_HOSTS=*" >> .env
 
       - name: Run migrations
         run: |
           set -a
-          source .env.test
+          source .env
           set +a
           poetry run python manage.py migrate
         env:
@@ -109,7 +103,7 @@ jobs:
       - name: Run All Tests
         run: |
           set -a
-          source .env.test
+          source .env
           set +a
           echo "🚀 Running Complete Test Suite"
           poetry run python run_tests.py ci
@@ -120,7 +114,7 @@ jobs:
       - name: Run Jobs Tests Specifically
         run: |
           set -a
-          source .env.test
+          source .env
           set +a
           echo "🎯 Running Jobs Tests (including rejection email functionality)"
           poetry run python manage.py test core.jobs.tests -v 2 --settings=core.settings_test
@@ -213,33 +207,27 @@ jobs:
 
       - name: Setup test environment
         run: |
-          cp .env.example .env.test
+          cp .env.example .env
           # Convert to Unix line endings
-          sed -i 's/\r$//' .env.test
-          # Update configuration for TEST_MODE
-          sed -i 's/DEV_DB_NAME=.*/DEV_DB_NAME=test_db_linguify/g' .env.test
-          sed -i 's/DEV_DB_USER=.*/DEV_DB_USER=postgres/g' .env.test
-          sed -i 's/DEV_DB_PASSWORD=.*/DEV_DB_PASSWORD=postgres/g' .env.test
-          sed -i 's/DEV_DB_HOST=.*/DEV_DB_HOST=localhost/g' .env.test
-          sed -i 's/DEV_DB_PORT=.*/DEV_DB_PORT=5432/g' .env.test
-          # Also set regular DB_ variables as fallback
-          sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env.test
-          sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env.test
-          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env.test
-          sed -i 's/DB_HOST=.*/DB_HOST=localhost/g' .env.test
-          sed -i 's/DB_PORT=.*/DB_PORT=5432/g' .env.test
-          sed -i 's/DEBUG=.*/DEBUG=True/g' .env.test
-          sed -i 's/SECRET_KEY=.*/SECRET_KEY=test_secret_key_for_ci_environment/g' .env.test
-          sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env.test
-          echo "TESTING=True" >> .env.test
-          echo "TEST_MODE=True" >> .env.test
-          echo "DJANGO_ENV=ci" >> .env.test
-          echo "ALLOWED_HOSTS=*" >> .env.test
+          sed -i 's/\r$//' .env
+          # Update DB configuration for CI
+          sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env
+          sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env
+          sed -i 's/DB_HOST=.*/DB_HOST=localhost/g' .env
+          sed -i 's/DB_PORT=.*/DB_PORT=5432/g' .env
+          sed -i 's/DEBUG=.*/DEBUG=True/g' .env
+          sed -i 's/SECRET_KEY=.*/SECRET_KEY=test_secret_key_for_ci_environment/g' .env
+          sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env
+          echo "TESTING=True" >> .env
+          echo "TEST_MODE=True" >> .env
+          echo "DJANGO_ENV=ci" >> .env
+          echo "ALLOWED_HOSTS=*" >> .env
 
       - name: Run migrations
         run: |
           set -a
-          source .env.test
+          source .env
           set +a
           poetry run python manage.py migrate
         env:
@@ -248,7 +236,7 @@ jobs:
       - name: Run Complete Test Suite for Staging
         run: |
           set -a
-          source .env.test
+          source .env
           set +a
           echo "🔥 Running FULL Test Suite for Staging"
           poetry run python run_tests.py ci

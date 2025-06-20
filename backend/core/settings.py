@@ -377,16 +377,16 @@ elif django_env == 'development':
     }
     print("Using PostgreSQL local for development")
     
-elif os.environ.get('TEST_MODE') == 'True':
+elif os.environ.get('TEST_MODE') == 'True' or django_env == 'test':
     # Tests : PostgreSQL temporaire en mémoire
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'test_linguify',
-            'USER': env('DEV_DB_USER', default='postgres'),
-            'PASSWORD': env('DEV_DB_PASSWORD', default='azerty'),
-            'HOST': env('DEV_DB_HOST', default='localhost'),
-            'PORT': env('DEV_DB_PORT', default='5432'),
+            'NAME': env('DB_NAME', default='test_linguify'),
+            'USER': env('DB_USER', default='postgres'),
+            'PASSWORD': env('DB_PASSWORD', default='postgres'),
+            'HOST': env('DB_HOST', default='localhost'),
+            'PORT': env('DB_PORT', default='5432'),
             'TEST': {
                 'NAME': 'test_linguify_temp',
             },

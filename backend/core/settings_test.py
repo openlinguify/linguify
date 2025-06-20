@@ -3,6 +3,9 @@ Django settings for testing
 """
 import os
 
+# Set DJANGO_ENV to 'test' to avoid fallback configuration
+os.environ.setdefault('DJANGO_ENV', 'test')
+
 # Set required environment variables for testing BEFORE importing settings
 os.environ.setdefault('SECRET_KEY', 'test-secret-key-for-testing-only')
 os.environ.setdefault('DEBUG', 'True')
