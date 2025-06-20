@@ -18,6 +18,20 @@
 *.class
 *.env
 *.conf
+
+# === DATABASE EXPORT/IMPORT TEMPORAIRES ===
+production_export.json
+production_data.json
+production_simple.json
+supabase_*.sql
+supabase_*.dump
+manual_export.json
+*_export.json
+*_dump_*.sql
+*_backup_*.sql
+fix_*.sql
+temp_*.json
+cleanup_*.py
 *.ini
 *.sqlite3
 *.db

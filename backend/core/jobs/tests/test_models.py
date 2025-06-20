@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.utils import timezone
 from django.db import IntegrityError
 
-from ..models import Department, JobPosition, JobApplication
+from core.jobs.models import Department, JobPosition, JobApplication
 
 
 class DepartmentModelTests(TestCase):

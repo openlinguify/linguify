@@ -1,59 +1,200 @@
 # -*- coding: utf-8 -*-
+"""
+Chat Module Manifest for Open Linguify
+Real-time collaborative chat and communication features
+
+Status: In Development - Not ready for production
+This module will provide real-time chat functionality for collaborative learning
+"""
+
 __manifest__ = {
-    'name': 'Conversation AI',
-    'version': '1.0.0',
+    'name': 'Collaborative Chat',  # Changed from 'Conversation AI' to avoid confusion
+    'version': '0.5.0',  # Version indicates development status
     'category': 'Communication',
-    'summary': 'Practice conversations with AI',
+    'summary': 'Real-time collaborative chat for learning groups',
     'description': '''
-Conversation AI Module for Linguify
-====================================
+Collaborative Chat Module for Open Linguify
+==========================================
 
-AI-powered conversation practice and language interaction.
+Real-time chat system for collaborative learning and group communication.
 
-Features:
-- Real-time conversations with AI tutors
-- Multiple conversation scenarios and topics
-- Speech recognition and pronunciation feedback
-- Context-aware responses based on learning level
-- Conversation history and replay
-- Integration with learning progress
+Planned Features:
+- Real-time group chat rooms
+- Study group collaboration
+- File sharing in conversations
+- Language exchange partner matching
+- Teacher-student communication channels
+- Voice and video call integration
+- Message translation and language help
+- Collaborative document editing within chat
+- Learning progress sharing
+- Gamified group challenges
 
-Usage:
+Current Status: Development Phase
+- Basic chat models implemented
+- WebSocket infrastructure in progress
+- Frontend components under development
+- Security and moderation features planned
+
+Technical Implementation:
+- Django Channels for WebSocket support
+- Redis for message queuing and real-time features
+- Integration with existing authentication system
+- Modular design for easy feature expansion
+
+Usage (when ready):
 - Access via /api/v1/chat/
-- Frontend available at /conversation-ai
+- Frontend available at /collaborative-chat
+- Admin interface for moderation
     ''',
-    'author': 'Linguify Team',
-    'website': 'https://linguify.com',
+    'author': 'Open Linguify Team',
+    'website': 'https://openlinguify.com',
     'license': 'MIT',
     'depends': [
         'authentication',  # Core authentication system
         'app_manager',     # App management system
-        'language_ai',     # AI services integration
+        'notification',    # For chat notifications
+        # 'language_ai',   # Future integration for AI-assisted chat
     ],
-    'installable': True,
-    'auto_install': False,
-    'application': True,
-    'sequence': 40,
-    'frontend_components': {
-        'main_component': 'ConversationAIView',
-        'route': '/conversation-ai',
-        'icon': 'MessageCircle',
-        'menu_order': 4,
-    },
+    
+    # Development status - disabled for production
+    'installable': True,  # Set to True when ready for deployment
+    'auto_install': True,
+    'application': True,  # Set to True when ready
+    'sequence': 60,  # Lower priority than core apps
+    
+    # Development roadmap
+    'development_status': 'Alpha',  # Alpha -> Beta -> Stable
+    'target_release': '2.0.0',  # When this will be included in releases
+    
+    # Frontend components (commented out until ready)
+    # 'frontend_components': {
+    #     'main_component': 'CollaborativeChatView',
+    #     'route': '/collaborative-chat',
+    #     'icon': 'MessageCircle',
+    #     'menu_order': 6,
+    #     'sidebar_menu': True,
+    # },
+    
+    # API configuration
     'api_endpoints': {
         'base_url': '/api/v1/chat/',
         'viewset': 'ChatViewSet',
+        'websocket_url': '/ws/chat/',
+        'requires_authentication': True,
     },
+    
+    # Security and permissions
     'permissions': {
-        'create': 'auth.user',
-        'read': 'auth.user', 
-        'update': 'auth.user',
-        'delete': 'auth.user',
+        'create': 'auth.user',  # Authenticated users can create chats
+        'read': 'auth.user',    # Authenticated users can read chats
+        'update': 'auth.user',  # Users can update their own messages
+        'delete': 'auth.user',  # Users can delete their own messages
+        'moderate': 'auth.staff',  # Staff can moderate chats
     },
+    
+    # Technical information
     'technical_info': {
         'django_app': 'apps.chat',
-        'models': ['ChatSession', 'Message'],
+        'models': ['ChatRoom', 'Message', 'ChatMember', 'ChatInvitation'],
         'admin_registered': True,
         'rest_framework': True,
-    }
+        'channels_required': True,  # Requires Django Channels
+        'redis_required': True,     # Requires Redis for real-time features
+        'database_migrations': ['0001_initial'],
+    },
+    
+    # Development configuration
+    'development': {
+        'test_coverage_target': 90,
+        'documentation_status': 'In Progress',
+        'code_review_status': 'Pending',
+        'security_audit_status': 'Pending',
+        'performance_tests': 'Pending',
+        'ui_ux_review': 'Pending',
+    },
+    
+    # Feature flags for gradual rollout (when ready)
+    'feature_flags': {
+        'basic_messaging': False,      # Simple text messaging
+        'file_sharing': False,         # File and image sharing
+        'voice_calls': False,          # Voice call integration
+        'video_calls': False,          # Video call integration
+        'message_translation': False,  # AI-powered translation
+        'study_groups': False,         # Study group features
+        'teacher_mode': False,         # Teacher-specific features
+        'moderation_tools': False,     # Content moderation
+    },
+    
+    # Deployment checklist (to be completed before enabling)
+    'deployment_checklist': {
+        'backend_complete': False,     # All backend functionality implemented
+        'frontend_complete': False,    # All frontend components ready
+        'tests_passing': False,        # All tests pass with good coverage
+        'security_reviewed': False,    # Security audit completed
+        'performance_optimized': False,  # Performance testing done
+        'documentation_complete': False,  # User and developer docs ready
+        'admin_tools_ready': False,    # Admin interface and moderation tools
+        'monitoring_setup': False,     # Logging and monitoring configured
+    },
+    
+    # Integration points with other apps
+    'integrations': {
+        'notification': {
+            'chat_mentions': 'Notify users when mentioned in chat',
+            'new_messages': 'Notify about new messages in active chats',
+            'group_invites': 'Notify about group chat invitations',
+        },
+        'authentication': {
+            'profile_integration': 'Show user profiles in chat',
+            'privacy_settings': 'Respect user privacy preferences',
+        },
+        'course': {
+            'study_groups': 'Create study groups for specific courses',
+            'homework_help': 'Collaborative homework assistance',
+        },
+        'language_ai': {
+            'translation_help': 'AI-powered message translation',
+            'grammar_correction': 'Suggest grammar improvements',
+            'language_practice': 'Practice conversations with AI',
+        },
+    },
+    
+    # Monitoring and analytics
+    'analytics': {
+        'user_engagement': 'Track chat usage and engagement metrics',
+        'popular_features': 'Monitor which chat features are most used',
+        'performance_metrics': 'Track message delivery times and system performance',
+        'moderation_stats': 'Monitor content moderation effectiveness',
+    },
 }
+
+# Development notes for the team
+"""
+DEVELOPMENT STATUS: ALPHA
+========================
+
+This chat module is currently in active development and should NOT be enabled
+in production environments. 
+
+TODO for Production Readiness:
+1. Complete WebSocket infrastructure with Django Channels
+2. Implement comprehensive message moderation system
+3. Add file sharing with proper security controls
+4. Create responsive frontend components
+5. Add comprehensive test suite
+6. Security audit and penetration testing
+7. Performance optimization and load testing
+8. Documentation for users and administrators
+9. Integration testing with other modules
+10. Accessibility compliance (WCAG 2.1)
+
+To enable for testing:
+1. Set 'installable': True
+2. Set 'application': True  
+3. Uncomment 'frontend_components' section
+4. Run: python manage.py migrate
+5. Run: python manage.py collectstatic
+
+Contact: dev-team@openlinguify.com for development questions
+"""
