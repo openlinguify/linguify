@@ -162,7 +162,7 @@ class MeSerializer(serializers.ModelSerializer):
         """Generate full name"""
         return f"{obj.first_name} {obj.last_name}".strip()
 
-    def get_age(self, obj):
+    def get_birthday(self, obj):
         """Retrieve user's birthday"""
         return obj.birthday
 

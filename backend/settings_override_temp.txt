@@ -1,5 +1,0 @@
-
-# Ajoutez ceci temporairement à settings.py si les traductions posent problème :
-USE_I18N = False
-USE_L10N = False
-LANGUAGE_CODE = 'en'

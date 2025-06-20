@@ -1,0 +1,275 @@
+{% extends "saas_web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Community" %} | Open Linguify{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="bi bi-people-fill me-2"></i>
+                    {% trans "Community" %}
+                </h1>
+                
+                <div class="d-flex gap-2">
+                    <a href="{% url 'community:discover' %}" class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i>
+                        {% trans "Discover Users" %}
+                    </a>
+                    <a href="{% url 'community:friends' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-person-heart me-1"></i>
+                        {% trans "My Friends" %} ({{ friends_count }})
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-person-heart text-primary" style="font-size: 2rem;"></i>
+                            <h5 class="card-title mt-2">{{ friends_count }}</h5>
+                            <p class="card-text text-muted">{% trans "Friends" %}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-envelope text-info" style="font-size: 2rem;"></i>
+                            <h5 class="card-title mt-2">{{ friend_requests_count }}</h5>
+                            <p class="card-text text-muted">{% trans "Friend Requests" %}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-people text-success" style="font-size: 2rem;"></i>
+                            <h5 class="card-title mt-2">3</h5>
+                            <p class="card-text text-muted">{% trans "Groups" %}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-chat-dots text-warning" style="font-size: 2rem;"></i>
+                            <h5 class="card-title mt-2">12</h5>
+                            <p class="card-text text-muted">{% trans "Messages" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">{% trans "Quick Actions" %}</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <a href="{% url 'community:discover' %}" class="d-block text-decoration-none">
+                                        <div class="border rounded p-3 h-100 text-center hover-shadow">
+                                            <i class="bi bi-search text-primary" style="font-size: 2rem;"></i>
+                                            <h6 class="mt-2">{% trans "Find Language Partners" %}</h6>
+                                            <small class="text-muted">{% trans "Connect with learners of your target language" %}</small>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <a href="{% url 'community:groups' %}" class="d-block text-decoration-none">
+                                        <div class="border rounded p-3 h-100 text-center hover-shadow">
+                                            <i class="bi bi-people text-success" style="font-size: 2rem;"></i>
+                                            <h6 class="mt-2">{% trans "Join Study Groups" %}</h6>
+                                            <small class="text-muted">{% trans "Practice with groups of learners" %}</small>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <a href="{% url 'community:messages' %}" class="d-block text-decoration-none">
+                                        <div class="border rounded p-3 h-100 text-center hover-shadow">
+                                            <i class="bi bi-chat-dots text-info" style="font-size: 2rem;"></i>
+                                            <h6 class="mt-2">{% trans "Start Conversations" %}</h6>
+                                            <small class="text-muted">{% trans "Practice speaking with native speakers" %}</small>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggested Friends -->
+            {% if suggested_friends %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">{% trans "Suggested Friends" %}</h5>
+                            <a href="{% url 'community:discover' %}" class="btn btn-sm btn-outline-primary">
+                                {% trans "See All" %}
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for user in suggested_friends %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="border rounded p-3 text-center">
+                                        {% if user.user.get_profile_picture_url %}
+                                            <img src="{{ user.user.get_profile_picture_url }}" 
+                                                 alt="{{ user.user.username }}" 
+                                                 class="rounded-circle mb-2"
+                                                 style="width: 60px; height: 60px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-primary rounded-circle mx-auto mb-2 d-flex align-items-center justify-content-center"
+                                                 style="width: 60px; height: 60px;">
+                                                <i class="bi bi-person text-white"></i>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        <h6 class="mb-1">{{ user.user.name|default:user.user.username }}</h6>
+                                        <small class="text-muted">{{ user.user.get_native_language_display }} → {{ user.user.get_target_language_display }}</small>
+                                        
+                                        <div class="mt-2">
+                                            <button class="btn btn-sm btn-primary send-friend-request" 
+                                                    data-user-id="{{ user.user.id }}">
+                                                <i class="bi bi-person-plus me-1"></i>
+                                                {% trans "Add Friend" %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recent Activity -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">{% trans "Recent Activity" %}</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_posts %}
+                                {% for post in recent_posts %}
+                                <div class="d-flex mb-3 pb-3 border-bottom">
+                                    {% if post.author.get_profile_picture_url %}
+                                        <img src="{{ post.author.get_profile_picture_url }}" 
+                                             alt="{{ post.author.username }}" 
+                                             class="rounded-circle me-3"
+                                             style="width: 40px; height: 40px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center"
+                                             style="width: 40px; height: 40px;">
+                                            <i class="bi bi-person text-white"></i>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <h6 class="mb-1">{{ post.author.name|default:post.author.username }}</h6>
+                                            <small class="text-muted">{{ post.created_at|timesince }} ago</small>
+                                        </div>
+                                        {% if post.title %}
+                                            <p class="mb-1 fw-bold">{{ post.title }}</p>
+                                        {% endif %}
+                                        <p class="mb-2">{{ post.content|truncatewords:20 }}</p>
+                                        <div class="d-flex gap-3">
+                                            <small class="text-muted">
+                                                <i class="bi bi-heart me-1"></i>{{ post.likes.count }}
+                                            </small>
+                                            <small class="text-muted">
+                                                <i class="bi bi-chat me-1"></i>{{ post.comments.count }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="bi bi-chat-square-dots text-muted" style="font-size: 3rem;"></i>
+                                    <p class="mt-3 text-muted">{% trans "No recent activity from your friends." %}</p>
+                                    <a href="{% url 'community:discover' %}" class="btn btn-primary">
+                                        {% trans "Find Friends to Follow Their Activity" %}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-shadow:hover {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transform: translateY(-1px);
+    transition: all 0.15s ease-in-out;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des demandes d'amitié
+    document.querySelectorAll('.send-friend-request').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            
+            fetch(`/community/api/send-friend-request/${userId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.innerHTML = '<i class="bi bi-check me-1"></i>{% trans "Request Sent" %}';
+                    this.disabled = true;
+                    this.classList.remove('btn-primary');
+                    this.classList.add('btn-success');
+                } else {
+                    alert(data.error || 'Error sending friend request');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error sending friend request');
+            });
+        });
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

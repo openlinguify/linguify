@@ -8,6 +8,7 @@ from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
+from django.conf import settings
 from .models import App, UserAppSettings
 from .serializers import AppSerializer, UserAppSettingsSerializer, AppToggleSerializer
 
@@ -325,6 +326,26 @@ def debug_apps(request):
                         'api_url': '/api/v1/quizz/'
                     }
                 }
+            },
+            {
+                'code': 'community',
+                'display_name': 'Community',
+                'description': 'Connectez-vous avec d\'autres apprenants de langues. Trouvez des partenaires linguistiques, rejoignez des groupes d\'étude et participez à des conversations.',
+                'category': 'Social',
+                'is_enabled': True,
+                'is_default': False,
+                'order': 6,
+                'manifest_data': {
+                    'frontend_components': {
+                        'icon': '👥',
+                        'description': 'Connect with language learners',
+                        'route': '/community/'
+                    },
+                    'technical_info': {
+                        'web_url': '/community/',
+                        'api_url': '/api/v1/community/'
+                    }
+                }
             }
         ]
         
@@ -414,6 +435,11 @@ class AppStoreView(View):
     def get(self, request):
         # Récupérer toutes les apps disponibles
         apps = App.objects.filter(is_enabled=True)
+        
+        # Filtrer les apps en développement si en production
+        if not settings.DEBUG:
+            # Exclure community en production tant qu'elle n'est pas prête
+            apps = apps.exclude(code='community')
         
         # Récupérer les settings utilisateur ou les créer
         user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
