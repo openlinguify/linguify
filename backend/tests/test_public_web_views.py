@@ -112,17 +112,17 @@ class PublicWebViewsTest(TestCase):
     
     def test_legacy_app_views_still_work(self):
         """Test that legacy app views still work"""
-        # Test courses app view
-        response = self.client.get(reverse('public_web:app_courses'))
-        self.assertEqual(response.status_code, 200)
+        # Test courses app view (redirect)
+        response = self.client.get(reverse('public_web:legacy_courses_redirect'))
+        self.assertEqual(response.status_code, 301)  # Redirect
         
-        # Test revision app view
-        response = self.client.get(reverse('public_web:app_revision'))
-        self.assertEqual(response.status_code, 200)
+        # Test revision app view (redirect)
+        response = self.client.get(reverse('public_web:legacy_revision_redirect'))
+        self.assertEqual(response.status_code, 301)  # Redirect
         
-        # Test notebook app view
-        response = self.client.get(reverse('public_web:app_notebook'))
-        self.assertEqual(response.status_code, 200)
+        # Test notebook app view (redirect)
+        response = self.client.get(reverse('public_web:legacy_notebook_redirect'))
+        self.assertEqual(response.status_code, 301)  # Redirect
     
     def test_robots_txt_view(self):
         """Test robots.txt view"""

@@ -95,9 +95,18 @@ jobs:
           # Ignorer les erreurs de flake8 pour le moment - à corriger ultérieurement
           echo "Linting check skipped - will be fixed in future PRs"
       
-      - name: Run migrations
+      - name: Debug settings
         run: |
-          poetry run python manage.py migrate --verbosity=2
+          echo "Using Django settings: $DJANGO_SETTINGS_MODULE"
+          poetry run python -c "
+          import os
+          os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings_test')
+          import django
+          django.setup()
+          from django.conf import settings
+          print('Database ENGINE:', settings.DATABASES['default']['ENGINE'])
+          print('Database NAME:', settings.DATABASES['default']['NAME'])
+          "
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
 
