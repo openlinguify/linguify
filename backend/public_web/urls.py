@@ -43,14 +43,16 @@ urlpatterns = [
     
     # Apps section - dynamic system
     path('apps/', views.DynamicAppsListView.as_view(), name='apps'),
-    path('apps/<slug:app_slug>/', views.DynamicAppDetailView.as_view(), name='dynamic_app_detail'),
     
-    # Legacy app URLs - redirect to dynamic system
+    # Legacy app URLs - redirect to dynamic system (MUST be before dynamic pattern)
     path('apps/courses/', RedirectView.as_view(url='/apps/course/', permanent=True), name='legacy_courses_redirect'),
     path('apps/revision/', RedirectView.as_view(url='/apps/revision/', permanent=True), name='legacy_revision_redirect'),
     path('apps/notebook/', RedirectView.as_view(url='/apps/notebook/', permanent=True), name='legacy_notebook_redirect'),
     path('apps/quizz/', RedirectView.as_view(url='/apps/quizz/', permanent=True), name='legacy_quizz_redirect'),
     path('apps/language-ai/', RedirectView.as_view(url='/apps/language_ai/', permanent=True), name='legacy_language_ai_redirect'),
+    
+    # Dynamic app detail (MUST be after legacy redirects)
+    path('apps/<slug:app_slug>/', views.DynamicAppDetailView.as_view(), name='dynamic_app_detail'),
     
     # SEO and technical files
     path('robots.txt', views.RobotsTxtView.as_view(), name='robots_txt'),

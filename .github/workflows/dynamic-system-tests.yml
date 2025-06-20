@@ -114,6 +114,7 @@ jobs:
           sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env.test
           echo "TESTING=True" >> .env.test
           echo "TEST_MODE=True" >> .env.test
+          echo "DJANGO_ENV=ci" >> .env.test
           echo "ALLOWED_HOSTS=*" >> .env.test
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
