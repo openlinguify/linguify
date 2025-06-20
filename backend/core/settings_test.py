@@ -50,23 +50,22 @@ os.environ.setdefault('BACKEND_URL', 'http://localhost:8000')
 
 from .settings import *
 
-# Use in-memory SQLite for tests to avoid PostgreSQL issues
+# Use PostgreSQL for tests to match production environment
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'test_db_linguify'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
+        'TEST': {
+            'NAME': 'test_db_linguify_test',
+        },
     }
 }
 
-# Disable migrations for faster tests
-class DisableMigrations:
-    def __contains__(self, item):
-        return True
-
-    def __getitem__(self, item):
-        return None
-
-MIGRATION_MODULES = DisableMigrations()
+# Keep migrations enabled for PostgreSQL tests to ensure proper schema
 
 # Speed up password hashing for tests
 PASSWORD_HASHERS = [

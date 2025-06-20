@@ -95,36 +95,40 @@ jobs:
           # Ignorer les erreurs de flake8 pour le moment - à corriger ultérieurement
           echo "Linting check skipped - will be fixed in future PRs"
       
-      - name: Debug settings
+      - name: Run migrations
         run: |
-          echo "Using Django settings: $DJANGO_SETTINGS_MODULE"
-          poetry run python -c "
-          import os
-          os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings_test')
-          import django
-          django.setup()
-          from django.conf import settings
-          print('Database ENGINE:', settings.DATABASES['default']['ENGINE'])
-          print('Database NAME:', settings.DATABASES['default']['NAME'])
-          "
+          poetry run python manage.py migrate --verbosity=2
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
+          DB_NAME: 'test_db_linguify'
+          DB_USER: 'postgres'
+          DB_PASSWORD: 'postgres'
+          DB_HOST: 'localhost'
+          DB_PORT: '5432'
 
       - name: Run main tests
         run: |
-          poetry run python manage.py test --verbosity=2
+          poetry run python manage.py test tests.test_public_web_views tests.test_public_web_integration core.jobs.tests --verbosity=2
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
+          DB_NAME: 'test_db_linguify'
+          DB_USER: 'postgres'
+          DB_PASSWORD: 'postgres'
+          DB_HOST: 'localhost'
+          DB_PORT: '5432'
       
       - name: Run dynamic system tests
         run: |
-          echo "🚀 Running Dynamic App Management System Tests"
+          echo "🚀 Running Additional Dynamic App Management System Tests"
           poetry run python manage.py test tests.test_public_web_dynamic_system --verbosity=2
-          poetry run python manage.py test tests.test_public_web_views --verbosity=2  
           poetry run python manage.py test tests.test_public_web_templatetags --verbosity=2
-          poetry run python manage.py test tests.test_public_web_integration --verbosity=2
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
+          DB_NAME: 'test_db_linguify'
+          DB_USER: 'postgres'
+          DB_PASSWORD: 'postgres'
+          DB_HOST: 'localhost'
+          DB_PORT: '5432'
       
       # Pas de génération de rapport pour simplifier la configuration CI
 
