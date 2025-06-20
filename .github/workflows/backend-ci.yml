@@ -100,6 +100,7 @@ jobs:
           poetry run python manage.py migrate --verbosity=2
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
+          DJANGO_ENV: 'test'
           DB_NAME: 'test_db_linguify'
           DB_USER: 'postgres'
           DB_PASSWORD: 'postgres'
@@ -111,6 +112,7 @@ jobs:
           poetry run python manage.py test tests.test_public_web_views tests.test_public_web_integration core.jobs.tests --verbosity=2
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
+          DJANGO_ENV: 'test'
           DB_NAME: 'test_db_linguify'
           DB_USER: 'postgres'
           DB_PASSWORD: 'postgres'
@@ -124,6 +126,7 @@ jobs:
           poetry run python manage.py test tests.test_public_web_templatetags --verbosity=2
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
+          DJANGO_ENV: 'test'
           DB_NAME: 'test_db_linguify'
           DB_USER: 'postgres'
           DB_PASSWORD: 'postgres'

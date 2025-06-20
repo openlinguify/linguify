@@ -77,7 +77,13 @@ jobs:
           cp .env.example .env.test
           # Convert to Unix line endings
           sed -i 's/\r$//' .env.test
-          # Update configuration
+          # Update configuration for TEST_MODE
+          sed -i 's/DEV_DB_NAME=.*/DEV_DB_NAME=test_db_linguify/g' .env.test
+          sed -i 's/DEV_DB_USER=.*/DEV_DB_USER=postgres/g' .env.test
+          sed -i 's/DEV_DB_PASSWORD=.*/DEV_DB_PASSWORD=postgres/g' .env.test
+          sed -i 's/DEV_DB_HOST=.*/DEV_DB_HOST=localhost/g' .env.test
+          sed -i 's/DEV_DB_PORT=.*/DEV_DB_PORT=5432/g' .env.test
+          # Also set regular DB_ variables as fallback
           sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env.test
           sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env.test
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env.test
@@ -87,6 +93,7 @@ jobs:
           sed -i 's/SECRET_KEY=.*/SECRET_KEY=test_secret_key_for_ci_environment/g' .env.test
           sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env.test
           echo "TESTING=True" >> .env.test
+          echo "TEST_MODE=True" >> .env.test
           echo "ALLOWED_HOSTS=*" >> .env.test
 
       - name: Run migrations
@@ -208,7 +215,13 @@ jobs:
           cp .env.example .env.test
           # Convert to Unix line endings
           sed -i 's/\r$//' .env.test
-          # Update configuration
+          # Update configuration for TEST_MODE
+          sed -i 's/DEV_DB_NAME=.*/DEV_DB_NAME=test_db_linguify/g' .env.test
+          sed -i 's/DEV_DB_USER=.*/DEV_DB_USER=postgres/g' .env.test
+          sed -i 's/DEV_DB_PASSWORD=.*/DEV_DB_PASSWORD=postgres/g' .env.test
+          sed -i 's/DEV_DB_HOST=.*/DEV_DB_HOST=localhost/g' .env.test
+          sed -i 's/DEV_DB_PORT=.*/DEV_DB_PORT=5432/g' .env.test
+          # Also set regular DB_ variables as fallback
           sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env.test
           sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env.test
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env.test
@@ -218,6 +231,7 @@ jobs:
           sed -i 's/SECRET_KEY=.*/SECRET_KEY=test_secret_key_for_ci_environment/g' .env.test
           sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env.test
           echo "TESTING=True" >> .env.test
+          echo "TEST_MODE=True" >> .env.test
           echo "ALLOWED_HOSTS=*" >> .env.test
 
       - name: Run migrations
