@@ -137,7 +137,8 @@
       "Bash(sudo apt:*)",
       "Bash(sudo apt install:*)",
       "Bash(DJANGO_ENV=production poetry run python scripts/database/app_manager.py list)",
-      "Bash(DJANGO_ENV=production poetry run python scripts/database/manifest_manager.py apply-manifest)"
+      "Bash(DJANGO_ENV=production poetry run python scripts/database/manifest_manager.py apply-manifest)",
+      "Bash(CI=true GITHUB_ACTIONS=true poetry run python manage.py test tests apps.authentication.tests --settings=core.settings_test --keepdb --verbosity=1 --pattern=\"test_*.py\")"
     ],
     "deny": []
   }
