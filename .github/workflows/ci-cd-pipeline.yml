@@ -114,7 +114,7 @@ jobs:
           source .env
           set +a
           echo "🚀 Running Complete Test Suite"
-          poetry run python run_tests.py ci
+          poetry run python manage.py test --verbosity=2 --keepdb
         env:
           TEST_MODE: 'True'
           CI: 'True'
@@ -125,7 +125,7 @@ jobs:
           source .env
           set +a
           echo "🎯 Running Jobs Tests (including rejection email functionality)"
-          poetry run python manage.py test core.jobs.tests -v 2 --settings=core.settings_test
+          poetry run python manage.py test core.jobs.tests -v 2 --settings=core.settings_test --keepdb
         env:
           TEST_MODE: 'True'
           CI: 'True'
@@ -255,9 +255,9 @@ jobs:
           source .env
           set +a
           echo "🔥 Running FULL Test Suite for Staging"
-          poetry run python run_tests.py ci
+          poetry run python manage.py test --verbosity=2 --keepdb
           echo "🎯 Running Jobs Tests"
-          poetry run python manage.py test core.jobs.tests -v 2 --settings=core.settings_test
+          poetry run python manage.py test core.jobs.tests -v 2 --settings=core.settings_test --keepdb
         env:
           TEST_MODE: 'True'
           CI: 'True'

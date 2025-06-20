@@ -109,7 +109,7 @@ jobs:
 
       - name: Run main tests
         run: |
-          poetry run python manage.py test tests.test_public_web_views tests.test_public_web_integration core.jobs.tests --verbosity=2
+          poetry run python manage.py test tests.test_public_web_views tests.test_public_web_integration core.jobs.tests --verbosity=2 --keepdb
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
           DJANGO_ENV: 'test'
@@ -122,8 +122,8 @@ jobs:
       - name: Run dynamic system tests
         run: |
           echo "🚀 Running Additional Dynamic App Management System Tests"
-          poetry run python manage.py test tests.test_public_web_dynamic_system --verbosity=2
-          poetry run python manage.py test tests.test_public_web_templatetags --verbosity=2
+          poetry run python manage.py test tests.test_public_web_dynamic_system --verbosity=2 --keepdb
+          poetry run python manage.py test tests.test_public_web_templatetags --verbosity=2 --keepdb
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
           DJANGO_ENV: 'test'

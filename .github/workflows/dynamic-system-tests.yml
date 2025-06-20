@@ -138,7 +138,7 @@ jobs:
           set -a
           source .env
           set +a
-          poetry run python manage.py test tests.test_public_web_dynamic_system.AppManifestParserTest --verbosity=2
+          poetry run python manage.py test tests.test_public_web_dynamic_system.AppManifestParserTest --verbosity=2 --keepdb
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
           TEST_MODE: 'True'
@@ -150,7 +150,7 @@ jobs:
           set -a
           source .env
           set +a
-          poetry run python manage.py test tests.test_public_web_views --verbosity=2
+          poetry run python manage.py test tests.test_public_web_views --verbosity=2 --keepdb
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
           TEST_MODE: 'True'
@@ -162,7 +162,7 @@ jobs:
           set -a
           source .env
           set +a
-          poetry run python manage.py test tests.test_public_web_templatetags --verbosity=2
+          poetry run python manage.py test tests.test_public_web_templatetags --verbosity=2 --keepdb
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
           TEST_MODE: 'True'
@@ -174,7 +174,7 @@ jobs:
           set -a
           source .env
           set +a
-          poetry run python manage.py test tests.test_public_web_integration --verbosity=2
+          poetry run python manage.py test tests.test_public_web_integration --verbosity=2 --keepdb
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
           TEST_MODE: 'True'
