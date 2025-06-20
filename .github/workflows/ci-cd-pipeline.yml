@@ -86,6 +86,14 @@ jobs:
           sed -i 's/DEBUG=.*/DEBUG=True/g' .env
           sed -i 's/SECRET_KEY=.*/SECRET_KEY=test_secret_key_for_ci_environment/g' .env
           sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env
+          # Add DEV_DB variables since they don't exist in .env.example
+          echo "" >> .env
+          echo "# CI Database Configuration" >> .env
+          echo "DEV_DB_NAME=test_db_linguify" >> .env
+          echo "DEV_DB_USER=postgres" >> .env
+          echo "DEV_DB_PASSWORD=postgres" >> .env
+          echo "DEV_DB_HOST=localhost" >> .env
+          echo "DEV_DB_PORT=5432" >> .env
           echo "TESTING=True" >> .env
           echo "TEST_MODE=True" >> .env
           echo "DJANGO_ENV=ci" >> .env
@@ -219,6 +227,14 @@ jobs:
           sed -i 's/DEBUG=.*/DEBUG=True/g' .env
           sed -i 's/SECRET_KEY=.*/SECRET_KEY=test_secret_key_for_ci_environment/g' .env
           sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env
+          # Add DEV_DB variables since they don't exist in .env.example
+          echo "" >> .env
+          echo "# CI Database Configuration" >> .env
+          echo "DEV_DB_NAME=test_db_linguify" >> .env
+          echo "DEV_DB_USER=postgres" >> .env
+          echo "DEV_DB_PASSWORD=postgres" >> .env
+          echo "DEV_DB_HOST=localhost" >> .env
+          echo "DEV_DB_PORT=5432" >> .env
           echo "TESTING=True" >> .env
           echo "TEST_MODE=True" >> .env
           echo "DJANGO_ENV=ci" >> .env
