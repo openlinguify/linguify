@@ -11,6 +11,7 @@ class QuizModelTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             username='testuser',
+            email='testuser@example.com',
             password='testpass123'
         )
         
@@ -56,6 +57,7 @@ class QuizAPITests(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             username='testuser',
+            email='testuser@example.com',
             password='testpass123'
         )
         self.client.force_authenticate(user=self.user)
