@@ -172,8 +172,52 @@ class FullSystemIntegrationTest(TestCase):
         for app in self.mock_apps:
             self.assertContains(response, app['name'])
     
-    def test_legacy_compatibility(self):
+    @patch('public_web.views.manifest_parser.get_app_by_slug')
+    def test_legacy_compatibility(self, mock_get_app):
         """Test that legacy URLs still work alongside dynamic system"""
+        # Mock apps that the redirects point to
+        def mock_app_by_slug(slug):
+            apps = {
+                'course': {
+                    'name': 'Learning',
+                    'slug': 'course',
+                    'summary': 'Interactive language lessons',
+                    'category': 'Education',
+                    'version': '1.0.0'
+                },
+                'revision': {
+                    'name': 'Revision',
+                    'slug': 'revision', 
+                    'summary': 'Spaced repetition flashcards',
+                    'category': 'Education',
+                    'version': '1.0.0'
+                },
+                'notebook': {
+                    'name': 'Notebook',
+                    'slug': 'notebook',
+                    'summary': 'Note-taking application',
+                    'category': 'Productivity', 
+                    'version': '1.0.0'
+                },
+                'quizz': {
+                    'name': 'Quiz',
+                    'slug': 'quizz',
+                    'summary': 'Interactive quizzes',
+                    'category': 'Education',
+                    'version': '1.0.0'
+                },
+                'language_ai': {
+                    'name': 'Language AI',
+                    'slug': 'language_ai',
+                    'summary': 'AI-powered language assistance',
+                    'category': 'Education',
+                    'version': '1.0.0'
+                }
+            }
+            return apps.get(slug)
+        
+        mock_get_app.side_effect = mock_app_by_slug
+        
         # Test legacy app URLs
         legacy_urls = [
             'public_web:legacy_courses_redirect',

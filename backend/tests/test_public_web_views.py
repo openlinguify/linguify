@@ -117,8 +117,38 @@ class PublicWebViewsTest(TestCase):
         
         self.assertEqual(response.status_code, 404)
     
-    def test_legacy_app_views_still_work(self):
+    @patch('public_web.views.manifest_parser.get_app_by_slug')
+    def test_legacy_app_views_still_work(self, mock_get_app):
         """Test that legacy app views still work"""
+        # Mock apps that the redirects point to
+        def mock_app_by_slug(slug):
+            apps = {
+                'course': {
+                    'name': 'Learning',
+                    'slug': 'course',
+                    'summary': 'Interactive language lessons',
+                    'category': 'Education',
+                    'version': '1.0.0'
+                },
+                'revision': {
+                    'name': 'Revision',
+                    'slug': 'revision', 
+                    'summary': 'Spaced repetition flashcards',
+                    'category': 'Education',
+                    'version': '1.0.0'
+                },
+                'notebook': {
+                    'name': 'Notebook',
+                    'slug': 'notebook',
+                    'summary': 'Note-taking application',
+                    'category': 'Productivity', 
+                    'version': '1.0.0'
+                }
+            }
+            return apps.get(slug)
+        
+        mock_get_app.side_effect = mock_app_by_slug
+        
         # Test courses app view (redirect)
         response = self.client.get(reverse('public_web:legacy_courses_redirect'))
         self.assertEqual(response.status_code, 301)  # Redirect
