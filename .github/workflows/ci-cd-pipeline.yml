@@ -264,14 +264,13 @@ jobs:
           source .env
           set +a
           echo "🔥 Running FULL Test Suite for Staging"
-          # Run specific test modules to avoid loading non-test files
+          # Run only specific test modules, excluding disabled apps
           poetry run python manage.py test \
+            tests \
             apps.authentication.tests \
             apps.quizz.tests \
             apps.revision.tests \
-            apps.task.tests \
             core.jobs.tests \
-            tests \
             --verbosity=2 --keepdb --settings=core.settings_test
           echo "🎯 Running Jobs Tests Again for Verification"
           poetry run python manage.py test core.jobs.tests -v 2 --settings=core.settings_test --keepdb
