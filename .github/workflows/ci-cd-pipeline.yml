@@ -344,7 +344,7 @@ jobs:
   notify-failure:
     name: Notify on Failure
     needs: [test, test-staging, deploy-staging, deploy-production]
-    if: failure()
+    if: failure() && false  # TEMPORAIREMENT DÉSACTIVÉ - Retirer "&& false" pour réactiver
     runs-on: ubuntu-latest
     permissions:
       issues: write

@@ -79,10 +79,6 @@ INSTALLED_APPS = [
     'channels',
     'drf_spectacular',
 
-    # Core project modules
-    'core.apps.CoreConfig',
-    'core.jobs',
-
     # Project django_apps
     'apps.authentication',
     # 'apps.chat',
@@ -105,6 +101,9 @@ INSTALLED_APPS = [
     # Web interfaces
     'public_web',
     'saas_web',
+    'core.apps.CoreConfig',
+    'core.jobs',
+    'core.blog',
     # 'admin_tools',  # Admin tools for managing the platform
     # Django REST framework modules
     'rest_framework',

@@ -16,6 +16,7 @@ from apps.authentication.views_terms import accept_terms, terms_status
 from tests.test_settings import test_settings
 from django.contrib.sitemaps.views import sitemap, index as sitemap_index
 from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
+from core.blog.views import comment_like_toggle, comment_report, reply_to_comment as comment_reply
 
 
 def redirect_to_admin(request):
@@ -25,6 +26,11 @@ def redirect_to_admin(request):
 urlpatterns = [
     # Language switching
     path('i18n/', include('django.conf.urls.i18n')),
+    
+    # Blog AJAX endpoints (no language prefix for API calls)
+    path('blog/comment/like/', comment_like_toggle, name='blog_comment_like_ajax'),
+    path('blog/comment/report/', comment_report, name='blog_comment_report_ajax'),
+    path('blog/comment/<int:comment_id>/reply/', comment_reply, name='blog_comment_reply_ajax'),
     
     # SaaS application (protected routes) - no language prefix
     path('', include('saas_web.urls')),
@@ -93,9 +99,16 @@ urlpatterns += i18n_patterns(
     # Careers/Jobs pages - with language prefix (public-facing)
     path('careers/', include('core.jobs.urls_web', namespace='jobs_web')),
     
+    # Blog - with language prefix (public-facing)
+    path('blog/', include('core.blog.urls', namespace='blog')),
+    
     # Public website (landing, marketing) - with language prefix
     path('', include('public_web.urls')),
     prefix_default_language=True,  # Add language prefix even for default language
 )
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Serve static files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

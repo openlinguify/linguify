@@ -1,0 +1,99 @@
+{% comment %}
+Profanity Alert Component
+Displays professional warnings for inappropriate language
+{% endcomment %}
+
+{% if messages %}
+    {% for message in messages %}
+        {% if message.level_tag == 'error' and 'inappropriate' in message.message or 'offensive' in message.message or 'respectful' in message.message %}
+            <div class="alert alert-danger alert-dismissible fade show profanity-error profanity-error-scroll" role="alert" id="profanity-alert" style="
+                border-left: 4px solid #fd7e14;
+                background: linear-gradient(135deg, #fff4e6 0%, #ffebcc 100%);
+                border-color: #fd7e14;
+            ">
+                <div class="d-flex align-items-start">
+                    <div class="flex-shrink-0 me-3">
+                        <i class="fas fa-exclamation-triangle fa-2x" style="color: #fd7e14;"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="alert-heading mb-2" style="color: #fd7e14; font-weight: 600;">
+                            <i class="fas fa-ban me-2"></i>
+                            Comment Blocked
+                        </h6>
+                        <p class="mb-2"><strong>{{ message.message }}</strong></p>
+                        <div class="small text-muted">
+                            <ul class="mb-0">
+                                <li>Please edit your comment to use appropriate language</li>
+                                <li>All comments must follow our community guidelines</li>
+                                <li>Try submitting your comment again after making changes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<style>
+.profanity-error {
+    border-left: 4px solid #fd7e14 !important;
+    background: linear-gradient(135deg, #fff4e6 0%, #ffebcc 100%) !important;
+    border-color: #fd7e14 !important;
+    animation: slideInDown 0.5s ease-out;
+}
+
+.profanity-error .alert-heading {
+    color: #fd7e14 !important;
+    font-weight: 600;
+}
+
+.profanity-error ul li {
+    padding: 3px 0;
+    color: #6c757d;
+}
+
+.profanity-error .fas.fa-exclamation-triangle {
+    color: #fd7e14 !important;
+}
+
+/* Animation for smooth appearance */
+@keyframes slideInDown {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Ensure the alert stays visible (no auto-hide) */
+.profanity-error {
+    position: relative;
+    z-index: 1050;
+    margin-bottom: 1.5rem;
+}
+
+/* Scroll to the alert when it appears */
+.profanity-error-scroll {
+    scroll-margin-top: 100px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Scroll to profanity alert if it exists
+    const profanityAlert = document.getElementById('profanity-alert');
+    if (profanityAlert) {
+        setTimeout(() => {
+            profanityAlert.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+        }, 100);
+    }
+});
+</script>
