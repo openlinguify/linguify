@@ -1,0 +1,183 @@
+{% load i18n %}
+
+<!-- Modern Report Comment Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">
+                    <i class="fas fa-flag text-danger me-2"></i>
+                    {% trans "Report Comment" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form id="reportForm">
+                <input type="hidden" id="reportCommentId" value="">
+                <div class="modal-body">
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {% trans "Help us maintain a respectful community by reporting inappropriate content. All reports are reviewed by our moderation team." %}
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="reporterName" class="form-label">
+                                {% trans "Your Name" %} <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="reporterName" 
+                                   required
+                                   maxlength="100"
+                                   placeholder="{% trans 'Enter your full name' %}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="reporterEmail" class="form-label">
+                                {% trans "Your Email" %} <span class="text-danger">*</span>
+                            </label>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="reporterEmail" 
+                                   required
+                                   placeholder="{% trans 'your.email@example.com' %}">
+                            <div class="form-text">
+                                <i class="fas fa-lock me-1"></i>
+                                {% trans "Your email will be kept confidential" %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">
+                            {% trans "Reason for reporting" %} <span class="text-danger">*</span>
+                        </label>
+                        <div class="report-reasons">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reportReason" id="reason_spam" value="spam">
+                                <label class="form-check-label" for="reason_spam">
+                                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                    <strong>{% trans "Spam or unwanted commercial content" %}</strong>
+                                    <div class="small text-muted">{% trans "Unsolicited advertising, promotional content, or repetitive posts" %}</div>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reportReason" id="reason_harassment" value="harassment">
+                                <label class="form-check-label" for="reason_harassment">
+                                    <i class="fas fa-user-slash text-danger me-2"></i>
+                                    <strong>{% trans "Harassment or bullying" %}</strong>
+                                    <div class="small text-muted">{% trans "Targeted harassment, intimidation, or cyberbullying" %}</div>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reportReason" id="reason_hate_speech" value="hate_speech">
+                                <label class="form-check-label" for="reason_hate_speech">
+                                    <i class="fas fa-ban text-danger me-2"></i>
+                                    <strong>{% trans "Hate speech or discrimination" %}</strong>
+                                    <div class="small text-muted">{% trans "Content promoting hatred or discrimination based on identity" %}</div>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reportReason" id="reason_inappropriate" value="inappropriate">
+                                <label class="form-check-label" for="reason_inappropriate">
+                                    <i class="fas fa-eye-slash text-warning me-2"></i>
+                                    <strong>{% trans "Inappropriate or offensive content" %}</strong>
+                                    <div class="small text-muted">{% trans "Content that violates community standards or is offensive" %}</div>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reportReason" id="reason_misinformation" value="misinformation">
+                                <label class="form-check-label" for="reason_misinformation">
+                                    <i class="fas fa-exclamation-circle text-info me-2"></i>
+                                    <strong>{% trans "False or misleading information" %}</strong>
+                                    <div class="small text-muted">{% trans "Misinformation or deliberately false claims" %}</div>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reportReason" id="reason_copyright" value="copyright">
+                                <label class="form-check-label" for="reason_copyright">
+                                    <i class="fas fa-copyright text-secondary me-2"></i>
+                                    <strong>{% trans "Copyright violation" %}</strong>
+                                    <div class="small text-muted">{% trans "Unauthorized use of copyrighted material" %}</div>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reportReason" id="reason_other" value="other">
+                                <label class="form-check-label" for="reason_other">
+                                    <i class="fas fa-ellipsis-h text-muted me-2"></i>
+                                    <strong>{% trans "Other" %}</strong>
+                                    <div class="small text-muted">{% trans "Please specify in the additional information field" %}</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="additionalInfo" class="form-label">
+                            {% trans "Additional Information" %} 
+                            <span class="text-muted">({% trans "optional" %})</span>
+                        </label>
+                        <textarea class="form-control" 
+                                  id="additionalInfo" 
+                                  rows="4" 
+                                  maxlength="500"
+                                  placeholder="{% trans 'Please provide more details about your report. This information helps our moderation team better understand the issue.' %}"></textarea>
+                    </div>
+                    
+                    <input type="hidden" id="reportCommentId" value="">
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>
+                        {% trans "Cancel" %}
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-flag me-1"></i>
+                        {% trans "Submit Report" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.report-reasons .form-check {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.report-reasons .form-check:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.report-reasons .form-check-input:checked + .form-check-label {
+    color: #2d3436;
+}
+
+.report-reasons .form-check:has(.form-check-input:checked) {
+    background: #fff3cd;
+    border-color: #ffc107;
+}
+
+.report-reasons .form-check-label {
+    cursor: pointer;
+    width: 100%;
+}
+
+.report-reasons .form-check-input {
+    margin-top: 0.25rem;
+}
+</style>

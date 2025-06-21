@@ -239,3 +239,7 @@ dmypy.json
 .pyre/
 *.mo
 *.pot
+
+
+
+todo.txt

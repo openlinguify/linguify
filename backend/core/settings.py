@@ -79,10 +79,6 @@ INSTALLED_APPS = [
     'channels',
     'drf_spectacular',
 
-    # Core project modules
-    'core.apps.CoreConfig',
-    'core.jobs',
-
     # Project django_apps
     'apps.authentication',
     # 'apps.chat',
@@ -105,6 +101,9 @@ INSTALLED_APPS = [
     # Web interfaces
     'public_web',
     'saas_web',
+    'core.apps.CoreConfig',
+    'core.jobs',
+    'core.blog',
     # 'admin_tools',  # Admin tools for managing the platform
     # Django REST framework modules
     'rest_framework',
@@ -338,6 +337,12 @@ django_env = env('DJANGO_ENV', default='development')
 # Check for Render Database URL first (automatically provided in cloud)
 database_url = env('DATABASE_URL', default=None)
 
+# Check if we're in Render environment (production)
+is_render = env('RENDER', default=False, cast=bool)
+if is_render and not django_env == 'test':
+    django_env = 'production'
+    print("Detected Render environment - setting django_env to production")
+
 if database_url:
     # Use Render PostgreSQL (automatically configured)
     import dj_database_url
@@ -346,8 +351,8 @@ if database_url:
     }
     print("Using Render PostgreSQL (Cloud)")
     
-elif django_env == 'production':
-    # PRODUCTION : Toujours Supabase PostgreSQL
+elif django_env == 'production' or django_env == 'staging' or is_render:
+    # PRODUCTION/STAGING : Toujours Supabase PostgreSQL
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -361,7 +366,7 @@ elif django_env == 'production':
             },
         }
     }
-    print("Using PRODUCTION Supabase PostgreSQL")
+    print(f"Using SUPABASE PostgreSQL for {django_env.upper()}")
     
 elif django_env == 'development':
     # DEVELOPMENT : PostgreSQL local uniquement
@@ -395,18 +400,37 @@ elif os.environ.get('TEST_MODE') == 'True' or django_env == 'test':
     print("Using PostgreSQL for testing")
     
 else:
-    # FALLBACK : PostgreSQL local avec anciennes variables
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env('DB_NAME', default='db_linguify_dev'),
-            'USER': env('DB_USER', default='postgres'),
-            'PASSWORD': env('DB_PASSWORD', default='azerty'),
-            'HOST': env('DB_HOST', default='localhost'),
-            'PORT': env('DB_PORT', default='5432'),
+    # FALLBACK : Vérifier si des variables Supabase sont présentes
+    supabase_host = env('SUPABASE_DB_HOST', default=None)
+    if supabase_host and not DEBUG:
+        # Production avec Supabase
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': env('SUPABASE_DB_NAME', default='postgres'),
+                'USER': env('SUPABASE_DB_USER'),
+                'PASSWORD': env('SUPABASE_DB_PASSWORD'),
+                'HOST': supabase_host,
+                'PORT': env('SUPABASE_DB_PORT', default='5432'),
+                'OPTIONS': {
+                    'sslmode': 'require',
+                },
+            }
         }
-    }
-    print("Using local PostgreSQL (fallback)")
+        print("Using Supabase PostgreSQL (fallback production)")
+    else:
+        # FALLBACK : PostgreSQL local avec anciennes variables
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': env('DB_NAME', default='db_linguify_dev'),
+                'USER': env('DB_USER', default='postgres'),
+                'PASSWORD': env('DB_PASSWORD', default='azerty'),
+                'HOST': env('DB_HOST', default='localhost'),
+                'PORT': env('DB_PORT', default='5432'),
+            }
+        }
+        print("Using local PostgreSQL (fallback development)")
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [

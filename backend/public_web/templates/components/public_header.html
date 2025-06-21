@@ -13,6 +13,27 @@
     scrollbar-width: thin;
     scrollbar-color: #6c757d #f8f9fa;
     border-radius: 0.375rem !important;
+    z-index: 9999 !important;
+}
+
+/* Fix dropdown z-index issues */
+.dropdown-menu {
+    z-index: 99999 !important;
+    position: absolute !important;
+}
+
+.navbar .dropdown {
+    z-index: 99999 !important;
+    position: relative !important;
+}
+
+.navbar {
+    z-index: 99999 !important;
+}
+
+/* Override any sticky elements that might interfere */
+.sticky-top {
+    z-index: 1000 !important;
 }
 
 .language-dropdown::-webkit-scrollbar {
