@@ -1,0 +1,85 @@
+{% load i18n %}
+
+<!-- Report Comment Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">{% trans "Report Comment" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="reportForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="reporterName" class="form-label">{% trans "Your Name" %}</label>
+                        <input type="text" class="form-control" id="reporterName" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="reporterEmail" class="form-label">{% trans "Your Email" %}</label>
+                        <input type="email" class="form-control" id="reporterEmail" required>
+                        <div class="form-text">{% trans "Your email will be kept confidential" %}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Reason for reporting" %}</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reportReason" id="reason_spam" value="spam">
+                            <label class="form-check-label" for="reason_spam">
+                                {% trans "Spam or unwanted commercial content" %}
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reportReason" id="reason_harassment" value="harassment">
+                            <label class="form-check-label" for="reason_harassment">
+                                {% trans "Harassment or bullying" %}
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reportReason" id="reason_hate_speech" value="hate_speech">
+                            <label class="form-check-label" for="reason_hate_speech">
+                                {% trans "Hate speech or discrimination" %}
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reportReason" id="reason_inappropriate" value="inappropriate">
+                            <label class="form-check-label" for="reason_inappropriate">
+                                {% trans "Inappropriate or offensive content" %}
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reportReason" id="reason_misinformation" value="misinformation">
+                            <label class="form-check-label" for="reason_misinformation">
+                                {% trans "False or misleading information" %}
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reportReason" id="reason_copyright" value="copyright">
+                            <label class="form-check-label" for="reason_copyright">
+                                {% trans "Copyright violation" %}
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reportReason" id="reason_other" value="other">
+                            <label class="form-check-label" for="reason_other">
+                                {% trans "Other (please specify)" %}
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="additionalInfo" class="form-label">{% trans "Additional Information" %} <small class="text-muted">({% trans "optional" %})</small></label>
+                        <textarea class="form-control" id="additionalInfo" rows="3" placeholder="{% trans 'Please provide more details about your report...' %}"></textarea>
+                    </div>
+                    
+                    <input type="hidden" id="reportCommentId" value="">
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-danger">{% trans "Submit Report" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
