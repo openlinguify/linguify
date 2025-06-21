@@ -1,0 +1,107 @@
+{% load i18n %}
+
+<!-- Comment Item (Reddit-style) -->
+<div class="comment-item mb-3 comment-depth-{{ depth }}" data-comment-id="{{ comment.id }}" data-depth="{{ depth }}">
+    <div class="card">
+        <div class="card-body p-3">
+            <!-- Comment Header -->
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="d-flex align-items-center">
+                    <div class="avatar-circle bg-primary text-white me-2" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold;">
+                        {{ comment.author_name|first|upper }}
+                    </div>
+                    <div>
+                        <strong class="comment-author">{{ comment.author_name }}</strong>
+                        <small class="text-muted ms-2">
+                            {{ comment.created_at|timesince }}
+                            {% if comment.is_edited %}
+                                <span class="badge bg-secondary">edited</span>
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- Comment Actions Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        ⋯
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item report-comment" href="#" data-comment-id="{{ comment.id }}">
+                            <i class="fas fa-flag"></i> {% trans "Report" %}
+                        </a></li>
+                        <!-- Comment ID hidden for better UX -->
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Comment Content -->
+            <div class="comment-content mb-3">
+                {{ comment.content|linebreaks }}
+            </div>
+            
+            <!-- Comment Actions Bar -->
+            <div class="comment-actions d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <!-- Like Button -->
+                    <button class="btn btn-sm btn-outline-primary like-btn me-3" 
+                            data-comment-id="{{ comment.id }}" 
+                            data-liked="false">
+                        <i class="fas fa-thumbs-up"></i>
+                        <span class="like-count">{{ comment.likes_count }}</span>
+                    </button>
+                    
+                    <!-- Reply Button -->
+                    {% if depth < 2 %}
+                    <button class="btn btn-sm btn-outline-secondary reply-btn me-3" 
+                            data-comment-id="{{ comment.id }}">
+                        <i class="fas fa-reply"></i> {% trans "Reply" %}
+                    </button>
+                    {% endif %}
+                    
+                    <!-- Share Button -->
+                    <button class="btn btn-sm btn-outline-info share-btn" 
+                            data-comment-id="{{ comment.id }}">
+                        <i class="fas fa-share"></i> {% trans "Share" %}
+                    </button>
+                </div>
+                
+                <div class="comment-stats text-muted small">
+                    {% if comment.get_replies.count > 0 %}
+                        {{ comment.get_replies.count }} {% trans "replies" %}
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Reply Form (Hidden by default) -->
+            <div class="reply-form mt-3" style="display: none;" data-comment-id="{{ comment.id }}">
+                <form class="quick-reply-form">
+                    <div class="mb-2">
+                        <input type="text" class="form-control form-control-sm" placeholder="{% trans 'Your name' %}" name="reply_author_name" required>
+                    </div>
+                    <div class="mb-2">
+                        <input type="email" class="form-control form-control-sm" placeholder="{% trans 'Your email' %}" name="reply_author_email" required>
+                    </div>
+                    <div class="mb-2">
+                        <textarea class="form-control form-control-sm" rows="3" placeholder="{% trans 'Write a reply...' %}" name="reply_content" required></textarea>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-sm btn-secondary me-2 cancel-reply">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-sm btn-primary submit-reply">{% trans "Reply" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Nested Replies -->
+    {% if comment.get_replies.exists and depth < 2 %}
+        <div class="replies mt-2" style="margin-left: 20px;">
+            {% for reply in comment.get_replies %}
+                {% with new_depth=depth|add:1 %}
+                    {% include 'blog/comment_item.html' with comment=reply depth=new_depth %}
+                {% endwith %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

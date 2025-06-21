@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   report-failure:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' && false }}  # Désactivé temporairement
+    if: false  # COMPLÈTEMENT DÉSACTIVÉ - Ne créera plus d'issues automatiques
     runs-on: ubuntu-latest
     permissions:
       contents: write

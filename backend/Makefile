@@ -146,6 +146,17 @@ help-db:
 	@echo ""
 	@echo "📱 Apps de test:"
 	@echo "  quizz, course, notebook, revision, language_ai"
+	@echo ""
+	@echo "📝 Blog OpenLinguify:"
+	@echo "  blog-articles              Créer les articles SEO (dev)"
+	@echo "  blog-dev / blog-prod       Status articles par environnement"
+	@echo "  blog-sync-prod             Synchroniser dev → prod (complet)"
+	@echo "  blog-sync-prod-all         Sync par modèle (category→tag→blogpost)"
+	@echo ""
+	@echo "🔄 Synchronisation granulaire:"
+	@echo "  make blog blogpost prod         Sync une table (format court)"
+	@echo "  make blog-sync-table TABLE=category TARGET=prod"
+	@echo "  make course-sync-table TABLE=lesson TARGET=prod"
 
 st:
 	@echo "⚡ STATUS RAPIDE"
@@ -212,6 +223,70 @@ reset-db:
 	poetry run python scripts/database/clean_database.py
 
 # ==============================================================================
+# 📝 BLOG MANAGEMENT & TABLE SYNC
+# ==============================================================================
+
+# Blog Management
+blog-articles:
+	@echo "📝 Création des articles SEO OpenLinguify (blog dev → articles + catégories + tags)..."
+	poetry run python manage.py create_seo_articles
+
+blog-sync-prod:
+	@echo "🔄 Synchronisation complète du blog vers production..."
+	poetry run python scripts/database/sync_blog_simple.py
+
+blog-dev:
+	@echo "🏗️  Articles blog en développement..."
+	@poetry run python manage.py shell -c "from core.blog.models import BlogPost, Category, Tag; print(f'📄 Articles: {BlogPost.objects.count()}'); print(f'📂 Catégories: {Category.objects.count()}'); print(f'🏷️  Tags: {Tag.objects.count()}')"
+
+blog-prod:
+	@echo "🚀 Articles blog en production..."
+	@DJANGO_ENV=production poetry run python manage.py shell -c "from core.blog.models import BlogPost, Category, Tag; print(f'📄 Articles: {BlogPost.objects.count()}'); print(f'📂 Catégories: {Category.objects.count()}'); print(f'🏷️  Tags: {Tag.objects.count()}')"
+
+# Table Synchronization (format: make <app>-sync-table TABLE=<table> TARGET=<env>)
+%-sync-table:
+	@if [ -z "$(TABLE)" ] || [ -z "$(TARGET)" ]; then \
+		echo "❌ Usage: make <app>-sync-table TABLE=<table> TARGET=<env>"; \
+		echo "📝 Exemples:"; \
+		echo "  make blog-sync-table TABLE=blogpost TARGET=prod"; \
+		echo "  make blog-sync-table TABLE=category TARGET=prod"; \
+		echo "  make course-sync-table TABLE=lesson TARGET=prod"; \
+		exit 1; \
+	fi
+	@$(eval APP := $(word 1,$(subst -, ,$*)))
+	@echo "🔄 Synchronisation $(APP).$(TABLE) → $(TARGET)"
+	@poetry run python scripts/database/sync_table_simple.py $(APP) $(TABLE) $(TARGET)
+
+# Shorthand syntax (format: make blog blogpost prod)
+%:
+	@if [ "$(words $(MAKECMDGOALS))" = "3" ]; then \
+		$(eval APP := $(word 1,$(MAKECMDGOALS))) \
+		$(eval TABLE := $(word 2,$(MAKECMDGOALS))) \
+		$(eval TARGET := $(word 3,$(MAKECMDGOALS))) \
+		echo "🔄 Synchronisation $(APP).$(TABLE) → $(TARGET)"; \
+		poetry run python scripts/database/sync_table_simple.py $(APP) $(TABLE) $(TARGET); \
+	else \
+		echo "❌ Format non reconnu. Utilisez:"; \
+		echo "  make <app> <table> <target>    # Exemple: make blog blogpost prod"; \
+		echo "  make <app>-sync-table TABLE=<table> TARGET=<env>"; \
+	fi
+
+# App-specific sync shortcuts
+blog-sync-prod-all:
+	@echo "🔄 Synchronisation complète blog (tous les modèles)..."
+	@make blog-sync-table TABLE=category TARGET=prod
+	@make blog-sync-table TABLE=tag TARGET=prod
+	@make blog-sync-table TABLE=blogpost TARGET=prod
+	@echo "✅ Blog synchronisé complètement"
+
+course-sync-prod-all:
+	@echo "🔄 Synchronisation complète course (modèles principaux)..."
+	@make course-sync-table TABLE=unit TARGET=prod
+	@make course-sync-table TABLE=lesson TARGET=prod
+	@make course-sync-table TABLE=vocabularylist TARGET=prod
+	@echo "✅ Course synchronisé complètement"
+
+# ==============================================================================
 # 🚀 DEPLOYMENT
 # ==============================================================================
 
@@ -267,7 +342,7 @@ check-deploy:
 
 env:
 	@echo "🔍 Environnement actuel:"
-	@poetry run python check_env.py
+	@poetry run python scripts/check_env.py
 
 env-dev:
 	@echo "🏗️  Passage en mode DÉVELOPPEMENT..."

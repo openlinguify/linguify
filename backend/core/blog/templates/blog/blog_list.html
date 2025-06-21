@@ -1,0 +1,175 @@
+{% extends 'public_web/public_base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}OpenLinguify Blog - {% trans "Language Learning Tips & Updates" %}{% endblock %}
+
+{% block meta_description %}OpenLinguify Blog - {% trans "Language learning tips, AI insights, and platform updates" %}{% endblock %}
+
+{% block meta_keywords %}openlinguify, open linguify, language learning, AI education, blog, tips, tutorials, linguify open, open source, source open, learning, education, platform updates, language tips, AI insights, smart learning, language blog, educational blog, open source education, language tips blog, AI blog, OpenLinguify updates, best language learning practices, AI in education, language learning blog, OpenLinguify news, best learning platform, best education tools{% endblock %}
+
+{% block extra_meta %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Force dropdown to appear above everything */
+.navbar .dropdown-menu {
+    z-index: 999999 !important;
+    position: absolute !important;
+}
+
+.navbar .dropdown {
+    z-index: 999999 !important;
+}
+
+/* Reduce z-index of sidebar elements */
+.col-lg-4 .sticky-top,
+.sidebar,
+.card {
+    z-index: 1 !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="mb-5">
+                <h1 class="display-4 fw-bold text-primary">OpenLinguify {% trans "Blog" %}</h1>
+                <p class="lead text-muted">{% trans "Language learning tips, AI insights, and OpenLinguify platform updates" %}</p>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="mb-4">
+                <form method="get" class="d-flex">
+                    <input type="search" name="search" value="{{ search_query }}" 
+                           class="form-control me-2" placeholder="{% trans 'Search articles...' %}">
+                    <button type="submit" class="btn btn-outline-primary">{% trans "Search" %}</button>
+                </form>
+            </div>
+            
+            <!-- Blog Posts -->
+            {% if posts %}
+                <div class="row">
+                    {% for post in posts %}
+                    <div class="col-md-6 mb-4">
+                        <article class="card h-100">
+                            {% if post.featured_image %}
+                            <img src="{{ post.featured_image.url }}" class="card-img-top" alt="{{ post.title }}" style="height: 200px; object-fit: cover;">
+                            {% endif %}
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    {% if post.category %}
+                                    <span class="badge bg-primary">{{ post.category.name }}</span>
+                                    {% endif %}
+                                    <small class="text-muted ms-2">{{ post.reading_time }} min read</small>
+                                </div>
+                                <h5 class="card-title">
+                                    <a href="{{ post.get_absolute_url }}" class="text-decoration-none">{{ post.title }}</a>
+                                </h5>
+                                <p class="card-text">{{ post.excerpt|default:post.content|truncatewords:20 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        {% trans "By" %} {{ post.author.get_full_name|default:post.author.username }}
+                                        <br>{{ post.published_at|date:"M d, Y" }}
+                                    </small>
+                                    <a href="{{ post.get_absolute_url }}" class="btn btn-outline-primary btn-sm">{% trans "Read More" %}</a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <nav aria-label="Blog pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">{% trans "First" %}</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">{% trans "Previous" %}</a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_obj.number }} {% trans "of" %} {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">{% trans "Next" %}</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}">{% trans "Last" %}</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center my-5">
+                    <h3>{% trans "No blog posts found" %}</h3>
+                    <p class="text-muted">{% trans "We're working on creating amazing content for you. Check back soon!" %}</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 2rem;">
+                <!-- Categories -->
+                {% if categories %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">{% trans "Categories" %}</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for category in categories %}
+                        <a href="{% url 'blog:category' category.slug %}" 
+                           class="btn btn-outline-secondary btn-sm me-1 mb-1">{{ category.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Tags -->
+                {% if tags %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">{% trans "Tags" %}</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for tag in tags %}
+                        <a href="{% url 'blog:tag' tag.slug %}" 
+                           class="badge bg-light text-dark me-1 mb-1">#{{ tag.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- About OpenLinguify -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">{% trans "About OpenLinguify" %}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="small">{% trans "OpenLinguify is an open-source educational platform that combines AI technology with proven pedagogical methods for effective language learning." %}</p>
+                        <a href="{% url 'public_web:about' %}" class="btn btn-primary btn-sm">{% trans "Learn More" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,736 @@
+{% extends 'public_web/public_base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}OpenLinguify Blog - {% trans "Language Learning Tips & Updates" %}{% endblock %}
+
+{% block meta_description %}OpenLinguify Blog - {% trans "Language learning tips, AI insights, and platform updates" %}{% endblock %}
+
+{% block extra_css %}
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* Odoo-inspired design improvements */
+.blog-container {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.container-fluid {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.blog-sidebar {
+    background: #f8f9fa;
+    border-radius: 0;
+    padding: 1.5rem;
+    margin-bottom: 0;
+    border: none;
+    border-right: 1px solid #e9ecef;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    z-index: 50;
+}
+
+.main-content-with-sidebar {
+    margin-left: 320px;
+    min-height: calc(100vh - 300px);
+}
+
+.sidebar-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.sidebar-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.sidebar-section h6 {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sidebar-filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #6c757d;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.25rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    border: 1px solid transparent;
+}
+
+.sidebar-filter:hover {
+    background: #e9ecef;
+    color: #495057;
+    text-decoration: none;
+    border-color: #dee2e6;
+}
+
+.sidebar-filter.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.sidebar-filter i {
+    width: 16px;
+    text-align: center;
+}
+
+.filter-count {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.sidebar-filter:not(.active) .filter-count {
+    background: #e9ecef;
+    color: #6c757d;
+}
+
+.tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag-cloud .badge {
+    background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.tag-cloud .badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(116, 185, 255, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.blog-search {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.blog-search input {
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border-radius: 25px;
+    border: 2px solid #e9ecef;
+    width: 100%;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.blog-search input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    outline: none;
+}
+
+.blog-search .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+
+.blog-controls {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.results-info {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.sort-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.sort-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    background: white;
+    color: #6c757d;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sort-btn:hover {
+    background: #f8f9fa;
+    border-color: #adb5bd;
+    color: #495057;
+    text-decoration: none;
+}
+
+.sort-btn.active {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+.post-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-color: #667eea;
+}
+
+.post-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.post-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.post-title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.post-title a:hover {
+    color: #667eea;
+}
+
+.post-excerpt {
+    color: #6c757d;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.post-meta-enhanced {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f3f4;
+}
+
+.post-meta-left {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.post-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.post-meta-item i {
+    font-size: 0.8rem;
+    width: 14px;
+    text-align: center;
+}
+
+.post-meta-item.views {
+    color: #28a745;
+}
+
+.post-meta-item.comments {
+    color: #17a2b8;
+}
+
+.post-meta-item.date {
+    color: #6c757d;
+}
+
+.post-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.post-tag {
+    background: #f8f9fa;
+    color: #495057;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    text-decoration: none;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s ease;
+}
+
+.post-tag:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    text-decoration: none;
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.author-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.author-name {
+    font-weight: 500;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+.page-link {
+    color: #667eea;
+    border-color: #dee2e6;
+}
+
+.page-link:hover {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+.page-item.active .page-link {
+    background: #667eea;
+    border-color: #667eea;
+}
+
+/* Alternative sticky sidebar approach */
+.blog-sidebar.sticky-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    max-height: 100vh;
+    align-self: start;
+}
+
+/* Flexbox container for better sidebar control */
+.blog-content-wrapper {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.blog-content-wrapper .blog-sidebar {
+    flex: 0 0 280px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    max-height: 100vh;
+}
+
+.blog-content-wrapper .main-content-with-sidebar {
+    flex: 1;
+    margin-left: 0;
+    padding: 1.5rem 2rem;
+}
+
+/* Responsive improvements */
+@media (max-width: 1024px) {
+    .blog-sidebar {
+        position: relative;
+        width: 100%;
+        left: auto;
+        top: auto;
+        margin-bottom: 2rem;
+        height: auto;
+        max-height: none;
+        bottom: auto;
+    }
+    
+    .main-content-with-sidebar {
+        margin-left: 0;
+    }
+    
+    .container-fluid {
+        padding: 0 1rem;
+    }
+    
+    .blog-content-wrapper {
+        flex-direction: column;
+    }
+    
+    .blog-content-wrapper .blog-sidebar {
+        flex: none;
+        width: 100%;
+        position: relative;
+        top: auto;
+        height: auto;
+        max-height: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .blog-container {
+        padding: 1rem 0.5rem;
+    }
+    
+    .blog-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .sort-controls {
+        justify-content: center;
+    }
+    
+    .post-meta-enhanced {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .post-meta-left {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+
+/* Loading states */
+.loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="blog-container">
+
+    <div class="container-fluid">
+        <div class="blog-content-wrapper">
+            <!-- Sticky Sidebar -->
+            <div class="blog-sidebar">
+                <!-- Search -->
+                <div class="blog-search">
+                    <i class="fas fa-search search-icon"></i>
+                    <form method="get" id="searchForm">
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Search articles..." 
+                               value="{{ request.GET.search }}">
+                    </form>
+                </div>
+
+                <!-- Main Filters -->
+                <div class="sidebar-section">
+                    <h6><i class="fas fa-filter"></i>Filters</h6>
+                    <a href="{% url 'blog:list' %}" class="sidebar-filter {% if not request.GET.category and not request.GET.tag %}active{% endif %}">
+                        <span><i class="fas fa-list"></i>All Articles</span>
+                        <span class="filter-count">{{ total_posts|default:0 }}</span>
+                    </a>
+                    <a href="?featured=1" class="sidebar-filter">
+                        <span><i class="fas fa-star"></i>Popular Articles</span>
+                        <span class="filter-count">{{ featured_count|default:0 }}</span>
+                    </a>
+                    <a href="?recent=1" class="sidebar-filter">
+                        <span><i class="fas fa-clock"></i>Recent Articles</span>
+                        <span class="filter-count">{{ recent_count|default:0 }}</span>
+                    </a>
+                    <a href="?commented=1" class="sidebar-filter">
+                        <span><i class="fas fa-comments"></i>Most Commented</span>
+                        <span class="filter-count">{{ commented_count|default:0 }}</span>
+                    </a>
+                </div>
+
+                <!-- Categories -->
+                <div class="sidebar-section">
+                    <h6><i class="fas fa-folder"></i>Categories</h6>
+                    {% for category in categories %}
+                        <a href="?category={{ category.slug }}" 
+                           class="sidebar-filter {% if request.GET.category == category.slug %}active{% endif %}">
+                            <span><i class="fas fa-folder-open"></i>{{ category.name }}</span>
+                            <span class="filter-count">{{ category.posts_count|default:0 }}</span>
+                        </a>
+                    {% empty %}
+                        <p class="text-muted small">No categories available</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Popular Tags -->
+                <div class="sidebar-section">
+                    <h6><i class="fas fa-tags"></i>Popular Tags</h6>
+                    <div class="tag-cloud">
+                        {% for tag in popular_tags %}
+                            <a href="?tag={{ tag.slug }}" class="badge">
+                                {{ tag.name }}
+                            </a>
+                        {% empty %}
+                            <p class="text-muted small">No tags available</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="sidebar-section">
+                    <h6><i class="fas fa-chart-bar"></i>Statistics</h6>
+                    <div class="sidebar-filter">
+                        <span><i class="fas fa-file-alt"></i>Total Articles</span>
+                        <span class="filter-count">{{ total_posts|default:0 }}</span>
+                    </div>
+                    <div class="sidebar-filter">
+                        <span><i class="fas fa-eye"></i>Total Views</span>
+                        <span class="filter-count">{{ total_views|default:0 }}</span>
+                    </div>
+                    <div class="sidebar-filter">
+                        <span><i class="fas fa-comment"></i>Total Comments</span>
+                        <span class="filter-count">{{ total_comments|default:0 }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content-with-sidebar">
+            <!-- Controls -->
+            <div class="blog-controls">
+                <div class="results-info">
+                    <i class="fas fa-info-circle me-1"></i>
+                    {% if posts and posts.paginator.count %}
+                        {% with count=posts.paginator.count %}
+                            {% if count == 1 %}
+                                {{ count }} article found
+                            {% else %}
+                                {{ count }} articles found
+                            {% endif %}
+                        {% endwith %}
+                    {% else %}
+                        No articles found
+                    {% endif %}
+                </div>
+                
+                <div class="sort-controls">
+                    <span class="text-muted small me-2">Sort by:</span>
+                    <a href="?sort=newest" class="sort-btn {% if request.GET.sort == 'newest' or not request.GET.sort %}active{% endif %}">
+                        <i class="fas fa-clock"></i>Newest
+                    </a>
+                    <a href="?sort=popular" class="sort-btn {% if request.GET.sort == 'popular' %}active{% endif %}">
+                        <i class="fas fa-fire"></i>Popular
+                    </a>
+                    <a href="?sort=comments" class="sort-btn {% if request.GET.sort == 'comments' %}active{% endif %}">
+                        <i class="fas fa-comments"></i>Most Commented
+                    </a>
+                </div>
+            </div>
+
+            <!-- Articles List -->
+            <div class="posts-container">
+                {% for post in posts %}
+                    <article class="post-card">
+                        <h2 class="post-title">
+                            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                        </h2>
+                        
+                        <p class="post-excerpt">{{ post.excerpt|default:post.content|truncatewords:30 }}</p>
+                        
+                        <div class="post-meta-enhanced">
+                            <div class="post-meta-left">
+                                <div class="author-info">
+                                    <div class="author-avatar">
+                                        {{ post.author.get_full_name|default:post.author.username|first|upper }}
+                                    </div>
+                                    <span class="author-name">{{ post.author.get_full_name|default:post.author.username }}</span>
+                                </div>
+                                
+                                <div class="post-meta-item date">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>{{ post.published_at|timesince }}</span>
+                                </div>
+                                
+                                <div class="post-meta-item views">
+                                    <i class="fas fa-eye"></i>
+                                    <span>{{ post.view_count|default:0 }} views</span>
+                                </div>
+                                
+                                <div class="post-meta-item comments">
+                                    <i class="fas fa-comment"></i>
+                                    <span>{{ post.comments_count|default:0 }} comments</span>
+                                </div>
+                            </div>
+                            
+                            <div class="post-tags">
+                                {% for tag in post.tags.all|slice:":3" %}
+                                    <a href="?tag={{ tag.slug }}" class="post-tag">{{ tag.name }}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h3 class="text-muted">No articles found</h3>
+                        <p class="text-muted">Try modifying your search criteria</p>
+                        <a href="{% url 'blog:list' %}" class="btn btn-primary">
+                            <i class="fas fa-home me-2"></i>View all articles
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if posts.has_other_pages %}
+                <div class="pagination-container">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            {% if posts.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ posts.previous_page_number }}">
+                                        <i class="fas fa-chevron-left me-1"></i>Previous
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in posts.paginator.page_range %}
+                                {% if posts.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if posts.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ posts.next_page_number }}">
+                                        Next<i class="fas fa-chevron-right ms-1"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Enhanced search functionality
+document.getElementById('searchForm').addEventListener('submit', function(e) {
+    const searchInput = this.querySelector('input[name="search"]');
+    if (!searchInput.value.trim()) {
+        e.preventDefault();
+        searchInput.focus();
+    }
+});
+
+// Auto-search with debounce
+let searchTimeout;
+document.querySelector('input[name="search"]').addEventListener('input', function(e) {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        if (e.target.value.length >= 3 || e.target.value.length === 0) {
+            e.target.form.submit();
+        }
+    }, 500);
+});
+
+// Smooth scroll for tags
+document.querySelectorAll('.post-tag, .tag-cloud .badge').forEach(tag => {
+    tag.addEventListener('click', function(e) {
+        // Add loading state
+        this.style.opacity = '0.6';
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + this.textContent;
+    });
+});
+
+// Full height sidebar - no adjustment needed since it takes 100vh
+</script>
+{% endblock %}
