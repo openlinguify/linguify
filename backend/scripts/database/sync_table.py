@@ -100,7 +100,7 @@ def sync_table_to_production(app_name, table_name, target_env):
             ['poetry', 'run', 'python'] + dump_command,
             capture_output=True,
             text=True,
-            cwd='/mnt/c/Users/louis/WebstormProjects/linguify/backend'
+            cwd=backend_dir
         )
         
         if result.returncode != 0:

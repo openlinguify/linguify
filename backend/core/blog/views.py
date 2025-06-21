@@ -141,7 +141,7 @@ class SecurityUtils:
     def generate_content_hash(content, author_email):
         """Generate hash for duplicate detection"""
         combined = f"{content.lower().strip()}{author_email.lower()}"
-        return hashlib.md5(combined.encode()).hexdigest()
+        return hashlib.sha256(combined.encode()).hexdigest()
 
 
 class CommentValidator:

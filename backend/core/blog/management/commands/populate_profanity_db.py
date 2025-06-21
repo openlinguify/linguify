@@ -92,15 +92,17 @@ class Command(BaseCommand):
     @transaction.atomic
     def create_words_from_data(self, data):
         """Create ProfanityWord objects from structured data"""
+        valid_languages = [choice[0] for choice in ProfanityWord.LANGUAGE_CHOICES]
+        valid_severities = [choice[0] for choice in ProfanityWord.SEVERITY_CHOICES]
         created_count = 0
         
         for language, severity_groups in data.items():
-            if language not in ['en', 'fr', 'es', 'nl']:
+            if language not in valid_languages:
                 self.stdout.write(self.style.WARNING(f'Skipping unsupported language: {language}'))
                 continue
                 
             for severity, words in severity_groups.items():
-                if severity not in ['mild', 'moderate', 'severe']:
+                if severity not in valid_severities:
                     self.stdout.write(self.style.WARNING(f'Skipping invalid severity: {severity}'))
                     continue
                 

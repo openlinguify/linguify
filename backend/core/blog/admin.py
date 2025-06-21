@@ -137,57 +137,58 @@ class ProfanityWordAdmin(admin.ModelAdmin):
     
     readonly_fields = ['created_at', 'updated_at']
     
+    def _clear_cache_safely(self, request):
+        """Safely clear the profanity filter cache with error handling"""
+        try:
+            from .profanity_filter import profanity_filter
+            profanity_filter.clear_cache()
+        except Exception as e:
+            self.message_user(request, f"Warning: Could not clear profanity cache: {e}", level='warning')
+    
     def activate_words(self, request, queryset):
         queryset.update(is_active=True)
         # Clear cache after changes
-        from .profanity_filter import profanity_filter
-        profanity_filter.clear_cache()
+        self._clear_cache_safely(request)
         self.message_user(request, f"{queryset.count()} words were activated.")
     activate_words.short_description = "Activate selected words"
     
     def deactivate_words(self, request, queryset):
         queryset.update(is_active=False)
         # Clear cache after changes
-        from .profanity_filter import profanity_filter
-        profanity_filter.clear_cache()
+        self._clear_cache_safely(request)
         self.message_user(request, f"{queryset.count()} words were deactivated.")
     deactivate_words.short_description = "Deactivate selected words"
     
     def set_mild(self, request, queryset):
         queryset.update(severity='mild')
         # Clear cache after changes
-        from .profanity_filter import profanity_filter
-        profanity_filter.clear_cache()
+        self._clear_cache_safely(request)
         self.message_user(request, f"{queryset.count()} words were set to mild severity.")
     set_mild.short_description = "Set severity to Mild"
     
     def set_moderate(self, request, queryset):
         queryset.update(severity='moderate')
         # Clear cache after changes
-        from .profanity_filter import profanity_filter
-        profanity_filter.clear_cache()
+        self._clear_cache_safely(request)
         self.message_user(request, f"{queryset.count()} words were set to moderate severity.")
     set_moderate.short_description = "Set severity to Moderate"
     
     def set_severe(self, request, queryset):
         queryset.update(severity='severe')
         # Clear cache after changes
-        from .profanity_filter import profanity_filter
-        profanity_filter.clear_cache()
+        self._clear_cache_safely(request)
         self.message_user(request, f"{queryset.count()} words were set to severe severity.")
     set_severe.short_description = "Set severity to Severe"
     
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         # Clear cache when individual words are saved
-        from .profanity_filter import profanity_filter
-        profanity_filter.clear_cache()
+        self._clear_cache_safely(request)
     
     def delete_model(self, request, obj):
         super().delete_model(request, obj)
         # Clear cache when words are deleted
-        from .profanity_filter import profanity_filter
-        profanity_filter.clear_cache()
+        self._clear_cache_safely(request)
     
     class Meta:
         verbose_name = 'Profanity Word'
