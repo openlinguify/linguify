@@ -377,13 +377,20 @@ class BlogDetailView(DetailView):
                                        {'post_id': getattr(post, 'pk', 'unknown')})
                 return
             
-            # Anti-spam check with cookie
+            # Anti-spam check with cookie and cache-based rate limiting
             cookie_name = f'viewed_{post.pk}'
             last_viewed = self.request.COOKIES.get(cookie_name)
             
-            if last_viewed:
+            # Additional cache-based check to prevent race conditions
+            ip_address = SecurityUtils.get_client_ip(self.request)
+            cache_key = f"view_counted_{post.pk}_{ip_address}"
+            
+            if last_viewed or cache.get(cache_key):
                 BlogViewLogger.log_view_attempt(self.request, post.pk, post.title, 'duplicate')
                 return
+            
+            # Set cache immediately to prevent race conditions
+            cache.set(cache_key, True, 300)  # 5 minutes
             
             # Attempt to increment view count with atomic operation
             try:

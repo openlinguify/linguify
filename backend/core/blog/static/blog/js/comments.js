@@ -12,36 +12,8 @@
 
 class BlogCommentsSystem {
     constructor() {
-        // Profanity filter - focused on real insults and vulgar language
-        this.profanityWords = [
-            // English - real insults and vulgar terms
-            'fuck', 'shit', 'bitch', 'bastard', 'asshole', 
-            'whore', 'slut', 'dick', 'cock', 'pussy', 'cunt',
-            'fag', 'faggot', 'nigger', 'motherfucker',
-            'twat', 'scumbag', 'douchebag', 'dickhead', 'prick',
-            'fck', 'fuk', 'btch', 'sht', 'fukk', 'fucc', 'shyt',
-            
-            // French - real insults and vulgar terms (refined list)
-            'merde', 'putain', 'connard', 'salope', 'pute', 'enculé',
-            'bite', 'con', 'conne', 'crétin', 'débile', 'abruti', 'taré',
-            'foutre', 'chier', 'bordel', 'bâtard', 'bâtarde', 'salaud',
-            'salopard', 'saloperie', 'pédé', 'tapette', 'lopette', 'tarlouze',
-            'bougnoule', 'bicot', 'raton', 'négro', 'nègre', 'chintok',
-            'youpin', 'feuj', 'connasse', 'encule', 'enculer', 'fdp',
-            'fils de pute', 'ptain', 'putin', 'ptn', 'batard', 'batarde',
-            
-            // Phonetic variations (essential only)
-            'putin', 'poutain', 'putein', 'conar', 'salop', 'ankule',
-            'fuk', 'fok', 'phuck', 'biatch', 'bytch',
-            
-            // Spanish - essential vulgar terms
-            'joder', 'mierda', 'puta', 'cabrón', 'pendejo',
-            'gilipollas', 'coño', 'hostia',
-            
-            // Dutch - essential vulgar terms
-            'kut', 'klootzak', 'hoer', 'lul', 'pik', 'eikel',
-            'mongool', 'debiel', 'kanker'
-        ];
+        // NOTE: Profanity filtering is handled server-side only
+        // This ensures security and consistency across all platforms
         
         this.init();
         this.bindEvents();
@@ -308,7 +280,7 @@ class BlogCommentsSystem {
             return false;
         }
 
-        // Note: Profanity validation is handled server-side only
+        // NOTE: Profanity validation is handled server-side only
         // This prevents double messages and ensures consistency
 
         // Save user info for future use
@@ -363,17 +335,26 @@ class BlogCommentsSystem {
             const abortController = new AbortController();
             const timeoutId = setTimeout(() => abortController.abort(), 10000); // 10 second timeout
             
-            const response = await fetch('/blog/comment/like/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': this.csrfToken
-                },
-                body: JSON.stringify(requestData),
-                signal: abortController.signal
-            });
-            
-            clearTimeout(timeoutId);
+            let response;
+            try {
+                response = await fetch('/blog/comment/like/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.csrfToken
+                    },
+                    body: JSON.stringify(requestData),
+                    signal: abortController.signal
+                });
+                
+                clearTimeout(timeoutId);
+            } catch (fetchError) {
+                clearTimeout(timeoutId);
+                if (fetchError.name === 'AbortError') {
+                    throw new Error('Request timeout - please try again');
+                }
+                throw fetchError;
+            }
 
             console.log('📥 Response status:', response.status, response.statusText);
             const data = await response.json();
@@ -406,7 +387,13 @@ class BlogCommentsSystem {
             console.error('💥 Network error:', error);
             // Revert optimistic update
             this.toggleLikeUI(btn, isLiked);
-            this.showNotification('Network error. Please try again.', 'error');
+            
+            // Provide specific error messages
+            if (error.message === 'Request timeout - please try again') {
+                this.showNotification('Request timed out. Please check your connection and try again.', 'warning');
+            } else {
+                this.showNotification('Network error. Please try again.', 'error');
+            }
         }
         
         console.groupEnd();
@@ -655,14 +642,30 @@ class BlogCommentsSystem {
             
             console.log('📤 Report request data:', requestData);
             
-            const response = await fetch('/blog/comment/report/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': this.csrfToken
-                },
-                body: JSON.stringify(requestData)
-            });
+            // Create AbortController to prevent extension interference
+            const abortController = new AbortController();
+            const timeoutId = setTimeout(() => abortController.abort(), 10000); // 10 second timeout
+            
+            let response;
+            try {
+                response = await fetch('/blog/comment/report/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.csrfToken
+                    },
+                    body: JSON.stringify(requestData),
+                    signal: abortController.signal
+                });
+                
+                clearTimeout(timeoutId);
+            } catch (fetchError) {
+                clearTimeout(timeoutId);
+                if (fetchError.name === 'AbortError') {
+                    throw new Error('Request timeout - please try again');
+                }
+                throw fetchError;
+            }
 
             console.log('📥 Report response status:', response.status, response.statusText);
             
@@ -689,7 +692,13 @@ class BlogCommentsSystem {
             }
         } catch (error) {
             console.error('💥 Error submitting report:', error);
-            this.showNotification('Failed to submit report. Please try again.', 'error');
+            
+            // Provide specific error messages
+            if (error.message === 'Request timeout - please try again') {
+                this.showNotification('Request timed out. Please check your connection and try again.', 'warning');
+            } else {
+                this.showNotification('Failed to submit report. Please try again.', 'error');
+            }
         }
     }
 
@@ -1291,116 +1300,8 @@ class BlogCommentsSystem {
         }, 5000);
     }
 
-    /**
-     * Check content for profanity
-     * @param {string} content - Content to check
-     * @returns {object} - Results with hasProfanity, severity, foundWords
-     */
-    checkProfanity(content) {
-        if (!content) return { hasProfanity: false, severity: 'none', foundWords: [] };
-
-        const contentLower = content.toLowerCase();
-        const foundWords = [];
-
-        // Basic word check
-        const words = contentLower.match(/\b\w+\b/g) || [];
-        words.forEach(word => {
-            if (this.profanityWords.includes(word)) {
-                foundWords.push(word);
-            }
-        });
-
-        // Advanced detection for circumvention
-        foundWords.push(...this.detectAdvancedProfanity(contentLower));
-
-        // Remove duplicates
-        const uniqueWords = [...new Set(foundWords)];
-
-        // Determine severity based on refined categories
-        let severity = 'none';
-        if (uniqueWords.length > 0) {
-            // Severe: Racist, extremely vulgar, hate speech
-            const severeWords = ['nigger', 'faggot', 'motherfucker', 'cunt', 'bougnoule', 'nègre', 'bicot', 'raton', 'chintok', 'youpin', 'feuj', 'kanker'];
-            
-            // Moderate: Strong insults and vulgar terms
-            const moderateWords = ['fuck', 'shit', 'bitch', 'connard', 'salope', 'pute', 'enculé', 'pédé', 'tapette', 'gilipollas'];
-
-            if (uniqueWords.some(word => severeWords.includes(word))) {
-                severity = 'severe';
-            } else if (uniqueWords.some(word => moderateWords.includes(word))) {
-                severity = 'moderate';
-            } else {
-                severity = 'mild';
-            }
-        }
-
-        return {
-            hasProfanity: uniqueWords.length > 0,
-            severity: severity,
-            foundWords: uniqueWords
-        };
-    }
-
-    detectAdvancedProfanity(text) {
-        const found = [];
-
-        // Remove special characters and numbers, check again
-        const cleanText = text.replace(/[^a-zA-Zàáâäæèéêëìíîïòóôöøùúûüÿç]/g, '');
-        this.profanityWords.forEach(word => {
-            const cleanWord = word.replace(/[^a-zA-Zàáâäæèéêëìíîïòóôöøùúûüÿç]/g, '');
-            if (cleanText.includes(cleanWord)) {
-                found.push(word);
-            }
-        });
-
-        // Check for leetspeak and substitutions
-        let normalizedText = text;
-        const substitutions = {
-            '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '8': 'b', '9': 'g',
-            '@': 'a', '$': 's', '!': 'i', '*': '', '-': '', '_': '', '.': ''
-        };
-
-        Object.keys(substitutions).forEach(symbol => {
-            normalizedText = normalizedText.replaceAll(symbol, substitutions[symbol]);
-        });
-
-        const normalizedWords = normalizedText.match(/\b\w+\b/g) || [];
-        normalizedWords.forEach(word => {
-            if (this.profanityWords.includes(word)) {
-                found.push(word);
-            }
-        });
-
-        // Check for spaced words (e.g., "p u t a i n")
-        const spacedPattern = text.replace(/\s+/g, '');
-        this.profanityWords.forEach(word => {
-            if (spacedPattern.includes(word)) {
-                found.push(word);
-            }
-        });
-
-        // Phonetic variations
-        const phoneticMap = {
-            'putin': 'putain', 'poutain': 'putain', 'putein': 'putain',
-            'mrd': 'merde', 'mrde': 'merde', 'mer2': 'merde',
-            'conar': 'connard', 'konar': 'connard',
-            'salop': 'salope', 'encule': 'enculé',
-            'fuk': 'fuck', 'fok': 'fuck', 'phuck': 'fuck',
-            'sht': 'shit', 'chit': 'shit', 'shyt': 'shit',
-            'biatch': 'bitch', 'bytch': 'bitch'
-        };
-
-        const textWords = text.match(/\b\w+\b/g) || [];
-        textWords.forEach(word => {
-            if (phoneticMap[word]) {
-                found.push(phoneticMap[word]);
-            }
-        });
-
-        return found;
-    }
-
-    // Note: Profanity warnings are now handled server-side only for better UX
+    // NOTE: Client-side profanity checking is removed for security
+    // All profanity validation is handled server-side only
 }
 
 // Prevent extension interference
