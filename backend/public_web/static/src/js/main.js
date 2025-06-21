@@ -8,16 +8,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const href = this.getAttribute('href');
             // Skip empty or invalid anchors
             if (href && href !== '#' && href.length > 1) {
-                try {
-                    const target = document.querySelector(href);
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
+                // Validate anchor format to prevent XSS
+                if (/^#[a-zA-Z][\w-]*$/.test(href)) {
+                    try {
+                        const target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    } catch (error) {
+                        console.warn('Invalid selector for anchor:', href);
                     }
-                } catch (error) {
-                    console.warn('Invalid selector for anchor:', href);
                 }
             }
         });
