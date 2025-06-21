@@ -17,6 +17,8 @@ from tests.test_settings import test_settings
 from django.contrib.sitemaps.views import sitemap, index as sitemap_index
 from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
 from core.blog.views import comment_like_toggle, comment_report, reply_to_comment as comment_reply
+from django.views.generic import RedirectView
+from .favicon_views import favicon_ico, apple_touch_icon, favicon_png
 
 
 def redirect_to_admin(request):
@@ -24,6 +26,14 @@ def redirect_to_admin(request):
 
 # URLs without language prefix (for compatibility)
 urlpatterns = [
+    # Favicon views with proper Django static file handling
+    path('favicon.ico', favicon_ico, name='favicon_ico'),
+    path('apple-touch-icon.png', apple_touch_icon, name='apple_touch_icon'),
+    path('apple-touch-icon-precomposed.png', 
+         lambda request: apple_touch_icon(request, precomposed=True), 
+         name='apple_touch_icon_precomposed'),
+    path('favicon-<str:size>.png', favicon_png, name='favicon_png'),
+    
     # Language switching
     path('i18n/', include('django.conf.urls.i18n')),
     

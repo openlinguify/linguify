@@ -5,6 +5,8 @@
 # Default crawler rules
 User-agent: *
 Allow: /
+Allow: /favicon.ico
+Allow: /static/images/favicon*.png
 Allow: /auth/login/
 Allow: /auth/register/
 Allow: /features/
