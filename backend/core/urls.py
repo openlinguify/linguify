@@ -26,13 +26,18 @@ def redirect_to_admin(request):
 
 # URLs without language prefix (for compatibility)
 urlpatterns = [
-    # Favicon views with proper Django static file handling
-    path('favicon.ico', favicon_ico, name='favicon_ico'),
-    path('apple-touch-icon.png', apple_touch_icon, name='apple_touch_icon'),
-    path('apple-touch-icon-precomposed.png', 
-         lambda request: apple_touch_icon(request, precomposed=True), 
-         name='apple_touch_icon_precomposed'),
-    path('favicon-<str:size>.png', favicon_png, name='favicon_png'),
+    # Favicon fallback redirects (temporary until views are deployed)
+    path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico', permanent=False)),
+    path('apple-touch-icon.png', RedirectView.as_view(url='/static/images/apple-touch-icon.png', permanent=False)),
+    path('apple-touch-icon-precomposed.png', RedirectView.as_view(url='/static/images/apple-touch-icon.png', permanent=False)),
+    
+    # Favicon views (enable after deployment)
+    # path('favicon.ico', favicon_ico, name='favicon_ico'),
+    # path('apple-touch-icon.png', apple_touch_icon, name='apple_touch_icon'),
+    # path('apple-touch-icon-precomposed.png', 
+    #      lambda request: apple_touch_icon(request, precomposed=True), 
+    #      name='apple_touch_icon_precomposed'),
+    # path('favicon-<str:size>.png', favicon_png, name='favicon_png'),
     
     # Language switching
     path('i18n/', include('django.conf.urls.i18n')),
