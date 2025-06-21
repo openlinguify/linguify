@@ -71,17 +71,20 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
     <link rel="stylesheet" href="{% static 'src/css/main.css' %}">
     {% block extra_css %}{% endblock %}
 
-    <!-- Favicons - Configuration complète pour Google -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
-    <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/favicon-48x48.png' %}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/favicon-192x192.png' %}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
-    <link rel="shortcut icon" href="/favicon.ico">
+    <!-- Favicons - Configuration complète pour Google avec vues Django robustes -->
+    <link rel="icon" type="image/x-icon" href="{% url 'favicon_ico' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% url 'favicon_png' size='16x16' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% url 'favicon_png' size='32x32' %}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{% url 'favicon_png' size='48x48' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% url 'favicon_png' size='192x192' %}">
+    
+    <!-- Apple Touch Icons - Modern and legacy compatibility -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% url 'apple_touch_icon' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="{% url 'apple_touch_icon_precomposed' %}">
+    <link rel="shortcut icon" href="{% url 'favicon_ico' %}">
     
     <!-- Spécifique pour Google et Microsoft -->
-    <meta name="msapplication-TileImage" content="{% static 'images/favicon-144x144.png' %}">
+    <meta name="msapplication-TileImage" content="{% url 'favicon_png' size='144x144' %}">
     <meta name="msapplication-TileColor" content="#6366f1">
     
     <!-- PWA Manifest -->
