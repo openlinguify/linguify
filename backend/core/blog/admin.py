@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.db import models
 from django.forms import Textarea
-from .models import BlogPost, Category, Tag, Comment, CommentLike, CommentReport
+from .models import BlogPost, Category, Tag, Comment, CommentLike, CommentReport, ProfanityWord
 
 
 @admin.register(Category)
@@ -117,6 +117,83 @@ class CommentLikeAdmin(admin.ModelAdmin):
         return super().get_queryset(request).select_related('comment', 'comment__post')
 
 
+@admin.register(ProfanityWord)
+class ProfanityWordAdmin(admin.ModelAdmin):
+    list_display = ['word', 'language', 'severity', 'is_active', 'created_at']
+    list_filter = ['language', 'severity', 'is_active', 'created_at']
+    search_fields = ['word']
+    actions = ['activate_words', 'deactivate_words', 'set_mild', 'set_moderate', 'set_severe']
+    list_per_page = 50
+    
+    fieldsets = (
+        ('Word Information', {
+            'fields': ('word', 'language', 'severity', 'is_active')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ['collapse']
+        })
+    )
+    
+    readonly_fields = ['created_at', 'updated_at']
+    
+    def activate_words(self, request, queryset):
+        queryset.update(is_active=True)
+        # Clear cache after changes
+        from .profanity_filter import profanity_filter
+        profanity_filter.clear_cache()
+        self.message_user(request, f"{queryset.count()} words were activated.")
+    activate_words.short_description = "Activate selected words"
+    
+    def deactivate_words(self, request, queryset):
+        queryset.update(is_active=False)
+        # Clear cache after changes
+        from .profanity_filter import profanity_filter
+        profanity_filter.clear_cache()
+        self.message_user(request, f"{queryset.count()} words were deactivated.")
+    deactivate_words.short_description = "Deactivate selected words"
+    
+    def set_mild(self, request, queryset):
+        queryset.update(severity='mild')
+        # Clear cache after changes
+        from .profanity_filter import profanity_filter
+        profanity_filter.clear_cache()
+        self.message_user(request, f"{queryset.count()} words were set to mild severity.")
+    set_mild.short_description = "Set severity to Mild"
+    
+    def set_moderate(self, request, queryset):
+        queryset.update(severity='moderate')
+        # Clear cache after changes
+        from .profanity_filter import profanity_filter
+        profanity_filter.clear_cache()
+        self.message_user(request, f"{queryset.count()} words were set to moderate severity.")
+    set_moderate.short_description = "Set severity to Moderate"
+    
+    def set_severe(self, request, queryset):
+        queryset.update(severity='severe')
+        # Clear cache after changes
+        from .profanity_filter import profanity_filter
+        profanity_filter.clear_cache()
+        self.message_user(request, f"{queryset.count()} words were set to severe severity.")
+    set_severe.short_description = "Set severity to Severe"
+    
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        # Clear cache when individual words are saved
+        from .profanity_filter import profanity_filter
+        profanity_filter.clear_cache()
+    
+    def delete_model(self, request, obj):
+        super().delete_model(request, obj)
+        # Clear cache when words are deleted
+        from .profanity_filter import profanity_filter
+        profanity_filter.clear_cache()
+    
+    class Meta:
+        verbose_name = 'Profanity Word'
+        verbose_name_plural = 'Profanity Words'
+
+
 @admin.register(CommentReport)
 class CommentReportAdmin(admin.ModelAdmin):
     list_display = ['report_summary', 'blog_post', 'comment_preview', 'reporter_name', 'reason', 'created_at', 'is_reviewed']
@@ -226,3 +303,5 @@ class CommentReportAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('comment', 'comment__post')
+
+

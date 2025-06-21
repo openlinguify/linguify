@@ -206,3 +206,41 @@ class CommentReport(models.Model):
     
     def __str__(self):
         return f'Report: {self.get_reason_display()} on comment by {self.comment.author_name}'
+
+
+class ProfanityWord(models.Model):
+    """
+    Secure storage for profanity words across multiple languages
+    """
+    LANGUAGE_CHOICES = [
+        ('en', 'English'),
+        ('fr', 'French'),
+        ('es', 'Spanish'),
+        ('nl', 'Dutch'),
+    ]
+    
+    SEVERITY_CHOICES = [
+        ('mild', 'Mild'),
+        ('moderate', 'Moderate'),
+        ('severe', 'Severe'),
+    ]
+    
+    word = models.CharField(max_length=100, db_index=True)
+    language = models.CharField(max_length=5, choices=LANGUAGE_CHOICES, default='en')
+    severity = models.CharField(max_length=10, choices=SEVERITY_CHOICES, default='mild')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ['word', 'language']
+        indexes = [
+            models.Index(fields=['word', 'language']),
+            models.Index(fields=['is_active']),
+            models.Index(fields=['severity']),
+        ]
+        verbose_name = 'Profanity Word'
+        verbose_name_plural = 'Profanity Words'
+    
+    def __str__(self):
+        return f'{self.word} ({self.get_language_display()}) - {self.get_severity_display()}'
