@@ -139,7 +139,8 @@
       "Bash(DJANGO_ENV=production poetry run python scripts/database/app_manager.py list)",
       "Bash(DJANGO_ENV=production poetry run python scripts/database/manifest_manager.py apply-manifest)",
       "Bash(CI=true GITHUB_ACTIONS=true poetry run python manage.py test tests apps.authentication.tests --settings=core.settings_test --keepdb --verbosity=1 --pattern=\"test_*.py\")",
-      "Bash(DJANGO_ENV=production poetry run python manage.py loaddata /tmp/debug_export.json)"
+      "Bash(DJANGO_ENV=production poetry run python manage.py loaddata /tmp/debug_export.json)",
+      "Bash(convert:*)"
     ],
     "deny": []
   }
