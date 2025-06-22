@@ -476,8 +476,8 @@
                 <div class="header-top">
                     <div class="course-nav">
                         <a href="{% url 'saas_web:dashboard' %}" class="nav-brand">
-                            <i class="bi bi-book nav-logo"></i>
-                            <span>Cours</span>
+                            <img src="/app-icons/course/icon.png" alt="Learning icon" class="nav-logo" style="width: 32px; height: 32px; object-fit: cover; border-radius: 6px;">
+                            <span>Learning</span>
                         </a>
                     </div>
                     
@@ -489,7 +489,7 @@
                                     {{ user.username }}
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{% url 'saas_web:profile' %}">Profil</a></li>
+                                    <li><a class="dropdown-item" href="/profile/">Profil</a></li>
                                     <li><a class="dropdown-item" href="{% url 'saas_web:dashboard' %}">Dashboard</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{% url 'auth:logout' %}">Déconnexion</a></li>

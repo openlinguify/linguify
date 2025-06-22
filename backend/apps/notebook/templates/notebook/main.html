@@ -27,6 +27,13 @@
         </select>
         
         <select class="form-select form-select-sm" style="width: auto;" 
+                id="archiveFilter" onchange="filterNotes()">
+            <option value="active">Notes actives</option>
+            <option value="archived">Notes archivées</option>
+            <option value="all">Toutes les notes</option>
+        </select>
+        
+        <select class="form-select form-select-sm" style="width: auto;" 
                 id="sortFilter" onchange="filterNotes()">
             <option value="updated_desc">Plus récentes</option>
             <option value="updated_asc">Plus anciennes</option>
@@ -35,246 +42,271 @@
         </select>
     </div>
     
-    <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-outline-custom btn-sm" onclick="refreshNotes()">
-            <i class="bi bi-arrow-clockwise"></i>
-            Actualiser
-        </button>
-        <button class="btn btn-outline-custom btn-sm d-md-none" onclick="toggleSidebar()">
-            <i class="bi bi-list"></i>
-        </button>
+    <div class="d-flex align-items-center">
+        <!-- Mode sélection multiple - Toolbar compacte -->
+        <div id="multiSelectControls" class="btn-toolbar fade" style="display: none;" role="toolbar">
+            <div class="btn-group btn-group-sm me-2" role="group">
+                <button type="button" class="btn btn-outline-danger" onclick="bulkDelete()" id="bulkDeleteBtn" title="Supprimer la sélection">
+                    <i class="bi bi-trash"></i>
+                    <span class="badge bg-danger ms-1" id="selectedCount">0</span>
+                </button>
+                <button type="button" class="btn btn-outline-warning" onclick="bulkArchive()" title="Archiver la sélection">
+                    <i class="bi bi-archive"></i>
+                    <span class="badge bg-warning ms-1" id="selectedCountArchive">0</span>
+                </button>
+                <button type="button" class="btn btn-outline-success" onclick="bulkUnarchive()" title="Désarchiver la sélection">
+                    <i class="bi bi-arrow-up-circle"></i>
+                    <span class="badge bg-success ms-1" id="selectedCountUnarchive">0</span>
+                </button>
+            </div>
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelMultiSelect()" title="Annuler la sélection">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        
+        <!-- Mode normal - Boutons compacts -->
+        <div id="normalControls" class="btn-toolbar fade show" role="toolbar">
+            <div class="btn-group btn-group-sm me-2" role="group">
+                <button type="button" class="btn btn-outline-primary" onclick="toggleMultiSelect()" title="Mode sélection multiple">
+                    <!-- Option Bootstrap: <i class="bi bi-ui-checks"></i> -->
+                    <!-- Option Phosphor (plus moderne): -->
+                    <i class="ph ph-check-square" style="font-size: 16px;"></i>
+                </button>
+                <button type="button" class="btn btn-outline-success" onclick="saveCurrentNote(true)" id="saveButton" title="Sauvegarder la note">
+                    <img src="{% static 'src/img/save-cloud.png' %}" alt="Save" style="width: 18px; height: 14px;">
+                </button>
+                <button type="button" class="btn btn-outline-info" onclick="refreshNotes()" title="Actualiser les notes">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+            <button type="button" class="btn btn-outline-secondary btn-sm d-md-none" onclick="toggleSidebar()" title="Afficher/masquer la sidebar">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block content %}
-<!-- Sidebar avec liste des notes -->
-<div class="notebook-sidebar" id="sidebar">
-    <div class="sidebar-header">
-        <h6 class="m-0 text-muted">Mes notes</h6>
-        <small class="text-muted" id="notesCount">0 notes</small>
-    </div>
-    
-    <div class="sidebar-content">
-        <div id="notesList" class="note-list">
-            <!-- Les notes seront chargées ici -->
+<div class="notebook-workspace d-flex h-100">
+    <!-- Sidebar avec liste des notes -->
+    <div class="notebook-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h6 class="m-0 text-muted">Mes notes</h6>
+            <small class="text-muted" id="notesCount">0 notes</small>
         </div>
         
-        <div id="loadingNotes" class="text-center p-3" style="display: none;">
-            <div class="loading-spinner"></div>
-            <div class="mt-2 text-muted">Chargement...</div>
-        </div>
-        
-        <div id="emptyNotes" class="text-center p-4" style="display: none;">
-            <i class="bi bi-journal-x text-muted" style="font-size: 2rem;"></i>
-            <div class="mt-2 text-muted">Aucune note trouvée</div>
-            <button class="btn btn-gradient btn-sm mt-2" onclick="createNewNote()">
-                Créer ma première note
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Zone d'édition principale -->
-<div class="notebook-editor">
-    <!-- État vide par défaut -->
-    <div id="emptyEditor" class="empty-state">
-        <i class="bi bi-journal-plus empty-state-icon"></i>
-        <div class="empty-state-title">Bienvenue dans votre notebook</div>
-        <div class="empty-state-description">
-            Sélectionnez une note dans la liste ou créez-en une nouvelle pour commencer.
-        </div>
-        <button class="btn btn-gradient" onclick="createNewNote()">
-            <i class="bi bi-plus me-1"></i>
-            Créer une nouvelle note
-        </button>
-    </div>
-    
-    <!-- Éditeur de note -->
-    <div id="noteEditor" style="display: none;">
-        <div class="editor-header">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                    <input type="text" class="form-control form-control-lg border-0 bg-transparent" 
-                           placeholder="Titre de la note..." id="noteTitle" onblur="saveCurrentNote()">
-                    <select class="form-select form-select-sm" style="width: auto;" 
-                            id="noteLanguage" onchange="saveCurrentNote()">
-                        <option value="">Langue</option>
-                        <option value="fr">Français</option>
-                        <option value="en">Anglais</option>
-                        <option value="es">Espagnol</option>
-                        <option value="de">Allemand</option>
-                    </select>
-                </div>
-                
-                <div class="d-flex align-items-center gap-2">
-                    <button class="btn btn-outline-danger btn-sm" onclick="deleteCurrentNote()">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                    <button class="btn btn-gradient btn-sm" onclick="saveCurrentNote()">
-                        <i class="bi bi-check"></i>
-                        Sauvegarder
-                    </button>
-                </div>
+        <div class="sidebar-content">
+            <div id="notesList" class="note-list">
+                <!-- Les notes seront chargées ici -->
+            </div>
+            
+            <div id="loadingNotes" class="text-center p-3" style="display: none;">
+                <div class="loading-spinner"></div>
+                <div class="mt-2 text-muted">Chargement...</div>
+            </div>
+            
+            <div id="emptyNotes" class="text-center p-4" style="display: none;">
+                <i class="bi bi-journal-x text-muted" style="font-size: 2rem;"></i>
+                <div class="mt-2 text-muted">Aucune note trouvée</div>
+                <button class="btn btn-gradient btn-sm mt-2" onclick="createNewNote()">
+                    Créer ma première note
+                </button>
             </div>
         </div>
-        
-        <div class="editor-content">
-            <!-- Onglets pour organiser le contenu -->
-            <ul class="nav nav-tabs" id="noteEditorTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="content-tab" data-bs-toggle="tab" data-bs-target="#content-panel" type="button" role="tab">
-                        <i class="bi bi-pencil-square me-1"></i>
-                        Contenu principal
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="language-tab" data-bs-toggle="tab" data-bs-target="#language-panel" type="button" role="tab">
-                        <i class="bi bi-translate me-1"></i>
-                        Apprentissage linguistique
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="metadata-tab" data-bs-toggle="tab" data-bs-target="#metadata-panel" type="button" role="tab">
-                        <i class="bi bi-tags me-1"></i>
-                        Organisation
-                    </button>
-                </li>
-            </ul>
+    </div>
+
+    <!-- Zone d'édition principale -->
+    <div class="notebook-editor flex-grow-1">
+        <!-- Éditeur de note -->
+        <div id="noteEditor" class="h-100 d-flex flex-column">
+            <!-- Header de l'éditeur -->
+            <div class="editor-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2 flex-grow-1">
+                        <input type="text" class="form-control form-control-lg border-0 bg-transparent" 
+                               placeholder="Titre de la note..." id="noteTitle" onblur="saveCurrentNote()">
+                        <select class="form-select form-select-sm" style="width: auto;" 
+                                id="noteLanguage" onchange="saveCurrentNote()">
+                            <option value="">Langue</option>
+                            <option value="fr">Français</option>
+                            <option value="en">Anglais</option>
+                            <option value="es">Espagnol</option>
+                            <option value="de">Allemand</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-outline-warning btn-sm" onclick="toggleArchiveCurrentNote()" id="archiveToggleBtn" title="Archiver/Désarchiver">
+                            <i class="bi bi-archive"></i>
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="deleteCurrentNote()">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
             
-            <div class="tab-content" id="noteEditorContent">
-                <!-- Onglet Contenu principal -->
-                <div class="tab-pane fade show active" id="content-panel" role="tabpanel">
-                    <div class="editor-panel">
-                        <div class="form-floating mb-0">
-                            <textarea class="form-control editor-textarea" placeholder="Écrivez votre note ici..." 
+            <!-- Contenu de l'éditeur avec onglets -->
+            <div class="editor-content flex-grow-1 d-flex flex-column">
+                <!-- Onglets -->
+                <ul class="nav nav-tabs" id="noteEditorTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="content-tab" data-bs-toggle="tab" 
+                                data-bs-target="#content-panel" type="button" role="tab">
+                            <i class="bi bi-pencil-square me-1"></i>
+                            Contenu principal
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="language-tab" data-bs-toggle="tab" 
+                                data-bs-target="#language-panel" type="button" role="tab">
+                            <i class="bi bi-translate me-1"></i>
+                            Apprentissage linguistique
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="metadata-tab" data-bs-toggle="tab" 
+                                data-bs-target="#metadata-panel" type="button" role="tab">
+                            <i class="bi bi-tags me-1"></i>
+                            Organisation
+                        </button>
+                    </li>
+                </ul>
+                
+                <!-- Contenu des onglets -->
+                <div class="tab-content flex-grow-1" id="noteEditorContent">
+                    <!-- Onglet Contenu principal -->
+                    <div class="tab-pane fade show active h-100" id="content-panel" role="tabpanel">
+                        <div class="editor-panel h-100 d-flex flex-column">
+                            <textarea class="form-control editor-textarea flex-grow-1" 
+                                      placeholder="Écrivez votre note ici..." 
                                       id="noteContent" onblur="saveCurrentNote()"></textarea>
-                            <label for="noteContent">Contenu de la note</label>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Onglet Apprentissage linguistique -->
-                <div class="tab-pane fade" id="language-panel" role="tabpanel">
-                    <div class="editor-panel">
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <textarea class="form-control" rows="4" placeholder="Traduction..." 
-                                              id="noteTranslation" onblur="saveCurrentNote()"></textarea>
-                                    <label for="noteTranslation">Traduction</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" placeholder="Prononciation..."
-                                           id="notePronunciation" onblur="saveCurrentNote()">
-                                    <label for="notePronunciation">Prononciation</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <select class="form-select" id="noteDifficulty" onchange="saveCurrentNote()">
-                                        <option value="">Sélectionner...</option>
-                                        <option value="BEGINNER">Débutant</option>
-                                        <option value="INTERMEDIATE">Intermédiaire</option>
-                                        <option value="ADVANCED">Avancé</option>
-                                    </select>
-                                    <label for="noteDifficulty">Niveau de difficulté</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <textarea class="form-control" rows="3" 
-                                              placeholder="Exemples d'utilisation (un par ligne)..." 
-                                              id="noteExamples" onblur="saveCurrentNote()"></textarea>
-                                    <label for="noteExamples">Exemples de phrases</label>
-                                </div>
-                                <small class="text-muted">Un exemple par ligne</small>
-                            </div>
-                            
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" 
-                                           placeholder="Mots associés..." 
-                                           id="noteRelatedWords" onblur="saveCurrentNote()">
-                                    <label for="noteRelatedWords">Mots associés</label>
-                                </div>
-                                <small class="text-muted">Séparez les mots par des virgules</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Onglet Organisation -->
-                <div class="tab-pane fade" id="metadata-panel" role="tabpanel">
-                    <div class="editor-panel">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <select class="form-select" id="noteType" onchange="saveCurrentNote()">
-                                        <option value="NOTE">Note</option>
-                                        <option value="VOCABULARY">Vocabulaire</option>
-                                        <option value="GRAMMAR">Grammaire</option>
-                                        <option value="EXPRESSION">Expression</option>
-                                        <option value="CULTURE">Culture</option>
-                                        <option value="TASK">Tâche</option>
-                                        <option value="REMINDER">Rappel</option>
-                                        <option value="MEETING">Réunion</option>
-                                        <option value="IDEA">Idée</option>
-                                        <option value="PROJECT">Projet</option>
-                                    </select>
-                                    <label for="noteType">Type de note</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <select class="form-select" id="notePriority" onchange="saveCurrentNote()">
-                                        <option value="LOW">Basse</option>
-                                        <option value="MEDIUM" selected>Moyenne</option>
-                                        <option value="HIGH">Haute</option>
-                                    </select>
-                                    <label for="notePriority">Priorité</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12">
-                                <div class="form-check form-switch mb-2">
-                                    <input class="form-check-input" type="checkbox" id="notePinned" onchange="saveCurrentNote()">
-                                    <label class="form-check-label" for="notePinned">
-                                        <i class="bi bi-pin-angle me-1"></i>
-                                        Épingler cette note
-                                    </label>
+                    
+                    <!-- Onglet Apprentissage linguistique -->
+                    <div class="tab-pane fade h-100" id="language-panel" role="tabpanel">
+                        <div class="editor-panel h-100">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <textarea class="form-control" rows="4" placeholder="Traduction..." 
+                                                  id="noteTranslation" onblur="saveCurrentNote()"></textarea>
+                                        <label for="noteTranslation">Traduction</label>
+                                    </div>
                                 </div>
                                 
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="noteArchived" onchange="saveCurrentNote()">
-                                    <label class="form-check-label" for="noteArchived">
-                                        <i class="bi bi-archive me-1"></i>
-                                        Archiver cette note
-                                    </label>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" placeholder="Prononciation..."
+                                               id="notePronunciation" onblur="saveCurrentNote()">
+                                        <label for="notePronunciation">Prononciation</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="noteDifficulty" onchange="saveCurrentNote()">
+                                            <option value="">Sélectionner...</option>
+                                            <option value="BEGINNER">Débutant</option>
+                                            <option value="INTERMEDIATE">Intermédiaire</option>
+                                            <option value="ADVANCED">Avancé</option>
+                                        </select>
+                                        <label for="noteDifficulty">Niveau de difficulté</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <textarea class="form-control" rows="3" 
+                                                  placeholder="Exemples d'utilisation (un par ligne)..." 
+                                                  id="noteExamples" onblur="saveCurrentNote()"></textarea>
+                                        <label for="noteExamples">Exemples de phrases</label>
+                                    </div>
+                                    <small class="text-muted">Un exemple par ligne</small>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" 
+                                               placeholder="Mots associés..." 
+                                               id="noteRelatedWords" onblur="saveCurrentNote()">
+                                        <label for="noteRelatedWords">Mots associés</label>
+                                    </div>
+                                    <small class="text-muted">Séparez les mots par des virgules</small>
                                 </div>
                             </div>
-                            
-                            <div class="col-12">
-                                <div class="stats-info">
-                                    <h6 class="text-muted mb-2">Statistiques</h6>
-                                    <div class="d-flex gap-3 text-muted small">
-                                        <div>
-                                            <i class="bi bi-calendar-plus me-1"></i>
-                                            Créée: <span id="noteCreatedAt">-</span>
-                                        </div>
-                                        <div>
-                                            <i class="bi bi-pencil me-1"></i>
-                                            Modifiée: <span id="noteUpdatedAt">-</span>
-                                        </div>
-                                        <div>
-                                            <i class="bi bi-eye me-1"></i>
-                                            Révisions: <span id="noteReviewCount">0</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Onglet Organisation -->
+                    <div class="tab-pane fade h-100" id="metadata-panel" role="tabpanel">
+                        <div class="editor-panel h-100">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="noteType" onchange="saveCurrentNote()">
+                                            <option value="NOTE">Note</option>
+                                            <option value="VOCABULARY">Vocabulaire</option>
+                                            <option value="GRAMMAR">Grammaire</option>
+                                            <option value="EXPRESSION">Expression</option>
+                                            <option value="CULTURE">Culture</option>
+                                            <option value="TASK">Tâche</option>
+                                            <option value="REMINDER">Rappel</option>
+                                            <option value="MEETING">Réunion</option>
+                                            <option value="IDEA">Idée</option>
+                                            <option value="PROJECT">Projet</option>
+                                        </select>
+                                        <label for="noteType">Type de note</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="notePriority" onchange="saveCurrentNote()">
+                                            <option value="LOW">Basse</option>
+                                            <option value="MEDIUM" selected>Moyenne</option>
+                                            <option value="HIGH">Haute</option>
+                                        </select>
+                                        <label for="notePriority">Priorité</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="notePinned" onchange="saveCurrentNote()">
+                                        <label class="form-check-label" for="notePinned">
+                                            <i class="bi bi-pin-angle me-1"></i>
+                                            Épingler cette note
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="noteArchived" onchange="saveCurrentNote()">
+                                        <label class="form-check-label" for="noteArchived">
+                                            <i class="bi bi-archive me-1"></i>
+                                            Archiver cette note
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <div class="stats-info">
+                                        <h6 class="text-muted mb-2">Statistiques</h6>
+                                        <div class="d-flex gap-3 text-muted small">
+                                            <div>
+                                                <i class="bi bi-calendar-plus me-1"></i>
+                                                Créée: <span id="noteCreatedAt">-</span>
+                                            </div>
+                                            <div>
+                                                <i class="bi bi-pencil me-1"></i>
+                                                Modifiée: <span id="noteUpdatedAt">-</span>
+                                            </div>
+                                            <div>
+                                                <i class="bi bi-eye me-1"></i>
+                                                Révisions: <span id="noteReviewCount">0</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -292,295 +324,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    // Configuration du service notebook
-    const notebookService = {
-        baseUrl: window.API_BASE_URL + '/api/v1/notebook',
-        
-        async getNotes(params = {}) {
-            const searchParams = new URLSearchParams(params);
-            return await window.apiService.request(`${this.baseUrl}/notes/?${searchParams}`);
-        },
-        
-        async createNote(noteData) {
-            return await window.apiService.request(`${this.baseUrl}/notes/`, {
-                method: 'POST',
-                body: JSON.stringify(noteData)
-            });
-        },
-        
-        async updateNote(id, noteData) {
-            return await window.apiService.request(`${this.baseUrl}/notes/${id}/`, {
-                method: 'PATCH',
-                body: JSON.stringify(noteData)
-            });
-        },
-        
-        async deleteNote(id) {
-            return await window.apiService.request(`${this.baseUrl}/notes/${id}/`, {
-                method: 'DELETE'
-            });
-        }
-    };
-    
-    // Variables globales
-    let currentNote = null;
-    let notes = [];
-    let searchTimeout = null;
-    
-    // Initialisation
-    document.addEventListener('DOMContentLoaded', function() {
-        loadNotes();
-    });
-    
-    // Chargement des notes
-    async function loadNotes() {
-        try {
-            showLoading();
-            const params = {
-                page: 1,
-                search: document.getElementById('searchInput').value,
-                language: document.getElementById('languageFilter').value,
-                sort: document.getElementById('sortFilter').value
-            };
-            
-            const response = await notebookService.getNotes(params);
-            notes = response.results || [];
-            displayNotes(notes);
-            updateNotesCount(notes.length);
-            
-        } catch (error) {
-            console.error('Error loading notes:', error);
-            window.notificationService.error('Erreur lors du chargement des notes');
-            showEmpty();
-        }
-    }
-    
-    // Affichage des notes
-    function displayNotes(notesList) {
-        const container = document.getElementById('notesList');
-        const emptyDiv = document.getElementById('emptyNotes');
-        const loadingDiv = document.getElementById('loadingNotes');
-        
-        loadingDiv.style.display = 'none';
-        
-        if (notesList.length === 0) {
-            container.innerHTML = '';
-            emptyDiv.style.display = 'block';
-            return;
-        }
-        
-        emptyDiv.style.display = 'none';
-        container.innerHTML = notesList.map(note => `
-            <div class="note-item" onclick="selectNote(${note.id})" data-note-id="${note.id}">
-                <div class="note-title">${escapeHtml(note.title || 'Sans titre')}</div>
-                <div class="note-preview">${escapeHtml(note.content || '').substring(0, 100)}...</div>
-                <div class="note-meta">
-                    ${note.language ? `<span class="note-language">${note.language.toUpperCase()}</span>` : ''}
-                    <span>${formatDate(note.updated_at)}</span>
-                </div>
-            </div>
-        `).join('');
-    }
-    
-    // Sélection d'une note
-    async function selectNote(noteId) {
-        try {
-            const note = notes.find(n => n.id === noteId);
-            if (!note) return;
-            
-            currentNote = note;
-            showEditor();
-            loadNoteInEditor(note);
-            
-            // Marquer la note comme active
-            document.querySelectorAll('.note-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector(`[data-note-id="${noteId}"]`).classList.add('active');
-            
-        } catch (error) {
-            console.error('Error selecting note:', error);
-            window.notificationService.error('Erreur lors de la sélection de la note');
-        }
-    }
-    
-    // Charger une note dans l'éditeur
-    function loadNoteInEditor(note) {
-        document.getElementById('noteTitle').value = note.title || '';
-        document.getElementById('noteLanguage').value = note.language || '';
-        document.getElementById('noteContent').value = note.content || '';
-        document.getElementById('noteTranslation').value = note.translation || '';
-        document.getElementById('notePronunciation').value = note.pronunciation || '';
-        document.getElementById('noteDifficulty').value = note.difficulty || '';
-        document.getElementById('noteExamples').value = (note.example_sentences || []).join('\n');
-        document.getElementById('noteRelatedWords').value = (note.related_words || []).join(', ');
-        document.getElementById('noteType').value = note.note_type || 'NOTE';
-        document.getElementById('notePriority').value = note.priority || 'MEDIUM';
-        document.getElementById('notePinned').checked = note.is_pinned || false;
-        document.getElementById('noteArchived').checked = note.is_archived || false;
-        
-        // Mettre à jour les statistiques
-        document.getElementById('noteCreatedAt').textContent = formatDate(note.created_at);
-        document.getElementById('noteUpdatedAt').textContent = formatDate(note.updated_at);
-        document.getElementById('noteReviewCount').textContent = note.review_count || 0;
-    }
-    
-    // Créer une nouvelle note
-    async function createNewNote() {
-        try {
-            const newNoteData = {
-                title: 'Nouvelle note',
-                language: 'fr',
-                content: '',
-                translation: '',
-                example_sentences: [],
-                related_words: []
-            };
-            
-            const createdNote = await notebookService.createNote(newNoteData);
-            notes.unshift(createdNote);
-            displayNotes(notes);
-            selectNote(createdNote.id);
-            updateNotesCount(notes.length);
-            
-            window.notificationService.success('Note créée avec succès');
-            
-        } catch (error) {
-            console.error('Error creating note:', error);
-            window.notificationService.error('Erreur lors de la création de la note');
-        }
-    }
-    
-    // Sauvegarder la note actuelle
-    async function saveCurrentNote() {
-        if (!currentNote) return;
-        
-        try {
-            const noteData = {
-                title: document.getElementById('noteTitle').value,
-                language: document.getElementById('noteLanguage').value,
-                content: document.getElementById('noteContent').value,
-                translation: document.getElementById('noteTranslation').value,
-                pronunciation: document.getElementById('notePronunciation').value,
-                difficulty: document.getElementById('noteDifficulty').value,
-                example_sentences: document.getElementById('noteExamples').value.split('\n').filter(s => s.trim()),
-                related_words: document.getElementById('noteRelatedWords').value.split(',').map(s => s.trim()).filter(s => s),
-                note_type: document.getElementById('noteType').value,
-                priority: document.getElementById('notePriority').value,
-                is_pinned: document.getElementById('notePinned').checked,
-                is_archived: document.getElementById('noteArchived').checked
-            };
-            
-            const updatedNote = await notebookService.updateNote(currentNote.id, noteData);
-            
-            // Mettre à jour la note dans la liste
-            const index = notes.findIndex(n => n.id === currentNote.id);
-            if (index !== -1) {
-                notes[index] = updatedNote;
-                currentNote = updatedNote;
-                displayNotes(notes);
-                
-                // Marquer la note comme active sans recharger tout l'éditeur
-                document.querySelectorAll('.note-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                document.querySelector(`[data-note-id="${updatedNote.id}"]`)?.classList.add('active');
-                
-                // Mettre à jour les statistiques
-                document.getElementById('noteUpdatedAt').textContent = formatDate(updatedNote.updated_at);
-            }
-            
-            // Notification discrète (pas à chaque sauvegarde automatique)
-            console.log('Note sauvegardée');
-            
-        } catch (error) {
-            console.error('Error saving note:', error);
-            window.notificationService.error('Erreur lors de la sauvegarde');
-        }
-    }
-    
-    // Supprimer la note actuelle
-    async function deleteCurrentNote() {
-        if (!currentNote || !confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) return;
-        
-        try {
-            await notebookService.deleteNote(currentNote.id);
-            
-            // Supprimer de la liste
-            notes = notes.filter(n => n.id !== currentNote.id);
-            displayNotes(notes);
-            updateNotesCount(notes.length);
-            
-            // Cacher l'éditeur
-            showEmpty();
-            currentNote = null;
-            
-            window.notificationService.success('Note supprimée');
-            
-        } catch (error) {
-            console.error('Error deleting note:', error);
-            window.notificationService.error('Erreur lors de la suppression');
-        }
-    }
-    
-    // Recherche avec délai
-    function debounceSearch() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(filterNotes, 300);
-    }
-    
-    // Filtrer les notes
-    function filterNotes() {
-        loadNotes();
-    }
-    
-    // Actualiser les notes
-    function refreshNotes() {
-        loadNotes();
-    }
-    
-    // Basculer la sidebar sur mobile
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('show');
-    }
-    
-    // États d'affichage
-    function showLoading() {
-        document.getElementById('loadingNotes').style.display = 'block';
-        document.getElementById('emptyNotes').style.display = 'none';
-    }
-    
-    function showEmpty() {
-        document.getElementById('emptyEditor').style.display = 'flex';
-        document.getElementById('noteEditor').style.display = 'none';
-    }
-    
-    function showEditor() {
-        document.getElementById('emptyEditor').style.display = 'none';
-        document.getElementById('noteEditor').style.display = 'flex';
-    }
-    
-    // Utilitaires
-    function updateNotesCount(count) {
-        document.getElementById('notesCount').textContent = `${count} note${count !== 1 ? 's' : ''}`;
-    }
-    
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-    
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffTime = Math.abs(now - date);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (diffDays === 1) return 'Hier';
-        if (diffDays <= 7) return `Il y a ${diffDays} jours`;
-        return date.toLocaleDateString('fr-FR');
-    }
-</script>
+<script src="{% static 'src/js/notebook.js' %}"></script>
 {% endblock %}

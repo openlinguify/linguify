@@ -1,6 +1,4 @@
-/* Styles améliorés pour l'application Notebook */
-
-/* Variables CSS */
+/* Variables CSS pour l'application Notebook */
 :root {
     --notebook-primary: #0d6efd;
     --notebook-secondary: #6c757d;
@@ -14,21 +12,164 @@
     --notebook-border: #dee2e6;
     --notebook-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
     --notebook-hover-bg: #e9ecef;
+    --sidebar-width: 320px;
 }
 
-/* Layout principal */
-.notebook-editor {
+/* Reset et layout de base */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #f8fafc;
+}
+
+.notebook-container {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    background-color: #ffffff;
+    overflow: hidden;
+    z-index: 1;
 }
 
-/* Header de l'éditeur */
+/* Header app */
+.app-header-content {
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--notebook-border);
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* Main corrigé */
+.notebook-main {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+}
+
+/* Zone de travail principale */
+.notebook-workspace {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* Sidebar des notes */
+.notebook-sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--notebook-sidebar-bg);
+    border-right: 1px solid var(--notebook-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--notebook-shadow);
+}
+
+.sidebar-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--notebook-border);
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+/* Liste des notes */
+.note-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.note-item {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--notebook-border);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    background: white;
+}
+
+.note-item:hover {
+    background-color: var(--notebook-hover-bg);
+}
+
+.note-item.active {
+    background-color: #e7f1ff;
+    border-left: 4px solid var(--notebook-primary);
+    padding-left: calc(1.5rem - 4px);
+}
+
+.note-title {
+    font-weight: 600;
+    color: var(--notebook-dark);
+    margin-bottom: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.875rem;
+}
+
+.note-preview {
+    font-size: 0.75rem;
+    color: var(--notebook-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+}
+
+.note-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--notebook-secondary);
+}
+
+.note-language {
+    background-color: var(--notebook-primary);
+    color: white;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    font-size: 0.625rem;
+}
+
+/* Zone d'édition */
+.notebook-editor {
+    flex: 1;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--notebook-shadow);
+}
+
 .editor-header {
     border-bottom: 1px solid var(--notebook-border);
     padding: 1rem 1.5rem;
     background-color: var(--notebook-light);
+    flex-shrink: 0;
 }
 
 .editor-header input[type="text"] {
@@ -37,7 +178,6 @@
     padding: 0.5rem 0;
 }
 
-/* Contenu de l'éditeur */
 .editor-content {
     flex: 1;
     display: flex;
@@ -45,11 +185,12 @@
     overflow: hidden;
 }
 
-/* Onglets personnalisés */
+/* Onglets */
 .nav-tabs {
     border-bottom: 2px solid var(--notebook-border);
     padding: 0 1.5rem;
     background-color: var(--notebook-light);
+    flex-shrink: 0;
 }
 
 .nav-tabs .nav-link {
@@ -78,34 +219,104 @@
 /* Contenu des onglets */
 .tab-content {
     flex: 1;
-    overflow-y: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-pane {
+    flex: 1;
+    overflow: hidden;
 }
 
 .editor-panel {
     padding: 1.5rem;
     height: 100%;
+    overflow-y: auto;
+    background-color: #f8f9fa;
 }
 
 /* Textarea principal */
 .editor-textarea {
-    min-height: 400px !important;
-    font-size: 1rem;
-    line-height: 1.8;
-    border: 1px solid var(--notebook-border);
-    resize: vertical;
+    min-height: 500px !important;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    border: 2px solid var(--notebook-border) !important;
+    border-radius: 8px !important;
+    resize: none;
+    font-family: 'Source Code Pro', 'Monaco', 'Menlo', monospace;
+    background: #ffffff;
+    padding: 1rem !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .editor-textarea:focus {
+    outline: none;
+    border-color: var(--notebook-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15) !important;
+}
+
+/* État initial sans note sélectionnée */
+.editor-textarea::placeholder {
+    color: var(--notebook-secondary);
+    font-style: italic;
+}
+
+/* Suppression de l'état vide - interface simplifiée */
+
+/* Boutons */
+.btn-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-outline-custom {
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #64748b;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-custom:hover {
+    border-color: var(--notebook-primary);
+    color: var(--notebook-primary);
+    background: #f8fafc;
+}
+
+/* Bouton de sauvegarde simplifié */
+#saveButton {
+    transition: all 0.2s ease;
+}
+
+#saveButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Form elements */
+.form-control {
+    border: 1px solid var(--notebook-border);
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
     border-color: var(--notebook-primary);
     box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
 }
 
-/* Form-floating amélioré */
-.form-floating > .form-control,
-.form-floating > .form-select {
+.form-floating > .form-control {
     height: calc(3.5rem + 2px);
     line-height: 1.25;
-    border-color: var(--notebook-border);
 }
 
 .form-floating > textarea.form-control {
@@ -118,13 +329,12 @@
 }
 
 .form-floating > .form-control:focus ~ label,
-.form-floating > .form-control:not(:placeholder-shown) ~ label,
-.form-floating > .form-select ~ label {
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
     color: var(--notebook-primary);
     font-size: 0.75rem;
 }
 
-/* Switches personnalisés */
+/* Switch elements */
 .form-check-input {
     width: 3em;
     height: 1.5em;
@@ -142,7 +352,7 @@
     padding-left: 0.5rem;
 }
 
-/* Section statistiques */
+/* Stats info */
 .stats-info {
     background-color: var(--notebook-light);
     padding: 1rem;
@@ -150,122 +360,7 @@
     margin-top: 1rem;
 }
 
-/* Sidebar améliorée */
-.notebook-sidebar {
-    background-color: var(--notebook-sidebar-bg);
-    border-right: 1px solid var(--notebook-border);
-}
-
-.sidebar-header {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--notebook-border);
-    background-color: #ffffff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* Items de notes dans la sidebar */
-.note-item {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--notebook-border);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-}
-
-.note-item:hover {
-    background-color: var(--notebook-hover-bg);
-}
-
-.note-item.active {
-    background-color: #e7f1ff;
-    border-left: 4px solid var(--notebook-primary);
-    padding-left: calc(1.5rem - 4px);
-}
-
-.note-title {
-    font-weight: 600;
-    color: var(--notebook-dark);
-    margin-bottom: 0.25rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.note-preview {
-    font-size: 0.875rem;
-    color: var(--notebook-secondary);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    line-height: 1.4;
-}
-
-.note-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    font-size: 0.75rem;
-    color: var(--notebook-secondary);
-}
-
-.note-language {
-    background-color: var(--notebook-primary);
-    color: white;
-    padding: 0.125rem 0.5rem;
-    border-radius: 0.25rem;
-    font-weight: 500;
-}
-
-/* État vide */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    padding: 2rem;
-    text-align: center;
-}
-
-.empty-state-icon {
-    font-size: 4rem;
-    color: var(--notebook-border);
-    margin-bottom: 1rem;
-}
-
-.empty-state-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--notebook-dark);
-    margin-bottom: 0.5rem;
-}
-
-.empty-state-description {
-    color: var(--notebook-secondary);
-    margin-bottom: 1.5rem;
-}
-
-/* Boutons gradient */
-.btn-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    transition: all 0.3s ease;
-}
-
-.btn-gradient:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-/* Animations de chargement */
+/* Loading spinner */
 .loading-spinner {
     width: 40px;
     height: 40px;
@@ -282,21 +377,65 @@
     }
 }
 
-/* Responsive */
+/* Notifications */
+.notification {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2000;
+    max-width: 400px;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    transition: all 0.3s ease;
+}
+
+.notification.success {
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+}
+
+.notification.error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+}
+
+.notification.info {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1d4ed8;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
+    .notebook-container {
+        top: 50px;
+    }
+    
+    :root {
+        --sidebar-width: 100%;
+    }
+    
     .notebook-sidebar {
         position: absolute;
-        left: 0;
         top: 0;
-        height: 100%;
+        left: 0;
+        bottom: 0;
         z-index: 1000;
         transform: translateX(-100%);
         transition: transform 0.3s ease;
         box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+        width: 320px;
     }
     
     .notebook-sidebar.show {
         transform: translateX(0);
+    }
+    
+    .notebook-editor {
+        width: 100%;
     }
     
     .editor-header {
@@ -316,6 +455,10 @@
     .nav-tabs .nav-link {
         margin-right: 0.5rem;
         padding: 0.5rem 0.75rem;
+    }
+    
+    .editor-textarea {
+        min-height: 350px !important;
     }
 }
 
@@ -358,4 +501,302 @@
     .stats-info {
         background-color: #2d3748;
     }
+}
+
+/* Utilitaires */
+.flex-grow-1 {
+    flex-grow: 1 !important;
+}
+
+.h-100 {
+    height: 100% !important;
+}
+
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Animation d'apparition */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === AMÉLIORATIONS UI ET TRANSITIONS === */
+
+/* Transitions fluides pour les toolbars */
+.btn-toolbar {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-toolbar.fade {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.btn-toolbar.fade-out {
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+/* Groupes de boutons compacts et élégants */
+.btn-group .btn {
+    position: relative;
+    border-radius: 0;
+    transition: all 0.2s ease;
+}
+
+.btn-group .btn:first-child {
+    border-top-left-radius: 0.375rem;
+    border-bottom-left-radius: 0.375rem;
+}
+
+.btn-group .btn:last-child {
+    border-top-right-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+}
+
+.btn-group .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 2;
+}
+
+.btn-group .btn:active {
+    transform: translateY(0);
+}
+
+/* Badges pour compteurs */
+.badge {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.4rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    min-width: 1.2rem;
+    text-align: center;
+}
+
+/* Animation de pulsation pour les badges */
+@keyframes pulse-badge {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.badge.updated {
+    animation: pulse-badge 0.3s ease;
+}
+
+/* === AMÉLIORATION DES FILTRES ET FORMULAIRES === */
+
+/* Amélioration des filtres dans l'en-tête */
+.input-group {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.input-group-text {
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    border: none;
+    color: var(--notebook-secondary);
+    font-weight: 500;
+}
+
+.form-select,
+.form-control {
+    border: none;
+    background: white;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.form-select:focus,
+.form-control:focus {
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    background: #fefefe;
+    border-color: var(--notebook-primary);
+}
+
+.form-select:hover,
+.form-control:hover {
+    background: #fafafa;
+}
+
+/* Style des selects personnalisés */
+.form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    padding-right: 2.5rem;
+}
+
+/* Animation pour les éléments de formulaire */
+.form-select,
+.form-control,
+.btn {
+    transform-origin: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-select:active,
+.form-control:active,
+.btn:active {
+    transform: scale(0.98);
+}
+
+/* === STYLES POUR LA SÉLECTION MULTIPLE === */
+
+/* Layout pour mode sélection multiple */
+.note-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.note-checkbox {
+    display: flex;
+    align-items: center;
+    padding-top: 0.125rem;
+    flex-shrink: 0;
+}
+
+.note-checkbox input[type="checkbox"] {
+    width: 1.125rem;
+    height: 1.125rem;
+    margin: 0;
+    accent-color: var(--notebook-primary);
+    cursor: pointer;
+}
+
+.note-content {
+    flex: 1;
+    min-width: 0; /* Pour permettre text-overflow */
+}
+
+/* État sélectionné */
+.note-item.selected {
+    background-color: #e3f2fd !important;
+    border-left: 4px solid var(--notebook-primary);
+    padding-left: calc(1.5rem - 4px);
+}
+
+.note-item.selected .note-title {
+    color: var(--notebook-primary);
+    font-weight: 700;
+}
+
+/* Animation pour la sélection */
+.note-item {
+    transition: all 0.2s ease;
+}
+
+.note-item.selected {
+    transform: translateX(2px);
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.15);
+}
+
+/* Contrôles de sélection multiple */
+#multiSelectControls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 0.375rem;
+    border: 1px solid var(--notebook-border);
+}
+
+#multiSelectControls .btn {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+/* Badge de compteur */
+#multiSelectControls span {
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+}
+
+/* Mode mobile */
+@media (max-width: 768px) {
+    .note-item {
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .note-checkbox input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+    }
+    
+    #multiSelectControls {
+        flex-wrap: wrap;
+        gap: 0.375rem;
+    }
+    
+    #multiSelectControls .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    #multiSelectControls span {
+        font-size: 0.625rem;
+        padding: 0.0625rem 0.25rem;
+    }
+}
+
+.note-item {
+    animation: fadeIn 0.3s ease;
+}
+
+/* === STYLES POUR LES NOTES ARCHIVÉES === */
+
+/* Notes archivées - apparence atténuée */
+.note-item.archived {
+    opacity: 0.7;
+    background-color: #f8f9fa !important;
+}
+
+.note-item.archived .note-title {
+    color: #6c757d;
+}
+
+.note-item.archived .note-preview {
+    color: #adb5bd;
+}
+
+.note-item.archived:hover {
+    opacity: 0.9;
+    background-color: #e9ecef !important;
+}
+
+/* Badge pour les notes archivées */
+.badge {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Bouton de désarchivage inline */
+.btn-sm.btn-outline-success {
+    padding: 0.125rem 0.375rem;
+    font-size: 0.7rem;
+    border-radius: 0.25rem;
+}
+
+/* Indicateur d'épinglage */
+.bi-pin-angle {
+    font-size: 0.8rem;
 }

@@ -51,6 +51,7 @@ help-apps:
 	@echo "🔄 Synchronisation:"
 	@echo "  sync-app APP=<code>     Synchronise une app vers production"
 	@echo "  sync-manifests          Synchronise tous les manifests"
+	@echo "  sync-icons              Synchronise les icônes depuis les manifests"
 	@echo "  apply-manifests         Applique la visibilité selon les manifests"
 	@echo ""
 	@echo "🗑️  Nettoyage:"
@@ -61,6 +62,7 @@ help-apps:
 	@echo "  make app-hide APP=demo_app_test"
 	@echo "  make app-show APP=community"
 	@echo "  make sync-app APP=course"
+	@echo "  make sync-icons"
 
 apps:
 	@echo "📱 Liste des applications..."
@@ -112,9 +114,25 @@ app-delete:
 	@DJANGO_ENV=$(ENV_VAL) poetry run python scripts/database/app_manager.py delete $(APP)
 
 sync-manifests:
-	@echo "🔄 Synchronisation des manifests..."
-	@$(eval ENV_VAL := $(shell grep DJANGO_ENV .env | cut -d'=' -f2 | tr -d '"'))
-	@DJANGO_ENV=$(ENV_VAL) poetry run python scripts/database/manifest_manager.py sync
+	@echo "🔄 Synchronisation complète des manifests..."
+	@echo "   📱 Synchronise les métadonnées des apps"
+	@echo "   🎨 Synchronise les icônes depuis static/description/"
+	@echo "   💾 Met à jour la base de données"
+	@echo ""
+	@poetry run python manage.py sync_manifests
+	@echo ""
+	@echo "✅ Manifests synchronisés !"
+
+sync-icons:
+	@echo "🎨 Synchronisation des icônes d'applications..."
+	@echo "   📖 Lit les manifests (__manifest__.py) des apps"
+	@echo "   🔍 Cherche les icônes dans static/description/"
+	@echo "   💾 Met à jour la base de données avec les infos d'icônes"
+	@echo "   🎯 Convertit les catégories en icônes Bootstrap appropriées"
+	@echo ""
+	@poetry run python manage.py sync_app_icons
+	@echo ""
+	@echo "✅ Icônes synchronisées ! Redémarrez le serveur pour voir les changements."
 
 apply-manifests:
 	@echo "🔧 Application des manifests selon l'environnement..."
@@ -466,6 +484,9 @@ setup:
 	@echo ""
 	@echo "5️⃣ Synchronisation des manifests..."
 	@make sync-manifests
+	@echo ""
+	@echo "6️⃣ Synchronisation des icônes..."
+	@make sync-icons
 	@echo ""
 	@echo "✅ CONFIGURATION TERMINÉE!"
 	@echo ""

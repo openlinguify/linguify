@@ -33,6 +33,14 @@ class LearningDashboardView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         
+        # App info pour le header
+        current_app_info = {
+            'name': 'course',
+            'display_name': 'Learning',
+            'static_icon': '/app-icons/course/icon.png',
+            'route_path': '/learning/'
+        }
+        
         # Récupérer toutes les unités
         units = Unit.objects.all().order_by('level', 'order')
         
@@ -89,6 +97,7 @@ class LearningDashboardView(LoginRequiredMixin, TemplateView):
         ]
         
         context.update({
+            'current_app': current_app_info,
             'page_title': 'Tableau de bord - Cours',
             'units': units,
             'units_json': json.dumps(units_data),

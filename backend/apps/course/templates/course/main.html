@@ -1,4 +1,4 @@
-{% extends "course/base.html" %}
+{% extends "course/base_new.html" %}
 {% load static %}
 
 {% block page_title %}Tableau de bord - Cours{% endblock %}
@@ -31,8 +31,9 @@
 {% endblock %}
 
 {% block content %}
-<!-- Sidebar avec liste des unités -->
-<div id="courseSidebar" class="course-sidebar">
+<div class="learning-main">
+    <!-- Sidebar avec liste des unités -->
+    <div id="courseSidebar" class="course-sidebar">
     <div class="sidebar-header">
         <h5 class="mb-0">Unités de cours</h5>
         <p class="text-muted small mb-0">{{ units|length }} unités disponibles</p>
@@ -155,6 +156,7 @@
     <div id="lessonView" style="display: none;">
         <!-- Le contenu sera chargé dynamiquement -->
     </div>
+</div>
 </div>
 {% endblock %}
 

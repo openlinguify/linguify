@@ -31,7 +31,7 @@ Usage:
         'app_manager',     # App management system
     ],
     'installable': True,
-    'auto_install': False,
+    'auto_install': True,
     'application': True,
     'sequence': 40,
     'frontend_components': {

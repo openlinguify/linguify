@@ -1,0 +1,504 @@
+{% extends "saas_web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Study Groups" %} | Open Linguify{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="bi bi-people me-2"></i>
+                        {% trans "Language Study Groups" %}
+                    </h1>
+                    <p class="text-muted mb-0">{% trans "Join study groups and practice languages together" %}</p>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+                        <i class="bi bi-plus me-1"></i>
+                        {% trans "Create Group" %}
+                    </button>
+                    <a href="{% url 'community:main' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        {% trans "Back to Community" %}
+                    </a>
+                </div>
+            </div>
+
+            <!-- Group Categories -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">{% trans "Browse by Language" %}</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-outline-primary btn-sm filter-btn active" data-filter="all">
+                                    {% trans "All Languages" %}
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm filter-btn" data-filter="english">
+                                    🇬🇧 English
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm filter-btn" data-filter="french">
+                                    🇫🇷 French
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm filter-btn" data-filter="spanish">
+                                    🇪🇸 Spanish
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm filter-btn" data-filter="german">
+                                    🇩🇪 German
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm filter-btn" data-filter="italian">
+                                    🇮🇹 Italian
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Groups -->
+            {% if my_groups %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-bookmark-heart me-2"></i>
+                                {% trans "My Study Groups" %}
+                                <span class="badge bg-light text-dark ms-2">{{ my_groups.count }}</span>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for group in my_groups %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card group-card h-100 border-primary">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="card-title">{{ group.name }}</h6>
+                                                <span class="badge bg-primary">{% trans "Member" %}</span>
+                                            </div>
+                                            <p class="card-text text-muted small">{{ group.description|truncatewords:15 }}</p>
+                                            <div class="mb-2">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-people me-1"></i>{{ group.members.count }} {% trans "members" %}
+                                                </small>
+                                                <small class="text-muted ms-3">
+                                                    <i class="bi bi-calendar me-1"></i>{{ group.created_at|date:"M d" }}
+                                                </small>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-sm btn-primary open-group" data-group-id="{{ group.id }}">
+                                                    <i class="bi bi-box-arrow-in-right me-1"></i>{% trans "Enter" %}
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-secondary group-settings" data-group-id="{{ group.id }}">
+                                                    <i class="bi bi-gear"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- All Groups -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-grid-3x3-gap me-2"></i>
+                                {% trans "Discover Study Groups" %}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if groups %}
+                                <div class="row" id="groupsContainer">
+                                    {% for group in groups %}
+                                    <div class="col-md-6 col-lg-4 mb-4 group-item" data-language="{{ group.language|default:'all' }}">
+                                        <div class="card group-card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <h6 class="card-title">{{ group.name }}</h6>
+                                                    <div class="d-flex align-items-center">
+                                                        {% if group.language %}
+                                                            <span class="badge bg-info me-2">{{ group.language }}</span>
+                                                        {% endif %}
+                                                        <span class="badge bg-outline-success">
+                                                            {% if group.members.count < 5 %}
+                                                                {% trans "Few spots left" %}
+                                                            {% elif group.members.count < 10 %}
+                                                                {% trans "Open" %}
+                                                            {% else %}
+                                                                {% trans "Popular" %}
+                                                            {% endif %}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <p class="card-text text-muted small mb-3">{{ group.description|truncatewords:20 }}</p>
+                                                
+                                                <!-- Group Stats -->
+                                                <div class="mb-3">
+                                                    <div class="row text-center">
+                                                        <div class="col-4">
+                                                            <small class="text-muted d-block">{% trans "Members" %}</small>
+                                                            <strong>{{ group.members.count }}</strong>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <small class="text-muted d-block">{% trans "Level" %}</small>
+                                                            <strong>{{ group.level|default:"Mixed" }}</strong>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <small class="text-muted d-block">{% trans "Active" %}</small>
+                                                            <strong>{{ group.activity_level|default:"Medium" }}</strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Recent Members Preview -->
+                                                <div class="mb-3">
+                                                    <small class="text-muted">{% trans "Recent members:" %}</small>
+                                                    <div class="d-flex align-items-center mt-1">
+                                                        {% for member in group.members.all|slice:":4" %}
+                                                            {% if member.user.get_profile_picture_url %}
+                                                                <img src="{{ member.user.get_profile_picture_url }}" 
+                                                                     alt="{{ member.user.username }}" 
+                                                                     class="rounded-circle me-1"
+                                                                     style="width: 25px; height: 25px; object-fit: cover;"
+                                                                     title="{{ member.user.name|default:member.user.username }}">
+                                                            {% else %}
+                                                                <div class="bg-secondary rounded-circle me-1 d-flex align-items-center justify-content-center"
+                                                                     style="width: 25px; height: 25px;"
+                                                                     title="{{ member.user.name|default:member.user.username }}">
+                                                                    <i class="bi bi-person text-white" style="font-size: 0.7rem;"></i>
+                                                                </div>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        {% if group.members.count > 4 %}
+                                                            <small class="text-muted ms-2">+{{ group.members.count|add:"-4" }} {% trans "more" %}</small>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+
+                                                <!-- Action Buttons -->
+                                                <div class="d-flex gap-2">
+                                                    {% if user.profile in group.members.all %}
+                                                        <button class="btn btn-sm btn-success open-group" data-group-id="{{ group.id }}">
+                                                            <i class="bi bi-box-arrow-in-right me-1"></i>{% trans "Enter Group" %}
+                                                        </button>
+                                                    {% else %}
+                                                        <button class="btn btn-sm btn-primary join-group" data-group-id="{{ group.id }}">
+                                                            <i class="bi bi-plus me-1"></i>{% trans "Join Group" %}
+                                                        </button>
+                                                    {% endif %}
+                                                    <button class="btn btn-sm btn-outline-info view-group" data-group-id="{{ group.id }}">
+                                                        <i class="bi bi-eye me-1"></i>{% trans "Preview" %}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+
+                                <!-- Pagination -->
+                                {% if is_paginated %}
+                                <nav aria-label="{% trans 'Groups pagination' %}">
+                                    <ul class="pagination justify-content-center">
+                                        {% if page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        {% endif %}
+                                        
+                                        {% for num in page_obj.paginator.page_range %}
+                                            {% if page_obj.number == num %}
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ num }}</span>
+                                            </li>
+                                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                            </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                                {% endif %}
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="bi bi-people text-muted" style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3">{% trans "No study groups yet" %}</h4>
+                                    <p class="text-muted">{% trans "Be the first to create a study group for your language!" %}</p>
+                                    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+                                        <i class="bi bi-plus me-1"></i>
+                                        {% trans "Create the First Group" %}
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Group Modal -->
+<div class="modal fade" id="createGroupModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    {% trans "Create New Study Group" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createGroupForm">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="groupName" class="form-label">{% trans "Group Name" %} *</label>
+                                <input type="text" class="form-control" id="groupName" placeholder="{% trans 'e.g., French Conversation Practice' %}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="groupLanguage" class="form-label">{% trans "Language" %} *</label>
+                                <select class="form-select" id="groupLanguage" required>
+                                    <option value="">{% trans "Select language" %}</option>
+                                    <option value="english">🇬🇧 English</option>
+                                    <option value="french">🇫🇷 French</option>
+                                    <option value="spanish">🇪🇸 Spanish</option>
+                                    <option value="german">🇩🇪 German</option>
+                                    <option value="italian">🇮🇹 Italian</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="groupDescription" class="form-label">{% trans "Description" %} *</label>
+                        <textarea class="form-control" id="groupDescription" rows="3" 
+                                  placeholder="{% trans 'Describe what your group is about, what level, meeting schedule, etc.' %}" required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="groupLevel" class="form-label">{% trans "Level" %}</label>
+                                <select class="form-select" id="groupLevel">
+                                    <option value="beginner">{% trans "Beginner (A1-A2)" %}</option>
+                                    <option value="intermediate" selected>{% trans "Intermediate (B1-B2)" %}</option>
+                                    <option value="advanced">{% trans "Advanced (C1-C2)" %}</option>
+                                    <option value="mixed">{% trans "Mixed Levels" %}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="groupType" class="form-label">{% trans "Group Type" %}</label>
+                                <select class="form-select" id="groupType">
+                                    <option value="conversation">{% trans "Conversation Practice" %}</option>
+                                    <option value="grammar">{% trans "Grammar Study" %}</option>
+                                    <option value="vocabulary">{% trans "Vocabulary Building" %}</option>
+                                    <option value="reading">{% trans "Reading Club" %}</option>
+                                    <option value="writing">{% trans "Writing Practice" %}</option>
+                                    <option value="general">{% trans "General Study" %}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Group Rules" %}</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="respectfulRule" checked disabled>
+                            <label class="form-check-label" for="respectfulRule">
+                                {% trans "Members must be respectful and encouraging" %}
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="activeRule">
+                            <label class="form-check-label" for="activeRule">
+                                {% trans "Members should participate actively" %}
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="languageRule">
+                            <label class="form-check-label" for="languageRule">
+                                {% trans "Practice target language primarily" %}
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-primary" id="createGroupBtn">
+                    <i class="bi bi-plus me-1"></i>
+                    {% trans "Create Group" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.group-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.125);
+}
+
+.group-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-color: var(--bs-primary);
+}
+
+.filter-btn.active {
+    background-color: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle language filters
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active from all buttons
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            
+            // Add active to clicked button
+            this.classList.add('active');
+            
+            // Filter groups
+            const language = this.dataset.filter;
+            filterGroups(language);
+        });
+    });
+
+    // Handle group actions
+    document.querySelectorAll('.join-group').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const groupId = this.dataset.groupId;
+            joinGroup(groupId, this);
+        });
+    });
+
+    document.querySelectorAll('.open-group').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const groupId = this.dataset.groupId;
+            openGroup(groupId);
+        });
+    });
+
+    document.querySelectorAll('.view-group').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const groupId = this.dataset.groupId;
+            viewGroup(groupId);
+        });
+    });
+
+    // Handle create group
+    document.getElementById('createGroupBtn').addEventListener('click', function() {
+        createGroup();
+    });
+
+    function filterGroups(language) {
+        const groups = document.querySelectorAll('.group-item');
+        
+        groups.forEach(group => {
+            if (language === 'all' || group.dataset.language === language) {
+                group.style.display = 'block';
+            } else {
+                group.style.display = 'none';
+            }
+        });
+    }
+
+    function joinGroup(groupId, button) {
+        const originalText = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{% trans "Joining..." %}';
+        
+        // TODO: Implement actual join group API call
+        setTimeout(() => {
+            button.innerHTML = '<i class="bi bi-check me-1"></i>{% trans "Joined!" %}';
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-success');
+            
+            // Update button to "Enter Group" after a moment
+            setTimeout(() => {
+                button.innerHTML = '<i class="bi bi-box-arrow-in-right me-1"></i>{% trans "Enter Group" %}';
+                button.classList.remove('join-group');
+                button.classList.add('open-group');
+                button.disabled = false;
+            }, 1500);
+        }, 1000);
+    }
+
+    function openGroup(groupId) {
+        // TODO: Implement group chat/discussion area
+        alert('{% trans "Opening group discussion area... (Feature coming soon!)" %}');
+    }
+
+    function viewGroup(groupId) {
+        // TODO: Implement group preview modal
+        alert('{% trans "Group preview coming soon!" %}');
+    }
+
+    function createGroup() {
+        const form = document.getElementById('createGroupForm');
+        const formData = new FormData(form);
+        
+        // Basic validation
+        const name = document.getElementById('groupName').value.trim();
+        const description = document.getElementById('groupDescription').value.trim();
+        const language = document.getElementById('groupLanguage').value;
+        
+        if (!name || !description || !language) {
+            alert('{% trans "Please fill in all required fields." %}');
+            return;
+        }
+        
+        // TODO: Implement actual group creation API call
+        const createBtn = document.getElementById('createGroupBtn');
+        createBtn.disabled = true;
+        createBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{% trans "Creating..." %}';
+        
+        setTimeout(() => {
+            alert('{% trans "Group created successfully! (Feature coming soon!)" %}');
+            bootstrap.Modal.getInstance(document.getElementById('createGroupModal')).hide();
+            form.reset();
+            createBtn.disabled = false;
+            createBtn.innerHTML = '<i class="bi bi-plus me-1"></i>{% trans "Create Group" %}';
+        }, 2000);
+    }
+});
+</script>
+{% endblock %}

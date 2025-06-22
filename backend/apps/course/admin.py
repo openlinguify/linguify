@@ -28,9 +28,7 @@ from .models import (
     ContentLesson, 
     TheoryContent,
     VocabularyList, 
-    ExerciseVocabularyMultipleChoice, 
     MultipleChoiceQuestion, 
-    Numbers,
     MatchingExercise,
     ExerciseGrammarReordering,
     FillBlankExercise,
@@ -882,7 +880,7 @@ class LessonAdmin(admin.ModelAdmin):
         'get_title', 
         'get_unit_with_level',
         'lesson_type', 
-        'get_professional_field', 
+        # 'get_professional_field',  # Champ supprimé lors de la refactorisation 
         'get_languages_status',
         'estimated_duration', 
         'order',
@@ -894,7 +892,7 @@ class LessonAdmin(admin.ModelAdmin):
         'unit__level',  # Filtre simple par niveau
         'lesson_type',
         'unit',
-        'professional_field',
+        # 'professional_field',  # Champ supprimé lors de la refactorisation
         'estimated_duration',
     )
     
@@ -1180,7 +1178,7 @@ class LessonAdmin(admin.ModelAdmin):
                             if vocabulary_items.exists():
                                 # Ajouter le vocabulaire trouvé à l'exercice
                                 for vocab in vocabulary_items:
-                                    exercise.vocabulary_words.add(vocab)
+                                    exercise.vocabulary_items.add(vocab)
                     
                     # Afficher un message de succès
                     messages.success(
@@ -1423,7 +1421,7 @@ class TheoryContentAdminForm(forms.ModelForm):
 class TheoryContentAdmin(admin.ModelAdmin):
     form = TheoryContentAdminForm
     list_display = ('id', 'get_content_title', 'has_formula', 'has_examples', 'format_indicator', 'language_count')
-    list_filter = ('content_lesson__lesson__unit', 'using_json_format')
+    list_filter = ('content_lesson__lesson__unit',)  # 'using_json_format' supprimé lors de la refactorisation
     search_fields = ('content_en', 'content_fr', 'content_lesson__title_en', 'language_specific_content')
     actions = ['migrate_to_json_format', 'add_custom_language']
     change_form_template = 'admin/course/theorycontent/change_form.html'
@@ -2122,12 +2120,12 @@ class VocabularyListAdmin(admin.ModelAdmin):
             'all': ('admin/css/vocabularylist_admin.css',)
         }
 
-@admin.register(Numbers)
-class NumbersAdmin(admin.ModelAdmin):
-    list_display = ('id', 'number', 'number_en', 'number_fr', 'is_reviewed', 'content_lesson')
-    list_filter = ('is_reviewed', 'content_lesson__lesson__unit')
-    search_fields = ('number', 'number_en', 'number_fr')
-    list_editable = ('is_reviewed',)
+# @admin.register(Numbers)  # SUPPRIMÉ - modèle Numbers obsolète
+# class NumbersAdmin(admin.ModelAdmin):  # SUPPRIMÉ
+#     list_display = ('id', 'number', 'number_en', 'number_fr', 'is_reviewed', 'content_lesson')
+#     list_filter = ('is_reviewed', 'content_lesson__lesson__unit')
+#     search_fields = ('number', 'number_en', 'number_fr')
+#     list_editable = ('is_reviewed',)
 
 @admin.register(MatchingExercise)
 class MatchingExerciseAdmin(admin.ModelAdmin):
@@ -2158,7 +2156,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
         ('Configuration des paires', {
-            'fields': ('pairs_count', 'preview_vocabulary_pairs', 'vocabulary_words'),
+            'fields': ('pairs_count', 'preview_vocabulary_pairs', 'vocabulary_items'),
             'description': 'Configurez le nombre de paires et sélectionnez le vocabulaire.'
         }),
     )
@@ -2166,7 +2164,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
     readonly_fields = ('preview_vocabulary_pairs', 'get_pairs_display', 'get_status_display')
     
     # Relations
-    filter_horizontal = ('vocabulary_words',)
+    filter_horizontal = ('vocabulary_items',)  # Renommé de vocabulary_items vers vocabulary_items
     
     def get_content_lesson_title(self, obj):
         """Affiche le titre de la leçon associée pour faciliter l'identification."""
@@ -2176,7 +2174,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
     
     def get_vocab_count(self, obj):
         """Affiche le nombre réel de mots de vocabulaire associés."""
-        count = obj.vocabulary_words.count()
+        count = obj.vocabulary_items.count()
         if count != obj.pairs_count:
             return format_html('<span style="color: red;">{}</span>', count)
         return count
@@ -2194,7 +2192,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
     
     def get_pairs_display(self, obj):
         """Affiche visuellement le nombre de paires configuré vs réel."""
-        actual_count = obj.vocabulary_words.count()
+        actual_count = obj.vocabulary_items.count()
         configured_count = obj.pairs_count
         
         if actual_count == configured_count:
@@ -2220,7 +2218,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
     
     def get_status_display(self, obj):
         """Affiche le statut visuel de l'exercice."""
-        actual_count = obj.vocabulary_words.count()
+        actual_count = obj.vocabulary_items.count()
         configured_count = obj.pairs_count
         
         if actual_count == 0:
@@ -2235,7 +2233,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
     
     def preview_vocabulary_pairs(self, obj):
         """Prévisualise les paires de vocabulaire dans le formulaire."""
-        vocab_items = obj.vocabulary_words.all()[:5]  # Limite à 5 pour la prévisualisation
+        vocab_items = obj.vocabulary_items.all()[:5]  # Limite à 5 pour la prévisualisation
         
         if not vocab_items:
             return "Aucune paire configurée"
@@ -2248,8 +2246,8 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
                 f'</div>'
             )
         
-        if obj.vocabulary_words.count() > 5:
-            pairs_html.append(f'<div style="color: #666; font-style: italic;">... et {obj.vocabulary_words.count() - 5} autres paires</div>')
+        if obj.vocabulary_items.count() > 5:
+            pairs_html.append(f'<div style="color: #666; font-style: italic;">... et {obj.vocabulary_items.count() - 5} autres paires</div>')
         
         return format_html(''.join(pairs_html))
     preview_vocabulary_pairs.short_description = 'Aperçu des paires'
@@ -2259,7 +2257,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
         Filtre les mots disponibles en fonction de la leçon sélectionnée,
         pour simplifier la création des exercices.
         """
-        if db_field.name == 'vocabulary_words':
+        if db_field.name == 'vocabulary_items':
             # Vérifier si request._obj existe (défini dans get_form)
             if hasattr(request, '_obj') and request._obj is not None:
                 kwargs['queryset'] = VocabularyList.objects.filter(
@@ -2324,7 +2322,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
             parent_lesson = content_lesson.lesson
             
             # Memorize the number of words before the operation
-            words_before = exercise.vocabulary_words.count()
+            words_before = exercise.vocabulary_items.count()
             
             # 1. Try to find vocabulary in the same content lesson
             vocab_items = VocabularyList.objects.filter(content_lesson=content_lesson)
@@ -2347,11 +2345,11 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
             if vocab_items.exists():
                 # Limit to the pairs_count specified in the exercise
                 vocab_items = vocab_items[:exercise.pairs_count]
-                exercise.vocabulary_words.add(*vocab_items)
+                exercise.vocabulary_items.add(*vocab_items)
                 exercises_updated += 1
                 
                 # Calculate how many words were added
-                words_after = exercise.vocabulary_words.count()
+                words_after = exercise.vocabulary_items.count()
                 words_added += (words_after - words_before)
         
         # Confirmation message
@@ -2370,11 +2368,11 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
         
         created_count = 0
         for exercise in queryset:
-            vocab_count = exercise.vocabulary_words.count()
+            vocab_count = exercise.vocabulary_items.count()
             if vocab_count > exercise.pairs_count:
                 # Calculer le nombre d'exercices nécessaires
                 num_exercises = ceil(vocab_count / exercise.pairs_count)
-                vocabulary_items = list(exercise.vocabulary_words.all())
+                vocabulary_items = list(exercise.vocabulary_items.all())
                 
                 # Créer des exercices supplémentaires
                 for i in range(1, num_exercises):
@@ -2392,7 +2390,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
                     # Associer le vocabulaire approprié
                     start_idx = i * exercise.pairs_count
                     end_idx = min((i + 1) * exercise.pairs_count, vocab_count)
-                    new_exercise.vocabulary_words.set(vocabulary_items[start_idx:end_idx])
+                    new_exercise.vocabulary_items.set(vocabulary_items[start_idx:end_idx])
                     created_count += 1
                 
                 # Mettre à jour l'exercice original
@@ -2400,7 +2398,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
                 exercise.title_fr = f"{exercise.title_fr} - Partie 1"
                 exercise.title_es = f"{exercise.title_es} - Parte 1"
                 exercise.title_nl = f"{exercise.title_nl} - Deel 1"
-                exercise.vocabulary_words.set(vocabulary_items[:exercise.pairs_count])
+                exercise.vocabulary_items.set(vocabulary_items[:exercise.pairs_count])
                 exercise.save()
         
         if created_count:
@@ -2415,7 +2413,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
         optimized_count = 0
         
         for exercise in queryset:
-            vocab_count = exercise.vocabulary_words.count()
+            vocab_count = exercise.vocabulary_items.count()
             if vocab_count != exercise.pairs_count and vocab_count > 0:
                 exercise.pairs_count = vocab_count
                 exercise.save()
@@ -2433,7 +2431,7 @@ class MatchingExerciseAdmin(admin.ModelAdmin):
         issues = []
         
         for exercise in queryset:
-            vocab_count = exercise.vocabulary_words.count()
+            vocab_count = exercise.vocabulary_items.count()
             pairs_count = exercise.pairs_count
             
             if vocab_count == 0:
@@ -2498,11 +2496,11 @@ class ExerciseGrammarReorderingAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(ExerciseVocabularyMultipleChoice)
-class ExerciseVocabularyMultipleChoiceAdmin(admin.ModelAdmin):
-    list_display = ('id', 'question', 'correct_answer', 'lesson')
-    list_filter = ('lesson__unit',)
-    search_fields = ('question', 'correct_answer')
+# @admin.register(ExerciseVocabularyMultipleChoice)  # SUPPRIMÉ - modèle obsolète
+# class ExerciseVocabularyMultipleChoiceAdmin(admin.ModelAdmin):  # SUPPRIMÉ
+#     list_display = ('id', 'question', 'correct_answer', 'lesson')
+#     list_filter = ('lesson__unit',)
+#     search_fields = ('question', 'correct_answer')
 
 class FillBlankExerciseAdminForm(forms.ModelForm):
     """Enhanced custom form for Fill in the Blank exercises admin"""
@@ -3235,7 +3233,7 @@ class FillBlankExerciseAdmin(admin.ModelAdmin):
                             if vocabulary_items.exists():
                                 # Ajouter le vocabulaire trouvé à l'exercice
                                 for vocab in vocabulary_items:
-                                    exercise.vocabulary_words.add(vocab)
+                                    exercise.vocabulary_items.add(vocab)
                     
                     # Afficher un message de succès
                     messages.success(
@@ -3631,7 +3629,7 @@ class TestRecapQuestionInline(admin.TabularInline):
         
         elif obj.question_type == 'matching':
             return format_html('<strong>Matching:</strong> {} pairs', 
-                               question.vocabulary_words.count())
+                               question.vocabulary_items.count())
         
         elif obj.question_type == 'reordering':
             return format_html('<strong>Sentence:</strong> {}', 
