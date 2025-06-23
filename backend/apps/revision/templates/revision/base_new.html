@@ -661,14 +661,14 @@
         "DEBUG": {{ debug|yesno:"true,false" }},
         "API_BASE_URL": "{{ request.scheme }}://{{ request.get_host }}",
         "USER_DATA": {
-            "id": {{ request.user.id|default:"null" }},
+            "id": {{ request.user.id|default:"null"|escapejs }},
             "username": "{{ request.user.username|default:''|escapejs }}",
             "email": "{{ request.user.email|default:''|escapejs }}",
             "is_authenticated": {{ user.is_authenticated|yesno:"true,false" }}
         },
         "REVISION_CONFIG": {
             "apiBaseUrl": "/api/v1/revision"{% if deck_id %},
-            "deckId": {{ deck_id }}{% endif %}{% if deck_data %},
+            "deckId": {{ deck_id|escapejs }}{% endif %}{% if deck_data %},
             "deckData": {{ deck_data|safe }}{% endif %}{% if study_mode %},
             "studyMode": "{{ study_mode|escapejs }}"{% endif %}{% if view_type %},
             "viewType": "{{ view_type|escapejs }}"{% endif %}

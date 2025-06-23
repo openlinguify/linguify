@@ -67,14 +67,24 @@ def contact_view(request):
 
 def get_preferred_language(request):
     """Get user's preferred language from Accept-Language header or default to 'en'"""
-    if 'HTTP_ACCEPT_LANGUAGE' in request.META:
-        accept_language = request.META['HTTP_ACCEPT_LANGUAGE']
-        supported_languages = ['en', 'fr', 'es', 'nl']
-        for lang in accept_language.split(','):
-            lang_code = lang.strip().split(';')[0].split('-')[0]
-            if lang_code in supported_languages:
-                return lang_code
-    return 'en'
+    from django.conf import settings
+    
+    try:
+        if 'HTTP_ACCEPT_LANGUAGE' in request.META:
+            accept_language = request.META['HTTP_ACCEPT_LANGUAGE']
+            # Get supported language codes from Django settings
+            supported_languages = [lang_code for lang_code, lang_name in settings.LANGUAGES]
+            for lang in accept_language.split(','):
+                lang_code = lang.strip().split(';')[0].split('-')[0]
+                if lang_code in supported_languages:
+                    return lang_code
+    except (AttributeError, IndexError, ValueError):
+        # Handle malformed Accept-Language headers gracefully
+        pass
+    
+    # Return the first language in LANGUAGES as default, or 'en' if not configured
+    default_language = settings.LANGUAGES[0][0] if settings.LANGUAGES else 'en'
+    return default_language
 
 
 def language_redirect_view(request, path):

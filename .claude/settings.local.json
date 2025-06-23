@@ -146,7 +146,8 @@
       "Bash(export:*)",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test tests.test_public_web_views.PublicWebViewsTest.test_legacy_app_views_still_work --verbosity=2 --keepdb --noinput)",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test tests.test_public_web_views --verbosity=1 --keepdb --noinput)",
-      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test tests.test_public_web_integration --verbosity=1 --keepdb --noinput)"
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test tests.test_public_web_integration --verbosity=1 --keepdb --noinput)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python -c \"\nfrom core.views import get_preferred_language\nfrom django.test import RequestFactory\nfrom django.conf import settings\n\n# Test the improved language detection\nfactory = RequestFactory()\n\n# Test normal operation\nrequest = factory.get('/', HTTP_ACCEPT_LANGUAGE='fr,en;q=0.9')\nlang = get_preferred_language(request)\nprint(f'Normal operation: {lang}')\n\n# Test malformed header (should not crash)\nrequest = factory.get('/', HTTP_ACCEPT_LANGUAGE=';;invalid;;')\nlang = get_preferred_language(request)\nprint(f'Malformed header: {lang}')\n\n# Test empty header\nrequest = factory.get('/')\nlang = get_preferred_language(request)\nprint(f'No header: {lang}')\n\n# Test configuration\nprint(f'Supported languages: {[code for code, name in settings.LANGUAGES]}')\n\")"
     ],
     "deny": []
   },
