@@ -13,7 +13,7 @@
 
 
     <meta name="keywords" content="{% block meta_keywords %}
-openlinguify, open linguify, apprentissage, éducation en ligne, outils éducatifs, flashcards, quiz, révision, mémoire, cours en ligne, application éducative, carnet de notes, IA éducative, social learning, apprentissage collaboratif,
+openlinguify, open linguify, OpenLinguify, Open Linguify, openlinguify.com, linguify platform, linguify educational apps, linguify open source, apprentissage, éducation en ligne, outils éducatifs, flashcards, quiz, révision, mémoire, cours en ligne, application éducative, carnet de notes, IA éducative, social learning, apprentissage collaboratif, flashcard, education tools, chat, online
 
 learning, online education, educational tools, flashcards, quizzes, study, memory, spaced repetition, online courses, study tools, learning app, smart education, revision tools, AI learning, digital notebook, collaborative learning,
 
@@ -38,21 +38,26 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
 शिक्षा, ऑनलाइन शिक्षा, शैक्षणिक उपकरण, फ्लैशकार्ड, क्विज़, अध्ययन, मेमोरी, ऑनलाइन कोर्स, शिक्षण ऐप, पुनरावृत्ति, एआई शिक्षा, सहयोगी शिक्षा
 {% endblock %}">
     <meta name="author" content="OpenLinguify Team">
+    <meta property="og:site_name" content="OpenLinguify">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="{% block og_title %}{% trans 'OpenLinguify - Open source platform for modern education' %}{% endblock %}">
-<meta property="og:description" content="{% block og_description %}{% trans 'Discover OpenLinguify, a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn.' %}{% endblock %}">
+    <meta property="og:title"
+        content="{% block og_title %}{% trans 'OpenLinguify - Open source educational apps platform' %}{% endblock %}">
+    <meta property="og:description"
+        content="{% block og_description %}{% trans 'Discover OpenLinguify, a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn.' %}{% endblock %}">
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:image" content="{% load static %}{% static 'public_web/images/og-image.png' %}">
-    
+
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{% block twitter_title %}{% trans 'OpenLinguify - Open source platform for modern education' %}{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_description %}{% trans 'OpenLinguify: Complete suite of open source educational apps: memorization, flashcards, notes, quizzes, collaborative chat and much more.' %}{% endblock %}">
+    <meta name="twitter:title"
+        content="{% block twitter_title %}{% trans 'OpenLinguify - Open source platform for modern education' %}{% endblock %}">
+    <meta name="twitter:description"
+        content="{% block twitter_description %}{% trans 'OpenLinguify: Complete suite of open source educational apps: memorization, flashcards, notes, quizzes, collaborative chat and much more.' %}{% endblock %}">
     <meta name="twitter:image" content="{% static 'public_web/images/og-image.png' %}">
-    
+
     <!-- Additional SEO -->
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#6366f1">
@@ -79,16 +84,16 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
     <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/favicon-48x48.png' %}">
     <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon-96x96.png' %}">
     <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/favicon-192x192.png' %}">
-    
+
     <!-- Apple Touch Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/apple-touch-icon-precomposed.png">
     <link rel="shortcut icon" href="/favicon.ico">
-    
+
     <!-- Spécifique pour Google et Microsoft -->
     <meta name="msapplication-TileImage" content="{% static 'images/favicon-144x144.png' %}">
     <meta name="msapplication-TileColor" content="#6366f1">
-    
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="{% static 'manifest.json' %}">
 
@@ -208,7 +213,7 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
         }
     }
     </script>
-    
+
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -233,7 +238,7 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
     </script>
 
     {% block structured_data %}{% endblock %}
-    
+
     {% block extra_head %}{% endblock %}
 </head>
 
@@ -254,41 +259,41 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
 
     <!-- Custom JS -->
     <script src="{% static 'src/js/main.js' %}"></script>
-    
+
     <!-- Language switching -->
     <script>
-    function setLanguage(lang) {
-        // Create form to submit language change
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '/i18n/setlang/';
-        
-        // Add CSRF token
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = 'csrfmiddlewaretoken';
-        csrfInput.value = '{{ csrf_token }}';
-        form.appendChild(csrfInput);
-        
-        // Add language
-        const langInput = document.createElement('input');
-        langInput.type = 'hidden';
-        langInput.name = 'language';
-        langInput.value = lang;
-        form.appendChild(langInput);
-        
-        // Add next URL
-        const nextInput = document.createElement('input');
-        nextInput.type = 'hidden';
-        nextInput.name = 'next';
-        nextInput.value = window.location.pathname;
-        form.appendChild(nextInput);
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
+        function setLanguage(lang) {
+            // Create form to submit language change
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/i18n/setlang/';
+
+            // Add CSRF token
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = '{{ csrf_token }}';
+            form.appendChild(csrfInput);
+
+            // Add language
+            const langInput = document.createElement('input');
+            langInput.type = 'hidden';
+            langInput.name = 'language';
+            langInput.value = lang;
+            form.appendChild(langInput);
+
+            // Add next URL
+            const nextInput = document.createElement('input');
+            nextInput.type = 'hidden';
+            nextInput.name = 'next';
+            nextInput.value = window.location.pathname;
+            form.appendChild(nextInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
     </script>
-    
+
     {% block extra_js %}{% endblock %}
 </body>
 

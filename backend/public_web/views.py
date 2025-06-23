@@ -274,6 +274,14 @@ class RobotsTxtView(View):
         content = f"""User-agent: *
 Allow: /
 
+# Important pages to index
+Allow: /notebook/
+Allow: /course/
+Allow: /revision/
+Allow: /features/
+Allow: /apps/
+Allow: /brand/
+
 # Sitemaps
 Sitemap: {base_url}/sitemap.xml
 
@@ -286,9 +294,10 @@ Allow: /static/images/favicon.png
 
 # Disallow admin and private areas
 Disallow: /admin/
-Disallow: /api/
+Disallow: /api/  # Block API endpoints except documentation
 Disallow: /dashboard/
 Disallow: /settings/
+Disallow: /profile/
 
 # SEO optimizations
 Crawl-delay: 1
@@ -510,3 +519,20 @@ class ClearCacheView(View):
             return JsonResponse({
                 'error': f'Cache clearing failed: {str(e)}'
             }, status=500)
+
+
+# Error handlers
+def custom_404(request, exception):
+    """Custom 404 error handler"""
+    return render(request, 'public_web/errors/404.html', {
+        'title': 'Page Not Found - Open Linguify',
+        'meta_description': 'The page you are looking for could not be found.',
+    }, status=404)
+
+
+def custom_500(request):
+    """Custom 500 error handler"""
+    return render(request, 'public_web/errors/500.html', {
+        'title': 'Server Error - Open Linguify',
+        'meta_description': 'An internal server error occurred.',
+    }, status=500)

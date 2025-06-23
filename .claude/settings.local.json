@@ -142,7 +142,8 @@
       "Bash(DJANGO_ENV=production poetry run python manage.py loaddata /tmp/debug_export.json)",
       "Bash(convert:*)",
       "Bash(__NEW_LINE__ cp apps/chat/static/description/icon.png static/app-icons/chat.png)",
-      "Bash(poetry:*)"
+      "Bash(poetry:*)",
+      "Bash(export:*)"
     ],
     "deny": []
   },

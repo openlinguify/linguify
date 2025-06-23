@@ -41,7 +41,9 @@ class AppManifestParser:
                             'django_app': manifest.get('technical_info', {}).get('django_app', f'apps.{app_dir.name}')
                         }
                 except Exception as e:
-                    print(f"Error loading manifest for {app_dir.name}: {e}")
+                    import logging
+                    logger = logging.getLogger(__name__)
+                    logger.warning(f"Error loading manifest for {app_dir.name}: {e}")
                     continue
         
         self._cached_manifests = manifests
