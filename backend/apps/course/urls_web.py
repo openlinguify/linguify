@@ -3,9 +3,10 @@ from django.urls import path
 from django.shortcuts import render
 from .views_web import (
     LearningDashboardView,
+    ChapterDetailView,
+    LessonDetailView,
     UnitsListView,
     UnitDetailView,
-    LessonDetailView,
     LessonsListView,
     language_settings_view,
     vocabulary_practice_view,
@@ -16,7 +17,9 @@ from .views_web import (
     complete_lesson_ajax,
     reset_unit_progress_ajax,
     unit_details_ajax,
+    complete_lesson,
 )
+from .debug_view import debug_data
 
 def test_view(request):
     return render(request, 'course/learning/test.html')
@@ -29,16 +32,22 @@ def simple_test_view(request):
     context = dashboard.get_context_data()
     return render(request, 'course/learning/simple_test.html', context)
 
-app_name = 'learning'
+app_name = 'course'
 
 urlpatterns = [
     # Test de fonctionnement
     path('test/', test_view, name='test'),
     path('simple-test/', simple_test_view, name='simple-test'),
+    path('debug/', debug_data, name='debug'),
     
     # Vues principales
-    path('', LearningDashboardView.as_view(), name='learning-dashboard'),
-    path('dashboard/', LearningDashboardView.as_view(), name='dashboard'),
+    path('', LearningDashboardView.as_view(), name='dashboard'),
+    path('dashboard/', LearningDashboardView.as_view(), name='learning-dashboard'),
+    
+    # Chapitres et leçons
+    path('chapter/<int:chapter_id>/', ChapterDetailView.as_view(), name='chapter_detail'),
+    path('lesson/<int:lesson_id>/', LessonDetailView.as_view(), name='lesson_detail'),
+    path('complete-lesson/<int:lesson_id>/', complete_lesson, name='complete_lesson'),
     
     # Unités
     path('units/', UnitsListView.as_view(), name='units-list'),

@@ -1,8 +1,8 @@
 from django.urls import path
-from django.views.generic import TemplateView
+from .views_web import LanguageAIMainView
 
 app_name = 'language_ai_web'
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='language_ai/app.html'), name='app'),
+    path('', LanguageAIMainView.as_view(), name='app'),
 ]

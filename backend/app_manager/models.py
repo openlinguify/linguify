@@ -107,6 +107,26 @@ class App(models.Model):
             raise ValidationError({'color': 'Color must start with #'})
     
     @classmethod
+    def sync_apps(cls):
+        """
+        Synchronise les applications depuis leurs manifests
+        Retourne un résumé des opérations
+        """
+        summary = {
+            'total_discovered': 0,
+            'newly_created': 0,
+            'updated': 0,
+            'errors': []
+        }
+        
+        cls.discover_apps_from_manifests()
+        
+        # Compter les résultats
+        # TODO: Implémenter le comptage des résultats
+        
+        return summary
+    
+    @classmethod
     def discover_apps_from_manifests(cls):
         """
         Discover and sync applications from __manifest__.py files.

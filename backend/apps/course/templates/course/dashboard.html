@@ -1,0 +1,190 @@
+{% extends "saas_web/base.html" %}
+{% load static %}
+
+{% block page_title %}Apprendre {{ target_language }} - Linguify{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'course/css/learning-app.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="learning-app">
+    <!-- Header Bar -->
+    <div class="learning-header">
+        <div class="header-left">
+            <div class="language-selector">
+                <img src="{% static 'images/favicon-32x32.png' %}" alt="Français" class="flag-icon">
+                <span>Français</span>
+                <i class="bi bi-chevron-down"></i>
+            </div>
+        </div>
+        
+        <div class="header-center">
+            <div class="streak-counter">
+                <i class="bi bi-fire"></i>
+                <span>{{ user_stats.streak_days|default:0 }}</span>
+            </div>
+            <div class="xp-counter">
+                <i class="bi bi-star-fill"></i>
+                <span>{{ user_stats.total_xp|default:0 }} XP</span>
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <button class="btn-icon" onclick="showProfile()">
+                <i class="bi bi-person-circle"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="learning-content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-3 col-md-4">
+                    <div class="sidebar-card">
+                        <h3>Mon Parcours</h3>
+                        <div class="progress-overview">
+                            <div class="circular-progress" data-progress="{{ user_stats.overall_progress|default:0 }}">
+                                <svg width="120" height="120">
+                                    <circle cx="60" cy="60" r="50" class="progress-bg"></circle>
+                                    <circle cx="60" cy="60" r="50" class="progress-bar" 
+                                            style="stroke-dasharray: {{ user_stats.overall_progress|default:0 }} 314;"></circle>
+                                </svg>
+                                <div class="progress-text">
+                                    <span class="percentage">{{ user_stats.overall_progress|default:0 }}%</span>
+                                    <span class="label">Complété</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="quick-stats">
+                            <div class="stat">
+                                <i class="bi bi-book"></i>
+                                <span>{{ user_stats.completed_lessons|default:0 }} leçons</span>
+                            </div>
+                            <div class="stat">
+                                <i class="bi bi-clock"></i>
+                                <span>{{ user_stats.study_time|default:0 }} min aujourd'hui</span>
+                            </div>
+                            <div class="stat">
+                                <i class="bi bi-trophy"></i>
+                                <span>Niveau {{ user_stats.level|default:"A1" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Learning Area -->
+                <div class="col-lg-9 col-md-8">
+                    <!-- Welcome Section -->
+                    <div class="welcome-card">
+                        <h1>Bonjour {{ user.first_name|default:user.username }} ! 👋</h1>
+                        <p>Continuez votre apprentissage du français</p>
+                    </div>
+
+                    <!-- Current Chapter -->
+                    {% if current_chapter %}
+                    <div class="current-chapter-card">
+                        <h2>Chapitre en cours</h2>
+                        <div class="chapter-info">
+                            <h3>{{ current_chapter.title }}</h3>
+                            <p>{{ current_chapter.description }}</p>
+                            <div class="chapter-progress">
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: {{ current_chapter.progress }}%"></div>
+                                </div>
+                                <span>{{ current_chapter.completed_lessons }}/{{ current_chapter.total_lessons }} leçons</span>
+                            </div>
+                            <button class="btn btn-primary btn-lg mt-3" onclick="continueLesson()">
+                                <i class="bi bi-play-fill"></i> Continuer
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Chapters Grid -->
+                    <div class="chapters-section">
+                        <h2>Tous les chapitres</h2>
+                        <div class="chapters-grid">
+                            {% for chapter in chapters %}
+                            <div class="chapter-card {% if chapter.is_locked %}locked{% endif %}" 
+                                 data-chapter-id="{% if not chapter.is_locked %}{{ chapter.id }}{% endif %}"
+                                 {% if not chapter.is_locked %}onclick="selectChapter({{ chapter.id }})" style="cursor: pointer;"{% endif %}>
+                                <div class="chapter-header">
+                                    <div class="chapter-icon">
+                                        <i class="bi bi-{{ chapter.icon|default:'book' }}"></i>
+                                    </div>
+                                    <div class="chapter-status">
+                                        {% if chapter.is_completed %}
+                                            <i class="bi bi-check-circle-fill text-success"></i>
+                                        {% elif chapter.is_current %}
+                                            <i class="bi bi-play-circle-fill text-primary"></i>
+                                        {% elif chapter.is_locked %}
+                                            <i class="bi bi-lock-fill text-muted"></i>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <h4>{{ chapter.title }}</h4>
+                                <p>{{ chapter.description|truncatechars:60 }}</p>
+                                <div class="chapter-meta">
+                                    <span><i class="bi bi-layers"></i> {{ chapter.lessons_count }} leçons</span>
+                                    <span><i class="bi bi-star"></i> {{ chapter.points }} pts</span>
+                                </div>
+                                {% if not chapter.is_locked %}
+                                <div class="chapter-progress">
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width: {{ chapter.progress }}%"></div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lesson Modal -->
+<div class="modal fade" id="lessonModal" tabindex="-1">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="lessonContent">
+                <!-- Lesson content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'course/js/learning-simple.js' %}"></script>
+<script>
+// Simple functions for the template
+function continueLesson() {
+    {% if current_lesson %}
+    window.location.href = '/learning/lesson/{{ current_lesson.id }}/';
+    {% else %}
+    // Go to first available chapter
+    const firstChapter = document.querySelector('.chapter-card:not(.locked)');
+    if (firstChapter) {
+        const chapterId = firstChapter.dataset.chapterId;
+        if (chapterId) {
+            window.location.href = '/learning/chapter/' + chapterId + '/';
+        }
+    }
+    {% endif %}
+}
+
+function selectChapter(chapterId) {
+    window.location.href = '/learning/chapter/' + chapterId + '/';
+}
+</script>
+{% endblock %}

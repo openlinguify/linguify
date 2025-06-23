@@ -34,9 +34,8 @@ Usage:
     'application': True,
     'sequence': 30,
     'frontend_components': {
-        'main_component': 'NotesView',
         'route': '/notebook',
-        'icon': 'FileText',
+        'static_icon': '/static/app-icons/notebook.png',
         'menu_order': 3,
     },
     'api_endpoints': {

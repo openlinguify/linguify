@@ -1,101 +1,246 @@
-{% extends "course/base.html" %}
+{% extends "saas_web/base.html" %}
+{% load static %}
 
-{% block page_title %}{{ lesson.title }} - Cours{% endblock %}
+{% block page_title %}{{ lesson.title }} - Linguify{% endblock %}
 
-{% block header_content %}
-<div class="d-flex align-items-center justify-content-between">
-    <div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{% url 'learning:dashboard' %}">Tableau de bord</a></li>
-                <li class="breadcrumb-item"><a href="{% url 'learning:unit-detail' lesson.unit.pk %}">{{ lesson.unit.title }}</a></li>
-                <li class="breadcrumb-item active">{{ lesson.title }}</li>
-            </ol>
-        </nav>
-    </div>
-    <a href="{% url 'learning:unit-detail' lesson.unit.pk %}" class="btn btn-outline-custom">
-        <i class="bi bi-arrow-left"></i> Retour à l'unité
-    </a>
-</div>
+{% block extra_css %}
+<link href="{% static 'course/css/learning-app.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-<div class="course-content" style="width: 100%;">
-    <div class="content-header">
-        <h4>{{ lesson.title }}</h4>
-        <p class="text-muted">{{ lesson.description|default:"" }}</p>
-        <div class="d-flex gap-3 text-muted small">
-            <span><i class="bi bi-clock"></i> ~{{ lesson.estimated_duration|default:15 }} minutes</span>
-            <span><i class="bi bi-lightning"></i> {{ xp_earned|default:0 }}/{{ lesson.xp_reward|default:50 }} XP gagnés</span>
-        </div>
-    </div>
-    
-    <div class="content-body">
-        <div class="progress-container mb-4">
-            <div class="progress-bar" style="width: {{ lesson_progress }}%"></div>
-        </div>
-        
-        <h5 class="mb-3">Contenu de la leçon</h5>
-        
-        {% if content_lessons %}
-            <div class="list-group">
-                {% for content in content_lessons %}
-                <div class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">
-                                {% if content.content_type == 'theory' %}
-                                    <i class="bi bi-book text-primary"></i> Théorie
-                                {% elif content.content_type == 'vocabulary' %}
-                                    <i class="bi bi-translate text-success"></i> Vocabulaire
-                                {% elif content.content_type == 'grammar' %}
-                                    <i class="bi bi-pen text-warning"></i> Grammaire
-                                {% elif content.content_type == 'exercises' %}
-                                    <i class="bi bi-pencil-square text-info"></i> Exercices
-                                {% else %}
-                                    <i class="bi bi-file-text"></i> {{ content.get_content_type_display }}
-                                {% endif %}
-                            </h6>
-                            <p class="mb-0 text-muted">{{ content.description|default:"Contenu de la leçon" }}</p>
-                        </div>
-                        
-                        <div>
-                            {% if content.completed %}
-                            <span class="badge bg-success">
-                                <i class="bi bi-check-circle"></i> Complété
-                            </span>
-                            {% else %}
-                            <a href="#" class="btn btn-sm btn-gradient" onclick="startContent({{ content.id }})">
-                                <i class="bi bi-play-fill"></i> Commencer
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="empty-state">
-                <i class="bi bi-journal-x empty-state-icon"></i>
-                <div class="empty-state-title">Aucun contenu disponible</div>
-                <div class="empty-state-description">Le contenu de cette leçon sera bientôt disponible</div>
-            </div>
-        {% endif %}
-        
-        {% if next_lesson %}
-        <div class="text-center mt-5">
-            <a href="{% url 'learning:lesson-detail' next_lesson.pk %}" class="btn btn-outline-custom me-2">
-                Leçon suivante <i class="bi bi-arrow-right"></i>
+<div class="learning-app">
+    <!-- Header Bar -->
+    <div class="learning-header">
+        <div class="header-left">
+            <a href="/learning/chapter/{{ lesson.chapter.id }}/" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Retour au chapitre
             </a>
         </div>
-        {% endif %}
+        
+        <div class="header-center">
+            <h1>{{ lesson.title }}</h1>
+        </div>
+    </div>
+
+    <!-- Lesson Content -->
+    <div class="learning-content">
+        <div class="container-fluid">
+            {% if has_content %}
+                {% for content in lesson_contents %}
+                    <div class="content-section" data-type="{{ content.display_type }}">
+                        <h3>{{ content.title }}</h3>
+                        
+                        {% if content.display_type == 'vocabulary' %}
+                    <!-- Vocabulary Lesson -->
+                    <div class="lesson-container vocabulary-lesson">
+                        <div class="lesson-header">
+                            <h2>{{ lesson.title }}</h2>
+                            <p>Apprenez le nouveau vocabulaire</p>
+                        </div>
+                        
+                        <div class="vocabulary-slider">
+                            <div class="vocabulary-cards">
+                                {% for word in lesson_content.vocabulary %}
+                                <div class="vocab-card {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}">
+                                    <div class="vocab-front">
+                                        <h3>{{ word.word }}</h3>
+                                        {% if word.phonetic %}
+                                        <p class="pronunciation">[{{ word.phonetic }}]</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="vocab-back">
+                                        <h4>{{ word.translation }}</h4>
+                                        {% if word.example_sentence %}
+                                        <div class="example-section">
+                                            <p class="example">"{{ word.example_sentence }}"</p>
+                                            {% if word.example_translation %}
+                                            <p class="example-translation">{{ word.example_translation }}</p>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="lesson-controls">
+                            <button class="btn btn-secondary" onclick="previousCard()" id="prevBtn" disabled>
+                                <i class="bi bi-arrow-left"></i> Précédent
+                            </button>
+                            <span class="card-counter">1 / {{ lesson_content.vocabulary|length }}</span>
+                            <button class="btn btn-primary" onclick="nextCard()" id="nextBtn">
+                                Suivant <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="lesson-tip">
+                            <i class="bi bi-lightbulb"></i>
+                            Cliquez sur la carte pour voir la traduction
+                        </div>
+                    </div>
+                    
+                {% elif lesson_content.type == 'matching' %}
+                    <!-- Matching Exercise -->
+                    <div class="lesson-container matching-exercise">
+                        <div class="lesson-header">
+                            <h2>{{ lesson.title }}</h2>
+                            <p class="instructions">{{ lesson_content.instructions|default:"Associez les éléments correspondants" }}</p>
+                        </div>
+                        
+                        <div class="matching-container">
+                            <div class="matching-column left-column">
+                                <h4>Français</h4>
+                                {% for pair in lesson_content.pairs %}
+                                <div class="matching-item left-item" data-id="{{ forloop.counter }}">
+                                    <span>{{ pair.left_item }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="matching-lines">
+                                <svg width="100%" height="100%"></svg>
+                            </div>
+                            
+                            <div class="matching-column right-column">
+                                <h4>Traduction</h4>
+                                {% for pair in lesson_content.pairs %}
+                                <div class="matching-item right-item" data-id="{{ forloop.counter }}">
+                                    <span>{{ pair.right_item }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="lesson-controls">
+                            <button class="btn btn-secondary" onclick="resetMatching()">
+                                <i class="bi bi-arrow-clockwise"></i> Réinitialiser
+                            </button>
+                            <button class="btn btn-primary" onclick="checkMatching()">
+                                <i class="bi bi-check"></i> Vérifier
+                            </button>
+                        </div>
+                    </div>
+                    
+                {% elif lesson_content.type == 'theory' %}
+                    <!-- Theory Lesson -->
+                    <div class="lesson-container grammar-lesson">
+                        <div class="lesson-header">
+                            <h2>{{ lesson.title }}</h2>
+                        </div>
+                        
+                        <div class="grammar-content">
+                            <div class="grammar-explanation">
+                                {{ lesson_content.content|safe }}
+                            </div>
+                        </div>
+                        
+                        <div class="lesson-controls">
+                            <form method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">
+                                    Terminer la leçon <i class="bi bi-check"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+                
+            {% else %}
+                <!-- Default Lesson -->
+                <div class="lesson-container default-lesson">
+                    <div class="lesson-header">
+                        <h2>{{ lesson.title }}</h2>
+                    </div>
+                    
+                    <div class="lesson-content">
+                        <p>{{ lesson.description }}</p>
+                        <p>Cette leçon ne contient pas encore de contenu spécifique.</p>
+                    </div>
+                    
+                    <div class="lesson-controls">
+                        <form method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">
+                                Terminer <i class="bi bi-check"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
+<script src="{% static 'course/js/learning-simple.js' %}"></script>
 <script>
-function startContent(contentId) {
-    // TODO: Implémenter la navigation vers le contenu
-    window.notificationService.info('Ouverture du contenu...');
+// Vocabulary card navigation
+let currentCardIndex = 0;
+const totalCards = {{ lesson_content.vocabulary|length|default:0 }};
+
+function nextCard() {
+    if (currentCardIndex < totalCards - 1) {
+        currentCardIndex++;
+        updateCardDisplay();
+    } else {
+        // Last card - complete lesson
+        completeLesson();
+    }
+}
+
+function previousCard() {
+    if (currentCardIndex > 0) {
+        currentCardIndex--;
+        updateCardDisplay();
+    }
+}
+
+function updateCardDisplay() {
+    const cards = document.querySelectorAll('.vocab-card');
+    cards.forEach((card, index) => {
+        card.classList.toggle('active', index === currentCardIndex);
+    });
+    
+    // Update counter
+    document.querySelector('.card-counter').textContent = `${currentCardIndex + 1} / ${totalCards}`;
+    
+    // Update button states
+    document.getElementById('prevBtn').disabled = currentCardIndex === 0;
+    document.getElementById('nextBtn').innerHTML = 
+        currentCardIndex === totalCards - 1 
+            ? 'Terminer <i class="bi bi-check"></i>' 
+            : 'Suivant <i class="bi bi-arrow-right"></i>';
+}
+
+function completeLesson() {
+    // Submit form to complete lesson
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">';
+    document.body.appendChild(form);
+    form.submit();
+}
+
+// Initialize vocabulary cards
+document.addEventListener('DOMContentLoaded', function() {
+    // Make cards clickable to flip
+    document.querySelectorAll('.vocab-card').forEach(card => {
+        card.addEventListener('click', () => {
+            card.classList.toggle('flipped');
+        });
+    });
+});
+
+// Simple matching for matching exercises
+function resetMatching() {
+    document.querySelectorAll('.matched').forEach(el => el.classList.remove('matched'));
+}
+
+function checkMatching() {
+    alert('Exercice en cours de développement. Leçon complétée!');
+    completeLesson();
 }
 </script>
 {% endblock %}

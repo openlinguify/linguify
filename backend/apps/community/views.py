@@ -4,12 +4,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, ListView
 from django.db.models import Q
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
 
 from apps.authentication.models import User
-from .models import Profile, FriendRequest, Post, Group, ActivityFeed, Recommendation
+from .models import (Profile, FriendRequest, Post, Group, ActivityFeed, Recommendation,
+                     LanguageExchangeSession, StudySession, LanguagePartnerMatch)
 
 
 class CommunityMainView(LoginRequiredMixin, TemplateView):
@@ -22,7 +23,16 @@ class CommunityMainView(LoginRequiredMixin, TemplateView):
         # Obtenir ou créer le profil utilisateur
         profile, created = Profile.objects.get_or_create(user=self.request.user)
         
+        # App info pour le header
+        current_app_info = {
+            'name': 'community',
+            'display_name': 'Community',
+            'static_icon': '/app-icons/community/icon.png',
+            'route_path': '/community/'
+        }
+        
         context.update({
+            'current_app': current_app_info,
             'profile': profile,
             'friend_requests_count': profile.friend_requests_received().filter(status='pending').count(),
             'friends_count': profile.friends.count(),
@@ -69,7 +79,7 @@ class DiscoverUsersView(LoginRequiredMixin, ListView):
         if target_language:
             queryset = queryset.filter(target_language=target_language)
         
-        return queryset.select_related('authentication_profile')
+        return queryset.select_related('profile')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -172,6 +182,91 @@ class ActivityFeedView(LoginRequiredMixin, ListView):
         return ActivityFeed.objects.filter(
             profile__in=friends_profiles
         ).select_related('profile__user').order_by('-created_at')
+
+
+class UserProfileView(LoginRequiredMixin, TemplateView):
+    """View for displaying user profiles with language learning focus"""
+    template_name = 'community/user_profile.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get the profile user
+        username = kwargs.get('username')
+        try:
+            profile_user = User.objects.get(username=username)
+            profile, created = Profile.objects.get_or_create(user=profile_user)
+        except User.DoesNotExist:
+            raise Http404("User not found")
+        
+        # Get current user profile
+        current_user_profile, _ = Profile.objects.get_or_create(user=self.request.user)
+        
+        # Check friendship status
+        is_friend = profile in current_user_profile.friends.all()
+        friend_request_pending = FriendRequest.objects.filter(
+            Q(sender=self.request.user, receiver=profile_user, status='pending') |
+            Q(sender=profile_user, receiver=self.request.user, status='pending')
+        ).exists()
+        
+        # Calculate language exchange compatibility
+        compatibility_score = 0
+        compatibility_reasons = []
+        compatibility_badge_color = 'secondary'
+        
+        if self.request.user != profile_user:
+            # Perfect mutual exchange
+            if (self.request.user.native_language == profile_user.target_language and
+                self.request.user.target_language == profile_user.native_language):
+                compatibility_score = 100
+                compatibility_reasons.append(f"Perfect language exchange match!")
+                compatibility_badge_color = 'success'
+            
+            # One-way teaching opportunities
+            elif self.request.user.native_language == profile_user.target_language:
+                compatibility_score = 70
+                compatibility_reasons.append(f"You can help with {self.request.user.get_native_language_display()}")
+                compatibility_badge_color = 'primary'
+            
+            elif profile_user.native_language == self.request.user.target_language:
+                compatibility_score = 70
+                compatibility_reasons.append(f"They can help with {profile_user.get_native_language_display()}")
+                compatibility_badge_color = 'primary'
+            
+            # Same learning language
+            elif self.request.user.target_language == profile_user.target_language:
+                compatibility_score = 40
+                compatibility_reasons.append(f"Both learning {self.request.user.get_target_language_display()}")
+                compatibility_badge_color = 'info'
+        
+        # Get activity statistics
+        exchange_sessions_count = LanguageExchangeSession.objects.filter(
+            participants=profile
+        ).count()
+        
+        study_sessions_count = StudySession.objects.filter(
+            participants=profile
+        ).count()
+        
+        # Get recent activities
+        recent_activities = ActivityFeed.objects.filter(
+            profile=profile
+        ).order_by('-created_at')[:10]
+        
+        context.update({
+            'profile_user': profile_user,
+            'profile': profile,
+            'is_friend': is_friend,
+            'friend_request_pending': friend_request_pending,
+            'compatibility_score': compatibility_score,
+            'compatibility_reasons': compatibility_reasons,
+            'compatibility_badge_color': compatibility_badge_color,
+            'exchange_sessions_count': exchange_sessions_count,
+            'study_sessions_count': study_sessions_count,
+            'recent_activities': recent_activities,
+        })
+        
+        return context
 
 
 # API Views pour les actions AJAX
