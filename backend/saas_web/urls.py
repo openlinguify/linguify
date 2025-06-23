@@ -10,10 +10,6 @@ urlpatterns = [
     path('app-store/', AppStoreView.as_view(), name='app_store'),
     path('settings/', views.UserSettingsView.as_view(), name='settings'),
     
-    # Profils utilisateurs
-    path('profile/', views.UserProfileView.as_view(), name='profile'),  # Mon profil
-    path('u/<str:username>/', views.UserProfileView.as_view(), name='user_profile'),  # Profil d'un autre utilisateur
-    
     # API endpoints
     path('api/user/stats/', views.UserStatsAPI.as_view(), name='api_user_stats'),
     path('api/notifications/', views.NotificationAPI.as_view(), name='api_notifications'),

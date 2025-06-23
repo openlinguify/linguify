@@ -210,6 +210,14 @@ class NoteViewSet(viewsets.ModelViewSet):
             'tags',
             'sharednote_set__shared_with'
         )
+        
+        # Gestion du filtre d'archivage par défaut
+        archive_filter = self.request.query_params.get('archive_status', 'active')
+        if archive_filter == 'archived':
+            queryset = queryset.filter(is_archived=True)
+        elif archive_filter == 'active':
+            queryset = queryset.filter(is_archived=False)
+        # Si archive_filter == 'all', on ne filtre pas
 
         # Filter by ownership or shared access with query optimization
         # Using subqueries to avoid duplicates in results and reduce joins
@@ -247,6 +255,11 @@ class NoteViewSet(viewsets.ModelViewSet):
         tags = self.request.query_params.getlist('tags')
         if tags:
             queryset = queryset.filter(tags__name__in=tags)
+            
+        # Filtrage par langue
+        language = self.request.query_params.get('language')
+        if language:
+            queryset = queryset.filter(language=language)
 
         needs_review = self.request.query_params.get('needs_review')
         if needs_review:

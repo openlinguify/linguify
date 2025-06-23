@@ -234,7 +234,7 @@ class BlogListView(ListView):
         if tag_slug:
             queryset = queryset.filter(tags__slug=tag_slug)
         
-        # Special filters (Odoo-style)
+        # Special filters (Open Linguify-style)
         if self.request.GET.get('featured'):
             queryset = queryset.filter(view_count__gte=100)  # Featured = high views
         elif self.request.GET.get('recent'):
@@ -246,7 +246,7 @@ class BlogListView(ListView):
                 comment_count=Count('comments', filter=Q(comments__is_approved=True))
             ).filter(comment_count__gte=1).order_by('-comment_count')
         
-        # Sorting (Odoo-style)
+        # Sorting (Open Linguify-style)
         sort_by = self.request.GET.get('sort', 'newest')
         if sort_by == 'popular':
             queryset = queryset.order_by('-view_count', '-published_at')

@@ -1,0 +1,332 @@
+{% extends "saas_web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Discover Language Partners" %} | Open Linguify{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="bi bi-search me-2"></i>
+                        {% trans "Discover Language Partners" %}
+                    </h1>
+                    <p class="text-muted mb-0">{% trans "Find native speakers and learners to practice with" %}</p>
+                </div>
+                
+                <a href="{% url 'community:main' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    {% trans "Back to Community" %}
+                </a>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" action="{% url 'community:discover' %}">
+                        <div class="row g-3">
+                            <!-- Search -->
+                            <div class="col-md-4">
+                                <label for="search" class="form-label">{% trans "Search by name" %}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="search" name="search" 
+                                           placeholder="{% trans 'Username or name...' %}" 
+                                           value="{{ current_search }}">
+                                </div>
+                            </div>
+                            
+                            <!-- Native Language Filter -->
+                            <div class="col-md-3">
+                                <label for="native_language" class="form-label">{% trans "Native Language" %}</label>
+                                <select class="form-select" id="native_language" name="native_language">
+                                    <option value="">{% trans "All Languages" %}</option>
+                                    {% for code, language in language_choices %}
+                                        <option value="{{ code }}" {% if current_native_language == code %}selected{% endif %}>
+                                            {{ language }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Target Language Filter -->
+                            <div class="col-md-3">
+                                <label for="target_language" class="form-label">{% trans "Learning Language" %}</label>
+                                <select class="form-select" id="target_language" name="target_language">
+                                    <option value="">{% trans "All Languages" %}</option>
+                                    {% for code, language in language_choices %}
+                                        <option value="{{ code }}" {% if current_target_language == code %}selected{% endif %}>
+                                            {{ language }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Search Button -->
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-funnel me-1"></i>
+                                    {% trans "Filter" %}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        {% if current_search or current_native_language or current_target_language %}
+                        <div class="mt-3">
+                            <a href="{% url 'community:discover' %}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i>
+                                {% trans "Clear Filters" %}
+                            </a>
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+
+            <!-- Users Grid -->
+            <div class="row">
+                {% if users %}
+                    {% for user in users %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 hover-shadow">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start">
+                                    <!-- Profile Picture -->
+                                    <div class="me-3">
+                                        {% if user.get_profile_picture_url %}
+                                            <img src="{{ user.get_profile_picture_url }}" 
+                                                 alt="{{ user.username }}" 
+                                                 class="rounded-circle"
+                                                 style="width: 60px; height: 60px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                                                 style="width: 60px; height: 60px;">
+                                                <i class="bi bi-person text-white fs-4"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- User Info -->
+                                    <div class="flex-grow-1">
+                                        <h5 class="card-title mb-1">
+                                            {{ user.name|default:user.username }}
+                                        </h5>
+                                        
+                                        <!-- Language Info -->
+                                        <div class="mb-2">
+                                            <span class="badge bg-primary">
+                                                <i class="bi bi-globe me-1"></i>
+                                                {% trans "Native:" %} {{ user.get_native_language_display|default:"Not specified" }}
+                                            </span>
+                                            <span class="badge bg-success ms-1">
+                                                <i class="bi bi-book me-1"></i>
+                                                {% trans "Learning:" %} {{ user.get_target_language_display|default:"Not specified" }}
+                                            </span>
+                                        </div>
+                                        
+                                        <!-- Bio if available -->
+                                        {% if user.profile.bio %}
+                                        <p class="card-text text-muted small mb-2">
+                                            {{ user.profile.bio|truncatewords:15 }}
+                                        </p>
+                                        {% endif %}
+                                        
+                                        <!-- Learning/Teaching Languages from Profile -->
+                                        {% if user.profile.learning_languages or user.profile.teaching_languages %}
+                                        <div class="mb-2">
+                                            {% if user.profile.teaching_languages %}
+                                            <small class="text-muted d-block">
+                                                <i class="bi bi-mortarboard me-1"></i>
+                                                {% trans "Can teach:" %} 
+                                                {% for lang in user.profile.teaching_languages %}
+                                                    {{ lang }}{% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </small>
+                                            {% endif %}
+                                            
+                                            {% if user.profile.learning_languages %}
+                                            <small class="text-muted d-block">
+                                                <i class="bi bi-book-half me-1"></i>
+                                                {% trans "Wants to learn:" %} 
+                                                {% for lang in user.profile.learning_languages %}
+                                                    {{ lang }}{% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </small>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <!-- Action Buttons -->
+                                        <div class="mt-3">
+                                            <button class="btn btn-sm btn-primary send-friend-request" 
+                                                    data-user-id="{{ user.id }}">
+                                                <i class="bi bi-person-plus me-1"></i>
+                                                {% trans "Add Friend" %}
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary view-profile" 
+                                                    data-user-id="{{ user.id }}">
+                                                <i class="bi bi-eye me-1"></i>
+                                                {% trans "View Profile" %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body text-center py-5">
+                                <i class="bi bi-people text-muted" style="font-size: 4rem;"></i>
+                                <h4 class="mt-3">{% trans "No users found" %}</h4>
+                                <p class="text-muted">
+                                    {% if current_search or current_native_language or current_target_language %}
+                                        {% trans "Try adjusting your filters to find more language partners." %}
+                                    {% else %}
+                                        {% trans "No users available at the moment. Check back later!" %}
+                                    {% endif %}
+                                </p>
+                                {% if current_search or current_native_language or current_target_language %}
+                                <a href="{% url 'community:discover' %}" class="btn btn-primary mt-3">
+                                    <i class="bi bi-arrow-clockwise me-1"></i>
+                                    {% trans "Clear Filters" %}
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="{% trans 'Page navigation' %}">
+                <ul class="pagination justify-content-center mt-4">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_native_language %}&native_language={{ current_native_language }}{% endif %}{% if current_target_language %}&target_language={{ current_target_language }}{% endif %}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_native_language %}&native_language={{ current_native_language }}{% endif %}{% if current_target_language %}&target_language={{ current_target_language }}{% endif %}">
+                                {{ num }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_native_language %}&native_language={{ current_native_language }}{% endif %}{% if current_target_language %}&target_language={{ current_target_language }}{% endif %}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-shadow {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.125);
+}
+
+.hover-shadow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-color: var(--bs-primary);
+}
+
+.badge {
+    font-weight: normal;
+    font-size: 0.875rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle friend request sending
+    document.querySelectorAll('.send-friend-request').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            const originalText = this.innerHTML;
+            
+            // Disable button and show loading
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{% trans "Sending..." %}';
+            
+            fetch(`/community/api/send-friend-request/${userId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.innerHTML = '<i class="bi bi-check me-1"></i>{% trans "Request Sent" %}';
+                    this.classList.remove('btn-primary');
+                    this.classList.add('btn-success');
+                } else {
+                    // Restore original state on error
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    alert(data.error || '{% trans "Error sending friend request" %}');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.innerHTML = originalText;
+                this.disabled = false;
+                alert('{% trans "Error sending friend request" %}');
+            });
+        });
+    });
+    
+    // Handle view profile (placeholder for now)
+    document.querySelectorAll('.view-profile').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            // TODO: Implement profile viewing functionality
+            alert('{% trans "Profile viewing coming soon!" %}');
+        });
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

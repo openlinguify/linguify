@@ -15,23 +15,65 @@ import json
 
 from .models import (
     Unit, 
+    Chapter,
     Lesson, 
     ContentLesson, 
     TheoryContent,
     VocabularyList, 
     MatchingExercise,
-    TestRecap
+    TestRecap,
+    UserProgress,
+    UnitProgress,
+    ChapterProgress,
+    LessonProgress,
+    UserActivity
 )
 from apps.authentication.models import User
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 
 class LearningDashboardView(LoginRequiredMixin, TemplateView):
     """Vue principale du dashboard d'apprentissage"""
-    template_name = 'course/main.html'
+    template_name = 'course/dashboard.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
+        
+        # Récupérer la langue depuis le paramètre GET ou utiliser français par défaut
+        selected_language = self.request.GET.get('lang', 'fr')
+        
+        # Fonction helper pour récupérer le texte dans la bonne langue
+        def get_localized_text(obj, field_base, lang=selected_language):
+            """Récupère le texte dans la langue demandée avec fallback"""
+            field_name = f"{field_base}_{lang}"
+            if hasattr(obj, field_name):
+                text = getattr(obj, field_name)
+                if text:
+                    return text
+            
+            # Fallback vers français puis anglais
+            if lang != 'fr' and hasattr(obj, f"{field_base}_fr"):
+                text = getattr(obj, f"{field_base}_fr")
+                if text:
+                    return text
+            
+            if lang != 'en' and hasattr(obj, f"{field_base}_en"):
+                text = getattr(obj, f"{field_base}_en")
+                if text:
+                    return text
+                    
+            return ""
+        
+        # App info pour le header
+        current_app_info = {
+            'name': 'course',
+            'display_name': 'Learning',
+            'static_icon': '/app-icons/course/icon.png',
+            'route_path': '/learning/'
+        }
         
         # Récupérer toutes les unités
         units = Unit.objects.all().order_by('level', 'order')
@@ -39,62 +81,229 @@ class LearningDashboardView(LoginRequiredMixin, TemplateView):
         # Préparer les données des unités pour le JSON
         units_data = []
         for unit in units:
-            lessons_data = []
-            for lesson in unit.lessons.all().order_by('order'):
-                lessons_data.append({
-                    'id': lesson.id,
-                    'title': lesson.title_fr or lesson.title_en,
-                    'description': lesson.description_fr or lesson.description_en or '',
-                    'estimated_duration': lesson.estimated_duration,
-                    'xp_reward': 10,  # Simulé
-                    'is_completed': False,  # TODO: Vérifier vraie progression
+            # Récupérer les chapitres avec leurs leçons
+            chapters_data = []
+            for chapter in unit.chapters.all().order_by('order'):
+                lessons_data = []
+                for lesson in chapter.lessons.all().order_by('order'):
+                    lessons_data.append({
+                        'id': lesson.id,
+                        'title': get_localized_text(lesson, 'title'),
+                        'description': get_localized_text(lesson, 'description'),
+                        'estimated_duration': lesson.estimated_duration,
+                        'xp_reward': 10,  # Simulé
+                        'is_completed': False,  # TODO: Vérifier vraie progression
+                    })
+                
+                chapters_data.append({
+                    'id': chapter.id,
+                    'title': get_localized_text(chapter, 'title'),
+                    'description': get_localized_text(chapter, 'description'),
+                    'theme': chapter.theme,
+                    'style': chapter.style,
+                    'order': chapter.order,
+                    'points_reward': chapter.points_reward,
+                    'is_checkpoint_required': chapter.is_checkpoint_required,
+                    'lessons': lessons_data,
+                    'progress_percentage': 0,  # TODO: Calculer vraie progression
                 })
+            
+            # Aussi récupérer les leçons sans chapitre pour compatibilité
+            orphan_lessons = []
+            for lesson in unit.lessons.filter(chapter__isnull=True).order_by('order'):
+                orphan_lessons.append({
+                    'id': lesson.id,
+                    'title': get_localized_text(lesson, 'title'),
+                    'description': get_localized_text(lesson, 'description'),
+                    'estimated_duration': lesson.estimated_duration,
+                    'xp_reward': 10,
+                    'is_completed': False,
+                })
+            
+            # Récupérer la progression de l'unité pour l'utilisateur
+            unit_progress, _ = UnitProgress.objects.get_or_create(
+                user=user, 
+                unit=unit,
+                defaults={'status': 'locked' if unit.order > 1 else 'not_started'}
+            )
             
             units_data.append({
                 'id': unit.id,
-                'title': unit.title_fr or unit.title_en,
-                'description': unit.description_fr or unit.description_en or '',
+                'title': get_localized_text(unit, 'title'),
+                'description': get_localized_text(unit, 'description'),
                 'level': unit.level,
-                'lessons': lessons_data,
-                'progress_percentage': 0,  # TODO: Calculer vraie progression
-                'estimated_duration': sum(l.estimated_duration or 30 for l in unit.lessons.all()),
+                'chapters': chapters_data,
+                'lessons': orphan_lessons,  # Leçons sans chapitre
+                'progress_percentage': unit_progress.progress_percentage,
+                'estimated_duration': unit.get_estimated_duration(),
+                'is_completed': unit_progress.is_completed,
+                'is_current': unit_progress.is_current,
+                'status': unit_progress.status,
             })
         
-        # Statistiques utilisateur simulées
+        # Récupérer ou créer la progression utilisateur
+        user_progress, created = UserProgress.objects.get_or_create(
+            user=user,
+            defaults={
+                'streak_days': 0,
+                'total_xp': 0,
+                'current_level': 'A1',
+                'completed_lessons_count': 0,
+                'total_study_time': 0,
+                'overall_progress': 0
+            }
+        )
+        
+        # Calculer les vraies statistiques
+        total_lessons = Lesson.objects.count()
+        completed_lessons_count = LessonProgress.objects.filter(
+            user=user, status='completed'
+        ).count()
+        overall_progress = (completed_lessons_count / total_lessons * 100) if total_lessons > 0 else 0
+        
+        # Statistiques utilisateur
         user_stats = {
-            'streak_days': 3,
-            'total_xp': 150,
-            'level': 1,
-            'completed_lessons': 5,
-            'time_spent': 120,
+            'streak_days': user_progress.streak_days,
+            'total_xp': user_progress.total_xp,
+            'level': user_progress.current_level,
+            'completed_lessons': completed_lessons_count,
+            'time_spent': user_progress.total_study_time,
+            'overall_progress': int(overall_progress),
+            'study_time': 0,  # Minutes d'étude aujourd'hui - à implémenter
         }
         
-        # Activités récentes simulées
-        from django.utils import timezone
-        from datetime import timedelta
+        # Activités récentes réelles
+        recent_activities = []
+        user_activities = UserActivity.objects.filter(user=user).order_by('-created_at')[:5]
         
-        recent_activities = [
-            {
-                'title': 'Vocabulaire de base complété',
-                'description': 'Vous avez appris 10 nouveaux mots',
-                'date': timezone.now() - timedelta(hours=2),
-                'xp': 20
-            },
-            {
-                'title': 'Grammaire française - leçon 1',
-                'description': 'Maîtrise des articles définis',
-                'date': timezone.now() - timedelta(days=1),
-                'xp': 15
+        for activity in user_activities:
+            recent_activities.append({
+                'title': activity.title,
+                'description': activity.description,
+                'date': activity.created_at,
+                'xp': activity.xp_earned,
+                'icon': activity.icon,
+            })
+        
+        # Si pas d'activité, ajouter des exemples pour démonstration
+        if not recent_activities:
+            from django.utils import timezone
+            from datetime import timedelta
+            recent_activities = [
+                {
+                    'title': 'Bienvenue sur Linguify !',
+                    'description': 'Commencez votre premier cours',
+                    'date': timezone.now(),
+                    'xp': 0,
+                    'icon': 'star'
+                }
+            ]
+        
+        # Timestamp pour forcer le rechargement des assets
+        from django.utils import timezone
+        import time
+        
+        # Récupérer tous les chapitres directement
+        chapters = []
+        current_chapter = None
+        current_lesson = None
+        
+        all_chapters = Chapter.objects.all().order_by('unit__order', 'order')
+        
+        for chapter in all_chapters:
+            # Dans votre base, les leçons sont liées à l'unité, pas au chapitre
+            # Nous allons distribuer les leçons de l'unité entre les chapitres
+            unit_lessons = Lesson.objects.filter(unit=chapter.unit, chapter__isnull=True)
+            total_unit_lessons = unit_lessons.count()
+            
+            # Calculer combien de leçons par chapitre (distribution équitable)
+            chapters_in_unit = Chapter.objects.filter(unit=chapter.unit).count()
+            if chapters_in_unit > 0:
+                lessons_per_chapter = max(1, total_unit_lessons // chapters_in_unit)
+                
+                # Distribution intelligente: si il y a moins de leçons que de chapitres
+                if total_unit_lessons < chapters_in_unit:
+                    # Les premiers chapitres (selon l'ordre) reçoivent 1 leçon, les autres 0
+                    if chapter.order <= total_unit_lessons:
+                        lessons_count = 1
+                    else:
+                        lessons_count = 0
+                else:
+                    # Distribution normale avec reste pour le dernier chapitre
+                    if chapter.order == chapters_in_unit:
+                        lessons_count = total_unit_lessons - (lessons_per_chapter * (chapters_in_unit - 1))
+                    else:
+                        lessons_count = lessons_per_chapter
+            else:
+                lessons_count = total_unit_lessons
+            
+            # Récupérer la progression du chapitre
+            chapter_progress = ChapterProgress.objects.filter(
+                user=user, chapter=chapter
+            ).first()
+            
+            # Compter les leçons complétées dans cette unité
+            # (pour simplifier, on distribue équitablement)
+            completed_lessons_in_unit = LessonProgress.objects.filter(
+                user=user,
+                lesson__unit=chapter.unit,
+                lesson__chapter__isnull=True,
+                status='completed'
+            ).count()
+            
+            # Distribution proportionnelle des leçons complétées
+            if chapters_in_unit > 0 and lessons_count > 0:
+                completed_lessons = min(
+                    int(completed_lessons_in_unit * lessons_count / total_unit_lessons), 
+                    lessons_count
+                )
+            else:
+                completed_lessons = 0
+            
+            progress = (completed_lessons / lessons_count * 100) if lessons_count > 0 else 0
+            
+            chapter_data = {
+                'id': chapter.id,
+                'title': chapter.title,  # Utiliser directement la property
+                'description': chapter.description,  # Utiliser directement la property
+                'icon': 'book',
+                'lessons_count': lessons_count,
+                'points': chapter.points_reward,
+                'progress': int(progress),
+                'completed_lessons': completed_lessons,
+                'total_lessons': lessons_count,
+                'is_locked': False,  # Pour l'instant, pas de verrouillage
+                'is_completed': completed_lessons == lessons_count and lessons_count > 0,
+                'is_current': False,  # À implémenter selon votre logique
             }
-        ]
+            
+            chapters.append(chapter_data)
+        
+        # Prendre le premier chapitre comme chapitre en cours pour l'instant
+        if chapters:
+            current_chapter = chapters[0]
+            # Trouver la première leçon du premier chapitre
+            first_chapter_obj = Chapter.objects.filter(id=current_chapter['id']).first()
+            if first_chapter_obj:
+                first_lesson = first_chapter_obj.lessons.first()
+                if first_lesson:
+                    current_lesson = {
+                        'id': first_lesson.id,
+                        'title': first_lesson.title
+                    }
         
         context.update({
-            'page_title': 'Tableau de bord - Cours',
-            'units': units,
-            'units_json': json.dumps(units_data),
+            'current_app': current_app_info,
+            'page_title': 'Apprendre une langue - Linguify',
+            'target_language': 'français',  # À adapter selon la sélection
+            'chapters': chapters,
+            'current_chapter': current_chapter,
+            'current_lesson': current_lesson,
             'user_stats': user_stats,
             'recent_activities': recent_activities,
+            'selected_language': selected_language,
             'debug': self.request.GET.get('debug', 'false').lower() == 'true',
+            'timestamp': int(time.time()),
         })
         
         return context
@@ -521,3 +730,248 @@ def unit_details_ajax(request, pk):
         return JsonResponse({
             'error': str(e)
         }, status=400)
+
+
+class ChapterDetailView(LoginRequiredMixin, TemplateView):
+    """Vue pour afficher les détails d'un chapitre"""
+    template_name = 'course/chapter_detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        chapter_id = self.kwargs['chapter_id']
+        
+        # Récupérer le chapitre
+        chapter = get_object_or_404(Chapter, id=chapter_id)
+        
+        # Récupérer les leçons - comme dans le dashboard, les leçons sont liées aux unités
+        lessons = []
+        
+        # Récupérer toutes les leçons de l'unité sans chapitre
+        unit_lessons = Lesson.objects.filter(unit=chapter.unit, chapter__isnull=True).order_by('order')
+        total_unit_lessons = unit_lessons.count()
+        
+        if total_unit_lessons > 0:
+            # Calculer combien de leçons par chapitre (distribution équitable)
+            chapters_in_unit = Chapter.objects.filter(unit=chapter.unit).count()
+            
+            if chapters_in_unit > 0:
+                # Distribution intelligente: si il y a moins de leçons que de chapitres
+                if total_unit_lessons < chapters_in_unit:
+                    # Les premiers chapitres (selon l'ordre) reçoivent 1 leçon, les autres 0
+                    if chapter.order <= total_unit_lessons:
+                        start_index = chapter.order - 1
+                        end_index = chapter.order
+                        chapter_lessons = list(unit_lessons)[start_index:end_index]
+                    else:
+                        chapter_lessons = []
+                else:
+                    # Distribution normale
+                    lessons_per_chapter = total_unit_lessons // chapters_in_unit
+                    
+                    # Déterminer quelles leçons appartiennent à ce chapitre
+                    chapter_order = chapter.order
+                    start_index = (chapter_order - 1) * lessons_per_chapter
+                    
+                    # Pour le dernier chapitre, prendre toutes les leçons restantes
+                    if chapter_order == chapters_in_unit:
+                        end_index = total_unit_lessons
+                    else:
+                        end_index = start_index + lessons_per_chapter
+                    
+                    # S'assurer que nous ne dépassons pas le nombre total de leçons
+                    end_index = min(end_index, total_unit_lessons)
+                    
+                    # Récupérer les leçons pour ce chapitre
+                    chapter_lessons = list(unit_lessons)[start_index:end_index]
+                
+                for lesson in chapter_lessons:
+                    lesson_progress = LessonProgress.objects.filter(
+                        user=user, lesson=lesson
+                    ).first()
+                    
+                    lessons.append({
+                        'id': lesson.id,
+                        'title': lesson.title,
+                        'description': lesson.description,
+                        'duration': lesson.estimated_duration,
+                        'is_completed': lesson_progress.status == 'completed' if lesson_progress else False,
+                        'lesson_type': getattr(lesson, 'lesson_type', 'general'),
+                        'content_count': lesson.content_lessons.count()
+                    })
+        
+        context.update({
+            'chapter': chapter,
+            'lessons': lessons,
+            'total_lessons': len(lessons),
+            'unit': chapter.unit
+        })
+        
+        return context
+
+
+class LessonDetailView(LoginRequiredMixin, TemplateView):
+    """Vue pour afficher les détails d'une leçon"""
+    template_name = 'course/lesson_detail_new.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        lesson_id = self.kwargs['lesson_id']
+        
+        # Récupérer la leçon
+        lesson = get_object_or_404(Lesson, id=lesson_id)
+        
+        # Récupérer TOUS les contenus de la leçon (pas seulement le premier)
+        content_lessons = ContentLesson.objects.filter(lesson=lesson).order_by('order')
+        lesson_contents = []
+        
+        for content_lesson in content_lessons:
+            content_data = {
+                'type': content_lesson.content_type,
+                'order': content_lesson.order,
+                'title': f"{content_lesson.content_type.title()} {content_lesson.order}"
+            }
+            
+            # Mapper les types de la base de données vers notre affichage
+            if content_lesson.content_type == 'VocabularyList':
+                try:
+                    vocab_list = content_lesson.vocabularylist
+                    vocabulary_items = []
+                    
+                    for item in vocab_list.words.all():
+                        vocabulary_items.append({
+                            'word': item.word,
+                            'translation': item.translation,
+                            'phonetic': getattr(item, 'phonetic', ''),
+                            'example_sentence': getattr(item, 'example_sentence', ''),
+                            'example_translation': getattr(item, 'example_translation', ''),
+                        })
+                    
+                    content_data.update({
+                        'display_type': 'vocabulary',
+                        'vocabulary': vocabulary_items,
+                        'title': f"Vocabulaire ({len(vocabulary_items)} mots)"
+                    })
+                except:
+                    content_data.update({
+                        'display_type': 'error',
+                        'message': 'Erreur lors du chargement du vocabulaire'
+                    })
+                    
+            elif content_lesson.content_type == 'Matching':
+                try:
+                    matching = content_lesson.matchingexercise
+                    pairs = []
+                    
+                    for pair in matching.pairs.all():
+                        pairs.append({
+                            'left_item': pair.left_item,
+                            'right_item': pair.right_item
+                        })
+                    
+                    content_data.update({
+                        'display_type': 'matching',
+                        'instructions': getattr(matching, 'instructions', 'Associez les éléments correspondants'),
+                        'pairs': pairs,
+                        'title': f"Exercice d'association ({len(pairs)} paires)"
+                    })
+                except:
+                    content_data.update({
+                        'display_type': 'error',
+                        'message': 'Erreur lors du chargement de l\'exercice d\'association'
+                    })
+                    
+            elif content_lesson.content_type == 'Theory':
+                try:
+                    theory = content_lesson.theorycontent
+                    content_data.update({
+                        'display_type': 'theory',
+                        'content': theory.content,
+                        'title': 'Contenu théorique'
+                    })
+                except:
+                    content_data.update({
+                        'display_type': 'error',
+                        'message': 'Erreur lors du chargement du contenu théorique'
+                    })
+                    
+            elif content_lesson.content_type == 'Speaking':
+                content_data.update({
+                    'display_type': 'speaking',
+                    'title': 'Exercice de prononciation',
+                    'message': 'Exercice de prononciation (à développer)'
+                })
+                
+            elif content_lesson.content_type == 'test_recap':
+                content_data.update({
+                    'display_type': 'test',
+                    'title': 'Test de révision',
+                    'message': 'Test de révision (à développer)'
+                })
+                
+            else:
+                # Type non géré
+                content_data.update({
+                    'display_type': 'unknown',
+                    'title': f"Contenu {content_lesson.content_type}",
+                    'message': f"Type de contenu '{content_lesson.content_type}' (à développer)"
+                })
+            
+            lesson_contents.append(content_data)
+        
+        # Déterminer si la leçon a du contenu substantiel
+        substantial_content = False
+        for content in lesson_contents:
+            if content['display_type'] in ['vocabulary', 'matching', 'theory']:
+                if content['display_type'] == 'vocabulary' and len(content.get('vocabulary', [])) > 0:
+                    substantial_content = True
+                elif content['display_type'] == 'matching' and len(content.get('pairs', [])) > 0:
+                    substantial_content = True
+                elif content['display_type'] == 'theory' and content.get('content', '').strip():
+                    substantial_content = True
+        
+        context.update({
+            'lesson': lesson,
+            'lesson_contents': lesson_contents,  # Tous les contenus (nouveau)
+            'content_count': len(lesson_contents),
+            'has_content': len(lesson_contents) > 0,
+            'has_substantial_content': substantial_content
+        })
+        
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        """Marquer la leçon comme complétée"""
+        lesson_id = self.kwargs['lesson_id']
+        lesson = get_object_or_404(Lesson, id=lesson_id)
+        
+        lesson_progress, created = LessonProgress.objects.get_or_create(
+            user=request.user,
+            lesson=lesson
+        )
+        
+        if lesson_progress.status != 'completed':
+            lesson_progress.mark_completed()  # Use the model's method
+            
+            messages.success(request, 'Leçon complétée avec succès!')
+        
+        return redirect('course:dashboard')
+
+
+# Fonction utilitaire pour marquer une leçon comme complétée
+@login_required
+def complete_lesson(request, lesson_id):
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    
+    lesson_progress, created = LessonProgress.objects.get_or_create(
+        user=request.user,
+        lesson=lesson
+    )
+    
+    if lesson_progress.status != 'completed':
+        lesson_progress.mark_completed()  # Use the model's method
+        
+        messages.success(request, 'Leçon complétée avec succès!')
+    
+    return redirect('course:dashboard')

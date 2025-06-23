@@ -1,0 +1,484 @@
+{% extends "saas_web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Activity Feed" %} | Open Linguify{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Main Feed -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-activity me-2"></i>
+                        {% trans "Friend Activity Feed" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if activities %}
+                        <div id="activitiesContainer">
+                            {% for activity in activities %}
+                            <div class="activity-item border-bottom pb-3 mb-3">
+                                <div class="d-flex">
+                                    <!-- User Avatar -->
+                                    <div class="me-3">
+                                        {% if activity.profile.user.get_profile_picture_url %}
+                                            <img src="{{ activity.profile.user.get_profile_picture_url }}" 
+                                                 alt="{{ activity.profile.user.username }}" 
+                                                 class="rounded-circle"
+                                                 style="width: 45px; height: 45px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                                                 style="width: 45px; height: 45px;">
+                                                <i class="bi bi-person text-white"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="flex-grow-1">
+                                        <!-- Activity Header -->
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="mb-1">
+                                                    <strong>{{ activity.profile.user.name|default:activity.profile.user.username }}</strong>
+                                                    {% if activity.activity_type == 'post' %}
+                                                        {% trans "shared a post" %}
+                                                    {% elif activity.activity_type == 'comment' %}
+                                                        {% trans "commented on a post" %}
+                                                    {% elif activity.activity_type == 'like' %}
+                                                        {% trans "liked a post" %}
+                                                    {% elif activity.activity_type == 'lesson_completed' %}
+                                                        {% trans "completed a lesson" %}
+                                                    {% elif activity.activity_type == 'friend_added' %}
+                                                        {% trans "made a new friend" %}
+                                                    {% elif activity.activity_type == 'group_joined' %}
+                                                        {% trans "joined a study group" %}
+                                                    {% elif activity.activity_type == 'achievement' %}
+                                                        {% trans "earned an achievement" %}
+                                                    {% else %}
+                                                        {% trans "had some activity" %}
+                                                    {% endif %}
+                                                </h6>
+                                                <small class="text-muted">{{ activity.created_at|timesince }} ago</small>
+                                            </div>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                                    <i class="bi bi-three-dots"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item" href="#"><i class="bi bi-eye-slash me-2"></i>{% trans "Hide this activity" %}</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="bi bi-person-x me-2"></i>{% trans "Hide all from this user" %}</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Activity Content -->
+                                        <div class="mt-2">
+                                            {% if activity.activity_type == 'lesson_completed' %}
+                                                <div class="bg-success bg-opacity-10 border border-success rounded p-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-book text-success me-2"></i>
+                                                        <div>
+                                                            <strong>{{ activity.activity_data.lesson_title|default:"French Basics" }}</strong>
+                                                            <div class="d-flex align-items-center mt-1">
+                                                                <span class="badge bg-success me-2">{{ activity.activity_data.language|default:"French" }}</span>
+                                                                <small class="text-muted">{{ activity.activity_data.duration|default:"15" }} minutes</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                            {% elif activity.activity_type == 'achievement' %}
+                                                <div class="bg-warning bg-opacity-10 border border-warning rounded p-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-trophy text-warning me-2 fs-4"></i>
+                                                        <div>
+                                                            <strong>{{ activity.activity_data.achievement_name|default:"7-Day Streak" }}</strong>
+                                                            <p class="mb-0 text-muted small">{{ activity.activity_data.description|default:"Completed lessons for 7 days in a row!" }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                            {% elif activity.activity_type == 'friend_added' %}
+                                                <div class="bg-info bg-opacity-10 border border-info rounded p-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-person-plus text-info me-2"></i>
+                                                        <div>
+                                                            {% trans "Connected with" %} <strong>{{ activity.activity_data.friend_name|default:"Marie Dubois" }}</strong>
+                                                            <div class="mt-1">
+                                                                <span class="badge bg-info">{{ activity.activity_data.friend_language|default:"French" }} {% trans "native speaker" %}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                            {% elif activity.activity_type == 'group_joined' %}
+                                                <div class="bg-primary bg-opacity-10 border border-primary rounded p-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-people text-primary me-2"></i>
+                                                        <div>
+                                                            {% trans "Joined" %} <strong>{{ activity.activity_data.group_name|default:"French Conversation Club" }}</strong>
+                                                            <p class="mb-0 text-muted small">{{ activity.activity_data.group_description|default:"Practice French conversation with native speakers"|truncatewords:10 }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                            {% elif activity.activity_type == 'post' %}
+                                                <div class="mt-2">
+                                                    <p>{{ activity.activity_data.content|default:"Just finished my French lesson for today! Feeling motivated to keep learning. 🇫🇷" }}</p>
+                                                    {% if activity.activity_data.image %}
+                                                        <img src="{{ activity.activity_data.image }}" class="img-fluid rounded" style="max-height: 300px;">
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- Activity Interactions -->
+                                        <div class="mt-3 d-flex align-items-center gap-3">
+                                            <button class="btn btn-sm btn-outline-primary like-btn" data-activity-id="{{ activity.id }}">
+                                                <i class="bi bi-heart"></i>
+                                                <span class="like-count">{{ activity.activity_data.likes_count|default:3 }}</span>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary comment-btn" data-activity-id="{{ activity.id }}">
+                                                <i class="bi bi-chat"></i>
+                                                <span>{{ activity.activity_data.comments_count|default:1 }}</span>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success share-btn" data-activity-id="{{ activity.id }}">
+                                                <i class="bi bi-share"></i>
+                                                {% trans "Encourage" %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Load More Button -->
+                        <div class="text-center mt-4">
+                            <button class="btn btn-outline-primary" id="loadMoreBtn">
+                                <i class="bi bi-arrow-down me-1"></i>
+                                {% trans "Load More Activities" %}
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-activity text-muted" style="font-size: 4rem;"></i>
+                            <h4 class="mt-3">{% trans "No activity yet" %}</h4>
+                            <p class="text-muted">{% trans "Add friends to see their learning activities and progress!" %}</p>
+                            <a href="{% url 'community:discover' %}" class="btn btn-primary mt-3">
+                                <i class="bi bi-search me-1"></i>
+                                {% trans "Find Friends" %}
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-lightning me-2"></i>
+                        {% trans "Quick Actions" %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                            <i class="bi bi-plus me-1"></i>
+                            {% trans "Share Your Progress" %}
+                        </button>
+                        <a href="{% url 'community:discover' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-search me-1"></i>
+                            {% trans "Find Language Partners" %}
+                        </a>
+                        <a href="{% url 'community:groups' %}" class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-people me-1"></i>
+                            {% trans "Join Study Groups" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Summary -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-graph-up me-2"></i>
+                        {% trans "Community Activity" %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="text-primary">
+                                <i class="bi bi-book" style="font-size: 1.5rem;"></i>
+                                <h5 class="mt-1 mb-0">127</h5>
+                                <small class="text-muted">{% trans "Lessons Today" %}</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="text-success">
+                                <i class="bi bi-trophy" style="font-size: 1.5rem;"></i>
+                                <h5 class="mt-1 mb-0">34</h5>
+                                <small class="text-muted">{% trans "Achievements" %}</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-info">
+                                <i class="bi bi-people" style="font-size: 1.5rem;"></i>
+                                <h5 class="mt-1 mb-0">18</h5>
+                                <small class="text-muted">{% trans "New Connections" %}</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-warning">
+                                <i class="bi bi-chat-dots" style="font-size: 1.5rem;"></i>
+                                <h5 class="mt-1 mb-0">89</h5>
+                                <small class="text-muted">{% trans "Messages" %}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trending Topics -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-hash me-2"></i>
+                        {% trans "Trending Topics" %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <strong>#FrenchPronunciation</strong>
+                                <br><small class="text-muted">{% trans "Tips and practice" %}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">23</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <strong>#SpanishGrammar</strong>
+                                <br><small class="text-muted">{% trans "Grammar discussions" %}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">18</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <strong>#LanguageExchange</strong>
+                                <br><small class="text-muted">{% trans "Partner matching" %}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">15</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <strong>#MotivationMonday</strong>
+                                <br><small class="text-muted">{% trans "Weekly motivation" %}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">12</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Post Modal -->
+<div class="modal fade" id="createPostModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    {% trans "Share Your Learning Progress" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createPostForm">
+                    <div class="mb-3">
+                        <label for="postContent" class="form-label">{% trans "What did you learn today?" %}</label>
+                        <textarea class="form-control" id="postContent" rows="4" 
+                                  placeholder="{% trans 'Share your progress, ask questions, or motivate others...' %}"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="postLanguage" class="form-label">{% trans "Language" %}</label>
+                        <select class="form-select" id="postLanguage">
+                            <option value="">{% trans "Select language (optional)" %}</option>
+                            <option value="english">🇬🇧 English</option>
+                            <option value="french">🇫🇷 French</option>
+                            <option value="spanish">🇪🇸 Spanish</option>
+                            <option value="german">🇩🇪 German</option>
+                            <option value="italian">🇮🇹 Italian</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Add tags" %}</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-outline-primary cursor-pointer tag-option" data-tag="progress">{% trans "#progress" %}</span>
+                            <span class="badge bg-outline-primary cursor-pointer tag-option" data-tag="motivation">{% trans "#motivation" %}</span>
+                            <span class="badge bg-outline-primary cursor-pointer tag-option" data-tag="question">{% trans "#question" %}</span>
+                            <span class="badge bg-outline-primary cursor-pointer tag-option" data-tag="achievement">{% trans "#achievement" %}</span>
+                            <span class="badge bg-outline-primary cursor-pointer tag-option" data-tag="tip">{% trans "#tip" %}</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-primary" id="createPostBtn">
+                    <i class="bi bi-send me-1"></i>
+                    {% trans "Share Post" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.activity-item {
+    transition: background-color 0.2s;
+}
+
+.activity-item:hover {
+    background-color: #f8f9fa;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.tag-option {
+    border: 1px solid #dee2e6;
+    transition: all 0.2s;
+}
+
+.tag-option:hover, .tag-option.selected {
+    background-color: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+}
+
+.like-btn.liked {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle like buttons
+    document.querySelectorAll('.like-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const activityId = this.dataset.activityId;
+            toggleLike(this);
+        });
+    });
+
+    // Handle comment buttons
+    document.querySelectorAll('.comment-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const activityId = this.dataset.activityId;
+            // TODO: Open comment section
+            alert('{% trans "Comments feature coming soon!" %}');
+        });
+    });
+
+    // Handle share buttons
+    document.querySelectorAll('.share-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const activityId = this.dataset.activityId;
+            // TODO: Implement sharing
+            alert('{% trans "Encouragement sent! (Feature coming soon!)" %}');
+        });
+    });
+
+    // Handle tag selection in modal
+    document.querySelectorAll('.tag-option').forEach(tag => {
+        tag.addEventListener('click', function() {
+            this.classList.toggle('selected');
+        });
+    });
+
+    // Handle create post
+    document.getElementById('createPostBtn').addEventListener('click', function() {
+        createPost();
+    });
+
+    // Handle load more
+    document.getElementById('loadMoreBtn')?.addEventListener('click', function() {
+        loadMoreActivities();
+    });
+
+    function toggleLike(button) {
+        const likeCount = button.querySelector('.like-count');
+        const currentCount = parseInt(likeCount.textContent);
+        
+        if (button.classList.contains('liked')) {
+            // Unlike
+            button.classList.remove('liked');
+            button.classList.add('btn-outline-primary');
+            button.classList.remove('btn-primary');
+            likeCount.textContent = currentCount - 1;
+        } else {
+            // Like
+            button.classList.add('liked');
+            button.classList.remove('btn-outline-primary');
+            button.classList.add('btn-primary');
+            likeCount.textContent = currentCount + 1;
+        }
+        
+        // TODO: Send like/unlike to API
+    }
+
+    function createPost() {
+        const content = document.getElementById('postContent').value.trim();
+        if (!content) {
+            alert('{% trans "Please write something to share!" %}');
+            return;
+        }
+        
+        const language = document.getElementById('postLanguage').value;
+        const selectedTags = Array.from(document.querySelectorAll('.tag-option.selected')).map(tag => tag.dataset.tag);
+        
+        // TODO: Implement actual post creation
+        const createBtn = document.getElementById('createPostBtn');
+        createBtn.disabled = true;
+        createBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{% trans "Sharing..." %}';
+        
+        setTimeout(() => {
+            alert('{% trans "Post shared successfully! (Feature coming soon!)" %}');
+            bootstrap.Modal.getInstance(document.getElementById('createPostModal')).hide();
+            document.getElementById('createPostForm').reset();
+            document.querySelectorAll('.tag-option.selected').forEach(tag => tag.classList.remove('selected'));
+            createBtn.disabled = false;
+            createBtn.innerHTML = '<i class="bi bi-send me-1"></i>{% trans "Share Post" %}';
+        }, 2000);
+    }
+
+    function loadMoreActivities() {
+        const loadBtn = document.getElementById('loadMoreBtn');
+        loadBtn.disabled = true;
+        loadBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{% trans "Loading..." %}';
+        
+        // TODO: Implement actual loading of more activities
+        setTimeout(() => {
+            loadBtn.disabled = false;
+            loadBtn.innerHTML = '<i class="bi bi-arrow-down me-1"></i>{% trans "Load More Activities" %}';
+            // TODO: Append new activities to container
+        }, 1500);
+    }
+});
+</script>
+{% endblock %}
