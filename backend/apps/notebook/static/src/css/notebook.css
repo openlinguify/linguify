@@ -21,12 +21,15 @@
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     margin: 0;
     padding: 0;
     height: 100vh;
     overflow: hidden;
     background-color: #f8fafc;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 .notebook-container {
@@ -133,6 +136,7 @@ body {
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     line-height: 1.4;
     margin-bottom: 0.5rem;
@@ -567,7 +571,7 @@ body {
 .btn-group .btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 2;
+    z-index: 1;
 }
 
 .btn-group .btn:active {
@@ -597,10 +601,37 @@ body {
 
 /* === AMÉLIORATION DES FILTRES ET FORMULAIRES === */
 
+/* === AMÉLIORATION DE LA TOOLBAR ET FILTRES === */
+
+/* Container principal des filtres */
+.d-flex.align-items-center.gap-3 {
+    gap: 0.75rem !important;
+    flex-wrap: wrap;
+}
+
+/* Responsive design pour mobile */
+@media (max-width: 768px) {
+    .d-flex.align-items-center.gap-3 {
+        gap: 0.5rem !important;
+    }
+    
+    #archiveFilter,
+    #sortFilter,
+    #languageFilter {
+        min-width: 120px;
+        max-width: 150px;
+        font-size: 0.8rem;
+    }
+    
+    .input-group {
+        width: 250px !important;
+    }
+}
+
 /* Amélioration des filtres dans l'en-tête */
 .input-group {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 0.375rem;
     overflow: hidden;
 }
 
@@ -619,33 +650,188 @@ body {
     font-weight: 500;
 }
 
-.form-select:focus,
 .form-control:focus {
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     background: #fefefe;
     border-color: var(--notebook-primary);
 }
 
-.form-select:hover,
 .form-control:hover {
     background: #fafafa;
 }
 
-/* Style des selects personnalisés */
+/* Style des selects personnalisés - Bootstrap natif amélioré */
 .form-select {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
     padding-right: 2.5rem;
+    font-family: Arial, Helvetica, sans-serif !important;
+    position: relative;
+    z-index: 1050;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    background-color: #fff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-select:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-select-sm {
+    padding: 0.25rem 2rem 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Fix pour les options des selects */
+.form-select option {
+    background: white;
+    color: #333;
+    padding: 8px;
+}
+
+/* Fix spécifique pour tous les selects de filtre */
+#archiveFilter,
+#sortFilter,
+#languageFilter {
+    font-family: Arial, Helvetica, sans-serif !important;
+    min-width: 140px;
+    max-width: 180px;
+}
+
+/* === AMÉLIORATION DES BOUTONS === */
+
+/* Bouton principal "Nouvelle note" */
+.btn-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 500;
+    padding: 0.375rem 1rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-gradient:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    color: white !important;
+}
+
+/* === STYLE UNIFORME POUR TOUS LES BOUTONS === */
+
+/* Boutons outline secondary - style propre et uniforme */
+.btn-outline-secondary,
+.btn.btn-outline-secondary {
+    border: 1px solid #6c757d !important;
+    color: #6c757d !important;
+    background-color: transparent !important;
+    border-radius: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Forcer l'override des autres couleurs Bootstrap - règles ultra spécifiques */
+button.btn-outline-warning,
+button.btn-outline-danger,
+button.btn-outline-primary,
+button.btn-outline-success,
+button.btn-outline-info,
+.btn.btn-outline-warning,
+.btn.btn-outline-danger,
+.btn.btn-outline-primary,
+.btn.btn-outline-success,
+.btn.btn-outline-info {
+    border: 1px solid #6c757d !important;
+    color: #6c757d !important;
+    background-color: transparent !important;
+    border-color: #6c757d !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-warning:hover,
+.btn-outline-danger:hover,
+.btn-outline-primary:hover,
+.btn-outline-success:hover,
+.btn-outline-info:hover {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #fff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.25);
+}
+
+.btn-outline-secondary:focus,
+.btn-outline-warning:focus,
+.btn-outline-danger:focus,
+.btn-outline-primary:focus,
+.btn-outline-success:focus,
+.btn-outline-info:focus {
+    box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.25) !important;
+    outline: 0;
+    border-color: #6c757d !important;
+    color: #6c757d !important;
+}
+
+.btn-outline-secondary:active,
+.btn-outline-warning:active,
+.btn-outline-danger:active,
+.btn-outline-primary:active,
+.btn-outline-success:active,
+.btn-outline-info:active {
+    background-color: #5c636a !important;
+    border-color: #565e64 !important;
+    color: #fff !important;
+    transform: translateY(0);
+}
+
+/* Style pour les badges dans les boutons */
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+    color: white;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.4rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    min-width: 1.2rem;
+    text-align: center;
+}
+
+/* Style pour les images dans les boutons */
+.btn-outline-secondary img {
+    opacity: 0.7;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.btn-outline-secondary:hover img {
+    opacity: 1;
+    filter: brightness(0) invert(1);
+}
+
+/* Espacement pour les groupes de boutons */
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.btn-toolbar {
+    gap: 0.5rem;
 }
 
 /* Animation pour les éléments de formulaire */
-.form-select,
 .form-control,
 .btn {
     transform-origin: center;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    backface-visibility: hidden;
+    transform: translateZ(0);
 }
 
-.form-select:active,
 .form-control:active,
 .btn:active {
     transform: scale(0.98);

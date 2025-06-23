@@ -46,17 +46,17 @@
         <!-- Mode sélection multiple - Toolbar compacte -->
         <div id="multiSelectControls" class="btn-toolbar fade" style="display: none;" role="toolbar">
             <div class="btn-group btn-group-sm me-2" role="group">
-                <button type="button" class="btn btn-outline-danger" onclick="bulkDelete()" id="bulkDeleteBtn" title="Supprimer la sélection">
-                    <i class="bi bi-trash"></i>
-                    <span class="badge bg-danger ms-1" id="selectedCount">0</span>
+                <button type="button" class="btn btn-outline-secondary" onclick="bulkDelete()" id="bulkDeleteBtn" title="Supprimer la sélection">
+                    <img src="{% static 'src/img/trash.png' %}" alt="Delete" style="width: 16px; height: 16px;">
+                    <span class="badge bg-secondary ms-1" id="selectedCount">0</span>
                 </button>
-                <button type="button" class="btn btn-outline-warning" onclick="bulkArchive()" title="Archiver la sélection">
-                    <i class="bi bi-archive"></i>
-                    <span class="badge bg-warning ms-1" id="selectedCountArchive">0</span>
+                <button type="button" class="btn btn-outline-secondary" onclick="bulkArchive()" title="Archiver la sélection">
+                    <img src="{% static 'src/img/archive.png' %}" alt="Archive" style="width: 16px; height: 16px;">
+                    <span class="badge bg-secondary ms-1" id="selectedCountArchive">0</span>
                 </button>
-                <button type="button" class="btn btn-outline-success" onclick="bulkUnarchive()" title="Désarchiver la sélection">
-                    <i class="bi bi-arrow-up-circle"></i>
-                    <span class="badge bg-success ms-1" id="selectedCountUnarchive">0</span>
+                <button type="button" class="btn btn-outline-secondary" onclick="bulkUnarchive()" title="Désarchiver la sélection">
+                    <img src="{% static 'src/img/archive.png' %}" alt="Unarchive" style="width: 16px; height: 16px; transform: rotate(180deg);">
+                    <span class="badge bg-secondary ms-1" id="selectedCountUnarchive">0</span>
                 </button>
             </div>
             <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelMultiSelect()" title="Annuler la sélection">
@@ -67,16 +67,14 @@
         <!-- Mode normal - Boutons compacts -->
         <div id="normalControls" class="btn-toolbar fade show" role="toolbar">
             <div class="btn-group btn-group-sm me-2" role="group">
-                <button type="button" class="btn btn-outline-primary" onclick="toggleMultiSelect()" title="Mode sélection multiple">
-                    <!-- Option Bootstrap: <i class="bi bi-ui-checks"></i> -->
-                    <!-- Option Phosphor (plus moderne): -->
-                    <i class="ph ph-check-square" style="font-size: 16px;"></i>
+                <button type="button" class="btn btn-outline-secondary" onclick="toggleMultiSelect()" title="Mode sélection multiple">
+                    <img src="{% static 'src/img/select.png' %}" alt="Select" style="width: 16px; height: 16px;">
                 </button>
-                <button type="button" class="btn btn-outline-success" onclick="saveCurrentNote(true)" id="saveButton" title="Sauvegarder la note">
+                <button type="button" class="btn btn-outline-secondary" onclick="saveCurrentNote(true)" id="saveButton" title="Sauvegarder la note">
                     <img src="{% static 'src/img/save-cloud.png' %}" alt="Save" style="width: 18px; height: 14px;">
                 </button>
-                <button type="button" class="btn btn-outline-info" onclick="refreshNotes()" title="Actualiser les notes">
-                    <i class="bi bi-arrow-clockwise"></i>
+                <button type="button" class="btn btn-outline-secondary" onclick="refreshNotes()" title="Actualiser les notes">
+                    <img src="{% static 'src/img/refresh.png' %}" alt="Refresh" style="width: 16px; height: 16px;">
                 </button>
             </div>
             <button type="button" class="btn btn-outline-secondary btn-sm d-md-none" onclick="toggleSidebar()" title="Afficher/masquer la sidebar">
@@ -136,12 +134,12 @@
                         </select>
                     </div>
                     
-                    <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-outline-warning btn-sm" onclick="toggleArchiveCurrentNote()" id="archiveToggleBtn" title="Archiver/Désarchiver">
-                            <i class="bi bi-archive"></i>
+                    <div class="d-flex align-items-center gap-2 ms-3">
+                        <button class="btn btn-outline-secondary btn-sm" onclick="toggleArchiveCurrentNote()" id="archiveToggleBtn" title="Archiver/Désarchiver">
+                            <img src="{% static 'src/img/archive.png' %}" alt="Archive" style="width: 16px; height: 16px;">
                         </button>
-                        <button class="btn btn-outline-danger btn-sm" onclick="deleteCurrentNote()">
-                            <i class="bi bi-trash"></i>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="deleteCurrentNote()">
+                            <img src="{% static 'src/img/trash.png' %}" alt="Delete" style="width: 16px; height: 16px;">
                         </button>
                     </div>
                 </div>
