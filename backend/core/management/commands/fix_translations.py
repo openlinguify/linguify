@@ -37,14 +37,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write(
-            self.style.SUCCESS('🌍 Script de correction et compilation des traductions Django')
+            self.style.SUCCESS('Script de correction et compilation des traductions Django')
         )
         self.stdout.write('=' * 60)
         
         try:
             # Get base directory (should be the backend directory)
             base_dir = settings.BASE_DIR
-            self.stdout.write(f'📁 Répertoire de travail: {base_dir}')
+            self.stdout.write(f'Repertoire de travail: {base_dir}')
             
             # Step 1: Fix translation files encoding
             self.fix_translation_files()

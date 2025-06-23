@@ -16,6 +16,8 @@ Allow: /revision/
 Allow: /quizz/
 Allow: /language_ai/
 Allow: /annexes/terms/
+Allow: /api/docs/
+Allow: /api/redoc/
 Disallow: /admin/
 Disallow: /api/auth/
 Disallow: /api/v1/
@@ -23,8 +25,6 @@ Disallow: /dashboard/
 Disallow: /profile/
 Disallow: /settings/
 Disallow: /media/
-Allow: /media/images/
-Allow: /media/screenshots/
 Disallow: /static/admin/
 Disallow: /test-settings/
 Disallow: /*.json$
@@ -80,6 +80,8 @@ Allow: /revision/
 Allow: /quizz/
 Allow: /language_ai/
 Allow: /annexes/terms/
+Allow: /api/docs/
+Allow: /api/redoc/
 Disallow: /admin/
 Disallow: /api/
 Disallow: /dashboard/

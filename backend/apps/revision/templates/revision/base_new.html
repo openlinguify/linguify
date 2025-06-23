@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page_title|default:"Révision" }} - Linguify</title>
+    <title>{% block title %}Memory{% endblock %} - Open Linguify</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
@@ -247,6 +247,7 @@
             line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             margin-bottom: 0.5rem;
@@ -655,24 +656,32 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Configuration globale -->
+    <script id="django-data" type="application/json">
+    {
+        "DEBUG": {{ debug|yesno:"true,false" }},
+        "API_BASE_URL": "{{ request.scheme }}://{{ request.get_host }}",
+        "USER_DATA": {
+            "id": {{ request.user.id|default:"null"|escapejs }},
+            "username": "{{ request.user.username|default:''|escapejs }}",
+            "email": "{{ request.user.email|default:''|escapejs }}",
+            "is_authenticated": {{ user.is_authenticated|yesno:"true,false" }}
+        },
+        "REVISION_CONFIG": {
+            "apiBaseUrl": "/api/v1/revision"{% if deck_id %},
+            "deckId": {{ deck_id|escapejs }}{% endif %}{% if deck_data %},
+            "deckData": {{ deck_data|safe }}{% endif %}{% if study_mode %},
+            "studyMode": "{{ study_mode|escapejs }}"{% endif %}{% if view_type %},
+            "viewType": "{{ view_type|escapejs }}"{% endif %}
+        }
+    }
+    </script>
     <script>
-        window.DEBUG = {{ debug|yesno:"true,false" }};
-        window.API_BASE_URL = "{{ request.scheme }}://{{ request.get_host }}";
-        window.USER_DATA = {
-            id: {{ request.user.id|default:"null" }},
-            username: "{{ request.user.username|default:'' }}",
-            email: "{{ request.user.email|default:'' }}",
-            is_authenticated: {{ user.is_authenticated|yesno:"true,false" }}
-        };
-        
-        // Configuration spécifique à la révision
-        window.REVISION_CONFIG = {
-            apiBaseUrl: '/api/v1/revision',
-            {% if deck_id %}deckId: {{ deck_id }},{% endif %}
-            {% if deck_data %}deckData: {{ deck_data|safe }},{% endif %}
-            {% if study_mode %}studyMode: '{{ study_mode }}',{% endif %}
-            {% if view_type %}viewType: '{{ view_type }}',{% endif %}
-        };
+        // Parse configuration from JSON
+        const djangoData = JSON.parse(document.getElementById('django-data').textContent);
+        window.DEBUG = djangoData.DEBUG;
+        window.API_BASE_URL = djangoData.API_BASE_URL;
+        window.USER_DATA = djangoData.USER_DATA;
+        window.REVISION_CONFIG = djangoData.REVISION_CONFIG;
         
         // Service de notifications global
         window.notificationService = {

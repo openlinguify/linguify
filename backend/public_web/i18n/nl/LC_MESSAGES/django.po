@@ -1,4 +1,4 @@
-# DUTCH TRANSLATION FOR PUBLIC_WEB
+# ENGLISH TRANSLATION FOR PUBLIC_WEB
 # Copyright (C) 2025 Open Linguify
 # This file is distributed under the same license as the Open Linguify package.
 #
@@ -9,7 +9,7 @@ msgstr ""
 "POT-Creation-Date: 2025-06-17 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Open Linguify Team\n"
-"Language-Team: Dutch\n"
+"Language-Team: Nl\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,24 +20,49 @@ msgstr ""
 msgid "Open Linguify - Open source educational apps platform"
 msgstr "Open Linguify - Open source educatieve apps platform"
 
-msgid "Open Linguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning."
-msgstr "Open Linguify is een open source educatieve apps platform: memorisatiesysteem, flashcards, notities maken, quizzen, collaboratieve chat, klaslokalen en veel meer. Ontdek onze tools om het leren te revolutioneren."
+msgid ""
+"Open Linguify is an open source educational apps platform: memorization "
+"system, flashcards, note-taking, quizzes, collaborative chat, classrooms and "
+"much more. Discover our tools to revolutionize learning."
+msgstr ""
+"Open Linguify is an open source educational apps platform: memorization "
+"system, flashcards, note-taking, quizzes, collaborative chat, classrooms and "
+"much more. Discover our tools to revolutionize learning."
 
 msgid "Open Linguify - Open source platform for modern education"
-msgstr "Open Linguify - Open source platform voor modern onderwijs"
+msgstr "Open Linguify - Open source platform for modern education"
 
-msgid "Discover a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn."
-msgstr "Ontdek een complete suite van open source educatieve apps: slimme memorisatie, flashcards, notities maken, interactieve quizzen, collaboratieve chat, virtuele klaslokalen en veel meer. Revolutioneer de manier waarop je leert."
+msgid ""
+"Discover a complete suite of open source educational apps: smart "
+"memorization, flashcards, note-taking, interactive quizzes, collaborative "
+"chat, virtual classrooms and much more. Revolutionize the way you learn."
+msgstr ""
+"Discover a complete suite of open source educational apps: smart "
+"memorization, flashcards, note-taking, interactive quizzes, collaborative "
+"chat, virtual classrooms and much more. Revolutionize the way you learn."
 
-msgid "Complete suite of open source educational apps: memorization, flashcards, notes, quizzes, collaborative chat and much more."
-msgstr "Complete suite van open source educatieve apps: memorisatie, flashcards, notities, quizzen, collaboratieve chat en veel meer."
+msgid ""
+"Complete suite of open source educational apps: memorization, flashcards, "
+"notes, quizzes, collaborative chat and much more."
+msgstr ""
+"Complete suite of open source educational apps: memorization, flashcards, "
+"notes, quizzes, collaborative chat and much more."
 
 # Landing page content
 msgid "Open Source Education Apps"
 msgstr "Open Source Educatieve Apps"
 
-msgid "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more."
-msgstr "Een complete suite van open source educatieve apps: memorisatie, flashcards, notities maken, quizzen, collaboratieve chat en veel meer."
+#, fuzzy
+msgid ""
+"A complete suite of open source educational apps: memorization, flashcards, "
+"note-taking, quizzes, collaborative chat and much more."
+msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"A complete suite of open source educational apps: memorization, flashcards, "
+"note-taking, quizzes, collaborative chat and much more.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Een complete suite van open source educatieve apps: memorisatie, flashcards, "
+"notities maken, quizzen, collaboratieve chat en veel meer."
 
 msgid "Start for free"
 msgstr "Gratis beginnen"
@@ -46,10 +71,14 @@ msgid "Discover our apps"
 msgstr "Ontdek onze apps"
 
 msgid "Access Dashboard"
-msgstr "Toegang tot Dashboard"
+msgstr "Access Dashboard"
 
-msgid "open linguify, educational apps, flashcards, memorization, note-taking, quizzes, collaborative chat, classrooms, open source, education, learning"
-msgstr "open linguify, educatieve apps, flashcards, memorisatie, notities maken, quizzen, collaboratieve chat, klaslokalen, open source, onderwijs, leren"
+msgid ""
+"open linguify, educational apps, flashcards, memorization, note-taking, "
+"quizzes, collaborative chat, classrooms, open source, education, learning"
+msgstr ""
+"open linguify, educational apps, flashcards, memorization, note-taking, "
+"quizzes, collaborative chat, classrooms, open source, education, learning"
 
 # Header navigation
 msgid "Features"
@@ -59,7 +88,7 @@ msgid "Apps"
 msgstr "Apps"
 
 msgid "About"
-msgstr "Over ons"
+msgstr "Over"
 
 msgid "Blog"
 msgstr "Blog"
@@ -84,147 +113,298 @@ msgstr "Open Source"
 msgid "Our Educational Apps"
 msgstr "Onze Educatieve Apps"
 
-msgid "Discover our suite of 5 apps designed to transform your learning experience. Choose one for free or access all with Premium."
-msgstr "Ontdek onze suite van 5 apps ontworpen om je leerervaring te transformeren. Kies er één gratis of krijg toegang tot alle met Premium."
+msgid ""
+"Discover our suite of 5 apps designed to transform your learning experience. "
+"Choose one for free or access all with Premium."
+msgstr ""
+"Discover our suite of 5 apps designed to transform your learning experience. "
+"Choose one for free or access all with Premium."
 
 msgid "Courses"
 msgstr "Cursussen"
 
-msgid "Structured courses with progressive lessons, interactive exercises and personalized assessments."
-msgstr "Gestructureerde cursussen met progressieve lessen, interactieve oefeningen en gepersonaliseerde beoordelingen."
+#, fuzzy
+msgid ""
+"Structured courses with progressive lessons, interactive exercises and "
+"personalized assessments."
+msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Structured courses with progressive lessons, interactive exercises and "
+"personalized assessments.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Gestructureerde cursussen met progressieve lessen, interactieve oefeningen "
+"en gepersonaliseerde beoordelingen."
 
 msgid "Revision"
 msgstr "Herhaling"
 
-msgid "Spaced repetition system with smart flashcards for optimal memorization."
-msgstr "Herhalingssysteem met slimme flashcards voor optimale memorisatie."
+#, fuzzy
+msgid ""
+"Spaced repetition system with smart flashcards for optimal memorization."
+msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Spaced repetition system with smart flashcards for optimal memorization.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Herhalingssysteem met slimme flashcards voor optimale memorisatie."
 
 msgid "Notebook"
 msgstr "Notitieboek"
 
-msgid "Centralized note-taking with intelligent organization and advanced search."
-msgstr "Gecentraliseerde notities met intelligente organisatie en geavanceerd zoeken."
+#, fuzzy
+msgid ""
+"Centralized note-taking with intelligent organization and advanced search."
+msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Centralized note-taking with intelligent organization and advanced search.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Gecentraliseerde notities met intelligente organisatie en geavanceerd zoeken."
 
 msgid "Quiz"
 msgstr "Quiz"
 
 msgid "Adaptive quiz system to test your knowledge and identify weak points."
-msgstr "Adaptief quizsysteem om je kennis te testen en zwakke punten te identificeren."
+msgstr "Adaptive quiz system to test your knowledge and identify weak points."
 
 msgid "Language AI"
 msgstr "Taal AI"
 
-msgid "AI assistant for natural conversations and intelligent real-time corrections."
-msgstr "AI-assistent voor natuurlijke gesprekken en intelligente realtime correcties."
+#, fuzzy
+msgid ""
+"AI assistant for natural conversations and intelligent real-time corrections."
+msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"AI assistant for natural conversations and intelligent real-time "
+"corrections.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"AI-assistent voor natuurlijke gesprekken en intelligente realtime correcties."
+
+# Dynamic system translations
+msgid "No apps available"
+msgstr "No apps available"
+
+msgid "Learn more"
+msgstr "Learn more"
+
+msgid "Our Applications"
+msgstr "Our Applications"
+
+msgid "Discover all Open Linguify applications"
+msgstr "Discover all Open Linguify applications"
+
+msgid ""
+"Discover our complete suite of educational applications designed to enhance "
+"your learning experience."
+msgstr ""
+"Discover our complete suite of educational applications designed to enhance "
+"your learning experience."
+
+msgid "No applications available"
+msgstr "No applications available"
+
+msgid "Applications will appear here once they are configured."
+msgstr "Applications will appear here once they are configured."
+
+msgid "Ready to start learning?"
+msgstr "Ready to start learning?"
+
+msgid ""
+"Join our community and access all these amazing educational applications."
+msgstr ""
+"Join our community and access all these amazing educational applications."
+
+msgid "Ready to try"
+msgstr "Ready to try"
+
+msgid ""
+"Start using this application now and discover how it can enhance your "
+"learning experience."
+msgstr ""
+"Start using this application now and discover how it can enhance your "
+"learning experience."
+
+msgid "This application is part of the Open Linguify educational suite."
+msgstr "This application is part of the Open Linguify educational suite."
+
+msgid "Explore App Store"
+msgstr "Explore App Store"
 
 # New apps section
 msgid "New Educational Apps Coming Soon"
-msgstr "Nieuwe Educatieve Apps Binnenkort Beschikbaar"
+msgstr "New Educational Apps Coming Soon"
 
-msgid "Our teams are actively working on innovative new educational apps to enrich our learning ecosystem. These upcoming tools will offer even more ways to master languages."
-msgstr "Onze teams werken actief aan innovatieve nieuwe educatieve apps om ons leerecosysteem te verrijken. Deze aankomende tools bieden nog meer manieren om talen onder de knie te krijgen."
+msgid ""
+"Our teams are actively working on innovative new educational apps to enrich "
+"our learning ecosystem. These upcoming tools will offer even more ways to "
+"master languages."
+msgstr ""
+"Our teams are actively working on innovative new educational apps to enrich "
+"our learning ecosystem. These upcoming tools will offer even more ways to "
+"master languages."
 
 msgid "AI Writing Assistant"
-msgstr "AI Schrijfassistent"
+msgstr "AI Writing Assistant"
 
 msgid "Pronunciation Trainer"
-msgstr "Uitspraaktrainer"
+msgstr "Pronunciation Trainer"
 
 msgid "Cultural Immersion"
-msgstr "Culturele Onderdompeling"
+msgstr "Cultural Immersion"
 
 msgid "Grammar Checker"
-msgstr "Grammaticacontrole"
+msgstr "Grammar Checker"
 
 msgid "Join the waiting list"
-msgstr "Doe mee met de wachtlijst"
+msgstr "Join the waiting list"
 
 msgid "Coming in 2025"
-msgstr "Komend in 2025"
+msgstr "Coming in 2025"
 
 msgid "Neuroscience-based language acquisition"
-msgstr "Neurowetenschappelijke taalverwerving"
+msgstr "Neuroscience-based language acquisition"
 
 msgid "Native speaker community"
-msgstr "Gemeenschap van moedertaalsprekers"
+msgstr "Native speaker community"
 
 msgid "Industry-recognized certifications"
-msgstr "Door de industrie erkende certificeringen"
+msgstr "Industry-recognized certifications"
 
 # Pricing section
 msgid "Plans adapted to your needs"
-msgstr "Plannen aangepast aan je behoeften"
+msgstr "Plans adapted to your needs"
 
 msgid "Choose the offer that matches your goals and learning pace."
-msgstr "Kies het aanbod dat past bij je doelen en leertempo."
+msgstr "Choose the offer that matches your goals and learning pace."
 
 msgid "Free"
-msgstr "Gratis"
+msgstr "Free"
 
 msgid "forever"
-msgstr "voor altijd"
+msgstr "forever"
 
 msgid "Perfect for discovering the platform"
-msgstr "Perfect om het platform te ontdekken"
+msgstr "Perfect for discovering the platform"
 
 msgid "Access to 1 app of your choice"
-msgstr "Toegang tot 1 app naar keuze"
+msgstr "Access to 1 app of your choice"
 
 msgid "Full use of the chosen app"
-msgstr "Volledig gebruik van de gekozen app"
+msgstr "Full use of the chosen app"
 
 msgid "Free updates"
-msgstr "Gratis updates"
+msgstr "Free updates"
 
 msgid "Community support"
-msgstr "Gemeenschapsondersteuning"
+msgstr "Community support"
 
 msgid "Most popular"
-msgstr "Meest populair"
+msgstr "Most popular"
 
 msgid "Premium"
 msgstr "Premium"
 
 msgid "per month"
-msgstr "per maand"
+msgstr "per month"
 
 msgid "Full access to all applications"
-msgstr "Volledige toegang tot alle applicaties"
+msgstr "Full access to all applications"
 
 msgid "Access to all applications"
-msgstr "Toegang tot alle applicaties"
+msgstr "Access to all applications"
 
 msgid "Courses: structured lessons"
-msgstr "Cursussen: gestructureerde lessen"
+msgstr "Courses: structured lessons"
 
 msgid "Revision: unlimited flashcards"
-msgstr "Herhaling: onbeperkte flashcards"
+msgstr "Revision: unlimited flashcards"
 
 msgid "Notebook: unlimited notes"
-msgstr "Notitieboek: onbeperkte notities"
+msgstr "Notebook: unlimited notes"
 
 msgid "Quiz & Language AI included"
-msgstr "Quiz & Taal AI inbegrepen"
+msgstr "Quiz & Language AI included"
 
 msgid "7-day free trial"
-msgstr "7 dagen gratis proefperiode"
+msgstr "7-day free trial"
 
 # CTA section
 msgid "Ready to revolutionize your learning?"
 msgstr "Klaar om je leren te revolutioneren?"
 
-msgid "Join our community and access a complete suite of open source educational apps."
-msgstr "Sluit je aan bij onze gemeenschap en krijg toegang tot een complete suite van open source educatieve apps."
+#, fuzzy
+msgid ""
+"Join our community and access a complete suite of open source educational "
+"apps."
+msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Join our community and access a complete suite of open source educational "
+"apps.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Sluit je aan bij onze gemeenschap en krijg toegang tot een complete suite "
+"van open source educatieve apps."
 
 msgid "Go to Dashboard"
-msgstr "Ga naar Dashboard"
+msgstr "Go to Dashboard"
 
 msgid "My Notes"
-msgstr "Mijn Notities"
+msgstr "My Notes"
 
+# Authentication translations
+msgid "Back to home"
+msgstr "Back to home"
+
+msgid "Sign in to your account"
+msgstr "Sign in to your account"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Email or username"
+msgstr "Email or username"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Remember me"
+msgstr "Remember me"
+
+msgid "Forgot password?"
+msgstr "Forgot password?"
+
+msgid "Don't have an account?"
+msgstr "Don't have an account?"
+
+msgid "Create an account"
+msgstr "Create an account"
+
+msgid "or"
+msgstr "or"
+
+msgid "Invalid username or password."
+msgstr "Invalid username or password."
+
+msgid "Welcome, %(username)s!"
+msgstr "Welcome, %(username)s!"
+
+# Auth buttons
+msgid "Log In"
+msgstr "Log In"
+
+msgid "Sign Up"
+msgstr "Sign Up"
+
+# #-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#
 # Footer content
-msgid "Open source educational apps platform: memorization, flashcards, notes, quizzes and collaborative chat."
-msgstr "Open source educatieve apps platform: memorisatie, flashcards, notities, quizzen en collaboratieve chat."
+#, fuzzy
+msgid ""
+"Open source educational apps platform: memorization, flashcards, notes, "
+"quizzes and collaborative chat."
+msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Open source educational apps platform: memorization, flashcards, notes, "
+"quizzes and collaborative chat.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Open source educatieve apps platform: memorisatie, flashcards, notities, "
+"quizzen en collaboratieve chat."
 
 msgid "Product"
 msgstr "Product"
@@ -239,13 +419,13 @@ msgid "Resources"
 msgstr "Bronnen"
 
 msgid "Documentation"
-msgstr "Documentatie"
+msgstr "Documentation"
 
 msgid "API"
 msgstr "API"
 
 msgid "Community"
-msgstr "Gemeenschap"
+msgstr "Community"
 
 msgid "Company"
 msgstr "Bedrijf"
@@ -254,13 +434,13 @@ msgid "Careers"
 msgstr "Carrières"
 
 msgid "Press"
-msgstr "Pers"
+msgstr "Press"
 
 msgid "Support"
 msgstr "Ondersteuning"
 
 msgid "Help Center"
-msgstr "Helpcentrum"
+msgstr "Help Center"
 
 msgid "Status"
 msgstr "Status"
@@ -285,44 +465,223 @@ msgstr "Cookies"
 
 # Views content
 msgid "Open Linguify - Learn languages"
-msgstr "Open Linguify - Leer talen"
+msgstr "Open Linguify - Learn languages"
 
 msgid "Open source platform for learning languages"
-msgstr "Open source platform voor het leren van talen"
+msgstr "Open source platform for learning languages"
 
-# Authentication translations
-msgid "Back to home"
-msgstr "Terug naar startpagina"
+# Brand page translations
+msgid "Revolutionizing education through open source technology"
+msgstr "Revolutionizing education through open source technology"
 
-msgid "Sign in to your account"
-msgstr "Meld je aan bij je account"
+msgid "Explore Our Apps"
+msgstr "Explore Our Apps"
 
-msgid "Login"
-msgstr "Inloggen"
+msgid "Learn More"
+msgstr "Learn More"
 
-msgid "Email or username"
-msgstr "E-mail of gebruikersnaam"
+msgid "Why Choose OpenLinguify?"
+msgstr "Why Choose OpenLinguify?"
 
-msgid "Password"
-msgstr "Wachtwoord"
+msgid ""
+"Our comprehensive platform offers cutting-edge educational tools designed "
+"for modern learners"
+msgstr ""
+"Our comprehensive platform offers cutting-edge educational tools designed "
+"for modern learners"
 
-msgid "Remember me"
-msgstr "Onthoud mij"
+msgid "AI-Powered Learning"
+msgstr "AI-Powered Learning"
 
-msgid "Forgot password?"
-msgstr "Wachtwoord vergeten?"
+msgid ""
+"Advanced artificial intelligence adapts to your learning style and pace for "
+"personalized education"
+msgstr ""
+"Advanced artificial intelligence adapts to your learning style and pace for "
+"personalized education"
 
-msgid "Don't have an account?"
-msgstr "Nog geen account?"
+msgid "Smart Flashcards"
+msgstr "Smart Flashcards"
 
-msgid "Create an account"
-msgstr "Account aanmaken"
+msgid ""
+"Spaced repetition algorithms optimize your memory retention with intelligent "
+"review scheduling"
+msgstr ""
+"Spaced repetition algorithms optimize your memory retention with intelligent "
+"review scheduling"
 
-msgid "or"
-msgstr "of"
+msgid "Digital Notebooks"
+msgstr "Digital Notebooks"
 
-msgid "Invalid username or password."
-msgstr "Ongeldige gebruikersnaam of wachtwoord."
+msgid ""
+"Organize your thoughts and knowledge with our comprehensive note-taking "
+"system"
+msgstr ""
+"Organize your thoughts and knowledge with our comprehensive note-taking "
+"system"
 
-msgid "Welcome, %(username)s!"
-msgstr "Welkom, %(username)s!"
+msgid "Adaptive Quizzes"
+msgstr "Adaptive Quizzes"
+
+msgid ""
+"Interactive assessments that adjust difficulty based on your progress and "
+"understanding"
+msgstr ""
+"Interactive assessments that adjust difficulty based on your progress and "
+"understanding"
+
+msgid "Collaborative Learning"
+msgstr "Collaborative Learning"
+
+msgid ""
+"Connect with learners worldwide through our social learning features and "
+"study groups"
+msgstr ""
+"Connect with learners worldwide through our social learning features and "
+"study groups"
+
+msgid ""
+"Transparent, community-driven development ensuring privacy and continuous "
+"innovation"
+msgstr ""
+"Transparent, community-driven development ensuring privacy and continuous "
+"innovation"
+
+msgid "Trusted by Learners Worldwide"
+msgstr "Trusted by Learners Worldwide"
+
+msgid "Active Learners"
+msgstr "Active Learners"
+
+msgid "Languages Supported"
+msgstr "Languages Supported"
+
+msgid "User Satisfaction"
+msgstr "User Satisfaction"
+
+msgid "Our Mission"
+msgstr "Our Mission"
+
+msgid ""
+"We believe education should be accessible to everyone, everywhere. "
+"OpenLinguify democratizes learning through innovative open source "
+"technology, providing powerful educational tools that help millions of "
+"learners worldwide achieve their goals and unlock their potential."
+msgstr ""
+"We believe education should be accessible to everyone, everywhere. "
+"OpenLinguify democratizes learning through innovative open source "
+"technology, providing powerful educational tools that help millions of "
+"learners worldwide achieve their goals and unlock their potential."
+
+msgid "Accessibility First"
+msgstr "Accessibility First"
+
+msgid ""
+"Free, open source tools available to learners regardless of their background "
+"or location"
+msgstr ""
+"Free, open source tools available to learners regardless of their background "
+"or location"
+
+msgid "Innovation Driven"
+msgstr "Innovation Driven"
+
+msgid ""
+"Cutting-edge AI and learning science research integrated into practical tools"
+msgstr ""
+"Cutting-edge AI and learning science research integrated into practical tools"
+
+msgid "Community Powered"
+msgstr "Community Powered"
+
+msgid "Built by educators and learners, for educators and learners worldwide"
+msgstr "Built by educators and learners, for educators and learners worldwide"
+
+msgid "Privacy Focused"
+msgstr "Privacy Focused"
+
+msgid ""
+"Your data belongs to you - transparent, secure, and privacy-first approach"
+msgstr ""
+"Your data belongs to you - transparent, secure, and privacy-first approach"
+
+msgid "Ready to Transform Your Learning?"
+msgstr "Ready to Transform Your Learning?"
+
+msgid ""
+"Join thousands of learners who have already discovered the power of "
+"OpenLinguify's educational tools"
+msgstr ""
+"Join thousands of learners who have already discovered the power of "
+"OpenLinguify's educational tools"
+
+msgid "Get Started Free"
+msgstr "Get Started Free"
+
+msgid "Contact Us"
+msgstr "Contact Us"
+
+msgid "Brand"
+msgstr "Merk"
+
+msgid ""
+"Discover our complete suite of educational apps designed to transform your "
+"learning experience. Choose one for free or access all with Premium."
+msgstr ""
+"Ontdek onze complete suite van educatieve apps ontworpen om je leerervaring "
+"te transformeren. Kies er één gratis of krijg toegang tot alle met Premium."
+
+msgid ""
+"Connect with other learners, share progress and discover content created by "
+"the community."
+msgstr ""
+"Verbind met andere leerlingen, deel voortgang en ontdek inhoud gemaakt door "
+"de gemeenschap."
+
+msgid ""
+"Real-time collaborative chat for study groups and language exchange with "
+"other learners."
+msgstr ""
+"Real-time collaboratieve chat voor studiegroepen en taaluitwisseling met "
+"andere leerlingen."
+
+msgid "Join the Open Source Revolution"
+msgstr "Sluit je aan bij de Open Source Revolutie"
+
+msgid ""
+"Open Linguify is built by the community, for the community. Help us create "
+"the future of education by contributing to our open source project."
+msgstr ""
+"Open Linguify is gebouwd door de gemeenschap, voor de gemeenschap. Help ons "
+"de toekomst van onderwijs te creëren door bij te dragen aan ons open source "
+"project."
+
+msgid "Contribute code and new features"
+msgstr "Draag code en nieuwe functies bij"
+
+msgid "Report bugs and suggest improvements"
+msgstr "Rapporteer bugs en stel verbeteringen voor"
+
+msgid "Help with translations and documentation"
+msgstr "Help met vertalingen en documentatie"
+
+msgid "Open Source Stats"
+msgstr "Open Source Statistieken"
+
+msgid "Growing community of contributors"
+msgstr "Groeiende gemeenschap van bijdragers"
+
+msgid "Contributors"
+msgstr "Bijdragers"
+
+msgid "Commits"
+msgstr "Commits"
+
+msgid "License"
+msgstr "Licentie"
+
+msgid "Latest Release"
+msgstr "Laatste Release"
+
+msgid "Contribute"
+msgstr "Bijdragen"

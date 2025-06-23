@@ -51,6 +51,10 @@ urlpatterns = [
     # App icons - serve app/static/description/icon.png as app-icons/app/icon.png
     path('app-icons/<str:app_name>/<str:filename>', AppIconView.as_view(), name='app_icon'),
     
+    # Redirects for app pages without language prefix to user's preferred language
+    path('apps/', views.language_redirect_view, {'path': 'apps/'}, name='apps_no_lang_redirect'),
+    path('apps/<slug:app_slug>/', views.app_language_redirect_view, name='app_detail_no_lang_redirect'),
+    
     # User profile routes (must be before saas_web.urls to avoid conflicts)
     path('profile/', include('apps.authentication.urls_profile')),
     path('u/', include('apps.authentication.urls_profile')),

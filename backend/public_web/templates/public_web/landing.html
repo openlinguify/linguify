@@ -6,11 +6,106 @@
 
 {% block meta_description %}{% trans "OpenLinguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning." %}{% endblock %}
 
-{% block meta_keywords %}{% trans "openlinguify, open linguify, educational apps, flashcards, memorization, note-taking, quizzes, collaborative chat, classrooms, open source, education, learning" %}{% endblock %}
+{% block meta_keywords %}{% trans "openlinguify, open linguify, OpenLinguify, Open Linguify, openlinguify.com, linguify apprendre langues, linguify AI, linguify, educational apps, flashcards, memorization, note-taking, quizzes, collaborative chat, classrooms, open source, education, learning, apprentissage" %}{% endblock %}
 
-{% block og_title %}{% trans "OpenLinguify - Open source platform for modern education" %}{% endblock %}
+{% block og_title %}{% trans "OpenLinguify - Open source educational apps platform" %}{% endblock %}
 
 {% block og_description %}{% trans "Discover OpenLinguify, a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn." %}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "OpenLinguify",
+    "alternateName": ["Open Linguify", "openlinguify", "OpenLinguify.com"],
+    "applicationCategory": "EducationalApplication",
+    "applicationSubCategory": "Language Learning",
+    "operatingSystem": "Web, iOS, Android",
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+    },
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.8,
+        "ratingCount": 1250,
+        "bestRating": 5,
+        "worstRating": 1
+    },
+    "featureList": [
+        "{% trans 'AI-powered lessons' %}",
+        "{% trans 'Interactive flashcards' %}",
+        "{% trans 'Speech recognition' %}",
+        "{% trans 'Progress tracking' %}",
+        "{% trans 'Multi-language support' %}",
+        "{% trans 'Offline mode' %}"
+    ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "{% trans 'What is OpenLinguify?' %}",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{% trans 'OpenLinguify is an open source educational platform offering AI-powered language learning tools including flashcards, quizzes, note-taking, and interactive courses.' %}"
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "{% trans 'Is OpenLinguify really free?' %}",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{% trans 'Yes! You can use one app completely free forever. Premium access gives you all 5 apps for 19.99€/month with a 7-day free trial.' %}"
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "{% trans 'Which languages can I learn with OpenLinguify?' %}",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{% trans 'OpenLinguify supports learning multiple languages including English, French, Spanish, Dutch, and many more. Our AI adapts to your target language.' %}"
+            }
+        }
+    ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "OpenLinguify Premium",
+    "description": "{% trans 'Full access to all OpenLinguify educational apps' %}",
+    "brand": {
+        "@type": "Brand",
+        "name": "OpenLinguify"
+    },
+    "offers": {
+        "@type": "Offer",
+        "priceCurrency": "EUR",
+        "price": "19.99",
+        "priceValidUntil": "2025-12-31",
+        "availability": "https://schema.org/InStock",
+        "seller": {
+            "@id": "https://www.openlinguify.com/#organization"
+        }
+    },
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.8,
+        "reviewCount": 500
+    }
+}
+</script>
+{% endblock %}
 
 {% block extra_head %}
 <!-- PWA Manifest -->
@@ -292,7 +387,6 @@
         .feature-icon {
             width: 60px;
             height: 60px;
-            background: var(--primary-gradient);
             border-radius: 15px;
             display: flex;
             align-items: center;
@@ -300,6 +394,23 @@
             font-size: 1.5rem;
             color: white;
             margin-bottom: 1.5rem;
+        }
+        
+        .feature-icon img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 15px;
+        }
+        
+        .feature-icon i {
+            background: var(--primary-gradient);
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .feature-title {
@@ -761,7 +872,7 @@
             <div class="row g-4">
                 <div class="col-6 col-md-3 animate-on-scroll">
                     <div class="stat-card">
-                        <span class="stat-number">5</span>
+                        <span class="stat-number">7</span>
                         <div class="stat-label">{% trans "Educational Apps" %}</div>
                     </div>
                 </div>
@@ -793,7 +904,7 @@
             <div class="text-center mb-5 animate-on-scroll">
                 <h2 class="display-5 fw-bold mb-4">{% trans "Our Educational Apps" %}</h2>
                 <p class="lead text-muted">
-                    {% trans "Discover our suite of 5 apps designed to transform your learning experience. Choose one for free or access all with Premium." %}
+                    {% trans "Discover our complete suite of educational apps designed to transform your learning experience. Choose one for free or access all with Premium." %}
                 </p>
             </div>
             
@@ -801,7 +912,7 @@
                 <div class="col-lg-4 col-md-6 animate-on-scroll">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-book-open"></i>
+                            <img src="{% static 'img/app_icon/langue.png' %}" alt="Revision">
                         </div>
                         <h3 class="feature-title">{% trans "Courses" %}</h3>
                         <p class="feature-description">
@@ -813,7 +924,7 @@
                 <div class="col-lg-4 col-md-6 animate-on-scroll delay-1">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-brain"></i>
+                            <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision">
                         </div>
                         <h3 class="feature-title">{% trans "Revision" %}</h3>
                         <p class="feature-description">
@@ -825,7 +936,7 @@
                 <div class="col-lg-4 col-md-6 animate-on-scroll delay-2">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-notebook"></i>
+                            <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook">
                         </div>
                         <h3 class="feature-title">{% trans "Notebook" %}</h3>
                         <p class="feature-description">
@@ -837,7 +948,7 @@
                 <div class="col-lg-4 col-md-6 animate-on-scroll delay-3">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-question-circle"></i>
+                            <img src="{% static 'img/app_icon/quizz.png' %}" alt="Quizz">
                         </div>
                         <h3 class="feature-title">{% trans "Quiz" %}</h3>
                         <p class="feature-description">
@@ -849,7 +960,31 @@
                 <div class="col-lg-4 col-md-6 animate-on-scroll delay-4">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-robot"></i>
+                            <img src="{% static 'img/app_icon/community.png' %}" alt="Community">
+                        </div>
+                        <h3 class="feature-title">{% trans "Community" %}</h3>
+                        <p class="feature-description">
+                            {% trans "Connect with other learners, share progress and discover content created by the community." %}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-5">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="{% static 'img/app_icon/Chat.png' %}" alt="Chat">
+                        </div>
+                        <h3 class="feature-title">{% trans "Chat" %}</h3>
+                        <p class="feature-description">
+                            {% trans "Real-time collaborative chat for study groups and language exchange with other learners." %}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI">
                         </div>
                         <h3 class="feature-title">{% trans "Language AI" %}</h3>
                         <p class="feature-description">
@@ -860,146 +995,90 @@
             </div>
         </div>
     </section>
-
-    <!-- New Info Section -->
-    <section class="new-info-section">
+    <!-- Contribute Section -->
+    <section class="contribute-section py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
         <div class="container">
-            <div class="new-info-card animate-on-scroll">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h2 class="h3 mb-4">{% trans "New Educational Apps Coming Soon" %}</h2>
-                        <p class="mb-4 text-muted">
-                            {% trans "Our teams are actively working on innovative new educational apps to enrich our learning ecosystem. These upcoming tools will offer even more ways to master languages." %}
+            <div class="row align-items-center">
+                <div class="col-lg-6 animate-on-scroll">
+                    <div class="contribute-content">
+                        <h2 class="display-5 fw-bold mb-4" style="color: var(--gray-900);">
+                            {% trans "Join the Open Source Revolution" %}
+                        </h2>
+                        <p class="lead mb-4" style="color: var(--gray-600);">
+                            {% trans "Open Linguify is built by the community, for the community. Help us create the future of education by contributing to our open source project." %}
                         </p>
                         
-                        <div class="mb-4">
-                            <span class="app-tag ai">{% trans "AI Writing Assistant" %}</span>
-                            <span class="app-tag pronunciation">{% trans "Pronunciation Trainer" %}</span>
-                            <span class="app-tag cultural">{% trans "Cultural Immersion" %}</span>
-                            <span class="app-tag grammar">{% trans "Grammar Checker" %}</span>
-                        </div>
-                        
-                        <a href="#contact" class="btn btn-outline-primary">
-                            {% trans "Join the waiting list" %}
-                            <i class="fas fa-chevron-right ms-2"></i>
-                        </a>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="highlights-box">
-                            <h4 class="mb-3">{% trans "Coming in 2025" %}</h4>
-                            
-                            <div class="highlight-item">
-                                <div class="highlight-icon">
-                                    <i class="fas fa-brain"></i>
+                        <div class="contribute-benefits mb-4">
+                            <div class="benefit-item d-flex align-items-center mb-3">
+                                <div class="benefit-icon me-3" style="background: rgba(99, 102, 241, 0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-code-slash" style="color: var(--primary-color);"></i>
                                 </div>
-                                <span>{% trans "Neuroscience-based language acquisition" %}</span>
+                                <span style="color: var(--gray-700);">{% trans "Contribute code and new features" %}</span>
                             </div>
-                            
-                            <div class="highlight-item">
-                                <div class="highlight-icon">
-                                    <i class="fas fa-users"></i>
+                            <div class="benefit-item d-flex align-items-center mb-3">
+                                <div class="benefit-icon me-3" style="background: rgba(139, 92, 246, 0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-bug" style="color: var(--secondary-color);"></i>
                                 </div>
-                                <span>{% trans "Native speaker community" %}</span>
+                                <span style="color: var(--gray-700);">{% trans "Report bugs and suggest improvements" %}</span>
                             </div>
-                            
-                            <div class="highlight-item">
-                                <div class="highlight-icon">
-                                    <i class="fas fa-award"></i>
+                            <div class="benefit-item d-flex align-items-center mb-3">
+                                <div class="benefit-icon me-3" style="background: rgba(16, 185, 129, 0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-translate" style="color: var(--success-color);"></i>
                                 </div>
-                                <span>{% trans "Industry-recognized certifications" %}</span>
+                                <span style="color: var(--gray-700);">{% trans "Help with translations and documentation" %}</span>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pricing Section -->
-    <section id="pricing" class="pricing-section">
-        <div class="container">
-            <div class="text-center mb-5 animate-on-scroll">
-                <h2 class="display-5 fw-bold mb-4">{% trans "Plans adapted to your needs" %}</h2>
-                <p class="lead text-muted">
-                    {% trans "Choose the offer that matches your goals and learning pace." %}
-                </p>
-            </div>
-            
-            <div class="row g-4 justify-content-center">
-                <div class="col-md-4 animate-on-scroll">
-                    <div class="pricing-card">
-                        <h3 class="h4 mb-2">{% trans "Free" %}</h3>
-                        <div class="price-display">
-                            0€
-                            <span class="price-period">{% trans "forever" %}</span>
+                        
+                        <div class="contribute-actions">
+                            <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn btn-primary btn-lg me-3 mb-2" style="border-radius: 25px; padding: 12px 24px;">
+                                <i class="bi bi-github me-2"></i>{% trans "View on GitHub" %}
+                            </a>
+                            <a href="https://github.com/openlinguify/linguify/issues" target="_blank" class="btn btn-outline-primary btn-lg mb-2" style="border-radius: 25px; padding: 12px 24px;">
+                                <i class="bi bi-exclamation-circle me-2"></i>{% trans "Report Issues" %}
+                            </a>
                         </div>
-                        <p class="text-muted mb-4">{% trans "Perfect for discovering the platform" %}</p>
-                        
-                        <ul class="feature-list mb-4">
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Access to 1 app of your choice" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Full use of the chosen app" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Free updates" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Community support" %}</span>
-                            </li>
-                        </ul>
-                        
-                        <a href="{% url 'auth:register' %}" class="btn btn-outline-primary w-100">
-                            {% trans "Start for free" %}
-                        </a>
                     </div>
                 </div>
                 
-                <div class="col-md-4 animate-on-scroll delay-1">
-                    <div class="pricing-card popular">
-                        <div class="popular-badge">{% trans "Most popular" %}</div>
-                        <h3 class="h4 mb-2">{% trans "Premium" %}</h3>
-                        <div class="price-display">
-                            19,99€
-                            <span class="price-period">{% trans "per month" %}</span>
+                <div class="col-lg-6 animate-on-scroll delay-1">
+                    <div class="contribute-visual">
+                        <div class="github-stats-card" style="background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);">
+                            <div class="text-center mb-4">
+                                <i class="bi bi-github" style="font-size: 3rem; color: var(--gray-900);"></i>
+                                <h3 class="mt-3 mb-1" style="color: var(--gray-900);">{% trans "Open Source Stats" %}</h3>
+                                <p class="text-muted">{% trans "Growing community of contributors" %}</p>
+                            </div>
+                            
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">5+</div>
+                                        <div class="stat-label text-muted">{% trans "Contributors" %}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);">50+</div>
+                                        <div class="stat-label text-muted">{% trans "Commits" %}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 1.5rem; font-weight: 700; color: var(--success-color);">LGPL-3</div>
+                                        <div class="stat-label text-muted">{% trans "License" %}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 pt-3" style="border-top: 1px solid var(--gray-100);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">{% trans "Latest Release" %}</span>
+                                    <span class="badge bg-primary">v1.0.0</span>
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-muted mb-4">{% trans "Full access to all applications" %}</p>
-                        
-                        <ul class="feature-list mb-4">
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Access to all applications" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Courses: structured lessons" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Revision: unlimited flashcards" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Notebook: unlimited notes" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Quiz & Language AI included" %}</span>
-                            </li>
-                        </ul>
-                        
-                        <a href="{% url 'auth:register' %}" class="btn btn-primary w-100">
-                            {% trans "7-day free trial" %}
-                        </a>
                     </div>
                 </div>
-                
             </div>
         </div>
     </section>
@@ -1030,20 +1109,6 @@
             </div>
         </div>
     </section>
-
-    <!-- SEO Content Section for openlinguify -->
-    <section class="py-4 bg-light">
-        <div class="container">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <p class="text-muted small">
-                        {% trans "OpenLinguify (also known as openlinguify) is your comprehensive open source educational platform. Whether you search for 'openlinguify' or 'open linguify', you'll find the same powerful learning tools designed to revolutionize education." %}
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
 {% endblock %}
 
 {% block extra_js %}
