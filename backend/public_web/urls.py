@@ -17,6 +17,7 @@ urlpatterns = [
     path('about/', views.AboutView.as_view(), name='about'),
     path('blog/', views.BlogView.as_view(), name='blog'),
     path('contact/', views.ContactView.as_view(), name='contact'),
+    path('report-bug/', views.ReportBugView.as_view(), name='report_bug'),
     
     # SEO brand variations - all redirect to main landing
     path('openlinguify/', RedirectView.as_view(pattern_name='public_web:landing', permanent=True), name='openlinguify_redirect'),
@@ -44,12 +45,9 @@ urlpatterns = [
     # Apps section - dynamic system
     path('apps/', views.DynamicAppsListView.as_view(), name='apps'),
     
-    # Legacy app URLs - redirect to dynamic system (MUST be before dynamic pattern)
-    path('apps/courses/', RedirectView.as_view(url='/apps/course/', permanent=True), name='legacy_courses_redirect'),
-    path('apps/revision/', RedirectView.as_view(url='/apps/revision/', permanent=True), name='legacy_revision_redirect'),
-    path('apps/notebook/', RedirectView.as_view(url='/apps/notebook/', permanent=True), name='legacy_notebook_redirect'),
-    path('apps/quizz/', RedirectView.as_view(url='/apps/quizz/', permanent=True), name='legacy_quizz_redirect'),
-    path('apps/language-ai/', RedirectView.as_view(url='/apps/language_ai/', permanent=True), name='legacy_language_ai_redirect'),
+    # Legacy app URLs - redirect to dynamic system (MUST be before dynamic pattern)  
+    path('apps/courses/', RedirectView.as_view(pattern_name='public_web:dynamic_app_detail', permanent=True), {'app_slug': 'course'}, name='legacy_courses_redirect'),
+    # Remove self-redirecting URLs - these are handled by the dynamic pattern below
     
     # Dynamic app detail (MUST be after legacy redirects)
     path('apps/<slug:app_slug>/', views.DynamicAppDetailView.as_view(), name='dynamic_app_detail'),
@@ -71,9 +69,6 @@ seo_patterns = [
     # Common educational platform searches
     path('learning-platform/', RedirectView.as_view(pattern_name='public_web:features', permanent=True), name='learning_platform_redirect'),
     path('language-learning/', RedirectView.as_view(pattern_name='public_web:features', permanent=True), name='language_learning_redirect'),
-    path('ai-tutor/', RedirectView.as_view(url='/apps/language_ai/', permanent=True), name='ai_tutor_redirect'),
-    path('flashcards/', RedirectView.as_view(url='/apps/revision/', permanent=True), name='flashcards_redirect'),
-    path('quiz/', RedirectView.as_view(url='/apps/quizz/', permanent=True), name='quiz_redirect'),
     
     # Common variations for apps page
     path('applications/', RedirectView.as_view(pattern_name='public_web:apps', permanent=True), name='applications_redirect'),

@@ -110,9 +110,9 @@ LOGGING = {
     },
 }
 
-# Disable i18n for faster tests
-USE_I18N = False
-USE_L10N = False
+# Enable i18n for testing language-prefixed URLs
+USE_I18N = True
+USE_L10N = True
 
 # Remove whitenoise middleware for tests to avoid import errors
 MIDDLEWARE = [m for m in MIDDLEWARE if 'whitenoise' not in m.lower()]
