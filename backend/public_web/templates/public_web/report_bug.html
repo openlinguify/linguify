@@ -1,0 +1,126 @@
+{% extends 'public_web/public_base.html' %}
+{% load i18n %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary">{% trans "Report a Bug" %}</h1>
+                <p class="lead text-muted">{% trans "Help us improve Open Linguify by reporting bugs and issues" %}</p>
+            </div>
+            
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    {% if success %}
+                        <div class="alert alert-success d-flex align-items-center" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <div>{{ success }}</div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="{% url 'public_web:landing' %}" class="btn btn-primary">{% trans "Back to Home" %}</a>
+                        </div>
+                    {% else %}
+                        {% if error %}
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <div>{{ error }}</div>
+                            </div>
+                        {% endif %}
+                        
+                        <form method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="name" class="form-label">{% trans "Name" %} <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="name" name="name" value="{{ name|default:'' }}" required>
+                                    <div class="invalid-feedback">
+                                        {% trans "Please provide your name." %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">{% trans "Email" %} <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="email" name="email" value="{{ email|default:'' }}" required>
+                                    <div class="invalid-feedback">
+                                        {% trans "Please provide a valid email address." %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">{% trans "Subject" %} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="subject" name="subject" value="{{ subject|default:'' }}" placeholder="{% trans 'Brief description of the issue' %}" required>
+                                <div class="invalid-feedback">
+                                    {% trans "Please provide a subject for your bug report." %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">{% trans "Description" %} <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="description" name="description" rows="6" placeholder="{% trans 'Detailed description of the bug, including steps to reproduce it' %}" required>{{ description|default:'' }}</textarea>
+                                <div class="invalid-feedback">
+                                    {% trans "Please provide a detailed description of the bug." %}
+                                </div>
+                                <div class="form-text">
+                                    {% trans "Please include steps to reproduce the issue, expected behavior, and actual behavior." %}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="url" class="form-label">{% trans "Page URL (optional)" %}</label>
+                                    <input type="url" class="form-control" id="url" name="url" value="{{ url|default:'' }}" placeholder="{% trans 'URL where the issue occurred' %}">
+                                    <div class="form-text">
+                                        {% trans "URL of the page where you encountered the issue" %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="browser" class="form-label">{% trans "Browser (optional)" %}</label>
+                                    <input type="text" class="form-control" id="browser" name="browser" value="{{ browser|default:'' }}" placeholder="{% trans 'e.g., Chrome 120, Firefox 121, Safari 17' %}">
+                                    <div class="form-text">
+                                        {% trans "Browser name and version" %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                {% trans "Your bug report will be sent directly to our development team. We appreciate your help in making Open Linguify better!" %}
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="{% url 'public_web:landing' %}" class="btn btn-outline-secondary me-md-2">{% trans "Cancel" %}</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send me-2"></i>{% trans "Send Bug Report" %}
+                                </button>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Bootstrap validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
+{% endblock %}

@@ -23,8 +23,6 @@
                 <ul class="list-unstyled">
                     <li><a href="{% url 'public_web:features' %}">{% trans "Features" %}</a></li>
                     <li><a href="{% url 'public_web:apps' %}">{% trans "Apps" %}</a></li>
-                    <li><a href="#">{% trans "Pricing" %}</a></li>
-                    <li><a href="#">{% trans "Roadmap" %}</a></li>
                 </ul>
             </div>
             
@@ -32,9 +30,7 @@
                 <h6 class="text-white mb-3">{% trans "Resources" %}</h6>
                 <ul class="list-unstyled">
                     <li><a href="{% url 'public_web:blog' %}">{% trans "Blog" %}</a></li>
-                    <li><a href="#">{% trans "Documentation" %}</a></li>
-                    <li><a href="#">{% trans "API" %}</a></li>
-                    <li><a href="#">{% trans "Community" %}</a></li>
+                    <li><a href="https://github.com/openlinguify/linguify" target="_blank">{% trans "Contribute" %}</a></li>
                 </ul>
             </div>
             
@@ -42,8 +38,8 @@
                 <h6 class="text-white mb-3">{% trans "Company" %}</h6>
                 <ul class="list-unstyled">
                     <li><a href="{% url 'public_web:about' %}">{% trans "About" %}</a></li>
+                    <li><a href="{% url 'public_web:brand' %}">{% trans "Brand" %}</a></li>
                     <li><a href="/careers/">{% trans "Careers" %}</a></li>
-                    <li><a href="#">{% trans "Press" %}</a></li>
                     <li><a href="{% url 'public_web:contact' %}">{% trans "Contact" %}</a></li>
                 </ul>
             </div>
@@ -51,9 +47,7 @@
             <div class="col-lg-2 col-md-4 mb-4">
                 <h6 class="text-white mb-3">{% trans "Support" %}</h6>
                 <ul class="list-unstyled">
-                    <li><a href="#">{% trans "Help Center" %}</a></li>
-                    <li><a href="#">{% trans "Status" %}</a></li>
-                    <li><a href="#">{% trans "Report a bug" %}</a></li>
+                    <li><a href="{% url 'public_web:report_bug' %}">{% trans "Report a bug" %}</a></li>
                     <li><a href="{% url 'public_web:contact' %}">{% trans "Contact us" %}</a></li>
                 </ul>
             </div>

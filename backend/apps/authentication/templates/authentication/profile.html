@@ -603,7 +603,7 @@
                         <i class="bi bi-graph-up-arrow me-2 text-primary"></i>
                         {% trans "Learning Overview" %}
                     </h3>
-                    <a href="{% url 'learning:dashboard' %}" class="section-action">{% trans "View dashboard" %}</a>
+                    <a href="{% url 'course:dashboard' %}" class="section-action">{% trans "View dashboard" %}</a>
                 </div>
                 
                 <div class="row g-3">
@@ -654,7 +654,7 @@
 
                 <div class="mt-4 row g-2">
                     <div class="col">
-                        <a href="{% url 'learning:dashboard' %}" class="btn btn-primary w-100">
+                        <a href="{% url 'course:dashboard' %}" class="btn btn-primary w-100">
                             <i class="bi bi-play-circle me-1"></i>
                             {% trans "Continue Learning" %}
                         </a>
@@ -678,7 +678,7 @@
             <div class="progress-section">
                 <div class="section-header">
                     <h3 class="section-title">{% trans "Language Progress" %}</h3>
-                    <a href="{% url 'learning:dashboard' %}" class="section-action">{% trans "View details" %}</a>
+                    <a href="{% url 'course:dashboard' %}" class="section-action">{% trans "View details" %}</a>
                 </div>
                 <div class="language-progress">
                     {% for lang in language_progress %}

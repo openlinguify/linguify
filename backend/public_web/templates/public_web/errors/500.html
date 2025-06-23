@@ -1,0 +1,46 @@
+{% extends 'public_web/public_base.html' %}
+
+{% block title %}Server Error - Open Linguify{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h1 class="display-1">500</h1>
+                <h2 class="mb-4">Internal Server Error</h2>
+                <p class="lead mb-4">
+                    We're experiencing some technical difficulties. Please try again later.
+                </p>
+                <div class="error-actions">
+                    <a href="{% url 'public_web:landing' %}" class="btn btn-primary btn-lg me-3">
+                        Go to Homepage
+                    </a>
+                    <a href="{% url 'public_web:report_bug' %}" class="btn btn-outline-secondary btn-lg">
+                        Report Issue
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-page {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    padding: 2rem 0;
+}
+
+.display-1 {
+    font-size: 8rem;
+    font-weight: 300;
+    color: #dc3545;
+}
+
+.error-actions .btn {
+    min-width: 150px;
+}
+</style>
+{% endblock %}

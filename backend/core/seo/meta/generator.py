@@ -15,6 +15,7 @@ class SEOMetaGenerator:
     
     DEFAULT_IMAGE = "https://www.openlinguify.com/static/images/og-default.png"
     SITE_NAME = "OpenLinguify"
+    SITE_NAME_ALT = "Open Linguify"
     TWITTER_HANDLE = "@openlinguify"
     
     @classmethod
