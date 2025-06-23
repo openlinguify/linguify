@@ -222,6 +222,13 @@ msgstr "Aller au Dashboard"
 msgid "My Notes"
 msgstr "Mes Notes"
 
+# Auth buttons
+msgid "Log In"
+msgstr "Connexion"
+
+msgid "Sign Up"
+msgstr "S'inscrire"
+
 # Footer content
 msgid "Open source educational apps platform: memorization, flashcards, notes, quizzes and collaborative chat."
 msgstr "Plateforme d'applications éducatives open source : mémorisation, flashcards, notes, quiz et chat collaboratif."

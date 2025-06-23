@@ -994,95 +994,90 @@
             </div>
         </div>
     </section>
-    
-    <!-- Pricing Section -->
-    <section id="pricing" class="pricing-section">
+    <!-- Contribute Section -->
+    <section class="contribute-section py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
         <div class="container">
-            <div class="text-center mb-5 animate-on-scroll">
-                <h2 class="display-5 fw-bold mb-4">{% trans "Plans adapted to your needs" %}</h2>
-                <p class="lead text-muted">
-                    {% trans "Choose the offer that matches your goals and learning pace." %}
-                </p>
-            </div>
-            
-            <div class="row g-4 justify-content-center">
-                <div class="col-md-4 animate-on-scroll">
-                    <div class="pricing-card">
-                        <h3 class="h4 mb-2">{% trans "Free" %}</h3>
-                        <div class="price-display">
-                            0€
-                            <span class="price-period">{% trans "forever" %}</span>
+            <div class="row align-items-center">
+                <div class="col-lg-6 animate-on-scroll">
+                    <div class="contribute-content">
+                        <h2 class="display-5 fw-bold mb-4" style="color: var(--gray-900);">
+                            {% trans "Join the Open Source Revolution" %}
+                        </h2>
+                        <p class="lead mb-4" style="color: var(--gray-600);">
+                            {% trans "Open Linguify is built by the community, for the community. Help us create the future of education by contributing to our open source project." %}
+                        </p>
+                        
+                        <div class="contribute-benefits mb-4">
+                            <div class="benefit-item d-flex align-items-center mb-3">
+                                <div class="benefit-icon me-3" style="background: rgba(99, 102, 241, 0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-code-slash" style="color: var(--primary-color);"></i>
+                                </div>
+                                <span style="color: var(--gray-700);">{% trans "Contribute code and new features" %}</span>
+                            </div>
+                            <div class="benefit-item d-flex align-items-center mb-3">
+                                <div class="benefit-icon me-3" style="background: rgba(139, 92, 246, 0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-bug" style="color: var(--secondary-color);"></i>
+                                </div>
+                                <span style="color: var(--gray-700);">{% trans "Report bugs and suggest improvements" %}</span>
+                            </div>
+                            <div class="benefit-item d-flex align-items-center mb-3">
+                                <div class="benefit-icon me-3" style="background: rgba(16, 185, 129, 0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-translate" style="color: var(--success-color);"></i>
+                                </div>
+                                <span style="color: var(--gray-700);">{% trans "Help with translations and documentation" %}</span>
+                            </div>
                         </div>
-                        <p class="text-muted mb-4">{% trans "Perfect for discovering the platform" %}</p>
                         
-                        <ul class="feature-list mb-4">
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Access to 1 app of your choice" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Full use of the chosen app" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Free updates" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Community support" %}</span>
-                            </li>
-                        </ul>
-                        
-                        <a href="{% url 'auth:register' %}" class="btn btn-outline-primary w-100">
-                            {% trans "Start for free" %}
-                        </a>
+                        <div class="contribute-actions">
+                            <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn btn-primary btn-lg me-3 mb-2" style="border-radius: 25px; padding: 12px 24px;">
+                                <i class="bi bi-github me-2"></i>{% trans "View on GitHub" %}
+                            </a>
+                            <a href="https://github.com/openlinguify/linguify/issues" target="_blank" class="btn btn-outline-primary btn-lg mb-2" style="border-radius: 25px; padding: 12px 24px;">
+                                <i class="bi bi-exclamation-circle me-2"></i>{% trans "Report Issues" %}
+                            </a>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="col-md-4 animate-on-scroll delay-1">
-                    <div class="pricing-card popular">
-                        <div class="popular-badge">{% trans "Most popular" %}</div>
-                        <h3 class="h4 mb-2">{% trans "Premium" %}</h3>
-                        <div class="price-display">
-                            19,99€
-                            <span class="price-period">{% trans "per month" %}</span>
+                <div class="col-lg-6 animate-on-scroll delay-1">
+                    <div class="contribute-visual">
+                        <div class="github-stats-card" style="background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);">
+                            <div class="text-center mb-4">
+                                <i class="bi bi-github" style="font-size: 3rem; color: var(--gray-900);"></i>
+                                <h3 class="mt-3 mb-1" style="color: var(--gray-900);">{% trans "Open Source Stats" %}</h3>
+                                <p class="text-muted">{% trans "Growing community of contributors" %}</p>
+                            </div>
+                            
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">5+</div>
+                                        <div class="stat-label text-muted">{% trans "Contributors" %}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);">50+</div>
+                                        <div class="stat-label text-muted">{% trans "Commits" %}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 1.5rem; font-weight: 700; color: var(--success-color);">LGPL-3</div>
+                                        <div class="stat-label text-muted">{% trans "License" %}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 pt-3" style="border-top: 1px solid var(--gray-100);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">{% trans "Latest Release" %}</span>
+                                    <span class="badge bg-primary">v1.0.0</span>
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-muted mb-4">{% trans "Full access to all applications" %}</p>
-                        
-                        <ul class="feature-list mb-4">
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Access to all applications" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Courses: structured lessons" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Revision: unlimited flashcards" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Notebook: unlimited notes" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Quiz, Community & Chat included" %}</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-check feature-check"></i>
-                                <span>{% trans "Language AI assistant" %}</span>
-                            </li>
-                        </ul>
-                        
-                        <a href="{% url 'auth:register' %}" class="btn btn-primary w-100">
-                            {% trans "7-day free trial" %}
-                        </a>
                     </div>
                 </div>
-                
             </div>
         </div>
     </section>

@@ -15,6 +15,7 @@ from django.core.cache import cache
 from django.utils.cache import get_cache_key
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
+from django.core.mail import send_mail
 from datetime import datetime, timedelta
 import logging
 
@@ -133,6 +134,87 @@ class ContactView(BaseSEOView):
     page_title = 'Contact - Open Linguify Support & Information'
     meta_description = 'Contact the Open Linguify team for support, partnerships, or questions about our educational platform.'
     meta_keywords = 'contact, support, partnerships, help, customer service'
+
+
+class ReportBugView(View):
+    """Page pour signaler un bug avec envoi d'email"""
+    
+    def get(self, request):
+        context = {
+            'title': _('Report a Bug - Open Linguify'),
+            'meta_description': _('Report bugs and issues with Open Linguify platform to help us improve your experience.'),
+            'meta_keywords': _('bug report, issues, support, help, feedback'),
+        }
+        return render(request, 'public_web/report_bug.html', context)
+    
+    def post(self, request):
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        description = request.POST.get('description', '').strip()
+        url = request.POST.get('url', '').strip()
+        browser = request.POST.get('browser', '').strip()
+        
+        if not all([name, email, subject, description]):
+            context = {
+                'title': _('Report a Bug - Open Linguify'),
+                'error': _('Please fill in all required fields.'),
+                'name': name,
+                'email': email,
+                'subject': subject,
+                'description': description,
+                'url': url,
+                'browser': browser,
+            }
+            return render(request, 'public_web/report_bug.html', context)
+        
+        try:
+            email_subject = f'[Bug Report] {subject}'
+            email_body = f"""
+New bug report from Open Linguify:
+
+Name: {name}
+Email: {email}
+Subject: {subject}
+
+Description:
+{description}
+
+Additional Information:
+URL: {url or 'Not provided'}
+Browser: {browser or 'Not provided'}
+User IP: {request.META.get('REMOTE_ADDR', 'Unknown')}
+User Agent: {request.META.get('HTTP_USER_AGENT', 'Unknown')}
+Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+"""
+            
+            send_mail(
+                subject=email_subject,
+                message=email_body,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=['louisphilippelalou@outlook.com'],
+                fail_silently=False,
+            )
+            
+            context = {
+                'title': _('Bug Report Sent - Open Linguify'),
+                'success': _('Thank you for your bug report. We will review it and get back to you if needed.'),
+            }
+            return render(request, 'public_web/report_bug.html', context)
+            
+        except Exception as e:
+            logger.error(f"Failed to send bug report email: {e}")
+            context = {
+                'title': _('Report a Bug - Open Linguify'),
+                'error': _('An error occurred while sending your report. Please try again later.'),
+                'name': name,
+                'email': email,
+                'subject': subject,
+                'description': description,
+                'url': url,
+                'browser': browser,
+            }
+            return render(request, 'public_web/report_bug.html', context)
 
 
 # Legal Pages - Cache plus long car rarement modifiées

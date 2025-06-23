@@ -159,3 +159,10 @@ msgstr "Invalid username or password."
 
 msgid "Welcome, %(username)s!"
 msgstr "Welcome, %(username)s!"
+
+# Auth buttons
+msgid "Log In"
+msgstr "Log In"
+
+msgid "Sign Up"
+msgstr "Sign Up"

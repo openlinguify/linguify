@@ -145,5 +145,6 @@
       "Bash(poetry:*)"
     ],
     "deny": []
-  }
+  },
+  "enableAllProjectMcpServers": false
 }

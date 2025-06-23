@@ -4,55 +4,55 @@
 {% load app_tags %}
 
 <style>
-/* Styles supprimés - on utilise maintenant les images PNG */
+    /* Styles supprimés - on utilise maintenant les images PNG */
 
-/* Language dropdown styling */
-.language-dropdown {
-    max-height: 400px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #6c757d #f8f9fa;
-    border-radius: 0.375rem !important;
-    z-index: 9999 !important;
-}
+    /* Language dropdown styling */
+    .language-dropdown {
+        max-height: 400px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #6c757d #f8f9fa;
+        border-radius: 0.375rem !important;
+        z-index: 9999 !important;
+    }
 
-/* Fix dropdown z-index issues */
-.dropdown-menu {
-    z-index: 99999 !important;
-    position: absolute !important;
-}
+    /* Fix dropdown z-index issues */
+    .dropdown-menu {
+        z-index: 99999 !important;
+        position: absolute !important;
+    }
 
-.navbar .dropdown {
-    z-index: 99999 !important;
-    position: relative !important;
-}
+    .navbar .dropdown {
+        z-index: 99999 !important;
+        position: relative !important;
+    }
 
-.navbar {
-    z-index: 99999 !important;
-}
+    .navbar {
+        z-index: 99999 !important;
+    }
 
-/* Override any sticky elements that might interfere */
-.sticky-top {
-    z-index: 1000 !important;
-}
+    /* Override any sticky elements that might interfere */
+    .sticky-top {
+        z-index: 1000 !important;
+    }
 
-.language-dropdown::-webkit-scrollbar {
-    width: 6px;
-}
+    .language-dropdown::-webkit-scrollbar {
+        width: 6px;
+    }
 
-.language-dropdown::-webkit-scrollbar-track {
-    background: #f8f9fa;
-    border-radius: 3px;
-}
+    .language-dropdown::-webkit-scrollbar-track {
+        background: #f8f9fa;
+        border-radius: 3px;
+    }
 
-.language-dropdown::-webkit-scrollbar-thumb {
-    background: #6c757d;
-    border-radius: 3px;
-}
+    .language-dropdown::-webkit-scrollbar-thumb {
+        background: #6c757d;
+        border-radius: 3px;
+    }
 
-.language-dropdown::-webkit-scrollbar-thumb:hover {
-    background: #495057;
-}
+    .language-dropdown::-webkit-scrollbar-thumb:hover {
+        background: #495057;
+    }
 </style>
 <header class="public-header">
     <nav class="navbar navbar-expand-lg">
@@ -60,12 +60,12 @@
             <a class="navbar-brand" href="{% url 'public_web:landing' %}">
                 Open Linguify
             </a>
-            
+
             <!-- Mobile menu toggle -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
+
             <!-- Navigation -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
@@ -80,81 +80,95 @@
                             {% dynamic_apps_dropdown %}
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'public_web:about' %}">{% trans "About" %}</a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'public_web:blog' %}">{% trans "Blog" %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'public_web:about' %}">{% trans "About" %}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'public_web:contact' %}">{% trans "Contact" %}</a>
                     </li>
                 </ul>
-                
+
                 <!-- Language selector -->
                 {% load i18n %}
                 <div class="dropdown me-3">
-                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
+                        data-bs-toggle="dropdown">
                         {% get_current_language as LANGUAGE_CODE %}
-                        {% if LANGUAGE_CODE == 'fr' %}<img src="{% static 'img/country_flags/fr.png' %}" alt="France" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'en' %}<img src="{% static 'img/country_flags/gb.png' %}" alt="United Kingdom" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'es' %}<img src="{% static 'img/country_flags/es.png' %}" alt="Spain" style="width: 20px; height: auto;" class="me-1">
-                        {% elif LANGUAGE_CODE == 'nl' %}<img src="{% static 'img/country_flags/nl.png' %}" alt="Netherlands" style="width: 20px; height: auto;" class="me-1">
-                        {% else %}<img src="{% static 'img/country_flags/gb.png' %}" alt="United Kingdom" style="width: 20px; height: auto;" class="me-1">{% endif %}
+                        {% if LANGUAGE_CODE == 'fr' %}<img src="{% static 'img/country_flags/fr.png' %}" alt="France"
+                            style="width: 20px; height: auto;" class="me-1">
+                        {% elif LANGUAGE_CODE == 'en' %}<img src="{% static 'img/country_flags/gb.png' %}"
+                            alt="United Kingdom" style="width: 20px; height: auto;" class="me-1">
+                        {% elif LANGUAGE_CODE == 'es' %}<img src="{% static 'img/country_flags/es.png' %}" alt="Spain"
+                            style="width: 20px; height: auto;" class="me-1">
+                        {% elif LANGUAGE_CODE == 'nl' %}<img src="{% static 'img/country_flags/nl.png' %}"
+                            alt="Netherlands" style="width: 20px; height: auto;" class="me-1">
+                        {% else %}<img src="{% static 'img/country_flags/gb.png' %}" alt="United Kingdom"
+                            style="width: 20px; height: auto;" class="me-1">{% endif %}
                     </button>
                     <ul class="dropdown-menu language-dropdown">
                         <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">
-                            <img src="{% static 'img/country_flags/gb.png' %}" alt="UK" style="width: 20px; height: auto;" class="me-2"> English
-                        </a></li>
+                                <img src="{% static 'img/country_flags/gb.png' %}" alt="UK"
+                                    style="width: 20px; height: auto;" class="me-2"> English
+                            </a></li>
                         <li><a class="dropdown-item" href="#" onclick="setLanguage('fr')">
-                            <img src="{% static 'img/country_flags/fr.png' %}" alt="France" style="width: 20px; height: auto;" class="me-2"> Français
-                        </a></li>
+                                <img src="{% static 'img/country_flags/fr.png' %}" alt="France"
+                                    style="width: 20px; height: auto;" class="me-2"> Français
+                            </a></li>
                         <li><a class="dropdown-item" href="#" onclick="setLanguage('es')">
-                            <img src="{% static 'img/country_flags/es.png' %}" alt="Spain" style="width: 20px; height: auto;" class="me-2"> Español
-                        </a></li>
+                                <img src="{% static 'img/country_flags/es.png' %}" alt="Spain"
+                                    style="width: 20px; height: auto;" class="me-2"> Español
+                            </a></li>
                         <li><a class="dropdown-item" href="#" onclick="setLanguage('nl')">
-                            <img src="{% static 'img/country_flags/nl.png' %}" alt="Netherlands" style="width: 20px; height: auto;" class="me-2"> Nederlands
-                        </a></li>
+                                <img src="{% static 'img/country_flags/nl.png' %}" alt="Netherlands"
+                                    style="width: 20px; height: auto;" class="me-2"> Nederlands
+                            </a></li>
                     </ul>
                 </div>
-                
+
                 <!-- Auth buttons -->
                 <div class="d-flex align-items-center gap-2">
                     {% if user.is_authenticated %}
-                        <!-- Si l'utilisateur est connecté, bouton vers le dashboard -->
-                        <a href="{% url 'saas_web:dashboard' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                        </a>
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                {% if user.get_profile_picture_url %}
-                                    <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil" style="width: 20px; height: 20px; object-fit: cover; border-radius: 50%; margin-right: 8px;">
-                                {% else %}
-                                    <i class="bi bi-person-circle me-2"></i>
-                                {% endif %}
-                                {{ user.username|default:"Utilisateur" }}
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="/profile/">
+                    <!-- Si l'utilisateur est connecté, bouton vers le dashboard -->
+                    <a href="{% url 'saas_web:dashboard' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            {% if user.get_profile_picture_url %}
+                            <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil"
+                                style="width: 20px; height: 20px; object-fit: cover; border-radius: 50%; margin-right: 8px;">
+                            {% else %}
+                            <i class="bi bi-person-circle me-2"></i>
+                            {% endif %}
+                            {{ user.username|default:"Utilisateur" }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/profile/">
                                     <i class="bi bi-person me-2"></i>Mon profil
                                 </a></li>
-                                <li><a class="dropdown-item" href="{% url 'saas_web:settings' %}">
+                            <li><a class="dropdown-item" href="{% url 'saas_web:settings' %}">
                                     <i class="bi bi-gear me-2"></i>Paramètres
                                 </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="{% url 'auth:logout' %}">
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'auth:logout' %}">
                                     <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
                                 </a></li>
-                            </ul>
-                        </div>
+                        </ul>
+                    </div>
                     {% else %}
-                        <!-- Si l'utilisateur n'est pas connecté -->
-                        <a href="{% url 'auth:login' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Connexion
-                        </a>
-                        <a href="{% url 'auth:register' %}" class="btn btn-primary">
-                            <i class="bi bi-person-plus me-2"></i>S'inscrire
-                        </a>
+                    <!-- Si l'utilisateur n'est pas connecté -->
+                    <a href="{% url 'auth:login' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Log In" %}
+                    </a>
+                    <a href="{% url 'auth:register' %}" class="btn btn-primary">
+                        <i class="bi bi-person-plus me-2"></i>{% trans "Sign Up" %}
+                    </a>
                     {% endif %}
                 </div>
             </div>
