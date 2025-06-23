@@ -24,6 +24,7 @@ from .widgets import AdminJSONFormField
 from .admin_filters import PairsStatusFilter, PairsCountRangeFilter
 from .models import (
     Unit, 
+    Chapter,
     Lesson, 
     ContentLesson, 
     TheoryContent,
@@ -47,13 +48,39 @@ class LessonInline(admin.TabularInline):
     fields = ('title_en', 'lesson_type', 'estimated_duration', 'order')
     ordering = ('order',)
 
+class ChapterInline(admin.TabularInline):
+    model = Chapter
+    extra = 0
+    show_change_link = True
+    fields = ('title_en', 'theme', 'style', 'order', 'points_reward', 'is_checkpoint_required')
+    ordering = ('order',)
+
+@admin.register(Chapter)
+class ChapterAdmin(admin.ModelAdmin):
+    list_display = ('id', 'get_title', 'unit', 'theme', 'style', 'order', 'points_reward', 'lesson_count', 'is_checkpoint_required')
+    list_filter = ('unit', 'style', 'is_checkpoint_required', 'theme')
+    search_fields = ('title_en', 'title_fr', 'title_es', 'title_nl', 'theme')
+    ordering = ('unit__order', 'order')
+    inlines = [LessonInline]
+    
+    def get_title(self, obj):
+        return f"{obj.title_en} | {obj.title_fr}"
+    get_title.short_description = 'Title'
+    
+    def lesson_count(self, obj):
+        count = obj.lessons.count()
+        return format_html('<span style="color: {};">{}</span>', 
+                          'green' if count > 0 else 'red', 
+                          f"{count} lessons")
+    lesson_count.short_description = 'Lessons'
+
 @admin.register(Unit)
 class UnitAdmin(admin.ModelAdmin):
     list_display = ('id', 'get_title', 'level', 'order', 'lesson_count')
     list_filter = ('level', )
     search_fields = ('title_en', 'title_fr', 'title_es', 'title_nl')
     ordering = ('order', 'id')
-    inlines = [LessonInline]
+    inlines = [ChapterInline, LessonInline]
     
     def get_title(self, obj):
         return f"{obj.title_en} | {obj.title_fr}"
@@ -879,6 +906,7 @@ class LessonAdmin(admin.ModelAdmin):
         'id', 
         'get_title', 
         'get_unit_with_level',
+        'chapter',
         'lesson_type', 
         # 'get_professional_field',  # Champ supprimé lors de la refactorisation 
         'get_languages_status',
@@ -892,6 +920,7 @@ class LessonAdmin(admin.ModelAdmin):
         'unit__level',  # Filtre simple par niveau
         'lesson_type',
         'unit',
+        'chapter',
         # 'professional_field',  # Champ supprimé lors de la refactorisation
         'estimated_duration',
     )

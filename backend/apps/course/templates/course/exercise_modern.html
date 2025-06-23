@@ -1,0 +1,250 @@
+{% extends "course/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ exercise.title }} - Exercice{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'course/css/learning-optimized.css' %}" rel="stylesheet">
+<link href="{% static 'course/css/exercise-interactive.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="exercise-container">
+    <!-- Exercise Header -->
+    <div class="exercise-header">
+        <div class="exercise-nav">
+            <button class="btn btn-icon" onclick="goBack()">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <nav class="breadcrumb-nav">
+                <span class="breadcrumb-item">{{ chapter.unit.title }}</span>
+                <i class="bi bi-chevron-right"></i>
+                <span class="breadcrumb-item">{{ chapter.title }}</span>
+                <i class="bi bi-chevron-right"></i>
+                <span class="breadcrumb-item active">{{ exercise.title }}</span>
+            </nav>
+        </div>
+        
+        <div class="exercise-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="exerciseProgress" style="width: 0%"></div>
+            </div>
+            <span class="progress-text" id="progressText">0/{{ total_questions }}</span>
+        </div>
+        
+        <div class="exercise-meta">
+            <span class="exercise-type">{{ exercise.exercise_type|capfirst }}</span>
+            <span class="exercise-points">+{{ exercise.points|default:10 }} XP</span>
+        </div>
+    </div>
+    
+    <!-- Exercise Content -->
+    <main class="exercise-main">
+        <div class="exercise-content" id="exerciseContent">
+            <!-- Content will be loaded dynamically based on exercise type -->
+        </div>
+        
+        <!-- Exercise Controls -->
+        <div class="exercise-controls">
+            <button class="btn btn-secondary" id="skipBtn" onclick="skipQuestion()" style="display: none;">
+                <i class="bi bi-skip-forward"></i>
+                Passer
+            </button>
+            
+            <div class="control-center">
+                <button class="btn btn-primary btn-lg" id="checkBtn" onclick="checkAnswer()" disabled>
+                    <i class="bi bi-check-circle"></i>
+                    Vérifier
+                </button>
+                
+                <button class="btn btn-success btn-lg" id="continueBtn" onclick="nextQuestion()" style="display: none;">
+                    <i class="bi bi-arrow-right"></i>
+                    Continuer
+                </button>
+            </div>
+            
+            <button class="btn btn-outline-secondary" id="hintBtn" onclick="showHint()">
+                <i class="bi bi-lightbulb"></i>
+                Indice
+            </button>
+        </div>
+    </main>
+    
+    <!-- Results Modal -->
+    <div class="modal fade" id="resultsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">🎉 Exercice terminé !</h5>
+                </div>
+                <div class="modal-body" id="resultsContent">
+                    <!-- Results will be populated by JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="goToNextExercise()">
+                        Exercice suivant
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="goBack()">
+                        Retour au chapitre
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Exercise Templates -->
+<script type="text/template" id="vocabularyTemplate">
+    <div class="vocabulary-exercise">
+        <div class="question-header">
+            <h2 class="question-title">{{ question.text }}</h2>
+            {% if question.audio %}
+            <button class="btn btn-audio" onclick="playAudio('{{ question.audio }}')">
+                <i class="bi bi-volume-up"></i>
+                Écouter
+            </button>
+            {% endif %}
+        </div>
+        
+        {% if question.image %}
+        <div class="question-image">
+            <img src="{{ question.image }}" alt="Question image" />
+        </div>
+        {% endif %}
+        
+        <div class="answer-options">
+            {% for option in question.options %}
+            <button class="answer-option" data-answer="{{ option.id }}" onclick="selectAnswer(this)">
+                <span class="option-text">{{ option.text }}</span>
+                {% if option.image %}
+                <img src="{{ option.image }}" alt="{{ option.text }}" class="option-image" />
+                {% endif %}
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="matchingTemplate">
+    <div class="matching-exercise">
+        <div class="question-header">
+            <h2 class="question-title">Associez les mots à leur traduction</h2>
+            <p class="question-instruction">Glissez-déposez ou cliquez pour associer</p>
+        </div>
+        
+        <div class="matching-area">
+            <div class="words-column">
+                <h3>Mots français</h3>
+                <div class="words-list" id="wordsList">
+                    <!-- French words will be populated here -->
+                </div>
+            </div>
+            
+            <div class="connections-area" id="connectionsArea">
+                <!-- SVG connections will be drawn here -->
+            </div>
+            
+            <div class="translations-column">
+                <h3>Traductions</h3>
+                <div class="translations-list" id="translationsList">
+                    <!-- Translations will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="fillBlankTemplate">
+    <div class="fill-blank-exercise">
+        <div class="question-header">
+            <h2 class="question-title">Complétez la phrase</h2>
+            {% if question.audio %}
+            <button class="btn btn-audio" onclick="playAudio('{{ question.audio }}')">
+                <i class="bi bi-volume-up"></i>
+                Écouter
+            </button>
+            {% endif %}
+        </div>
+        
+        <div class="sentence-container">
+            <div class="sentence" id="sentenceContainer">
+                <!-- Sentence with blanks will be populated here -->
+            </div>
+        </div>
+        
+        <div class="word-bank" id="wordBank">
+            <!-- Available words will be populated here -->
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="speakingTemplate">
+    <div class="speaking-exercise">
+        <div class="question-header">
+            <h2 class="question-title">Répétez la phrase</h2>
+            <p class="question-instruction">Cliquez sur le microphone et répétez clairement</p>
+        </div>
+        
+        <div class="reference-audio">
+            <div class="audio-player">
+                <button class="btn btn-audio btn-lg" onclick="playReference()">
+                    <i class="bi bi-play-circle"></i>
+                    Écouter l'exemple
+                </button>
+                <div class="audio-waveform" id="referenceWaveform"></div>
+            </div>
+            <div class="reference-text">{{ question.text }}</div>
+        </div>
+        
+        <div class="recording-area">
+            <button class="btn btn-record" id="recordBtn" onclick="toggleRecording()">
+                <i class="bi bi-mic"></i>
+                <span>Appuyer pour parler</span>
+            </button>
+            <div class="recording-status" id="recordingStatus"></div>
+            <div class="audio-waveform" id="userWaveform"></div>
+        </div>
+        
+        <div class="pronunciation-feedback" id="pronunciationFeedback" style="display: none;">
+            <!-- Pronunciation analysis will appear here -->
+        </div>
+    </div>
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/learning-modern.js' %}"></script>
+<script src="{% static 'js/exercise-engine.js' %}"></script>
+<script>
+// Initialize exercise data
+const exerciseData = {
+    id: {{ exercise.id }},
+    type: '{{ exercise.exercise_type }}',
+    questions: {{ questions_json|safe }},
+    currentQuestion: 0,
+    totalQuestions: {{ total_questions }},
+    score: 0,
+    answers: [],
+    startTime: Date.now(),
+    hints_used: 0
+};
+
+// Initialize the exercise engine
+document.addEventListener('DOMContentLoaded', function() {
+    window.ExerciseEngine = new InteractiveExerciseEngine(exerciseData);
+    window.ExerciseEngine.init();
+});
+
+// Navigation functions
+function goBack() {
+    if (confirm('Êtes-vous sûr de vouloir quitter cet exercice ? Votre progression sera perdue.')) {
+        window.history.back();
+    }
+}
+
+function goToNextExercise() {
+    // Navigate to next exercise in the chapter
+    window.location.href = '{% url "course:next_exercise" exercise.id %}';
+}
+</script>
+{% endblock %}

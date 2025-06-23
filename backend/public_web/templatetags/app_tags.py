@@ -85,7 +85,7 @@ def get_app_info(app_name):
         # Convertir l'icône React en Bootstrap Icon
         bootstrap_icon = ICON_MAPPING.get(react_icon, 'bi-app')
         
-        # Vérifier si une icône statique existe (style Odoo)
+        # Vérifier si une icône statique existe (style Open Linguify)
         static_icon_path = None
         
         # Chercher l'app config pour le chemin
@@ -96,7 +96,7 @@ def get_app_info(app_name):
                 break
         
         if app_config:
-            # Style Odoo: app_name/static/description/icon.png -> /app-icons/app_name/icon.png
+            # Style Open Linguify: app_name/static/description/icon.png -> /app-icons/app_name/icon.png
             icon_file = os.path.join(app_config.path, 'static', 'description', 'icon.png')
             if os.path.exists(icon_file):
                 # URL directe vers notre serveur d'icônes

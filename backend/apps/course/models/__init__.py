@@ -11,7 +11,7 @@ Cette organisation améliore la lisibilité et la maintenance du code.
 from .mixins import MultilingualMixin
 
 # Import des modèles principaux
-from .core import Unit, Lesson, ContentLesson
+from .core import Unit, Chapter, Lesson, ContentLesson
 
 # Import des exercices et contenus
 from .exercises import (
@@ -29,10 +29,20 @@ from .content import TheoryContent
 # Import des tests
 from .tests import TestRecap, TestRecapQuestion, TestRecapResult
 
+# Import des modèles de progression utilisateur
+from .user_progress import (
+    UserProgress,
+    UnitProgress, 
+    ChapterProgress,
+    LessonProgress,
+    UserActivity
+)
+
 # Export de tous les modèles pour l'importation externe
 __all__ = [
     'MultilingualMixin',
     'Unit', 
+    'Chapter',
     'Lesson', 
     'ContentLesson',
     'VocabularyList',
@@ -44,5 +54,10 @@ __all__ = [
     'FillBlankExercise',
     'TestRecap',
     'TestRecapQuestion', 
-    'TestRecapResult'
+    'TestRecapResult',
+    'UserProgress',
+    'UnitProgress',
+    'ChapterProgress', 
+    'LessonProgress',
+    'UserActivity'
 ]

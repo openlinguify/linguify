@@ -7,8 +7,8 @@ BYPASS_AUTH_FOR_DEVELOPMENT = True
 
 # This will make the Supabase authentication return a fake user
 # Remove this in production!
-print("⚠️  WARNING: Authentication bypass is enabled for development!")
-print("⚠️  This should NEVER be used in production!")
+print("WARNING: Authentication bypass is enabled for development!")
+print("This should NEVER be used in production!")
 
 # ===== IMPORTANT: Database Configuration =====
 # Use local PostgreSQL for development instead of production Supabase
@@ -23,9 +23,9 @@ if os.environ.get('USE_LOCAL_DB', 'True') == 'True':
             'PORT': os.environ.get('LOCAL_DB_PORT', '5432'),
         }
     }
-    print("🔧 Using LOCAL database for development")
+    print("Using LOCAL database for development")
 else:
-    print("⚠️  Using PRODUCTION database - Be careful!")
+    print("Using PRODUCTION database - Be careful!")
 
 # ===== Development-Only Apps =====
 # Apps that should NOT be available in production yet
@@ -62,8 +62,8 @@ if 'debug_toolbar' in INSTALLED_APPS:
     INTERNAL_IPS = ['127.0.0.1', 'localhost']
 
 print("="*50)
-print("🚀 DEVELOPMENT ENVIRONMENT ACTIVE")
-print("📊 Database:", DATABASES['default']['NAME'])
-print("🔧 Debug Mode:", DEBUG)
-print("⚠️  Community App:", 'ENABLED' if 'apps.community' in INSTALLED_APPS else 'DISABLED')
+print("DEVELOPMENT ENVIRONMENT ACTIVE")
+print("Database:", DATABASES['default']['NAME'])
+print("Debug Mode:", DEBUG)
+print("Community App:", 'ENABLED' if 'apps.community' in INSTALLED_APPS else 'DISABLED')
 print("="*50)

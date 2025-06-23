@@ -1,5 +1,5 @@
 """
-Views pour servir les icônes d'applications style Odoo
+Views pour servir les icônes d'applications style Open Linguify
 """
 import os
 from django.http import FileResponse, Http404
@@ -12,7 +12,7 @@ from django.views.decorators.cache import cache_control
 @method_decorator(cache_control(max_age=86400), name='dispatch')  # Cache 24h
 class AppIconView(View):
     """
-    Sert les icônes des applications style Odoo
+    Sert les icônes des applications style Open Linguify.
     URL: /app-icons/{app_name}/icon.png
     """
     

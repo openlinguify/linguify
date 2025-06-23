@@ -1,0 +1,70 @@
+{% extends "saas_web/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ chapter.title }} - Linguify{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'course/css/learning-app.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="learning-app">
+    <!-- Header Bar -->
+    <div class="learning-header">
+        <div class="header-left">
+            <a href="/learning/" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Retour au dashboard
+            </a>
+        </div>
+        
+        <div class="header-center">
+            <h1>{{ chapter.title }}</h1>
+        </div>
+    </div>
+
+    <!-- Chapter Content -->
+    <div class="learning-content">
+        <div class="container-fluid">
+            <div class="chapter-detail-view">
+                <div class="chapter-detail-header">
+                    <h2>{{ chapter.title }}</h2>
+                    <p>{{ chapter.description }}</p>
+                </div>
+                
+                <div class="lessons-list">
+                    {% for lesson in lessons %}
+                    <div class="lesson-item {% if lesson.is_completed %}completed{% endif %}" 
+                         onclick="window.location.href='/learning/lesson/{{ lesson.id }}/'">
+                        <div class="lesson-number">{{ forloop.counter }}</div>
+                        <div class="lesson-info">
+                            <h4>{{ lesson.title }}</h4>
+                            <p>{{ lesson.description }}</p>
+                            <div class="lesson-meta">
+                                <span><i class="bi bi-clock"></i> {{ lesson.duration }} min</span>
+                                <span><i class="bi bi-book"></i> {{ lesson.lesson_type|title }}</span>
+                            </div>
+                        </div>
+                        <div class="lesson-status">
+                            {% if lesson.is_completed %}
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                            {% else %}
+                                <i class="bi bi-play-circle"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <p>Aucune leçon disponible dans ce chapitre</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'course/js/learning-simple.js' %}"></script>
+{% endblock %}

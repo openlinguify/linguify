@@ -28,6 +28,7 @@ class Unit(MultilingualMixin):
     """
     Unité de cours pour l'apprentissage des langues.
     Utilise MultilingualMixin pour optimiser la gestion des traductions.
+    Structure inspirée de Open Linguify pour une meilleure organisation.
     """
     LEVEL_CHOICES = [
         ('A1', 'A1'),
@@ -101,7 +102,34 @@ class Unit(MultilingualMixin):
     @property
     def description(self):
         """Property pour compatibilité avec les templates - retourne la description en français par défaut"""
-        return self.description_fr or self.description_en
+        return self.description_fr or self.description_en or ""
+    
+    def get_total_lessons_count(self):
+        """Compte le nombre total de leçons dans cette unité."""
+        # Count lessons linked to chapters in this unit
+        total_chapter_lessons = 0
+        for chapter in self.chapters.all():
+            total_chapter_lessons += chapter.lessons.count()
+        
+        # Count lessons linked directly to this unit (without chapter)
+        direct_lessons = self.lessons.filter(chapter__isnull=True).count()
+        
+        return total_chapter_lessons + direct_lessons
+    
+    def get_estimated_duration(self):
+        """Calcule la durée estimée totale de l'unité en minutes."""
+        total_duration = 0
+        
+        # Add duration from lessons in chapters
+        for chapter in self.chapters.all():
+            for lesson in chapter.lessons.all():
+                total_duration += lesson.estimated_duration or 15  # 15 min par défaut
+        
+        # Add duration from lessons linked directly to unit
+        for lesson in self.lessons.filter(chapter__isnull=True):
+            total_duration += lesson.estimated_duration or 15  # 15 min par défaut
+            
+        return total_duration
 
     def update_unit_descriptions(self, save_immediately=True):
         """Met à jour les descriptions de l'unité pour toutes les langues"""
@@ -173,6 +201,95 @@ class Unit(MultilingualMixin):
         super().save(*args, **kwargs)
 
 
+class Chapter(MultilingualMixin):
+    """
+    Chapitre au sein d'une unité - Structure hybride Open Linguify/OpenLinguify.
+    Supporte les thèmes (Open Linguify) et modules thématiques (OpenLinguify).
+    """
+    
+    CHAPTER_STYLE_CHOICES = [
+        ('Open Linguify', 'Open Linguify Style (Chapter 1: Introductions)'),
+        ('OpenLinguify', 'OpenLinguify Style (Décrire une maison)'),
+        ('custom', 'Custom Style'),
+    ]
+    
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name='chapters')
+    title_en = models.CharField(max_length=100, blank=False, null=False)
+    title_fr = models.CharField(max_length=100, blank=False, null=False)
+    title_es = models.CharField(max_length=100, blank=False, null=False)
+    title_nl = models.CharField(max_length=100, blank=False, null=False)
+    theme = models.CharField(max_length=50, help_text="Theme like 'Introductions', 'Describing house', etc.")
+    description_en = models.TextField(blank=True, null=True)
+    description_fr = models.TextField(blank=True, null=True)
+    description_es = models.TextField(blank=True, null=True)
+    description_nl = models.TextField(blank=True, null=True)
+    order = models.PositiveIntegerField(default=1)
+    style = models.CharField(max_length=20, choices=CHAPTER_STYLE_CHOICES, default='Open Linguify')
+    is_checkpoint_required = models.BooleanField(default=True, help_text="Requires checkpoint test to unlock next chapter")
+    points_reward = models.PositiveIntegerField(default=100, help_text="Points awarded for completing this chapter")
+    
+    class Meta:
+        app_label = 'course'
+        ordering = ['unit__order', 'order']
+        unique_together = [['unit', 'order']]
+
+    def __str__(self):
+        return f"Chapter {self.order}: {self.title_en} ({self.unit.title_en})"
+    
+    @property
+    def title(self):
+        """Property pour compatibilité avec les templates"""
+        return self.title_fr or self.title_en
+    
+    @property
+    def description(self):
+        """Property pour compatibilité avec les templates"""
+        return self.description_fr or self.description_en
+
+    def get_progress_percentage(self, user=None):
+        """
+        Calcule le pourcentage de completion comme Open Linguify.
+        Si user est fourni, calcule pour cet utilisateur spécifique.
+        """
+        total_lessons = self.lessons.count()
+        if total_lessons == 0:
+            return 0
+            
+        if user:
+            # TODO: Implémenter le calcul basé sur UserProgress
+            # Pour l'instant, retourne 0
+            return 0
+        else:
+            # Calcul générique basé sur les leçons
+            completed_lessons = self.lessons.filter(content_lessons__isnull=False).count()
+            return int((completed_lessons / total_lessons) * 100)
+
+    def is_unlocked_for_user(self, user):
+        """
+        Vérifie si ce chapitre est débloqué pour l'utilisateur.
+        Basé sur la completion du chapitre précédent.
+        """
+        if self.order == 1:
+            return True  # Premier chapitre toujours débloqué
+            
+        # TODO: Implémenter la logique de déblocage basée sur UserProgress
+        return True  # Pour l'instant, tous les chapitres sont débloqués
+
+    def get_next_chapter(self):
+        """Récupère le chapitre suivant dans la même unité."""
+        return Chapter.objects.filter(
+            unit=self.unit, 
+            order__gt=self.order
+        ).first()
+
+    def get_previous_chapter(self):
+        """Récupère le chapitre précédent dans la même unité."""
+        return Chapter.objects.filter(
+            unit=self.unit, 
+            order__lt=self.order
+        ).last()
+
+
 class Lesson(models.Model):
     """Leçon au sein d'une unité de cours."""
     
@@ -183,6 +300,7 @@ class Lesson(models.Model):
         PROFESSIONAL = 'professional', _('Professional')
 
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name='lessons')
+    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='lessons', null=True, blank=True)
     title_en = models.CharField(max_length=100, blank=False, null=False)
     title_fr = models.CharField(max_length=100, blank=False, null=False)  
     title_es = models.CharField(max_length=100, blank=False, null=False)
@@ -214,6 +332,13 @@ class Lesson(models.Model):
     def description(self):
         """Property pour compatibilité avec les templates"""
         return self.description_fr or self.description_en
+    
+    def get_lesson_type(self):
+        """Get the lesson type based on content"""
+        content_lesson = self.content_lessons.first()
+        if content_lesson:
+            return content_lesson.content_type
+        return self.lesson_type
 
 
 class ContentLesson(models.Model):
