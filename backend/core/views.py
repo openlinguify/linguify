@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.core.mail import send_mail
 from django.conf import settings
+from django.shortcuts import redirect
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -62,3 +63,25 @@ def contact_view(request):
             {'error': 'Failed to send your message. Please try again later.'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+
+def get_preferred_language(request):
+    """Get user's preferred language from Accept-Language header or default to 'en'"""
+    if 'HTTP_ACCEPT_LANGUAGE' in request.META:
+        accept_language = request.META['HTTP_ACCEPT_LANGUAGE']
+        supported_languages = ['en', 'fr', 'es', 'nl']
+        for lang in accept_language.split(','):
+            lang_code = lang.strip().split(';')[0].split('-')[0]
+            if lang_code in supported_languages:
+                return lang_code
+    return 'en'
+
+
+def language_redirect_view(request, path):
+    """Redirect to the same path with language prefix"""
+    return redirect(f'/{get_preferred_language(request)}/{path}')
+
+
+def app_language_redirect_view(request, app_slug):
+    """Redirect app URLs to the same URL with language prefix"""
+    return redirect(f'/{get_preferred_language(request)}/apps/{app_slug}/')
