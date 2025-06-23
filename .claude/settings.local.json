@@ -143,7 +143,10 @@
       "Bash(convert:*)",
       "Bash(__NEW_LINE__ cp apps/chat/static/description/icon.png static/app-icons/chat.png)",
       "Bash(poetry:*)",
-      "Bash(export:*)"
+      "Bash(export:*)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test tests.test_public_web_views.PublicWebViewsTest.test_legacy_app_views_still_work --verbosity=2 --keepdb --noinput)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test tests.test_public_web_views --verbosity=1 --keepdb --noinput)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test tests.test_public_web_integration --verbosity=1 --keepdb --noinput)"
     ],
     "deny": []
   },

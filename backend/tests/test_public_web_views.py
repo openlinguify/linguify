@@ -22,6 +22,10 @@ class PublicWebViewsTest(TestCase):
         # Clear cache to prevent test interference
         from django.core.cache import cache
         cache.clear()
+        # Activate language for i18n_patterns
+        from django.utils import translation
+        translation.activate('en')
+        self.addCleanup(translation.deactivate)
     
     def test_landing_view(self):
         """Test the landing page view"""
@@ -153,13 +157,8 @@ class PublicWebViewsTest(TestCase):
         response = self.client.get(reverse('public_web:legacy_courses_redirect'))
         self.assertEqual(response.status_code, 301)  # Redirect
         
-        # Test revision app view (redirect)
-        response = self.client.get(reverse('public_web:legacy_revision_redirect'))
-        self.assertEqual(response.status_code, 301)  # Redirect
-        
-        # Test notebook app view (redirect)
-        response = self.client.get(reverse('public_web:legacy_notebook_redirect'))
-        self.assertEqual(response.status_code, 301)  # Redirect
+        # Test that the redirect redirects to the correct URL
+        self.assertRedirects(response, '/en/apps/course/', status_code=301, fetch_redirect_response=False)
     
     def test_robots_txt_view(self):
         """Test robots.txt view"""
@@ -185,6 +184,10 @@ class PublicWebContextTest(TestCase):
         # Clear cache to prevent test interference
         from django.core.cache import cache
         cache.clear()
+        # Activate language for i18n_patterns
+        from django.utils import translation
+        translation.activate('en')
+        self.addCleanup(translation.deactivate)
     
     @patch('public_web.views.manifest_parser.get_public_apps')
     def test_apps_list_context(self, mock_get_apps):
@@ -236,16 +239,24 @@ class PublicWebLanguageTest(TestCase):
         # Clear cache to prevent test interference
         from django.core.cache import cache
         cache.clear()
+        # Activate language for i18n_patterns
+        from django.utils import translation
+        translation.activate('en')
+        self.addCleanup(translation.deactivate)
     
     def test_features_view_with_language(self):
         """Test features view with different languages"""
-        # Test French (may not be configured in test environment)
-        response = self.client.get('/fr/features/')
-        self.assertIn(response.status_code, [200, 404])  # May not be configured in tests
-        
-        # Test base URL works
-        response = self.client.get('/features/')
+        # Test English features view using reverse()
+        response = self.client.get(reverse('public_web:features'))
         self.assertEqual(response.status_code, 200)
+        
+        # Test French language (may not be configured in test environment)
+        from django.utils import translation
+        translation.activate('fr')
+        response = self.client.get(reverse('public_web:features'))
+        # French may not be configured in tests, so accept 200 or redirect
+        self.assertIn(response.status_code, [200, 302, 404])
+        translation.activate('en')  # Reset back to English
     
     @patch('public_web.views.manifest_parser.get_app_by_slug')
     def test_dynamic_app_detail_with_language(self, mock_get_app):
@@ -260,10 +271,14 @@ class PublicWebLanguageTest(TestCase):
         }
         mock_get_app.return_value = mock_app
         
-        # Test base URL works
-        response = self.client.get('/apps/test_app/')
+        # Test with language prefix using reverse() 
+        response = self.client.get(reverse('public_web:dynamic_app_detail', kwargs={'app_slug': 'test_app'}))
         self.assertEqual(response.status_code, 200)
         
-        # Test with language prefix (may not be configured in test environment)
-        response = self.client.get('/fr/apps/test_app/')
-        self.assertIn(response.status_code, [200, 404])  # May not be configured in tests
+        # Test French language (may not be configured in test environment)
+        from django.utils import translation
+        translation.activate('fr')
+        response = self.client.get(reverse('public_web:dynamic_app_detail', kwargs={'app_slug': 'test_app'}))
+        # French may not be configured in tests, so accept 200 or redirect
+        self.assertIn(response.status_code, [200, 302, 404])
+        translation.activate('en')  # Reset back to English

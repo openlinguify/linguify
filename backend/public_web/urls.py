@@ -45,8 +45,8 @@ urlpatterns = [
     # Apps section - dynamic system
     path('apps/', views.DynamicAppsListView.as_view(), name='apps'),
     
-    # Legacy app URLs - redirect to dynamic system (MUST be before dynamic pattern)
-    path('apps/courses/', RedirectView.as_view(url='/apps/course/', permanent=True), name='legacy_courses_redirect'),
+    # Legacy app URLs - redirect to dynamic system (MUST be before dynamic pattern)  
+    path('apps/courses/', RedirectView.as_view(pattern_name='public_web:dynamic_app_detail', permanent=True), {'app_slug': 'course'}, name='legacy_courses_redirect'),
     # Remove self-redirecting URLs - these are handled by the dynamic pattern below
     
     # Dynamic app detail (MUST be after legacy redirects)
