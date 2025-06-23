@@ -25,7 +25,17 @@ class RevisionMainView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # App info pour le header
+        current_app_info = {
+            'name': 'revision',
+            'display_name': 'Revision',
+            'static_icon': '/app-icons/revision/icon.png',
+            'route_path': '/revision/'
+        }
+        
         context.update({
+            'current_app': current_app_info,
             'page_title': 'Révision - Mes Flashcards',
             'app_name': 'revision',
             'user_data': {

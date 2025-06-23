@@ -19,6 +19,7 @@ from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
 from core.blog.views import comment_like_toggle, comment_report, reply_to_comment as comment_reply
 from django.views.generic import RedirectView
 from .favicon_views import favicon_ico, apple_touch_icon, favicon_png
+from app_manager.icon_views import AppIconView
 
 
 def redirect_to_admin(request):
@@ -47,6 +48,13 @@ urlpatterns = [
     path('blog/comment/report/', comment_report, name='blog_comment_report_ajax'),
     path('blog/comment/<int:comment_id>/reply/', comment_reply, name='blog_comment_reply_ajax'),
     
+    # App icons - serve app/static/description/icon.png as app-icons/app/icon.png
+    path('app-icons/<str:app_name>/<str:filename>', AppIconView.as_view(), name='app_icon'),
+    
+    # User profile routes (must be before saas_web.urls to avoid conflicts)
+    path('profile/', include('apps.authentication.urls_profile')),
+    path('u/', include('apps.authentication.urls_profile')),
+    
     # SaaS application (protected routes) - no language prefix
     path('', include('saas_web.urls')),
     
@@ -64,13 +72,11 @@ urlpatterns = [
     # Terms and conditions endpoints
     path('api/auth/terms/accept', accept_terms, name='accept_terms'),
     path('api/auth/terms/status', terms_status, name='terms_status'),
-    path('api/v1/course/', include('apps.course.urls', namespace='course')),
     path('api/v1/revision/', include('apps.revision.urls', namespace='revision')),
     path('api/v1/notebook/', include('apps.notebook.urls', namespace='notebook')),
     path('notebook/', include('apps.notebook.urls_web', namespace='notebook_web')),
     path('revision/', include('apps.revision.urls_web', namespace='revision_web')),
-    path('course/', include('apps.course.urls_web', namespace='learning')),
-    path('learning/', include('apps.course.urls_web', namespace='learning_alias')),
+    path('learning/', include('apps.course.urls_web', namespace='course')),
     path('quizz/', include('apps.quizz.urls_web', namespace='quizz_web')),
     path('language_ai/', include('apps.language_ai.urls_web', namespace='language_ai_web')),
     path('community/', include('apps.community.urls', namespace='community')),

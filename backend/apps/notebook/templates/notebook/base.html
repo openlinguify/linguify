@@ -3,6 +3,7 @@
 <html lang="fr" class="h-full">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page_title|default:"Notebook" }} - Linguify</title>
     
@@ -17,426 +18,24 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Phosphor Icons (optionnel pour plus d'icônes modernes) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- CSS personnalisé pour le notebook -->
-    <link rel="stylesheet" href="{% static 'css/notebook.css' %}">
-    
-    <!-- CSS spécifique au notebook -->
-    <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
-            --primary-color: #6366f1;
-            --primary-dark: #4f46e5;
-            --sidebar-width: 320px;
-            --sidebar-width-mobile: 100%;
-            --header-height: 120px;
-        }
-        
-        * {
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            overflow: hidden;
-            background-color: #f8fafc;
-        }
-        
-        .notebook-container {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        
-        /* Header fixe */
-        .notebook-header {
-            height: var(--header-height);
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-            z-index: 1000;
-            flex-shrink: 0;
-        }
-        
-        .header-content {
-            padding: 1rem 1.5rem;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        
-        .header-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .header-actions {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-        
-        /* Navigation */
-        .notebook-nav {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            color: var(--primary-color);
-            font-weight: 600;
-            font-size: 1.25rem;
-        }
-        
-        .nav-logo {
-            width: 32px;
-            height: 32px;
-        }
-        
-        /* Buttons */
-        .btn-gradient {
-            background: var(--primary-gradient);
-            border: none;
-            color: white;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-        
-        .btn-gradient:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
-            color: white;
-        }
-        
-        .btn-outline-custom {
-            border: 1px solid #e2e8f0;
-            background: white;
-            color: #64748b;
-            transition: all 0.2s ease;
-        }
-        
-        .btn-outline-custom:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            background: #f8fafc;
-        }
-        
-        /* Main content */
-        .notebook-main {
-            flex: 1;
-            overflow: hidden;
-            display: flex;
-        }
-        
-        /* Sidebar */
-        .notebook-sidebar {
-            width: var(--sidebar-width);
-            background: white;
-            border-right: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar-header {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            background: #f8fafc;
-        }
-        
-        .sidebar-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0;
-        }
-        
-        /* Note list */
-        .note-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .note-item {
-            padding: 1rem;
-            border-bottom: 1px solid #f1f5f9;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            background: white;
-        }
-        
-        .note-item:hover {
-            background: #f8fafc;
-        }
-        
-        .note-item.active {
-            background: #f0f7ff;
-            border-left: 3px solid var(--primary-color);
-        }
-        
-        .note-title {
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-            font-size: 0.875rem;
-        }
-        
-        .note-preview {
-            color: #64748b;
-            font-size: 0.75rem;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .note-meta {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-            font-size: 0.75rem;
-            color: #94a3b8;
-        }
-        
-        .note-language {
-            background: #e2e8f0;
-            color: #64748b;
-            padding: 0.125rem 0.375rem;
-            border-radius: 0.25rem;
-            font-size: 0.625rem;
-            font-weight: 500;
-        }
-        
-        /* Editor area */
-        .notebook-editor {
-            flex: 1;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        
-        .editor-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-            background: #fafbfc;
-        }
-        
-        .editor-content {
-            flex: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Empty state */
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            padding: 2rem;
-            text-align: center;
-        }
-        
-        .empty-state-icon {
-            width: 64px;
-            height: 64px;
-            color: #cbd5e1;
-            margin-bottom: 1rem;
-        }
-        
-        .empty-state-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #475569;
-            margin-bottom: 0.5rem;
-        }
-        
-        .empty-state-description {
-            color: #64748b;
-            margin-bottom: 1.5rem;
-        }
-        
-        /* Search filters */
-        .search-filters {
-            background: #f8fafc;
-            padding: 0.75rem;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .search-input {
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            width: 100%;
-            font-size: 0.875rem;
-            transition: all 0.2s ease;
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-        
-        /* Loading states */
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 50%;
-            border-top-color: var(--primary-color);
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            :root {
-                --sidebar-width: 100%;
-                --header-height: 100px;
-            }
-            
-            .notebook-sidebar {
-                position: absolute;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                z-index: 100;
-                transform: translateX(-100%);
-            }
-            
-            .notebook-sidebar.show {
-                transform: translateX(0);
-            }
-            
-            .notebook-editor {
-                width: 100%;
-            }
-            
-            .header-content {
-                padding: 0.75rem 1rem;
-                gap: 0.75rem;
-            }
-            
-            .btn-sm {
-                padding: 0.375rem 0.75rem;
-                font-size: 0.75rem;
-            }
-        }
-        
-        /* Notifications */
-        .notification {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 2000;
-            max-width: 400px;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .notification.success {
-            background: #dcfce7;
-            border: 1px solid #bbf7d0;
-            color: #166534;
-        }
-        
-        .notification.error {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
-        }
-        
-        .notification.info {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            color: #1d4ed8;
-        }
-        
-        /* Form styles */
-        .form-control {
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            transition: all 0.2s ease;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-        
-        .form-label {
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'src/css/notebook.css' %}">
     
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="notebook-container">
         <!-- Header -->
-        <div class="notebook-header">
-            <div class="header-content">
-                <div class="header-top">
-                    <div class="notebook-nav">
-                        <a href="{% url 'saas_web:dashboard' %}" class="nav-brand">
-                            <i class="bi bi-journal-text nav-logo"></i>
-                            <span>Notebook</span>
-                        </a>
-                    </div>
-                    
-                    <div class="header-actions">
-                        {% if user.is_authenticated %}
-                            <div class="dropdown">
-                                <button class="btn btn-outline-custom dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-person-circle"></i>
-                                    {{ user.username }}
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{% url 'saas_web:profile' %}">Profil</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'saas_web:dashboard' %}">Dashboard</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="{% url 'auth:logout' %}">Déconnexion</a></li>
-                                </ul>
-                            </div>
-                        {% else %}
-                            <a href="{% url 'auth:login' %}" class="btn btn-outline-custom">Connexion</a>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                {% block header_content %}{% endblock %}
-            </div>
+        {% include 'components/app_header.html' %}
+        
+        <!-- App-specific header content -->
+        <div class="app-header-content border-bottom" style="background: #f8fafc; padding: 1rem 1.5rem;">
+            {% block header_content %}{% endblock %}
         </div>
         
         <!-- Main Content -->
@@ -476,17 +75,16 @@
             
             show: function(message, type = 'info') {
                 const notification = document.createElement('div');
-                notification.className = `notification ${type}`;
-                notification.innerHTML = `
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">${message}</div>
-                        <button type="button" class="btn-close ms-2" onclick="this.parentElement.parentElement.remove()"></button>
-                    </div>
-                `;
+                notification.className = 'notification ' + type;
+                notification.innerHTML = 
+                    '<div class="d-flex align-items-center">' +
+                        '<div class="flex-grow-1">' + message + '</div>' +
+                        '<button type="button" class="btn-close ms-2" onclick="this.parentElement.parentElement.remove()"></button>' +
+                    '</div>';
                 
                 document.body.appendChild(notification);
                 
-                setTimeout(() => {
+                setTimeout(function() {
                     if (notification.parentNode) {
                         notification.remove();
                     }
@@ -497,8 +95,8 @@
         // Service API simplifié
         window.apiService = {
             async request(url, options = {}) {
+                console.log('API Request:', url, options);
                 const csrfToken = this.getCSRFToken();
-                console.log('CSRF Token:', csrfToken); // Debug
                 
                 const defaultOptions = {
                     headers: {
@@ -507,37 +105,56 @@
                     },
                 };
                 
-                const mergedOptions = { ...defaultOptions, ...options };
+                const mergedOptions = Object.assign({}, defaultOptions, options);
                 if (options.headers) {
-                    mergedOptions.headers = { ...defaultOptions.headers, ...options.headers };
+                    mergedOptions.headers = Object.assign({}, defaultOptions.headers, options.headers);
                 }
                 
-                console.log('Request:', url, mergedOptions); // Debug
-                
+                console.log('Merged options:', mergedOptions);
                 const response = await fetch(url, mergedOptions);
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
                 
                 if (!response.ok) {
-                    console.error('API Error:', response.status, response.statusText); // Debug
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    console.error('HTTP Error - Status:', response.status, 'URL:', url);
+                    
+                    // Essayer de récupérer le message d'erreur
+                    let errorMessage = 'HTTP error! status: ' + response.status;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.error) {
+                            errorMessage = errorData.error;
+                        }
+                    } catch (e) {
+                        // Ignore JSON parsing error
+                    }
+                    
+                    throw new Error(errorMessage);
                 }
                 
-                return response.json();
+                // Pour les réponses vides
+                if (response.status === 204 || response.headers.get('content-length') === '0') {
+                    console.log('Empty response detected');
+                    return { success: true };
+                }
+                
+                const contentType = response.headers.get('content-type');
+                console.log('Content type:', contentType);
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json();
+                }
+                
+                return { success: true };
             },
             
-            getCSRFToken() {
-                const token = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                            document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || 
-                            window.csrfToken || '';
-                console.log('Getting CSRF token:', token); // Debug
-                return token;
+            getCSRFToken: function() {
+                var tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+                var metaElement = document.querySelector('meta[name=csrf-token]');
+                return (tokenElement && tokenElement.value) || 
+                       (metaElement && metaElement.getAttribute('content')) || 
+                       window.csrfToken || '';
             }
         };
-        
-        console.log('Configuration notebook:', {
-            debug: window.DEBUG,
-            apiBaseUrl: window.API_BASE_URL,
-            user: window.USER_DATA
-        });
     </script>
     
     {% block extra_js %}{% endblock %}

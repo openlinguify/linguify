@@ -24,6 +24,12 @@ from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParam
 from drf_spectacular.types import OpenApiTypes
 from django.contrib.auth import logout
 from django.utils import timezone
+from django.views import View
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
+from datetime import timedelta
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -1561,3 +1567,182 @@ def logout_all_devices(request):
             {'error': 'Failed to logout from all devices'},
             status=500
         )
+
+
+@method_decorator(login_required, name='dispatch')
+class UserProfileView(View):
+    """Page du profil utilisateur avec design réseau social"""
+    def get(self, request, username=None):
+        from django.utils import timezone
+        from datetime import timedelta
+        from django.db.models import Count, Sum, Q
+        
+        # Récupérer l'utilisateur dont on veut voir le profil
+        if username:
+            profile_user = get_object_or_404(User, username=username)
+        else:
+            profile_user = request.user
+        
+        # Récupérer les settings utilisateur
+        from app_manager.models import UserAppSettings
+        user_settings, created = UserAppSettings.objects.get_or_create(user=profile_user)
+        
+        # Statistiques d'apprentissage (simulées pour l'instant)
+        learning_stats = {
+            'total_lessons': self._get_lessons_completed(profile_user),
+            'study_streak': self._get_study_streak(profile_user),
+            'words_learned': self._get_words_learned(profile_user),
+            'total_xp': self._get_total_xp(profile_user),
+            'hours_studied': self._get_hours_studied(profile_user),
+            'achievement_count': self._get_achievement_count(profile_user),
+        }
+        
+        # Badges et réalisations (simulés pour l'instant)
+        badges = self._get_user_badges(profile_user)
+        
+        # Activité récente
+        recent_activities = self._get_recent_activities(profile_user)
+        
+        # Progression linguistique
+        language_progress = self._get_language_progress(profile_user)
+        
+        # Applications utilisées
+        user_apps = []
+        for app in user_settings.enabled_apps.filter(is_enabled=True):
+            # Mapper les icônes
+            icon_mapping = {
+                'Book': 'bi-book',
+                'Cards': 'bi-collection',
+                'MessageSquare': 'bi-chat-dots',
+                'Brain': 'bi-lightbulb',
+                'App': 'bi-app-indicator',
+            }
+            
+            user_apps.append({
+                'display_name': app.display_name,
+                'route_path': app.route_path,
+                'icon_class': icon_mapping.get(app.icon_name, 'bi-app'),
+                'last_used': timezone.now() - timedelta(hours=2),  # Simulé
+            })
+        
+        context = {
+            'title': f'{profile_user.username} - ' + _('Profile') + ' | Open Linguify',
+            'user': request.user,
+            'profile_user': profile_user,
+            'learning_stats': learning_stats,
+            'badges': badges,
+            'recent_activities': recent_activities,
+            'language_progress': language_progress,
+            'user_apps': user_apps,
+        }
+        
+        return render(request, 'authentication/profile.html', context)
+    
+    def _get_lessons_completed(self, user):
+        """Récupère le nombre de leçons complétées"""
+        try:
+            from apps.course.models import LessonProgress
+            return LessonProgress.objects.filter(
+                user=user,
+                is_completed=True
+            ).count()
+        except:
+            return 42  # Valeur simulée
+    
+    def _get_study_streak(self, user):
+        """Calcule la série de jours d'étude consécutifs"""
+        # Pour l'instant, retourne une valeur simulée
+        return 7
+    
+    def _get_words_learned(self, user):
+        """Compte le nombre de mots appris"""
+        try:
+            from apps.revision.models import FlashcardProgress
+            return FlashcardProgress.objects.filter(
+                user=user,
+                mastery_level__gte=3
+            ).count()
+        except:
+            return 256  # Valeur simulée
+    
+    def _get_total_xp(self, user):
+        """Calcule le total d'XP gagné"""
+        # Pour l'instant, retourne une valeur simulée
+        return 3450
+    
+    def _get_hours_studied(self, user):
+        """Calcule le nombre d'heures étudiées"""
+        # Pour l'instant, retourne une valeur simulée
+        return 24
+    
+    def _get_achievement_count(self, user):
+        """Compte le nombre de réalisations débloquées"""
+        # Pour l'instant, retourne une valeur simulée
+        return 12
+    
+    def _get_user_badges(self, user):
+        """Récupère les badges de l'utilisateur"""
+        # Badges simulés pour l'instant
+        badges = [
+            {'name': _('Early Bird'), 'icon': '🌅', 'description': _('Study before 7 AM')},
+            {'name': _('Polyglot'), 'icon': '🌍', 'description': _('Learn 3+ languages')},
+            {'name': _('Perfectionist'), 'icon': '💯', 'description': _('100% on 10 quizzes')},
+            {'name': _('Speed Learner'), 'icon': '⚡', 'description': _('Complete 5 lessons in a day')},
+            {'name': _('Vocabulary Master'), 'icon': '📚', 'description': _('Learn 1000 words')},
+            {'name': _('Streak Champion'), 'icon': '🔥', 'description': _('30 day streak')},
+        ]
+        return badges
+    
+    def _get_recent_activities(self, user):
+        """Récupère les activités récentes de l'utilisateur"""
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        # Activités simulées pour l'instant
+        activities = [
+            {
+                'title': _('Completed lesson: Basic Greetings'),
+                'icon': 'bi-check-circle',
+                'timestamp': timezone.now() - timedelta(hours=2),
+            },
+            {
+                'title': _('Earned 50 XP in Daily Challenge'),
+                'icon': 'bi-trophy',
+                'timestamp': timezone.now() - timedelta(hours=5),
+            },
+            {
+                'title': _('Reviewed 20 flashcards'),
+                'icon': 'bi-collection',
+                'timestamp': timezone.now() - timedelta(days=1),
+            },
+            {
+                'title': _('Unlocked new achievement: Speed Learner'),
+                'icon': 'bi-award',
+                'timestamp': timezone.now() - timedelta(days=2),
+            },
+            {
+                'title': _('Started learning Spanish'),
+                'icon': 'bi-flag',
+                'timestamp': timezone.now() - timedelta(days=3),
+            },
+        ]
+        return activities
+    
+    def _get_language_progress(self, user):
+        """Récupère la progression dans chaque langue"""
+        # Progression simulée pour l'instant
+        progress = []
+        
+        if user.target_language:
+            progress.append({
+                'name': user.get_target_language_display(),
+                'level': 'B1',
+                'percentage': 65,
+            })
+        
+        # Ajouter d'autres langues si disponibles
+        if hasattr(user, 'secondary_languages'):
+            # Code pour langues secondaires
+            pass
+        
+        return progress

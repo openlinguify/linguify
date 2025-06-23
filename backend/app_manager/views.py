@@ -130,11 +130,12 @@ def debug_apps(request):
                 'category': 'Intelligence IA',
                 'description': 'Conversez avec notre IA pour pratiquer la langue et recevoir des corrections personnalisées.',
                 'order': 4,
+                'icon_name': 'bi-robot',
                 'manifest_data': {
                     'frontend_components': {
-                        'icon': '🤖',
-                        'description': 'Assistant IA pour l\'apprentissage des langues',
-                        'route': '/language-ai/'
+                        'route': '/language-ai/',
+                        'static_icon': '/static/description/icon.png',
+                        'menu_order': 4,
                     },
                     'technical_info': {
                         'web_url': '/language-ai/',
@@ -142,17 +143,18 @@ def debug_apps(request):
                     }
                 }
             },
-            'notes': {
-                'display_name': 'Notebook',
-                'category': 'Productivité',
+            'notebook': {
+                'display_name': 'Notes',
+                'category': 'Productivity',
                 'description': 'Prenez des notes intelligentes et organisez votre vocabulaire avec des fonctionnalités avancées.',
                 'is_enabled': True,
                 'order': 1,
+                'icon_name': 'bi-journal-text',
                 'manifest_data': {
                     'frontend_components': {
-                        'icon': '📓',
-                        'description': 'Notebook intelligent pour l\'apprentissage',
-                        'route': '/notebook/'
+                        'route': '/notebook',
+                        'static_icon': '/static/description/icon.png',
+                        'menu_order': 3,
                     },
                     'technical_info': {
                         'web_url': '/notebook/',
@@ -166,11 +168,12 @@ def debug_apps(request):
                 'description': 'Créez et participez à des quiz personnalisés pour tester vos connaissances.',
                 'is_enabled': True,
                 'order': 5,
+                'icon_name': 'bi-question-circle',
                 'manifest_data': {
                     'frontend_components': {
-                        'icon': '❓',
-                        'description': 'Quiz interactifs et personnalisés',
-                        'route': '/quiz/'
+                        'route': '/quiz/',
+                        'static_icon': '/static/description/icon.png',
+                        'menu_order': 5,
                     },
                     'technical_info': {
                         'web_url': '/quiz/',
@@ -184,11 +187,12 @@ def debug_apps(request):
                 'description': 'Système de révision avec répétition espacée (Flashcards).',
                 'is_enabled': True,
                 'order': 3,
+                'icon_name': 'bi-card-list',
                 'manifest_data': {
                     'frontend_components': {
-                        'icon': '🃏',
-                        'description': 'Révisions et flashcards',
-                        'route': '/revision/'
+                        'route': '/revision/',
+                        'static_icon': '/static/description/icon.png',
+                        'menu_order': 3,
                     },
                     'technical_info': {
                         'web_url': '/revision/',
@@ -229,17 +233,18 @@ def debug_apps(request):
         missing_apps = [
             {
                 'code': 'notebook',
-                'display_name': 'Notebook',
+                'display_name': 'Notes',
                 'description': 'Prenez des notes intelligentes et organisez votre vocabulaire avec des fonctionnalités avancées.',
-                'category': 'Productivité',
+                'category': 'Productivity',
                 'is_enabled': True,
                 'is_default': True,
                 'order': 1,
+                'icon_name': 'bi-journal-text',
                 'manifest_data': {
                     'frontend_components': {
-                        'icon': '📓',
-                        'description': 'Notebook intelligent pour l\'apprentissage',
-                        'route': '/notebook/'
+                        'route': '/notebook/',
+                        'static_icon': '/static/description/icon.png',
+                        'menu_order': 3,
                     },
                     'technical_info': {
                         'web_url': '/notebook/',
@@ -255,11 +260,12 @@ def debug_apps(request):
                 'is_enabled': True,
                 'is_default': True,
                 'order': 2,
+                'icon_name': 'bi-book',
                 'manifest_data': {
                     'frontend_components': {
-                        'icon': '📚',
-                        'description': 'Cours structurés et interactifs',
-                        'route': '/course/'
+                        'route': '/course/',
+                        'static_icon': '/static/description/icon.png',
+                        'menu_order': 2,
                     },
                     'technical_info': {
                         'web_url': '/course/',
@@ -275,11 +281,12 @@ def debug_apps(request):
                 'is_enabled': True,
                 'is_default': True,
                 'order': 3,
+                'icon_name': 'bi-card-list',
                 'manifest_data': {
                     'frontend_components': {
-                        'icon': '🃏',
-                        'description': 'Révisions et flashcards',
-                        'route': '/revision/'
+                        'route': '/revision/',
+                        'static_icon': '/static/description/icon.png',
+                        'menu_order': 3,
                     },
                     'technical_info': {
                         'web_url': '/revision/',
@@ -295,11 +302,12 @@ def debug_apps(request):
                 'is_enabled': True,
                 'is_default': False,
                 'order': 4,
+                'icon_name': 'bi-robot',
                 'manifest_data': {
                     'frontend_components': {
-                        'icon': '🤖',
-                        'description': 'Assistant IA pour l\'apprentissage des langues',
-                        'route': '/language-ai/'
+                        'route': '/language-ai/',
+                        'static_icon': '/static/description/icon.png',
+                        'menu_order': 4,
                     },
                     'technical_info': {
                         'web_url': '/language-ai/',
@@ -315,11 +323,12 @@ def debug_apps(request):
                 'is_enabled': True,
                 'is_default': False,
                 'order': 5,
+                'icon_name': 'bi-question-circle',
                 'manifest_data': {
                     'frontend_components': {
-                        'icon': '❓',
-                        'description': 'Quiz interactifs et personnalisés',
-                        'route': '/quiz/'
+                        'route': '/quiz/',
+                        'static_icon': '/static/description/icon.png',
+                        'menu_order': 5,
                     },
                     'technical_info': {
                         'web_url': '/quiz/',
@@ -335,11 +344,12 @@ def debug_apps(request):
                 'is_enabled': True,
                 'is_default': False,
                 'order': 6,
+                'icon_name': 'bi-people',
                 'manifest_data': {
                     'frontend_components': {
-                        'icon': '👥',
-                        'description': 'Connect with language learners',
-                        'route': '/community/'
+                        'route': '/community/',
+                        'static_icon': '/static/description/icon.png',
+                        'menu_order': 6,
                     },
                     'technical_info': {
                         'web_url': '/community/',
@@ -447,12 +457,43 @@ class AppStoreView(View):
         
         available_apps = []
         for app in apps:
+            # Récupérer l'icône statique depuis le manifest ou depuis le dossier de l'app
+            static_icon_url = None
+            
+            # Option 1: Depuis le manifest_data OU automatiquement depuis app/static/description/icon.png
+            if app.manifest_data and 'frontend_components' in app.manifest_data:
+                frontend_components = app.manifest_data['frontend_components']
+                if 'static_icon' in frontend_components:
+                    # Le manifest contient le chemin relatif
+                    manifest_icon_path = frontend_components['static_icon']
+                    if manifest_icon_path.startswith('/static/'):
+                        # Utiliser le chemin depuis le manifest (app-icons ou description)
+                        static_icon_url = manifest_icon_path[8:]  # Remove '/static/'
+            
+            # Vérifier automatiquement si l'app a une icône dans static/description/
+            if not static_icon_url:
+                try:
+                    import os
+                    from django.apps import apps as django_apps
+                    # Trouver l'app Django correspondante
+                    for app_config in django_apps.get_app_configs():
+                        if app_config.name.endswith(app.code) or app_config.label == app.code:
+                            # Vérifier si icon.png existe dans static/description/
+                            icon_path = os.path.join(app_config.path, 'static', 'description', 'icon.png')
+                            if os.path.exists(icon_path):
+                                # URL vers le système app-icons
+                                static_icon_url = f"/app-icons/{app.code}/icon.png"
+                            break
+                except:
+                    pass
+            
             available_apps.append({
                 'id': app.id,
                 'name': app.code,
                 'display_name': app.display_name,
                 'description': app.description,
                 'icon': app.icon_name or 'bi-app',
+                'static_icon': static_icon_url,
                 'color_gradient': f'linear-gradient(135deg, {app.color} 0%, {app.color}80 100%)',
                 'category': app.category,
                 'route_path': app.route_path,

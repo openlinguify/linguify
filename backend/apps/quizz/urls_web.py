@@ -1,8 +1,8 @@
 from django.urls import path
-from django.views.generic import TemplateView
+from .views_web import QuizzMainView
 
 app_name = 'quizz_web'
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='quizz/app.html'), name='app'),
+    path('', QuizzMainView.as_view(), name='app'),
 ]

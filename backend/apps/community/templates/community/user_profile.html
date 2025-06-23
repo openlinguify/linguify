@@ -1,0 +1,445 @@
+{% extends "saas_web/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ profile_user.name|default:profile_user.username }} | Open Linguify{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Profile Header -->
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center">
+                            {% if profile_user.get_profile_picture_url %}
+                                <img src="{{ profile_user.get_profile_picture_url }}" 
+                                     alt="{{ profile_user.username }}" 
+                                     class="rounded-circle img-fluid"
+                                     style="width: 120px; height: 120px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-primary rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                                     style="width: 120px; height: 120px;">
+                                    <i class="bi bi-person text-white" style="font-size: 3rem;"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Online Status -->
+                            {% if profile.is_online %}
+                            <span class="badge bg-success mt-2">
+                                <i class="bi bi-circle-fill me-1"></i>{% trans "Online" %}
+                            </span>
+                            {% else %}
+                            <span class="badge bg-secondary mt-2">
+                                <i class="bi bi-circle me-1"></i>{% trans "Offline" %}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-7">
+                            <h2 class="mb-1">{{ profile_user.name|default:profile_user.username }}</h2>
+                            <p class="text-muted mb-2">@{{ profile_user.username }}</p>
+                            
+                            <!-- Language Information -->
+                            <div class="mb-3">
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% if profile_user.native_language %}
+                                    <span class="badge bg-primary fs-6">
+                                        <i class="bi bi-house me-1"></i>
+                                        {% trans "Native:" %} {{ profile_user.get_native_language_display }}
+                                    </span>
+                                    {% endif %}
+                                    
+                                    {% if profile_user.target_language %}
+                                    <span class="badge bg-success fs-6">
+                                        <i class="bi bi-book me-1"></i>
+                                        {% trans "Learning:" %} {{ profile_user.get_target_language_display }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Bio -->
+                            {% if profile.bio %}
+                            <p class="mb-3">{{ profile.bio }}</p>
+                            {% endif %}
+                            
+                            <!-- Stats -->
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <h5 class="mb-0 text-primary">{{ profile.friends.count }}</h5>
+                                    <small class="text-muted">{% trans "Friends" %}</small>
+                                </div>
+                                <div class="col-4">
+                                    <h5 class="mb-0 text-success">{{ exchange_sessions_count|default:0 }}</h5>
+                                    <small class="text-muted">{% trans "Exchange Sessions" %}</small>
+                                </div>
+                                <div class="col-4">
+                                    <h5 class="mb-0 text-info">{{ study_sessions_count|default:0 }}</h5>
+                                    <small class="text-muted">{% trans "Study Sessions" %}</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 text-end">
+                            {% if request.user != profile_user %}
+                                {% if is_friend %}
+                                    <button class="btn btn-success mb-2" disabled>
+                                        <i class="bi bi-check-circle me-1"></i>{% trans "Friends" %}
+                                    </button>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary start-chat" data-user-id="{{ profile_user.id }}">
+                                            <i class="bi bi-chat-dots me-1"></i>{% trans "Message" %}
+                                        </button>
+                                        <button class="btn btn-outline-info start-exchange" data-user-id="{{ profile_user.id }}">
+                                            <i class="bi bi-translate me-1"></i>{% trans "Language Exchange" %}
+                                        </button>
+                                    </div>
+                                {% elif friend_request_pending %}
+                                    <button class="btn btn-warning" disabled>
+                                        <i class="bi bi-clock me-1"></i>{% trans "Request Pending" %}
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-primary send-friend-request" data-user-id="{{ profile_user.id }}">
+                                        <i class="bi bi-person-plus me-1"></i>{% trans "Add Friend" %}
+                                    </button>
+                                {% endif %}
+                            {% else %}
+                                <a href="{% url 'authentication:profile' %}" class="btn btn-outline-primary">
+                                    <i class="bi bi-pencil me-1"></i>{% trans "Edit Profile" %}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Language Skills -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-translate me-2"></i>
+                        {% trans "Language Skills" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Teaching Languages -->
+                    {% if profile.teaching_languages %}
+                    <div class="mb-3">
+                        <h6 class="text-success">
+                            <i class="bi bi-mortarboard me-1"></i>
+                            {% trans "Can Teach" %}
+                        </h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for language in profile.teaching_languages %}
+                            <span class="badge bg-success">{{ language }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Learning Languages -->
+                    {% if profile.learning_languages %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">
+                            <i class="bi bi-book-half me-1"></i>
+                            {% trans "Currently Learning" %}
+                        </h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for language in profile.learning_languages %}
+                            <span class="badge bg-primary">{{ language }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Language Exchange Compatibility -->
+                    {% if request.user != profile_user and compatibility_score %}
+                    <div class="mt-3 p-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong>{% trans "Language Exchange Match" %}</strong>
+                            <span class="badge bg-{{ compatibility_badge_color }}">{{ compatibility_score }}%</span>
+                        </div>
+                        {% if compatibility_reasons %}
+                            {% for reason in compatibility_reasons %}
+                            <small class="d-block text-muted">
+                                <i class="bi bi-check-circle text-success me-1"></i>{{ reason }}
+                            </small>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Achievements & Badges -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-trophy me-2"></i>
+                        {% trans "Achievements" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if profile.badges.exists %}
+                        <div class="row">
+                            {% for badge in profile.badges.all %}
+                            <div class="col-6 mb-3 text-center">
+                                <div class="border rounded p-2">
+                                    {% if badge.icon %}
+                                        <img src="{{ badge.icon.url }}" alt="{{ badge.name }}" class="img-fluid mb-1" style="max-height: 40px;">
+                                    {% else %}
+                                        <i class="bi bi-award text-warning" style="font-size: 2rem;"></i>
+                                    {% endif %}
+                                    <h6 class="small mb-0">{{ badge.name }}</h6>
+                                    <small class="text-muted">{{ badge.description|truncatewords:5 }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="bi bi-award text-muted" style="font-size: 2rem;"></i>
+                            <p class="text-muted mt-2 mb-0">{% trans "No achievements yet" %}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity & Groups -->
+        <div class="col-lg-8">
+            <!-- Study Groups -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-people me-2"></i>
+                        {% trans "Study Groups" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if profile.groups.exists %}
+                        <div class="row">
+                            {% for group in profile.groups.all %}
+                            <div class="col-md-6 mb-3">
+                                <div class="border rounded p-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">{{ group.name }}</h6>
+                                            <div class="mb-2">
+                                                <span class="badge bg-info">{{ group.get_language_display }}</span>
+                                                <span class="badge bg-secondary ms-1">{{ group.get_level_display }}</span>
+                                            </div>
+                                            <small class="text-muted">{{ group.description|truncatewords:8 }}</small>
+                                        </div>
+                                        {% if group.created_by == profile %}
+                                            <span class="badge bg-warning">{% trans "Creator" %}</span>
+                                        {% elif profile in group.moderators.all %}
+                                            <span class="badge bg-success">{% trans "Moderator" %}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mt-2">
+                                        <small class="text-muted">
+                                            <i class="bi bi-people me-1"></i>{{ group.members.count }} {% trans "members" %}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="bi bi-people text-muted" style="font-size: 2rem;"></i>
+                            <p class="text-muted mt-2 mb-0">{% trans "Not in any study groups yet" %}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-activity me-2"></i>
+                        {% trans "Recent Activity" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_activities %}
+                        {% for activity in recent_activities %}
+                        <div class="d-flex mb-3 pb-3 border-bottom">
+                            <div class="me-3">
+                                {% if activity.activity_type == 'lesson_completed' %}
+                                    <div class="bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-book text-white"></i>
+                                    </div>
+                                {% elif activity.activity_type == 'achievement' %}
+                                    <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-trophy text-white"></i>
+                                    </div>
+                                {% elif activity.activity_type == 'friend_added' %}
+                                    <div class="bg-info rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-person-plus text-white"></i>
+                                    </div>
+                                {% elif activity.activity_type == 'group_joined' %}
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-people text-white"></i>
+                                    </div>
+                                {% else %}
+                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-activity text-white"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between">
+                                    <p class="mb-1">
+                                        {% if activity.activity_type == 'lesson_completed' %}
+                                            {% trans "Completed lesson:" %} <strong>{{ activity.activity_data.lesson_title|default:"Language lesson" }}</strong>
+                                        {% elif activity.activity_type == 'achievement' %}
+                                            {% trans "Earned achievement:" %} <strong>{{ activity.activity_data.achievement_name|default:"New achievement" }}</strong>
+                                        {% elif activity.activity_type == 'friend_added' %}
+                                            {% trans "Connected with" %} <strong>{{ activity.activity_data.friend_name|default:"a new friend" }}</strong>
+                                        {% elif activity.activity_type == 'group_joined' %}
+                                            {% trans "Joined study group:" %} <strong>{{ activity.activity_data.group_name|default:"Study group" }}</strong>
+                                        {% elif activity.activity_type == 'language_exchange' %}
+                                            {% trans "Had a language exchange session" %}
+                                        {% else %}
+                                            {% trans "Had some activity" %}
+                                        {% endif %}
+                                    </p>
+                                    <small class="text-muted">{{ activity.created_at|timesince }} ago</small>
+                                </div>
+                                
+                                {% if activity.activity_data.description %}
+                                <small class="text-muted">{{ activity.activity_data.description|truncatewords:15 }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-activity text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-3 mb-0">{% trans "No recent activity" %}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.badge {
+    font-weight: normal;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle friend request sending
+    document.querySelectorAll('.send-friend-request').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            sendFriendRequest(userId, this);
+        });
+    });
+
+    // Handle start chat
+    document.querySelectorAll('.start-chat').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            startConversation(userId);
+        });
+    });
+
+    // Handle start exchange
+    document.querySelectorAll('.start-exchange').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            startLanguageExchange(userId);
+        });
+    });
+
+    function sendFriendRequest(userId, button) {
+        const originalText = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{% trans "Sending..." %}';
+        
+        fetch(`/community/api/send-friend-request/${userId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                button.innerHTML = '<i class="bi bi-check me-1"></i>{% trans "Request Sent" %}';
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-success');
+            } else {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                alert(data.error || '{% trans "Error sending friend request" %}');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            button.innerHTML = originalText;
+            button.disabled = false;
+            alert('{% trans "Error sending friend request" %}');
+        });
+    }
+
+    function startConversation(userId) {
+        fetch('/community/api/conversations/start/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ user_id: userId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = `/community/messages/?conversation=${data.conversation_id}`;
+            } else {
+                alert(data.error || '{% trans "Error starting conversation" %}');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('{% trans "Error starting conversation" %}');
+        });
+    }
+
+    function startLanguageExchange(userId) {
+        // TODO: Implement language exchange session creation
+        alert('{% trans "Language exchange feature coming soon!" %}');
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+{% endblock %}

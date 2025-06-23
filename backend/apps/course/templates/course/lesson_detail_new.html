@@ -1,0 +1,330 @@
+{% extends "saas_web/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ lesson.title }} - Linguify{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'course/css/learning-app.css' %}" rel="stylesheet">
+<style>
+.content-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.content-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f1f3f5;
+}
+
+.content-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-size: 18px;
+    color: white;
+}
+
+.content-icon.vocabulary { background: #4CAF50; }
+.content-icon.matching { background: #2196F3; }
+.content-icon.theory { background: #FF9800; }
+.content-icon.speaking { background: #9C27B0; }
+.content-icon.test { background: #F44336; }
+.content-icon.unknown { background: #9E9E9E; }
+
+.vocabulary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.vocab-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    border-left: 4px solid #4CAF50;
+}
+
+.vocab-word {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 4px;
+}
+
+.vocab-translation {
+    font-size: 16px;
+    color: #636e72;
+    margin-bottom: 8px;
+}
+
+.vocab-phonetic {
+    font-size: 14px;
+    color: #74b9ff;
+    font-style: italic;
+}
+
+.matching-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 20px 0;
+}
+
+.matching-column h4 {
+    text-align: center;
+    margin-bottom: 16px;
+    color: #2d3436;
+}
+
+.matching-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.matching-item:hover {
+    background: #e9ecef;
+    border-color: #2196F3;
+}
+
+.theory-content {
+    line-height: 1.6;
+    color: #2d3436;
+}
+
+.theory-content h4 {
+    color: #FF9800;
+    margin: 20px 0 10px 0;
+}
+
+.placeholder-content {
+    text-align: center;
+    padding: 40px 20px;
+    color: #74b9ff;
+}
+
+.lesson-progress {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    min-width: 200px;
+}
+
+.progress-bar {
+    background: #e9ecef;
+    border-radius: 10px;
+    height: 8px;
+    margin: 8px 0;
+}
+
+.progress-fill {
+    background: #4CAF50;
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="learning-app">
+    <!-- Header Bar -->
+    <div class="learning-header">
+        <div class="header-left">
+            <a href="javascript:history.back()" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+        </div>
+        
+        <div class="header-center">
+            <h1>{{ lesson.title }}</h1>
+        </div>
+    </div>
+
+    <!-- Lesson Content -->
+    <div class="learning-content">
+        <div class="container-fluid">
+            <div class="lesson-description">
+                <p><strong>{{ lesson.description }}</strong></p>
+            </div>
+            
+            {% if has_content %}
+                {% for content in lesson_contents %}
+                    <div class="content-section">
+                        <div class="content-header">
+                            <div class="content-icon {{ content.display_type }}">
+                                {% if content.display_type == 'vocabulary' %}
+                                    <i class="bi bi-book"></i>
+                                {% elif content.display_type == 'matching' %}
+                                    <i class="bi bi-link-45deg"></i>
+                                {% elif content.display_type == 'theory' %}
+                                    <i class="bi bi-lightbulb"></i>
+                                {% elif content.display_type == 'speaking' %}
+                                    <i class="bi bi-mic"></i>
+                                {% elif content.display_type == 'test' %}
+                                    <i class="bi bi-check-circle"></i>
+                                {% else %}
+                                    <i class="bi bi-question-circle"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h3>{{ content.title }}</h3>
+                                <small>Section {{ forloop.counter }} sur {{ lesson_contents|length }}</small>
+                            </div>
+                        </div>
+                        
+                        {% if content.display_type == 'vocabulary' %}
+                            <div class="vocabulary-grid">
+                                {% for word in content.vocabulary %}
+                                <div class="vocab-item">
+                                    <div class="vocab-word">{{ word.word }}</div>
+                                    <div class="vocab-translation">{{ word.translation }}</div>
+                                    {% if word.phonetic %}
+                                    <div class="vocab-phonetic">[{{ word.phonetic }}]</div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                        {% elif content.display_type == 'matching' %}
+                            <p class="text-muted">{{ content.instructions }}</p>
+                            <div class="matching-grid">
+                                <div>
+                                    <h4>Éléments</h4>
+                                    {% for pair in content.pairs %}
+                                    <div class="matching-item">{{ pair.left_item }}</div>
+                                    {% endfor %}
+                                </div>
+                                <div>
+                                    <h4>Associations</h4>
+                                    {% for pair in content.pairs %}
+                                    <div class="matching-item">{{ pair.right_item }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                        {% elif content.display_type == 'theory' %}
+                            <div class="theory-content">
+                                {{ content.content|safe }}
+                            </div>
+                            
+                        {% elif content.display_type == 'error' %}
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                {{ content.message }}
+                            </div>
+                            
+                        {% else %}
+                            <div class="placeholder-content">
+                                <i class="bi bi-gear" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                                <p>{{ content.message|default:"Contenu en cours de développement" }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <!-- Lesson Completion -->
+                <div class="content-section">
+                    <div class="content-header">
+                        <div class="content-icon" style="background: #4CAF50;">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div>
+                            <h3>Compléter la leçon</h3>
+                            <small>Marquez cette leçon comme terminée</small>
+                        </div>
+                    </div>
+                    
+                    <p>Vous avez consulté {{ content_count }} section{{ content_count|pluralize }} de contenu.</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle"></i> Terminer la leçon
+                        </button>
+                    </form>
+                </div>
+                
+            {% else %}
+                <!-- No Content -->
+                <div class="content-section">
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 64px; color: #9E9E9E; margin-bottom: 16px; display: block;"></i>
+                        <h4>Contenu en préparation</h4>
+                        <p class="text-muted">Cette leçon ne contient pas encore de contenu spécifique.</p>
+                        <p class="text-muted">Le contenu sera ajouté prochainement.</p>
+                        
+                        <form method="post" style="margin-top: 24px;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-secondary">
+                                <i class="bi bi-skip-forward"></i> Passer cette leçon
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Progress Indicator -->
+    <div class="lesson-progress">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span><i class="bi bi-book"></i> Progression</span>
+            <span>{{ content_count }} section{{ content_count|pluralize }}</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 100%;"></div>
+        </div>
+        <small class="text-muted">Contenu consulté</small>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation d'entrée pour les sections
+    const sections = document.querySelectorAll('.content-section');
+    sections.forEach((section, index) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            section.style.transition = 'all 0.5s ease';
+            section.style.opacity = '1';
+            section.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+    
+    // Interaction avec les éléments de matching
+    document.querySelectorAll('.matching-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // Simple highlight effect
+            this.style.background = '#e3f2fd';
+            setTimeout(() => {
+                this.style.background = '#f8f9fa';
+            }, 200);
+        });
+    });
+});
+</script>
+{% endblock %}

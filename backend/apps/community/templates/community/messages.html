@@ -1,0 +1,399 @@
+{% extends "saas_web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Messages" %} | Open Linguify{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row h-75">
+        <!-- Conversations Sidebar -->
+        <div class="col-md-4 col-lg-3">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-chat-dots me-2"></i>
+                        {% trans "Conversations" %}
+                    </h5>
+                    <button class="btn btn-sm btn-primary" id="newConversationBtn">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>
+                <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                    {% if conversations %}
+                        {% for conversation in conversations %}
+                        <div class="conversation-item p-3 border-bottom cursor-pointer" 
+                             data-conversation-id="{{ conversation.id }}">
+                            <div class="d-flex align-items-center">
+                                <!-- Participant Avatar -->
+                                <div class="me-3">
+                                    {% for participant in conversation.participants.all %}
+                                        {% if participant.user != user %}
+                                            {% if participant.user.get_profile_picture_url %}
+                                                <img src="{{ participant.user.get_profile_picture_url }}" 
+                                                     alt="{{ participant.user.username }}" 
+                                                     class="rounded-circle"
+                                                     style="width: 45px; height: 45px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                                                     style="width: 45px; height: 45px;">
+                                                    <i class="bi bi-person text-white"></i>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            <!-- Online Status -->
+                                            {% if participant.is_online %}
+                                            <span class="position-absolute badge bg-success rounded-pill" 
+                                                  style="top: 35px; left: 35px; width: 10px; height: 10px; padding: 0;"></span>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                
+                                <div class="flex-grow-1">
+                                    {% for participant in conversation.participants.all %}
+                                        {% if participant.user != user %}
+                                            <h6 class="mb-1">{{ participant.user.name|default:participant.user.username }}</h6>
+                                            <small class="text-muted">
+                                                {{ participant.user.get_native_language_display|default:"Unknown" }} speaker
+                                            </small>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">{% trans "Last message:" %} {{ conversation.last_message|timesince }} ago</small>
+                                        <span class="badge bg-primary rounded-pill">2</span> <!-- Unread count placeholder -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-chat-square-dots text-muted" style="font-size: 3rem;"></i>
+                            <p class="mt-3 text-muted">{% trans "No conversations yet" %}</p>
+                            <button class="btn btn-primary btn-sm" id="startFirstConversation">
+                                {% trans "Start Your First Conversation" %}
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="col-md-8 col-lg-9">
+            <div class="card h-100">
+                <!-- Chat Header -->
+                <div class="card-header d-none" id="chatHeader">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <img id="chatPartnerAvatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0" id="chatPartnerName"></h6>
+                            <small class="text-muted" id="chatPartnerLanguage"></small>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>{% trans "View Profile" %}</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-people me-2"></i>{% trans "Study Together" %}</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-exclamation-triangle me-2"></i>{% trans "Report User" %}</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Messages -->
+                <div class="card-body d-flex flex-column" style="height: 500px;">
+                    <!-- Default State -->
+                    <div id="defaultChatState" class="d-flex align-items-center justify-content-center h-100">
+                        <div class="text-center">
+                            <i class="bi bi-chat-heart text-muted" style="font-size: 4rem;"></i>
+                            <h4 class="mt-3">{% trans "Welcome to Language Learning Messages" %}</h4>
+                            <p class="text-muted">{% trans "Select a conversation to start chatting with your language learning partners" %}</p>
+                            <div class="mt-4">
+                                <h6>{% trans "Tips for language exchange:" %}</h6>
+                                <ul class="list-unstyled text-muted">
+                                    <li><i class="bi bi-check-circle me-2 text-success"></i>{% trans "Practice speaking your target language" %}</li>
+                                    <li><i class="bi bi-check-circle me-2 text-success"></i>{% trans "Help others with your native language" %}</li>
+                                    <li><i class="bi bi-check-circle me-2 text-success"></i>{% trans "Share cultural insights" %}</li>
+                                    <li><i class="bi bi-check-circle me-2 text-success"></i>{% trans "Be patient and encouraging" %}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Messages Container -->
+                    <div id="messagesContainer" class="flex-grow-1 d-none" style="overflow-y: auto;">
+                        <!-- Messages will be loaded here -->
+                    </div>
+
+                    <!-- Message Input -->
+                    <div id="messageInput" class="mt-3 d-none">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="{% trans 'Type your message...' %}" id="messageText">
+                            <button class="btn btn-primary" type="button" id="sendMessage">
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="bi bi-lightbulb me-1"></i>
+                                {% trans "Tip: Try writing in both languages to help each other learn!" %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Exchange Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-translate me-2"></i>
+                        {% trans "Language Exchange Tools" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="border rounded p-3 text-center h-100 cursor-pointer hover-shadow" data-tool="translator">
+                                <i class="bi bi-translate text-primary" style="font-size: 2rem;"></i>
+                                <h6 class="mt-2">{% trans "Quick Translator" %}</h6>
+                                <small class="text-muted">{% trans "Translate words on the fly" %}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="border rounded p-3 text-center h-100 cursor-pointer hover-shadow" data-tool="phrases">
+                                <i class="bi bi-chat-quote text-success" style="font-size: 2rem;"></i>
+                                <h6 class="mt-2">{% trans "Common Phrases" %}</h6>
+                                <small class="text-muted">{% trans "Useful expressions for chat" %}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="border rounded p-3 text-center h-100 cursor-pointer hover-shadow" data-tool="topics">
+                                <i class="bi bi-list-ul text-info" style="font-size: 2rem;"></i>
+                                <h6 class="mt-2">{% trans "Conversation Topics" %}</h6>
+                                <small class="text-muted">{% trans "Ideas to keep talking" %}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="border rounded p-3 text-center h-100 cursor-pointer hover-shadow" data-tool="pronunciation">
+                                <i class="bi bi-mic text-warning" style="font-size: 2rem;"></i>
+                                <h6 class="mt-2">{% trans "Pronunciation Help" %}</h6>
+                                <small class="text-muted">{% trans "Audio examples and tips" %}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Conversation Modal -->
+<div class="modal fade" id="newConversationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{% trans "Start New Conversation" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>{% trans "Choose a friend to start a conversation with:" %}</p>
+                <div class="list-group" id="friendsList">
+                    <!-- Friends will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.conversation-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.conversation-item:hover {
+    background-color: #f8f9fa;
+}
+
+.conversation-item.active {
+    background-color: #e3f2fd;
+    border-left: 4px solid var(--bs-primary);
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.hover-shadow:hover {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transform: translateY(-1px);
+    transition: all 0.15s ease-in-out;
+}
+
+.message-bubble {
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+.message-bubble.sent {
+    background-color: #007bff;
+    color: white;
+    margin-left: auto;
+}
+
+.message-bubble.received {
+    background-color: #f8f9fa;
+    color: #333;
+    margin-right: auto;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const conversations = document.querySelectorAll('.conversation-item');
+    const defaultState = document.getElementById('defaultChatState');
+    const chatHeader = document.getElementById('chatHeader');
+    const messagesContainer = document.getElementById('messagesContainer');
+    const messageInput = document.getElementById('messageInput');
+
+    // Handle conversation selection
+    conversations.forEach(conversation => {
+        conversation.addEventListener('click', function() {
+            // Remove active state from all conversations
+            conversations.forEach(c => c.classList.remove('active'));
+            
+            // Add active state to clicked conversation
+            this.classList.add('active');
+            
+            // Show chat interface
+            defaultState.classList.add('d-none');
+            chatHeader.classList.remove('d-none');
+            messagesContainer.classList.remove('d-none');
+            messageInput.classList.remove('d-none');
+            
+            // TODO: Load actual conversation data
+            loadConversation(this.dataset.conversationId);
+        });
+    });
+
+    // Handle new conversation
+    document.getElementById('newConversationBtn').addEventListener('click', function() {
+        // TODO: Load friends list and show modal
+        const modal = new bootstrap.Modal(document.getElementById('newConversationModal'));
+        loadFriendsList();
+        modal.show();
+    });
+
+    // Handle message sending
+    document.getElementById('sendMessage').addEventListener('click', sendMessage);
+    document.getElementById('messageText').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    // Handle language exchange tools
+    document.querySelectorAll('[data-tool]').forEach(tool => {
+        tool.addEventListener('click', function() {
+            const toolType = this.dataset.tool;
+            handleLanguageTool(toolType);
+        });
+    });
+
+    function loadConversation(conversationId) {
+        // TODO: Implement actual conversation loading
+        messagesContainer.innerHTML = `
+            <div class="text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">{% trans "Loading..." %}</span>
+                </div>
+                <p class="mt-2 text-muted">{% trans "Loading conversation..." %}</p>
+            </div>
+        `;
+        
+        // Simulate loading delay
+        setTimeout(() => {
+            messagesContainer.innerHTML = `
+                <div class="d-flex flex-column gap-3 p-3">
+                    <div class="message-bubble received rounded p-3">
+                        <p class="mb-1">{% trans "Hello! How are you doing with your French studies?" %}</p>
+                        <small class="text-muted">{% trans "2 hours ago" %}</small>
+                    </div>
+                    <div class="message-bubble sent rounded p-3">
+                        <p class="mb-1">{% trans "Hi! I'm doing well, thanks! Can you help me with pronunciation?" %}</p>
+                        <small class="text-muted">{% trans "1 hour ago" %}</small>
+                    </div>
+                    <div class="message-bubble received rounded p-3">
+                        <p class="mb-1">{% trans "Of course! What words are you struggling with?" %}</p>
+                        <small class="text-muted">{% trans "30 minutes ago" %}</small>
+                    </div>
+                </div>
+            `;
+        }, 1000);
+    }
+
+    function sendMessage() {
+        const messageText = document.getElementById('messageText');
+        const text = messageText.value.trim();
+        
+        if (text) {
+            // Add message to UI immediately
+            const messageHtml = `
+                <div class="message-bubble sent rounded p-3 mb-3">
+                    <p class="mb-1">${text}</p>
+                    <small class="text-muted">{% trans "Just now" %}</small>
+                </div>
+            `;
+            
+            messagesContainer.innerHTML += messageHtml;
+            messageText.value = '';
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // TODO: Send actual message via API
+        }
+    }
+
+    function loadFriendsList() {
+        // TODO: Load actual friends list
+        document.getElementById('friendsList').innerHTML = `
+            <div class="text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">{% trans "Loading..." %}</span>
+                </div>
+                <p class="mt-2 text-muted">{% trans "Loading your friends..." %}</p>
+            </div>
+        `;
+    }
+
+    function handleLanguageTool(toolType) {
+        switch(toolType) {
+            case 'translator':
+                alert('{% trans "Quick translator feature coming soon!" %}');
+                break;
+            case 'phrases':
+                alert('{% trans "Common phrases feature coming soon!" %}');
+                break;
+            case 'topics':
+                alert('{% trans "Conversation topics feature coming soon!" %}');
+                break;
+            case 'pronunciation':
+                alert('{% trans "Pronunciation help feature coming soon!" %}');
+                break;
+        }
+    }
+});
+</script>
+{% endblock %}

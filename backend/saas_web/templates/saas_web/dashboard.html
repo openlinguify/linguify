@@ -280,8 +280,13 @@
             <div class="col-lg-2 col-md-3 col-sm-4 col-6">
                 <a href="{{ app.url }}" class="text-decoration-none">
                     <div class="app-card-simple">
-                        <div class="app-icon-simple" data-gradient="{{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}">
-                            <i class="bi {{ app.icon|default:'bi-app' }}"></i>
+                        <div class="app-icon-simple" {% if not app.static_icon %}data-gradient="{{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}"{% else %}style="background: transparent; border: 1px solid #e2e8f0;"{% endif %}>
+                            {% if app.static_icon %}
+                                <img src="{{ app.static_icon }}" alt="{{ app.display_name }} icon" style="width: 48px; height: 48px; object-fit: cover; border-radius: 10px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'; this.parentElement.setAttribute('data-gradient', '{{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}');">
+                                <i class="bi {{ app.icon|default:'bi-app' }}" style="display: none; color: white;"></i>
+                            {% else %}
+                                <i class="bi {{ app.icon|default:'bi-app' }}" style="color: white;"></i>
+                            {% endif %}
                         </div>
                         <h6 class="app-name-simple">{{ app.display_name|default:app.name }}</h6>
                     </div>

@@ -66,8 +66,13 @@
             <div class="app-card" data-category="{{ app.category|default:'other' }}" data-app-id="{{ app.id }}">
                 <!-- App Header -->
                 <div class="app-header">
-                    <div class="app-icon" style="background: {{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}">
-                        <i class="bi {{ app.icon|default:'bi-app' }}"></i>
+                    <div class="app-icon" style="{% if not app.static_icon %}background: {{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }};{% else %}background: transparent; border: 1px solid #e2e8f0; border-radius: 12px;{% endif %}">
+                        {% if app.static_icon %}
+                            <img src="{{ app.static_icon }}" alt="{{ app.display_name }} icon" style="width: 40px; height: 40px; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'; this.parentElement.style.background='{{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}';">
+                            <i class="bi {{ app.icon|default:'bi-app' }}" style="display: none; color: white;"></i>
+                        {% else %}
+                            <i class="bi {{ app.icon|default:'bi-app' }}" style="color: white;"></i>
+                        {% endif %}
                     </div>
                     <div class="app-info">
                         <h3 class="app-title">{{ app.display_name }}</h3>
