@@ -4,7 +4,7 @@ Django template-based authentication views
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, EmailOrUsernameAuthenticationForm
 from django.contrib import messages
 from django.views.generic import FormView
 from django.urls import reverse_lazy
@@ -16,7 +16,7 @@ from django.utils.translation import gettext as _
 class LoginView(FormView):
     """Login view using Django templates"""
     template_name = 'authentication/login.html'
-    form_class = AuthenticationForm
+    form_class = EmailOrUsernameAuthenticationForm
     success_url = reverse_lazy('saas_web:dashboard')
     
     def dispatch(self, request, *args, **kwargs):
@@ -26,26 +26,17 @@ class LoginView(FormView):
         return super().dispatch(request, *args, **kwargs)
     
     def form_valid(self, form):
-        username = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password')
-        user = authenticate(username=username, password=password)
+        # The form already handled authentication, just login the user
+        user = form.get_user()
+        login(self.request, user)
+        messages.success(self.request, _('Welcome, %(username)s!') % {'username': user.username})
         
-        if user is not None:
-            login(self.request, user)
-            messages.success(self.request, _('Welcome, %(username)s!') % {'username': user.username})
-            
-            # Redirect to next page if specified
-            next_page = self.request.GET.get('next')
-            if next_page:
-                return HttpResponseRedirect(next_page)
-            
-            return super().form_valid(form)
-        else:
-            # Add error to the form itself
-            error_message = _('Invalid username or password.')
-            form.add_error(None, error_message)
-            messages.error(self.request, error_message)
-            return self.form_invalid(form)
+        # Redirect to next page if specified
+        next_page = self.request.GET.get('next')
+        if next_page:
+            return HttpResponseRedirect(next_page)
+        
+        return super().form_valid(form)
 
 
 class RegisterView(FormView):

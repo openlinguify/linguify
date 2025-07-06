@@ -2,10 +2,57 @@
 Custom forms for authentication app
 """
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import get_user_model, authenticate
+from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
+
+
+class EmailOrUsernameAuthenticationForm(AuthenticationForm):
+    """
+    Custom authentication form that allows login with email or username
+    """
+    username = forms.CharField(
+        max_length=254,
+        widget=forms.TextInput(attrs={
+            'autofocus': True,
+            'placeholder': _('Email or Username'),
+            'class': 'form-control'
+        }),
+        label=_('Email or Username')
+    )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Update the username field to be more generic
+        self.fields['username'].label = _('Email or Username')
+        self.fields['username'].help_text = _('You can use either your email address or username to log in.')
+    
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if username is not None and password:
+            # Use our custom authentication backend
+            self.user_cache = authenticate(
+                self.request, 
+                username=username, 
+                password=password
+            )
+            if self.user_cache is None:
+                raise self.get_invalid_login_error()
+            else:
+                self.confirm_login_allowed(self.user_cache)
+
+        return self.cleaned_data
+    
+    def get_invalid_login_error(self):
+        return forms.ValidationError(
+            _('Please enter a correct email/username and password. Note that both fields may be case-sensitive.'),
+            code='invalid_login',
+            params={'username': self.username_field.verbose_name},
+        )
 
 
 class CustomUserCreationForm(UserCreationForm):

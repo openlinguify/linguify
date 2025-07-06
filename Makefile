@@ -33,26 +33,72 @@ help: ## Affiche cette aide
 
 portal: ## Lance le serveur Portal (port 8080)
 	@echo "$(BLUE)🌐 Lancement du Portal Linguify sur le port $(PORTAL_PORT)...$(NC)"
+	@if lsof -Pi :$(PORTAL_PORT) -t >/dev/null 2>&1; then \
+		echo "$(RED)❌ Erreur: Le port $(PORTAL_PORT) est déjà utilisé!$(NC)"; \
+		echo "$(YELLOW)💡 Essayez: make stop-portal ou utilisez un autre port$(NC)"; \
+		exit 1; \
+	fi
 	$(MANAGE) portal runserver $(PORTAL_PORT)
 
 lms: ## Lance le serveur LMS (port 8001)
 	@echo "$(BLUE)🎓 Lancement du LMS Linguify sur le port $(LMS_PORT)...$(NC)"
+	@if lsof -Pi :$(LMS_PORT) -t >/dev/null 2>&1; then \
+		echo "$(RED)❌ Erreur: Le port $(LMS_PORT) est déjà utilisé!$(NC)"; \
+		echo "$(YELLOW)💡 Essayez: make stop-lms ou utilisez un autre port$(NC)"; \
+		exit 1; \
+	fi
 	$(MANAGE) lms runserver $(LMS_PORT)
 
 backend: ## Lance le serveur Backend (port 8000)
 	@echo "$(BLUE)⚙️ Lancement du Backend Linguify sur le port $(BACKEND_PORT)...$(NC)"
+	@if lsof -Pi :$(BACKEND_PORT) -t >/dev/null 2>&1; then \
+		echo "$(RED)❌ Erreur: Le port $(BACKEND_PORT) est déjà utilisé!$(NC)"; \
+		echo "$(YELLOW)💡 Essayez: make stop-backend ou utilisez un autre port$(NC)"; \
+		exit 1; \
+	fi
 	$(MANAGE) backend runserver $(BACKEND_PORT)
 
 all: ## Lance les 3 serveurs en parallèle
-	@echo "$(BLUE)🚀 Lancement de tous les serveurs Linguify...$(NC)"
+	@echo "$(BLUE) Lancement de tous les serveurs Linguify...$(NC)"
 	@echo "$(YELLOW)Portal: http://127.0.0.1:$(PORTAL_PORT)$(NC)"
 	@echo "$(YELLOW)LMS: http://127.0.0.1:$(LMS_PORT)$(NC)"
 	@echo "$(YELLOW)Backend: http://127.0.0.1:$(BACKEND_PORT)$(NC)"
 	@echo "$(RED)Utilisez Ctrl+C pour arrêter tous les serveurs$(NC)"
-	$(MANAGE) portal runserver $(PORTAL_PORT) & \
-	$(MANAGE) lms runserver $(LMS_PORT) & \
-	$(MANAGE) backend runserver $(BACKEND_PORT) & \
+	@echo "$(BLUE)⏳ Démarrage en cours... (peut prendre 30s sur WSL)$(NC)"
+	$(MANAGE) portal runserver $(PORTAL_PORT) --nothreading & \
+	sleep 2 && $(MANAGE) lms runserver $(LMS_PORT) --nothreading & \
+	sleep 2 && $(MANAGE) backend runserver $(BACKEND_PORT) --nothreading & \
 	wait
+
+stop: ## Arrête tous les serveurs Django
+	@echo "$(RED)🛑 Arrêt de tous les serveurs Linguify...$(NC)"
+	@pkill -f "manage.py.*runserver" || true
+	@echo "$(GREEN)✅ Tous les serveurs sont arrêtés$(NC)"
+
+stop-portal: ## Arrête le serveur Portal
+	@echo "$(RED)🛑 Arrêt du serveur Portal...$(NC)"
+	@lsof -ti :$(PORTAL_PORT) | xargs -r kill -9 2>/dev/null || true
+	@echo "$(GREEN)✅ Serveur Portal arrêté$(NC)"
+
+stop-lms: ## Arrête le serveur LMS
+	@echo "$(RED)🛑 Arrêt du serveur LMS...$(NC)"
+	@lsof -ti :$(LMS_PORT) | xargs -r kill -9 2>/dev/null || true
+	@echo "$(GREEN)✅ Serveur LMS arrêté$(NC)"
+
+stop-backend: ## Arrête le serveur Backend
+	@echo "$(RED)🛑 Arrêt du serveur Backend...$(NC)"
+	@lsof -ti :$(BACKEND_PORT) | xargs -r kill -9 2>/dev/null || true
+	@echo "$(GREEN)✅ Serveur Backend arrêté$(NC)"
+
+restart: ## Redémarre tous les serveurs
+	@make stop
+	@sleep 2
+	@make all
+
+restart-backend: ## Redémarre le serveur Backend
+	@make stop-backend
+	@sleep 1
+	@make backend
 
 status: ## Vérifie le statut des projets
 	@echo "$(BLUE)📊 Vérification du statut des projets...$(NC)"
@@ -169,7 +215,3 @@ urls: ## Affiche les URLs disponibles
 	@echo "$(YELLOW)LMS:$(NC) http://127.0.0.1:$(LMS_PORT)"
 	@echo "$(YELLOW)Backend:$(NC) http://127.0.0.1:$(BACKEND_PORT)"
 
-stop: ## Arrête tous les processus Django en cours
-	@echo "$(BLUE)🛑 Arrêt des serveurs Django...$(NC)"
-	@pkill -f "manage.py.*runserver" || echo "$(YELLOW)Aucun serveur à arrêter$(NC)"
-	@echo "$(GREEN)✅ Serveurs arrêtés$(NC)"

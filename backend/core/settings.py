@@ -119,7 +119,8 @@ LOGOUT_REDIRECT_URL = '/'
 # App config declarations in individual apps
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
+    'apps.authentication.backends.EmailOrUsernameModelBackend',  # Custom backend for email or username login
+    'django.contrib.auth.backends.ModelBackend',  # Fallback to default
     'django.contrib.auth.backends.RemoteUserBackend',
 ]
 
