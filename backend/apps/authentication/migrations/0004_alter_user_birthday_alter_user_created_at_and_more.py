@@ -65,6 +65,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='user',
-            constraint=models.CheckConstraint(condition=models.Q(('native_language', models.F('target_language')), _negated=True), name='prevent_same_native_and_target_language'),
+            constraint=models.CheckConstraint(check=~models.Q(native_language=models.F('target_language')), name='prevent_same_native_and_target_language'),
         ),
     ]

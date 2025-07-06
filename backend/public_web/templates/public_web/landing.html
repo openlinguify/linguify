@@ -839,26 +839,46 @@
                         {% trans "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more." %}
                     </p>
                     
-                    <div class="d-flex gap-3 flex-wrap animate-on-scroll delay-2">
-                        {% if not user.is_authenticated %}
-                            <a href="{% url 'auth:register' %}" class="btn-hero primary">
-                                <i class="fas fa-rocket"></i>
-                                {% trans "Start for free" %}
-                            </a>
-                            <a href="#features" class="btn-hero secondary">
-                                <i class="fas fa-globe"></i>
-                                {% trans "Discover our apps" %}
-                            </a>
-                        {% else %}
-                            <a href="/dashboard/" class="btn-hero primary">
-                                <i class="bi bi-grid-3x3-gap"></i>
-                                {% trans "Access Dashboard" %}
-                            </a>
-                            <a href="/notebook/" class="btn-hero secondary">
-                                <i class="bi bi-journal-text"></i>
-                                {% trans "My Notes" %}
-                            </a>
-                        {% endif %}
+                    <!-- User Type Selection -->
+                    <div class="user-type-selection mb-4 animate-on-scroll delay-2">
+                        <h3 class="mb-3" style="color: #e0e7ff; font-size: 1.1rem;">
+                            {% trans "Choose your learning journey:" %}
+                        </h3>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="user-type-card" style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 1.5rem; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                                    <i class="fas fa-user fa-2x mb-2" style="color: #e0e7ff;"></i>
+                                    <h5 style="color: white; margin-bottom: 0.5rem;">{% trans "Personal Learning" %}</h5>
+                                    <p style="color: #e0e7ff; font-size: 0.9rem; margin-bottom: 1rem;">{% trans "For individual learners and self-study" %}</p>
+                                    {% if not user.is_authenticated %}
+                                        <a href="{% url 'auth:register' %}" class="btn btn-light btn-sm">
+                                            {% trans "Start Learning" %}
+                                        </a>
+                                    {% else %}
+                                        <a href="/dashboard/" class="btn btn-light btn-sm">
+                                            {% trans "Go to Dashboard" %}
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="user-type-card" style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 1.5rem; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                                    <i class="fas fa-university fa-2x mb-2" style="color: #e0e7ff;"></i>
+                                    <h5 style="color: white; margin-bottom: 0.5rem;">{% trans "Institutional LMS" %}</h5>
+                                    <p style="color: #e0e7ff; font-size: 0.9rem; margin-bottom: 1rem;">{% trans "For schools, universities & organizations" %}</p>
+                                    <a href="/lms/" class="btn btn-outline-light btn-sm">
+                                        {% trans "Explore LMS" %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-3 flex-wrap animate-on-scroll delay-3">
+                        <a href="#features" class="btn-hero secondary">
+                            <i class="fas fa-globe"></i>
+                            {% trans "Discover our apps" %}
+                        </a>
                     </div>
                 </div>
             </div>
