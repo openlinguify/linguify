@@ -5,6 +5,9 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.conf import settings
 from lms.apps.tenants.models import Organization
+import logging
+
+logger = logging.getLogger(__name__)
 
 def redirect_to_login(request, org_slug=None):
     """Redirect to login page instead of showing landing page"""
@@ -63,7 +66,7 @@ def dashboard(request, org_slug=None):
                     context['enrollments'] = []
                     context['profile_just_created'] = True
                 except Exception as e:
-                    print(f"Error accessing student profile: {e}")
+                    logger.error(f"Error accessing student profile: {e}")
                     context['needs_profile_setup'] = True
             
             elif user_role in ['owner', 'administrator']:
@@ -79,7 +82,7 @@ def dashboard(request, org_slug=None):
                         status='active'
                     ).count()
                 except Exception as e:
-                    print(f"Error getting admin stats: {e}")
+                    logger.error(f"Error getting admin stats: {e}")
                     context['total_students'] = 0
                     context['active_students'] = 0
             
@@ -111,28 +114,28 @@ def login_view(request, org_slug=None):
         username = request.POST.get('username')
         password = request.POST.get('password')
         
-        # Debug: Print authentication attempt
-        print(f"Authentication attempt: username={username}, org_slug={org_slug}")
+        # Debug: Log authentication attempt
+        logger.info(f"Authentication attempt: username={username}, org_slug={org_slug}")
         
         # Force authentication to use default database (where users are stored)
         from lms.apps.tenants.db_router import clear_current_database, get_current_database, set_current_database
         from lms.apps.tenants.models import OrganizationUser
         current_db = get_current_database()
-        print(f"Current DB before auth: {current_db}")
+        logger.debug(f"Current DB before auth: {current_db}")
         
         clear_current_database()  # This ensures auth uses the default database
-        print(f"Current DB after clear: {get_current_database()}")
+        logger.debug(f"Current DB after clear: {get_current_database()}")
         
         # Debug: Check if user exists - force using default database
         try:
             db_user = OrganizationUser.objects.using('default').get(username=username)
-            print(f"User found in DB: {db_user.username}, active: {db_user.is_active}")
-            print(f"User has usable password: {db_user.has_usable_password()}")
+            logger.debug(f"User found in DB: {db_user.username}, active: {db_user.is_active}")
+            logger.debug(f"User has usable password: {db_user.has_usable_password()}")
         except OrganizationUser.DoesNotExist:
-            print(f"User {username} not found in database")
+            logger.warning(f"User {username} not found in database")
         
         user = authenticate(request, username=username, password=password)
-        print(f"Authentication result: {user}")
+        logger.debug(f"Authentication result: {user}")
         
         # Restore the previous database context after authentication
         if current_db != 'default':
@@ -140,13 +143,13 @@ def login_view(request, org_slug=None):
         
         if user is not None:
             login(request, user)
-            print(f"Login successful for: {user.username}")
+            logger.info(f"Login successful for: {user.username}")
             # Redirect to organization dashboard if in org context
             if org_slug:
                 return redirect('org-core:dashboard', org_slug=org_slug)
             return redirect('core:dashboard')
         else:
-            print("Authentication failed")
+            logger.warning("Authentication failed")
             messages.error(request, 'Invalid username or password')
     
     # Pass organization context to template

@@ -364,11 +364,11 @@ elif django_env == 'development':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env('DEV_DB_NAME', default='db_linguify_dev'),
-            'USER': env('DEV_DB_USER', default='postgres'),
-            'PASSWORD': env('DEV_DB_PASSWORD', default='azerty'),
-            'HOST': env('DEV_DB_HOST', default='localhost'),
-            'PORT': env('DEV_DB_PORT', default='5432'),
+            'NAME': env('DEV_DB_NAME'),
+            'USER': env('DEV_DB_USER'),
+            'PASSWORD': env('DEV_DB_PASSWORD'),
+            'HOST': env('DEV_DB_HOST'),
+            'PORT': env('DEV_DB_PORT'),
         }
     }
     print("Using PostgreSQL local for development")
