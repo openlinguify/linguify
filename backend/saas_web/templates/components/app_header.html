@@ -1,7 +1,6 @@
 <!-- Header fixe réutilisable pour les applications Open Linguify -->
 {% load static %}
 {% load i18n %}
-{% load app_tags %}
 
 <!-- Header Critical CSS - inlined for performance -->
 <style>
@@ -199,19 +198,10 @@ body {
         <div class="container-fluid">
             <!-- Brand -->
             <a class="navbar-brand" href="{% url 'saas_web:dashboard' %}" aria-label="{% trans 'Return to dashboard' %}">
-                {% if current_app %}
-                    <img src="/app-icons/{{ current_app.name }}/icon.png" alt="{{ current_app.display_name }} icon" class="me-2 align-middle" style="width: 32px; height: 32px; object-fit: cover; border-radius: 6px; margin-top: -2px;" aria-hidden="true">
-                    {{ current_app.display_name }}
-                {% else %}
-                    {% get_current_app_name request as detected_app %}
-                    {% if detected_app %}
-                        {% get_app_info detected_app as app_info %}
-                        <img src="/app-icons/{{ detected_app }}/icon.png" alt="{{ app_info.display_name }} icon" class="me-2 align-middle" style="width: 32px; height: 32px; object-fit: cover; border-radius: 6px; margin-top: -2px;" aria-hidden="true">
-                        {{ app_info.display_name }}
-                    {% else %}
-                        Linguify
-                    {% endif %}
-                {% endif %}
+                <span class="d-flex align-items-center">
+                    <img src="{% static 'img/app_icon/langue.png' %}" alt="Linguify" class="me-2" style="width: 32px; height: 32px; object-fit: cover; border-radius: 6px;" aria-hidden="true">
+                    Linguify
+                </span>
             </a>
             
             <div class="ms-auto d-flex align-items-center gap-2">

@@ -114,6 +114,9 @@ urlpatterns = [
     
     # SEO Status and Management
     path('seo/status/', sitemap_status, name='seo_status'),
+    
+    # LMS info page
+    path('lms/', views.lms_info, name='lms_info'),
 ]
 
 # URLs with language prefix (for public website and authentication)
@@ -127,8 +130,8 @@ urlpatterns += i18n_patterns(
     # Blog - with language prefix (public-facing)
     path('blog/', include('core.blog.urls', namespace='blog')),
     
-    # Public website (landing, marketing) - with language prefix
-    path('', include('public_web.urls')),
+    # Redirect to dashboard for authenticated users, or to portal for others
+    path('', RedirectView.as_view(url='/dashboard/', permanent=False)),
     prefix_default_language=True,  # Add language prefix even for default language
 )
 

@@ -1,0 +1,245 @@
+{% extends "public_web/public_base.html" %}
+{% load i18n %}
+
+{% block title %}Quiz Interactif - Créateur de Quiz{% endblock %}
+
+{% block meta_description %}Créez et partagez des quiz interactifs pour tester vos connaissances. Système de notation avancé, analytics de performance et partage communautaire.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="app-icon me-3" style="font-size: 3rem; color: #fff;">
+                        🧠
+                    </div>
+                    <div>
+                        <h1 class="display-4 fw-bold mb-2">
+                            Quiz Interactif
+                        </h1>
+                        <p class="lead mb-0">Créez et partagez des quiz pour tester vos connaissances</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3">
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'auth:register' %}" class="btn btn-light btn-lg">
+                            <i class="bi bi-person-plus me-2"></i>{% trans "Commencer gratuitement" %}
+                        </a>
+                    {% else %}
+                        <a href="/quizz/" class="btn btn-light btn-lg">
+                            <i class="bi bi-patch-question me-2"></i>{% trans "Créer un quiz" %}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <div style="font-size: 10rem; opacity: 0.3; color: #fff;">🧠</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Description Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-body p-5">
+                        <h2 class="h3 mb-4">{% trans "Système de Quiz Interactif" %}</h2>
+                        <div class="description-content">
+                            <p>Créez des quiz personnalisés pour tester vos connaissances et celles de votre communauté. Notre système de quiz intelligent s'adapte à votre niveau et vous aide à progresser efficacement.</p>
+                            
+                            <h4>Fonctionnalités principales :</h4>
+                            <ul>
+                                <li><strong>Création de quiz personnalisés</strong> avec différents types de questions</li>
+                                <li><strong>Questions à choix multiples</strong>, vrai/faux, réponses courtes</li>
+                                <li><strong>Système de notation avancé</strong> avec feedback détaillé</li>
+                                <li><strong>Analytics de performance</strong> pour suivre vos progrès</li>
+                                <li><strong>Partage communautaire</strong> de vos quiz avec d'autres apprenants</li>
+                                <li><strong>Quiz adaptatifs</strong> qui s'ajustent à votre niveau</li>
+                                <li><strong>Bibliothèque de quiz</strong> créés par la communauté</li>
+                                <li><strong>Statistiques détaillées</strong> de vos performances</li>
+                            </ul>
+                            
+                            <div class="alert alert-success mt-4">
+                                <i class="bi bi-trophy me-2"></i>
+                                <strong>Challenge :</strong> Participez aux défis hebdomadaires et grimpez dans le classement !
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <i class="bi bi-tag text-primary" style="font-size: 2rem;"></i>
+                                </div>
+                                <h6 class="fw-bold">{% trans "Category" %}</h6>
+                                <p class="text-muted">Évaluation & Tests</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <i class="bi bi-code-slash text-primary" style="font-size: 2rem;"></i>
+                                </div>
+                                <h6 class="fw-bold">{% trans "Version" %}</h6>
+                                <p class="text-muted">1.0.0</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <i class="bi bi-person text-primary" style="font-size: 2rem;"></i>
+                                </div>
+                                <h6 class="fw-bold">{% trans "Author" %}</h6>
+                                <p class="text-muted">Linguify Team</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-6 fw-bold">Pourquoi choisir notre Quiz Interactif ?</h2>
+                <p class="lead text-muted">Des fonctionnalités avancées pour un apprentissage efficace</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="text-center h-100">
+                    <div class="mb-3">
+                        <i class="bi bi-patch-question text-danger" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="fw-bold">Quiz Personnalisés</h5>
+                    <p class="text-muted">Créez vos propres questions adaptées à vos besoins</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="text-center h-100">
+                    <div class="mb-3">
+                        <i class="bi bi-graph-up text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="fw-bold">Analytics Avancés</h5>
+                    <p class="text-muted">Suivez vos progrès avec des statistiques détaillées</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="text-center h-100">
+                    <div class="mb-3">
+                        <i class="bi bi-share text-warning" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="fw-bold">Partage Communautaire</h5>
+                    <p class="text-muted">Partagez vos quiz et découvrez ceux des autres</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="text-center h-100">
+                    <div class="mb-3">
+                        <i class="bi bi-award text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="fw-bold">Système de Scores</h5>
+                    <p class="text-muted">Notation intelligente avec feedback personnalisé</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quiz Types Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-6 fw-bold">Types de Quiz Disponibles</h2>
+                <p class="lead text-muted">Variez les formats pour maintenir l'engagement</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-check-circle text-success me-3" style="font-size: 2rem;"></i>
+                            <h5 class="mb-0">Questions à Choix Multiples</h5>
+                        </div>
+                        <p class="text-muted">Format classique avec plusieurs réponses possibles. Idéal pour tester la compréhension générale.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-toggle-on text-primary me-3" style="font-size: 2rem;"></i>
+                            <h5 class="mb-0">Vrai ou Faux</h5>
+                        </div>
+                        <p class="text-muted">Questions rapides pour vérifier la compréhension des concepts clés.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-pencil text-warning me-3" style="font-size: 2rem;"></i>
+                            <h5 class="mb-0">Réponses Courtes</h5>
+                        </div>
+                        <p class="text-muted">Questions ouvertes pour évaluer la capacité d'expression et de synthèse.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-puzzle text-info me-3" style="font-size: 2rem;"></i>
+                            <h5 class="mb-0">Questions Adaptatives</h5>
+                        </div>
+                        <p class="text-muted">Difficulté qui s'ajuste automatiquement selon vos performances.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 4rem 0;">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">
+            {% trans "Prêt à tester vos connaissances ?" %}
+        </h2>
+        <p class="lead mb-5">
+            {% trans "Créez votre premier quiz et découvrez une nouvelle façon d'apprendre et de réviser." %}
+        </p>
+        {% if not user.is_authenticated %}
+            <a href="{% url 'auth:register' %}" class="btn btn-light btn-lg me-3">
+                <i class="bi bi-rocket me-2"></i>{% trans "Commencer gratuitement" %}
+            </a>
+            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
+            </a>
+        {% else %}
+            <a href="/quizz/" class="btn btn-light btn-lg me-3">
+                <i class="bi bi-patch-question me-2"></i>{% trans "Créer un quiz" %}
+            </a>
+            <a href="{% url 'saas_web:app_store' %}" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-shop me-2"></i>{% trans "Explore App Store" %}
+            </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

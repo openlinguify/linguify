@@ -1,0 +1,207 @@
+{% extends 'public_web/public_base.html' %}
+{% load static %}
+{% load app_tags %}
+
+{% block title %}Fonctionnalités - Open Linguify{% endblock %}
+
+{% block meta_description %}Découvrez toutes les fonctionnalités de Open Linguify : cours interactifs, flashcards intelligentes, suivi de progression et bien plus.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section hero-gradient">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Des fonctionnalités puissantes pour apprendre
+                </h1>
+                <p class="lead mb-4">
+                    Open Linguify offre un écosystème complet d'outils d'apprentissage 
+                    conçus pour vous aider à maîtriser n'importe quelle langue.
+                </p>
+                <div class="d-flex gap-3">
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'auth:register' %}" class="btn btn-light btn-lg">
+                            <i class="bi bi-person-plus me-2"></i>Commencer gratuitement
+                        </a>
+                    {% else %}
+                        <a href="{% url 'saas_web:dashboard' %}" class="btn btn-light btn-lg">
+                            <i class="bi bi-speedometer2 me-2"></i>Aller au Dashboard
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-chat-dots me-2"></i>Nous contacter
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <i class="bi bi-grid-3x3-gap" style="font-size: 10rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Course App -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Courses</h3>
+                    <p class="text-muted mb-3">
+                        Cours structurés avec des leçons progressives, exercices interactifs 
+                        et évaluations personnalisées.
+                    </p>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-check text-success me-2"></i>Leçons de vocabulaire</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Exercices de grammaire</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Tests de compréhension</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Suivi de progression</li>
+                    </ul>
+                    <div class="mt-3">
+                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='course' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revision App -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">
+                        <i class="bi bi-cards"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Revision</h3>
+                    <p class="text-muted mb-3">
+                        Système de révision espacée avec flashcards intelligentes 
+                        pour une mémorisation optimale.
+                    </p>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-check text-success me-2"></i>Flashcards personnalisées</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Révision espacée</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Statistiques détaillées</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Import/Export de decks</li>
+                    </ul>
+                    <div class="mt-3">
+                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='revision' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notebook App -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">
+                        <i class="bi bi-journal-text"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Notebook</h3>
+                    <p class="text-muted mb-3">
+                        Prise de notes centralisée avec organisation intelligente 
+                        et recherche avancée.
+                    </p>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-check text-success me-2"></i>Éditeur riche</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Organisation par tags</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Recherche full-text</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Partage de notes</li>
+                    </ul>
+                    <div class="mt-3">
+                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='notebook' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz App -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%)">
+                        <i class="bi bi-question-circle"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Quiz</h3>
+                    <p class="text-muted mb-3">
+                        Système de quiz adaptatif pour tester vos connaissances 
+                        et identifier vos points faibles.
+                    </p>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-check text-success me-2"></i>Quiz adaptatifs</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Questions variées</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Analyses détaillées</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Recommandations</li>
+                    </ul>
+                    <div class="mt-3">
+                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='quizz' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Language AI -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Language AI</h3>
+                    <p class="text-muted mb-3">
+                        Assistant IA pour conversations naturelles et corrections 
+                        intelligentes en temps réel.
+                    </p>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-check text-success me-2"></i>Chat conversationnel</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Corrections automatiques</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Suggestions contextuelles</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Exercices personnalisés</li>
+                    </ul>
+                    <div class="mt-3">
+                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='language_ai' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">
+            Prêt à explorer toutes ces fonctionnalités ?
+        </h2>
+        <p class="lead mb-5">
+            Commencez dès maintenant et découvrez comment Open Linguify 
+            peut transformer votre apprentissage des langues.
+        </p>
+        {% if not user.is_authenticated %}
+            <a href="{% url 'auth:register' %}" class="btn btn-primary btn-lg me-3">
+                <i class="bi bi-rocket me-2"></i>Commencer gratuitement
+            </a>
+            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-chat-dots me-2"></i>Nous contacter
+            </a>
+        {% else %}
+            <a href="{% url 'saas_web:dashboard' %}" class="btn btn-primary btn-lg me-3">
+                <i class="bi bi-speedometer2 me-2"></i>Aller au Dashboard
+            </a>
+            <a href="{% url 'saas_web:app_store' %}" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-shop me-2"></i>Explorer l'App Store
+            </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

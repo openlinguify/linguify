@@ -1,0 +1,300 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% trans "OpenLinguify - Open source educational apps platform" %}{% endblock %}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="{% block meta_description %}{% trans 'OpenLinguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning.' %}{% endblock %}">
+
+
+    <meta name="keywords" content="{% block meta_keywords %}
+openlinguify, open linguify, OpenLinguify, Open Linguify, openlinguify.com, linguify platform, linguify educational apps, linguify open source, apprentissage, éducation en ligne, outils éducatifs, flashcards, quiz, révision, mémoire, cours en ligne, application éducative, carnet de notes, IA éducative, social learning, apprentissage collaboratif, flashcard, education tools, chat, online
+
+learning, online education, educational tools, flashcards, quizzes, study, memory, spaced repetition, online courses, study tools, learning app, smart education, revision tools, AI learning, digital notebook, collaborative learning,
+
+aprendizaje, educación en línea, herramientas educativas, tarjetas didácticas, cuestionarios, repaso, memoria, cursos online, aprendizaje colaborativo, aplicación de estudio, repetición espaciada,
+
+lernen, Online-Bildung, Lernwerkzeuge, Karteikarten, Quiz, Wiederholung, Gedächtnis, Online-Kurse, Lernplattform, KI-Lernen, Notizbuch online, gemeinsames Lernen,
+
+apprendimento, istruzione online, strumenti educativi, flashcard, quiz, studio, memoria, corsi online, intelligenza artificiale per l’istruzione, apprendimento collaborativo, app didattica,
+
+aprendizagem, educação online, ferramentas educacionais, flashcards, questionários, estudo, memória, cursos online, repetição espaçada, aplicação educativa, caderno digital, aprendizagem colaborativa,
+
+leren, online onderwijs, educatieve tools, flashcards, quizzen, studeren, geheugen, online cursussen, leertools, digitaal notitieboek, samenwerken leren,
+
+nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamięć, kursy online, aplikacja edukacyjna, inteligentna nauka, nauczanie wspólne,
+
+التعلم, التعليم الإلكتروني, أدوات تعليمية, بطاقات تعليمية, اختبارات, مراجعة, ذاكرة, تطبيق تعليمي, دفاتر ملاحظات رقمية, التعلم الجماعي, الذكاء الاصطناعي في التعليم,
+
+学習, オンライン教育, 教育ツール, フラッシュカード, クイズ, 復習, 記憶, スマート学習, オンラインコース, ノートアプリ, AI学習, 協働学習,
+
+学习, 在线教育, 教育工具, 闪卡, 测验, 复习, 记忆, 在线课程, 学习工具, 智能学习, 数字笔记本, 协作学习, 教育AI,
+
+शिक्षा, ऑनलाइन शिक्षा, शैक्षणिक उपकरण, फ्लैशकार्ड, क्विज़, अध्ययन, मेमोरी, ऑनलाइन कोर्स, शिक्षण ऐप, पुनरावृत्ति, एआई शिक्षा, सहयोगी शिक्षा
+{% endblock %}">
+    <meta name="author" content="OpenLinguify Team">
+    <meta property="og:site_name" content="OpenLinguify">
+
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="{% block og_title %}{% trans 'OpenLinguify - Open source educational apps platform' %}{% endblock %}">
+    <meta property="og:description"
+        content="{% block og_description %}{% trans 'Discover OpenLinguify, a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn.' %}{% endblock %}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:image" content="{% load static %}{% static 'public_web/images/og-image.png' %}">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title"
+        content="{% block twitter_title %}{% trans 'OpenLinguify - Open source platform for modern education' %}{% endblock %}">
+    <meta name="twitter:description"
+        content="{% block twitter_description %}{% trans 'OpenLinguify: Complete suite of open source educational apps: memorization, flashcards, notes, quizzes, collaborative chat and much more.' %}{% endblock %}">
+    <meta name="twitter:image" content="{% static 'public_web/images/og-image.png' %}">
+
+    <!-- Additional SEO -->
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#6366f1">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    {% load static %}
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'src/css/main.css' %}">
+    {% block extra_css %}{% endblock %}
+
+    <!-- Favicons - Configuration complète pour tous navigateurs -->
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/favicon-48x48.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/favicon-192x192.png' %}">
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/apple-touch-icon-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <!-- Spécifique pour Google et Microsoft -->
+    <meta name="msapplication-TileImage" content="{% static 'images/favicon-144x144.png' %}">
+    <meta name="msapplication-TileColor" content="#6366f1">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+
+        /* Header public */
+        .public-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e2e8f0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .main-content {
+            padding-top: 65px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1e293b;
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer a {
+            color: #cbd5e1;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: white;
+        }
+
+        /* Hero section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 6rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding-top: 60px;
+            }
+
+            .hero-section {
+                padding: 4rem 0;
+            }
+        }
+    </style>
+
+    <!-- Structured Data / Schema.org -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": "https://www.openlinguify.com/#organization",
+        "name": "OpenLinguify",
+        "alternateName": ["Open Linguify", "openlinguify"],
+        "url": "https://www.openlinguify.com/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.openlinguify.com{% static 'images/favicon.png' %}",
+            "width": 512,
+            "height": 512
+        },
+        "description": "{% trans 'OpenLinguify is an open source educational platform offering AI-powered language learning tools, flashcards, quizzes, and collaborative learning features.' %}",
+        "sameAs": [
+            "https://github.com/openlinguify",
+            "https://twitter.com/openlinguify",
+            "https://linkedin.com/company/openlinguify"
+        ],
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer support",
+            "url": "https://www.openlinguify.com/contact/",
+            "availableLanguage": ["English", "French", "Spanish", "Dutch"]
+        }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": "https://www.openlinguify.com/#website",
+        "url": "https://www.openlinguify.com/",
+        "name": "OpenLinguify",
+        "description": "{% trans 'Open source educational platform for language learning' %}",
+        "publisher": {
+            "@id": "https://www.openlinguify.com/#organization"
+        },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://www.openlinguify.com/search?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+        },
+        "inLanguage": ["en", "fr", "es", "nl"]
+    }
+    </script>
+
+    {% block structured_data %}{% endblock %}
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <!-- Include public header -->
+    {% include 'components/public_header.html' %}
+
+    <!-- Main content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Include public footer -->
+    {% include 'components/public_footer.html' %}
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="{% static 'src/js/main.js' %}"></script>
+
+    <!-- Language switching -->
+    <script>
+        function setLanguage(lang) {
+            // Create form to submit language change
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/i18n/setlang/';
+
+            // Add CSRF token
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = '{{ csrf_token }}';
+            form.appendChild(csrfInput);
+
+            // Add language
+            const langInput = document.createElement('input');
+            langInput.type = 'hidden';
+            langInput.name = 'language';
+            langInput.value = lang;
+            form.appendChild(langInput);
+
+            // Add next URL
+            const nextInput = document.createElement('input');
+            nextInput.type = 'hidden';
+            nextInput.name = 'next';
+            nextInput.value = window.location.pathname;
+            form.appendChild(nextInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

@@ -99,7 +99,7 @@ INSTALLED_APPS = [
     'apps.quizz',
     
     # Web interfaces
-    'public_web',
+    # 'public_web', # Moved to portal
     'saas_web',
     'core.apps.CoreConfig',
     'core.jobs',
@@ -466,9 +466,9 @@ LANGUAGES = [
     ('nl', 'Nederlands'),
 ]
 
-# Locale paths - public_web as central hub for consistent translations
+# Locale paths - for internationalization
 LOCALE_PATHS = [
-    os.path.join(BASE_DIR, 'public_web/i18n'),
+    # os.path.join(BASE_DIR, 'public_web/i18n'), # Moved to portal
     os.path.join(BASE_DIR, 'apps/authentication/i18n'),
     os.path.join(BASE_DIR, 'saas_web/i18n'),
     os.path.join(BASE_DIR, 'apps/course/i18n'),
@@ -530,7 +530,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'public_web', 'static'),
+    # os.path.join(BASE_DIR, 'public_web', 'static'), # Moved to portal
     os.path.join(BASE_DIR, 'saas_web', 'static'),
 ]
 
