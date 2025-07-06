@@ -7,7 +7,7 @@ import argparse
 def print_help():
     """Print help message for Linguify projects"""
     print("\n" + "="*60)
-    print("🌐 LINGUIFY PROJECT MANAGER")
+    print("LINGUIFY PROJECT MANAGER")
     print("="*60 + "\n")
     
     print("Available projects:")
@@ -66,15 +66,18 @@ def main():
     if project == 'lms':
         sys.path.insert(0, os.path.join(base_dir, 'lms'))
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'lms.settings')
-        print(f"🎓 Managing Linguify LMS...")
+        print(f"Managing Linguify LMS...")
     elif project == 'portal':
-        sys.path.insert(0, os.path.join(base_dir, 'portal'))
+        portal_path = os.path.join(base_dir, 'portal')
+        sys.path.insert(0, portal_path)
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'portal.settings')
-        print(f"🌐 Managing Linguify Portal...")
+        print(f"Managing Linguify Portal...")
+        # Change to portal directory for Django to find the module correctly
+        os.chdir(portal_path)
     else:
         sys.path.insert(0, os.path.join(base_dir, 'backend'))
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
-        print(f"📚 Managing Linguify Particulier (Backend)...")
+        print(f"Managing Linguify Particulier (Backend)...")
     
     try:
         from django.core.management import execute_from_command_line
