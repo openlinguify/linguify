@@ -1,7 +1,6 @@
 {% extends 'public_web/public_base.html' %}
 {% load static %}
 {% load i18n %}
-{% load app_tags %}
 
 {% block title %}{% trans "Applications" %} - Open Linguify{% endblock %}
 
@@ -21,11 +20,11 @@
                 </p>
                 <div class="d-flex gap-3">
                     {% if not user.is_authenticated %}
-                        <a href="{% url 'auth:register' %}" class="btn btn-light btn-lg">
+                        <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg">
                             <i class="bi bi-person-plus me-2"></i>{% trans "Start for free" %}
                         </a>
                     {% else %}
-                        <a href="{% url 'saas_web:dashboard' %}" class="btn btn-light btn-lg">
+                        <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-light btn-lg">
                             <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
                         </a>
                     {% endif %}
@@ -50,7 +49,7 @@
                     <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
                         <i class="bi bi-{{ app.icon|lower }}"></i>
                     </div>
-                    <h3 class="h5 mb-3">{{ app.name|translate_app_name }}</h3>
+                    <h3 class="h5 mb-3">{{ app.name }}</h3>
                     <p class="text-muted mb-3">{{ app.summary }}</p>
                     
                     <div class="mt-auto">
@@ -58,7 +57,7 @@
                             <small class="text-muted">{{ app.category }}</small>
                             <small class="text-muted">v{{ app.version }}</small>
                         </div>
-                        <a href="{% get_app_url app.slug %}" class="btn btn-outline-primary btn-sm w-100">
+                        <a href="{% url 'public_web:dynamic_app_detail' app_slug=app.slug %}" class="btn btn-outline-primary btn-sm w-100">
                             <i class="bi bi-arrow-right me-1"></i>{% trans "Learn more" %}
                         </a>
                     </div>
@@ -87,17 +86,17 @@
             {% trans "Join our community and access all these amazing educational applications." %}
         </p>
         {% if not user.is_authenticated %}
-            <a href="{% url 'auth:register' %}" class="btn btn-primary btn-lg me-3">
+            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-primary btn-lg me-3">
                 <i class="bi bi-rocket me-2"></i>{% trans "Start for free" %}
             </a>
             <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
                 <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
             </a>
         {% else %}
-            <a href="{% url 'saas_web:dashboard' %}" class="btn btn-primary btn-lg me-3">
+            <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-primary btn-lg me-3">
                 <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
             </a>
-            <a href="{% url 'saas_web:app_store' %}" class="btn btn-outline-light btn-lg">
+            <a href="http://127.0.0.1:8000/app-store/" class="btn btn-outline-light btn-lg">
                 <i class="bi bi-shop me-2"></i>{% trans "Explore App Store" %}
             </a>
         {% endif %}

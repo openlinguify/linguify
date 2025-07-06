@@ -3,7 +3,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse
+from django.conf import settings
 from lms.apps.tenants.models import Organization
+
+def redirect_to_login(request, org_slug=None):
+    """Redirect to login page instead of showing landing page"""
+    if request.user.is_authenticated:
+        return dashboard(request, org_slug)
+    return redirect('core:login')
 
 def dashboard(request, org_slug=None):
     """LMS Dashboard - main landing page"""
@@ -152,7 +159,6 @@ def login_view(request, org_slug=None):
 def logout_view(request, org_slug=None):
     """LMS Logout view"""
     logout(request)
-    # Redirect to organization context if available
-    if org_slug:
-        return redirect('org-core:dashboard', org_slug=org_slug)
-    return redirect('core:dashboard')
+    # Redirect to portal instead of dashboard
+    portal_url = 'http://127.0.0.1:8080' if settings.DEBUG else 'https://openlinguify.com'
+    return redirect(portal_url)

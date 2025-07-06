@@ -16,7 +16,8 @@ from apps.authentication.views_terms import accept_terms, terms_status
 from tests.test_settings import test_settings
 from django.contrib.sitemaps.views import sitemap, index as sitemap_index
 from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
-from core.blog.views import comment_like_toggle, comment_report, reply_to_comment as comment_reply
+# Blog moved to portal - commented out
+# from core.blog.views import comment_like_toggle, comment_report, reply_to_comment as comment_reply
 from django.views.generic import RedirectView
 from .favicon_views import favicon_ico, apple_touch_icon, favicon_png
 from app_manager.icon_views import AppIconView
@@ -43,10 +44,10 @@ urlpatterns = [
     # Language switching
     path('i18n/', include('django.conf.urls.i18n')),
     
-    # Blog AJAX endpoints (no language prefix for API calls)
-    path('blog/comment/like/', comment_like_toggle, name='blog_comment_like_ajax'),
-    path('blog/comment/report/', comment_report, name='blog_comment_report_ajax'),
-    path('blog/comment/<int:comment_id>/reply/', comment_reply, name='blog_comment_reply_ajax'),
+    # Blog AJAX endpoints moved to portal
+    # path('blog/comment/like/', comment_like_toggle, name='blog_comment_like_ajax'),
+    # path('blog/comment/report/', comment_report, name='blog_comment_report_ajax'),
+    # path('blog/comment/<int:comment_id>/reply/', comment_reply, name='blog_comment_reply_ajax'),
     
     # App icons - serve app/static/description/icon.png as app-icons/app/icon.png
     path('app-icons/<str:app_name>/<str:filename>', AppIconView.as_view(), name='app_icon'),
@@ -87,7 +88,8 @@ urlpatterns = [
     path('api/contact/', views.contact_view, name='contact'),
     path('api/v1/notifications/', include('apps.notification.urls', namespace='notification')),
     path('api/v1/language_ai/', include('apps.language_ai.urls', namespace='language_ai')),
-    path('api/v1/jobs/', include('core.jobs.urls', namespace='jobs')),
+    # Jobs API moved to portal
+    # path('api/v1/jobs/', include('core.jobs.urls', namespace='jobs')),
     path('api/v1/app-manager/', include('app_manager.urls', namespace='app_manager')),
     # path('api/v1/flashcard/', include('flashcard.urls', namespace='flashcard')),
     # path('api/v1/task/', include('task.urls', namespace='task')),
@@ -124,11 +126,11 @@ urlpatterns += i18n_patterns(
     # Authentication (login/register pages) - with language prefix
     path('auth/', include('apps.authentication.urls_auth')),
     
-    # Careers/Jobs pages - with language prefix (public-facing)
-    path('careers/', include('core.jobs.urls_web', namespace='jobs_web')),
+    # Careers/Jobs pages moved to portal
+    # path('careers/', include('core.jobs.urls_web', namespace='jobs_web')),
     
-    # Blog - with language prefix (public-facing)
-    path('blog/', include('core.blog.urls', namespace='blog')),
+    # Blog moved to portal
+    # path('blog/', include('core.blog.urls', namespace='blog')),
     
     # Redirect to dashboard for authenticated users, or to portal for others
     path('', RedirectView.as_view(url='/dashboard/', permanent=False)),

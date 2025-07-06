@@ -81,4 +81,6 @@ def logout_view(request):
     from django.contrib.auth import logout
     logout(request)
     messages.success(request, 'Vous avez été déconnecté avec succès.')
-    return redirect('public_web:landing')
+    # Redirect to portal instead of removed public_web
+    portal_url = 'http://127.0.0.1:8080' if settings.DEBUG else 'https://openlinguify.com'
+    return redirect(portal_url)

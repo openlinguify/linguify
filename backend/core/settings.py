@@ -99,20 +99,11 @@ INSTALLED_APPS = [
     'apps.quizz',
     
     # Web interfaces
-    # 'public_web', # Moved to portal
     'saas_web',
     'core.apps.CoreConfig',
-    'core.jobs',
-    'core.blog',
-    # 'admin_tools',  # Admin tools for managing the platform
-    # Django REST framework modules
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    
-    # Frontend integration
-    # 'compressor',
-    # 'sass_processor',
 
     # test
     'pytest_django',
@@ -269,7 +260,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'apps.authentication.middleware.JWTMiddleware',  # Disabled - using Supabase now
     'apps.authentication.middleware_terms.TermsAcceptanceMiddleware',  # Check terms acceptance
-    'core.jobs.middleware.JobsErrorHandlingMiddleware',  # Jobs error handling
+    # 'core.jobs.middleware.JobsErrorHandlingMiddleware',  # Jobs error handling - moved to portal
     # SEO Optimization Middleware (simplified version)
     'core.seo.middleware.simple.SimpleSEOMiddleware',
     # 'core.seo.middleware.optimization.SEOOptimizationMiddleware',  # Disabled temporarily

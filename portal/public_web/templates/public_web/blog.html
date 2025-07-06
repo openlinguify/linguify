@@ -9,11 +9,6 @@
 {% block meta_keywords %}openlinguify, open linguify, language learning, AI education, blog, tips, tutorials{% endblock %}
 
 {% block content %}
-<script>
-// Redirect to new blog app
-window.location.href = "{% url 'blog:list' %}";
-</script>
-
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -24,10 +19,14 @@ window.location.href = "{% url 'blog:list' %}";
             
             <div class="text-center">
                 <div class="alert alert-info">
-                    <i class="bi bi-rss me-2"></i>
-                    {% trans "Redirecting to our new blog..." %}
+                    <i class="bi bi-info-circle me-2"></i>
+                    {% trans "Le blog sera bientôt disponible ! En attendant, découvrez nos produits Linguify." %}
                 </div>
-                <a href="{% url 'blog:list' %}" class="btn btn-primary">{% trans "Visit OpenLinguify Blog" %}</a>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{% url 'blog:list' %}" class="btn btn-primary">{% trans "Voir le blog" %}</a>
+                    <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-outline-primary">{% trans "Linguify Particulier" %}</a>
+                    <a href="http://127.0.0.1:8001/login/" class="btn btn-outline-primary">{% trans "Linguify LMS" %}</a>
+                </div>
             </div>
         </div>
     </div>

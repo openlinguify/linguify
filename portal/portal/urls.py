@@ -10,12 +10,18 @@ from django.conf.urls.i18n import i18n_patterns
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
+    # API endpoints (no language prefix)
+    path('api/v1/jobs/', include('jobs.urls')),
 ]
 
 # URLs avec préfixe de langue
 urlpatterns += i18n_patterns(
     # Pages publiques seulement - pas d'auth dans le portal
     path('', include('public_web.urls')),
+    # Apps déplacées du backend
+    path('blog/', include('blog.urls')),
+    path('jobs/', include('jobs.urls_web')),  # Web interface for jobs
+    path('careers/', include('jobs.urls_web')),  # Alternative URL for careers
     prefix_default_language=True,
 )
 

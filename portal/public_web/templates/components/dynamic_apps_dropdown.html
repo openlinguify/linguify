@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load app_tags %}
 
 {% for app in apps %}
     <li><a class="dropdown-item" href="{% url 'public_web:dynamic_app_detail' app_slug=app.slug %}">

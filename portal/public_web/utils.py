@@ -74,6 +74,14 @@ class AppManifestParser:
                 'author': 'Linguify Team',
             }
         ]
+    
+    def get_app_by_slug(self, slug: str) -> Optional[Dict]:
+        """Get a specific app by slug"""
+        apps = self.get_public_apps()
+        for app in apps:
+            if app['slug'] == slug:
+                return app
+        return None
 
 
 # Global instance

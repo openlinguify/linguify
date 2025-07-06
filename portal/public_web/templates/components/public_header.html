@@ -1,7 +1,6 @@
 <!-- Header public pour le site marketing -->
 {% load i18n %}
 {% load static %}
-{% load app_tags %}
 
 <style>
     /* Styles supprimés - on utilise maintenant les images PNG */
@@ -77,7 +76,12 @@
                             {% trans "Apps" %}
                         </a>
                         <ul class="dropdown-menu">
-                            {% dynamic_apps_dropdown %}
+                            <li><a class="dropdown-item" href="{% url 'public_web:dynamic_app_detail' app_slug='revision' %}">{% trans "Revision" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'public_web:dynamic_app_detail' app_slug='notebook' %}">{% trans "Notes" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'public_web:dynamic_app_detail' app_slug='quizz' %}">{% trans "Quiz" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'public_web:dynamic_app_detail' app_slug='language_ai' %}">{% trans "IA Linguistique" %}</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'public_web:apps' %}">{% trans "Voir toutes les apps" %}</a></li>
                         </ul>
                     </li>
 
@@ -133,7 +137,7 @@
                 <div class="d-flex align-items-center gap-2">
                     {% if user.is_authenticated %}
                     <!-- Si l'utilisateur est connecté, bouton vers le dashboard -->
-                    <a href="{% url 'saas_web:dashboard' %}" class="btn btn-outline-primary">
+                    <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-outline-primary">
                         <i class="bi bi-speedometer2 me-2"></i>Dashboard
                     </a>
                     <div class="dropdown">
@@ -150,13 +154,13 @@
                             <li><a class="dropdown-item" href="/profile/">
                                     <i class="bi bi-person me-2"></i>Mon profil
                                 </a></li>
-                            <li><a class="dropdown-item" href="{% url 'saas_web:settings' %}">
+                            <li><a class="dropdown-item" href="http://127.0.0.1:8000/settings/">
                                     <i class="bi bi-gear me-2"></i>Paramètres
                                 </a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item text-danger" href="{% url 'auth:logout' %}">
+                            <li><a class="dropdown-item text-danger" href="http://127.0.0.1:8000/fr/auth/logout/">
                                     <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
                                 </a></li>
                         </ul>

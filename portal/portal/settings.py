@@ -27,6 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'public_web',  # Notre app principale pour le portail
+    'blog',       # App blog déplacée du backend
+    'jobs',       # App jobs déplacée du backend
 ]
 
 MIDDLEWARE = [
@@ -64,8 +66,12 @@ WSGI_APPLICATION = 'portal.wsgi.application'
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'db_linguify_portal',
+        'USER': 'postgres',
+        'PASSWORD': 'azerty',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
