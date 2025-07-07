@@ -1,92 +1,87 @@
 {% extends "revision/base_new.html" %}
+{% load static %}
 
-{% block title %}Memory{% endblock %}
+{% block page_title %}Memory{% endblock %}
 
 {% block header_content %}
-<!-- Actions du header -->
-<div class="d-flex align-items-center justify-content-between">
-    <div class="d-flex align-items-center gap-2">
+<!-- Interface unifiée sur une seule ligne -->
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <!-- Gauche: Navigation + Actions principales -->
+    <div class="d-flex align-items-center gap-3">
         <!-- Bouton toggle sidebar mobile -->
-        <button id="toggleSidebar" class="btn btn-outline-custom d-md-none">
+        <button id="toggleSidebar" class="btn btn-outline-custom btn-sm d-md-none">
             <i class="bi bi-list"></i>
         </button>
         
+        <!-- Navigation tabs -->
+        <div class="d-flex align-items-center gap-1">
+            <a href="{% url 'revision_web:main' %}" 
+               class="nav-tab {% if app_name == 'revision' and not study_mode %}active{% endif %}">
+                <i class="bi bi-stack me-1"></i>
+                Mes Decks
+            </a>
+            <a href="{% url 'revision_web:explore' %}" 
+               class="nav-tab {% if view_type == 'explore' %}active{% endif %}">
+                <i class="bi bi-globe2 me-1"></i>
+                Explorer
+            </a>
+        </div>
+        
         <!-- Refresh -->
-        <button id="refreshDecks" class="btn btn-outline-custom">
+        <button id="refreshDecks" class="btn btn-outline-custom btn-sm">
             <i class="bi bi-arrow-clockwise"></i>
-            <span class="d-none d-md-inline ms-1">Actualiser</span>
+            <span class="d-none d-xl-inline ms-1">Actualiser</span>
         </button>
     </div>
     
-    <div class="d-flex gap-2">
-        <!-- Stats rapides -->
-        <div class="d-none d-lg-flex align-items-center text-muted me-3">
-            <span id="decksCount">0 decks</span>
-            <span class="mx-2">•</span>
-            <span id="cardsCount">0 cartes</span>
+    <!-- Centre: Statistiques compactes -->
+    <div class="d-none d-lg-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2 text-sm">
+            <span id="totalDecks" class="fw-semibold text-primary">0</span>
+            <span class="text-muted">Decks</span>
         </div>
+        <div class="d-flex align-items-center gap-2 text-sm">
+            <span id="totalCards" class="fw-semibold text-primary">0</span>
+            <span class="text-muted">Cartes</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 text-sm">
+            <span id="totalLearned" class="fw-semibold text-success">0</span>
+            <span class="text-muted">Apprises</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 text-sm">
+            <span id="completionRate" class="fw-semibold text-warning">0%</span>
+            <span class="text-muted">Progression</span>
+        </div>
+    </div>
+    
+    <!-- Droite: Actions et filtres -->
+    <div class="d-flex align-items-center gap-2">
+        <!-- Filtres compacts -->
+        <input type="text" id="searchInput" class="form-control form-control-sm" 
+               style="width: 200px;" placeholder="Rechercher...">
         
-        <!-- Import -->
-        <button id="importDeck" class="btn btn-outline-custom">
+        <select id="statusFilter" class="form-select form-select-sm" style="width: auto;">
+            <option value="">Tous les statuts</option>
+            <option value="active">Actifs</option>
+            <option value="archived">Archivés</option>
+        </select>
+        
+        <select id="sortFilter" class="form-select form-select-sm" style="width: auto;">
+            <option value="updated_desc">Plus récents</option>
+            <option value="name_asc">A-Z</option>
+            <option value="progress_desc">Progression</option>
+        </select>
+        
+        <!-- Actions -->
+        <button id="importDeck" class="btn btn-outline-custom btn-sm">
             <i class="bi bi-upload"></i>
-            <span class="d-none d-md-inline ms-1">Importer</span>
+            <span class="d-none d-xl-inline ms-1">Importer</span>
         </button>
         
-        <!-- Nouveau deck -->
-        <button id="createDeck" class="btn btn-gradient">
+        <button id="createDeck" class="btn btn-gradient btn-sm">
             <i class="bi bi-plus-lg"></i>
-            <span class="d-none d-md-inline ms-1">Nouveau deck</span>
+            <span class="d-none d-xl-inline ms-1">Nouveau deck</span>
         </button>
-    </div>
-</div>
-
-<!-- Statistiques et filtres -->
-<div class="stats-grid d-none d-md-grid">
-    <div class="stat-card">
-        <div class="stat-value" id="totalDecks">0</div>
-        <div class="stat-label">Decks</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-value" id="totalCards">0</div>
-        <div class="stat-label">Cartes</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-value" id="totalLearned">0</div>
-        <div class="stat-label">Apprises</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-value" id="completionRate">0%</div>
-        <div class="stat-label">Progression</div>
-    </div>
-</div>
-
-<!-- Filtres de recherche -->
-<div class="search-filters">
-    <div class="row g-2">
-        <div class="col-md-6">
-            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher dans vos decks...">
-        </div>
-        <div class="col-md-3">
-            <select id="statusFilter" class="form-select form-control">
-                <option value="">Tous les statuts</option>
-                <option value="active">Actifs</option>
-                <option value="archived">Archivés</option>
-                <option value="public">Publics</option>
-                <option value="private">Privés</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <select id="sortFilter" class="form-select form-control">
-                <option value="updated_desc">Modifiés récemment</option>
-                <option value="updated_asc">Anciens en premier</option>
-                <option value="created_desc">Créés récemment</option>
-                <option value="created_asc">Créés en premier</option>
-                <option value="name_asc">Nom A-Z</option>
-                <option value="name_desc">Nom Z-A</option>
-                <option value="progress_desc">Plus de progrès</option>
-                <option value="progress_asc">Moins de progrès</option>
-            </select>
-        </div>
     </div>
 </div>
 {% endblock %}
@@ -95,14 +90,8 @@
 <!-- Sidebar -->
 <div id="revisionSidebar" class="revision-sidebar">
     <div class="sidebar-content">
-        <!-- Loading state -->
-        <div id="decksLoading" class="d-flex justify-content-center align-items-center p-4">
-            <div class="loading-spinner"></div>
-            <span class="ms-2">Chargement des decks...</span>
-        </div>
-        
         <!-- Decks list -->
-        <ul id="decksList" class="deck-list" style="display: none;"></ul>
+        <ul id="decksList" class="deck-list"></ul>
         
         <!-- Empty state -->
         <div id="decksEmpty" class="empty-state" style="display: none;">
@@ -310,6 +299,110 @@
         </div>
     </div>
     
+    <!-- View All Cards -->
+    <div id="viewAllCardsSection" style="display: none;">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Toutes les cartes - <span id="deckNameInCards"></span></h5>
+                <button id="backToDeckView" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                    Retour au deck
+                </button>
+            </div>
+        </div>
+        
+        <div class="study-content p-4">
+            <div id="cardsContainer">
+                <!-- Cards will be loaded here -->
+            </div>
+            
+            <div id="noCardsMessage" class="text-center p-4" style="display: none;">
+                <i class="bi bi-stack text-muted" style="font-size: 3rem;"></i>
+                <h5 class="text-muted mt-3">Aucune carte dans ce deck</h5>
+                <p class="text-muted">Commencez par ajouter quelques cartes pour réviser !</p>
+                <button class="btn btn-gradient" onclick="window.revisionMain.showCreateCardForm()">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    Ajouter une carte
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create Card Form -->
+    <div id="createCardForm" style="display: none;">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Ajouter une nouvelle carte</h5>
+                <button id="cancelCardCreate" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-x-lg"></i>
+                    Annuler
+                </button>
+            </div>
+        </div>
+        
+        <div class="study-content p-4">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Recto (Question) <span class="text-danger">*</span></label>
+                    <textarea id="newCardFront" class="form-control" rows="4" 
+                              placeholder="Ex: Comment dit-on 'bonjour' en anglais ?" required></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Verso (Réponse) <span class="text-danger">*</span></label>
+                    <textarea id="newCardBack" class="form-control" rows="4" 
+                              placeholder="Ex: Hello" required></textarea>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button id="submitCardCreate" class="btn btn-gradient me-2">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    Ajouter la carte
+                </button>
+                <button id="cancelCardCreateAlt" class="btn btn-outline-custom">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Card Form -->
+    <div id="editCardForm" style="display: none;">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Modifier la carte</h5>
+                <button id="cancelCardEdit" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-x-lg"></i>
+                    Annuler
+                </button>
+            </div>
+        </div>
+        
+        <div class="study-content p-4">
+            <input type="hidden" id="editCardId" value="">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Recto (Question) <span class="text-danger">*</span></label>
+                    <textarea id="editCardFront" class="form-control" rows="4" required></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Verso (Réponse) <span class="text-danger">*</span></label>
+                    <textarea id="editCardBack" class="form-control" rows="4" required></textarea>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button id="submitCardEdit" class="btn btn-gradient me-2">
+                    <i class="bi bi-check-lg me-1"></i>
+                    Enregistrer les modifications
+                </button>
+                <button id="cancelCardEditAlt" class="btn btn-outline-custom">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Import Deck Form -->
     <div id="importDeckForm" style="display: none;">
         <div class="study-header">
@@ -353,478 +446,17 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- CSRF Token for API calls -->
+{% csrf_token %}
+
+<!-- Charger le JavaScript modulaire -->
+<script src="{% static 'src/js/revision-main.js' %}"></script>
+
 <script>
-// État global de l'application
-let appState = {
-    decks: [],
-    filteredDecks: [],
-    selectedDeck: null,
-    isLoading: false,
-    currentPage: 1,
-    hasMore: true,
-    stats: {
-        totalDecks: 0,
-        totalCards: 0,
-        totalLearned: 0,
-        completionRate: 0
-    },
-    filters: {
-        search: '',
-        status: '',
-        sort: 'updated_desc'
-    }
-};
+// Le JavaScript principal est maintenant dans revision-main.js
+// Il s'initialise automatiquement au chargement de la page
 
-// API Service
-const revisionAPI = {
-    async getDecks(page = 1, filters = {}) {
-        const params = new URLSearchParams({
-            page: page,
-            ...filters
-        });
-        
-        return await window.apiService.request(`/api/v1/revision/decks/?${params}`);
-    },
-    
-    async getDeck(id) {
-        return await window.apiService.request(`/api/v1/revision/decks/${id}/`);
-    },
-    
-    async createDeck(data) {
-        return await window.apiService.request('/api/v1/revision/decks/', {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
-    },
-    
-    async updateDeck(id, data) {
-        return await window.apiService.request(`/api/v1/revision/decks/${id}/`, {
-            method: 'PATCH',
-            body: JSON.stringify(data)
-        });
-    },
-    
-    async deleteDeck(id) {
-        return await window.apiService.request(`/api/v1/revision/decks/${id}/`, {
-            method: 'DELETE'
-        });
-    },
-    
-    async getStats() {
-        return await window.apiService.request('/api/v1/revision/stats/');
-    },
-    
-    async importDeck(formData) {
-        return await window.apiService.request('/api/v1/revision/import/', {
-            method: 'POST',
-            body: formData,
-            headers: {} // Let browser set Content-Type for FormData
-        });
-    }
-};
-
-// Utility functions
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
-}
-
-function calculateProgress(deck) {
-    if (!deck.cards_count || deck.cards_count === 0) return 0;
-    return Math.round((deck.learned_count || 0) / deck.cards_count * 100);
-}
-
-// DOM elements
-const elements = {
-    // Sidebar
-    sidebar: document.getElementById('revisionSidebar'),
-    toggleSidebar: document.getElementById('toggleSidebar'),
-    decksList: document.getElementById('decksList'),
-    decksLoading: document.getElementById('decksLoading'),
-    decksEmpty: document.getElementById('decksEmpty'),
-    loadMoreContainer: document.getElementById('loadMoreContainer'),
-    loadMoreBtn: document.getElementById('loadMoreBtn'),
-    
-    // Filters
-    searchInput: document.getElementById('searchInput'),
-    statusFilter: document.getElementById('statusFilter'),
-    sortFilter: document.getElementById('sortFilter'),
-    
-    // Study area
-    welcomeState: document.getElementById('welcomeState'),
-    deckDetails: document.getElementById('deckDetails'),
-    createDeckForm: document.getElementById('createDeckForm'),
-    importDeckForm: document.getElementById('importDeckForm'),
-    
-    // Deck details
-    deckName: document.getElementById('deckName'),
-    deckDescription: document.getElementById('deckDescription'),
-    deckProgress: document.getElementById('deckProgress'),
-    deckProgressBar: document.getElementById('deckProgressBar'),
-    
-    // Create form
-    newDeckName: document.getElementById('newDeckName'),
-    newDeckDescription: document.getElementById('newDeckDescription'),
-    newDeckVisibility: document.getElementById('newDeckVisibility'),
-    
-    // Import form
-    importFile: document.getElementById('importFile'),
-    importDeckName: document.getElementById('importDeckName'),
-    
-    // Buttons
-    createDeck: document.getElementById('createDeck'),
-    importDeck: document.getElementById('importDeck'),
-    refreshDecks: document.getElementById('refreshDecks'),
-    backToList: document.getElementById('backToList'),
-    submitCreate: document.getElementById('submitCreate'),
-    cancelCreate: document.getElementById('cancelCreate'),
-    cancelCreateAlt: document.getElementById('cancelCreateAlt'),
-    submitImport: document.getElementById('submitImport'),
-    cancelImport: document.getElementById('cancelImport'),
-    cancelImportAlt: document.getElementById('cancelImportAlt'),
-    
-    // Stats
-    decksCount: document.getElementById('decksCount'),
-    cardsCount: document.getElementById('cardsCount'),
-    totalDecks: document.getElementById('totalDecks'),
-    totalCards: document.getElementById('totalCards'),
-    totalLearned: document.getElementById('totalLearned'),
-    completionRate: document.getElementById('completionRate')
-};
-
-// Event listeners
-function setupEventListeners() {
-    // Sidebar toggle
-    elements.toggleSidebar?.addEventListener('click', toggleSidebar);
-    
-    // Search and filters
-    elements.searchInput?.addEventListener('input', debounce(handleSearch, 300));
-    elements.statusFilter?.addEventListener('change', handleStatusFilter);
-    elements.sortFilter?.addEventListener('change', handleSortFilter);
-    
-    // Buttons
-    elements.createDeck?.addEventListener('click', showCreateForm);
-    elements.importDeck?.addEventListener('click', showImportForm);
-    elements.refreshDecks?.addEventListener('click', loadDecks);
-    elements.backToList?.addEventListener('click', backToList);
-    
-    // Create form
-    elements.submitCreate?.addEventListener('click', createNewDeck);
-    elements.cancelCreate?.addEventListener('click', hideCreateForm);
-    elements.cancelCreateAlt?.addEventListener('click', hideCreateForm);
-    
-    // Import form
-    elements.submitImport?.addEventListener('click', importNewDeck);
-    elements.cancelImport?.addEventListener('click', hideImportForm);
-    elements.cancelImportAlt?.addEventListener('click', hideImportForm);
-    
-    // Create deck buttons
-    document.querySelectorAll('.create-deck-btn').forEach(btn => {
-        btn.addEventListener('click', showCreateForm);
-    });
-    
-    // Load more
-    elements.loadMoreBtn?.addEventListener('click', loadMoreDecks);
-}
-
-// Core functions
-async function loadDecks(reset = true) {
-    try {
-        if (reset) {
-            appState.currentPage = 1;
-            appState.decks = [];
-            elements.decksLoading.style.display = 'block';
-            elements.decksList.style.display = 'none';
-            elements.decksEmpty.style.display = 'none';
-        }
-        
-        appState.isLoading = true;
-        
-        const [decksResponse, statsResponse] = await Promise.all([
-            revisionAPI.getDecks(appState.currentPage, appState.filters),
-            revisionAPI.getStats()
-        ]);
-        
-        if (reset) {
-            appState.decks = decksResponse.results || [];
-        } else {
-            appState.decks = [...appState.decks, ...(decksResponse.results || [])];
-        }
-        
-        appState.hasMore = !!decksResponse.next;
-        appState.currentPage = decksResponse.next ? appState.currentPage + 1 : appState.currentPage;
-        appState.stats = statsResponse;
-        
-        renderDecksList();
-        updateStats();
-        
-    } catch (error) {
-        console.error('Error loading decks:', error);
-        window.notificationService.error('Erreur lors du chargement des decks');
-    } finally {
-        appState.isLoading = false;
-        elements.decksLoading.style.display = 'none';
-    }
-}
-
-function renderDecksList() {
-    if (appState.decks.length === 0) {
-        elements.decksList.style.display = 'none';
-        elements.decksEmpty.style.display = 'block';
-        elements.loadMoreContainer.style.display = 'none';
-        return;
-    }
-    
-    elements.decksEmpty.style.display = 'none';
-    elements.decksList.style.display = 'block';
-    
-    elements.decksList.innerHTML = appState.decks.map(deck => {
-        const progress = calculateProgress(deck);
-        return `
-        <li class="deck-item ${appState.selectedDeck?.id === deck.id ? 'active' : ''}" 
-            onclick="selectDeck(${deck.id})">
-            <div class="deck-header">
-                <div class="deck-name">${deck.name || 'Sans nom'}</div>
-                <div class="deck-stats">
-                    <span class="deck-badge">${deck.cards_count || 0}</span>
-                    ${deck.is_public ? '<i class="bi bi-globe2" title="Public"></i>' : ''}
-                    ${deck.is_archived ? '<i class="bi bi-archive" title="Archivé"></i>' : ''}
-                </div>
-            </div>
-            <div class="deck-description">${deck.description || 'Aucune description'}</div>
-            <div class="deck-meta">
-                <div class="deck-progress">
-                    <span>${deck.learned_count || 0}/${deck.cards_count || 0}</span>
-                    <div class="progress-bar-custom">
-                        <div class="progress-fill" style="width: ${progress}%"></div>
-                    </div>
-                    <span>${progress}%</span>
-                </div>
-                <span>${formatDate(deck.updated_at)}</span>
-            </div>
-        </li>
-    `;
-    }).join('');
-    
-    // Load more button
-    elements.loadMoreContainer.style.display = appState.hasMore ? 'block' : 'none';
-}
-
-async function selectDeck(deckId) {
-    try {
-        const deck = await revisionAPI.getDeck(deckId);
-        appState.selectedDeck = deck;
-        
-        // Hide welcome state and show deck details
-        elements.welcomeState.style.display = 'none';
-        elements.deckDetails.style.display = 'block';
-        elements.createDeckForm.style.display = 'none';
-        elements.importDeckForm.style.display = 'none';
-        
-        // Populate deck details
-        elements.deckName.textContent = deck.name || 'Sans nom';
-        elements.deckDescription.textContent = deck.description || 'Aucune description';
-        
-        const progress = calculateProgress(deck);
-        elements.deckProgress.textContent = `${deck.learned_count || 0}/${deck.cards_count || 0}`;
-        elements.deckProgressBar.style.width = `${progress}%`;
-        
-        // Update decks list visual state
-        renderDecksList();
-        
-        // Hide sidebar on mobile
-        if (window.innerWidth < 768) {
-            elements.sidebar.classList.remove('show');
-        }
-        
-    } catch (error) {
-        console.error('Error loading deck:', error);
-        window.notificationService.error('Erreur lors du chargement du deck');
-    }
-}
-
-function showCreateForm() {
-    elements.welcomeState.style.display = 'none';
-    elements.deckDetails.style.display = 'none';
-    elements.createDeckForm.style.display = 'block';
-    elements.importDeckForm.style.display = 'none';
-    
-    // Clear form
-    elements.newDeckName.value = '';
-    elements.newDeckDescription.value = '';
-    elements.newDeckVisibility.value = 'private';
-    
-    // Focus on name input
-    elements.newDeckName.focus();
-}
-
-function hideCreateForm() {
-    elements.createDeckForm.style.display = 'none';
-    
-    if (appState.selectedDeck) {
-        elements.deckDetails.style.display = 'block';
-    } else {
-        elements.welcomeState.style.display = 'block';
-    }
-}
-
-function showImportForm() {
-    elements.welcomeState.style.display = 'none';
-    elements.deckDetails.style.display = 'none';
-    elements.createDeckForm.style.display = 'none';
-    elements.importDeckForm.style.display = 'block';
-    
-    // Clear form
-    elements.importFile.value = '';
-    elements.importDeckName.value = '';
-}
-
-function hideImportForm() {
-    elements.importDeckForm.style.display = 'none';
-    
-    if (appState.selectedDeck) {
-        elements.deckDetails.style.display = 'block';
-    } else {
-        elements.welcomeState.style.display = 'block';
-    }
-}
-
-async function createNewDeck() {
-    const name = elements.newDeckName.value.trim();
-    const description = elements.newDeckDescription.value.trim();
-    const isPublic = elements.newDeckVisibility.value === 'public';
-    
-    if (!name) {
-        window.notificationService.error('Le nom du deck est requis');
-        return;
-    }
-    
-    try {
-        const deckData = {
-            name: name,
-            description: description,
-            is_public: isPublic
-        };
-        
-        const newDeck = await revisionAPI.createDeck(deckData);
-        
-        window.notificationService.success('Deck créé avec succès');
-        
-        // Reload decks and select the new one
-        await loadDecks();
-        await selectDeck(newDeck.id);
-        
-    } catch (error) {
-        console.error('Error creating deck:', error);
-        window.notificationService.error('Erreur lors de la création du deck');
-    }
-}
-
-async function importNewDeck() {
-    const file = elements.importFile.files[0];
-    const name = elements.importDeckName.value.trim();
-    
-    if (!file) {
-        window.notificationService.error('Veuillez sélectionner un fichier');
-        return;
-    }
-    
-    if (!name) {
-        window.notificationService.error('Le nom du deck est requis');
-        return;
-    }
-    
-    try {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('name', name);
-        
-        const newDeck = await revisionAPI.importDeck(formData);
-        
-        window.notificationService.success('Deck importé avec succès');
-        
-        // Reload decks and select the new one
-        await loadDecks();
-        await selectDeck(newDeck.id);
-        
-    } catch (error) {
-        console.error('Error importing deck:', error);
-        window.notificationService.error('Erreur lors de l\'importation du deck');
-    }
-}
-
-// Filter functions
-function handleSearch() {
-    appState.filters.search = elements.searchInput.value;
-    loadDecks();
-}
-
-function handleStatusFilter() {
-    appState.filters.status = elements.statusFilter.value;
-    loadDecks();
-}
-
-function handleSortFilter() {
-    appState.filters.sort = elements.sortFilter.value;
-    loadDecks();
-}
-
-function loadMoreDecks() {
-    if (!appState.isLoading && appState.hasMore) {
-        loadDecks(false);
-    }
-}
-
-// UI functions
-function toggleSidebar() {
-    elements.sidebar.classList.toggle('show');
-}
-
-function backToList() {
-    elements.sidebar.classList.add('show');
-}
-
-function updateStats() {
-    const stats = appState.stats;
-    
-    // Header stats
-    if (elements.decksCount) {
-        elements.decksCount.textContent = `${stats.totalDecks} deck${stats.totalDecks !== 1 ? 's' : ''}`;
-    }
-    if (elements.cardsCount) {
-        elements.cardsCount.textContent = `${stats.totalCards} carte${stats.totalCards !== 1 ? 's' : ''}`;
-    }
-    
-    // Detailed stats
-    if (elements.totalDecks) elements.totalDecks.textContent = stats.totalDecks;
-    if (elements.totalCards) elements.totalCards.textContent = stats.totalCards;
-    if (elements.totalLearned) elements.totalLearned.textContent = stats.totalLearned;
-    if (elements.completionRate) elements.completionRate.textContent = `${stats.completionRate}%`;
-}
-
-// Initialize app
-document.addEventListener('DOMContentLoaded', function() {
-    setupEventListeners();
-    loadDecks();
-});
-
-// Global functions for inline event handlers
-window.selectDeck = selectDeck;
+// Exporter selectDeck pour les événements inline
+window.selectDeck = window.revisionMain.selectDeck;
 </script>
 {% endblock %}

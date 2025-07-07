@@ -1,12 +1,14 @@
 # backend/revision/views/flashcard_views.py
 from django.utils import timezone
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Prefetch
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from ..permissions import FlashcardDeckPermission, FlashcardPermission, DeckBatchPermission, RateLimitPermission
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.pagination import PageNumberPagination
 # import pandas as pd  # Temporarily disabled due to C extension issues
 from rest_framework import filters
 from django.shortcuts import get_object_or_404
@@ -16,15 +18,24 @@ from apps.revision.serializers import (
     FlashcardSerializer,
     FlashcardDeckDetailSerializer,
     FlashcardDeckCreateSerializer,
-    DeckArchiveSerializer
+    DeckArchiveSerializer,
+    BatchDeleteSerializer,
+    BatchArchiveSerializer
 )
+from django.http import JsonResponse
 
 import logging
 logger = logging.getLogger(__name__)
 
+class DeckPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class FlashcardDeckViewSet(viewsets.ModelViewSet):
     serializer_class = FlashcardDeckSerializer
-    permission_classes = [AllowAny]  # Autoriser l'accès public à la liste des decks
+    permission_classes = [FlashcardDeckPermission]  # Permissions granulaires
+    pagination_class = DeckPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'description', 'user__username']  # Ajout de la recherche par utilisateur
     ordering_fields = ['created_at', 'name', 'user__username']
@@ -42,15 +53,30 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """
-        Gestion dynamique des permissions:
-        - Lecture publique pour les decks publics
-        - Authentication requise pour modifier
+        Permissions granulaires avec rate limiting pour certaines actions
         """
-        if self.action in ['update', 'partial_update', 'destroy', 'create', 
-                          'toggle_public', 'archive_management', 'batch_delete']:
-            self.permission_classes = [IsAuthenticated]
+        if self.action in ['batch_delete']:
+            self.permission_classes = [DeckBatchPermission, RateLimitPermission]
+        elif self.action in ['create']:
+            self.permission_classes = [FlashcardDeckPermission, RateLimitPermission]
+        else:
+            self.permission_classes = [FlashcardDeckPermission]
         return super().get_permissions()
 
+    def _get_optimized_queryset(self):
+        """
+        Retourne un queryset optimisé avec les relations préchargées et les annotations
+        pour éviter les requêtes N+1
+        """
+        return FlashcardDeck.objects.select_related('user').prefetch_related(
+            Prefetch(
+                'flashcards',
+                queryset=Flashcard.objects.select_related('user')
+            )
+        ).annotate(
+            cards_count=Count('flashcards'),
+            learned_count=Count('flashcards', filter=Q(flashcards__learned=True))
+        )
 
     def get_queryset(self):
         """
@@ -64,21 +90,29 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
         if public_access:
             # Return both public decks and user's own decks (if authenticated)
             if user.is_authenticated:
-                return FlashcardDeck.objects.filter(
+                return self._get_optimized_queryset().filter(
                     Q(is_public=True, is_archived=False) | Q(user=user)
                 )
             else:
                 # For anonymous users, only return public decks
-                return FlashcardDeck.objects.filter(
+                return self._get_optimized_queryset().filter(
                     is_public=True, 
                     is_archived=False
                 )
+        
+        # If user is not authenticated, return empty queryset for personal space
+        if not user.is_authenticated:
+            return FlashcardDeck.objects.none()
         # Paramètres de requête
         show_public = self.request.query_params.get('public', 'false').lower() == 'true'
         show_mine = self.request.query_params.get('mine', 'true').lower() == 'true' and user.is_authenticated
         show_archived = self.request.query_params.get('archived', 'false').lower() == 'true'
         username_filter = self.request.query_params.get('username')
         search_query = self.request.query_params.get('search', '')
+        
+        logger.debug(f"Query params: public={show_public}, mine={show_mine}, archived={show_archived}, search='{search_query}', user_authenticated={user.is_authenticated}")
+        if user.is_authenticated:
+            logger.debug(f"User: {user.username}, total decks: {FlashcardDeck.objects.filter(user=user).count()}")
         
         # Cas de base : si aucun filtre n'est spécifié, afficher les cartes de l'utilisateur
         # Important pour l'espace personnel
@@ -87,7 +121,9 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
             personal_query = Q(user=user, is_active=True)
             if not show_archived:
                 personal_query &= Q(is_archived=False)
-            return FlashcardDeck.objects.filter(personal_query)
+            queryset = self._get_optimized_queryset().filter(personal_query)
+            logger.debug(f"Personal decks query for user {user.username}: {queryset.count()} decks")
+            return queryset
         
         # Si recherche ou filtre username
         if search_query or username_filter:
@@ -117,7 +153,7 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
                 search_filter = Q(name__icontains=search_query) | Q(description__icontains=search_query)
                 query &= search_filter
                 
-            return FlashcardDeck.objects.filter(query).distinct()
+            return self._get_optimized_queryset().filter(query).distinct()
         
         # Construction de la requête pour les autres cas
         query = Q(is_active=True)
@@ -140,9 +176,14 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
         elif show_public:
             query &= Q(is_public=True, is_archived=False)
         else:
-            return FlashcardDeck.objects.none()
+            # Default fallback: if user is authenticated, show their personal decks
+            if user.is_authenticated:
+                logger.debug(f"Default fallback: showing personal decks for {user.username}")
+                return self._get_optimized_queryset().filter(user=user, is_active=True, is_archived=False)
+            else:
+                return FlashcardDeck.objects.none()
             
-        return FlashcardDeck.objects.filter(query)
+        return self._get_optimized_queryset().filter(query)
 
     def perform_create(self, serializer):
         """Associe automatiquement l'utilisateur actuel lors de la création d'un deck."""
@@ -286,6 +327,36 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def stats(self, request):
+        """Get user statistics for revision"""
+        user = request.user
+        
+        # Get user's decks
+        user_decks = FlashcardDeck.objects.filter(user=user, is_active=True)
+        
+        # Calculate statistics
+        total_decks = user_decks.count()
+        total_cards = 0
+        total_learned = 0
+        
+        for deck in user_decks:
+            deck_cards = deck.flashcards.count()
+            deck_learned = deck.flashcards.filter(learned=True).count()
+            total_cards += deck_cards
+            total_learned += deck_learned
+        
+        completion_rate = 0
+        if total_cards > 0:
+            completion_rate = int((total_learned / total_cards) * 100)
+        
+        return Response({
+            'totalDecks': total_decks,
+            'totalCards': total_cards,
+            'totalLearned': total_learned,
+            'completionRate': completion_rate
+        })
+
     @action(detail=True, methods=['get'])
     def cards(self, request, pk=None):
         """Récupérer toutes les cartes d'un deck spécifique."""
@@ -392,46 +463,88 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
             "count": count
         })
         
-    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['post'])
     def batch_delete(self, request):
-        """Supprimer plusieurs decks en une seule requête."""
+        """Supprimer plusieurs decks en une seule requête avec validation sécurisée."""
+        serializer = BatchDeleteSerializer(data=request.data, context={'request': request})
+        
+        if not serializer.is_valid():
+            return Response(
+                {"detail": "Données invalides", "errors": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
         try:
-            deck_ids = request.data.get('deckIds', [])
+            deck_ids = serializer.validated_data['deck_ids']
             
-            if not deck_ids:
-                return Response(
-                    {"detail": "No deck IDs provided"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            
-            # Vérifier que l'utilisateur est autorisé à supprimer ces decks
+            # Supprimer les decks (permissions déjà vérifiées dans le sérialiseur)
             queryset = FlashcardDeck.objects.filter(
                 id__in=deck_ids,
-                user=request.user  # S'assurer que les decks appartiennent à l'utilisateur
+                user=request.user
             )
             
-            # Compter le nombre de decks trouvés (qui appartiennent à l'utilisateur)
-            count = queryset.count()
-            
-            if count == 0:
-                return Response(
-                    {"detail": "No accessible decks found with these IDs"},
-                    status=status.HTTP_404_NOT_FOUND
-                )
-            
-            # Supprimer les decks
             deleted_count, _ = queryset.delete()
             
+            logger.info(f"User {request.user.id} deleted {deleted_count} decks: {deck_ids}")
+            
             return Response({
-                "message": f"Successfully deleted {deleted_count} decks",
-                "deleted": deleted_count
+                "message": f"Suppression réussie de {deleted_count} deck(s)",
+                "deleted": deleted_count,
+                "deck_ids": deck_ids
             }, status=status.HTTP_200_OK)
             
         except Exception as e:
-            logger.error(f"Error batch deleting decks: {str(e)}")
+            logger.error(f"Error batch deleting decks for user {request.user.id}: {str(e)}")
             return Response(
-                {"detail": f"Failed to delete decks: {str(e)}"},
+                {"detail": "Erreur lors de la suppression des decks"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    
+    @action(detail=False, methods=['post'])
+    def batch_archive(self, request):
+        """Archiver/désarchiver plusieurs decks en une seule requête avec validation sécurisée."""
+        serializer = BatchArchiveSerializer(data=request.data, context={'request': request})
+        
+        if not serializer.is_valid():
+            return Response(
+                {"detail": "Données invalides", "errors": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            deck_ids = serializer.validated_data['deck_ids']
+            action_type = serializer.validated_data['action']
+            
+            # Mettre à jour les decks
+            queryset = FlashcardDeck.objects.filter(
+                id__in=deck_ids,
+                user=request.user
+            )
+            
+            if action_type == 'archive':
+                updated_count = 0
+                for deck in queryset:
+                    deck.archive()
+                    updated_count += 1
+                message = f"Archivage réussi de {updated_count} deck(s)"
+            else:  # unarchive
+                updated_count = queryset.update(is_archived=False, expiration_date=None)
+                message = f"Désarchivage réussi de {updated_count} deck(s)"
+            
+            logger.info(f"User {request.user.id} {action_type}d {updated_count} decks: {deck_ids}")
+            
+            return Response({
+                "message": message,
+                "updated": updated_count,
+                "action": action_type,
+                "deck_ids": deck_ids
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"Error batch {action_type} for user {request.user.id}: {str(e)}")
+            return Response(
+                {"detail": f"Erreur lors de l'{action_type} des decks"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
     def retrieve(self, request, *args, **kwargs):
@@ -460,7 +573,7 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
 
 class FlashcardViewSet(viewsets.ModelViewSet):
     serializer_class = FlashcardSerializer
-    permission_classes = [AllowAny]  # Permission de base
+    permission_classes = [FlashcardPermission]  # Permissions granulaires
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['front_text', 'back_text']
     ordering_fields = ['created_at', 'last_reviewed', 'review_count']
@@ -468,12 +581,14 @@ class FlashcardViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """
-        Gestion dynamique des permissions:
-        - Lecture publique pour les cartes des decks publics
-        - Authentication requise pour modifier
+        Permissions granulaires avec rate limiting pour certaines actions
         """
-        if self.action in ['update', 'partial_update', 'destroy', 'create', 'toggle_learned', 'batch_delete']:
-            self.permission_classes = [IsAuthenticated]
+        if self.action in ['batch_delete']:
+            self.permission_classes = [FlashcardPermission, RateLimitPermission]
+        elif self.action in ['create']:
+            self.permission_classes = [FlashcardPermission, RateLimitPermission]
+        else:
+            self.permission_classes = [FlashcardPermission]
         return super().get_permissions()
 
     def get_queryset(self):
@@ -486,12 +601,12 @@ class FlashcardViewSet(viewsets.ModelViewSet):
         
         if user.is_authenticated:
             # Utilisateur authentifié - voir ses cartes et celles des decks publics
-            queryset = Flashcard.objects.filter(
+            queryset = Flashcard.objects.select_related('user', 'deck__user').filter(
                 Q(user=user) | Q(deck__is_public=True, deck__is_archived=False)
             )
         else:
             # Utilisateur anonyme - voir uniquement les cartes des decks publics et non archivés
-            queryset = Flashcard.objects.filter(
+            queryset = Flashcard.objects.select_related('user', 'deck__user').filter(
                 deck__is_public=True,
                 deck__is_archived=False
             )

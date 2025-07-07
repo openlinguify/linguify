@@ -1,5 +1,6 @@
 # backend/revision/serializers/flashcard_serializers.py
 from rest_framework import serializers
+from django.core.validators import RegexValidator
 from ..models import FlashcardDeck, Flashcard
 
 class FlashcardSerializer(serializers.ModelSerializer):
@@ -43,11 +44,21 @@ class FlashcardSerializer(serializers.ModelSerializer):
     def validate(self, data):
         """Validation personnalisée pour les cartes."""
         # Vérifier que les textes ne sont pas vides
-        if 'front_text' in data and not data['front_text'].strip():
-            raise serializers.ValidationError({"front_text": "Le texte recto ne peut pas être vide."})
+        if 'front_text' in data:
+            front_text = data['front_text'].strip()
+            if not front_text:
+                raise serializers.ValidationError({"front_text": "Le texte recto ne peut pas être vide."})
+            if len(front_text) > 1000:  # Limite de sécurité
+                raise serializers.ValidationError({"front_text": "Le texte recto ne peut pas dépasser 1000 caractères."})
+            data['front_text'] = front_text
         
-        if 'back_text' in data and not data['back_text'].strip():
-            raise serializers.ValidationError({"back_text": "Le texte verso ne peut pas être vide."})
+        if 'back_text' in data:
+            back_text = data['back_text'].strip()
+            if not back_text:
+                raise serializers.ValidationError({"back_text": "Le texte verso ne peut pas être vide."})
+            if len(back_text) > 1000:  # Limite de sécurité
+                raise serializers.ValidationError({"back_text": "Le texte verso ne peut pas dépasser 1000 caractères."})
+            data['back_text'] = back_text
         
         return data
 
@@ -55,7 +66,7 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
     """Sérialiseur pour le modèle FlashcardDeck."""
     
     # Ajout de champs calculés
-    card_count = serializers.SerializerMethodField()
+    cards_count = serializers.SerializerMethodField()
     learned_count = serializers.SerializerMethodField()
     username = serializers.SerializerMethodField()
     is_owner = serializers.SerializerMethodField()
@@ -67,22 +78,24 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'description', 'created_at', 'updated_at', 
             'is_active', 'is_public', 'is_archived', 'expiration_date',
-            'card_count', 'learned_count', 'username', 'is_owner',
+            'cards_count', 'learned_count', 'username', 'is_owner',
             'days_until_deletion', 'expiration_info'
         ]
         read_only_fields = [
             'created_at', 'updated_at', 'user', 
-            'card_count', 'learned_count', 'username', 'is_owner',
+            'cards_count', 'learned_count', 'username', 'is_owner',
             'days_until_deletion', 'expiration_info'
         ]
     
-    def get_card_count(self, obj):
+    def get_cards_count(self, obj):
         """Renvoie le nombre total de cartes dans ce deck."""
-        return obj.flashcards.count()
+        # Utilise l'annotation si disponible, sinon fallback sur count()
+        return getattr(obj, 'cards_count', obj.flashcards.count())
     
     def get_learned_count(self, obj):
         """Renvoie le nombre de cartes apprises dans ce deck."""
-        return obj.flashcards.filter(learned=True).count()
+        # Utilise l'annotation si disponible, sinon fallback sur count()
+        return getattr(obj, 'learned_count', obj.flashcards.filter(learned=True).count())
     
     def get_username(self, obj):
         """Renvoie le nom d'utilisateur du propriétaire du deck."""
@@ -105,8 +118,21 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
     
     def validate_name(self, value):
         """Valide que le nom du deck n'est pas vide et est unique pour l'utilisateur."""
-        if not value.strip():
+        name = value.strip()
+        
+        if not name:
             raise serializers.ValidationError("Le nom du deck ne peut pas être vide.")
+        
+        if len(name) < 2:
+            raise serializers.ValidationError("Le nom du deck doit contenir au moins 2 caractères.")
+        
+        if len(name) > 100:
+            raise serializers.ValidationError("Le nom du deck ne peut pas dépasser 100 caractères.")
+        
+        # Validation de caractères (éviter injection de scripts)
+        import re
+        if not re.match(r'^[a-zA-Z0-9\s\-_àâäéèêëïîôöùûüÿñç.!?]+$', name):
+            raise serializers.ValidationError("Le nom du deck contient des caractères non autorisés.")
         
         # Vérifier l'unicité du nom pour cet utilisateur
         request = self.context.get('request')
@@ -115,7 +141,7 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
             instance = getattr(self, 'instance', None)
             queryset = FlashcardDeck.objects.filter(
                 user=request.user, 
-                name__iexact=value.strip()
+                name__iexact=name
             )
             
             if instance:
@@ -126,7 +152,7 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
                     "Vous avez déjà un deck avec ce nom. Veuillez choisir un nom différent."
                 )
         
-        return value.strip()
+        return name
 
 # Sérialiseur pour les opérations de création de deck avec un nombre minimal de champs
 class FlashcardDeckCreateSerializer(serializers.ModelSerializer):
@@ -136,6 +162,33 @@ class FlashcardDeckCreateSerializer(serializers.ModelSerializer):
         model = FlashcardDeck
         fields = ['id', 'name', 'description', 'is_active', 'is_public']
         read_only_fields = ['id']
+    
+    def create(self, validated_data):
+        """Create a new deck with the current user as owner."""
+        user = self.context['request'].user
+        validated_data['user'] = user
+        validated_data['is_active'] = True  # Always active when created
+        return super().create(validated_data)
+    
+    def validate_name(self, value):
+        """Validate that the deck name is not empty and unique for the user."""
+        if not value.strip():
+            raise serializers.ValidationError("Le nom du deck ne peut pas être vide.")
+        
+        # Check uniqueness for this user
+        request = self.context.get('request')
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            queryset = FlashcardDeck.objects.filter(
+                user=request.user, 
+                name__iexact=value.strip()
+            )
+            
+            if queryset.exists():
+                raise serializers.ValidationError(
+                    "Vous avez déjà un deck avec ce nom. Veuillez choisir un nom différent."
+                )
+        
+        return value.strip()
 
 # Sérialiseur pour afficher un deck avec ses cartes (utilisé pour les requêtes détaillées)
 class FlashcardDeckDetailSerializer(FlashcardDeckSerializer):
@@ -222,3 +275,82 @@ class DeckArchiveSerializer(serializers.Serializer):
             'success': False,
             'message': f"Action '{action}' non reconnue."
         }
+
+# Sérialiseur pour les opérations par lot sécurisées
+class BatchDeleteSerializer(serializers.Serializer):
+    """Sérialiseur pour la suppression par lot avec validation robuste"""
+    deck_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        max_length=50,  # Limite de sécurité
+        min_length=1,
+        help_text="Liste des IDs de decks à supprimer (maximum 50)"
+    )
+    
+    def validate_deck_ids(self, value):
+        """Valide les IDs de decks"""
+        # Retirer les doublons
+        unique_ids = list(set(value))
+        
+        if len(unique_ids) != len(value):
+            raise serializers.ValidationError("Des IDs de decks sont dupliqués.")
+        
+        # Vérifier que les decks existent
+        existing_count = FlashcardDeck.objects.filter(id__in=unique_ids).count()
+        if existing_count != len(unique_ids):
+            raise serializers.ValidationError("Certains decks spécifiés n'existent pas.")
+        
+        return unique_ids
+    
+    def validate(self, data):
+        """Validation globale avec vérification des permissions"""
+        deck_ids = data.get('deck_ids', [])
+        request = self.context.get('request')
+        
+        if not request or not request.user.is_authenticated:
+            raise serializers.ValidationError("Authentification requise.")
+        
+        # Vérifier que l'utilisateur est propriétaire de tous les decks
+        user_deck_count = FlashcardDeck.objects.filter(
+            id__in=deck_ids,
+            user=request.user
+        ).count()
+        
+        if user_deck_count != len(deck_ids):
+            raise serializers.ValidationError(
+                "Vous n'êtes pas autorisé à supprimer certains de ces decks."
+            )
+        
+        return data
+
+class BatchArchiveSerializer(serializers.Serializer):
+    """Sérialiseur pour l'archivage par lot"""
+    deck_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        max_length=50,
+        min_length=1
+    )
+    action = serializers.ChoiceField(
+        choices=['archive', 'unarchive'],
+        help_text="Action à effectuer sur les decks"
+    )
+    
+    def validate(self, data):
+        """Validation avec vérification des permissions"""
+        deck_ids = data.get('deck_ids', [])
+        request = self.context.get('request')
+        
+        if not request or not request.user.is_authenticated:
+            raise serializers.ValidationError("Authentification requise.")
+        
+        # Vérifier ownership
+        user_deck_count = FlashcardDeck.objects.filter(
+            id__in=deck_ids,
+            user=request.user
+        ).count()
+        
+        if user_deck_count != len(deck_ids):
+            raise serializers.ValidationError(
+                "Vous n'êtes pas autorisé à modifier certains de ces decks."
+            )
+        
+        return data
