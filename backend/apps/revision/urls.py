@@ -11,6 +11,7 @@ from .views import (
     VocabularyListViewSet, 
     CreateRevisionListViewSet
 )
+from .views.flashcard_views import TagsAPIView
 app_name = 'revision'
 
 router = DefaultRouter()
@@ -28,6 +29,7 @@ router.register(r'revision-lists', CreateRevisionListViewSet, basename='revision
 urlpatterns = [
     path('', include(router.urls)),
     path('decks/<int:deck_id>/import/', FlashcardImportView.as_view(), name='flashcard-import'),
+    path('tags/', TagsAPIView.as_view(), name='tags-api'),
 ]
 
 

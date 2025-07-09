@@ -25,6 +25,7 @@ from apps.revision.serializers import (
     ApplyPresetSerializer
 )
 from django.http import JsonResponse
+import re
 
 import logging
 logger = logging.getLogger(__name__)
@@ -34,7 +35,105 @@ class DeckPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-class FlashcardDeckViewSet(viewsets.ModelViewSet):
+# ===== MIXINS POUR ÉVITER LA DUPLICATION =====
+
+class DeckCloneMixin:
+    """Mixin pour la fonctionnalité de clonage des decks."""
+    
+    def clone_deck(self, source_deck, request):
+        """
+        Méthode commune pour cloner un deck.
+        """
+        # Vérifier que le deck est public ou appartient à l'utilisateur
+        if not source_deck.is_public and source_deck.user != request.user:
+            return Response(
+                {"detail": "You can only clone public decks or your own decks"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Ne pas permettre de cloner un deck archivé, sauf s'il appartient à l'utilisateur
+        if source_deck.is_archived and source_deck.user != request.user:
+            return Response(
+                {"detail": "You cannot clone an archived deck from another user"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            # Créer un nouveau deck pour l'utilisateur
+            new_deck = FlashcardDeck.objects.create(
+                user=request.user,
+                name=request.data.get('name', f"Clone of {source_deck.name}"),
+                description=request.data.get('description', 
+                                        f"Cloned from {source_deck.user.username}'s deck: {source_deck.description}"),
+                is_active=True,
+                is_public=False,  # Par défaut, les clones sont privés
+                is_archived=False # Les clones ne sont jamais archivés
+            )
+            
+            # Copier toutes les cartes
+            cards_created = 0
+            for card in source_deck.flashcards.all():
+                Flashcard.objects.create(
+                    user=request.user,
+                    deck=new_deck,
+                    front_text=card.front_text,
+                    back_text=card.back_text,
+                    learned=False,  # Réinitialiser l'état d'apprentissage
+                    review_count=0  # Réinitialiser les stats d'apprentissage
+                )
+                cards_created += 1
+            
+            # Retourner les informations sur le nouveau deck
+            serializer = FlashcardDeckSerializer(new_deck, context={'request': request})
+            
+            return Response({
+                "message": f"Successfully cloned '{source_deck.name}' with {cards_created} cards",
+                "deck": serializer.data
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            logger.error(f"Error cloning deck {source_deck.id}: {str(e)}")
+            return Response(
+                {"detail": f"Failed to clone deck: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+class DeckPermissionMixin:
+    """Mixin pour la gestion des permissions des decks."""
+    
+    def check_deck_owner(self, deck, user):
+        """Vérifie que l'utilisateur est propriétaire du deck."""
+        return deck.user == user
+    
+    def check_deck_access(self, deck, user):
+        """Vérifie l'accès en lecture (public ou propriétaire)."""
+        return deck.is_public or (user.is_authenticated and deck.user == user)
+    
+    def check_deck_not_archived(self, deck):
+        """Vérifie que le deck n'est pas archivé."""
+        return not deck.is_archived
+
+class OptimizedQuerysetMixin:
+    """Mixin pour les querysets optimisés."""
+    
+    def get_optimized_deck_queryset(self):
+        """
+        Retourne un queryset optimisé avec les relations préchargées et les annotations
+        pour éviter les requêtes N+1
+        """
+        return FlashcardDeck.objects.select_related('user').prefetch_related(
+            Prefetch(
+                'flashcards',
+                queryset=Flashcard.objects.select_related('user')
+            )
+        ).annotate(
+            cards_count=Count('flashcards'),
+            learned_count=Count('flashcards', filter=Q(flashcards__learned=True))
+        )
+
+# ===== VIEWSETS PRINCIPAUX =====
+
+class FlashcardDeckViewSet(DeckCloneMixin, DeckPermissionMixin, OptimizedQuerysetMixin, viewsets.ModelViewSet):
     serializer_class = FlashcardDeckSerializer
     permission_classes = [FlashcardDeckPermission]  # Permissions granulaires
     pagination_class = DeckPagination
@@ -65,21 +164,6 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
             self.permission_classes = [FlashcardDeckPermission]
         return super().get_permissions()
 
-    def _get_optimized_queryset(self):
-        """
-        Retourne un queryset optimisé avec les relations préchargées et les annotations
-        pour éviter les requêtes N+1
-        """
-        return FlashcardDeck.objects.select_related('user').prefetch_related(
-            Prefetch(
-                'flashcards',
-                queryset=Flashcard.objects.select_related('user')
-            )
-        ).annotate(
-            cards_count=Count('flashcards'),
-            learned_count=Count('flashcards', filter=Q(flashcards__learned=True))
-        )
-
     def get_queryset(self):
         """
         Retourne les decks appropriés selon le contexte
@@ -92,12 +176,12 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
         if public_access:
             # Return both public decks and user's own decks (if authenticated)
             if user.is_authenticated:
-                return self._get_optimized_queryset().filter(
+                return self.get_optimized_deck_queryset().filter(
                     Q(is_public=True, is_archived=False) | Q(user=user)
                 )
             else:
                 # For anonymous users, only return public decks
-                return self._get_optimized_queryset().filter(
+                return self.get_optimized_deck_queryset().filter(
                     is_public=True, 
                     is_archived=False
                 )
@@ -105,6 +189,7 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
         # If user is not authenticated, return empty queryset for personal space
         if not user.is_authenticated:
             return FlashcardDeck.objects.none()
+            
         # Paramètres de requête
         show_public = self.request.query_params.get('public', 'false').lower() == 'true'
         show_mine = self.request.query_params.get('mine', 'true').lower() == 'true' and user.is_authenticated
@@ -117,45 +202,14 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
             logger.debug(f"User: {user.username}, total decks: {FlashcardDeck.objects.filter(user=user).count()}")
         
         # Cas de base : si aucun filtre n'est spécifié, afficher les cartes de l'utilisateur
-        # Important pour l'espace personnel
         if not search_query and not username_filter and not show_public and show_mine and user.is_authenticated:
             # Filtre simple pour espace personnel
             personal_query = Q(user=user, is_active=True)
             if not show_archived:
                 personal_query &= Q(is_archived=False)
-            queryset = self._get_optimized_queryset().filter(personal_query)
+            queryset = self.get_optimized_deck_queryset().filter(personal_query)
             logger.debug(f"Personal decks query for user {user.username}: {queryset.count()} decks")
             return queryset
-        
-        # Si recherche ou filtre username
-        if search_query or username_filter:
-            query = Q(is_active=True)
-            
-            # Pour l'explorateur, on veut les decks publics
-            if show_public:
-                query &= Q(is_public=True, is_archived=False)
-            
-            # Pour les decks perso
-            if show_mine and user.is_authenticated:
-                user_query = Q(user=user)
-                if not show_archived:
-                    user_query &= Q(is_archived=False)
-                    
-                if show_public:
-                    query |= user_query
-                else:
-                    query &= user_query
-                    
-            # Filtre par username
-            if username_filter:
-                query &= Q(user__username__icontains=username_filter)
-                
-            # Recherche textuelle
-            if search_query:
-                search_filter = Q(name__icontains=search_query) | Q(description__icontains=search_query)
-                query &= search_filter
-                
-            return self._get_optimized_queryset().filter(query).distinct()
         
         # Construction de la requête pour les autres cas
         query = Q(is_active=True)
@@ -181,11 +235,20 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
             # Default fallback: if user is authenticated, show their personal decks
             if user.is_authenticated:
                 logger.debug(f"Default fallback: showing personal decks for {user.username}")
-                return self._get_optimized_queryset().filter(user=user, is_active=True, is_archived=False)
+                return self.get_optimized_deck_queryset().filter(user=user, is_active=True, is_archived=False)
             else:
                 return FlashcardDeck.objects.none()
+                
+        # Filtres additionnels
+        if search_query or username_filter:
+            if username_filter:
+                query &= Q(user__username__icontains=username_filter)
+                
+            if search_query:
+                search_filter = Q(name__icontains=search_query) | Q(description__icontains=search_query)
+                query &= search_filter
             
-        return self._get_optimized_queryset().filter(query)
+        return self.get_optimized_deck_queryset().filter(query).distinct()
 
     def perform_create(self, serializer):
         """Associe automatiquement l'utilisateur actuel lors de la création d'un deck."""
@@ -200,14 +263,14 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
         ne modifie que ses propres decks
         """
         instance = self.get_object()
-        if instance.user != request.user:
+        if not self.check_deck_owner(instance, request.user):
             return Response(
                 {"detail": "You don't have permission to modify this deck"},
                 status=status.HTTP_403_FORBIDDEN
             )
             
         # Vérifier si le deck est archivé
-        if instance.is_archived:
+        if not self.check_deck_not_archived(instance):
             return Response(
                 {"detail": "This deck is archived. Please unarchive it first to make changes."},
                 status=status.HTTP_400_BAD_REQUEST
@@ -221,7 +284,7 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
         ne supprime que ses propres decks
         """
         instance = self.get_object()
-        if instance.user != request.user:
+        if not self.check_deck_owner(instance, request.user):
             return Response(
                 {"detail": "You don't have permission to delete this deck"},
                 status=status.HTTP_403_FORBIDDEN
@@ -229,12 +292,19 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def clone(self, request, pk=None):
+        """Action pour cloner un deck"""
+        source_deck = self.get_object()
+        logger.debug(f"Tentative de clonage du deck {pk} par l'utilisateur {request.user.username}")
+        return self.clone_deck(source_deck, request)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def toggle_public(self, request, pk=None):
         """Action pour basculer la visibilité publique d'un deck."""
         deck = self.get_object()
         
         # Vérifier que l'utilisateur est propriétaire du deck
-        if deck.user != request.user:
+        if not self.check_deck_owner(deck, request.user):
             return Response(
                 {"detail": "You don't have permission to modify this deck's visibility"},
                 status=status.HTTP_403_FORBIDDEN
@@ -260,74 +330,6 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
             "is_public": deck.is_public,
             "message": f"Deck visibility set to {'public' if deck.is_public else 'private'}"
         })
-
-    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
-    def archive_management(self, request):
-        """
-        Endpoint pour gérer l'archivage et la prolongation des decks.
-        Permet d'archiver, désarchiver ou prolonger la date d'expiration.
-        """
-        serializer = DeckArchiveSerializer(data=request.data, context={'request': request})
-        
-        if serializer.is_valid():
-            result = serializer.save()
-            return Response(result)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def clone(self, request, pk=None):
-        """Action pour cloner un deck public"""
-        source_deck = self.get_object()
-        
-        # Journaliser pour le débogage
-        logger.debug(f"Tentative de clonage du deck public {pk} par l'utilisateur {request.user.username}")
-        logger.debug(f"Données de la requête: {request.data}")
-        
-        # Vérifier que le deck est public
-        if not source_deck.is_public:
-            return Response(
-                {"detail": "You can only clone public decks"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        try:
-            # Créer un nouveau deck pour l'utilisateur
-            new_deck = FlashcardDeck.objects.create(
-                user=request.user,
-                # Fournir des valeurs par défaut pour éviter les erreurs
-                name=request.data.get('name') or f"Clone of {source_deck.name}",
-                description=request.data.get('description') or f"Cloned from {source_deck.user.username}'s deck: {source_deck.description}",
-                is_active=True,
-                is_public=False,
-                is_archived=False
-            )
-            
-            # Copier toutes les cartes
-            cards_created = 0
-            for card in source_deck.flashcards.all():
-                Flashcard.objects.create(
-                    user=request.user,
-                    deck=new_deck,
-                    front_text=card.front_text,
-                    back_text=card.back_text,
-                    learned=False,
-                    review_count=0
-                )
-                cards_created += 1
-            
-            serializer = FlashcardDeckSerializer(new_deck, context={'request': request})
-            return Response({
-                "message": f"Successfully cloned '{source_deck.name}' with {cards_created} cards",
-                "deck": serializer.data
-            }, status=status.HTTP_201_CREATED)
-            
-        except Exception as e:
-            logger.error(f"Erreur lors du clonage du deck {pk}: {str(e)}")
-            return Response(
-                {"detail": f"Failed to clone deck: {str(e)}"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def stats(self, request):
@@ -365,15 +367,15 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
         try:
             deck = self.get_object()
             
-            # Vérifier l'accès aux cartes - autoriser pour les decks publics
-            if not deck.is_public and (not request.user.is_authenticated or deck.user != request.user):
+            # Vérifier l'accès aux cartes
+            if not self.check_deck_access(deck, request.user):
                 return Response(
                     {"detail": "You don't have permission to view cards in this deck"},
                     status=status.HTTP_403_FORBIDDEN
                 )
             
             # Ne pas permettre de voir les cartes d'un deck archivé sauf au propriétaire
-            if deck.is_archived and (not request.user.is_authenticated or deck.user != request.user):
+            if deck.is_archived and not self.check_deck_owner(deck, request.user):
                 return Response(
                     {"detail": "This deck is archived and not available for viewing"},
                     status=status.HTTP_403_FORBIDDEN
@@ -403,7 +405,6 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
     def popular(self, request):
         """
         Endpoint dédié pour récupérer les decks publics populaires.
-        Les decks sont triés par nombre de cartes ou de clones.
         """
         # Filtrer uniquement les decks publics et non archivés
         queryset = FlashcardDeck.objects.filter(is_public=True, is_active=True, is_archived=False)
@@ -423,260 +424,6 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-    
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
-    def archived(self, request):
-        """Récupère tous les decks archivés de l'utilisateur courant."""
-        queryset = FlashcardDeck.objects.filter(
-            user=request.user, 
-            is_archived=True
-        ).order_by('expiration_date')
-        
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
-    def expiring_soon(self, request):
-        """Récupère les decks qui vont expirer bientôt."""
-        # Utiliser la méthode de classe pour trouver les decks à avertir
-        queryset = FlashcardDeck.get_decks_needing_warning(user=request.user)
-        
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({
-            "count": queryset.count(),
-            "decks": serializer.data
-        })
-    
-    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
-    def cleanup_expired(self, request):
-        """Action pour nettoyer les decks expirés (admin uniquement)."""
-        # Vérifier que l'utilisateur est superutilisateur
-        if not request.user.is_superuser:
-            return Response(
-                {"detail": "Only administrators can perform this action"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-            
-        # Exécuter le nettoyage
-        count = FlashcardDeck.cleanup_expired()
-        
-        return Response({
-            "message": f"Cleanup completed: {count} expired decks deleted",
-            "count": count
-        })
-        
-    @action(detail=False, methods=['post'])
-    def batch_delete(self, request):
-        """Supprimer plusieurs decks en une seule requête avec validation sécurisée."""
-        serializer = BatchDeleteSerializer(data=request.data, context={'request': request})
-        
-        if not serializer.is_valid():
-            return Response(
-                {"detail": "Données invalides", "errors": serializer.errors},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        try:
-            deck_ids = serializer.validated_data['deck_ids']
-            
-            # Supprimer les decks (permissions déjà vérifiées dans le sérialiseur)
-            queryset = FlashcardDeck.objects.filter(
-                id__in=deck_ids,
-                user=request.user
-            )
-            
-            deleted_count, _ = queryset.delete()
-            
-            logger.info(f"User {request.user.id} deleted {deleted_count} decks: {deck_ids}")
-            
-            return Response({
-                "message": f"Suppression réussie de {deleted_count} deck(s)",
-                "deleted": deleted_count,
-                "deck_ids": deck_ids
-            }, status=status.HTTP_200_OK)
-            
-        except Exception as e:
-            logger.error(f"Error batch deleting decks for user {request.user.id}: {str(e)}")
-            return Response(
-                {"detail": "Erreur lors de la suppression des decks"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-    
-    @action(detail=False, methods=['post'])
-    def batch_archive(self, request):
-        """Archiver/désarchiver plusieurs decks en une seule requête avec validation sécurisée."""
-        serializer = BatchArchiveSerializer(data=request.data, context={'request': request})
-        
-        if not serializer.is_valid():
-            return Response(
-                {"detail": "Données invalides", "errors": serializer.errors},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        try:
-            deck_ids = serializer.validated_data['deck_ids']
-            action_type = serializer.validated_data['action']
-            
-            # Mettre à jour les decks
-            queryset = FlashcardDeck.objects.filter(
-                id__in=deck_ids,
-                user=request.user
-            )
-            
-            if action_type == 'archive':
-                updated_count = 0
-                for deck in queryset:
-                    deck.archive()
-                    updated_count += 1
-                message = f"Archivage réussi de {updated_count} deck(s)"
-            else:  # unarchive
-                updated_count = queryset.update(is_archived=False, expiration_date=None)
-                message = f"Désarchivage réussi de {updated_count} deck(s)"
-            
-            logger.info(f"User {request.user.id} {action_type}d {updated_count} decks: {deck_ids}")
-            
-            return Response({
-                "message": message,
-                "updated": updated_count,
-                "action": action_type,
-                "deck_ids": deck_ids
-            }, status=status.HTTP_200_OK)
-            
-        except Exception as e:
-            logger.error(f"Error batch {action_type} for user {request.user.id}: {str(e)}")
-            return Response(
-                {"detail": f"Erreur lors de l'{action_type} des decks"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        Récupère un deck spécifique.
-        Permet l'accès aux decks publics pour tous les utilisateurs
-        """
-        try:
-            instance = self.get_object()
-            
-            # Vérification des permissions - autoriser l'accès aux decks publics
-            if not instance.is_public and instance.user != request.user:
-                return Response(
-                    {"detail": "You don't have permission to view this deck"},
-                    status=status.HTTP_403_FORBIDDEN
-                )
-                
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data)
-        except Exception as e:
-            logger.error(f"Error retrieving deck {kwargs.get('pk')}: {str(e)}")
-            return Response(
-                {"detail": "Erreur lors du chargement du deck"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-    
-    @action(detail=True, methods=['get', 'patch'], permission_classes=[IsAuthenticated])
-    def learning_settings(self, request, pk=None):
-        """
-        Endpoint pour gérer les paramètres d'apprentissage d'un deck.
-        GET: récupère les paramètres actuels
-        PATCH: met à jour les paramètres
-        """
-        deck = self.get_object()
-        
-        # Vérifier que l'utilisateur est propriétaire du deck
-        if deck.user != request.user:
-            return Response(
-                {"detail": "You don't have permission to modify this deck's learning settings"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
-        if request.method == 'GET':
-            serializer = DeckLearningSettingsSerializer(deck, context={'request': request})
-            return Response(serializer.data)
-        
-        elif request.method == 'PATCH':
-            serializer = DeckLearningSettingsSerializer(
-                deck, 
-                data=request.data, 
-                partial=True, 
-                context={'request': request}
-            )
-            
-            if serializer.is_valid():
-                serializer.save()
-                return Response({
-                    "message": "Paramètres d'apprentissage mis à jour avec succès",
-                    "settings": serializer.data
-                })
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def apply_preset(self, request, pk=None):
-        """
-        Applique un preset de configuration d'apprentissage à un deck.
-        """
-        deck = self.get_object()
-        
-        # Vérifier que l'utilisateur est propriétaire du deck
-        if deck.user != request.user:
-            return Response(
-                {"detail": "You don't have permission to modify this deck's learning settings"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
-        serializer = ApplyPresetSerializer(data=request.data)
-        
-        if serializer.is_valid():
-            preset_name = serializer.validated_data['preset_name']
-            
-            # Appliquer le preset
-            success = deck.apply_learning_preset(preset_name)
-            
-            if success:
-                # Récupérer les nouveaux paramètres
-                settings_serializer = DeckLearningSettingsSerializer(deck, context={'request': request})
-                
-                return Response({
-                    "message": f"Preset '{preset_name}' appliqué avec succès",
-                    "preset_applied": preset_name,
-                    "settings": settings_serializer.data
-                })
-            else:
-                return Response(
-                    {"detail": f"Erreur lors de l'application du preset '{preset_name}'"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated])
-    def learning_statistics(self, request, pk=None):
-        """
-        Récupère les statistiques d'apprentissage détaillées d'un deck.
-        """
-        deck = self.get_object()
-        
-        # Vérifier que l'utilisateur est propriétaire du deck ou que le deck est public
-        if not deck.is_public and deck.user != request.user:
-            return Response(
-                {"detail": "You don't have permission to view this deck's statistics"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
-        statistics = deck.get_learning_statistics()
-        presets = deck.get_learning_presets()
-        
-        return Response({
-            "deck_id": deck.id,
-            "deck_name": deck.name,
-            "statistics": statistics,
-            "current_settings": {
-                "required_reviews_to_learn": deck.required_reviews_to_learn,
-                "auto_mark_learned": deck.auto_mark_learned,
-                "reset_on_wrong_answer": deck.reset_on_wrong_answer
-            },
-            "available_presets": presets
-        })
 
 class FlashcardViewSet(viewsets.ModelViewSet):
     serializer_class = FlashcardSerializer
@@ -877,122 +624,168 @@ class FlashcardViewSet(viewsets.ModelViewSet):
                 {"detail": f"Failed to fetch due cards: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-    
+
+class PublicDecksViewSet(DeckCloneMixin, OptimizedQuerysetMixin, viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet spécifique pour explorer les decks publics.
+    En lecture seule, ne permet pas de modification.
+    """
+    serializer_class = FlashcardDeckSerializer
+    permission_classes = [AllowAny]
+    pagination_class = DeckPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'description', 'user__username']
+    ordering_fields = ['created_at', 'name', 'user__username']
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        """Ne retourne que les decks publics actifs et non archivés."""
+        queryset = FlashcardDeck.objects.filter(
+            is_public=True,
+            is_active=True,
+            is_archived=False
+        ).select_related('user').prefetch_related('flashcards').annotate(
+            cards_count=Count('flashcards'),
+            learned_count=Count('flashcards', filter=Q(flashcards__learned=True))
+        )
+        
+        # Filtres supplémentaires
+        username = self.request.query_params.get('username')
+        author = self.request.query_params.get('author')
+        search = self.request.query_params.get('search')
+        min_cards = self.request.query_params.get('minCards')
+        max_cards = self.request.query_params.get('maxCards')
+            
+        # Filtrer par nom d'utilisateur si spécifié
+        if username:
+            queryset = queryset.filter(user__username__icontains=username)
+            
+        # Filtrer par auteur (alternative pour username)
+        if author:
+            queryset = queryset.filter(user__username__icontains=author)
+
+        # Recherche textuelle
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) | 
+                Q(description__icontains=search) | 
+                Q(user__username__icontains=search)
+            ).distinct()
+
+        # Filtrer par nombre de cartes
+        if min_cards:
+            try:
+                min_cards = int(min_cards)
+                queryset = queryset.filter(cards_count__gte=min_cards)
+            except ValueError:
+                pass
+                
+        if max_cards:
+            try:
+                max_cards = int(max_cards)
+                queryset = queryset.filter(cards_count__lte=max_cards)
+            except ValueError:
+                pass
+
+        # Tri par popularité si demandé
+        sort_by = self.request.query_params.get('sort_by') or self.request.query_params.get('sortBy')
+        if sort_by == 'popularity':
+            queryset = queryset.order_by('-cards_count')
+        elif sort_by == 'cards_count':
+            queryset = queryset.order_by('-cards_count')
+        elif sort_by == 'name':
+            queryset = queryset.order_by('name')
+                
+        return queryset
+
     @action(detail=False, methods=['get'])
-    def ids(self, request):
-        """Récupérer uniquement les IDs des flashcards, optionnellement filtrées par deck."""
+    def stats(self, request):
+        """Récupérer les statistiques des decks publics."""
         try:
-            deck_id = request.query_params.get('deck')
+            public_decks = FlashcardDeck.objects.filter(
+                is_public=True,
+                is_active=True,
+                is_archived=False
+            ).select_related('user').prefetch_related('flashcards')
             
-            # Appliquer les filtres
-            queryset = self.get_queryset()
-            if deck_id:
-                queryset = queryset.filter(deck_id=deck_id)
+            total_decks = public_decks.count()
+            total_cards = sum(deck.flashcards.count() for deck in public_decks)
+            total_authors = public_decks.values('user').distinct().count()
             
-            # Récupérer seulement les IDs pour optimiser les performances
-            card_ids = queryset.values_list('id', flat=True)
+            stats = {
+                'totalDecks': total_decks,
+                'totalCards': total_cards,
+                'totalAuthors': total_authors
+            }
             
-            return Response(list(card_ids))
+            return Response(stats)
             
         except Exception as e:
-            logger.error(f"Error fetching card IDs: {str(e)}")
+            logger.error(f"Error fetching public decks stats: {str(e)}")
             return Response(
-                {"detail": f"Failed to fetch card IDs: {str(e)}"},
+                {"detail": f"Failed to fetch stats: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @action(detail=True, methods=['get'])
+    def cards(self, request, pk=None):
+        """Récupérer toutes les cartes d'un deck public spécifique."""
+        try:
+            deck = self.get_object()
+            
+            # Vérifier que le deck est bien public
+            if not deck.is_public:
+                return Response(
+                    {"detail": "This deck is not public."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+                
+            # Ne pas permettre de voir les cartes d'un deck archivé
+            if deck.is_archived:
+                return Response(
+                    {"detail": "This deck is archived and not available for viewing"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            cards = deck.flashcards.all().order_by('-created_at')
+            serializer = FlashcardSerializer(cards, many=True, context={'request': request})
+            return Response(serializer.data)
+            
+        except Exception as e:
+            logger.error(f"Error fetching cards for public deck {pk}: {str(e)}")
+            return Response(
+                {"detail": f"Failed to fetch cards: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def update_review_progress(self, request, pk=None):
+    def clone(self, request, pk=None):
         """
-        Met à jour le progrès de révision d'une carte selon les paramètres du deck.
+        Action pour cloner un deck public d'un autre utilisateur.
         """
-        try:
-            card = self.get_object()
-            
-            # Vérifier que l'utilisateur est propriétaire de la carte
-            if card.user != request.user:
-                return Response(
-                    {"detail": "You don't have permission to update this card's progress"},
-                    status=status.HTTP_403_FORBIDDEN
-                )
-            
-            # Vérifier si le deck est archivé
-            if card.deck.is_archived:
-                return Response(
-                    {"detail": "You cannot update cards in an archived deck."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            
-            # Récupérer le paramètre de correction
-            is_correct = request.data.get('is_correct', True)
-            
-            # Mettre à jour le progrès selon les paramètres du deck
-            card.update_review_progress(is_correct=is_correct)
-            
-            # Retourner la carte mise à jour
-            serializer = self.get_serializer(card)
-            return Response({
-                "message": "Progrès de révision mis à jour",
-                "card": serializer.data,
-                "learning_progress": {
-                    "correct_reviews": card.correct_reviews_count,
-                    "total_reviews": card.total_reviews_count,
-                    "required_reviews": card.deck.required_reviews_to_learn,
-                    "progress_percentage": card.learning_progress_percentage,
-                    "reviews_remaining": card.reviews_remaining_to_learn,
-                    "is_learned": card.learned
-                }
-            })
-            
-        except Exception as e:
-            logger.error(f"Error updating review progress for card {pk}: {str(e)}")
-            return Response(
-                {"detail": f"Failed to update review progress: {str(e)}"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        source_deck = self.get_object()
+        return self.clone_deck(source_deck, request)
 
-    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
-    def batch_delete(self, request):
-        """Supprimer plusieurs flashcards en une seule requête."""
-        try:
-            card_ids = request.data.get('cardIds', [])
+    @action(detail=False, methods=['get'])
+    def popular(self, request):
+        """
+        Liste les decks publics les plus populaires.
+        """
+        queryset = self.get_queryset().annotate(
+            card_count=Count('flashcards')
+        ).order_by('-card_count')
+        
+        # Limiter le nombre de résultats
+        limit = int(request.query_params.get('limit', 10))
+        queryset = queryset[:limit]
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
             
-            if not card_ids:
-                return Response(
-                    {"detail": "No card IDs provided"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            
-            # Vérifier que l'utilisateur est autorisé à supprimer ces cartes
-            queryset = self.get_queryset().filter(
-                id__in=card_ids,
-                user=request.user,  # S'assurer que les cartes appartiennent à l'utilisateur
-                deck__is_archived=False  # Ne pas permettre la suppression dans les decks archivés
-            )
-            
-            # Stocker le nombre de cartes trouvées
-            count = queryset.count()
-            
-            if count == 0:
-                return Response(
-                    {"detail": "No accessible cards found with these IDs or cards are in archived decks"},
-                    status=status.HTTP_404_NOT_FOUND
-                )
-            
-            # Supprimer les cartes
-            deleted_count, _ = queryset.delete()
-            
-            return Response({
-                "message": f"Successfully deleted {deleted_count} cards",
-                "deleted": deleted_count
-            }, status=status.HTTP_200_OK)
-            
-        except Exception as e:
-            logger.error(f"Error batch deleting cards: {str(e)}")
-            return Response(
-                {"detail": f"Failed to delete cards: {str(e)}"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class FlashcardImportView(APIView):
     permission_classes = [IsAuthenticated]
@@ -1031,21 +824,16 @@ class FlashcardImportView(APIView):
                 return Response({"detail": "Le deck spécifié n'existe pas."}, 
                                status=status.HTTP_404_NOT_FOUND)
             
-            # to read the file taking into account the file type and the presence of a header
+            # Lire le fichier selon son type
             if excel_file.name.endswith('.csv'):
                 df = pd.read_csv(excel_file, header=0 if has_header else None)
             else:
-                df=pd.read_excel(excel_file, engine='openpyxl', header=0 if has_header else None)
+                df = pd.read_excel(excel_file, engine='openpyxl', header=0 if has_header else None)
 
             if not has_header:
                 df.columns = ['front_text', 'back_text'] + [f'col_{i}' for i in range(2, len(df.columns))]
             
-            # Ne pas retourner ici - continuer pour traiter les colonnes sélectionnées
-            
             # Vérifier que les colonnes nécessaires existent
-            required_columns = ['front_text', 'back_text']
-            # Si le fichier a des noms de colonnes différents (par exemple 'anglais', 'français'),
-            # on peut les mapper automatiquement aux 2 premières colonnes
             if len(df.columns) < 2:
                 return Response({"detail": "Le fichier doit contenir au moins 2 colonnes."}, 
                                status=status.HTTP_400_BAD_REQUEST)
@@ -1159,237 +947,71 @@ class FlashcardImportView(APIView):
         except Exception as e:
             return Response({"detail": f"Une erreur s'est produite lors de l'importation: {str(e)}"}, 
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-class PublicDecksViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ViewSet spécifique pour explorer les decks publics.
-    En lecture seule, ne permet pas de modification.
-    """
-    serializer_class = FlashcardDeckSerializer
-    permission_classes = [AllowAny]
-    pagination_class = DeckPagination
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name', 'description', 'user__username']
-    ordering_fields = ['created_at', 'name', 'user__username']
-    ordering = ['-created_at']
 
-    def get_queryset(self):
-        """Ne retourne que les decks publics actifs et non archivés."""
-        queryset = FlashcardDeck.objects.filter(
-            is_public=True,
-            is_active=True,
-            is_archived=False
-        ).select_related('user').prefetch_related('flashcards').annotate(
-            cards_count=Count('flashcards'),
-            learned_count=Count('flashcards', filter=Q(flashcards__learned=True))
-        )
-        
-        # Filtres supplémentaires
-        username = self.request.query_params.get('username')
-        author = self.request.query_params.get('author')
-        search = self.request.query_params.get('search')
-        min_cards = self.request.query_params.get('minCards')
-        max_cards = self.request.query_params.get('maxCards')
-        
-        # Note: Le champ language n'existe pas encore dans le modèle FlashcardDeck
-            
-        # Filtrer par nom d'utilisateur si spécifié
-        if username:
-            queryset = queryset.filter(user__username__icontains=username)
-            
-        # Filtrer par auteur (alternative pour username)
-        if author:
-            queryset = queryset.filter(user__username__icontains=author)
+# ===== API VIEWS =====
 
-        # Recherche textuelle
-        if search:
-            queryset = queryset.filter(
-                Q(name__icontains=search) | 
-                Q(description__icontains=search) | 
-                Q(user__username__icontains=search)
-            ).distinct()
-
-        # Filtrer par nombre de cartes
-        if min_cards:
-            try:
-                min_cards = int(min_cards)
-                queryset = queryset.filter(cards_count__gte=min_cards)
-            except ValueError:
-                pass
-                
-        if max_cards:
-            try:
-                max_cards = int(max_cards)
-                queryset = queryset.filter(cards_count__lte=max_cards)
-            except ValueError:
-                pass
-
-        # Tri par popularité si demandé
-        sort_by = self.request.query_params.get('sort_by') or self.request.query_params.get('sortBy')
-        if sort_by == 'popularity':
-            queryset = queryset.order_by('-cards_count')
-        elif sort_by == 'cards_count':
-            queryset = queryset.order_by('-cards_count')
-        elif sort_by == 'name':
-            queryset = queryset.order_by('name')
-                
-        return queryset
-
-    @action(detail=False, methods=['get'])
-    def stats(self, request):
-        """Récupérer les statistiques des decks publics."""
+class TagsAPIView(APIView):
+    """API pour gérer les tags des decks - VERSION UNIQUE."""
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        """Récupère tous les tags disponibles pour l'utilisateur."""
         try:
-            public_decks = FlashcardDeck.objects.filter(
-                is_public=True,
-                is_active=True,
-                is_archived=False
-            ).select_related('user').prefetch_related('flashcards')
+            # Récupérer tous les tags des decks de l'utilisateur
+            user_decks = FlashcardDeck.objects.filter(user=request.user, is_active=True)
             
-            total_decks = public_decks.count()
-            total_cards = sum(deck.flashcards.count() for deck in public_decks)
-            total_authors = public_decks.values('user').distinct().count()
+            all_tags = set()
+            for deck in user_decks:
+                if deck.tags:
+                    all_tags.update(deck.tags)
             
-            stats = {
-                'totalDecks': total_decks,
-                'totalCards': total_cards,
-                'totalAuthors': total_authors
-            }
-            
-            return Response(stats)
-            
-        except Exception as e:
-            logger.error(f"Error fetching public decks stats: {str(e)}")
-            return Response(
-                {"detail": f"Failed to fetch stats: {str(e)}"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-    @action(detail=True, methods=['get'])
-    def cards(self, request, pk=None):
-        """Récupérer toutes les cartes d'un deck public spécifique."""
-        try:
-            deck = self.get_object()
-            
-            # Vérifier que le deck est bien public
-            if not deck.is_public:
-                return Response(
-                    {"detail": "This deck is not public."},
-                    status=status.HTTP_403_FORBIDDEN
-                )
-                
-            # Ne pas permettre de voir les cartes d'un deck archivé
-            if deck.is_archived:
-                return Response(
-                    {"detail": "This deck is archived and not available for viewing"},
-                    status=status.HTTP_403_FORBIDDEN
-                )
-            
-            cards = deck.flashcards.all().order_by('-created_at')
-            serializer = FlashcardSerializer(cards, many=True, context={'request': request})
-            return Response(serializer.data)
-            
-        except Exception as e:
-            logger.error(f"Error fetching cards for public deck {pk}: {str(e)}")
-            return Response(
-                {"detail": f"Failed to fetch cards: {str(e)}"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def clone(self, request, pk=None):
-        """
-        Action pour cloner un deck public d'un autre utilisateur.
-        Crée une copie du deck et de ses cartes pour l'utilisateur courant.
-        """
-        source_deck = self.get_object()
-        
-        # Vérifier que le deck est public ou appartient à l'utilisateur
-        if not source_deck.is_public and source_deck.user != request.user:
-            return Response(
-                {"detail": "You can only clone public decks or your own decks"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
-        # Ne pas permettre de cloner un deck archivé, sauf s'il appartient à l'utilisateur
-        if source_deck.is_archived and source_deck.user != request.user:
-            return Response(
-                {"detail": "You cannot clone an archived deck from another user"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        try:
-            # Créer un nouveau deck pour l'utilisateur
-            new_deck = FlashcardDeck.objects.create(
-                user=request.user,
-                name=request.data.get('name', f"Clone of {source_deck.name}"),
-                description=request.data.get('description', 
-                                        f"Cloned from {source_deck.user.username}'s deck: {source_deck.description}"),
-                is_active=True,
-                is_public=False,  # Par défaut, les clones sont privés
-                is_archived=False # Les clones ne sont jamais archivés
-            )
-            
-            # Copier toutes les cartes
-            cards_created = 0
-            for card in source_deck.flashcards.all():
-                Flashcard.objects.create(
-                    user=request.user,
-                    deck=new_deck,
-                    front_text=card.front_text,
-                    back_text=card.back_text,
-                    learned=False,  # Réinitialiser l'état d'apprentissage
-                    review_count=0  # Réinitialiser les stats d'apprentissage
-                )
-                cards_created += 1
-            
-            # Retourner les informations sur le nouveau deck
-            serializer = FlashcardDeckSerializer(new_deck, context={'request': request})
+            # Trier les tags alphabétiquement
+            sorted_tags = sorted(list(all_tags))
             
             return Response({
-                "message": f"Successfully cloned '{source_deck.name}' with {cards_created} cards",
-                "deck": serializer.data
-            }, status=status.HTTP_201_CREATED)
+                'tags': sorted_tags,
+                'count': len(sorted_tags)
+            })
             
         except Exception as e:
+            logger.error(f"Error retrieving tags for user {request.user.id}: {str(e)}")
             return Response(
-                {"detail": f"Failed to clone deck: {str(e)}"},
-                status=status.HTTP_400_BAD_REQUEST
+                {"detail": "Erreur lors de la récupération des tags"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+    
+    def post(self, request):
+        """Ajoute un nouveau tag à la liste des tags disponibles."""
+        try:
+            tag = request.data.get('tag', '').strip().lower()
             
-    @action(detail=False, methods=['get'])
-    def popular(self, request):
-        """
-        Liste les decks publics les plus populaires.
-        Définit la popularité en fonction du nombre de cartes dans le deck.
-        """
-        queryset = self.get_queryset().annotate(
-            card_count=Count('flashcards')
-        ).order_by('-card_count')
-        
-        # Limiter le nombre de résultats
-        limit = int(request.query_params.get('limit', 10))
-        queryset = queryset[:limit]
-        
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            if not tag:
+                return Response(
+                    {"detail": "Le tag ne peut pas être vide"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-        
-    @action(detail=False, methods=['get'])
-    def recent(self, request):
-        """Liste les decks publics les plus récents."""
-        queryset = self.get_queryset().order_by('-created_at')
-        
-        # Limiter le nombre de résultats
-        limit = int(request.query_params.get('limit', 10))
-        queryset = queryset[:limit]
-        
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            # Validation du tag
+            if len(tag) > 50:
+                return Response(
+                    {"detail": "Le tag ne peut pas dépasser 50 caractères"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+            if not re.match(r'^[a-zA-Z0-9àâäçéèêëïîôöùûüÿñæœ\s\-_]+$', tag):
+                return Response(
+                    {"detail": "Le tag contient des caractères non autorisés"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            return Response({
+                'tag': tag,
+                'message': 'Tag validé avec succès'
+            })
+            
+        except Exception as e:
+            logger.error(f"Error adding tag for user {request.user.id}: {str(e)}")
+            return Response(
+                {"detail": "Erreur lors de l'ajout du tag"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

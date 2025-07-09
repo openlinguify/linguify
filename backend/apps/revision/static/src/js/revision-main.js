@@ -15,7 +15,8 @@ let appState = {
     filters: {
         search: '',
         status: '',
-        sort: 'updated_desc'
+        sort: 'updated_desc',
+        tags: []
     }
 };
 
@@ -261,7 +262,15 @@ function renderDecksList() {
     if (decksEmpty) decksEmpty.style.display = 'none';
     decksList.style.display = 'block';
     
-    decksList.innerHTML = appState.decks.map(deck => {
+    // Apply client-side tags filtering
+    let filteredDecks = appState.decks;
+    if (appState.filters.tags && appState.filters.tags.length > 0) {
+        filteredDecks = window.filterDecksByTags ? 
+            window.filterDecksByTags(appState.decks, appState.filters.tags) : 
+            appState.decks;
+    }
+    
+    decksList.innerHTML = filteredDecks.map(deck => {
         const progress = calculateProgress(deck);
         return `
         <li class="deck-item ${appState.selectedDeck?.id === deck.id ? 'active' : ''}" 
@@ -275,6 +284,12 @@ function renderDecksList() {
                 </div>
             </div>
             <div class="deck-description">${deck.description || 'Aucune description'}</div>
+            <div class="deck-tags-container">
+                <div class="deck-tags">${window.displayDeckTags ? window.displayDeckTags(deck) : ''}</div>
+                <button class="btn-add-tag" onclick="event.stopPropagation(); quickEditTags(${deck.id})" title="Ajouter des tags">
+                    <i class="bi bi-tag"></i>
+                </button>
+            </div>
             <div class="deck-meta">
                 <div class="deck-progress">
                     <span>${deck.learned_count || 0}/${deck.cards_count || 0}</span>
@@ -363,6 +378,14 @@ function showCreateForm() {
     elements.newDeckName.value = '';
     elements.newDeckDescription.value = '';
     elements.newDeckVisibility.value = 'private';
+    
+    // Initialize tags manager for create form
+    if (window.tagsManager && !window.tagsManager.isInitialized) {
+        window.tagsManager.init('newDeckTagsInput', 'newDeckTagsDisplay');
+    }
+    if (window.tagsManager) {
+        window.tagsManager.setTags([]);
+    }
     
     // Focus on name input
     elements.newDeckName.focus();
@@ -816,7 +839,8 @@ async function createNewDeck() {
         const deckData = {
             name: name,
             description: description,
-            is_public: isPublic
+            is_public: isPublic,
+            tags: window.tagsManager ? window.tagsManager.getTags() : []
         };
         
         console.log('Creating deck with data:', deckData);
@@ -1466,6 +1490,14 @@ function showEditDeckForm() {
     elements.editDeckDescription.value = appState.selectedDeck.description || '';
     elements.editDeckVisibility.value = appState.selectedDeck.is_public ? 'public' : 'private';
     
+    // Initialize tags manager for edit form
+    if (window.tagsManager && !window.tagsManager.isInitialized) {
+        window.tagsManager.init('editDeckTagsInput', 'editDeckTagsDisplay');
+    }
+    if (window.tagsManager) {
+        window.tagsManager.setTags(appState.selectedDeck.tags || []);
+    }
+    
     // Focus sur le nom
     elements.editDeckName.focus();
 }
@@ -1502,7 +1534,8 @@ async function saveEditDeck() {
         const deckData = {
             name: name,
             description: description,
-            is_public: isPublic
+            is_public: isPublic,
+            tags: window.tagsManager ? window.tagsManager.getTags() : []
         };
         
         const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, deckData);
@@ -1841,6 +1874,246 @@ function handleSortFilter() {
     loadDecks();
 }
 
+// Tags filter functions
+function toggleTagsFilter() {
+    const dropdown = document.getElementById('tagsFilterDropdown');
+    const toggle = document.getElementById('tagsFilterToggle');
+    
+    if (dropdown.style.display === 'none') {
+        loadTagsFilter();
+        dropdown.style.display = 'block';
+        toggle.classList.add('active');
+    } else {
+        dropdown.style.display = 'none';
+        toggle.classList.remove('active');
+    }
+}
+
+function handleTagsFilterOutsideClick(event) {
+    const dropdown = document.getElementById('tagsFilterDropdown');
+    const toggle = document.getElementById('tagsFilterToggle');
+    
+    if (!dropdown.contains(event.target) && !toggle.contains(event.target)) {
+        dropdown.style.display = 'none';
+        toggle.classList.remove('active');
+    }
+}
+
+async function loadTagsFilter() {
+    const dropdown = document.getElementById('tagsFilterDropdown');
+    
+    try {
+        const response = await window.apiService.request('/api/v1/revision/tags/');
+        const tags = response.tags || [];
+        
+        dropdown.innerHTML = `
+            <div class="tags-filter-header">
+                <span>Filtrer par tags</span>
+                <button class="btn btn-link btn-sm p-0" onclick="clearTagsFilter()">
+                    <i class="bi bi-x-circle"></i>
+                </button>
+            </div>
+            <div class="tags-filter-list">
+                ${tags.map(tag => `
+                    <div class="tags-filter-item ${appState.filters.tags.includes(tag) ? 'active' : ''}" 
+                         onclick="toggleTagFilter('${tag}')">
+                        ${tag}
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } catch (error) {
+        console.error('Erreur lors du chargement des tags:', error);
+        dropdown.innerHTML = '<div class="p-2 text-muted">Erreur lors du chargement des tags</div>';
+    }
+}
+
+function toggleTagFilter(tag) {
+    const index = appState.filters.tags.indexOf(tag);
+    
+    if (index === -1) {
+        appState.filters.tags.push(tag);
+    } else {
+        appState.filters.tags.splice(index, 1);
+    }
+    
+    updateTagsFilterCounter();
+    loadDecks();
+    loadTagsFilter(); // Refresh the filter display
+}
+
+function clearTagsFilter() {
+    appState.filters.tags = [];
+    updateTagsFilterCounter();
+    loadDecks();
+    loadTagsFilter(); // Refresh the filter display
+}
+
+function updateTagsFilterCounter() {
+    const countElement = document.getElementById('tagsFilterCount');
+    const toggleButton = document.getElementById('tagsFilterToggle');
+    const count = appState.filters.tags.length;
+    
+    if (count > 0) {
+        countElement.textContent = count;
+        countElement.style.display = 'inline-block';
+        toggleButton.classList.add('active');
+    } else {
+        countElement.style.display = 'none';
+        toggleButton.classList.remove('active');
+    }
+}
+
+// Quick tags editing (Odoo style)
+function quickEditTags(deckId) {
+    const deck = appState.decks.find(d => d.id === deckId);
+    if (!deck) return;
+    
+    // Create modal for quick tag editing
+    const modal = document.createElement('div');
+    modal.className = 'quick-tags-modal';
+    modal.innerHTML = `
+        <div class="quick-tags-overlay" onclick="closeQuickTagsModal()"></div>
+        <div class="quick-tags-content">
+            <div class="quick-tags-header">
+                <h5><i class="bi bi-tags"></i> Tags pour "${deck.name}"</h5>
+                <button onclick="closeQuickTagsModal()" class="btn-close">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="quick-tags-body">
+                <div class="current-tags" id="quickCurrentTags">
+                    ${(deck.tags || []).map(tag => `
+                        <span class="tag-pill" onclick="removeQuickTag('${tag}', ${deckId})">
+                            ${tag} <i class="bi bi-x"></i>
+                        </span>
+                    `).join('')}
+                </div>
+                <div class="add-tag-section">
+                    <input type="text" id="quickTagInput" placeholder="Ajouter un tag..." 
+                           onkeypress="handleQuickTagKeypress(event, ${deckId})">
+                    <button onclick="addQuickTag(${deckId})" class="btn-add">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>
+                <div class="suggested-tags" id="quickSuggestedTags"></div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    loadQuickTagSuggestions();
+    document.getElementById('quickTagInput').focus();
+}
+
+function closeQuickTagsModal() {
+    const modal = document.querySelector('.quick-tags-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function handleQuickTagKeypress(event, deckId) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        addQuickTag(deckId);
+    }
+}
+
+async function addQuickTag(deckId) {
+    const input = document.getElementById('quickTagInput');
+    const tagValue = input.value.trim();
+    
+    if (!tagValue) return;
+    
+    try {
+        const deck = appState.decks.find(d => d.id === deckId);
+        const currentTags = deck.tags || [];
+        
+        if (currentTags.includes(tagValue)) {
+            window.notificationService?.warning('Ce tag existe déjà');
+            return;
+        }
+        
+        const updatedTags = [...currentTags, tagValue];
+        
+        await revisionAPI.updateDeck(deckId, { tags: updatedTags });
+        
+        // Update local state
+        deck.tags = updatedTags;
+        
+        // Refresh modal
+        updateQuickTagsDisplay(deckId);
+        input.value = '';
+        
+        // Refresh deck list
+        renderDecksList();
+        
+        window.notificationService?.success('Tag ajouté');
+    } catch (error) {
+        console.error('Error adding tag:', error);
+        window.notificationService?.error('Erreur lors de l\'ajout du tag');
+    }
+}
+
+async function removeQuickTag(tag, deckId) {
+    try {
+        const deck = appState.decks.find(d => d.id === deckId);
+        const updatedTags = (deck.tags || []).filter(t => t !== tag);
+        
+        await revisionAPI.updateDeck(deckId, { tags: updatedTags });
+        
+        // Update local state
+        deck.tags = updatedTags;
+        
+        // Refresh modal
+        updateQuickTagsDisplay(deckId);
+        
+        // Refresh deck list
+        renderDecksList();
+        
+        window.notificationService?.success('Tag supprimé');
+    } catch (error) {
+        console.error('Error removing tag:', error);
+        window.notificationService?.error('Erreur lors de la suppression du tag');
+    }
+}
+
+function updateQuickTagsDisplay(deckId) {
+    const deck = appState.decks.find(d => d.id === deckId);
+    const container = document.getElementById('quickCurrentTags');
+    if (container && deck) {
+        container.innerHTML = (deck.tags || []).map(tag => `
+            <span class="tag-pill" onclick="removeQuickTag('${tag}', ${deckId})">
+                ${tag} <i class="bi bi-x"></i>
+            </span>
+        `).join('');
+    }
+}
+
+async function loadQuickTagSuggestions() {
+    try {
+        const response = await window.apiService.request('/api/v1/revision/tags/');
+        const tags = response.tags || [];
+        
+        const container = document.getElementById('quickSuggestedTags');
+        if (container) {
+            container.innerHTML = `
+                <div class="suggestions-title">Tags populaires:</div>
+                <div class="suggestions-list">
+                    ${tags.slice(0, 6).map(tag => `
+                        <span class="tag-suggestion" onclick="document.getElementById('quickTagInput').value='${tag}'">
+                            ${tag}
+                        </span>
+                    `).join('')}
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading tag suggestions:', error);
+    }
+}
+
 function loadMoreDecks() {
     if (!appState.isLoading && appState.hasMore) {
         loadDecks(false);
@@ -2160,6 +2433,10 @@ function setupEventListeners() {
     elements.searchInput?.addEventListener('input', debounce(handleSearch, 300));
     elements.statusFilter?.addEventListener('change', handleStatusFilter);
     elements.sortFilter?.addEventListener('change', handleSortFilter);
+    
+    // Tags filter
+    document.getElementById('tagsFilterToggle')?.addEventListener('click', toggleTagsFilter);
+    document.addEventListener('click', handleTagsFilterOutsideClick);
     
     // Buttons
     elements.createDeck?.addEventListener('click', showCreateForm);

@@ -94,7 +94,7 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
         model = FlashcardDeck
         fields = [
             'id', 'name', 'description', 'created_at', 'updated_at', 
-            'is_active', 'is_public', 'is_archived', 'expiration_date',
+            'is_active', 'is_public', 'is_archived', 'expiration_date', 'tags',
             'required_reviews_to_learn', 'auto_mark_learned', 'reset_on_wrong_answer',
             'cards_count', 'learned_count', 'username', 'user', 'is_owner',
             'days_until_deletion', 'expiration_info', 'learning_statistics', 'learning_presets'
@@ -197,7 +197,7 @@ class FlashcardDeckCreateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = FlashcardDeck
-        fields = ['id', 'name', 'description', 'is_active', 'is_public']
+        fields = ['id', 'name', 'description', 'is_active', 'is_public', 'tags']
         read_only_fields = ['id']
     
     def create(self, validated_data):
@@ -226,6 +226,38 @@ class FlashcardDeckCreateSerializer(serializers.ModelSerializer):
                 )
         
         return value.strip()
+    
+    def validate_tags(self, value):
+        """Validate tags format and content."""
+        if not isinstance(value, list):
+            raise serializers.ValidationError("Les tags doivent être une liste.")
+        
+        # Nettoyer et valider chaque tag
+        cleaned_tags = []
+        for tag in value:
+            if not isinstance(tag, str):
+                raise serializers.ValidationError("Chaque tag doit être une chaîne de caractères.")
+            
+            cleaned_tag = tag.strip().lower()
+            if not cleaned_tag:
+                continue  # Ignorer les tags vides
+            
+            if len(cleaned_tag) > 50:
+                raise serializers.ValidationError("Chaque tag ne peut pas dépasser 50 caractères.")
+            
+            # Vérifier que le tag ne contient que des caractères autorisés
+            import re
+            if not re.match(r'^[a-zA-Z0-9àâäçéèêëïîôöùûüÿñæœ\s\-_]+$', cleaned_tag):
+                raise serializers.ValidationError(f"Le tag '{cleaned_tag}' contient des caractères non autorisés.")
+            
+            if cleaned_tag not in cleaned_tags:
+                cleaned_tags.append(cleaned_tag)
+        
+        # Limiter le nombre de tags
+        if len(cleaned_tags) > 10:
+            raise serializers.ValidationError("Vous ne pouvez pas avoir plus de 10 tags par deck.")
+        
+        return cleaned_tags
 
 # Sérialiseur pour afficher un deck avec ses cartes (utilisé pour les requêtes détaillées)
 class FlashcardDeckDetailSerializer(FlashcardDeckSerializer):

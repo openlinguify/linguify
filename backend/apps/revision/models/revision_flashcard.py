@@ -15,6 +15,7 @@ class FlashcardDeck(models.Model):
     is_public = models.BooleanField(default=False) 
     is_archived = models.BooleanField(default=False)
     expiration_date = models.DateTimeField(null=True, blank=True)
+    tags = models.JSONField(default=list, blank=True, help_text="Liste des tags pour organiser les decks")
     
     # Nouveaux paramètres d'apprentissage
     required_reviews_to_learn = models.PositiveIntegerField(

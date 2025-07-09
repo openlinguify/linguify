@@ -397,6 +397,12 @@ help-dev:
 	@echo "  test-app APP=X   Specific app tests"
 	@echo "  test-revision    Revision learning settings tests"
 	@echo "  test-revision-all All revision tests"
+	@echo "  test-revision-complete Complete revision test suite"
+	@echo "  test-revision-models   Revision models tests"
+	@echo "  test-revision-api      Revision API tests"
+	@echo "  test-revision-permissions Revision permissions tests"
+	@echo "  test-revision-tags     Revision tags tests"
+	@echo "  test-revision-integration Revision integration tests"
 	@echo "  test-system      System tests"
 	@echo ""
 	@echo "🎨 Code:"
@@ -459,6 +465,54 @@ test-revision:
 test-revision-all:
 	@echo "🧪 Testing ALL revision app tests..."
 	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision --verbosity=2
+
+test-revision-complete:
+	@echo "🧪 Running COMPLETE revision test suite..."
+	@echo "📋 This includes all tests: models, API, serializers, permissions, tags, integration"
+	@echo ""
+	@echo "🧪 Running models tests..."
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_models --verbosity=2
+	@echo ""
+	@echo "🧪 Running API tests..."
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_views_api --verbosity=2
+	@echo ""
+	@echo "🧪 Running serializers tests..."
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_serializers --verbosity=2
+	@echo ""
+	@echo "🧪 Running permissions tests..."
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_permissions --verbosity=2
+	@echo ""
+	@echo "🧪 Running tags system tests..."
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_tags --verbosity=2
+	@echo ""
+	@echo "🧪 Running integration tests..."
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_integration --verbosity=2
+	@echo ""
+	@echo "✅ COMPLETE revision test suite finished!"
+
+test-revision-models:
+	@echo "🧪 Testing revision models..."
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_models --verbosity=2
+
+test-revision-api:
+	@echo "🧪 Testing revision API views..."
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_views_api --verbosity=2
+
+test-revision-serializers:
+	@echo "🧪 Testing revision serializers..."
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_serializers --verbosity=2
+
+test-revision-permissions:
+	@echo "🧪 Testing revision permissions..."
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_permissions --verbosity=2
+
+test-revision-tags:
+	@echo "🧪 Testing revision tags system..."
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_tags --verbosity=2
+
+test-revision-integration:
+	@echo "🧪 Testing revision integration..."
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_integration --verbosity=2
 
 test-system:
 	@echo "🧪 System tests (public_web)..."
