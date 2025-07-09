@@ -17,8 +17,8 @@ class FlashcardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flashcard
         fields = [
-            'id', 'deck', 'front_text', 'back_text', 'learned', 
-            'created_at', 'updated_at', 'last_reviewed', 'review_count', 
+            'id', 'deck', 'front_text', 'back_text', 'front_language', 'back_language',
+            'learned', 'created_at', 'updated_at', 'last_reviewed', 'review_count', 
             'next_review', 'days_since_last_review', 'is_due',
             'correct_reviews_count', 'total_reviews_count',
             'learning_progress_percentage', 'reviews_remaining_to_learn'
@@ -83,6 +83,7 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
     cards_count = serializers.SerializerMethodField()
     learned_count = serializers.SerializerMethodField()
     username = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
     is_owner = serializers.SerializerMethodField()
     days_until_deletion = serializers.SerializerMethodField()
     expiration_info = serializers.SerializerMethodField()
@@ -95,12 +96,12 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
             'id', 'name', 'description', 'created_at', 'updated_at', 
             'is_active', 'is_public', 'is_archived', 'expiration_date',
             'required_reviews_to_learn', 'auto_mark_learned', 'reset_on_wrong_answer',
-            'cards_count', 'learned_count', 'username', 'is_owner',
+            'cards_count', 'learned_count', 'username', 'user', 'is_owner',
             'days_until_deletion', 'expiration_info', 'learning_statistics', 'learning_presets'
         ]
         read_only_fields = [
-            'created_at', 'updated_at', 'user', 
-            'cards_count', 'learned_count', 'username', 'is_owner',
+            'created_at', 'updated_at', 
+            'cards_count', 'learned_count', 'username', 'user', 'is_owner',
             'days_until_deletion', 'expiration_info', 'learning_statistics', 'learning_presets'
         ]
     
@@ -117,6 +118,17 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
     def get_username(self, obj):
         """Renvoie le nom d'utilisateur du propriétaire du deck."""
         return obj.user.username if obj.user else None
+    
+    def get_user(self, obj):
+        """Renvoie les informations de l'utilisateur propriétaire du deck."""
+        if obj.user:
+            return {
+                'id': obj.user.id,
+                'username': obj.user.username,
+                'first_name': obj.user.first_name,
+                'last_name': obj.user.last_name,
+            }
+        return None
     
     def get_is_owner(self, obj):
         """Détermine si l'utilisateur actuel est le propriétaire du deck."""

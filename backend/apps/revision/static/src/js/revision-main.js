@@ -303,6 +303,7 @@ function hideAllSections() {
     if (elements.welcomeState) elements.welcomeState.style.display = 'none';
     if (elements.deckDetails) elements.deckDetails.style.display = 'none';
     if (elements.createDeckForm) elements.createDeckForm.style.display = 'none';
+    if (elements.editDeckForm) elements.editDeckForm.style.display = 'none';
     if (elements.importDeckForm) elements.importDeckForm.style.display = 'none';
     if (elements.importPreviewSection) elements.importPreviewSection.style.display = 'none';
     if (elements.createCardForm) elements.createCardForm.style.display = 'none';
@@ -818,6 +819,10 @@ async function createNewDeck() {
             is_public: isPublic
         };
         
+        console.log('Creating deck with data:', deckData);
+        console.log('CSRF Token:', window.apiService.getCSRFToken());
+        console.log('User authenticated:', window.USER_DATA?.is_authenticated);
+        
         const newDeck = await revisionAPI.createDeck(deckData);
         
         window.notificationService.success('Deck créé avec succès');
@@ -828,7 +833,16 @@ async function createNewDeck() {
         
     } catch (error) {
         console.error('Error creating deck:', error);
-        window.notificationService.error('Erreur lors de la création du deck');
+        console.error('Error details:', error.data);
+        
+        // Try to show more specific error message
+        if (error.data && error.data.detail) {
+            window.notificationService.error(error.data.detail);
+        } else if (error.data && error.data.name && error.data.name[0]) {
+            window.notificationService.error(error.data.name[0]);
+        } else {
+            window.notificationService.error('Erreur lors de la création du deck');
+        }
     }
 }
 
@@ -874,14 +888,14 @@ async function importNewDeck() {
         // Then, get preview of the file
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('has_header', 'true');
+        formData.append('has_header', 'true'); // Initial load always with header
         formData.append('preview_only', 'true');
         formData.append('front_column', '0');
         formData.append('back_column', '1');
         
         const previewResult = await revisionAPI.previewImport(newDeck.id, formData);
-        importState.previewData = previewResult.preview;
-        importState.columns = previewResult.columns;
+        importState.previewData = previewResult.preview || [];
+        importState.columns = previewResult.columns || [];
         
         // Show preview step
         showImportPreview(previewResult);
@@ -1154,12 +1168,20 @@ function showImportPreview(previewResult) {
     const elements = getElements();
     elements.importPreviewSection.style.display = 'block';
     
+    // Vérifier que previewResult contient les données attendues
+    if (!previewResult || typeof previewResult !== 'object') {
+        window.notificationService.error('Données de preview invalides');
+        return;
+    }
+    
     // Afficher les infos du fichier avec animation
     animateValue(elements.previewFileName, importState.file.name);
-    animateValue(elements.previewTotalRows, previewResult.total_rows);
+    animateValue(elements.previewTotalRows, previewResult.total_rows || 0);
     
     // Estimer le nombre de cartes
-    const estimatedCards = Math.max(0, previewResult.total_rows - 1); // -1 pour l'en-tête
+    const totalRows = previewResult.total_rows || 0;
+    const hasHeader = document.getElementById('hasHeaderCheck').checked;
+    const estimatedCards = Math.max(0, hasHeader ? totalRows - 1 : totalRows);
     animateValue(document.getElementById('previewEstimatedCards'), estimatedCards);
     
     // Afficher les options de colonnes
@@ -1169,15 +1191,21 @@ function showImportPreview(previewResult) {
     frontSelect.innerHTML = '';
     backSelect.innerHTML = '';
     
-    previewResult.columns.forEach(col => {
+    const columns = previewResult.columns || [];
+    if (columns.length === 0) {
+        window.notificationService.error('Aucune colonne trouvée dans le fichier');
+        return;
+    }
+    
+    columns.forEach(col => {
         const optionFront = document.createElement('option');
         optionFront.value = col.index;
-        optionFront.textContent = `Colonne ${col.index + 1}: ${col.name}`;
+        optionFront.textContent = `Colonne ${col.index + 1}: ${col.name || 'Sans nom'}`;
         frontSelect.appendChild(optionFront);
         
         const optionBack = document.createElement('option');
         optionBack.value = col.index;
-        optionBack.textContent = `Colonne ${col.index + 1}: ${col.name}`;
+        optionBack.textContent = `Colonne ${col.index + 1}: ${col.name || 'Sans nom'}`;
         backSelect.appendChild(optionBack);
     });
     
@@ -1186,7 +1214,7 @@ function showImportPreview(previewResult) {
     backSelect.value = '1';
     
     // Afficher le preview initial avec animation
-    updatePreviewDisplay(previewResult.preview);
+    updatePreviewDisplay(previewResult.preview || []);
     
     // Animation d'entrée des cartes
     setTimeout(() => {
@@ -1213,11 +1241,11 @@ function updatePreviewDisplay(previewData) {
                 <div class="row">
                     <div class="col-md-6">
                         <h6 class="text-muted mb-1">Recto</h6>
-                        <p class="mb-0">${card.front_text}</p>
+                        <p class="mb-0">${card.front_text || ''}</p>
                     </div>
                     <div class="col-md-6">
                         <h6 class="text-muted mb-1">Verso</h6>
-                        <p class="mb-0">${card.back_text}</p>
+                        <p class="mb-0">${card.back_text || ''}</p>
                     </div>
                 </div>
             </div>
@@ -1242,14 +1270,19 @@ async function updatePreview() {
             updateIndicator.style.display = 'inline-block';
         }
         
+        // Récupérer l'état de la checkbox
+        const hasHeader = document.getElementById('hasHeaderCheck').checked;
+        
         const formData = new FormData();
         formData.append('file', importState.file);
-        formData.append('has_header', 'true');
+        formData.append('has_header', hasHeader ? 'true' : 'false');
         formData.append('preview_only', 'true');
         formData.append('front_column', frontColumn);
         formData.append('back_column', backColumn);
         
         const previewResult = await revisionAPI.previewImport(importState.tempDeck.id, formData);
+        
+        console.log('Preview result:', previewResult);
         
         // Animation de sortie des anciennes cartes
         const container = elements.previewCardsContainer;
@@ -1266,7 +1299,7 @@ async function updatePreview() {
         
         // Attendre que l'animation se termine puis afficher les nouvelles cartes
         setTimeout(() => {
-            updatePreviewDisplay(previewResult.preview);
+            updatePreviewDisplay(previewResult.preview || []);
             
             // Animation d'entrée des nouvelles cartes
             setTimeout(() => {
@@ -1355,12 +1388,26 @@ async function confirmImport() {
         const frontColumn = elements.frontColumnSelect.value;
         const backColumn = elements.backColumnSelect.value;
         
+        // Récupérer l'état de la checkbox
+        const hasHeader = document.getElementById('hasHeaderCheck').checked;
+        
+        // Récupérer les langues sélectionnées
+        const frontLanguage = document.getElementById('frontLanguageSelect').value;
+        const backLanguage = document.getElementById('backLanguageSelect').value;
+        
         const formData = new FormData();
         formData.append('file', importState.file);
-        formData.append('has_header', 'true');
+        formData.append('has_header', hasHeader ? 'true' : 'false');
         formData.append('preview_only', 'false');
         formData.append('front_column', frontColumn);
         formData.append('back_column', backColumn);
+        
+        if (frontLanguage) {
+            formData.append('front_language', frontLanguage);
+        }
+        if (backLanguage) {
+            formData.append('back_language', backLanguage);
+        }
         
         const importResult = await revisionAPI.importDeck(importState.tempDeck.id, formData);
         
@@ -1398,6 +1445,380 @@ function hideImportPreview() {
         elements.deckDetails.style.display = 'block';
     } else {
         elements.welcomeState.style.display = 'block';
+    }
+}
+
+// ===== FONCTIONS DE GESTION DES DECKS =====
+
+function showEditDeckForm() {
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
+    
+    hideAllSections();
+    
+    const elements = getElements();
+    elements.editDeckForm.style.display = 'block';
+    
+    // Pré-remplir le formulaire avec les données actuelles
+    elements.editDeckName.value = appState.selectedDeck.name || '';
+    elements.editDeckDescription.value = appState.selectedDeck.description || '';
+    elements.editDeckVisibility.value = appState.selectedDeck.is_public ? 'public' : 'private';
+    
+    // Focus sur le nom
+    elements.editDeckName.focus();
+}
+
+function hideEditDeckForm() {
+    const elements = getElements();
+    elements.editDeckForm.style.display = 'none';
+    
+    if (appState.selectedDeck) {
+        elements.deckDetails.style.display = 'block';
+    } else {
+        elements.welcomeState.style.display = 'block';
+    }
+}
+
+async function saveEditDeck() {
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
+    
+    const elements = getElements();
+    const name = elements.editDeckName.value.trim();
+    const description = elements.editDeckDescription.value.trim();
+    const isPublic = elements.editDeckVisibility.value === 'public';
+    
+    if (!name) {
+        window.notificationService.error('Le nom du deck est requis');
+        elements.editDeckName.focus();
+        return;
+    }
+    
+    try {
+        const deckData = {
+            name: name,
+            description: description,
+            is_public: isPublic
+        };
+        
+        const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, deckData);
+        
+        window.notificationService.success('Deck modifié avec succès');
+        
+        // Mettre à jour l'état local
+        appState.selectedDeck = updatedDeck;
+        
+        // Recharger la liste des decks et sélectionner le deck modifié
+        await loadDecks();
+        await selectDeck(updatedDeck.id);
+        
+        hideEditDeckForm();
+        
+    } catch (error) {
+        console.error('Error updating deck:', error);
+        window.notificationService.error('Erreur lors de la modification du deck');
+    }
+}
+
+async function exportDeck() {
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
+    
+    try {
+        // Récupérer les cartes du deck
+        const cardsResponse = await revisionAPI.getCards(appState.selectedDeck.id);
+        const cards = cardsResponse.results || cardsResponse || [];
+        
+        if (cards.length === 0) {
+            window.notificationService.warning('Ce deck ne contient aucune carte à exporter');
+            return;
+        }
+        
+        // Créer les données CSV
+        const csvData = [
+            ['Recto', 'Verso', 'Apprise', 'Date de création'],
+            ...cards.map(card => [
+                card.front_text,
+                card.back_text,
+                card.learned ? 'Oui' : 'Non',
+                new Date(card.created_at).toLocaleDateString('fr-FR')
+            ])
+        ];
+        
+        // Convertir en CSV
+        const csvContent = csvData.map(row => 
+            row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(',')
+        ).join('\n');
+        
+        // Créer le blob et télécharger
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        
+        link.setAttribute('href', url);
+        link.setAttribute('download', `${appState.selectedDeck.name}.csv`);
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        window.notificationService.success(`Deck exporté : ${cards.length} cartes`);
+        
+    } catch (error) {
+        console.error('Error exporting deck:', error);
+        window.notificationService.error('Erreur lors de l\'exportation du deck');
+    }
+}
+
+async function shareDeck() {
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
+    
+    if (!appState.selectedDeck.is_public) {
+        // Proposer de rendre le deck public
+        const makePublic = confirm(
+            'Ce deck est privé. Voulez-vous le rendre public pour pouvoir le partager ?'
+        );
+        
+        if (makePublic) {
+            try {
+                const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, {
+                    is_public: true
+                });
+                appState.selectedDeck = updatedDeck;
+                window.notificationService.success('Deck rendu public');
+            } catch (error) {
+                console.error('Error making deck public:', error);
+                window.notificationService.error('Erreur lors de la publication du deck');
+                return;
+            }
+        } else {
+            return;
+        }
+    }
+    
+    // Créer l'URL de partage
+    const shareUrl = `${window.location.origin}/revision/explore/?deck=${appState.selectedDeck.id}`;
+    
+    // Copier dans le presse-papiers si possible
+    if (navigator.clipboard && window.isSecureContext) {
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            window.notificationService.success('Lien de partage copié dans le presse-papiers');
+        } catch (error) {
+            showShareDialog(shareUrl);
+        }
+    } else {
+        showShareDialog(shareUrl);
+    }
+}
+
+function showShareDialog(url) {
+    // Créer une modal simple pour afficher l'URL
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+        <div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Partager le deck</h5>
+                        <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Copiez ce lien pour partager votre deck :</p>
+                        <div class="input-group">
+                            <input type="text" class="form-control" value="${url}" readonly>
+                            <button class="btn btn-primary" onclick="
+                                this.previousElementSibling.select();
+                                document.execCommand('copy');
+                                window.notificationService.success('Lien copié');
+                                this.closest('.modal').remove();
+                            ">Copier</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+async function archiveDeck() {
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
+    
+    const action = appState.selectedDeck.is_archived ? 'désarchiver' : 'archiver';
+    
+    if (!confirm(`Êtes-vous sûr de vouloir ${action} ce deck ?`)) {
+        return;
+    }
+    
+    try {
+        const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, {
+            is_archived: !appState.selectedDeck.is_archived
+        });
+        
+        appState.selectedDeck = updatedDeck;
+        
+        const message = updatedDeck.is_archived ? 'Deck archivé' : 'Deck désarchivé';
+        window.notificationService.success(message);
+        
+        // Recharger la liste des decks
+        await loadDecks();
+        
+        // Si le deck est archivé, revenir à la vue d'accueil
+        if (updatedDeck.is_archived) {
+            hideAllSections();
+            const elements = getElements();
+            elements.welcomeState.style.display = 'block';
+            appState.selectedDeck = null;
+        } else {
+            await selectDeck(updatedDeck.id);
+        }
+        
+    } catch (error) {
+        console.error('Error archiving deck:', error);
+        window.notificationService.error(`Erreur lors de l'${action}age du deck`);
+    }
+}
+
+async function deleteDeckConfirm() {
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
+    
+    const deckName = appState.selectedDeck.name;
+    const cardsCount = appState.selectedDeck.cards_count || 0;
+    
+    showDeleteConfirmationModal(deckName, cardsCount);
+}
+
+function showDeleteConfirmationModal(deckName, cardsCount) {
+    // Créer la modal de confirmation
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+        <div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-danger bg-opacity-10 rounded-circle p-2 me-3">
+                                <i class="bi bi-trash text-danger" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title text-danger mb-0">Supprimer le deck</h5>
+                                <p class="text-muted mb-0 small">Cette action est irréversible</p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+                    </div>
+                    <div class="modal-body pt-2">
+                        <div class="alert alert-danger bg-danger bg-opacity-10 border-danger border-opacity-25">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-exclamation-triangle-fill text-danger me-2 mt-1"></i>
+                                <div>
+                                    <strong>Attention !</strong> Vous êtes sur le point de supprimer définitivement :
+                                    <ul class="mb-0 mt-2">
+                                        <li>Le deck <strong>"${deckName}"</strong></li>
+                                        ${cardsCount > 0 ? `<li>Ses <strong>${cardsCount} carte${cardsCount > 1 ? 's' : ''}</strong></li>` : ''}
+                                        <li>Tout l'historique de révision associé</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <p class="text-muted mb-2">Pour confirmer la suppression, tapez le nom du deck :</p>
+                            <input type="text" class="form-control" id="deleteConfirmInput" 
+                                   placeholder="Tapez '${deckName}' pour confirmer" 
+                                   autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-outline-secondary" onclick="this.closest('.modal').remove()">
+                            <i class="bi bi-x-lg me-1"></i>
+                            Annuler
+                        </button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn" disabled 
+                                onclick="executeDeleteDeck('${deckName}')">
+                            <i class="bi bi-trash me-1"></i>
+                            Supprimer définitivement
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Gérer la validation du nom
+    const input = modal.querySelector('#deleteConfirmInput');
+    const confirmBtn = modal.querySelector('#confirmDeleteBtn');
+    
+    input.addEventListener('input', function() {
+        const isValid = this.value.trim() === deckName;
+        confirmBtn.disabled = !isValid;
+        
+        if (isValid) {
+            confirmBtn.classList.remove('btn-danger');
+            confirmBtn.classList.add('btn-outline-danger');
+        } else {
+            confirmBtn.classList.remove('btn-outline-danger');
+            confirmBtn.classList.add('btn-danger');
+        }
+    });
+    
+    // Focus sur l'input
+    setTimeout(() => input.focus(), 100);
+    
+    // Fermer avec Escape
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
+}
+
+async function executeDeleteDeck(deckName) {
+    try {
+        // Fermer la modal
+        const modal = document.querySelector('.modal');
+        if (modal) modal.remove();
+        
+        // Afficher un loading
+        window.notificationService.info('Suppression en cours...');
+        
+        await revisionAPI.deleteDeck(appState.selectedDeck.id);
+        
+        window.notificationService.success(`Deck "${deckName}" supprimé avec succès`);
+        
+        // Revenir à la vue d'accueil
+        hideAllSections();
+        const elements = getElements();
+        elements.welcomeState.style.display = 'block';
+        appState.selectedDeck = null;
+        
+        // Recharger la liste des decks
+        await loadDecks();
+        
+    } catch (error) {
+        console.error('Error deleting deck:', error);
+        window.notificationService.error('Erreur lors de la suppression du deck');
     }
 }
 
@@ -1635,6 +2056,15 @@ function getElements() {
         newDeckDescription: document.getElementById('newDeckDescription'),
         newDeckVisibility: document.getElementById('newDeckVisibility'),
         
+        // Edit deck form
+        editDeckForm: document.getElementById('editDeckForm'),
+        editDeckName: document.getElementById('editDeckName'),
+        editDeckDescription: document.getElementById('editDeckDescription'),
+        editDeckVisibility: document.getElementById('editDeckVisibility'),
+        saveEditDeck: document.getElementById('saveEditDeck'),
+        cancelEditDeck: document.getElementById('cancelEditDeck'),
+        cancelEditDeckAlt: document.getElementById('cancelEditDeckAlt'),
+        
         // Import form
         importFile: document.getElementById('importFile'),
         importDeckName: document.getElementById('importDeckName'),
@@ -1751,6 +2181,11 @@ function setupEventListeners() {
     elements.cancelCreate?.addEventListener('click', hideCreateForm);
     elements.cancelCreateAlt?.addEventListener('click', hideCreateForm);
     
+    // Edit deck form
+    elements.saveEditDeck?.addEventListener('click', saveEditDeck);
+    elements.cancelEditDeck?.addEventListener('click', hideEditDeckForm);
+    elements.cancelEditDeckAlt?.addEventListener('click', hideEditDeckForm);
+    
     // Import form
     elements.submitImport?.addEventListener('click', importNewDeck);
     elements.cancelImport?.addEventListener('click', hideImportForm);
@@ -1776,6 +2211,13 @@ function setupEventListeners() {
     elements.closeLearningSettings?.addEventListener('click', closeLearningSettings);
     elements.saveLearningSettings?.addEventListener('click', saveLearningSettings);
     elements.resetToDefault?.addEventListener('click', resetToDefaultSettings);
+    
+    // Deck Management buttons
+    document.getElementById('editDeck')?.addEventListener('click', showEditDeckForm);
+    document.getElementById('exportDeck')?.addEventListener('click', exportDeck);
+    document.getElementById('shareDeck')?.addEventListener('click', shareDeck);
+    document.getElementById('archiveDeck')?.addEventListener('click', archiveDeck);
+    document.getElementById('deleteDeck')?.addEventListener('click', deleteDeckConfirm);
     
     // Create deck buttons
     document.querySelectorAll('.create-deck-btn').forEach(btn => {
@@ -1864,7 +2306,18 @@ window.revisionMain = {
     updateImportButton,
     animateValue,
     animateNumber,
-    animateText
+    animateText,
+    
+    // Deck Management
+    showEditDeckForm,
+    hideEditDeckForm,
+    saveEditDeck,
+    exportDeck,
+    shareDeck,
+    archiveDeck,
+    deleteDeckConfirm,
+    showDeleteConfirmationModal,
+    executeDeleteDeck
 };
 
 // Auto-initialize when DOM is ready

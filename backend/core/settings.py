@@ -15,8 +15,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Initialiser environ.Env
 env = environ.Env()
 
-# Lire le fichier .env
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+# Lire le fichier .env avec encodage UTF-8
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'), encoding='utf-8')
 
 if not env('SECRET_KEY', default=None):
     raise ValueError("SECRET_KEY must be set in environment variables or .env file")

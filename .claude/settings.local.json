@@ -159,7 +159,8 @@
       "Bash(./venv/bin/python -c \"import django; print(''✅ Django'', django.get_version())\")",
       "Bash(kill:*)",
       "Bash(git checkout:*)",
-      "Bash(./venv/bin/python:*)"
+      "Bash(./venv/bin/python:*)",
+      "Bash(createdb:*)"
     ],
     "deny": []
   },

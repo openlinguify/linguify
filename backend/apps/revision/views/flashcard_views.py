@@ -1007,6 +1007,10 @@ class FlashcardImportView(APIView):
             front_column = request.data.get('front_column', '0')
             back_column = request.data.get('back_column', '1')
             
+            # Récupérer les langues optionnelles
+            front_language = request.data.get('front_language', '')
+            back_language = request.data.get('back_language', '')
+            
             # Vérifier si le fichier est présent
             if not excel_file:
                 return Response({"detail": "Aucun fichier n'a été fourni."}, status=status.HTTP_400_BAD_REQUEST)
@@ -1036,13 +1040,7 @@ class FlashcardImportView(APIView):
             if not has_header:
                 df.columns = ['front_text', 'back_text'] + [f'col_{i}' for i in range(2, len(df.columns))]
             
-            preview_data = df.head(5).to_dict(orient='records')
-            if request.data.get('preview_only', 'false').lower() == 'true':
-                return Response({
-                    "preview": preview_data,
-                    "total_rows": len(df),
-                    "columns": list(df.columns),
-                }, status=status.HTTP_200_OK)
+            # Ne pas retourner ici - continuer pour traiter les colonnes sélectionnées
             
             # Vérifier que les colonnes nécessaires existent
             required_columns = ['front_text', 'back_text']
@@ -1075,10 +1073,20 @@ class FlashcardImportView(APIView):
                 columns_info = [{'index': i, 'name': col} for i, col in enumerate(df.columns)]
                 
                 for idx, row in preview_df.head(5).iterrows():  # Max 5 lignes de preview
-                    front_text = str(row['front_text']).strip()
-                    back_text = str(row['back_text']).strip()
+                    front_value = row['front_text']
+                    back_value = row['back_text']
                     
-                    if front_text and back_text and front_text != 'nan' and back_text != 'nan':
+                    # Vérifier si les valeurs sont NaN ou None
+                    if pd.isna(front_value) or pd.isna(back_value):
+                        continue
+                    
+                    front_text = str(front_value).strip()
+                    back_text = str(back_value).strip()
+                    
+                    # Ignorer les valeurs vides ou invalides
+                    if (front_text and back_text and 
+                        front_text.lower() not in ['nan', 'none', 'null'] and 
+                        back_text.lower() not in ['nan', 'none', 'null']):
                         preview_data.append({
                             'front_text': front_text,
                             'back_text': back_text
@@ -1098,20 +1106,37 @@ class FlashcardImportView(APIView):
             preview_data = []
             
             for idx, row in preview_df.iterrows():
-                front_text = str(row['front_text']).strip()
-                back_text = str(row['back_text']).strip()
+                front_value = row['front_text']
+                back_value = row['back_text']
                 
-                # Ignorer les lignes vides
-                if not front_text or not back_text or front_text == 'nan' or back_text == 'nan':
+                # Vérifier si les valeurs sont NaN ou None
+                if pd.isna(front_value) or pd.isna(back_value):
+                    continue
+                
+                front_text = str(front_value).strip()
+                back_text = str(back_value).strip()
+                
+                # Ignorer les lignes vides ou invalides
+                if (not front_text or not back_text or 
+                    front_text.lower() in ['nan', 'none', 'null'] or 
+                    back_text.lower() in ['nan', 'none', 'null']):
                     continue
                 
                 try:
-                    flashcard = Flashcard.objects.create(
-                        deck=deck,
-                        front_text=front_text,
-                        back_text=back_text,
-                        user=request.user
-                    )
+                    flashcard_data = {
+                        'deck': deck,
+                        'front_text': front_text,
+                        'back_text': back_text,
+                        'user': request.user
+                    }
+                    
+                    # Ajouter les langues si elles sont spécifiées
+                    if front_language:
+                        flashcard_data['front_language'] = front_language
+                    if back_language:
+                        flashcard_data['back_language'] = back_language
+                    
+                    flashcard = Flashcard.objects.create(**flashcard_data)
                     flashcards_created += 1
                     
                     # Ajouter aux données de preview (max 3)
@@ -1142,6 +1167,7 @@ class PublicDecksViewSet(viewsets.ReadOnlyModelViewSet):
     """
     serializer_class = FlashcardDeckSerializer
     permission_classes = [AllowAny]
+    pagination_class = DeckPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'description', 'user__username']
     ordering_fields = ['created_at', 'name', 'user__username']
@@ -1153,20 +1179,27 @@ class PublicDecksViewSet(viewsets.ReadOnlyModelViewSet):
             is_public=True,
             is_active=True,
             is_archived=False
+        ).select_related('user').prefetch_related('flashcards').annotate(
+            cards_count=Count('flashcards'),
+            learned_count=Count('flashcards', filter=Q(flashcards__learned=True))
         )
         
         # Filtres supplémentaires
-        language = self.request.query_params.get('language')
         username = self.request.query_params.get('username')
+        author = self.request.query_params.get('author')
         search = self.request.query_params.get('search')
+        min_cards = self.request.query_params.get('minCards')
+        max_cards = self.request.query_params.get('maxCards')
         
-        # Filtrer par langue si spécifié
-        if language:
-            queryset = queryset.filter(language=language)
+        # Note: Le champ language n'existe pas encore dans le modèle FlashcardDeck
             
         # Filtrer par nom d'utilisateur si spécifié
         if username:
             queryset = queryset.filter(user__username__icontains=username)
+            
+        # Filtrer par auteur (alternative pour username)
+        if author:
+            queryset = queryset.filter(user__username__icontains=author)
 
         # Recherche textuelle
         if search:
@@ -1176,12 +1209,60 @@ class PublicDecksViewSet(viewsets.ReadOnlyModelViewSet):
                 Q(user__username__icontains=search)
             ).distinct()
 
+        # Filtrer par nombre de cartes
+        if min_cards:
+            try:
+                min_cards = int(min_cards)
+                queryset = queryset.filter(cards_count__gte=min_cards)
+            except ValueError:
+                pass
+                
+        if max_cards:
+            try:
+                max_cards = int(max_cards)
+                queryset = queryset.filter(cards_count__lte=max_cards)
+            except ValueError:
+                pass
+
         # Tri par popularité si demandé
-        sort_by = self.request.query_params.get('sort_by')
+        sort_by = self.request.query_params.get('sort_by') or self.request.query_params.get('sortBy')
         if sort_by == 'popularity':
-            queryset = queryset.annotate(card_count=Count('flashcards')).order_by('-card_count')
+            queryset = queryset.order_by('-cards_count')
+        elif sort_by == 'cards_count':
+            queryset = queryset.order_by('-cards_count')
+        elif sort_by == 'name':
+            queryset = queryset.order_by('name')
                 
         return queryset
+
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Récupérer les statistiques des decks publics."""
+        try:
+            public_decks = FlashcardDeck.objects.filter(
+                is_public=True,
+                is_active=True,
+                is_archived=False
+            ).select_related('user').prefetch_related('flashcards')
+            
+            total_decks = public_decks.count()
+            total_cards = sum(deck.flashcards.count() for deck in public_decks)
+            total_authors = public_decks.values('user').distinct().count()
+            
+            stats = {
+                'totalDecks': total_decks,
+                'totalCards': total_cards,
+                'totalAuthors': total_authors
+            }
+            
+            return Response(stats)
+            
+        except Exception as e:
+            logger.error(f"Error fetching public decks stats: {str(e)}")
+            return Response(
+                {"detail": f"Failed to fetch stats: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     @action(detail=True, methods=['get'])
     def cards(self, request, pk=None):

@@ -8,7 +8,7 @@ from apps.authentication.models import User
 class FlashcardDeck(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='flashcard_decks')
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True, default='')
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
@@ -390,6 +390,21 @@ class Flashcard(models.Model):
     deck = models.ForeignKey(FlashcardDeck, on_delete=models.CASCADE, related_name='flashcards')
     front_text = models.TextField()
     back_text = models.TextField()
+    
+    # Champs de langue pour le recto et le verso
+    front_language = models.CharField(
+        max_length=10,
+        blank=True,
+        null=True,
+        help_text="Code de langue pour le recto (ex: 'fr', 'en', 'es')"
+    )
+    back_language = models.CharField(
+        max_length=10,
+        blank=True,
+        null=True,
+        help_text="Code de langue pour le verso (ex: 'fr', 'en', 'es')"
+    )
+    
     learned = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
