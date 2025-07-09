@@ -160,7 +160,10 @@
       "Bash(kill:*)",
       "Bash(git checkout:*)",
       "Bash(./venv/bin/python:*)",
-      "Bash(createdb:*)"
+      "Bash(createdb:*)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_models --verbosity=2 --keepdb)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_serializers --verbosity=2 --keepdb)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_simple --verbosity=2 --keepdb)"
     ],
     "deny": []
   },
