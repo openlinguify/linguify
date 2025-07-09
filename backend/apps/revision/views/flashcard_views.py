@@ -20,7 +20,9 @@ from apps.revision.serializers import (
     FlashcardDeckCreateSerializer,
     DeckArchiveSerializer,
     BatchDeleteSerializer,
-    BatchArchiveSerializer
+    BatchArchiveSerializer,
+    DeckLearningSettingsSerializer,
+    ApplyPresetSerializer
 )
 from django.http import JsonResponse
 
@@ -564,12 +566,117 @@ class FlashcardDeckViewSet(viewsets.ModelViewSet):
                 
             serializer = self.get_serializer(instance)
             return Response(serializer.data)
-            
         except Exception as e:
+            logger.error(f"Error retrieving deck {kwargs.get('pk')}: {str(e)}")
             return Response(
-                {"detail": f"Error retrieving deck: {str(e)}"},
-                status=status.HTTP_404_NOT_FOUND
+                {"detail": "Erreur lors du chargement du deck"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+    
+    @action(detail=True, methods=['get', 'patch'], permission_classes=[IsAuthenticated])
+    def learning_settings(self, request, pk=None):
+        """
+        Endpoint pour gérer les paramètres d'apprentissage d'un deck.
+        GET: récupère les paramètres actuels
+        PATCH: met à jour les paramètres
+        """
+        deck = self.get_object()
+        
+        # Vérifier que l'utilisateur est propriétaire du deck
+        if deck.user != request.user:
+            return Response(
+                {"detail": "You don't have permission to modify this deck's learning settings"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        if request.method == 'GET':
+            serializer = DeckLearningSettingsSerializer(deck, context={'request': request})
+            return Response(serializer.data)
+        
+        elif request.method == 'PATCH':
+            serializer = DeckLearningSettingsSerializer(
+                deck, 
+                data=request.data, 
+                partial=True, 
+                context={'request': request}
+            )
+            
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "message": "Paramètres d'apprentissage mis à jour avec succès",
+                    "settings": serializer.data
+                })
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def apply_preset(self, request, pk=None):
+        """
+        Applique un preset de configuration d'apprentissage à un deck.
+        """
+        deck = self.get_object()
+        
+        # Vérifier que l'utilisateur est propriétaire du deck
+        if deck.user != request.user:
+            return Response(
+                {"detail": "You don't have permission to modify this deck's learning settings"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        serializer = ApplyPresetSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            preset_name = serializer.validated_data['preset_name']
+            
+            # Appliquer le preset
+            success = deck.apply_learning_preset(preset_name)
+            
+            if success:
+                # Récupérer les nouveaux paramètres
+                settings_serializer = DeckLearningSettingsSerializer(deck, context={'request': request})
+                
+                return Response({
+                    "message": f"Preset '{preset_name}' appliqué avec succès",
+                    "preset_applied": preset_name,
+                    "settings": settings_serializer.data
+                })
+            else:
+                return Response(
+                    {"detail": f"Erreur lors de l'application du preset '{preset_name}'"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated])
+    def learning_statistics(self, request, pk=None):
+        """
+        Récupère les statistiques d'apprentissage détaillées d'un deck.
+        """
+        deck = self.get_object()
+        
+        # Vérifier que l'utilisateur est propriétaire du deck ou que le deck est public
+        if not deck.is_public and deck.user != request.user:
+            return Response(
+                {"detail": "You don't have permission to view this deck's statistics"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        statistics = deck.get_learning_statistics()
+        presets = deck.get_learning_presets()
+        
+        return Response({
+            "deck_id": deck.id,
+            "deck_name": deck.name,
+            "statistics": statistics,
+            "current_settings": {
+                "required_reviews_to_learn": deck.required_reviews_to_learn,
+                "auto_mark_learned": deck.auto_mark_learned,
+                "reset_on_wrong_answer": deck.reset_on_wrong_answer
+            },
+            "available_presets": presets
+        })
 
 class FlashcardViewSet(viewsets.ModelViewSet):
     serializer_class = FlashcardSerializer
@@ -791,6 +898,56 @@ class FlashcardViewSet(viewsets.ModelViewSet):
             logger.error(f"Error fetching card IDs: {str(e)}")
             return Response(
                 {"detail": f"Failed to fetch card IDs: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def update_review_progress(self, request, pk=None):
+        """
+        Met à jour le progrès de révision d'une carte selon les paramètres du deck.
+        """
+        try:
+            card = self.get_object()
+            
+            # Vérifier que l'utilisateur est propriétaire de la carte
+            if card.user != request.user:
+                return Response(
+                    {"detail": "You don't have permission to update this card's progress"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            # Vérifier si le deck est archivé
+            if card.deck.is_archived:
+                return Response(
+                    {"detail": "You cannot update cards in an archived deck."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Récupérer le paramètre de correction
+            is_correct = request.data.get('is_correct', True)
+            
+            # Mettre à jour le progrès selon les paramètres du deck
+            card.update_review_progress(is_correct=is_correct)
+            
+            # Retourner la carte mise à jour
+            serializer = self.get_serializer(card)
+            return Response({
+                "message": "Progrès de révision mis à jour",
+                "card": serializer.data,
+                "learning_progress": {
+                    "correct_reviews": card.correct_reviews_count,
+                    "total_reviews": card.total_reviews_count,
+                    "required_reviews": card.deck.required_reviews_to_learn,
+                    "progress_percentage": card.learning_progress_percentage,
+                    "reviews_remaining": card.reviews_remaining_to_learn,
+                    "is_learned": card.learned
+                }
+            })
+            
+        except Exception as e:
+            logger.error(f"Error updating review progress for card {pk}: {str(e)}")
+            return Response(
+                {"detail": f"Failed to update review progress: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 

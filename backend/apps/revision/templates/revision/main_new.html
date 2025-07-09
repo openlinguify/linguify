@@ -243,10 +243,16 @@
                             Réviser les difficiles
                         </button>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <button id="resetProgress" class="btn btn-outline-custom w-100">
                             <i class="bi bi-arrow-clockwise me-1"></i>
                             Réinitialiser progrès
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button id="learningSettings" class="btn btn-outline-custom w-100">
+                            <i class="bi bi-gear me-1"></i>
+                            Paramètres
                         </button>
                     </div>
                 </div>
@@ -403,6 +409,469 @@
         </div>
     </div>
     
+    <!-- Learning Settings Form -->
+    <div id="learningSettingsForm" style="display: none;">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Paramètres d'apprentissage - <span id="settingsDeckName"></span></h5>
+                <button id="closeLearningSettings" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-x-lg"></i>
+                    Fermer
+                </button>
+            </div>
+        </div>
+        
+        <div class="study-content p-4">
+            <!-- Current Statistics -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h6 class="card-title">📊 Statistiques actuelles</h6>
+                    <div class="row text-center" id="currentStats">
+                        <div class="col-3">
+                            <div class="stat-value text-primary" id="statTotalCards">0</div>
+                            <div class="stat-label">Total cartes</div>
+                        </div>
+                        <div class="col-3">
+                            <div class="stat-value text-success" id="statLearnedCards">0</div>
+                            <div class="stat-label">Apprises</div>
+                        </div>
+                        <div class="col-3">
+                            <div class="stat-value text-warning" id="statAverageProgress">0%</div>
+                            <div class="stat-label">Progression moy.</div>
+                        </div>
+                        <div class="col-3">
+                            <div class="stat-value text-info" id="statCardsNeeding">0</div>
+                            <div class="stat-label">À réviser</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Presets -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h6 class="card-title">🎯 Presets de configuration</h6>
+                    <div class="row g-2" id="presetsContainer">
+                        <!-- Presets will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Manual Settings -->
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">⚙️ Configuration personnalisée</h6>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Révisions requises pour apprendre</label>
+                            <select id="requiredReviews" class="form-control">
+                                <option value="1">1 fois (très facile)</option>
+                                <option value="2">2 fois (facile)</option>
+                                <option value="3" selected>3 fois (normal)</option>
+                                <option value="4">4 fois (exigeant)</option>
+                                <option value="5">5 fois (difficile)</option>
+                                <option value="7">7 fois (très difficile)</option>
+                                <option value="10">10 fois (expert)</option>
+                            </select>
+                            <small class="text-muted">Nombre de révisions correctes nécessaires</small>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label class="form-label">Marquage automatique</label>
+                            <div class="form-check form-switch">
+                                <input type="checkbox" class="form-check-input" id="autoMarkLearned" checked>
+                                <label class="form-check-label">Marquer automatiquement comme apprises</label>
+                            </div>
+                            <small class="text-muted">Désactiver pour un contrôle manuel</small>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label class="form-label">Reset sur erreur</label>
+                            <div class="form-check form-switch">
+                                <input type="checkbox" class="form-check-input" id="resetOnWrong">
+                                <label class="form-check-label">Remettre à zéro si mauvaise réponse</label>
+                            </div>
+                            <small class="text-muted">Le compteur redémarre à 0 en cas d'erreur</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button id="saveLearningSettings" class="btn btn-gradient me-2">
+                            <i class="bi bi-check-lg me-1"></i>
+                            Enregistrer les paramètres
+                        </button>
+                        <button id="resetToDefault" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise me-1"></i>
+                            Remettre par défaut
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Flashcard Study Mode -->
+    <div id="flashcardStudyMode" style="display: none;">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Mode Flashcards - <span id="studyDeckName"></span></h5>
+                <div class="d-flex align-items-center gap-2">
+                    <span id="studyProgress" class="badge bg-primary">0/0</span>
+                    <button id="exitStudyMode" class="btn btn-outline-custom btn-sm">
+                        <i class="bi bi-arrow-left"></i>
+                        Retour au deck
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="study-content">
+            <!-- Study Area -->
+            <div id="studyArea" class="d-flex flex-column align-items-center justify-content-center p-4" style="min-height: 400px;">
+                <!-- Flashcard -->
+                <div id="flashcard" class="flashcard mb-4" onclick="flipCard()">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <div class="flashcard-text" id="flashcardFront">Cliquez pour commencer</div>
+                        </div>
+                        <div class="flashcard-back">
+                            <div class="flashcard-text" id="flashcardBack">Réponse</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Instructions -->
+                <div id="studyInstructions" class="text-center mb-4">
+                    <p class="text-muted">Cliquez sur la carte pour voir la réponse, puis évaluez votre connaissance</p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div id="studyActions" class="d-flex gap-3" style="display: none;">
+                    <button id="studyDifficult" class="btn btn-outline-danger">
+                        <i class="bi bi-x-circle"></i>
+                        Difficile
+                    </button>
+                    <button id="studyEasy" class="btn btn-outline-warning">
+                        <i class="bi bi-dash-circle"></i>
+                        Moyen
+                    </button>
+                    <button id="studyKnown" class="btn btn-outline-success">
+                        <i class="bi bi-check-circle"></i>
+                        Facile
+                    </button>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="noCardsToStudy" class="empty-state" style="display: none;">
+                    <i class="bi bi-trophy text-warning" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3">Félicitations !</h4>
+                    <p class="text-muted">Vous avez terminé toutes les cartes de ce deck pour aujourd'hui.</p>
+                    <button class="btn btn-gradient" onclick="window.revisionMain.exitStudyMode()">
+                        Retour au deck
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Study Stats -->
+            <div class="border-top p-3">
+                <div class="row text-center">
+                    <div class="col">
+                        <div class="stat-value text-success" id="studyCorrect">0</div>
+                        <div class="stat-label">Réussies</div>
+                    </div>
+                    <div class="col">
+                        <div class="stat-value text-warning" id="studyMedium">0</div>
+                        <div class="stat-label">Moyennes</div>
+                    </div>
+                    <div class="col">
+                        <div class="stat-value text-danger" id="studyDifficult">0</div>
+                        <div class="stat-label">Difficiles</div>
+                    </div>
+                    <div class="col">
+                        <div class="stat-value text-primary" id="studyRemaining">0</div>
+                        <div class="stat-label">Restantes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quiz Study Mode -->
+    <div id="quizStudyMode" style="display: none;">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Mode Questionnaire - <span id="quizDeckName"></span></h5>
+                <div class="d-flex align-items-center gap-2">
+                    <span id="quizProgress" class="badge bg-primary">0/0</span>
+                    <button id="exitQuizMode" class="btn btn-outline-custom btn-sm">
+                        <i class="bi bi-arrow-left"></i>
+                        Retour au deck
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress mt-2" style="height: 4px;">
+                <div id="quizProgressBar" class="progress-bar bg-primary" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="study-content">
+            <!-- Quiz Area -->
+            <div id="quizArea" class="p-4">
+                <!-- Question -->
+                <div class="quiz-question-container mb-4">
+                    <h4 id="quizQuestion" class="quiz-question text-center p-4 border rounded bg-light">Question</h4>
+                </div>
+                
+                <!-- Options -->
+                <div id="quizOptions" class="quiz-options mb-4">
+                    <!-- Options will be generated dynamically -->
+                </div>
+                
+                <!-- Feedback -->
+                <div id="quizFeedback" style="display: none;">
+                    <!-- Feedback will be shown here -->
+                </div>
+                
+                <!-- Next Button -->
+                <div class="text-center">
+                    <button id="nextQuestion" class="btn btn-gradient" style="display: none;">
+                        <i class="bi bi-arrow-right me-1"></i>
+                        Question suivante
+                    </button>
+                </div>
+            </div>
+            
+            <!-- No Cards Message -->
+            <div id="noQuizCards" class="empty-state" style="display: none;">
+                <i class="bi bi-question-circle text-muted" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">Pas assez de cartes</h4>
+                <p class="text-muted">Ce deck doit contenir au moins 4 cartes pour le mode questionnaire.</p>
+                <button class="btn btn-gradient" onclick="window.quizMode.exitQuizMode()">
+                    Retour au deck
+                </button>
+            </div>
+            
+            <!-- Quiz Stats -->
+            <div class="border-top p-3">
+                <div class="row text-center">
+                    <div class="col">
+                        <div class="stat-value text-success" id="quizCorrect">0</div>
+                        <div class="stat-label">Correctes</div>
+                    </div>
+                    <div class="col">
+                        <div class="stat-value text-danger" id="quizIncorrect">0</div>
+                        <div class="stat-label">Incorrectes</div>
+                    </div>
+                    <div class="col">
+                        <div class="stat-value text-primary" id="quizScore">0%</div>
+                        <div class="stat-label">Score</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Matching Study Mode -->
+    <div id="matchingStudyMode" style="display: none;">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Mode Associer - <span id="matchingDeckName"></span></h5>
+                <div class="d-flex align-items-center gap-2">
+                    <button id="newMatchingGame" class="btn btn-outline-custom btn-sm">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Nouveau jeu
+                    </button>
+                    <button id="exitMatchingMode" class="btn btn-outline-custom btn-sm">
+                        <i class="bi bi-arrow-left"></i>
+                        Retour au deck
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="study-content">
+            <!-- Game Area -->
+            <div id="matchingGameArea" class="p-4">
+                <!-- Instructions -->
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Comment jouer :</strong> Cliquez sur les éléments pour les associer. Trouvez toutes les paires terme-définition !
+                </div>
+                
+                <!-- Game Board -->
+                <div id="matchingBoard" class="matching-board">
+                    <!-- Matching items will be generated dynamically -->
+                </div>
+            </div>
+            
+            <!-- Completion Screen -->
+            <div id="matchingCompletion" class="empty-state" style="display: none;">
+                <div id="matchingCompletionMessage">
+                    <!-- Completion message will be generated dynamically -->
+                </div>
+                
+                <div class="d-flex gap-2 justify-content-center mt-4">
+                    <button class="btn btn-outline-custom" onclick="window.matchingMode.restartMatching()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>
+                        Rejouer
+                    </button>
+                    <button class="btn btn-gradient" onclick="window.matchingMode.exitMatchingMode()">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Retour au deck
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Game Stats -->
+            <div class="border-top p-3">
+                <div class="row text-center">
+                    <div class="col">
+                        <div class="stat-value text-success"><span id="matchingPairs">0</span>/<span id="matchingTotal">0</span></div>
+                        <div class="stat-label">Paires trouvées</div>
+                    </div>
+                    <div class="col">
+                        <div class="stat-value text-primary" id="matchingAttempts">0</div>
+                        <div class="stat-label">Tentatives</div>
+                    </div>
+                    <div class="col">
+                        <div class="stat-value text-warning" id="matchingAccuracy">100%</div>
+                        <div class="stat-label">Précision</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Spaced Repetition Study Mode -->
+    <div id="spacedStudyMode" style="display: none;">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Révision Rapide - <span id="spacedDeckName"></span></h5>
+                <div class="d-flex align-items-center gap-2">
+                    <span id="spacedProgress" class="badge bg-primary">0/0</span>
+                    <button id="exitSpacedMode" class="btn btn-outline-custom btn-sm">
+                        <i class="bi bi-arrow-left"></i>
+                        Retour au deck
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress mt-2" style="height: 4px;">
+                <div id="spacedProgressBar" class="progress-bar bg-primary" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="study-content">
+            <!-- Review Area -->
+            <div id="spacedReviewArea" class="p-4">
+                <!-- Card Info -->
+                <div id="spacedCardInfo" class="mb-3">
+                    <!-- Card info will be shown here -->
+                </div>
+                
+                <!-- Question State -->
+                <div id="spacedCardQuestion" class="text-center mb-4">
+                    <div class="flashcard mb-4">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">
+                                <div class="flashcard-text" id="spacedCardFront">Question</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="revealAnswer" class="btn btn-gradient">
+                        <i class="bi bi-eye me-1"></i>
+                        Révéler la réponse
+                    </button>
+                </div>
+                
+                <!-- Answer State -->
+                <div id="spacedCardAnswer" class="text-center mb-4" style="display: none;">
+                    <div class="flashcard mb-4">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-back">
+                                <div class="flashcard-text" id="spacedCardBack">Réponse</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-muted mb-4">Comment avez-vous trouvé cette carte ?</p>
+                </div>
+                
+                <!-- Difficulty Actions -->
+                <div id="spacedActions" class="d-flex justify-content-center gap-2 flex-wrap" style="display: none;">
+                    <button id="reviewAgain" class="btn btn-danger">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        <div class="small">À revoir</div>
+                        <div class="tiny text-white-50">< 1 jour</div>
+                    </button>
+                    <button id="reviewHard" class="btn btn-warning">
+                        <i class="bi bi-dash-circle"></i>
+                        <div class="small">Difficile</div>
+                        <div class="tiny text-white-50">2-3 jours</div>
+                    </button>
+                    <button id="reviewGood" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i>
+                        <div class="small">Correct</div>
+                        <div class="tiny text-white-50">4-7 jours</div>
+                    </button>
+                    <button id="reviewEasy" class="btn btn-success">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div class="small">Facile</div>
+                        <div class="tiny text-white-50">2-4 semaines</div>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- No Review Needed -->
+            <div id="noReviewNeeded" class="empty-state" style="display: none;">
+                <i class="bi bi-calendar-check text-success" style="font-size: 4rem;"></i>
+                <h4 class="mt-3 text-success">Toutes les cartes sont à jour !</h4>
+                <p class="text-muted">Aucune carte n'a besoin d'être révisée pour le moment.</p>
+                <p class="text-muted">Revenez plus tard ou ajoutez de nouvelles cartes à étudier.</p>
+                <button class="btn btn-gradient" onclick="window.spacedMode.exitSpacedMode()">
+                    Retour au deck
+                </button>
+            </div>
+            
+            <!-- Session Complete -->
+            <div id="spacedCompletion" class="empty-state" style="display: none;">
+                <div id="spacedCompletionMessage">
+                    <!-- Completion message will be generated dynamically -->
+                </div>
+                
+                <div class="d-flex gap-2 justify-content-center mt-4">
+                    <button class="btn btn-gradient" onclick="window.spacedMode.exitSpacedMode()">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Retour au deck
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Session Stats -->
+            <div class="border-top p-3">
+                <div class="row text-center">
+                    <div class="col">
+                        <div class="stat-value text-primary" id="spacedReviewed">0</div>
+                        <div class="stat-label">Révisées</div>
+                    </div>
+                    <div class="col">
+                        <div class="stat-value text-info" id="spacedRemaining">0</div>
+                        <div class="stat-label">Restantes</div>
+                    </div>
+                    <div class="col">
+                        <div class="stat-value text-success" id="spacedEfficiency">100%</div>
+                        <div class="stat-label">Efficacité</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Import Deck Form -->
     <div id="importDeckForm" style="display: none;">
         <div class="study-header">
@@ -451,6 +920,10 @@
 
 <!-- Charger le JavaScript modulaire -->
 <script src="{% static 'src/js/revision-main.js' %}"></script>
+<script src="{% static 'src/js/revision-flashcards.js' %}"></script>
+<script src="{% static 'src/js/revision-quiz.js' %}"></script>
+<script src="{% static 'src/js/revision-matching.js' %}"></script>
+<script src="{% static 'src/js/revision-spaced.js' %}"></script>
 
 <script>
 // Le JavaScript principal est maintenant dans revision-main.js

@@ -9,6 +9,8 @@ from .flashcard_serializers import (
     DeckArchiveSerializer,
     BatchDeleteSerializer,
     BatchArchiveSerializer,
+    DeckLearningSettingsSerializer,
+    ApplyPresetSerializer,
 )
 from .revision_serializers import RevisionSessionSerializer, VocabularyWordSerializer, VocabularyListSerializer
 
@@ -25,5 +27,7 @@ __all__ = [
     'FlashcardDeckDetailSerializer',
     'DeckArchiveSerializer',
     'BatchDeleteSerializer',
-    'BatchArchiveSerializer'
+    'BatchArchiveSerializer',
+    'DeckLearningSettingsSerializer',
+    'ApplyPresetSerializer'
 ]

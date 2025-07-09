@@ -395,7 +395,9 @@ help-dev:
 	@echo "  test             All tests"
 	@echo "  test-fast        Quick tests (no setup)"
 	@echo "  test-app APP=X   Specific app tests"
-	@echo "  test-core        Core tests only"
+	@echo "  test-revision    Revision learning settings tests"
+	@echo "  test-revision-all All revision tests"
+	@echo "  test-system      System tests"
 	@echo ""
 	@echo "🎨 Code:"
 	@echo "  lint             Check code"
@@ -438,6 +440,25 @@ test-app:
 	fi
 	@echo "🧪 Testing app: $(APP)"
 	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.$(APP) --verbosity=2
+
+test-revision:
+	@echo "🧪 Testing revision app with learning settings..."
+	@echo "📋 Running comprehensive test suite:"
+	@echo "   • Core learning settings tests"
+	@echo "   • Edge cases and validation tests"
+	@echo "   • Integration workflow tests"
+	@echo ""
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_learning_settings --verbosity=2
+	@echo ""
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_learning_edge_cases --verbosity=2
+	@echo ""
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_learning_integration --verbosity=2
+	@echo ""
+	@echo "✅ Revision tests completed!"
+
+test-revision-all:
+	@echo "🧪 Testing ALL revision app tests..."
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision --verbosity=2
 
 test-system:
 	@echo "🧪 System tests (public_web)..."

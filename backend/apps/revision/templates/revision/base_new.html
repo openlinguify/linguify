@@ -596,6 +596,170 @@
             letter-spacing: 0.05em;
             margin-top: 0.125rem;
         }
+        
+        /* Quiz styles */
+        .quiz-question {
+            font-size: 1.25rem;
+            font-weight: 500;
+            line-height: 1.5;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .quiz-option {
+            transition: all 0.2s ease;
+            border: 2px solid #e2e8f0 !important;
+            position: relative;
+        }
+        
+        .quiz-option:hover:not(:disabled) {
+            border-color: var(--primary-color) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(139, 92, 246, 0.15);
+        }
+        
+        .quiz-option-letter {
+            background: var(--primary-gradient);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+        
+        .quiz-option-text {
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+        
+        .quiz-option.btn-success .quiz-option-letter {
+            background: #10b981;
+        }
+        
+        .quiz-option.btn-danger .quiz-option-letter {
+            background: #ef4444;
+        }
+        
+        /* Matching game styles */
+        .matching-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            padding: 1rem 0;
+        }
+        
+        .matching-item {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .matching-item:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+        }
+        
+        .matching-item.selected {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, #f0f4ff 0%, #fef7cd 100%);
+            transform: scale(1.02);
+        }
+        
+        .matching-item.matched {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            opacity: 0.8;
+            cursor: default;
+        }
+        
+        .matching-item.error {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .matching-item-content {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .matching-item-type {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+        
+        .matching-item-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+            line-height: 1.4;
+            color: #374151;
+        }
+        
+        .matching-item.term {
+            border-left: 4px solid #8b5cf6;
+        }
+        
+        .matching-item.definition {
+            border-left: 4px solid #d946ef;
+        }
+        
+        @media (max-width: 768px) {
+            .matching-board {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .matching-item {
+                min-height: 60px;
+                padding: 0.75rem;
+            }
+        }
+        
+        /* Spaced repetition styles */
+        .spaced-actions .btn {
+            min-width: 100px;
+            padding: 0.75rem 1rem;
+            text-align: center;
+        }
+        
+        .tiny {
+            font-size: 0.65rem;
+            line-height: 1;
+        }
+        
+        .small {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .card-info {
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            border-left: 4px solid var(--primary-color);
+        }
     </style>
     
     {% block extra_css %}{% endblock %}

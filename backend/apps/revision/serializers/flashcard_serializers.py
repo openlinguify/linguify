@@ -10,18 +10,24 @@ class FlashcardSerializer(serializers.ModelSerializer):
     days_since_last_review = serializers.SerializerMethodField()
     # Ajout d'un champ calculé pour savoir si la carte est due pour révision
     is_due = serializers.SerializerMethodField()
+    # Nouveaux champs calculés pour le système d'apprentissage
+    learning_progress_percentage = serializers.SerializerMethodField()
+    reviews_remaining_to_learn = serializers.SerializerMethodField()
     
     class Meta:
         model = Flashcard
         fields = [
             'id', 'deck', 'front_text', 'back_text', 'learned', 
             'created_at', 'updated_at', 'last_reviewed', 'review_count', 
-            'next_review', 'days_since_last_review', 'is_due'
+            'next_review', 'days_since_last_review', 'is_due',
+            'correct_reviews_count', 'total_reviews_count',
+            'learning_progress_percentage', 'reviews_remaining_to_learn'
         ]
         read_only_fields = [
             'created_at', 'updated_at', 'last_reviewed', 
             'review_count', 'next_review', 'user',
-            'days_since_last_review', 'is_due'
+            'days_since_last_review', 'is_due',
+            'learning_progress_percentage', 'reviews_remaining_to_learn'
         ]
     
     def get_days_since_last_review(self, obj):
@@ -40,6 +46,14 @@ class FlashcardSerializer(serializers.ModelSerializer):
             return True  # Jamais révisée, donc due
         
         return obj.next_review <= timezone.now()
+    
+    def get_learning_progress_percentage(self, obj):
+        """Calcule le pourcentage de progression vers l'apprentissage."""
+        return obj.learning_progress_percentage
+    
+    def get_reviews_remaining_to_learn(self, obj):
+        """Nombre de révisions correctes restantes pour marquer comme apprise."""
+        return obj.reviews_remaining_to_learn
     
     def validate(self, data):
         """Validation personnalisée pour les cartes."""
@@ -72,19 +86,22 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
     is_owner = serializers.SerializerMethodField()
     days_until_deletion = serializers.SerializerMethodField()
     expiration_info = serializers.SerializerMethodField()
+    learning_statistics = serializers.SerializerMethodField()
+    learning_presets = serializers.SerializerMethodField()
     
     class Meta:
         model = FlashcardDeck
         fields = [
             'id', 'name', 'description', 'created_at', 'updated_at', 
             'is_active', 'is_public', 'is_archived', 'expiration_date',
+            'required_reviews_to_learn', 'auto_mark_learned', 'reset_on_wrong_answer',
             'cards_count', 'learned_count', 'username', 'is_owner',
-            'days_until_deletion', 'expiration_info'
+            'days_until_deletion', 'expiration_info', 'learning_statistics', 'learning_presets'
         ]
         read_only_fields = [
             'created_at', 'updated_at', 'user', 
             'cards_count', 'learned_count', 'username', 'is_owner',
-            'days_until_deletion', 'expiration_info'
+            'days_until_deletion', 'expiration_info', 'learning_statistics', 'learning_presets'
         ]
     
     def get_cards_count(self, obj):
@@ -115,6 +132,14 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
     def get_expiration_info(self, obj):
         """Renvoie les informations détaillées sur l'expiration."""
         return obj.expiration_status
+    
+    def get_learning_statistics(self, obj):
+        """Renvoie les statistiques d'apprentissage du deck."""
+        return obj.get_learning_statistics()
+    
+    def get_learning_presets(self, obj):
+        """Renvoie les presets de configuration d'apprentissage."""
+        return obj.get_learning_presets()
     
     def validate_name(self, value):
         """Valide que le nom du deck n'est pas vide et est unique pour l'utilisateur."""
@@ -354,3 +379,68 @@ class BatchArchiveSerializer(serializers.Serializer):
             )
         
         return data
+
+# Nouveau serializer pour les paramètres d'apprentissage
+class DeckLearningSettingsSerializer(serializers.ModelSerializer):
+    """Sérialiseur pour les paramètres d'apprentissage d'un deck."""
+    
+    learning_statistics = serializers.SerializerMethodField()
+    learning_presets = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = FlashcardDeck
+        fields = [
+            'id', 'name', 'required_reviews_to_learn', 'auto_mark_learned', 
+            'reset_on_wrong_answer', 'learning_statistics', 'learning_presets'
+        ]
+        read_only_fields = ['id', 'name', 'learning_statistics', 'learning_presets']
+    
+    def get_learning_statistics(self, obj):
+        """Renvoie les statistiques d'apprentissage du deck."""
+        return obj.get_learning_statistics()
+    
+    def get_learning_presets(self, obj):
+        """Renvoie les presets de configuration d'apprentissage."""
+        return obj.get_learning_presets()
+    
+    def validate_required_reviews_to_learn(self, value):
+        """Valide le nombre de révisions requis."""
+        if value < 1:
+            raise serializers.ValidationError("Le nombre de révisions doit être d'au moins 1.")
+        if value > 20:
+            raise serializers.ValidationError("Le nombre de révisions ne peut pas dépasser 20.")
+        return value
+    
+    def update(self, instance, validated_data):
+        """Met à jour les paramètres et recalcule le statut des cartes."""
+        # Sauvegarder les anciens paramètres
+        old_required = instance.required_reviews_to_learn
+        old_auto_mark = instance.auto_mark_learned
+        old_reset = instance.reset_on_wrong_answer
+        
+        # Mettre à jour l'instance
+        instance = super().update(instance, validated_data)
+        
+        # Si les paramètres ont changé, recalculer le statut des cartes
+        if (old_required != instance.required_reviews_to_learn or 
+            old_auto_mark != instance.auto_mark_learned or 
+            old_reset != instance.reset_on_wrong_answer):
+            instance.recalculate_cards_learned_status()
+        
+        return instance
+
+# Serializer pour appliquer des presets
+class ApplyPresetSerializer(serializers.Serializer):
+    """Sérialiseur pour appliquer un preset de configuration d'apprentissage."""
+    
+    preset_name = serializers.ChoiceField(
+        choices=['beginner', 'normal', 'intensive', 'expert'],
+        help_text="Nom du preset à appliquer"
+    )
+    
+    def validate_preset_name(self, value):
+        """Valide que le preset existe."""
+        valid_presets = ['beginner', 'normal', 'intensive', 'expert']
+        if value not in valid_presets:
+            raise serializers.ValidationError(f"Preset '{value}' non reconnu. Presets valides: {valid_presets}")
+        return value
