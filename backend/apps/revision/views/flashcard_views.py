@@ -9,7 +9,7 @@ from ..permissions import FlashcardDeckPermission, FlashcardPermission, DeckBatc
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.pagination import PageNumberPagination
-# import pandas as pd  # Temporarily disabled due to C extension issues
+import pandas as pd
 from rest_framework import filters
 from django.shortcuts import get_object_or_404
 from apps.revision.models import FlashcardDeck, Flashcard
@@ -1003,6 +1003,9 @@ class FlashcardImportView(APIView):
             # Récupérer le fichier Excel et l'ID du deck
             excel_file = request.FILES.get('file')
             has_header = request.data.get('has_header', 'true').lower() == 'true'
+            preview_only = request.data.get('preview_only', 'false').lower() == 'true'
+            front_column = request.data.get('front_column', '0')
+            back_column = request.data.get('back_column', '1')
             
             # Vérifier si le fichier est présent
             if not excel_file:
@@ -1013,11 +1016,15 @@ class FlashcardImportView(APIView):
                 return Response({"detail": "Le fichier doit être au format Excel (.xls, .xlsx) ou CSV."},
                                status=status.HTTP_400_BAD_REQUEST)
 
-            # Vérifier si le deck existe et appartient à l'utilisateur
+            # Vérifier si le deck existe et que l'utilisateur a les permissions
             try:
-                deck = FlashcardDeck.objects.get(id=deck_id, user=request.user)
+                deck = FlashcardDeck.objects.get(id=deck_id)
+                # Vérifier que l'utilisateur est le propriétaire
+                if deck.user != request.user:
+                    return Response({"detail": "Vous n'avez pas la permission d'importer dans ce deck."}, 
+                                   status=status.HTTP_403_FORBIDDEN)
             except FlashcardDeck.DoesNotExist:
-                return Response({"detail": "Le deck spécifié n'existe pas ou ne vous appartient pas."}, 
+                return Response({"detail": "Le deck spécifié n'existe pas."}, 
                                status=status.HTTP_404_NOT_FOUND)
             
             # to read the file taking into account the file type and the presence of a header
@@ -1045,16 +1052,52 @@ class FlashcardImportView(APIView):
                 return Response({"detail": "Le fichier doit contenir au moins 2 colonnes."}, 
                                status=status.HTTP_400_BAD_REQUEST)
             
-            # Si les colonnes ne sont pas nommées front_text et back_text, on les renomme
-            if df.columns[0] != 'front_text' or df.columns[1] != 'back_text':
-                df = df.iloc[:, :2]  # Prendre seulement les 2 premières colonnes
-                df.columns = ['front_text', 'back_text']
+            # Convertir les indices de colonnes en entiers
+            try:
+                front_col_idx = int(front_column)
+                back_col_idx = int(back_column)
+            except (ValueError, TypeError):
+                front_col_idx = 0
+                back_col_idx = 1
             
-            # Créer les flashcards
+            # Vérifier que les indices sont valides
+            if front_col_idx >= len(df.columns) or back_col_idx >= len(df.columns):
+                return Response({"detail": "Indices de colonnes invalides."}, 
+                               status=status.HTTP_400_BAD_REQUEST)
+            
+            # Créer un DataFrame avec les colonnes sélectionnées
+            preview_df = df.iloc[:, [front_col_idx, back_col_idx]].copy()
+            preview_df.columns = ['front_text', 'back_text']
+            
+            # Si c'est juste un preview, retourner les données
+            if preview_only:
+                preview_data = []
+                columns_info = [{'index': i, 'name': col} for i, col in enumerate(df.columns)]
+                
+                for idx, row in preview_df.head(5).iterrows():  # Max 5 lignes de preview
+                    front_text = str(row['front_text']).strip()
+                    back_text = str(row['back_text']).strip()
+                    
+                    if front_text and back_text and front_text != 'nan' and back_text != 'nan':
+                        preview_data.append({
+                            'front_text': front_text,
+                            'back_text': back_text
+                        })
+                
+                return Response({
+                    "preview": preview_data,
+                    "columns": columns_info,
+                    "total_rows": len(df),
+                    "selected_front_column": front_col_idx,
+                    "selected_back_column": back_col_idx
+                }, status=status.HTTP_200_OK)
+            
+            # Créer les flashcards (seulement si ce n'est pas un preview)
             flashcards_created = 0
             flashcards_failed = 0
+            preview_data = []
             
-            for _, row in df.iterrows():
+            for idx, row in preview_df.iterrows():
                 front_text = str(row['front_text']).strip()
                 back_text = str(row['back_text']).strip()
                 
@@ -1063,22 +1106,29 @@ class FlashcardImportView(APIView):
                     continue
                 
                 try:
-                    Flashcard.objects.create(
+                    flashcard = Flashcard.objects.create(
                         deck=deck,
                         front_text=front_text,
                         back_text=back_text,
                         user=request.user
                     )
                     flashcards_created += 1
+                    
+                    # Ajouter aux données de preview (max 3)
+                    if len(preview_data) < 3:
+                        preview_data.append({
+                            'front_text': front_text,
+                            'back_text': back_text
+                        })
+                    
                 except Exception as e:
                     flashcards_failed += 1
-                    print(f"Erreur lors de la création d'une flashcard: {e}")
             
             return Response({
-                "detail": f"{flashcards_created} cartes ont été importées avec succès. {flashcards_failed} imports ont échoué.",
-                "created": flashcards_created,
-                "failed": flashcards_failed,
-                "preview": preview_data[:3]  # Renvoyer quelques exemples des données importées
+                "detail": f"{flashcards_created} cartes ont été importées avec succès.",
+                "cards_created": flashcards_created,
+                "cards_failed": flashcards_failed,
+                "preview": preview_data
             }, status=status.HTTP_201_CREATED)
             
         except Exception as e:

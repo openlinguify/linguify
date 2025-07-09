@@ -58,11 +58,52 @@ const revisionAPI = {
         return await window.apiService.request('/api/v1/revision/decks/stats/');
     },
     
-    async importDeck(formData) {
-        return await window.apiService.request('/api/v1/revision/import/', {
+    async previewImport(deckId, formData) {
+        // Pour FormData, on doit gérer les headers différemment
+        const csrfToken = window.apiService.getCSRFToken();
+        return await fetch(`/api/v1/revision/decks/${deckId}/import/`, {
             method: 'POST',
             body: formData,
-            headers: {} // Let browser set Content-Type for FormData
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        }).then(async response => {
+            if (!response.ok) {
+                let errorMessage = `HTTP error! status: ${response.status}`;
+                try {
+                    const errorData = await response.json();
+                    if (errorData.detail) errorMessage = errorData.detail;
+                } catch (e) {}
+                const error = new Error(errorMessage);
+                error.status = response.status;
+                throw error;
+            }
+            return response.json();
+        });
+    },
+
+    async importDeck(deckId, formData) {
+        // Pour FormData, on doit gérer les headers différemment
+        const csrfToken = window.apiService.getCSRFToken();
+        return await fetch(`/api/v1/revision/decks/${deckId}/import/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken
+                // Ne PAS définir Content-Type, le navigateur le fera automatiquement avec boundary
+            }
+        }).then(async response => {
+            if (!response.ok) {
+                let errorMessage = `HTTP error! status: ${response.status}`;
+                try {
+                    const errorData = await response.json();
+                    if (errorData.detail) errorMessage = errorData.detail;
+                } catch (e) {}
+                const error = new Error(errorMessage);
+                error.status = response.status;
+                throw error;
+            }
+            return response.json();
         });
     },
     
@@ -263,6 +304,7 @@ function hideAllSections() {
     if (elements.deckDetails) elements.deckDetails.style.display = 'none';
     if (elements.createDeckForm) elements.createDeckForm.style.display = 'none';
     if (elements.importDeckForm) elements.importDeckForm.style.display = 'none';
+    if (elements.importPreviewSection) elements.importPreviewSection.style.display = 'none';
     if (elements.createCardForm) elements.createCardForm.style.display = 'none';
     if (elements.editCardForm) elements.editCardForm.style.display = 'none';
     if (elements.viewAllCardsSection) elements.viewAllCardsSection.style.display = 'none';
@@ -345,6 +387,16 @@ function showImportForm() {
     // Clear form
     elements.importFile.value = '';
     elements.importDeckName.value = '';
+    
+    // Reset form state
+    clearSelectedFile();
+    updateImportButton();
+    
+    // Initialize drag and drop
+    initializeDragAndDrop();
+    
+    // Initialize real-time validation
+    initializeRealTimeValidation();
 }
 
 function hideImportForm() {
@@ -780,6 +832,15 @@ async function createNewDeck() {
     }
 }
 
+// Variables globales pour l'import
+let importState = {
+    file: null,
+    deckName: '',
+    previewData: null,
+    columns: null,
+    tempDeck: null
+};
+
 async function importNewDeck() {
     const elements = getElements();
     const file = elements.importFile.files[0];
@@ -796,21 +857,547 @@ async function importNewDeck() {
     }
     
     try {
+        // Stocker les infos pour l'étape suivante
+        importState.file = file;
+        importState.deckName = name;
+        
+        // First, create the deck
+        const deckData = {
+            name: name,
+            description: `Deck importé depuis ${file.name}`,
+            is_public: false
+        };
+        
+        const newDeck = await revisionAPI.createDeck(deckData);
+        importState.tempDeck = newDeck;
+        
+        // Then, get preview of the file
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('name', name);
+        formData.append('has_header', 'true');
+        formData.append('preview_only', 'true');
+        formData.append('front_column', '0');
+        formData.append('back_column', '1');
         
-        const newDeck = await revisionAPI.importDeck(formData);
+        const previewResult = await revisionAPI.previewImport(newDeck.id, formData);
+        importState.previewData = previewResult.preview;
+        importState.columns = previewResult.columns;
         
-        window.notificationService.success('Deck importé avec succès');
+        // Show preview step
+        showImportPreview(previewResult);
+        
+    } catch (error) {
+        console.error('Erreur lors du preview:', error);
+        
+        // Gérer les erreurs spécifiques
+        if (error.status === 400 && error.message.includes('deck with this name already exists')) {
+            window.notificationService.error('Un deck avec ce nom existe déjà. Veuillez choisir un autre nom.');
+        } else {
+            window.notificationService.error('Erreur lors de la préparation de l\'import: ' + error.message);
+        }
+    }
+}
+
+// ===== FONCTIONS D'INTERACTIVITÉ AVANCÉE =====
+
+function initializeDragAndDrop() {
+    const dropZone = document.getElementById('fileDropZone');
+    const fileInput = document.getElementById('importFile');
+    
+    if (!dropZone || !fileInput) return;
+    
+    // Prévenir les comportements par défaut
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    // Highlight drop zone when item is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+    
+    // Handle dropped files
+    dropZone.addEventListener('drop', handleDrop, false);
+    
+    // Handle click on drop zone
+    dropZone.addEventListener('click', () => fileInput.click());
+    
+    // Handle file input change
+    fileInput.addEventListener('change', handleFileSelect, false);
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    function highlight(e) {
+        dropZone.classList.add('drag-over');
+    }
+    
+    function unhighlight(e) {
+        dropZone.classList.remove('drag-over');
+    }
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect({ target: { files } });
+        }
+    }
+}
+
+function handleFileSelect(e) {
+    const file = e.target.files[0];
+    
+    if (!file) {
+        clearSelectedFile();
+        return;
+    }
+    
+    // Validation du fichier
+    if (!validateFile(file)) {
+        clearSelectedFile();
+        return;
+    }
+    
+    // Afficher les informations du fichier
+    showSelectedFileInfo(file);
+    updateImportButton();
+}
+
+function validateFile(file) {
+    const allowedTypes = [
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/csv'
+    ];
+    
+    const allowedExtensions = ['.xls', '.xlsx', '.csv'];
+    
+    // Vérifier le type MIME
+    if (!allowedTypes.includes(file.type)) {
+        // Fallback: vérifier l'extension
+        const hasValidExtension = allowedExtensions.some(ext => 
+            file.name.toLowerCase().endsWith(ext)
+        );
+        
+        if (!hasValidExtension) {
+            window.notificationService.error(
+                'Format de fichier non supporté. Utilisez .xlsx, .xls ou .csv'
+            );
+            return false;
+        }
+    }
+    
+    // Vérifier la taille (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+        window.notificationService.error(
+            'Le fichier est trop volumineux. Taille maximum : 10MB'
+        );
+        return false;
+    }
+    
+    return true;
+}
+
+function showSelectedFileInfo(file) {
+    const selectedFileInfo = document.getElementById('selectedFileInfo');
+    const selectedFileName = document.getElementById('selectedFileName');
+    const selectedFileSize = document.getElementById('selectedFileSize');
+    
+    if (selectedFileInfo && selectedFileName && selectedFileSize) {
+        selectedFileName.textContent = file.name;
+        selectedFileSize.textContent = formatFileSize(file.size);
+        selectedFileInfo.style.display = 'block';
+        
+        // Animer l'apparition
+        selectedFileInfo.style.opacity = '0';
+        selectedFileInfo.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            selectedFileInfo.style.transition = 'all 0.3s ease';
+            selectedFileInfo.style.opacity = '1';
+            selectedFileInfo.style.transform = 'translateY(0)';
+        }, 10);
+    }
+}
+
+function clearSelectedFile() {
+    const selectedFileInfo = document.getElementById('selectedFileInfo');
+    const fileInput = document.getElementById('importFile');
+    
+    if (selectedFileInfo) selectedFileInfo.style.display = 'none';
+    if (fileInput) fileInput.value = '';
+    
+    updateImportButton();
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function initializeRealTimeValidation() {
+    const deckNameInput = document.getElementById('importDeckName');
+    
+    if (!deckNameInput) return;
+    
+    // Debounced validation
+    let validationTimeout;
+    
+    deckNameInput.addEventListener('input', function() {
+        clearTimeout(validationTimeout);
+        
+        validationTimeout = setTimeout(() => {
+            validateDeckName(this.value.trim());
+            updateImportButton();
+        }, 300);
+    });
+    
+    // Real-time character counter
+    deckNameInput.addEventListener('input', function() {
+        updateCharacterCounter(this.value);
+    });
+}
+
+function validateDeckName(name) {
+    const deckNameInput = document.getElementById('importDeckName');
+    const errorElement = document.getElementById('deckNameError');
+    
+    if (!deckNameInput || !errorElement) return false;
+    
+    // Reset states
+    deckNameInput.classList.remove('is-valid', 'is-invalid');
+    errorElement.textContent = '';
+    
+    if (!name) {
+        deckNameInput.classList.add('is-invalid');
+        errorElement.textContent = 'Le nom du deck est requis';
+        return false;
+    }
+    
+    if (name.length < 3) {
+        deckNameInput.classList.add('is-invalid');
+        errorElement.textContent = 'Le nom doit contenir au moins 3 caractères';
+        return false;
+    }
+    
+    if (name.length > 100) {
+        deckNameInput.classList.add('is-invalid');
+        errorElement.textContent = 'Le nom ne peut pas dépasser 100 caractères';
+        return false;
+    }
+    
+    // Vérifier si le nom existe déjà
+    const existingDeck = appState.decks.find(deck => 
+        deck.name.toLowerCase() === name.toLowerCase()
+    );
+    
+    if (existingDeck) {
+        deckNameInput.classList.add('is-invalid');
+        errorElement.textContent = 'Un deck avec ce nom existe déjà';
+        return false;
+    }
+    
+    deckNameInput.classList.add('is-valid');
+    return true;
+}
+
+function updateCharacterCounter(value) {
+    const maxLength = 100;
+    const remaining = maxLength - value.length;
+    
+    // Vous pouvez ajouter un compteur de caractères si souhaité
+    // Pour l'instant, on se contente de la validation
+}
+
+function updateImportButton() {
+    const submitButton = document.getElementById('submitImport');
+    const fileInput = document.getElementById('importFile');
+    const deckNameInput = document.getElementById('importDeckName');
+    
+    if (!submitButton || !fileInput || !deckNameInput) return;
+    
+    const hasFile = fileInput.files && fileInput.files.length > 0;
+    const hasValidName = validateDeckName(deckNameInput.value.trim());
+    
+    const isValid = hasFile && hasValidName;
+    
+    submitButton.disabled = !isValid;
+    
+    if (isValid) {
+        submitButton.classList.remove('btn-secondary');
+        submitButton.classList.add('btn-gradient');
+    } else {
+        submitButton.classList.remove('btn-gradient');
+        submitButton.classList.add('btn-secondary');
+    }
+}
+
+function showImportPreview(previewResult) {
+    hideAllSections();
+    
+    const elements = getElements();
+    elements.importPreviewSection.style.display = 'block';
+    
+    // Afficher les infos du fichier avec animation
+    animateValue(elements.previewFileName, importState.file.name);
+    animateValue(elements.previewTotalRows, previewResult.total_rows);
+    
+    // Estimer le nombre de cartes
+    const estimatedCards = Math.max(0, previewResult.total_rows - 1); // -1 pour l'en-tête
+    animateValue(document.getElementById('previewEstimatedCards'), estimatedCards);
+    
+    // Afficher les options de colonnes
+    const frontSelect = elements.frontColumnSelect;
+    const backSelect = elements.backColumnSelect;
+    
+    frontSelect.innerHTML = '';
+    backSelect.innerHTML = '';
+    
+    previewResult.columns.forEach(col => {
+        const optionFront = document.createElement('option');
+        optionFront.value = col.index;
+        optionFront.textContent = `Colonne ${col.index + 1}: ${col.name}`;
+        frontSelect.appendChild(optionFront);
+        
+        const optionBack = document.createElement('option');
+        optionBack.value = col.index;
+        optionBack.textContent = `Colonne ${col.index + 1}: ${col.name}`;
+        backSelect.appendChild(optionBack);
+    });
+    
+    // Sélectionner les colonnes par défaut
+    frontSelect.value = '0';
+    backSelect.value = '1';
+    
+    // Afficher le preview initial avec animation
+    updatePreviewDisplay(previewResult.preview);
+    
+    // Animation d'entrée des cartes
+    setTimeout(() => {
+        const cards = document.querySelectorAll('.preview-cards-grid .card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.4s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    }, 100);
+}
+
+function updatePreviewDisplay(previewData) {
+    const elements = getElements();
+    const container = elements.previewCardsContainer;
+    
+    container.innerHTML = previewData.map(card => `
+        <div class="card mb-2">
+            <div class="card-body p-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-1">Recto</h6>
+                        <p class="mb-0">${card.front_text}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-1">Verso</h6>
+                        <p class="mb-0">${card.back_text}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function updatePreview() {
+    try {
+        const elements = getElements();
+        const frontColumn = elements.frontColumnSelect.value;
+        const backColumn = elements.backColumnSelect.value;
+        
+        if (frontColumn === backColumn) {
+            window.notificationService.error('Les colonnes recto et verso doivent être différentes');
+            return;
+        }
+        
+        // Afficher l'indicateur de chargement
+        const updateIndicator = document.getElementById('previewUpdateIndicator');
+        if (updateIndicator) {
+            updateIndicator.style.display = 'inline-block';
+        }
+        
+        const formData = new FormData();
+        formData.append('file', importState.file);
+        formData.append('has_header', 'true');
+        formData.append('preview_only', 'true');
+        formData.append('front_column', frontColumn);
+        formData.append('back_column', backColumn);
+        
+        const previewResult = await revisionAPI.previewImport(importState.tempDeck.id, formData);
+        
+        // Animation de sortie des anciennes cartes
+        const container = elements.previewCardsContainer;
+        const oldCards = container.querySelectorAll('.card');
+        
+        // Animer la sortie
+        oldCards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '0';
+                card.style.transform = 'translateX(-20px)';
+            }, index * 50);
+        });
+        
+        // Attendre que l'animation se termine puis afficher les nouvelles cartes
+        setTimeout(() => {
+            updatePreviewDisplay(previewResult.preview);
+            
+            // Animation d'entrée des nouvelles cartes
+            setTimeout(() => {
+                const newCards = container.querySelectorAll('.card');
+                newCards.forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateX(20px)';
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.4s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateX(0)';
+                    }, index * 100);
+                });
+            }, 50);
+        }, 200);
+        
+        // Cacher l'indicateur de chargement
+        setTimeout(() => {
+            if (updateIndicator) {
+                updateIndicator.style.display = 'none';
+            }
+        }, 500);
+        
+    } catch (error) {
+        console.error('Erreur lors de la mise à jour du preview:', error);
+        window.notificationService.error('Erreur lors de la mise à jour du preview');
+        
+        // Cacher l'indicateur en cas d'erreur
+        const updateIndicator = document.getElementById('previewUpdateIndicator');
+        if (updateIndicator) {
+            updateIndicator.style.display = 'none';
+        }
+    }
+}
+
+// ===== FONCTIONS UTILITAIRES D'ANIMATION =====
+
+function animateValue(element, value) {
+    if (!element) return;
+    
+    if (typeof value === 'number') {
+        animateNumber(element, 0, value, 1000);
+    } else {
+        animateText(element, value);
+    }
+}
+
+function animateNumber(element, start, end, duration) {
+    const startTime = performance.now();
+    
+    function updateNumber(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function (ease out)
+        const easedProgress = 1 - Math.pow(1 - progress, 3);
+        
+        const current = Math.floor(start + (end - start) * easedProgress);
+        element.textContent = current;
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateNumber);
+        } else {
+            element.textContent = end;
+        }
+    }
+    
+    requestAnimationFrame(updateNumber);
+}
+
+function animateText(element, text) {
+    element.style.opacity = '0';
+    element.style.transform = 'translateY(10px)';
+    
+    setTimeout(() => {
+        element.textContent = text;
+        element.style.transition = 'all 0.3s ease';
+        element.style.opacity = '1';
+        element.style.transform = 'translateY(0)';
+    }, 150);
+}
+
+async function confirmImport() {
+    try {
+        const elements = getElements();
+        const frontColumn = elements.frontColumnSelect.value;
+        const backColumn = elements.backColumnSelect.value;
+        
+        const formData = new FormData();
+        formData.append('file', importState.file);
+        formData.append('has_header', 'true');
+        formData.append('preview_only', 'false');
+        formData.append('front_column', frontColumn);
+        formData.append('back_column', backColumn);
+        
+        const importResult = await revisionAPI.importDeck(importState.tempDeck.id, formData);
+        
+        window.notificationService.success(`Import réussi ! ${importResult.cards_created} cartes créées`);
         
         // Reload decks and select the new one
         await loadDecks();
-        await selectDeck(newDeck.id);
+        await selectDeck(importState.tempDeck.id);
+        
+        // Reset import state
+        importState = {
+            file: null,
+            deckName: '',
+            previewData: null,
+            columns: null,
+            tempDeck: null
+        };
         
     } catch (error) {
-        console.error('Error importing deck:', error);
-        window.notificationService.error('Erreur lors de l\'importation du deck');
+        console.error('Erreur lors de l\'import final:', error);
+        window.notificationService.error('Erreur lors de l\'import: ' + error.message);
+    }
+}
+
+function cancelImportPreview() {
+    // TODO: Supprimer le deck temporaire créé
+    hideImportPreview();
+}
+
+function hideImportPreview() {
+    const elements = getElements();
+    elements.importPreviewSection.style.display = 'none';
+    
+    if (appState.selectedDeck) {
+        elements.deckDetails.style.display = 'block';
+    } else {
+        elements.welcomeState.style.display = 'block';
     }
 }
 
@@ -1052,6 +1639,17 @@ function getElements() {
         importFile: document.getElementById('importFile'),
         importDeckName: document.getElementById('importDeckName'),
         
+        // Import preview section
+        importPreviewSection: document.getElementById('importPreviewSection'),
+        previewFileName: document.getElementById('previewFileName'),
+        previewTotalRows: document.getElementById('previewTotalRows'),
+        frontColumnSelect: document.getElementById('frontColumnSelect'),
+        backColumnSelect: document.getElementById('backColumnSelect'),
+        previewCardsContainer: document.getElementById('previewCardsContainer'),
+        confirmImport: document.getElementById('confirmImport'),
+        cancelImportPreview: document.getElementById('cancelImportPreview'),
+        cancelImportPreviewAlt: document.getElementById('cancelImportPreviewAlt'),
+        
         // Create card form
         newCardFront: document.getElementById('newCardFront'),
         newCardBack: document.getElementById('newCardBack'),
@@ -1158,6 +1756,11 @@ function setupEventListeners() {
     elements.cancelImport?.addEventListener('click', hideImportForm);
     elements.cancelImportAlt?.addEventListener('click', hideImportForm);
     
+    // Import preview
+    elements.confirmImport?.addEventListener('click', confirmImport);
+    elements.cancelImportPreview?.addEventListener('click', cancelImportPreview);
+    elements.cancelImportPreviewAlt?.addEventListener('click', cancelImportPreview);
+    
     // Create card form
     elements.submitCardCreate?.addEventListener('click', createNewCard);
     elements.cancelCardCreate?.addEventListener('click', hideCreateCardForm);
@@ -1239,7 +1842,29 @@ window.revisionMain = {
     closeLearningSettings,
     applyPreset,
     updateStatisticsDisplay,
-    updatePresetsDisplay
+    updatePresetsDisplay,
+    
+    // Import Preview
+    showImportPreview,
+    updatePreviewDisplay,
+    updatePreview,
+    confirmImport,
+    cancelImportPreview,
+    hideImportPreview,
+    
+    // Advanced Interactivity
+    initializeDragAndDrop,
+    handleFileSelect,
+    validateFile,
+    showSelectedFileInfo,
+    clearSelectedFile,
+    formatFileSize,
+    initializeRealTimeValidation,
+    validateDeckName,
+    updateImportButton,
+    animateValue,
+    animateNumber,
+    animateText
 };
 
 // Auto-initialize when DOM is ready

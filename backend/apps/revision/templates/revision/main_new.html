@@ -876,7 +876,10 @@
     <div id="importDeckForm" style="display: none;">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
-                <h5 class="mb-0">Importer un deck</h5>
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-upload text-primary me-2" style="font-size: 1.5rem;"></i>
+                    <h5 class="mb-0">Importer un deck</h5>
+                </div>
                 <button id="cancelImport" class="btn btn-outline-custom btn-sm">
                     <i class="bi bi-x-lg"></i>
                     Annuler
@@ -885,25 +888,94 @@
         </div>
         
         <div class="study-content p-4">
-            <div class="alert alert-info">
-                <i class="bi bi-info-circle me-2"></i>
-                Vous pouvez importer des fichiers CSV ou Excel avec les colonnes : <strong>Terme</strong>, <strong>Définition</strong>, <strong>Exemple (optionnel)</strong>
+            <!-- Étapes de progression -->
+            <div class="import-steps mb-4">
+                <div class="step-indicator">
+                    <div class="step active">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Sélection</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Aperçu</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Import</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone de drop pour fichier -->
+            <div class="file-drop-zone mb-4" id="fileDropZone">
+                <div class="drop-zone-content">
+                    <i class="bi bi-cloud-upload text-primary" style="font-size: 3rem;"></i>
+                    <h6 class="mt-3 mb-2">Glissez votre fichier ici</h6>
+                    <p class="text-muted mb-3">ou cliquez pour sélectionner</p>
+                    <input type="file" id="importFile" class="d-none" accept=".csv,.xlsx,.xls">
+                    <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('importFile').click()">
+                        <i class="bi bi-folder2-open me-1"></i>
+                        Parcourir
+                    </button>
+                </div>
+                <div class="drop-zone-overlay" id="dropZoneOverlay">
+                    <i class="bi bi-cloud-upload-fill text-white" style="font-size: 3rem;"></i>
+                    <p class="text-white mt-2 mb-0">Déposez le fichier ici</p>
+                </div>
+            </div>
+
+            <!-- Informations sur le fichier sélectionné -->
+            <div class="selected-file-info" id="selectedFileInfo" style="display: none;">
+                <div class="alert alert-success">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-file-earmark-check text-success me-2"></i>
+                        <div>
+                            <strong id="selectedFileName"></strong>
+                            <div class="text-muted small" id="selectedFileSize"></div>
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm ms-auto" onclick="clearSelectedFile()">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formats supportés -->
+            <div class="supported-formats mb-4">
+                <h6 class="text-muted mb-2">Formats supportés</h6>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-light text-dark">
+                        <i class="bi bi-file-earmark-excel text-success me-1"></i>
+                        Excel (.xlsx, .xls)
+                    </span>
+                    <span class="badge bg-light text-dark">
+                        <i class="bi bi-filetype-csv text-info me-1"></i>
+                        CSV (.csv)
+                    </span>
+                </div>
+                <small class="text-muted mt-1 d-block">
+                    Votre fichier doit contenir au minimum 2 colonnes pour le recto et verso des cartes
+                </small>
             </div>
             
-            <div class="mb-3">
-                <label class="form-label">Fichier à importer</label>
-                <input type="file" id="importFile" class="form-control" accept=".csv,.xlsx,.xls">
+            <div class="mb-4">
+                <label class="form-label fw-bold">
+                    <i class="bi bi-tag me-1"></i>
+                    Nom du deck
+                </label>
+                <input type="text" id="importDeckName" class="form-control form-control-lg" 
+                       placeholder="Entrez le nom du nouveau deck..." 
+                       maxlength="100">
+                <div class="form-text">Ce nom doit être unique dans vos decks</div>
+                <div class="invalid-feedback" id="deckNameError"></div>
             </div>
             
-            <div class="mb-3">
-                <label class="form-label">Nom du deck</label>
-                <input type="text" id="importDeckName" class="form-control" placeholder="Nom pour le deck importé">
-            </div>
-            
-            <div class="mt-4">
-                <button id="submitImport" class="btn btn-gradient me-2">
-                    <i class="bi bi-upload me-1"></i>
-                    Importer le deck
+            <div class="d-flex gap-2 justify-content-end">
+                <button id="submitImport" class="btn btn-gradient btn-lg" disabled>
+                    <i class="bi bi-arrow-right me-1"></i>
+                    Suivant - Aperçu
                 </button>
                 <button id="cancelImportAlt" class="btn btn-outline-custom">
                     Annuler
@@ -911,7 +983,503 @@
             </div>
         </div>
     </div>
+    
+    <!-- Import Preview Section -->
+    <div id="importPreviewSection" style="display: none;">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-eye text-info me-2" style="font-size: 1.5rem;"></i>
+                    <h5 class="mb-0">Aperçu de l'import</h5>
+                </div>
+                <button id="cancelImportPreview" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-x-lg"></i>
+                    Annuler
+                </button>
+            </div>
+        </div>
+        
+        <div class="study-content p-4">
+            <!-- Étapes de progression -->
+            <div class="import-steps mb-4">
+                <div class="step-indicator">
+                    <div class="step completed">
+                        <div class="step-number"><i class="bi bi-check"></i></div>
+                        <div class="step-label">Sélection</div>
+                    </div>
+                    <div class="step-line completed"></div>
+                    <div class="step active">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Aperçu</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Import</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Résumé du fichier -->
+            <div class="import-summary mb-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="bi bi-file-earmark text-primary"></i>
+                            </div>
+                            <div class="summary-content">
+                                <div class="summary-title">Fichier</div>
+                                <div class="summary-value" id="previewFileName"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="bi bi-list-ol text-success"></i>
+                            </div>
+                            <div class="summary-content">
+                                <div class="summary-title">Lignes</div>
+                                <div class="summary-value" id="previewTotalRows"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="bi bi-credit-card text-warning"></i>
+                            </div>
+                            <div class="summary-content">
+                                <div class="summary-title">Cartes à créer</div>
+                                <div class="summary-value" id="previewEstimatedCards">~</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration des colonnes -->
+            <div class="column-mapping mb-4">
+                <h6 class="mb-3">
+                    <i class="bi bi-arrow-left-right me-1"></i>
+                    Configuration des colonnes
+                </h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mapping-option">
+                            <label class="form-label fw-bold text-primary">
+                                <i class="bi bi-card-text me-1"></i>
+                                Recto des cartes
+                            </label>
+                            <select id="frontColumnSelect" class="form-select form-select-lg" onchange="updatePreview()">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mapping-option">
+                            <label class="form-label fw-bold text-success">
+                                <i class="bi bi-card-text me-1"></i>
+                                Verso des cartes
+                            </label>
+                            <select id="backColumnSelect" class="form-select form-select-lg" onchange="updatePreview()">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="mapping-hint mt-2">
+                    <i class="bi bi-lightbulb text-warning me-1"></i>
+                    <small class="text-muted">Modifiez la sélection pour voir l'aperçu mis à jour en temps réel</small>
+                </div>
+            </div>
+            
+            <!-- Aperçu des cartes -->
+            <div class="preview-cards mb-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="mb-0">
+                        <i class="bi bi-stack me-1"></i>
+                        Aperçu des cartes (5 premières)
+                    </h6>
+                    <span class="badge bg-info" id="previewUpdateIndicator" style="display: none;">
+                        <i class="bi bi-arrow-repeat me-1"></i>
+                        Mise à jour...
+                    </span>
+                </div>
+                <div id="previewCardsContainer" class="preview-cards-grid">
+                    <!-- Les cartes de preview seront ajoutées ici -->
+                </div>
+            </div>
+            
+            <div class="d-flex gap-2 justify-content-between">
+                <button id="cancelImportPreviewAlt" class="btn btn-outline-custom">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Retour
+                </button>
+                <button id="confirmImport" class="btn btn-gradient btn-lg">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Confirmer l'import
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===== STYLES POUR L'IMPORT AMÉLIORÉ ===== */
+
+/* Indicateur d'étapes */
+.import-steps {
+    padding: 20px 0;
+}
+
+.step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    border: 3px solid #e9ecef;
+}
+
+.step.active .step-number {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    animation: pulse 2s infinite;
+}
+
+.step.completed .step-number {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.step-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6c757d;
+    text-align: center;
+}
+
+.step.active .step-label {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.step.completed .step-label {
+    color: #28a745;
+}
+
+.step-line {
+    height: 3px;
+    background: #e9ecef;
+    flex: 1;
+    margin: 0 10px;
+    margin-top: -25px;
+    transition: all 0.3s ease;
+}
+
+.step-line.completed {
+    background: #28a745;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(var(--primary-color-rgb), 0); }
+    100% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0); }
+}
+
+/* Zone de drop pour fichiers */
+.file-drop-zone {
+    position: relative;
+    border: 3px dashed #dee2e6;
+    border-radius: 12px;
+    padding: 60px 30px;
+    text-align: center;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.file-drop-zone:hover {
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.05);
+}
+
+.file-drop-zone.drag-over {
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.1);
+    transform: scale(1.02);
+}
+
+.drop-zone-content {
+    transition: all 0.3s ease;
+}
+
+.drop-zone-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--primary-color);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.file-drop-zone.drag-over .drop-zone-overlay {
+    opacity: 0.9;
+}
+
+.file-drop-zone.drag-over .drop-zone-content {
+    opacity: 0.3;
+}
+
+/* Informations du fichier sélectionné */
+.selected-file-info {
+    animation: slideInUp 0.3s ease;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Formats supportés */
+.supported-formats .badge {
+    font-size: 0.875rem;
+    padding: 8px 12px;
+}
+
+/* Résumé d'import */
+.import-summary {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.summary-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    height: 100%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+}
+
+.summary-icon {
+    font-size: 2rem;
+    margin-right: 15px;
+    width: 60px;
+    text-align: center;
+}
+
+.summary-content {
+    flex: 1;
+}
+
+.summary-title {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.summary-value {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+/* Configuration des colonnes */
+.column-mapping {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e9ecef;
+}
+
+.mapping-option {
+    position: relative;
+}
+
+.mapping-option .form-select {
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.mapping-option .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-color-rgb), 0.25);
+}
+
+.mapping-hint {
+    text-align: center;
+    padding: 10px;
+    background: rgba(255, 193, 7, 0.1);
+    border-radius: 6px;
+}
+
+/* Aperçu des cartes */
+.preview-cards {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e9ecef;
+}
+
+.preview-cards-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.preview-cards-grid .card {
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.preview-cards-grid .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.preview-cards-grid .card-body {
+    padding: 15px;
+}
+
+.preview-cards-grid .card-body h6 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.preview-cards-grid .card-body p {
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .step-indicator {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .step-line {
+        width: 3px;
+        height: 30px;
+        margin: 10px 0;
+    }
+    
+    .file-drop-zone {
+        padding: 40px 20px;
+    }
+    
+    .import-summary {
+        padding: 15px;
+    }
+    
+    .summary-card {
+        margin-bottom: 15px;
+        padding: 12px;
+    }
+    
+    .summary-icon {
+        font-size: 1.5rem;
+        margin-right: 10px;
+        width: 40px;
+    }
+}
+
+/* États de validation */
+.form-control.is-valid {
+    border-color: #28a745;
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545;
+}
+
+/* Animations d'entrée */
+.import-steps,
+.file-drop-zone,
+.supported-formats,
+.import-summary,
+.column-mapping,
+.preview-cards {
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+}
+
+.import-steps { animation-delay: 0.1s; }
+.file-drop-zone { animation-delay: 0.2s; }
+.supported-formats { animation-delay: 0.3s; }
+.import-summary { animation-delay: 0.1s; }
+.column-mapping { animation-delay: 0.2s; }
+.preview-cards { animation-delay: 0.3s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Variables CSS pour les couleurs primaires */
+:root {
+    --primary-color-rgb: 13, 110, 253;
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -919,7 +1487,7 @@
 {% csrf_token %}
 
 <!-- Charger le JavaScript modulaire -->
-<script src="{% static 'src/js/revision-main.js' %}"></script>
+<script src="{% static 'src/js/revision-main.js' %}?v=20250109-premium"></script>
 <script src="{% static 'src/js/revision-flashcards.js' %}"></script>
 <script src="{% static 'src/js/revision-quiz.js' %}"></script>
 <script src="{% static 'src/js/revision-matching.js' %}"></script>
@@ -931,5 +1499,7 @@
 
 // Exporter selectDeck pour les événements inline
 window.selectDeck = window.revisionMain.selectDeck;
+window.updatePreview = window.revisionMain.updatePreview;
+window.clearSelectedFile = window.revisionMain.clearSelectedFile;
 </script>
 {% endblock %}

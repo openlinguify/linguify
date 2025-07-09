@@ -865,9 +865,33 @@
                 const response = await fetch(url, { ...defaultOptions, ...options });
                 
                 if (!response.ok) {
-                    const error = new Error(`HTTP error! status: ${response.status}`);
+                    let errorMessage = `HTTP error! status: ${response.status}`;
+                    let errorData = null;
+                    
+                    // Try to get error details from response
+                    try {
+                        const contentType = response.headers.get('content-type');
+                        if (contentType && contentType.includes('application/json')) {
+                            errorData = await response.json();
+                            // Check for various error message formats
+                            if (errorData.detail) {
+                                errorMessage = errorData.detail;
+                            } else if (errorData.message) {
+                                errorMessage = errorData.message;
+                            } else if (errorData.error) {
+                                errorMessage = errorData.error;
+                            } else if (errorData.name && errorData.name[0]) {
+                                errorMessage = errorData.name[0];
+                            }
+                        }
+                    } catch (e) {
+                        // If parsing fails, keep the default error message
+                    }
+                    
+                    const error = new Error(errorMessage);
                     error.status = response.status;
                     error.response = response;
+                    error.data = errorData;
                     throw error;
                 }
                 
