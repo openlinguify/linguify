@@ -163,7 +163,14 @@
       "Bash(createdb:*)",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_models --verbosity=2 --keepdb)",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_serializers --verbosity=2 --keepdb)",
-      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_simple --verbosity=2 --keepdb)"
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_simple --verbosity=2 --keepdb)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_learning_settings.LearningSettingsAPITest.test_update_card_progress --verbosity=2)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_learning_viewsets.LearningSettingsViewSetTest.test_learning_settings_get_unauthorized --verbosity=2)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_learning_viewsets.LearningSettingsViewSetTest.test_learning_settings_get_unauthenticated --verbosity=2)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python -c \"\nfrom django.test import TestCase\nfrom django.contrib.auth import get_user_model\nfrom rest_framework.test import APITestCase, APIClient\nfrom rest_framework import status\nfrom django.urls import reverse\nfrom apps.revision.models import FlashcardDeck\n\nUser = get_user_model()\n\nclient = APIClient()\nuser = User.objects.create_user(username=''testuser'', email=''test@example.com'', password=''testpass123'')\ndeck = FlashcardDeck.objects.create(user=user, name=''Test Deck'')\n\nurl = reverse(''revision:deck-learning-settings'', args=[deck.id])\nresponse = client.get(url)\nprint(f''Status: {response.status_code}'')\nprint(f''Data: {response.data}'')\n\")",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_learning_viewsets --verbosity=0)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test python -c \"\nimport django; django.setup()\nfrom django.contrib.auth.models import AnonymousUser\nfrom django.test import RequestFactory\nfrom rest_framework.test import APIRequestFactory\nfactory = APIRequestFactory()\nrequest = factory.get(''/test/'')\nprint(f''User: {request.user}'')\nprint(f''Is authenticated: {request.user.is_authenticated}'')\nprint(f''Type: {type(request.user)}'')\n\")",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python -c \"\nimport django; django.setup()\nfrom django.contrib.auth.models import AnonymousUser\nfrom django.test import RequestFactory\nfrom rest_framework.test import APIRequestFactory\nfactory = APIRequestFactory()\nrequest = factory.get(''/test/'')\nprint(f''User: {request.user}'')\nprint(f''Is authenticated: {request.user.is_authenticated}'')\nprint(f''Type: {type(request.user)}'')\n\")"
     ],
     "deny": []
   },
