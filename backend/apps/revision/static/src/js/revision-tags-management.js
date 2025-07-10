@@ -89,14 +89,18 @@ class TagsManagement {
     }
 
     setCurrentDeck(deckId) {
-        this.currentDeckId = deckId;
+        this.currentDeckId = parseInt(deckId);
+        console.log('🎯 setCurrentDeck appelé avec deckId:', this.currentDeckId);
+        
         // Charger les tags du deck courant
         if (window.appState && window.appState.decks) {
-            const deck = window.appState.decks.find(d => d.id === deckId);
+            const deck = window.appState.decks.find(d => d.id === this.currentDeckId);
             if (deck && deck.tags) {
                 this.assignedTags = new Set(deck.tags);
+                console.log('📋 Tags assignés au deck:', this.assignedTags);
             } else {
                 this.assignedTags = new Set();
+                console.log('📋 Aucun tag assigné au deck');
             }
         }
     }
@@ -547,7 +551,12 @@ class TagsManagement {
                 });
                 
                 if (validationResponse && validationResponse.tag) {
-                    window.notificationService?.success('Étiquette créée avec succès');
+                    // Ajouter automatiquement le nouveau tag au deck courant
+                    if (this.currentDeckId) {
+                        this.assignedTags.add(tagName);
+                        await this.saveTagsToCurrentDeck();
+                    }
+                    window.notificationService?.success('Étiquette créée et ajoutée au deck');
                 } else {
                     throw new Error('Validation du tag échouée');
                 }
@@ -558,6 +567,11 @@ class TagsManagement {
 
             // Recharger la liste depuis le serveur
             await this.loadTags();
+            
+            // Actualiser l'affichage du deck si on a créé et assigné un tag
+            if (!this.editingTag && this.currentDeckId && window.renderDecksList) {
+                window.renderDecksList();
+            }
 
         } catch (error) {
             console.error('Erreur lors de la sauvegarde du tag:', error);
@@ -633,11 +647,13 @@ class TagsManagement {
 
     async saveTagsToCurrentDeck() {
         if (!this.currentDeckId || !window.revisionAPI) {
+            console.log('⚠️ saveTagsToCurrentDeck: currentDeckId ou revisionAPI manquant', this.currentDeckId);
             return;
         }
 
         try {
             const tagsArray = Array.from(this.assignedTags);
+            console.log('💾 Sauvegarde des tags pour le deck', this.currentDeckId, ':', tagsArray);
             
             // Sauvegarder via l'API
             await window.revisionAPI.updateDeck(this.currentDeckId, { tags: tagsArray });
@@ -645,11 +661,14 @@ class TagsManagement {
             // Mettre à jour l'état local
             if (window.appState && window.appState.decks) {
                 const deck = window.appState.decks.find(d => d.id === this.currentDeckId);
+                console.log('🔍 Deck trouvé dans appState:', deck ? deck.name : 'NON TROUVÉ');
                 if (deck) {
                     deck.tags = tagsArray;
+                    console.log('📝 Tags mis à jour dans le deck:', deck.tags);
                     
                     // Actualiser l'affichage de la liste des decks
                     if (window.renderDecksList) {
+                        console.log('🔄 Actualisation de la liste des decks...');
                         window.renderDecksList();
                     }
                 }
