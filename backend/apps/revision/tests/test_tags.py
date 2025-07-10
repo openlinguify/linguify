@@ -180,14 +180,23 @@ class TagsSerializerTest(TestCase):
             'tags': ['python', 'PYTHON', 'django', 'Python', 'django']
         }
         
-        serializer = FlashcardDeckCreateSerializer(data=data)
+        # Créer un contexte request pour le serializer
+        from django.test import RequestFactory
+        factory = RequestFactory()
+        request = factory.post('/test')
+        request.user = self.user
+        
+        serializer = FlashcardDeckCreateSerializer(data=data, context={'request': request})
         self.assertTrue(serializer.is_valid())
         
-        deck = serializer.save(user=self.user)
+        deck = serializer.save()
         # Les tags doivent être nettoyés et dédupliqués (case insensitive)
         self.assertEqual(len(deck.tags), 2)
-        self.assertIn('python', deck.tags)
-        self.assertIn('django', deck.tags)
+        
+        # Vérifier que les tags dédupliqués sont présents (case insensitive)
+        tags_lower = [tag.lower() for tag in deck.tags]
+        self.assertIn('python', tags_lower)
+        self.assertIn('django', tags_lower)
     
     def test_max_tags_validation(self):
         """Test de validation du nombre maximum de tags"""
@@ -326,6 +335,64 @@ class TagsAPITest(APITestCase):
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
             self.assertIn('detail', response.data)
     
+    def test_validate_duplicate_tag_case_insensitive(self):
+        """Test de validation d'un tag dupliqué (case-insensitive)"""
+        url = reverse('revision:tags-api')
+        
+        # Le deck1 a déjà le tag 'python' (minuscule)
+        test_cases = [
+            'Python',   # Majuscule
+            'PYTHON',   # Tout en majuscule
+            'PyThOn',   # Mixte
+            'python',   # Identique
+            '  python  ', # Avec espaces
+        ]
+        
+        for duplicate_tag in test_cases:
+            data = {'tag': duplicate_tag}
+            response = self.client.post(url, data, format='json')
+            
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertIn('existe déjà', response.data['detail'].lower())
+            self.assertIn('python', response.data['detail'].lower())
+    
+    def test_validate_new_tag_case_insensitive(self):
+        """Test de validation d'un nouveau tag unique"""
+        url = reverse('revision:tags-api')
+        
+        # Ce tag n'existe pas encore
+        data = {'tag': 'rust'}
+        response = self.client.post(url, data, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['tag'], 'rust')
+        self.assertIn('validé avec succès', response.data['message'])
+    
+    def test_get_tags_deduplication_case_insensitive(self):
+        """Test de déduplication case-insensitive dans GET /tags/"""
+        # Ajouter un deck avec des tags en majuscules
+        FlashcardDeck.objects.create(
+            user=self.user,
+            name="Uppercase Deck",
+            tags=['PYTHON', 'DJANGO', 'MySQL']  # Même tags mais différente casse
+        )
+        
+        url = reverse('revision:tags-api')
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Vérifier qu'il n'y a pas de doublons case-insensitive
+        tags = response.data['tags']
+        tags_lower = [tag.lower() for tag in tags]
+        
+        # Pas de doublons après normalisation
+        self.assertEqual(len(tags_lower), len(set(tags_lower)))
+        
+        # Vérifier que 'python' n'apparaît qu'une fois (peu importe la casse)
+        python_variations = [tag for tag in tags if tag.lower() == 'python']
+        self.assertEqual(len(python_variations), 1)
+    
     def test_search_tags(self):
         """Test de recherche dans les tags"""
         url = reverse('revision:tags-api')
@@ -451,6 +518,87 @@ class TagsFilteringTest(APITestCase):
         # Filtrer les decks avec le tag 'frontend'
         frontend_decks = [d for d in all_decks if 'frontend' in d['tags']]
         self.assertEqual(len(frontend_decks), 1)  # Seulement web_deck
+    
+    def test_multi_tag_filtering_or_logic(self):
+        """Test du filtrage multi-tags avec logique OR (au moins un tag)"""
+        url = reverse('revision:deck-list')
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        all_decks = response.data['results']
+        
+        # Simuler le filtrage JavaScript avec logique OR
+        def filter_decks_by_tags_or(decks, selected_tags):
+            """Réplique de la fonction JS avec logique OR"""
+            if not selected_tags:
+                return decks
+            
+            return [deck for deck in decks 
+                   if deck['tags'] and 
+                   any(selected_tag.lower() in [tag.lower() for tag in deck['tags']] 
+                       for selected_tag in selected_tags)]
+        
+        # Test 1: Tags qui n'ont aucun deck en commun
+        # 'frontend' (seulement web_deck) + 'programming' (seulement python_deck)
+        selected_tags = ['frontend', 'programming']
+        filtered = filter_decks_by_tags_or(all_decks, selected_tags)
+        
+        # Avec OR logic: devrait inclure web_deck ET python_deck
+        self.assertEqual(len(filtered), 2)
+        deck_names = [d['name'] for d in filtered]
+        self.assertIn('Web Deck', deck_names)
+        self.assertIn('Python Deck', deck_names)
+        
+        # Test 2: Tags qui ont des decks en commun
+        # 'python' + 'web' (mixed_deck a les deux)
+        selected_tags = ['python', 'web']
+        filtered = filter_decks_by_tags_or(all_decks, selected_tags)
+        
+        # Avec OR logic: python_deck, web_deck, mixed_deck (tous)
+        self.assertEqual(len(filtered), 3)
+        
+        # Test 3: Un seul tag
+        selected_tags = ['fullstack']
+        filtered = filter_decks_by_tags_or(all_decks, selected_tags)
+        
+        # Seulement mixed_deck a ce tag
+        self.assertEqual(len(filtered), 1)
+        self.assertEqual(filtered[0]['name'], 'Mixed Deck')
+    
+    def test_multi_tag_filtering_case_insensitive(self):
+        """Test du filtrage multi-tags case-insensitive"""
+        url = reverse('revision:deck-list')
+        response = self.client.get(url)
+        
+        all_decks = response.data['results']
+        
+        def filter_decks_by_tags_case_insensitive(decks, selected_tags):
+            """Réplique de la fonction JS avec normalisation case-insensitive"""
+            if not selected_tags:
+                return decks
+            
+            return [deck for deck in decks 
+                   if deck['tags'] and 
+                   any(selected_tag.strip().lower() == deck_tag.strip().lower()
+                       for selected_tag in selected_tags
+                       for deck_tag in deck['tags'])]
+        
+        # Test avec différentes casses
+        test_cases = [
+            ['PYTHON'],      # Majuscule
+            ['Python'],      # Première lettre majuscule  
+            ['python'],      # Minuscule
+            ['  python  '],  # Avec espaces
+        ]
+        
+        for selected_tags in test_cases:
+            filtered = filter_decks_by_tags_case_insensitive(all_decks, selected_tags)
+            
+            # Tous devraient retourner les mêmes decks avec 'python'
+            self.assertEqual(len(filtered), 2)  # python_deck et mixed_deck
+            deck_names = [d['name'] for d in filtered]
+            self.assertIn('Python Deck', deck_names)
+            self.assertIn('Mixed Deck', deck_names)
     
     def test_search_by_tag_content(self):
         """Test de recherche par contenu de tags"""

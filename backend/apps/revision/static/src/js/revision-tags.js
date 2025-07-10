@@ -27,10 +27,10 @@ class TagsManager {
 
     setupEventListeners() {
         // Gestion de l'input
-        this.inputElement.addEventListener('keydown', (e) => {
+        this.inputElement.addEventListener('keydown', async (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                this.addTag(this.inputElement.value.trim());
+                await this.addTag(this.inputElement.value.trim());
             } else if (e.key === 'Backspace' && this.inputElement.value === '') {
                 this.removeLastTag();
             }
@@ -51,20 +51,38 @@ class TagsManager {
         });
     }
 
-    addTag(tagText) {
+    async addTag(tagText) {
         if (!tagText || tagText.length === 0) {
             return false;
         }
 
         // Normaliser le tag
         const normalizedTag = this.normalizeTag(tagText);
+        const originalTag = tagText.trim();
         
         if (!this.isValidTag(normalizedTag)) {
             return false;
         }
 
-        if (this.tags.has(normalizedTag)) {
-            this.showError('Ce tag existe déjà');
+        // 1. Vérifier si le tag existe déjà dans cette liste (case-insensitive)
+        const existingTagInList = Array.from(this.tags).find(existingTag => 
+            existingTag.trim().toLowerCase() === normalizedTag.toLowerCase()
+        );
+        
+        if (existingTagInList) {
+            this.showError(`Ce tag existe déjà dans cette liste: "${existingTagInList}"`);
+            return false;
+        }
+        
+        // 2. Vérification stricte contre les tags disponibles globaux
+        await this.loadAvailableTags(); // S'assurer qu'on a les derniers tags
+        
+        const existingAvailableTag = Array.from(this.availableTags).find(availableTag => 
+            availableTag.trim().toLowerCase() === normalizedTag.toLowerCase()
+        );
+        
+        if (existingAvailableTag) {
+            this.showError(`Ce tag existe déjà dans vos decks: "${existingAvailableTag}"`);
             return false;
         }
 
@@ -73,12 +91,38 @@ class TagsManager {
             return false;
         }
 
-        this.tags.add(normalizedTag);
-        this.availableTags.add(normalizedTag);
-        this.inputElement.value = '';
-        this.updateDisplay();
-        this.hideSuggestions();
-        return true;
+        // 3. Validation finale via l'API (double sécurité)
+        try {
+            const response = await window.apiService.request('/api/v1/revision/tags/', {
+                method: 'POST',
+                body: JSON.stringify({ tag: normalizedTag })
+            });
+            
+            // Si on arrive ici, le tag est validé par l'API
+            this.tags.add(originalTag); // Garder la casse originale
+            this.availableTags.add(originalTag); // Mettre à jour les tags disponibles
+            this.inputElement.value = '';
+            this.updateDisplay();
+            this.hideSuggestions();
+            
+            console.log(`✅ Tag ajouté avec succès: "${originalTag}"`);
+            return true;
+            
+        } catch (error) {
+            if (error.status === 400) {
+                // Erreur de validation par l'API (duplicate ou invalide)
+                try {
+                    const errorData = await error.response?.json?.() || {};
+                    this.showError(errorData.detail || 'Ce tag ne peut pas être ajouté');
+                } catch (parseError) {
+                    this.showError('Ce tag ne peut pas être ajouté');
+                }
+            } else {
+                console.error('Erreur API lors de la validation du tag:', error);
+                this.showError('Erreur de connexion. Veuillez réessayer.');
+            }
+            return false;
+        }
     }
 
     removeTag(tagText) {
@@ -138,8 +182,8 @@ class TagsManager {
         this.tags.clear();
         if (Array.isArray(tags)) {
             tags.forEach(tag => {
-                if (this.isValidTag(tag)) {
-                    this.tags.add(this.normalizeTag(tag));
+                if (this.isValidTag(tag.trim())) {
+                    this.tags.add(tag.trim()); // Garder la casse originale, juste nettoyer les espaces
                 }
             });
         }
@@ -171,8 +215,8 @@ class TagsManager {
             const item = document.createElement('div');
             item.className = 'tags-suggestion-item';
             item.textContent = suggestion;
-            item.addEventListener('click', () => {
-                this.addTag(suggestion);
+            item.addEventListener('click', async () => {
+                await this.addTag(suggestion);
             });
             this.suggestionsElement.appendChild(item);
         });
@@ -212,9 +256,15 @@ class TagsManager {
             const response = await window.apiService.request('/api/v1/revision/tags/');
             if (response && response.tags) {
                 this.availableTags = new Set(response.tags);
+                console.log(`🔄 Tags disponibles rechargés: ${response.tags.length} tags`);
+                return true;
+            } else {
+                console.warn('Réponse API tags invalide:', response);
+                return false;
             }
         } catch (error) {
             console.error('Erreur lors du chargement des tags:', error);
+            return false;
         }
     }
 
@@ -224,7 +274,18 @@ class TagsManager {
             window.notificationService.error(message);
         } else {
             console.error(message);
+            // Fallback: afficher une alerte si pas de système de notification
+            alert(message);
         }
+    }
+    
+    // Méthode de debug pour diagnostiquer les problèmes
+    debugTagsState(action = '') {
+        console.group(`🔍 Debug Tags State ${action ? '- ' + action : ''}`);
+        console.log('Tags actuels dans la liste:', Array.from(this.tags));
+        console.log('Tags disponibles globaux:', Array.from(this.availableTags));
+        console.log('Input value:', this.inputElement?.value || 'N/A');
+        console.groupEnd();
     }
 }
 
@@ -266,9 +327,14 @@ function filterDecksByTags(decks, selectedTags) {
             return false;
         }
 
-        return selectedTags.every(tag => 
-            deck.tags.some(deckTag => deckTag.toLowerCase() === tag.toLowerCase())
-        );
+        // Utilise OR logic: le deck doit avoir AU MOINS UN des tags sélectionnés
+        return selectedTags.some(selectedTag => {
+            const normalizedSelectedTag = selectedTag.trim().toLowerCase();
+            return deck.tags.some(deckTag => {
+                const normalizedDeckTag = deckTag.trim().toLowerCase();
+                return normalizedDeckTag === normalizedSelectedTag;
+            });
+        });
     });
 }
 

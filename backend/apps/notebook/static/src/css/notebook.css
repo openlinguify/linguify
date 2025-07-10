@@ -986,3 +986,239 @@ button.btn-outline-info,
 .bi-pin-angle {
     font-size: 0.8rem;
 }
+
+/* ===========================
+   SYSTÈME DE TAGS - NOTEBOOK
+   =========================== */
+
+/* Container pour les tags input */
+.tags-input-container {
+    position: relative;
+    border: 1px solid var(--notebook-border);
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    background: white;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.tags-input-container:focus-within {
+    border-color: var(--notebook-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Affichage des tags */
+.tags-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    flex-grow: 1;
+}
+
+.tags-display:empty {
+    display: none;
+}
+
+/* Éléments de tag individuels */
+.tag-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    transition: all 0.2s ease;
+}
+
+.tag-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tag-remove {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 0.7rem;
+    padding: 0;
+    margin-left: 0.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.tag-remove:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+
+/* Input pour ajouter des tags */
+.tags-input-container input.tags-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    flex-grow: 1;
+    min-width: 120px;
+    padding: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.tags-input-container input.tags-input::placeholder {
+    color: #6c757d;
+    opacity: 0.7;
+}
+
+/* Styles pour la gestion des tags (style Odoo) */
+.tags-management-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.tags-management-container .table {
+    margin-bottom: 0;
+}
+
+.tags-management-container .table thead th {
+    border-top: none;
+    background-color: #f8f9fa;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #495057;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.tags-management-container .table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.color-display {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: inline-block;
+}
+
+.tag-preview {
+    min-width: 80px;
+    text-align: center;
+}
+
+.tag-preview .badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Modal customization */
+.modal-lg {
+    max-width: 800px;
+}
+
+.modal-header {
+    border-bottom: 2px solid #e9ecef;
+    background-color: #f8f9fa;
+}
+
+.modal-header .modal-title {
+    font-weight: 600;
+    color: #495057;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* Tags count styling */
+#notebookTagsCount {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Search input styling */
+#notebookTagsSearchInput:focus {
+    border-color: var(--notebook-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Pagination customization */
+.pagination .page-link {
+    color: var(--notebook-primary);
+    border-color: #dee2e6;
+}
+
+.pagination .page-link:hover {
+    color: #0b5ed7;
+    background-color: #f8f9fa;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--notebook-primary);
+    border-color: var(--notebook-primary);
+}
+
+/* Button customizations */
+.btn-outline-primary:hover {
+    background-color: var(--notebook-primary);
+    border-color: var(--notebook-primary);
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .modal-lg {
+        max-width: 95%;
+        margin: 1rem auto;
+    }
+    
+    .tags-management-container {
+        max-height: 300px;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.125rem 0.25rem;
+        font-size: 0.7rem;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .modal-footer .ms-auto {
+        margin-left: 0 !important;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .tags-input-container {
+        min-height: 2rem;
+        padding: 0.375rem;
+    }
+    
+    .tag-item {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+}

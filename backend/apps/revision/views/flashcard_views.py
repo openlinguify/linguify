@@ -1093,13 +1093,20 @@ class TagsAPIView(APIView):
             # Récupérer tous les tags des decks de l'utilisateur
             user_decks = FlashcardDeck.objects.filter(user=request.user, is_active=True)
             
-            all_tags = set()
+            # Dédupliquer les tags en mode case-insensitive tout en gardant la première occurrence
+            seen_normalized = set()
+            unique_tags = []
+            
             for deck in user_decks:
                 if deck.tags:
-                    all_tags.update(deck.tags)
+                    for tag in deck.tags:
+                        normalized = tag.strip().lower()
+                        if normalized not in seen_normalized:
+                            seen_normalized.add(normalized)
+                            unique_tags.append(tag)  # Garder la casse originale
             
-            # Trier les tags alphabétiquement
-            sorted_tags = sorted(list(all_tags))
+            # Trier les tags alphabétiquement (case-insensitive)
+            sorted_tags = sorted(unique_tags, key=lambda x: x.lower())
             
             return Response({
                 'tags': sorted_tags,
@@ -1134,6 +1141,30 @@ class TagsAPIView(APIView):
             if not re.match(r'^[a-zA-Z0-9àâäçéèêëïîôöùûüÿñæœ\s\-_]+$', tag):
                 return Response(
                     {"detail": "Le tag contient des caractères non autorisés"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Vérifier si le tag existe déjà pour cet utilisateur (case-insensitive)
+            user_decks = FlashcardDeck.objects.filter(user=request.user, is_active=True)
+            existing_tags_normalized = set()
+            existing_tags_original = []
+            
+            for deck in user_decks:
+                if deck.tags:
+                    for deck_tag in deck.tags:
+                        normalized = deck_tag.strip().lower()
+                        existing_tags_normalized.add(normalized)
+                        existing_tags_original.append(deck_tag)
+            
+            if tag in existing_tags_normalized:
+                # Trouver le tag original avec la même forme normalisée
+                original_tag = next(
+                    (orig for orig in existing_tags_original 
+                     if orig.strip().lower() == tag), 
+                    tag
+                )
+                return Response(
+                    {"detail": f"Le tag '{original_tag}' (ou une variante) existe déjà dans vos decks"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
