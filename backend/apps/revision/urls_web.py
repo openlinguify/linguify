@@ -11,6 +11,10 @@ urlpatterns = [
     # Page principale de révision
     path('', views_web.RevisionMainView.as_view(), name='main'),
     
+    # Nouveaux espaces Study et Stats
+    path('study/', views_web.study_hub, name='study_hub'),
+    path('stats/', views_web.stats_dashboard, name='stats_dashboard'),
+    
     # Vue legacy (pour compatibilité)
     path('legacy/', views_web.revision_main, name='main_legacy'),
     

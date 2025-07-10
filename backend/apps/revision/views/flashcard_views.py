@@ -197,6 +197,23 @@ class FlashcardDeckViewSet(DeckCloneMixin, DeckPermissionMixin, OptimizedQueryse
         username_filter = self.request.query_params.get('username')
         search_query = self.request.query_params.get('search', '')
         
+        # Nouveau paramètre de statut simple pour la compatibilité frontend
+        status_filter = self.request.query_params.get('status', '')
+        
+        # Override parameters based on status filter for frontend compatibility
+        if status_filter == 'active':
+            show_mine = True
+            show_public = False
+            show_archived = False
+        elif status_filter == 'archived':
+            show_mine = True
+            show_public = False
+            show_archived = True
+        elif status_filter == 'public':
+            show_mine = False
+            show_public = True
+            show_archived = False
+        
         logger.debug(f"Query params: public={show_public}, mine={show_mine}, archived={show_archived}, search='{search_query}', user_authenticated={user.is_authenticated}")
         if user.is_authenticated:
             logger.debug(f"User: {user.username}, total decks: {FlashcardDeck.objects.filter(user=user).count()}")

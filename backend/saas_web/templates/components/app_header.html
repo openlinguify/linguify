@@ -191,6 +191,45 @@
 body {
     padding-top: var(--header-height);
 }
+
+/* Unified button styles - prevent app-specific CSS from overriding */
+.header-btn, .btn.header-btn {
+    border-radius: 8px !important;
+    transition: all var(--transition-fast) !important;
+    font-weight: 500 !important;
+    border: 1px solid var(--border-color) !important;
+    background: white !important;
+    color: #6c757d !important;
+    /* Force uniform button size */
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+}
+
+.header-btn:hover, .btn.header-btn:hover {
+    transform: translateY(-1px) !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Specific button variants */
+.btn-outline-primary.header-btn {
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.btn-outline-primary.header-btn:hover {
+    background: var(--primary-color) !important;
+    color: white !important;
+}
+
+/* Override any btn-sm or other size variations */
+.header-btn.btn-sm, .btn.header-btn.btn-sm, 
+.header-btn.btn-lg, .btn.header-btn.btn-lg {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+}
 </style>
 
 <header class="fixed-header" id="mainHeader">
@@ -205,6 +244,8 @@ body {
             </a>
             
             <div class="ms-auto d-flex align-items-center gap-2">
+                <!-- App-specific navigation items (can be extended by individual apps) -->
+                {% block app_navigation %}
                 <!-- Desktop Navigation -->
                 <div class="d-none d-lg-flex align-items-center gap-2">
                     {% if request.resolver_match.url_name != 'dashboard' %}
@@ -225,6 +266,7 @@ body {
                     </a>
                     {% endif %}
                 </div>
+                {% endblock %}
                 
                 <!-- Mobile menu toggle -->
                 <button class="navbar-toggler d-lg-none header-btn" 

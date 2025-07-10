@@ -1,0 +1,585 @@
+{% extends 'revision/base_new.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Statistics Dashboard" %}{% endblock %}
+
+{% block header_content %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="h3 mb-1">{% trans "Statistics Dashboard" %}</h1>
+        <p class="text-muted mb-0">{% trans "Track your learning progress and performance" %}</p>
+    </div>
+    
+    <div class="d-flex gap-2">
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-calendar me-1"></i>
+                <span id="currentPeriod">{% trans "Last 7 days" %}</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item period-filter" href="#" data-period="7">{% trans "Last 7 days" %}</a></li>
+                <li><a class="dropdown-item period-filter" href="#" data-period="30">{% trans "Last 30 days" %}</a></li>
+                <li><a class="dropdown-item period-filter" href="#" data-period="90">{% trans "Last 3 months" %}</a></li>
+                <li><a class="dropdown-item period-filter" href="#" data-period="365">{% trans "Last year" %}</a></li>
+            </ul>
+        </div>
+        
+        <button class="btn btn-outline-primary" onclick="exportStats()">
+            <i class="bi bi-download me-1"></i>
+            {% trans "Export" %}
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Overall Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box bg-primary text-white me-3">
+                            <i class="bi bi-card-text"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" id="totalStudiedCards">-</h3>
+                            <p class="text-muted mb-0">{% trans "Cards Studied" %}</p>
+                        </div>
+                    </div>
+                    <div class="progress mt-2" style="height: 4px;">
+                        <div class="progress-bar bg-primary" id="studiedCardsProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box bg-success text-white me-3">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" id="accuracyRate">-</h3>
+                            <p class="text-muted mb-0">{% trans "Accuracy Rate" %}</p>
+                        </div>
+                    </div>
+                    <div class="progress mt-2" style="height: 4px;">
+                        <div class="progress-bar bg-success" id="accuracyProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box bg-warning text-white me-3">
+                            <i class="bi bi-clock"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" id="studyTime">-</h3>
+                            <p class="text-muted mb-0">{% trans "Study Time" %}</p>
+                        </div>
+                    </div>
+                    <div class="progress mt-2" style="height: 4px;">
+                        <div class="progress-bar bg-warning" id="studyTimeProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box bg-info text-white me-3">
+                            <i class="bi bi-fire"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" id="currentStreak">-</h3>
+                            <p class="text-muted mb-0">{% trans "Current Streak" %}</p>
+                        </div>
+                    </div>
+                    <div class="progress mt-2" style="height: 4px;">
+                        <div class="progress-bar bg-info" id="streakProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <!-- Study Activity Chart -->
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{% trans "Study Activity" %}</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="studyActivityChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Breakdown -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{% trans "Performance Breakdown" %}</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="performanceChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Statistics Tables -->
+    <div class="row">
+        <!-- Deck Performance -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{% trans "Deck Performance" %}</h5>
+                    <button class="btn btn-sm btn-outline-primary" onclick="loadDeckStats()">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>{% trans "Deck" %}</th>
+                                    <th>{% trans "Cards" %}</th>
+                                    <th>{% trans "Mastered" %}</th>
+                                    <th>{% trans "Accuracy" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody id="deckStatsTable">
+                                <tr>
+                                    <td colspan="4" class="text-center py-3">
+                                        <div class="loading-spinner"></div>
+                                        <p class="text-muted mt-2 mb-0">{% trans "Loading deck statistics..." %}</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{% trans "Recent Activity" %}</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush" id="recentActivity">
+                        <div class="list-group-item text-center py-3">
+                            <div class="loading-spinner"></div>
+                            <p class="text-muted mt-2 mb-0">{% trans "Loading recent activity..." %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Study Goals -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{% trans "Study Goals" %}</h5>
+                    <button class="btn btn-sm btn-primary" onclick="setStudyGoal()">
+                        {% trans "Set Goal" %}
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="goal-card">
+                                <h6>{% trans "Daily Cards Goal" %}</h6>
+                                <div class="goal-progress">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span id="dailyGoalProgress">0/20</span>
+                                        <span id="dailyGoalPercentage">0%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" id="dailyGoalBar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="goal-card">
+                                <h6>{% trans "Weekly Study Time" %}</h6>
+                                <div class="goal-progress">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span id="weeklyGoalProgress">0/300min</span>
+                                        <span id="weeklyGoalPercentage">0%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-warning" id="weeklyGoalBar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="goal-card">
+                                <h6>{% trans "Accuracy Target" %}</h6>
+                                <div class="goal-progress">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span id="accuracyGoalProgress">0%/85%</span>
+                                        <span id="accuracyGoalStatus">{% trans "Target" %}</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" id="accuracyGoalBar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+let currentPeriod = 7;
+let studyActivityChart = null;
+let performanceChart = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadStatistics();
+    initializeCharts();
+    loadDeckStats();
+    loadRecentActivity();
+    loadStudyGoals();
+    
+    // Period filter handlers
+    document.querySelectorAll('.period-filter').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            currentPeriod = parseInt(this.dataset.period);
+            document.getElementById('currentPeriod').textContent = this.textContent;
+            loadStatistics();
+        });
+    });
+});
+
+function loadStatistics() {
+    fetch(`/api/v1/revision/stats/?period=${currentPeriod}`)
+        .then(response => response.json())
+        .then(data => {
+            // Update overview cards
+            document.getElementById('totalStudiedCards').textContent = data.total_studied_cards || 0;
+            document.getElementById('accuracyRate').textContent = (data.accuracy_rate || 0) + '%';
+            document.getElementById('studyTime').textContent = formatTime(data.total_study_time || 0);
+            document.getElementById('currentStreak').textContent = data.current_streak || 0;
+            
+            // Update progress bars
+            document.getElementById('studiedCardsProgress').style.width = Math.min((data.total_studied_cards || 0) / 100 * 100, 100) + '%';
+            document.getElementById('accuracyProgress').style.width = (data.accuracy_rate || 0) + '%';
+            document.getElementById('studyTimeProgress').style.width = Math.min((data.total_study_time || 0) / 600 * 100, 100) + '%';
+            document.getElementById('streakProgress').style.width = Math.min((data.current_streak || 0) / 30 * 100, 100) + '%';
+            
+            // Update charts
+            updateStudyActivityChart(data.daily_activity || []);
+            updatePerformanceChart(data.performance_breakdown || {});
+        })
+        .catch(error => {
+            console.error('Error loading statistics:', error);
+            window.notificationService.error('{% trans "Error loading statistics" %}');
+        });
+}
+
+function initializeCharts() {
+    // Study Activity Chart
+    const activityCtx = document.getElementById('studyActivityChart').getContext('2d');
+    studyActivityChart = new Chart(activityCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: '{% trans "Cards Studied" %}',
+                data: [],
+                borderColor: 'rgb(99, 102, 241)',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    // Performance Chart
+    const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+    performanceChart = new Chart(performanceCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['{% trans "Correct" %}', '{% trans "Incorrect" %}', '{% trans "Skipped" %}'],
+            datasets: [{
+                data: [0, 0, 0],
+                backgroundColor: ['#10b981', '#ef4444', '#6b7280']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function updateStudyActivityChart(data) {
+    if (studyActivityChart) {
+        studyActivityChart.data.labels = data.map(item => item.date);
+        studyActivityChart.data.datasets[0].data = data.map(item => item.cards_studied);
+        studyActivityChart.update();
+    }
+}
+
+function updatePerformanceChart(data) {
+    if (performanceChart) {
+        performanceChart.data.datasets[0].data = [
+            data.correct || 0,
+            data.incorrect || 0,
+            data.skipped || 0
+        ];
+        performanceChart.update();
+    }
+}
+
+function loadDeckStats() {
+    fetch('/api/v1/revision/decks/stats/')
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.getElementById('deckStatsTable');
+            tbody.innerHTML = '';
+            
+            if (data.results && data.results.length > 0) {
+                data.results.forEach(deck => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>
+                                <strong>${deck.name}</strong>
+                                <br><small class="text-muted">${deck.description || '{% trans "No description" %}'}</small>
+                            </td>
+                            <td>${deck.cards_count}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">${deck.mastered_cards}/${deck.cards_count}</span>
+                                    <div class="progress flex-grow-1" style="height: 4px;">
+                                        <div class="progress-bar" style="width: ${deck.mastery_percentage}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge ${deck.accuracy >= 80 ? 'bg-success' : deck.accuracy >= 60 ? 'bg-warning' : 'bg-danger'}">
+                                    ${deck.accuracy}%
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } else {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center py-3 text-muted">
+                            {% trans "No deck statistics available" %}
+                        </td>
+                    </tr>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading deck stats:', error);
+            document.getElementById('deckStatsTable').innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center py-3 text-danger">
+                        {% trans "Error loading deck statistics" %}
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+function loadRecentActivity() {
+    fetch('/api/v1/revision/sessions/recent/')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('recentActivity');
+            container.innerHTML = '';
+            
+            if (data.results && data.results.length > 0) {
+                data.results.forEach(session => {
+                    const timeAgo = getTimeAgo(new Date(session.created_at));
+                    container.innerHTML += `
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">${session.deck_name}</h6>
+                                <small>${timeAgo}</small>
+                            </div>
+                            <p class="mb-1">${session.mode} - ${session.cards_studied} {% trans "cards studied" %}</p>
+                            <small>{% trans "Accuracy:" %} ${session.accuracy}%</small>
+                        </div>
+                    `;
+                });
+            } else {
+                container.innerHTML = `
+                    <div class="list-group-item text-center py-3 text-muted">
+                        {% trans "No recent activity found" %}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading recent activity:', error);
+            document.getElementById('recentActivity').innerHTML = `
+                <div class="list-group-item text-center py-3 text-danger">
+                    {% trans "Error loading recent activity" %}
+                </div>
+            `;
+        });
+}
+
+function loadStudyGoals() {
+    fetch('/api/v1/revision/goals/')
+        .then(response => response.json())
+        .then(data => {
+            // Update daily goal
+            const dailyProgress = data.daily_cards_progress || { current: 0, target: 20 };
+            const dailyPercentage = Math.round((dailyProgress.current / dailyProgress.target) * 100);
+            document.getElementById('dailyGoalProgress').textContent = `${dailyProgress.current}/${dailyProgress.target}`;
+            document.getElementById('dailyGoalPercentage').textContent = `${dailyPercentage}%`;
+            document.getElementById('dailyGoalBar').style.width = `${Math.min(dailyPercentage, 100)}%`;
+            
+            // Update weekly goal
+            const weeklyProgress = data.weekly_time_progress || { current: 0, target: 300 };
+            const weeklyPercentage = Math.round((weeklyProgress.current / weeklyProgress.target) * 100);
+            document.getElementById('weeklyGoalProgress').textContent = `${weeklyProgress.current}/${weeklyProgress.target}min`;
+            document.getElementById('weeklyGoalPercentage').textContent = `${weeklyPercentage}%`;
+            document.getElementById('weeklyGoalBar').style.width = `${Math.min(weeklyPercentage, 100)}%`;
+            
+            // Update accuracy goal
+            const accuracyProgress = data.accuracy_progress || { current: 0, target: 85 };
+            const accuracyPercentage = Math.round((accuracyProgress.current / accuracyProgress.target) * 100);
+            document.getElementById('accuracyGoalProgress').textContent = `${accuracyProgress.current}%/${accuracyProgress.target}%`;
+            document.getElementById('accuracyGoalStatus').textContent = accuracyProgress.current >= accuracyProgress.target ? '{% trans "Achieved" %}' : '{% trans "Target" %}';
+            document.getElementById('accuracyGoalBar').style.width = `${Math.min(accuracyPercentage, 100)}%`;
+        })
+        .catch(error => {
+            console.error('Error loading study goals:', error);
+        });
+}
+
+function formatTime(minutes) {
+    if (minutes < 60) {
+        return minutes + 'min';
+    } else {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return hours + 'h' + (mins > 0 ? ' ' + mins + 'min' : '');
+    }
+}
+
+function getTimeAgo(date) {
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    
+    if (minutes < 60) {
+        return minutes + ' min ago';
+    } else if (minutes < 1440) {
+        return Math.floor(minutes / 60) + ' hours ago';
+    } else {
+        return Math.floor(minutes / 1440) + ' days ago';
+    }
+}
+
+function exportStats() {
+    fetch(`/api/v1/revision/stats/export/?period=${currentPeriod}`)
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `revision_stats_${currentPeriod}days.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        })
+        .catch(error => {
+            console.error('Error exporting stats:', error);
+            window.notificationService.error('{% trans "Error exporting statistics" %}');
+        });
+}
+
+function setStudyGoal() {
+    // This would open a modal to set study goals
+    window.notificationService.info('{% trans "Study goal setting coming soon!" %}');
+}
+</script>
+
+<style>
+.stats-card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+}
+
+.icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.goal-card {
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.goal-progress h6 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+</style>
+{% endblock %}

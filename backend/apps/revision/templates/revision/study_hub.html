@@ -1,0 +1,295 @@
+{% extends 'revision/base_new.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Study Hub" %}{% endblock %}
+
+{% block header_content %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="h3 mb-1">{% trans "Study Hub" %}</h1>
+        <p class="text-muted mb-0">{% trans "Choose your study mode and start learning" %}</p>
+    </div>
+    
+    <div class="d-flex gap-2">
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-filter me-1"></i>
+                {% trans "Filter by difficulty" %}
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" data-filter="all">{% trans "All levels" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-filter="easy">{% trans "Easy" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-filter="medium">{% trans "Medium" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-filter="hard">{% trans "Hard" %}</a></li>
+            </ul>
+        </div>
+        
+        <button class="btn btn-outline-primary" id="quickStudyBtn">
+            <i class="bi bi-lightning-fill me-1"></i>
+            {% trans "Quick Study" %}
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Study Progress Overview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 col-6">
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalCards">-</div>
+                                <div class="stat-label">{% trans "Total Cards" %}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-card">
+                                <div class="stat-value text-success" id="masteredCards">-</div>
+                                <div class="stat-label">{% trans "Mastered" %}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-card">
+                                <div class="stat-value text-warning" id="learningCards">-</div>
+                                <div class="stat-label">{% trans "Learning" %}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-card">
+                                <div class="stat-value text-info" id="newCards">-</div>
+                                <div class="stat-label">{% trans "New" %}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small text-muted">{% trans "Overall Progress" %}</span>
+                            <span class="small text-muted" id="progressPercentage">0%</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" role="progressbar" id="progressBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Study Modes Grid -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="mb-3">{% trans "Study Modes" %}</h4>
+        </div>
+    </div>
+    
+    <div class="study-modes">
+        <!-- Flashcards Mode -->
+        <div class="study-mode-card" data-mode="flashcards">
+            <div class="study-mode-icon">🔄</div>
+            <h5 class="study-mode-title">{% trans "Flashcards" %}</h5>
+            <p class="study-mode-description">
+                {% trans "Classic flashcard experience. Flip cards to reveal answers and rate your knowledge." %}
+            </p>
+            <div class="mt-auto">
+                <div class="d-flex justify-content-between text-small text-muted mb-2">
+                    <span>{% trans "Best for:" %}</span>
+                    <span>{% trans "Quick review" %}</span>
+                </div>
+                <button class="btn btn-gradient w-100" onclick="startStudyMode('flashcards')">
+                    {% trans "Start Flashcards" %}
+                </button>
+            </div>
+        </div>
+
+        <!-- Learn Mode (Quiz) -->
+        <div class="study-mode-card" data-mode="learn">
+            <div class="study-mode-icon">🎯</div>
+            <h5 class="study-mode-title">{% trans "Learn" %}</h5>
+            <p class="study-mode-description">
+                {% trans "Interactive learning with multiple choice questions and immediate feedback." %}
+            </p>
+            <div class="mt-auto">
+                <div class="d-flex justify-content-between text-small text-muted mb-2">
+                    <span>{% trans "Best for:" %}</span>
+                    <span>{% trans "Active learning" %}</span>
+                </div>
+                <button class="btn btn-gradient w-100" onclick="startStudyMode('learn')">
+                    {% trans "Start Learning" %}
+                </button>
+            </div>
+        </div>
+
+        <!-- Match Mode -->
+        <div class="study-mode-card" data-mode="match">
+            <div class="study-mode-icon">🧩</div>
+            <h5 class="study-mode-title">{% trans "Match" %}</h5>
+            <p class="study-mode-description">
+                {% trans "Memory game where you match terms with their definitions. Fun and engaging!" %}
+            </p>
+            <div class="mt-auto">
+                <div class="d-flex justify-content-between text-small text-muted mb-2">
+                    <span>{% trans "Best for:" %}</span>
+                    <span>{% trans "Memory training" %}</span>
+                </div>
+                <button class="btn btn-gradient w-100" onclick="startStudyMode('match')">
+                    {% trans "Start Matching" %}
+                </button>
+            </div>
+        </div>
+
+        <!-- Spaced Repetition -->
+        <div class="study-mode-card" data-mode="review">
+            <div class="study-mode-icon">⏰</div>
+            <h5 class="study-mode-title">{% trans "Spaced Review" %}</h5>
+            <p class="study-mode-description">
+                {% trans "Scientifically optimized repetition intervals for long-term retention." %}
+            </p>
+            <div class="mt-auto">
+                <div class="d-flex justify-content-between text-small text-muted mb-2">
+                    <span>{% trans "Best for:" %}</span>
+                    <span>{% trans "Long-term memory" %}</span>
+                </div>
+                <button class="btn btn-gradient w-100" onclick="startStudyMode('review')">
+                    {% trans "Start Review" %}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Decks -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>{% trans "Recent Study Sessions" %}</h4>
+                <a href="{% url 'revision_web:main' %}" class="btn btn-outline-primary btn-sm">
+                    {% trans "View All Decks" %}
+                </a>
+            </div>
+            
+            <div class="row" id="recentDecks">
+                <!-- Recent decks will be loaded dynamically -->
+                <div class="col-12 text-center py-4">
+                    <div class="loading-spinner"></div>
+                    <p class="text-muted mt-2">{% trans "Loading recent sessions..." %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadStudyProgress();
+    loadRecentDecks();
+});
+
+function loadStudyProgress() {
+    // API call to get user statistics
+    fetch('/api/v1/revision/stats/')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('totalCards').textContent = data.total_cards || 0;
+            document.getElementById('masteredCards').textContent = data.mastered_cards || 0;
+            document.getElementById('learningCards').textContent = data.learning_cards || 0;
+            document.getElementById('newCards').textContent = data.new_cards || 0;
+            
+            const percentage = data.total_cards > 0 ? Math.round((data.mastered_cards / data.total_cards) * 100) : 0;
+            document.getElementById('progressPercentage').textContent = percentage + '%';
+            document.getElementById('progressBar').style.width = percentage + '%';
+        })
+        .catch(error => {
+            console.error('Error loading study progress:', error);
+        });
+}
+
+function loadRecentDecks() {
+    fetch('/api/v1/revision/decks/?limit=4&ordering=-last_studied')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('recentDecks');
+            container.innerHTML = '';
+            
+            if (data.results && data.results.length > 0) {
+                data.results.forEach(deck => {
+                    container.innerHTML += createDeckCard(deck);
+                });
+            } else {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-4">
+                        <p class="text-muted">{% trans "No recent study sessions found." %}</p>
+                        <a href="{% url 'revision_web:main' %}" class="btn btn-primary">{% trans "Start Studying" %}</a>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading recent decks:', error);
+            document.getElementById('recentDecks').innerHTML = `
+                <div class="col-12 text-center py-4">
+                    <p class="text-danger">{% trans "Error loading recent sessions." %}</p>
+                </div>
+            `;
+        });
+}
+
+function createDeckCard(deck) {
+    return `
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title">${deck.name}</h6>
+                    <p class="card-text small text-muted">${deck.cards_count} {% trans "cards" %}</p>
+                    <div class="progress mb-2" style="height: 4px;">
+                        <div class="progress-bar" style="width: ${deck.progress || 0}%"></div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary w-100" onclick="continueStudying(${deck.id})">
+                        {% trans "Continue" %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function startStudyMode(mode) {
+    // Check if user has selected a deck
+    const deckId = localStorage.getItem('selectedDeckId');
+    if (!deckId) {
+        window.notificationService.warning('{% trans "Please select a deck first." %}');
+        window.location.href = '{% url "revision_web:main" %}';
+        return;
+    }
+    
+    // Redirect to study mode
+    window.location.href = `/revision/deck/${deckId}/study/${mode}/`;
+}
+
+function continueStudying(deckId) {
+    localStorage.setItem('selectedDeckId', deckId);
+    window.location.href = `/revision/deck/${deckId}/study/flashcards/`;
+}
+
+// Quick Study functionality
+document.getElementById('quickStudyBtn').addEventListener('click', function() {
+    fetch('/api/v1/revision/decks/quick_study/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.deck_id) {
+                window.location.href = `/revision/deck/${data.deck_id}/study/flashcards/`;
+            } else {
+                window.notificationService.info('{% trans "No cards available for quick study." %}');
+            }
+        })
+        .catch(error => {
+            console.error('Error starting quick study:', error);
+            window.notificationService.error('{% trans "Error starting quick study." %}');
+        });
+});
+</script>
+{% endblock %}
