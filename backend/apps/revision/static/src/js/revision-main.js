@@ -350,9 +350,24 @@ async function selectDeck(deckId) {
         elements.deckName.textContent = deck.name || 'Sans nom';
         elements.deckDescription.textContent = deck.description || 'Aucune description';
         
+        // Display deck tags
+        const deckTagsDisplay = document.getElementById('deckTagsDisplay');
+        if (deckTagsDisplay && window.displayDeckTags) {
+            deckTagsDisplay.innerHTML = window.displayDeckTags(deck);
+        }
+        
         const progress = calculateProgress(deck);
         elements.deckProgress.textContent = `${deck.learned_count || 0}/${deck.cards_count || 0}`;
         elements.deckProgressBar.style.width = `${progress}%`;
+        
+        // Initialize tags manager for deck details if available
+        if (window.tagsManager && elements.editDeckTagsInput && elements.editDeckTagsDisplay) {
+            if (!window.tagsManager.isInitialized) {
+                window.tagsManager.init('editDeckTagsInput', 'editDeckTagsDisplay');
+            }
+            // Set the current deck's tags in the manager
+            window.tagsManager.setTags(deck.tags || []);
+        }
         
         // Update decks list visual state
         renderDecksList();
@@ -1964,54 +1979,30 @@ function updateTagsFilterCounter() {
     }
 }
 
-// Quick tags editing (Odoo style)
+// Quick tags editing (Odoo style) - Open tags management directly
 function quickEditTags(deckId) {
+    console.log('🏷️ quickEditTags appelé avec deckId:', deckId);
+    
     const deck = appState.decks.find(d => d.id === deckId);
-    if (!deck) return;
+    if (!deck) {
+        console.error('❌ Deck non trouvé pour l\'ID:', deckId);
+        return;
+    }
     
-    // Create modal for quick tag editing
-    const modal = document.createElement('div');
-    modal.className = 'quick-tags-modal';
-    modal.innerHTML = `
-        <div class="quick-tags-overlay" onclick="closeQuickTagsModal()"></div>
-        <div class="quick-tags-content">
-            <div class="quick-tags-header">
-                <h5><i class="bi bi-tags"></i> Tags pour "${deck.name}"</h5>
-                <button onclick="closeQuickTagsModal()" class="btn-close">
-                    <i class="bi bi-x"></i>
-                </button>
-            </div>
-            <div class="quick-tags-body">
-                <div class="current-tags" id="quickCurrentTags">
-                    ${(deck.tags || []).map(tag => `
-                        <span class="tag-pill" onclick="removeQuickTag('${tag}', ${deckId})">
-                            ${tag} <i class="bi bi-x"></i>
-                        </span>
-                    `).join('')}
-                </div>
-                <div class="add-tag-section">
-                    <input type="text" id="quickTagInput" placeholder="Ajouter un tag..." 
-                           onkeypress="handleQuickTagKeypress(event, ${deckId})">
-                    <button onclick="addQuickTag(${deckId})" class="btn-add">
-                        <i class="bi bi-plus"></i>
-                    </button>
-                </div>
-                <div class="suggested-tags" id="quickSuggestedTags"></div>
-            </div>
-        </div>
-    `;
+    console.log('✅ Deck trouvé:', deck.name, 'Tags actuels:', deck.tags);
     
-    document.body.appendChild(modal);
-    loadQuickTagSuggestions();
-    document.getElementById('quickTagInput').focus();
-}
-
-function closeQuickTagsModal() {
-    const modal = document.querySelector('.quick-tags-modal');
-    if (modal) {
-        modal.remove();
+    // Store the deck ID for the tags management
+    if (window.tagsManagement) {
+        console.log('✅ tagsManagement trouvé, initialisation...');
+        window.tagsManagement.setCurrentDeck(deckId);
+        window.tagsManagement.showTagsManagement();
+    } else {
+        console.error('❌ window.tagsManagement non trouvé !');
     }
 }
+
+// Les fonctions de la modal rapide ne sont plus nécessaires
+// car on utilise maintenant directement la modal de gestion des tags
 
 function handleQuickTagKeypress(event, deckId) {
     if (event.key === 'Enter') {
@@ -2512,6 +2503,9 @@ function initializeApp() {
 }
 
 // Export for global access
+window.revisionAPI = revisionAPI;
+window.appState = appState;
+window.renderDecksList = renderDecksList;
 window.revisionMain = {
     loadDecks,
     appState,
