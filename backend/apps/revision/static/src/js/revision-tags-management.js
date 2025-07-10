@@ -108,8 +108,6 @@ class TagsManagement {
     async showTagsManagement() {
         console.log('🎯 showTagsManagement appelé pour deck:', this.currentDeckId);
         
-        await this.loadTags();
-        
         let modal = document.getElementById('tagsManagementModal');
         console.log('🔍 Modal trouvée:', modal ? 'OUI' : 'NON');
         
@@ -119,6 +117,9 @@ class TagsManagement {
         }
         
         this.updateModalTitle();
+        
+        // Charger les tags APRÈS avoir créé la modal
+        await this.loadTags();
         
         if (modal) {
             console.log('📋 Affichage de la modal...');
@@ -252,7 +253,12 @@ class TagsManagement {
 
     renderTags() {
         const tbody = document.getElementById('tagsTableBody');
-        if (!tbody) return;
+        console.log('🎨 renderTags: tbody trouvé:', tbody ? 'OUI' : 'NON');
+        console.log('🎨 renderTags: nombre de tags à afficher:', this.tags.length);
+        if (!tbody) {
+            console.error('❌ Élément tagsTableBody non trouvé dans le DOM');
+            return;
+        }
 
         // Filtrer les tags selon la recherche
         let filteredTags = this.tags;
@@ -267,7 +273,7 @@ class TagsManagement {
         const endIndex = startIndex + this.itemsPerPage;
         const paginatedTags = filteredTags.slice(startIndex, endIndex);
 
-        tbody.innerHTML = paginatedTags.map(tag => `
+        const htmlContent = paginatedTags.map(tag => `
             <tr class="tag-row ${this.assignedTags.has(tag.name) ? 'table-success' : ''}" data-tag="${tag.name}">
                 <td>
                     <input type="checkbox" class="form-check-input tag-assign-checkbox" 
@@ -296,9 +302,14 @@ class TagsManagement {
                 </td>
             </tr>
         `).join('');
+        
+        console.log('🎨 HTML généré pour', paginatedTags.length, 'tags:', htmlContent.substring(0, 200) + '...');
+        tbody.innerHTML = htmlContent;
 
         // Event listeners pour les checkboxes d'assignation
-        tbody.querySelectorAll('.tag-assign-checkbox').forEach(checkbox => {
+        const checkboxes = tbody.querySelectorAll('.tag-assign-checkbox');
+        console.log('🎨 Attachement des event listeners sur', checkboxes.length, 'checkboxes');
+        checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', (e) => {
                 const tagName = e.target.dataset.tag;
                 const row = e.target.closest('tr');
