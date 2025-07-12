@@ -21,285 +21,200 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary-color: #6366f1;
-            --primary-dark: #4f46e5;
-            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--gradient-bg);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 2rem 0;
-        }
-        
-        .auth-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-            overflow: hidden;
-        }
-        
-        .auth-form {
-            padding: 3rem;
-        }
-        
-        .auth-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .auth-header h1 {
-            color: var(--primary-color);
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        
-        .form-control {
-            border-radius: 10px;
-            border: 2px solid #e5e7eb;
-            padding: 12px 16px;
-            transition: all 0.3s ease;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-        
-        .btn-primary {
-            background: var(--primary-color);
-            border: none;
-            border-radius: 10px;
-            padding: 12px 24px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-        
-        .auth-divider {
-            text-align: center;
-            margin: 2rem 0;
-            position: relative;
-        }
-        
-        .auth-divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #e5e7eb;
-        }
-        
-        .auth-divider span {
-            background: white;
-            padding: 0 1rem;
-            color: #6b7280;
-        }
-        
-        .social-btn {
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 12px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: #374151;
-        }
-        
-        .social-btn:hover {
-            border-color: var(--primary-color);
-            background: #f8fafc;
-        }
-        
-        .auth-footer {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #e5e7eb;
-        }
-        
-        .back-to-home {
-            position: absolute;
-            top: 2rem;
-            left: 2rem;
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .back-to-home:hover {
-            color: #e0e7ff;
-        }
-        
-        .password-strength {
-            margin-top: 0.5rem;
-        }
-        
-        .password-strength-bar {
-            height: 4px;
-            border-radius: 2px;
-            background: #e5e7eb;
-            transition: all 0.3s ease;
-        }
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'authentication/css/register.css' %}">
 </head>
 <body>
-    <a href="/" class="back-to-home">
-        <i class="bi bi-arrow-left me-2"></i>
-        {% trans "Back to home" %}
+    <a href="/" class="back-home-link">
+        <i class="bi bi-arrow-left icon"></i>
+        {% trans "Retour à l'accueil" %}
     </a>
     
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="auth-container">
-                    <div class="auth-form">
-                        <div class="auth-header">
-                            <h1>
-                                <i class="bi bi-translate me-2"></i>
-                                Linguify
-                            </h1>
-                            <p class="text-muted">Créez votre compte gratuit</p>
-                        </div>
+    <div class="page-container">
+        <div class="form-wrapper">
+            <div class="form-container">
+                <div class="form-header">
+                    <h1 class="form-title">
+                        Open Linguify
+                    </h1>
+                    <p class="form-subtitle">Créez votre compte gratuit</p>
+                </div>
                         
-                        {% if messages %}
-                            {% for message in messages %}
-                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                    {{ message }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                </div>
+                <form method="post" id="registerForm">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
                             {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">Prénom</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="error-message">
+                                    {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">Nom</label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="error-message">
+                                    {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">Nom d'utilisateur</label>
+                        {{ form.username }}
+                        <div class="form-text">
+                            <i class="bi bi-info-circle"></i>
+                            Uniquement des lettres, chiffres et @/./+/-/_
+                        </div>
+                        {% if form.username.errors %}
+                            <div class="error-message">
+                                {% for error in form.username.errors %}{{ error }}{% endfor %}
+                            </div>
                         {% endif %}
-                        
-                        <form method="post" id="registerForm">
-                            {% csrf_token %}
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="first_name" class="form-label">Prénom</label>
-                                    <input type="text" class="form-control" id="first_name" name="first_name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">Adresse email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="error-message">
+                                {% for error in form.email.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.birthday.id_for_label }}" class="form-label">Date de naissance</label>
+                            {{ form.birthday }}
+                            {% if form.birthday.errors %}
+                                <div class="error-message">
+                                    {% for error in form.birthday.errors %}{{ error }}{% endfor %}
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="last_name" class="form-label">Nom</label>
-                                    <input type="text" class="form-control" id="last_name" name="last_name" required>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="id_username" class="form-label">Nom d'utilisateur</label>
-                                <input type="text" class="form-control" id="id_username" name="username" required>
-                                <div class="form-text">
-                                    <i class="bi bi-info-circle me-1"></i>
-                                    Uniquement des lettres, chiffres et @/./+/-/_
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Adresse email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="id_password1" class="form-label">Mot de passe</label>
-                                <input type="password" class="form-control" id="id_password1" name="password1" required>
-                                <div class="password-strength">
-                                    <div class="password-strength-bar" id="strengthBar"></div>
-                                    <small class="text-muted" id="strengthText">
-                                        Minimum 8 caractères avec lettres et chiffres
-                                    </small>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="id_password2" class="form-label">Confirmer le mot de passe</label>
-                                <input type="password" class="form-control" id="id_password2" name="password2" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="native_language" class="form-label">Votre langue native</label>
-                                <select class="form-control" id="native_language" name="native_language" required>
-                                    <option value="">Choisir votre langue native</option>
-                                    <option value="EN">Anglais</option>
-                                    <option value="ES">Espagnol</option>
-                                    <option value="FR">Français</option>
-                                    <option value="NL">Néerlandais</option>
-                                    <option value="DE">Allemand</option>
-                                    <option value="IT">Italien</option>
-                                    <option value="PT">Portugais</option>
-                                </select>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="target_language" class="form-label">Langue que vous souhaitez apprendre</label>
-                                <select class="form-control" id="target_language" name="target_language" required>
-                                    <option value="">Choisir une langue</option>
-                                    <option value="EN">Anglais</option>
-                                    <option value="ES">Espagnol</option>
-                                    <option value="FR">Français</option>
-                                    <option value="NL">Néerlandais</option>
-                                    <option value="DE">Allemand</option>
-                                    <option value="IT">Italien</option>
-                                    <option value="PT">Portugais</option>
-                                </select>
-                            </div>
-                            
-                            <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
-                                <label class="form-check-label" for="terms">
-                                    J'accepte les 
-                                    <a href="http://127.0.0.1:8080/fr/terms/" target="_blank" class="text-primary">conditions d'utilisation</a> 
-                                    et la 
-                                    <a href="http://127.0.0.1:8080/fr/privacy/" target="_blank" class="text-primary">politique de confidentialité</a>
-                                </label>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary w-100 mb-3">
-                                <i class="bi bi-person-plus me-2"></i>
-                                Créer mon compte
-                            </button>
-                        </form>
-                        
-                        <div class="auth-divider">
-                            <span>ou</span>
+                            {% endif %}
                         </div>
-                        
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <a href="#" class="social-btn d-block text-center">
-                                    <i class="bi bi-google me-2"></i>
-                                    Google
-                                </a>
-                            </div>
-                            <div class="col-6">
-                                <a href="#" class="social-btn d-block text-center">
-                                    <i class="bi bi-github me-2"></i>
-                                    GitHub
-                                </a>
+                        <div class="form-group">
+                            <label for="{{ form.gender.id_for_label }}" class="form-label">Genre</label>
+                            {{ form.gender }}
+                            {% if form.gender.errors %}
+                                <div class="error-message">
+                                    {% for error in form.gender.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.password1.id_for_label }}" class="form-label">Mot de passe</label>
+                        {{ form.password1 }}
+                        <div class="password-strength-container">
+                            <div class="password-strength-bar" id="strengthBar"></div>
+                            <div class="password-strength-text" id="strengthText">
+                                Minimum 8 caractères avec lettres et chiffres
                             </div>
                         </div>
+                        {% if form.password1.errors %}
+                            <div class="error-message">
+                                {% for error in form.password1.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.password2.id_for_label }}" class="form-label">Confirmer le mot de passe</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <div class="error-message">
+                                {% for error in form.password2.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.native_language.id_for_label }}" class="form-label">Votre langue native</label>
+                        {{ form.native_language }}
+                        {% if form.native_language.errors %}
+                            <div class="error-message">
+                                {% for error in form.native_language.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.target_language.id_for_label }}" class="form-label">Langue que vous souhaitez apprendre</label>
+                        {{ form.target_language }}
+                        {% if form.target_language.errors %}
+                            <div class="error-message">
+                                {% for error in form.target_language.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.language_level.id_for_label }}" class="form-label">Niveau de langue actuel</label>
+                            {{ form.language_level }}
+                            {% if form.language_level.errors %}
+                                <div class="error-message">
+                                    {% for error in form.language_level.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.objectives.id_for_label }}" class="form-label">Objectifs d'apprentissage</label>
+                            {{ form.objectives }}
+                            {% if form.objectives.errors %}
+                                <div class="error-message">
+                                    {% for error in form.objectives.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        {{ form.terms }}
+                        <label class="checkbox-label" for="{{ form.terms.id_for_label }}">
+                            J'accepte les 
+                            <a href="https://openlinguify.com/fr/terms/" target="_blank" style="color: var(--primary); font-weight: 600;">conditions d'utilisation</a> 
+                            et la 
+                            <a href="https://openlinguify.com/fr/privacy/" target="_blank" style="color: var(--primary); font-weight: 600;">politique de confidentialité</a>
+                        </label>
+                        {% if form.terms.errors %}
+                            <div class="error-message">
+                                {% for error in form.terms.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="submit-button">
+                        <i class="bi bi-person-plus" style="margin-right: 0.5rem;"></i>
+                        Créer mon compte
+                    </button>
+                </form>
                         
                         <div class="auth-footer">
                             <p class="text-muted">
                                 Déjà un compte ? 
-                                <a href="/auth/login/" class="text-primary text-decoration-none fw-semibold">
+                                <a href="{% url 'auth:login' %}" class="text-primary text-decoration-none fw-semibold">
                                     Se connecter
                                 </a>
                             </p>
                             <p class="text-muted mt-2">
                                 <small>
                                     En vous inscrivant, vous acceptez notre 
-                                    <a href="{% url 'public_web:cookies' %}" target="_blank" class="text-secondary">politique des cookies</a>
+                                    <a href="https://openlinguify.com/fr/cookies/" target="_blank" class="text-secondary">politique des cookies</a>
                                 </small>
                             </p>
                         </div>
@@ -311,66 +226,7 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        // Validation du mot de passe en temps réel
-        document.getElementById('id_password1').addEventListener('input', function() {
-            const password = this.value;
-            const strengthBar = document.getElementById('strengthBar');
-            const strengthText = document.getElementById('strengthText');
-            
-            let strength = 0;
-            let message = '';
-            
-            if (password.length >= 8) strength += 1;
-            if (password.match(/[a-z]/)) strength += 1;
-            if (password.match(/[A-Z]/)) strength += 1;
-            if (password.match(/[0-9]/)) strength += 1;
-            if (password.match(/[^a-zA-Z0-9]/)) strength += 1;
-            
-            switch (strength) {
-                case 0:
-                case 1:
-                    strengthBar.style.width = '20%';
-                    strengthBar.style.background = '#ef4444';
-                    message = 'Très faible';
-                    break;
-                case 2:
-                    strengthBar.style.width = '40%';
-                    strengthBar.style.background = '#f97316';
-                    message = 'Faible';
-                    break;
-                case 3:
-                    strengthBar.style.width = '60%';
-                    strengthBar.style.background = '#eab308';
-                    message = 'Moyen';
-                    break;
-                case 4:
-                    strengthBar.style.width = '80%';
-                    strengthBar.style.background = '#22c55e';
-                    message = 'Fort';
-                    break;
-                case 5:
-                    strengthBar.style.width = '100%';
-                    strengthBar.style.background = '#16a34a';
-                    message = 'Très fort';
-                    break;
-            }
-            
-            strengthText.textContent = message;
-        });
-        
-        // Vérification de la confirmation du mot de passe
-        document.getElementById('id_password2').addEventListener('input', function() {
-            const password1 = document.getElementById('id_password1').value;
-            const password2 = this.value;
-            
-            if (password2 && password1 !== password2) {
-                this.setCustomValidity('Les mots de passe ne correspondent pas');
-            } else {
-                this.setCustomValidity('');
-            }
-        });
-    </script>
+    <!-- Custom JS -->
+    <script src="{% static 'authentication/js/register.js' %}"></script>
 </body>
 </html>

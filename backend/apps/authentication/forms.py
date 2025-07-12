@@ -57,24 +57,71 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
 
 class CustomUserCreationForm(UserCreationForm):
     """Custom user creation form that uses our User model"""
-    email = forms.EmailField(required=True)
-    first_name = forms.CharField(max_length=30, required=True)
-    last_name = forms.CharField(max_length=30, required=True)
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={'class': 'form-input'})
+    )
+    first_name = forms.CharField(
+        max_length=30, 
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-input'})
+    )
+    last_name = forms.CharField(
+        max_length=30, 
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-input'})
+    )
+    birthday = forms.DateField(
+        required=False, 
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-input'}),
+        label="Date de naissance"
+    )
+    gender = forms.ChoiceField(
+        choices=[('', 'Choisir votre genre')] + list(User._meta.get_field('gender').choices),
+        required=False,
+        label="Genre",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
     native_language = forms.ChoiceField(
         choices=[('', 'Choisir votre langue native')] + list(User._meta.get_field('native_language').choices),
         required=True,
-        label="Langue native"
+        label="Langue native",
+        widget=forms.Select(attrs={'class': 'form-select'})
     )
     target_language = forms.ChoiceField(
         choices=[('', 'Choisir la langue à apprendre')] + list(User._meta.get_field('target_language').choices),
         required=True,
-        label="Langue à apprendre"
+        label="Langue à apprendre",
+        widget=forms.Select(attrs={'class': 'form-select'})
     )
-    terms = forms.BooleanField(required=True, label="J'accepte les conditions d'utilisation")
+    language_level = forms.ChoiceField(
+        choices=[('', 'Choisir votre niveau')] + list(User._meta.get_field('language_level').choices),
+        required=False,
+        label="Niveau de langue actuel",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    objectives = forms.ChoiceField(
+        choices=[('', 'Choisir vos objectifs')] + list(User._meta.get_field('objectives').choices),
+        required=False,
+        label="Objectifs d'apprentissage",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    terms = forms.BooleanField(
+        required=True, 
+        label="J'accepte les conditions d'utilisation",
+        widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'})
+    )
     
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2', 'native_language', 'target_language', 'terms')
+        fields = ('username', 'email', 'first_name', 'last_name', 'birthday', 'gender', 'password1', 'password2', 'native_language', 'target_language', 'language_level', 'objectives', 'terms')
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add custom CSS classes to inherited fields
+        self.fields['username'].widget.attrs.update({'class': 'form-input'})
+        self.fields['password1'].widget.attrs.update({'class': 'form-input'})
+        self.fields['password2'].widget.attrs.update({'class': 'form-input'})
     
     def clean(self):
         cleaned_data = super().clean()
@@ -94,8 +141,12 @@ class CustomUserCreationForm(UserCreationForm):
             password=self.cleaned_data['password1'],
             first_name=self.cleaned_data['first_name'],
             last_name=self.cleaned_data['last_name'],
+            birthday=self.cleaned_data.get('birthday'),
+            gender=self.cleaned_data.get('gender'),
             native_language=self.cleaned_data['native_language'],
             target_language=self.cleaned_data['target_language'],
+            language_level=self.cleaned_data.get('language_level'),
+            objectives=self.cleaned_data.get('objectives'),
         )
         
         # Handle terms acceptance
