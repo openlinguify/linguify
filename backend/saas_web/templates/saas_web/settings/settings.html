@@ -1,153 +1,292 @@
 {% extends 'saas_web/base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}Paramètres - Open Linguify{% endblock %}
 
 {% block extra_css %}
 <style>
+        body {
+            background: #f4f5f7 !important;
+            font-family: "Lucida Grande", Helvetica, Verdana, Arial, sans-serif !important;
+        }
         
-        .settings-card {
+        /* Override ALL base.html container styles */
+        .main-content {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        .container,
+        .container-fluid {
+            max-width: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        .content-area {
+            max-width: none !important;
+            width: 100vw !important;
+            height: calc(100vh - 60px) !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            display: flex;
+            background: #f4f5f7;
+            position: absolute;
+            top: 60px;
+            left: 0;
+        }
+        
+        .settings-sidebar {
+            width: 230px;
+            background: #875a7b;
+            color: white;
+            padding: 0;
+            overflow-y: auto;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            height: calc(100vh - 60px);
+            flex-shrink: 0;
+        }
+        
+        .settings-main {
+            flex: 1;
+            background: #f4f5f7;
+            padding: 0;
+            overflow-y: auto;
+            height: calc(100vh - 60px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-content-header {
             background: white;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-            padding: 2rem;
-            margin-bottom: 2rem;
+            border-bottom: 1px solid #dee2e6;
+            padding: 12px 16px;
+            flex-shrink: 0;
+            z-index: 10;
         }
         
-        .page-header {
-            margin-bottom: 2rem;
+        .settings-tabs {
+            background: white;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 16px;
+            margin-bottom: 0;
+            flex-shrink: 0;
         }
         
-        .page-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 0.5rem;
+        .main-content-body {
+            padding: 16px;
+            flex: 1;
+            overflow-y: auto;
         }
         
-        .page-subtitle {
-            color: #64748b;
-            font-size: 1rem;
-        }
-        
-        .settings-nav {
-            border-bottom: 2px solid #e2e8f0;
-            margin-bottom: 2rem;
-            padding-bottom: 0;
-        }
-        
-        .settings-nav .nav-link {
-            border: none;
-            color: #6b7280;
-            font-weight: 500;
-            padding: 1rem 1.5rem;
-            border-radius: 0;
-            margin-right: 1rem;
-        }
-        
-        .settings-nav .nav-link:hover {
-            background: none;
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--primary-color);
-        }
-        
-        .settings-nav .nav-link.active {
-            color: var(--primary-color);
-            background: none;
-            border-bottom: 2px solid var(--primary-color);
-        }
-        
-        .form-section {
-            margin-bottom: 2rem;
-        }
-        
-        .form-section-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 1rem;
+        .breadcrumb-nav {
             display: flex;
             align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #6c757d;
         }
         
-        .form-section-title i {
-            margin-right: 0.5rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-label {
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: #374151;
-        }
-        
-        .form-control {
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 0.75rem;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-        
-        .btn-primary {
-            background: var(--primary-color);
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
+        .breadcrumb-nav .active {
+            color: #495057;
             font-weight: 500;
         }
         
-        .btn-primary:hover {
-            background: var(--primary-dark);
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: #7c3b6e;
+        }
+        
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
         .user-avatar {
-            width: 60px;
-            height: 60px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: var(--primary-color);
+            background: rgba(255,255,255,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.5rem;
             font-weight: 600;
-            margin-right: 1rem;
+            font-size: 14px;
         }
         
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .user-info {
+            color: white;
         }
         
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid #e2e8f0;
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            opacity: 0.8;
+            margin: 0;
+        }
+        
+        .sidebar-section {
+            margin: 0;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 8px 0;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .sidebar-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .sidebar-item.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border-right: 3px solid #f0ad4e;
+        }
+        
+        .sidebar-item.active:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .sidebar-item i {
+            width: 16px;
+            margin-right: 8px;
+            font-size: 14px;
             text-align: center;
         }
         
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
+        .app-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            font-size: 12px;
+            color: white;
+            background: rgba(255,255,255,0.2);
         }
         
-        .stat-label {
-            color: #64748b;
-            font-size: 0.9rem;
+        .content-section {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 12px 16px;
+            color: #495057;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .section-content {
+            padding: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+            font-size: 13px;
+            color: #495057;
+            background: white;
+            transition: border-color 0.15s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #875a7b;
+            box-shadow: 0 0 0 2px rgba(135, 90, 123, 0.2);
+        }
+        
+        .form-control:disabled {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+        
+        .btn-primary {
+            background: #875a7b;
+            color: white;
+            border: 1px solid #875a7b;
+            padding: 6px 12px;
+            border-radius: 3px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #7c3b6e;
+            border-color: #7c3b6e;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: 1px solid #6c757d;
+            padding: 6px 12px;
+            border-radius: 3px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.15s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            border-color: #545b62;
+            color: white;
+            text-decoration: none;
         }
         
         .tab-content {
@@ -157,757 +296,379 @@
         .tab-content.active {
             display: block;
         }
+        
+        .file-upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 4px;
+            padding: 24px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: border-color 0.15s ease;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #875a7b;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 12px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        
+        .settings-tab {
+            display: inline-block;
+            padding: 12px 16px;
+            color: #6c757d;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            font-size: 13px;
+            font-weight: 500;
+            margin-right: 16px;
+            cursor: pointer;
+            background: none;
+            border-left: none;
+            border-right: none;
+            border-top: none;
+        }
+        
+        .settings-tab:hover {
+            color: #495057;
+            text-decoration: none;
+        }
+        
+        .settings-tab.active {
+            color: #875a7b;
+            border-bottom-color: #875a7b;
+        }
 </style>
 {% endblock %}
 
 {% block content %}
-
-        <!-- Content Area -->
-        <div class="content-area">
-            <!-- Page Header -->
-            <div class="page-header">
-                <div class="d-flex align-items-center">
-                    <div class="user-avatar">
-                        {% if user.get_profile_picture_url %}
-                            <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                        {% else %}
-                            {{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}
-                        {% endif %}
-                    </div>
-                    <div>
-                        <h1 class="page-title">Paramètres</h1>
-                        <p class="page-subtitle">Gérez vos préférences et informations personnelles</p>
-                    </div>
+<div class="content-area">
+    <!-- Settings Sidebar -->
+    <div class="settings-sidebar">
+        <!-- User Profile Header -->
+        <div class="sidebar-header">
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    {% if user.get_profile_picture_url %}
+                        <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    {% else %}
+                        {{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}
+                    {% endif %}
                 </div>
-            </div>
-
-            <!-- Settings Navigation -->
-            <div class="settings-card">
-                <ul class="nav settings-nav" id="settingsTabs">
-                    <li class="nav-item">
-                        <a class="nav-link active" onclick="showTab('profile')">
-                            <i class="bi bi-person me-2"></i>
-                            Profil
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" onclick="showTab('notifications')">
-                            <i class="bi bi-bell me-2"></i>
-                            Notifications
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" onclick="showTab('privacy')">
-                            <i class="bi bi-shield-lock me-2"></i>
-                            Confidentialité
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" onclick="showTab('language')">
-                            <i class="bi bi-globe me-2"></i>
-                            Langues
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" onclick="showTab('voice')">
-                            <i class="bi bi-mic me-2"></i>
-                            Assistant Vocal
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" onclick="showTab('security')">
-                            <i class="bi bi-shield-check me-2"></i>
-                            Sécurité
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" onclick="showTab('account')">
-                            <i class="bi bi-person-x me-2"></i>
-                            Compte
-                        </a>
-                    </li>
-                </ul>
-
-                <!-- Profile Tab -->
-                <div id="profile" class="tab-content active">
-                    <div class="form-section">
-                        <h3 class="form-section-title">
-                            <i class="bi bi-person"></i>
-                            Informations personnelles
-                        </h3>
-                        <!-- Photo de profil -->
-                        <div class="form-section mb-4">
-                            <h4 class="form-section-title">
-                                <i class="bi bi-camera"></i>
-                                Photo de profil
-                            </h4>
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <div class="user-avatar" style="width: 80px; height: 80px; font-size: 2rem;">
-                                        {% if user.get_profile_picture_url %}
-                                            <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                                        {% else %}
-                                            {{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label class="form-label" for="profilePicture">Changer la photo</label>
-                                        <input type="file" class="form-control" id="profilePicture" accept="image/*" onchange="uploadProfilePicture(event)">
-                                        <small class="text-muted">Formats acceptés : JPG, PNG, WEBP. Taille max : 5MB</small>
-                                    </div>
-                                    {% if user.get_profile_picture_url %}
-                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeProfilePicture()">
-                                        <i class="bi bi-trash me-1"></i>
-                                        Supprimer la photo
-                                    </button>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <form id="profileForm" onsubmit="saveProfile(event)">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label" for="firstName">Prénom</label>
-                                        <input type="text" class="form-control" id="firstName" name="first_name" value="{{ user.first_name }}">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label" for="lastName">Nom</label>
-                                        <input type="text" class="form-control" id="lastName" name="last_name" value="{{ user.last_name }}">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="email">Email</label>
-                                <input type="email" class="form-control" id="email" value="{{ user.email }}" readonly>
-                                <small class="text-muted">L'email ne peut pas être modifié</small>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="username">Nom d'utilisateur</label>
-                                <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="bio">Biographie</label>
-                                <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Parlez-nous de vous...">{{ user.bio }}</textarea>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary" id="saveProfileBtn">
-                                <i class="bi bi-check2 me-2"></i>
-                                Sauvegarder les modifications
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Notifications Tab -->
-                <div id="notifications" class="tab-content">
-                    <div class="form-section">
-                        <h3 class="form-section-title">
-                            <i class="bi bi-bell"></i>
-                            Préférences de notification
-                        </h3>
-                        <form>
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
-                                <label class="form-check-label" for="emailNotifications">
-                                    <strong>Notifications par email</strong><br>
-                                    <small class="text-muted">Recevez des emails pour les leçons, progrès et rappels</small>
-                                </label>
-                            </div>
-                            
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="pushNotifications">
-                                <label class="form-check-label" for="pushNotifications">
-                                    <strong>Notifications push</strong><br>
-                                    <small class="text-muted">Recevez des notifications sur votre appareil</small>
-                                </label>
-                            </div>
-                            
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="achievementNotifications" checked>
-                                <label class="form-check-label" for="achievementNotifications">
-                                    <strong>Notifications de réussite</strong><br>
-                                    <small class="text-muted">Soyez notifié de vos accomplissements et badges</small>
-                                </label>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check2 me-2"></i>
-                                Sauvegarder les préférences
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Privacy Tab -->
-                <div id="privacy" class="tab-content">
-                    <div class="form-section">
-                        <h3 class="form-section-title">
-                            <i class="bi bi-shield-lock"></i>
-                            Paramètres de confidentialité
-                        </h3>
-                        <form>
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="publicProfile">
-                                <label class="form-check-label" for="publicProfile">
-                                    <strong>Profil public</strong><br>
-                                    <small class="text-muted">Permettre aux autres utilisateurs de voir votre profil</small>
-                                </label>
-                            </div>
-                            
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="shareProgress">
-                                <label class="form-check-label" for="shareProgress">
-                                    <strong>Partager mes progrès</strong><br>
-                                    <small class="text-muted">Autoriser le partage de vos statistiques d'apprentissage</small>
-                                </label>
-                            </div>
-                            
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="shareActivity">
-                                <label class="form-check-label" for="shareActivity">
-                                    <strong>Partager mon activité</strong><br>
-                                    <small class="text-muted">Permettre aux amis de voir vos activités récentes</small>
-                                </label>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check2 me-2"></i>
-                                Sauvegarder les paramètres
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Language Tab -->
-                <div id="language" class="tab-content">
-                    <div class="form-section">
-                        <h3 class="form-section-title">
-                            <i class="bi bi-globe"></i>
-                            Préférences linguistiques
-                        </h3>
-                        <form id="languageForm" onsubmit="saveLanguageSettings(event)">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label" for="nativeLanguage">Langue maternelle</label>
-                                        <select class="form-control" id="nativeLanguage" name="native_language">
-                                            <option value="FR" {% if user.native_language == 'FR' %}selected{% endif %}>Français</option>
-                                            <option value="EN" {% if user.native_language == 'EN' %}selected{% endif %}>Anglais</option>
-                                            <option value="ES" {% if user.native_language == 'ES' %}selected{% endif %}>Espagnol</option>
-                                            <option value="DE" {% if user.native_language == 'DE' %}selected{% endif %}>Néerlandais</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label" for="targetLanguage">Langue d'apprentissage</label>
-                                        <select class="form-control" id="targetLanguage" name="target_language">
-                                            <option value="EN" {% if user.target_language == 'EN' %}selected{% endif %}>Anglais</option>
-                                            <option value="FR" {% if user.target_language == 'FR' %}selected{% endif %}>Français</option>
-                                            <option value="ES" {% if user.target_language == 'ES' %}selected{% endif %}>Espagnol</option>
-                                            <option value="DE" {% if user.target_language == 'DE' %}selected{% endif %}>Néerlandais</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="languageLevel">Niveau actuel</label>
-                                <select class="form-control" id="languageLevel" name="language_level">
-                                    <option value="A1" {% if user.language_level == 'A1' %}selected{% endif %}>A1 - Débutant</option>
-                                    <option value="A2" {% if user.language_level == 'A2' %}selected{% endif %}>A2 - Élémentaire</option>
-                                    <option value="B1" {% if user.language_level == 'B1' %}selected{% endif %}>B1 - Intermédiaire</option>
-                                    <option value="B2" {% if user.language_level == 'B2' %}selected{% endif %}>B2 - Intermédiaire avancé</option>
-                                    <option value="C1" {% if user.language_level == 'C1' %}selected{% endif %}>C1 - Avancé</option>
-                                    <option value="C2" {% if user.language_level == 'C2' %}selected{% endif %}>C2 - Maîtrise</option>
-                                </select>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check2 me-2"></i>
-                                Sauvegarder les langues
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Voice Assistant Tab -->
-                <div id="voice" class="tab-content">
-                    {% include 'saas_web/voice_settings_tab.html' %}
-                </div>
-
-                <!-- Security Tab -->
-                <div id="security" class="tab-content">
-                    <div class="form-section">
-                        <h3 class="form-section-title">
-                            <i class="bi bi-shield-check"></i>
-                            Sécurité du compte
-                        </h3>
-                        
-                        <!-- Change Password -->
-                        <div class="mb-4">
-                            <h5><i class="bi bi-key me-2"></i>Changer le mot de passe</h5>
-                            <form id="passwordForm" onsubmit="changePassword(event)">
-                                <div class="form-group">
-                                    <label class="form-label" for="currentPassword">Mot de passe actuel</label>
-                                    <input type="password" class="form-control" id="currentPassword" name="old_password" required>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label" for="newPassword">Nouveau mot de passe</label>
-                                            <input type="password" class="form-control" id="newPassword" name="new_password" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label" for="confirmPassword">Confirmer le mot de passe</label>
-                                            <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-warning">
-                                    <i class="bi bi-shield-lock me-2"></i>
-                                    Changer le mot de passe
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- Session Management -->
-                        <div class="mb-4">
-                            <h5><i class="bi bi-laptop me-2"></i>Sessions actives</h5>
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle me-2"></i>
-                                Vous êtes connecté sur cet appareil. Pour voir toutes vos sessions actives, utilisez la section "Déconnexion de tous les appareils" ci-dessous.
-                            </div>
-                            <button type="button" class="btn btn-outline-danger" onclick="logoutAllDevices()">
-                                <i class="bi bi-box-arrow-right me-2"></i>
-                                Déconnecter tous les appareils
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Account Management Tab -->
-                <div id="account" class="tab-content">
-                    <div class="form-section">
-                        <h3 class="form-section-title">
-                            <i class="bi bi-person-x"></i>
-                            Gestion du compte
-                        </h3>
-                        
-                        <!-- Export Data -->
-                        <div class="mb-4">
-                            <h5><i class="bi bi-download me-2"></i>Exporter mes données</h5>
-                            <p class="text-muted">Téléchargez une copie de toutes vos données Linguify.</p>
-                            <button type="button" class="btn btn-outline-primary" onclick="exportUserData()">
-                                <i class="bi bi-file-earmark-arrow-down me-2"></i>
-                                Exporter mes données
-                            </button>
-                        </div>
-
-                        <!-- Delete Account -->
-                        <div class="mb-4">
-                            <h5 class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Zone de danger</h5>
-                            <div class="alert alert-danger">
-                                <h6><strong>Supprimer mon compte</strong></h6>
-                                <p class="mb-2">⚠️ Cette action est irréversible. Toutes vos données seront définitivement supprimées :</p>
-                                <ul class="mb-3">
-                                    <li>Profil utilisateur et préférences</li>
-                                    <li>Progrès d'apprentissage et statistiques</li>
-                                    <li>Notes et flashcards personnalisées</li>
-                                    <li>Historique des leçons et exercices</li>
-                                </ul>
-                                <button type="button" class="btn btn-danger" onclick="confirmAccountDeletion()">
-                                    <i class="bi bi-trash me-2"></i>
-                                    Supprimer définitivement mon compte
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Account Status -->
-                        <div class="mb-4">
-                            <h5><i class="bi bi-info-circle me-2"></i>Informations du compte</h5>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Membre depuis :</strong> {{ user.date_joined|date:"d/m/Y" }}</p>
-                                    <p><strong>Dernière connexion :</strong> {{ user.last_login|date:"d/m/Y H:i" }}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Statut :</strong> 
-                                        <span class="badge bg-success">Actif</span>
-                                    </p>
-                                    <p><strong>Type de compte :</strong> 
-                                        {% if user.is_subscribed %}
-                                            <span class="badge bg-primary">Premium</span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">Gratuit</span>
-                                        {% endif %}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="user-info">
+                    <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+                    <div class="user-role">Administrateur</div>
                 </div>
             </div>
         </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-        // Get CSRF token
-        function getCsrfToken() {
-            return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                   document.cookie.match(/csrftoken=([^;]+)/)?.[1];
-        }
-
-        // Show success/error messages
-        function showMessage(message, type = 'success') {
-            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-            const iconClass = type === 'success' ? 'bi-check-circle' : 'bi-exclamation-triangle';
-            
-            const alertHtml = `
-                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-                    <i class="bi ${iconClass} me-2"></i>
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        
+        <!-- General Settings -->
+        <div class="sidebar-section">
+            <ul class="sidebar-menu">
+                <li>
+                    <button class="sidebar-item active" onclick="showTab('general')">
+                        <i class="bi bi-gear-fill"></i>
+                        Paramètres généraux
+                    </button>
+                </li>
+                <li>
+                    <button class="sidebar-item" onclick="showTab('users')">
+                        <i class="bi bi-people-fill"></i>
+                        Utilisateurs & Sociétés
+                    </button>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Apps Settings -->
+        <div class="sidebar-section">
+            <ul class="sidebar-menu">
+                {% for app in user_apps %}
+                <li>
+                    <button class="sidebar-item" onclick="showTab('app-{{ app.display_name|slugify }}')">
+                        <div class="app-icon">
+                            <i class="bi {{ app.icon_class }}"></i>
+                        </div>
+                        {{ app.display_name }}
+                    </button>
+                </li>
+                {% empty %}
+                <li style="padding: 8px 16px; color: rgba(255,255,255,0.5); font-size: 12px;">
+                    Aucune app installée
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Settings Main Content -->
+    <div class="settings-main">
+        <!-- Main Content Header -->
+        <div class="main-content-header">
+            <div class="breadcrumb-nav">
+                <span>Paramètres</span>
+                <span>›</span>
+                <span class="active">Paramètres généraux</span>
+            </div>
+        </div>
+        
+        <!-- Settings Tabs -->
+        <div class="settings-tabs">
+            <button class="settings-tab active" onclick="showSubTab('general-settings')">Paramètres généraux</button>
+            <button class="settings-tab" onclick="showSubTab('users-companies')">Utilisateurs & Sociétés</button>
+        </div>
+        
+        <!-- Main Content Body -->
+        <div class="main-content-body">
+            <!-- General Settings Tab Content -->
+            <div id="general" class="tab-content active">
+                <!-- Users Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <i class="bi bi-people-fill" style="margin-right: 8px;"></i>
+                        Utilisateurs
+                    </div>
+                    <div class="section-content">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div>
+                                <h4 style="margin: 0; font-size: 14px;">Inviter de nouveaux utilisateurs</h4>
+                                <p style="margin: 4px 0 0 0; font-size: 12px; color: #6c757d;">Ajouter des utilisateurs à votre plateforme</p>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <span style="background: #dc3545; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;">
+                                    👥 2 Utilisateurs actifs
+                                </span>
+                                <a href="#" class="btn-secondary" style="font-size: 12px;">→ Gérer les utilisateurs</a>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input type="email" class="form-control" placeholder="Saisir une adresse e-mail" style="max-width: 300px;">
+                            <button class="btn-primary">Inviter</button>
+                        </div>
+                    </div>
                 </div>
-            `;
-            
-            const container = document.querySelector('.content-area');
-            container.insertAdjacentHTML('afterbegin', alertHtml);
-            
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                const alert = container.querySelector('.alert');
-                if (alert) alert.remove();
-            }, 5000);
-        }
 
-        // Tab switching
-        function showTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Remove active class from all nav links
-            document.querySelectorAll('.settings-nav .nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            // Show selected tab
-            document.getElementById(tabName).classList.add('active');
-            
-            // Add active class to clicked nav link
-            event.target.classList.add('active');
-        }
+                <!-- Languages Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <i class="bi bi-translate" style="margin-right: 8px;"></i>
+                        Langues
+                    </div>
+                    <div class="section-content">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="font-size: 14px;">4 Langues</strong>
+                                <p style="margin: 4px 0 0 0; font-size: 12px; color: #6c757d;">Langues disponibles sur la plateforme</p>
+                            </div>
+                            <a href="#" class="btn-secondary" style="font-size: 12px;">→ Ajouter des langues</a>
+                        </div>
+                    </div>
+                </div>
 
-        // Save Profile
-        async function saveProfile(event) {
-            event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
-            const submitBtn = form.querySelector('button[type="submit"]');
-            
-            // Disable button and show loading
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Sauvegarde...';
-            
-            try {
-                const response = await fetch('/api/auth/settings/', {
-                    method: 'PATCH',
-                    credentials: 'include',
-                    headers: {
-                        'X-CSRFToken': getCsrfToken(),
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(Object.fromEntries(formData))
-                });
-                
-                const result = await response.json();
-                if (response.ok && result.success) {
-                    showMessage('Profil mis à jour avec succès !', 'success');
-                    // Update avatar if name changed
-                    const firstName = formData.get('first_name');
-                    const lastName = formData.get('last_name');
-                    if (firstName || lastName) {
-                        document.querySelector('.user-avatar').textContent = 
-                            (firstName?.[0] || '').toUpperCase() + (lastName?.[0] || '').toUpperCase();
-                    }
-                } else {
-                    showMessage('Erreur lors de la sauvegarde: ' + (result.error || 'Erreur inconnue'), 'error');
-                }
-            } catch (error) {
-                showMessage('Erreur de connexion. Veuillez réessayer.', 'error');
-            }
-            
-            // Restore button
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="bi bi-check2 me-2"></i>Sauvegarder les modifications';
-        }
+                <!-- Companies Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <i class="bi bi-building" style="margin-right: 8px;"></i>
+                        Sociétés
+                    </div>
+                    <div class="section-content">
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <h4 style="margin: 0; font-size: 14px; color: #875a7b;">Linguify</h4>
+                                    <p style="margin: 2px 0; font-size: 12px; color: #6c757d;">Plateforme d'apprentissage linguistique</p>
+                                    <p style="margin: 2px 0; font-size: 12px; color: #6c757d;">France</p>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;">
+                                        1 Société
+                                    </span>
+                                    <a href="#" class="btn-secondary" style="font-size: 12px;">→ Gérer des sociétés</a>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-secondary" style="font-size: 12px;">→ Mettre à jour les informations</a>
+                    </div>
+                </div>
 
-        // Save Language Settings
-        async function saveLanguageSettings(event) {
-            event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
-            const submitBtn = form.querySelector('button[type="submit"]');
-            
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Sauvegarde...';
-            
-            try {
-                const response = await fetch('/api/auth/settings/learning/', {
-                    method: 'PATCH',
-                    credentials: 'include',
-                    headers: {
-                        'X-CSRFToken': getCsrfToken(),
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(Object.fromEntries(formData))
-                });
-                
-                const result = await response.json();
-                if (response.ok && result.success) {
-                    showMessage('Paramètres linguistiques mis à jour !', 'success');
-                } else {
-                    showMessage('Erreur: ' + (result.error || 'Erreur inconnue'), 'error');
-                }
-            } catch (error) {
-                showMessage('Erreur de connexion. Veuillez réessayer.', 'error');
-            }
-            
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="bi bi-check2 me-2"></i>Sauvegarder les langues';
-        }
+                <!-- Configuration Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <i class="bi bi-file-earmark-text" style="margin-right: 8px;"></i>
+                        Configuration
+                    </div>
+                    <div class="section-content">
+                        <div class="two-column">
+                            <div>
+                                <h4 style="margin: 0 0 8px 0; font-size: 14px;">Mise en page du document</h4>
+                                <p style="margin: 0 0 8px 0; font-size: 12px; color: #6c757d;">Choisir la mise en page de vos documents</p>
+                                <a href="#" class="btn-secondary" style="font-size: 12px;">→ Configurer la mise en page du document</a>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0 0 8px 0; font-size: 14px;">Modèles d'e-mail</h4>
+                                <p style="margin: 0 0 8px 0; font-size: 12px; color: #6c757d;">Personnaliser la présentation des e-mails automatisés</p>
+                                <div style="margin-bottom: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                                        <span style="font-size: 12px;">Texte du bouton</span>
+                                        <div style="width: 16px; height: 16px; border-radius: 50%; background: #f8f9fa; border: 1px solid #dee2e6;"></div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 12px;">Couleur de bouton</span>
+                                        <div style="width: 16px; height: 16px; border-radius: 50%; background: #e91e63;"></div>
+                                    </div>
+                                </div>
+                                <a href="#" class="btn-secondary" style="font-size: 12px;">→ Revoir tous les modèles</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        // Change Password
-        async function changePassword(event) {
-            event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
-            const submitBtn = form.querySelector('button[type="submit"]');
-            
-            // Validate passwords match
-            if (formData.get('new_password') !== formData.get('confirm_password')) {
-                showMessage('Les mots de passe ne correspondent pas.', 'error');
-                return;
-            }
-            
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Modification...';
-            
-            try {
-                const response = await fetch('/api/auth/settings/password/', {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                        'X-CSRFToken': getCsrfToken(),
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(Object.fromEntries(formData))
-                });
-                
-                const result = await response.json();
-                if (response.ok && result.success) {
-                    showMessage('Mot de passe modifié avec succès !', 'success');
-                    form.reset();
-                } else {
-                    showMessage('Erreur: ' + (result.error || 'Mot de passe incorrect'), 'error');
-                }
-            } catch (error) {
-                showMessage('Erreur de connexion. Veuillez réessayer.', 'error');
-            }
-            
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="bi bi-shield-lock me-2"></i>Changer le mot de passe';
-        }
+                <!-- Units Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <i class="bi bi-rulers" style="margin-right: 8px;"></i>
+                        Unités de mesure
+                    </div>
+                    <div class="section-content">
+                        <p style="margin: 0; font-size: 12px; color: #6c757d;">Configuration des unités pour les mesures et calculs</p>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Users & Companies Tab Content -->
+            <div id="users" class="tab-content">
+                <div class="content-section">
+                    <div class="section-header">
+                        <i class="bi bi-people-fill" style="margin-right: 8px;"></i>
+                        Gestion des utilisateurs
+                    </div>
+                    <div class="section-content">
+                        <div class="alert-info">
+                            <i class="bi bi-info-circle" style="margin-right: 8px;"></i>
+                            Section de gestion des utilisateurs et sociétés à développer...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- App Settings Tabs -->
+            {% for app in user_apps %}
+            <div id="app-{{ app.display_name|slugify }}" class="tab-content">
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="app-icon" style="margin-right: 8px;">
+                            <i class="bi {{ app.icon_class }}"></i>
+                        </div>
+                        Configuration {{ app.display_name }}
+                    </div>
+                    <div class="section-content">
+                        <div class="alert-info">
+                            <i class="bi bi-info-circle" style="margin-right: 8px;"></i>
+                            Paramètres spécifiques à {{ app.display_name }} à développer...
+                        </div>
+                        
+                        <!-- Example app settings structure -->
+                        <div style="margin-top: 16px;">
+                            <div class="form-group">
+                                <label class="form-label">Activer {{ app.display_name }}</label>
+                                <input type="checkbox" checked style="margin-right: 8px;">
+                                <span style="font-size: 12px; color: #6c757d;">Module activé</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Paramètres avancés</label>
+                                <a href="#" class="btn-secondary">Configurer</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 
-        // Logout All Devices
-        async function logoutAllDevices() {
-            if (!confirm('Êtes-vous sûr de vouloir vous déconnecter de tous les appareils ?')) {
-                return;
-            }
-            
-            try {
-                const response = await fetch('/api/auth/logout-all/', {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                        'X-CSRFToken': getCsrfToken(),
-                    }
-                });
-                
-                if (response.ok) {
-                    showMessage('Déconnexion de tous les appareils réussie !', 'success');
-                } else {
-                    showMessage('Erreur lors de la déconnexion.', 'error');
-                }
-            } catch (error) {
-                showMessage('Erreur de connexion.', 'error');
-            }
-        }
+<script>
+function showTab(tabName) {
+    // Hide all tab contents
+    const tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    
+    // Remove active class from all sidebar items
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    sidebarItems.forEach(item => item.classList.remove('active'));
+    
+    // Show selected tab
+    const selectedTab = document.getElementById(tabName);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
+    
+    // Add active class to clicked sidebar item
+    event.target.classList.add('active');
+    
+    // Update breadcrumb and header tabs
+    updateHeaderForTab(tabName);
+}
 
-        // Export User Data
-        async function exportUserData() {
-            try {
-                const response = await fetch('/api/auth/export-data/', {
-                    credentials: 'include',
-                    headers: {
-                        'X-CSRFToken': getCsrfToken(),
-                    }
-                });
-                
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'mes-donnees-linguify.json';
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    showMessage('Export des données réussi !', 'success');
-                } else {
-                    showMessage('Erreur lors de l\'export des données.', 'error');
-                }
-            } catch (error) {
-                showMessage('Erreur de connexion.', 'error');
-            }
-        }
+function updateHeaderForTab(tabName) {
+    const breadcrumb = document.querySelector('.breadcrumb-nav .active');
+    const tabs = document.querySelectorAll('.settings-tab');
+    
+    // Update breadcrumb
+    if (tabName === 'general') {
+        breadcrumb.textContent = 'Paramètres généraux';
+    } else if (tabName === 'users') {
+        breadcrumb.textContent = 'Utilisateurs & Sociétés';
+    } else if (tabName.startsWith('app-')) {
+        const appName = tabName.replace('app-', '').replace('-', ' ');
+        breadcrumb.textContent = appName.charAt(0).toUpperCase() + appName.slice(1);
+    }
+    
+    // Update header tabs visibility
+    const settingsTabs = document.querySelector('.settings-tabs');
+    if (tabName === 'general' || tabName === 'users') {
+        settingsTabs.style.display = 'block';
+    } else {
+        settingsTabs.style.display = 'none';
+    }
+}
 
-        // Confirm Account Deletion
-        function confirmAccountDeletion() {
-            const confirmation = prompt(
-                'ATTENTION: Cette action est irréversible !\\n\\n' +
-                'Pour confirmer la suppression de votre compte, tapez exactement:\\n' +
-                '"SUPPRIMER MON COMPTE"'
-            );
-            
-            if (confirmation === 'SUPPRIMER MON COMPTE') {
-                deleteAccount();
-            } else if (confirmation !== null) {
-                showMessage('Confirmation incorrecte. Suppression annulée.', 'error');
-            }
-        }
+function showSubTab(subTabName) {
+    const tabs = document.querySelectorAll('.settings-tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    
+    event.target.classList.add('active');
+}
 
-        // Delete Account
-        async function deleteAccount() {
-            try {
-                const response = await fetch('/api/auth/delete-account/', {
-                    method: 'DELETE',
-                    credentials: 'include',
-                    headers: {
-                        'X-CSRFToken': getCsrfToken(),
-                    }
-                });
-                
-                if (response.ok) {
-                    alert('Votre compte a été supprimé. Vous allez être redirigé.');
-                    window.location.href = '/';
-                } else {
-                    showMessage('Erreur lors de la suppression du compte.', 'error');
-                }
-            } catch (error) {
-                showMessage('Erreur de connexion.', 'error');
-            }
-        }
-
-        // Upload Profile Picture
-        async function uploadProfilePicture(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            // Validate file size (5MB max)
-            if (file.size > 5 * 1024 * 1024) {
-                showMessage('La taille du fichier ne doit pas dépasser 5MB.', 'error');
-                return;
-            }
-            
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                showMessage('Veuillez sélectionner un fichier image.', 'error');
-                return;
-            }
-            
-            const formData = new FormData();
-            formData.append('profile_picture', file);
-            
-            try {
-                const response = await fetch('/api/auth/profile-picture/', {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                        'X-CSRFToken': getCsrfToken(),
-                    },
-                    body: formData
-                });
-                
-                const result = await response.json();
-                if (response.ok && result.success) {
-                    showMessage('Photo de profil mise à jour !', 'success');
-                    // Recharger la page pour voir la nouvelle photo
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showMessage('Erreur: ' + (result.error || 'Upload échoué'), 'error');
-                }
-            } catch (error) {
-                showMessage('Erreur de connexion.', 'error');
-            }
-        }
-
-        // Remove Profile Picture
-        async function removeProfilePicture() {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer votre photo de profil ?')) {
-                return;
-            }
-            
-            try {
-                const response = await fetch('/api/auth/profile-picture/', {
-                    method: 'DELETE',
-                    credentials: 'include',
-                    headers: {
-                        'X-CSRFToken': getCsrfToken(),
-                    }
-                });
-                
-                const result = await response.json();
-                if (response.ok && result.success) {
-                    showMessage('Photo de profil supprimée !', 'success');
-                    // Recharger la page pour voir le changement
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showMessage('Erreur: ' + (result.error || 'Suppression échouée'), 'error');
-                }
-            } catch (error) {
-                showMessage('Erreur de connexion.', 'error');
-            }
-        }
-
-        // Add CSRF token to all forms
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add CSRF token to forms if missing
-            const csrfToken = getCsrfToken();
-            if (csrfToken) {
-                document.querySelectorAll('form').forEach(form => {
-                    if (!form.querySelector('[name="csrfmiddlewaretoken"]')) {
-                        const csrfInput = document.createElement('input');
-                        csrfInput.type = 'hidden';
-                        csrfInput.name = 'csrfmiddlewaretoken';
-                        csrfInput.value = csrfToken;
-                        form.appendChild(csrfInput);
-                    }
-                });
-            }
-        });
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    updateHeaderForTab('general');
+});
 </script>
 {% endblock %}

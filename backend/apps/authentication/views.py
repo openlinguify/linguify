@@ -1608,6 +1608,8 @@ class UserProfileView(View):
         
         # Applications utilisées
         user_apps = []
+        user_quick_actions = []
+        
         for app in user_settings.enabled_apps.filter(is_enabled=True):
             # Mapper les icônes
             icon_mapping = {
@@ -1616,14 +1618,28 @@ class UserProfileView(View):
                 'MessageSquare': 'bi-chat-dots',
                 'Brain': 'bi-lightbulb',
                 'App': 'bi-app-indicator',
+                'Zap': 'bi-lightning-fill',
+                'RotateCcw': 'bi-arrow-clockwise',
             }
             
-            user_apps.append({
+            app_data = {
                 'display_name': app.display_name,
                 'route_path': app.route_path,
                 'icon_class': icon_mapping.get(app.icon_name, 'bi-app'),
                 'last_used': timezone.now() - timedelta(hours=2),  # Simulé
-            })
+            }
+            
+            user_apps.append(app_data)
+            
+            # Ajouter des sous-titres spécifiques pour les actions rapides
+            if 'revision' in app.route_path.lower():
+                app_data['subtitle'] = '12 cartes à réviser'
+            elif 'quiz' in app.route_path.lower():
+                app_data['subtitle'] = 'Quiz rapide'
+            else:
+                app_data['subtitle'] = 'Disponible'
+                
+            user_quick_actions.append(app_data)
         
         context = {
             'title': f'{profile_user.username} - ' + _('Profile') + ' | Open Linguify',
@@ -1634,6 +1650,7 @@ class UserProfileView(View):
             'recent_activities': recent_activities,
             'language_progress': language_progress,
             'user_apps': user_apps,
+            'user_quick_actions': user_quick_actions,
         }
         
         return render(request, 'authentication/profile.html', context)
