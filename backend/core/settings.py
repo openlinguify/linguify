@@ -86,10 +86,8 @@ INSTALLED_APPS = [
     'apps.community',
     'apps.course',
     'apps.data',
-    # 'apps.flashcard',
     'apps.language_ai',
     # 'apps.payments',
-    # 'apps.quiz',
     'apps.revision',
     'apps.notebook',
     # 'apps.task',
@@ -97,6 +95,9 @@ INSTALLED_APPS = [
     #'subscription',
     'app_manager',
     'apps.quizz',
+    
+    # Core apps
+    'core.vocal',
     
     # Web interfaces
     'saas_web',

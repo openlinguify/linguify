@@ -104,7 +104,18 @@ class UserSettingsView(View):
             'title': _('Paramètres - Open Linguify'),
             'user': request.user,
         }
-        return render(request, 'saas_web/settings.html', context)
+        return render(request, 'saas_web/settings/settings.html', context)
+
+
+@method_decorator(login_required, name='dispatch')
+class VoiceSettingsView(View):
+    """Page des paramètres de l'assistant vocal"""
+    def get(self, request):
+        context = {
+            'title': _('Paramètres Vocaux - Open Linguify'),
+            'user': request.user,
+        }
+        return render(request, 'saas_web/voice_settings.html', context)
 
 
 

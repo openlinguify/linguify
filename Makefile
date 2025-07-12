@@ -56,7 +56,7 @@ backend: ## Lance le serveur Backend (port 8000)
 		echo "$(YELLOW)💡 Essayez: make stop-backend ou utilisez un autre port$(NC)"; \
 		exit 1; \
 	fi
-	$(MANAGE) backend runserver $(BACKEND_PORT)
+	cd backend && poetry run python manage.py runserver $(BACKEND_PORT)
 
 all: ## Lance les 3 serveurs en parallèle
 	@echo "$(BLUE) Lancement de tous les serveurs Linguify...$(NC)"

@@ -9,6 +9,7 @@ urlpatterns = [
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     path('app-store/', AppStoreView.as_view(), name='app_store'),
     path('settings/', views.UserSettingsView.as_view(), name='settings'),
+    path('settings/voice/', views.VoiceSettingsView.as_view(), name='voice_settings'),
     
     # API endpoints
     path('api/user/stats/', views.UserStatsAPI.as_view(), name='api_user_stats'),

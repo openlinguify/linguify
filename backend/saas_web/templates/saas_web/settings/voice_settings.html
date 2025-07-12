@@ -1,0 +1,650 @@
+{% extends 'saas_web/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Voice Assistant Settings" %} - Linguify{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Réutiliser les styles des settings existants */
+.settings-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: #64748b;
+    font-size: 1rem;
+}
+
+.form-section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.form-section-title i {
+    margin-right: 0.5rem;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #374151;
+}
+
+.form-control {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.user-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-right: 1rem;
+}
+
+.command-item {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: between;
+    align-items: center;
+}
+
+.command-phrase {
+    font-weight: 600;
+    color: #495057;
+}
+
+.command-action {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.voice-toggle {
+    transform: scale(1.2);
+}
+
+.preference-item {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.preference-item:last-child {
+    border-bottom: none;
+}
+
+.test-voice-btn {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.command-stats {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Content Area avec le même style que settings.html -->
+<div class="content-area">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <div class="user-avatar">
+                    {% if user.get_profile_picture_url %}
+                        <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    {% else %}
+                        {{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}
+                    {% endif %}
+                </div>
+                <div>
+                    <h1 class="page-title">🎤 {% trans "Assistant Vocal" %}</h1>
+                    <p class="page-subtitle">{% trans "Configurez votre assistant vocal intelligent" %}</p>
+                </div>
+            </div>
+            <a href="{% url 'saas_web:settings' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                {% trans "Retour aux Paramètres" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Voice Assistant Status -->
+    <div class="settings-card">
+        <h3 class="form-section-title">
+            <i class="bi bi-mic-fill"></i>
+            {% trans "État de l'Assistant" %}
+        </h3>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="preference-item">
+                    <div>
+                        <strong>{% trans "Voice Commands" %}</strong>
+                        <div class="text-muted">{% trans "Enable voice command recognition" %}</div>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input voice-toggle" type="checkbox" id="voiceCommandsEnabled" checked>
+                    </div>
+                </div>
+                
+                <div class="preference-item">
+                    <div>
+                        <strong>{% trans "Text-to-Speech" %}</strong>
+                        <div class="text-muted">{% trans "Enable vocal responses" %}</div>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input voice-toggle" type="checkbox" id="ttsEnabled" checked>
+                    </div>
+                </div>
+                
+                <div class="preference-item">
+                    <div>
+                        <strong>{% trans "Auto Listen" %}</strong>
+                        <div class="text-muted">{% trans "Automatically listen after responses" %}</div>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input voice-toggle" type="checkbox" id="autoListen">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="preference-item">
+                    <div>
+                        <strong>{% trans "Voice Speed" %}</strong>
+                        <div class="text-muted">{% trans "Adjust speech synthesis speed" %}</div>
+                    </div>
+                    <select class="form-select" id="voiceSpeed" style="width: auto;">
+                        <option value="slow">{% trans "Slow" %}</option>
+                        <option value="normal" selected>{% trans "Normal" %}</option>
+                        <option value="fast">{% trans "Fast" %}</option>
+                    </select>
+                </div>
+                
+                <div class="preference-item">
+                    <div>
+                        <strong>{% trans "Microphone Sensitivity" %}</strong>
+                        <div class="text-muted">{% trans "Adjust voice detection sensitivity" %}</div>
+                    </div>
+                    <input type="range" class="form-range" id="micSensitivity" min="1" max="100" value="70" style="width: 150px;">
+                    <span id="sensitivityValue" class="ms-2">70%</span>
+                </div>
+                
+                <div class="preference-item">
+                    <button class="btn btn-primary test-voice-btn" id="testVoiceBtn">
+                        <i class="bi bi-volume-up me-1"></i>
+                        {% trans "Test Voice" %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Commands -->
+    <div class="settings-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="form-section-title">
+                <i class="bi bi-list-ul"></i>
+                {% trans "Commandes Disponibles" %}
+            </h3>
+            <button class="btn btn-outline-primary" id="refreshCommandsBtn">
+                <i class="bi bi-arrow-clockwise me-1"></i>
+                {% trans "Actualiser" %}
+            </button>
+        </div>
+        
+        <div class="row" id="commandsContainer">
+            <div class="col-12 text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">{% trans "Loading..." %}</span>
+                </div>
+                <p class="mt-2">{% trans "Loading commands..." %}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Commands -->
+    <div class="settings-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="form-section-title">
+                <i class="bi bi-plus-square"></i>
+                {% trans "Commandes Personnalisées" %}
+            </h3>
+            <button class="btn btn-success" id="addCommandBtn">
+                <i class="bi bi-plus-circle me-1"></i>
+                {% trans "Ajouter une Commande" %}
+            </button>
+        </div>
+        
+        <div id="customCommandsContainer">
+            <div class="text-center text-muted">
+                <i class="bi bi-mic-mute" style="font-size: 2rem; opacity: 0.5;"></i>
+                <p>{% trans "No custom commands yet" %}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Settings -->
+    <div class="settings-card">
+        <h3 class="form-section-title">
+            <i class="bi bi-globe"></i>
+            {% trans "Paramètres Linguistiques" %}
+        </h3>
+        <div class="row">
+            <div class="col-md-6">
+                <label class="form-label">{% trans "Langue de Reconnaissance Vocale" %}</label>
+                <p class="text-muted">{% trans "Basée sur votre langue maternelle:" %} <strong>{{ user.native_language|upper }}</strong></p>
+                <p class="small text-info">
+                    <i class="bi bi-info-circle me-1"></i>
+                    {% trans "Les commandes vocales s'adaptent automatiquement à votre langue maternelle." %}
+                </p>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">{% trans "Langue des Réponses" %}</label>
+                <p class="text-muted">{% trans "Langue de l'interface:" %} <strong>{{ LANGUAGE_CODE|upper }}</strong></p>
+                <p class="small text-info">
+                    <i class="bi bi-info-circle me-1"></i>
+                    {% trans "Les réponses vocales utilisent la langue de votre interface." %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Command Modal -->
+<div class="modal fade" id="addCommandModal" tabindex="-1" aria-labelledby="addCommandModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCommandModalLabel">{% trans "Ajouter une Commande Personnalisée" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addCommandForm">
+                    <div class="mb-3">
+                        <label for="triggerPhrase" class="form-label">{% trans "Phrase de Déclenchement" %}</label>
+                        <input type="text" class="form-control" id="triggerPhrase" placeholder="{% trans 'ex: ouvrir mes notes' %}" required>
+                        <div class="form-text">{% trans "La phrase que vous direz pour déclencher cette commande" %}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="actionType" class="form-label">{% trans "Type d'Action" %}</label>
+                        <select class="form-select" id="actionType" required>
+                            <option value="">{% trans "Sélectionner une action" %}</option>
+                            <option value="navigate">{% trans "Naviguer vers une URL" %}</option>
+                            <option value="toggle_theme">{% trans "Changer le Thème" %}</option>
+                            <option value="custom_action">{% trans "Action Personnalisée" %}</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3" id="urlField" style="display: none;">
+                        <label for="targetUrl" class="form-label">{% trans "URL de Destination" %}</label>
+                        <input type="text" class="form-control" id="targetUrl" placeholder="{% trans 'ex: /notes/' %}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="responseText" class="form-label">{% trans "Réponse Vocale" %}</label>
+                        <input type="text" class="form-control" id="responseText" placeholder="{% trans 'ex: Ouverture de vos notes' %}" required>
+                        <div class="form-text">{% trans "Ce que l'assistant dira lors de l'exécution de cette commande" %}</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Annuler" %}</button>
+                <button type="button" class="btn btn-primary" id="saveCommandBtn">{% trans "Sauvegarder la Commande" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const voiceSettings = new VoiceSettingsManager();
+    voiceSettings.init();
+});
+
+class VoiceSettingsManager {
+    constructor() {
+        this.apiBase = '/api/v1/vocal/';
+    }
+    
+    init() {
+        this.loadPreferences();
+        this.loadCommands();
+        this.loadCustomCommands();
+        this.bindEvents();
+    }
+    
+    async loadPreferences() {
+        try {
+            const response = await fetch(`${this.apiBase}preferences/`);
+            const data = await response.json();
+            
+            if (data.success) {
+                const prefs = data.preferences;
+                document.getElementById('voiceCommandsEnabled').checked = prefs.voice_commands_enabled;
+                document.getElementById('ttsEnabled').checked = prefs.tts_enabled;
+                document.getElementById('autoListen').checked = prefs.auto_listen;
+                document.getElementById('voiceSpeed').value = prefs.preferred_voice_speed;
+                document.getElementById('micSensitivity').value = prefs.sensitivity;
+                document.getElementById('sensitivityValue').textContent = prefs.sensitivity + '%';
+            }
+        } catch (error) {
+            console.error('Error loading preferences:', error);
+        }
+    }
+    
+    async loadCommands() {
+        try {
+            const response = await fetch(`${this.apiBase}commands/`);
+            const data = await response.json();
+            
+            if (data.success) {
+                this.displayCommands(data.commands);
+            }
+        } catch (error) {
+            console.error('Error loading commands:', error);
+        }
+    }
+    
+    async loadCustomCommands() {
+        try {
+            const response = await fetch(`${this.apiBase}user-commands/`);
+            const data = await response.json();
+            
+            if (data.success) {
+                this.displayCustomCommands(data.commands);
+            }
+        } catch (error) {
+            console.error('Error loading custom commands:', error);
+        }
+    }
+    
+    displayCommands(commands) {
+        const container = document.getElementById('commandsContainer');
+        container.innerHTML = '';
+        
+        Object.entries(commands).forEach(([category, commandList]) => {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'col-md-6 mb-3';
+            
+            categoryDiv.innerHTML = `
+                <h5 class="text-capitalize">${category.replace('_', ' ')}</h5>
+                ${commandList.map(cmd => `
+                    <div class="command-item">
+                        <div>
+                            <div class="command-phrase">"${cmd.command}"</div>
+                            <div class="command-action">${cmd.description}</div>
+                        </div>
+                        <i class="bi bi-mic text-primary"></i>
+                    </div>
+                `).join('')}
+            `;
+            
+            container.appendChild(categoryDiv);
+        });
+    }
+    
+    displayCustomCommands(commands) {
+        const container = document.getElementById('customCommandsContainer');
+        
+        if (commands.length === 0) {
+            container.innerHTML = `
+                <div class="text-center text-muted">
+                    <i class="bi bi-mic-mute" style="font-size: 2rem; opacity: 0.5;"></i>
+                    <p>{% trans "No custom commands yet" %}</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = commands.map(cmd => `
+            <div class="command-item">
+                <div class="flex-grow-1">
+                    <div class="command-phrase">"${cmd.trigger_phrase}"</div>
+                    <div class="command-action">${cmd.action_type}</div>
+                    <div class="command-stats">{% trans "Used" %} ${cmd.usage_count} {% trans "times" %}</div>
+                </div>
+                <button class="btn btn-outline-danger btn-sm" onclick="voiceSettings.deleteCommand('${cmd.id}')">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `).join('');
+    }
+    
+    bindEvents() {
+        // Save preferences on change
+        ['voiceCommandsEnabled', 'ttsEnabled', 'autoListen'].forEach(id => {
+            document.getElementById(id).addEventListener('change', () => this.savePreferences());
+        });
+        
+        document.getElementById('voiceSpeed').addEventListener('change', () => this.savePreferences());
+        
+        const sensitivitySlider = document.getElementById('micSensitivity');
+        sensitivitySlider.addEventListener('input', (e) => {
+            document.getElementById('sensitivityValue').textContent = e.target.value + '%';
+            this.savePreferences();
+        });
+        
+        // Test voice button
+        document.getElementById('testVoiceBtn').addEventListener('click', () => {
+            if (window.linguifyVoiceAssistant) {
+                window.linguifyVoiceAssistant.speak("{% trans 'Voice assistant test successful!' %}");
+            }
+        });
+        
+        // Add command modal
+        document.getElementById('addCommandBtn').addEventListener('click', () => {
+            new bootstrap.Modal(document.getElementById('addCommandModal')).show();
+        });
+        
+        document.getElementById('actionType').addEventListener('change', (e) => {
+            const urlField = document.getElementById('urlField');
+            urlField.style.display = e.target.value === 'navigate' ? 'block' : 'none';
+        });
+        
+        document.getElementById('saveCommandBtn').addEventListener('click', () => this.saveCustomCommand());
+        
+        // Refresh commands
+        document.getElementById('refreshCommandsBtn').addEventListener('click', () => {
+            this.loadCommands();
+            this.loadCustomCommands();
+        });
+    }
+    
+    async savePreferences() {
+        const preferences = {
+            voice_commands_enabled: document.getElementById('voiceCommandsEnabled').checked,
+            tts_enabled: document.getElementById('ttsEnabled').checked,
+            auto_listen: document.getElementById('autoListen').checked,
+            preferred_voice_speed: document.getElementById('voiceSpeed').value,
+            sensitivity: parseInt(document.getElementById('micSensitivity').value)
+        };
+        
+        try {
+            const response = await fetch(`${this.apiBase}preferences/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify(preferences)
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                this.showToast('{% trans "Preferences saved successfully" %}', 'success');
+            }
+        } catch (error) {
+            console.error('Error saving preferences:', error);
+            this.showToast('{% trans "Error saving preferences" %}', 'error');
+        }
+    }
+    
+    async saveCustomCommand() {
+        const triggerPhrase = document.getElementById('triggerPhrase').value;
+        const actionType = document.getElementById('actionType').value;
+        const responseText = document.getElementById('responseText').value;
+        const targetUrl = document.getElementById('targetUrl').value;
+        
+        if (!triggerPhrase || !actionType || !responseText) {
+            this.showToast('{% trans "Please fill in all required fields" %}', 'error');
+            return;
+        }
+        
+        const params = {};
+        if (actionType === 'navigate' && targetUrl) {
+            params.url = targetUrl;
+        }
+        
+        try {
+            const response = await fetch(`${this.apiBase}learn-command/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify({
+                    trigger_phrase: triggerPhrase,
+                    action: actionType,
+                    params: params,
+                    response: responseText
+                })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                this.showToast('{% trans "Command added successfully" %}', 'success');
+                bootstrap.Modal.getInstance(document.getElementById('addCommandModal')).hide();
+                document.getElementById('addCommandForm').reset();
+                this.loadCustomCommands();
+            } else {
+                this.showToast(data.error || '{% trans "Error adding command" %}', 'error');
+            }
+        } catch (error) {
+            console.error('Error saving command:', error);
+            this.showToast('{% trans "Error adding command" %}', 'error');
+        }
+    }
+    
+    async deleteCommand(commandId) {
+        if (!confirm('{% trans "Are you sure you want to delete this command?" %}')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${this.apiBase}user-commands/${commandId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': this.getCSRFToken()
+                }
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                this.showToast('{% trans "Command deleted successfully" %}', 'success');
+                this.loadCustomCommands();
+            } else {
+                this.showToast(data.error || '{% trans "Error deleting command" %}', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting command:', error);
+            this.showToast('{% trans "Error deleting command" %}', 'error');
+        }
+    }
+    
+    getCSRFToken() {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'csrftoken') return value;
+        }
+        return '';
+    }
+    
+    showToast(message, type) {
+        // Simple toast notification - could be enhanced with Bootstrap toasts
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        const alert = document.createElement('div');
+        alert.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        alert.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alert);
+        
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.parentNode.removeChild(alert);
+            }
+        }, 5000);
+    }
+}
+
+// Make it globally accessible
+window.voiceSettings = null;
+document.addEventListener('DOMContentLoaded', function() {
+    window.voiceSettings = new VoiceSettingsManager();
+    window.voiceSettings.init();
+});
+</script>
+{% endblock %}

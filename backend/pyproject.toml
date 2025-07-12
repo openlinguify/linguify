@@ -32,6 +32,11 @@ supabase = "^2.15.3"
 whitenoise = "^6.9.0"
 pywebpush = "^2.0.3"
 
+# Voice/Audio dependencies
+pyttsx3 = "^2.90"
+SpeechRecognition = "^3.10.0"
+# pyaudio = "^0.2.13"  # Optional - difficile à installer sur Windows
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
 

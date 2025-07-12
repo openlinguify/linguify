@@ -13,6 +13,9 @@ router.register(r'conversations', AIConversationViewSet, basename='ai-conversati
 router.register(r'messages', ConversationMessageViewSet, basename='conversation-message')
 router.register(r'feedback', ConversationFeedbackViewSet, basename='conversation-feedback')
 
+from .views import ChatAPIView
+
 urlpatterns = [
     path('', include(router.urls)),
+    path('chat/', ChatAPIView.as_view(), name='chat-api'),
 ]

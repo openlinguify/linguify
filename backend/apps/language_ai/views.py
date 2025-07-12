@@ -180,3 +180,162 @@ class ConversationFeedbackViewSet(viewsets.ModelViewSet):
             )
         
         return super().create(request, *args, **kwargs)
+
+
+from rest_framework.views import APIView
+from django.utils import timezone
+
+class ChatAPIView(APIView):
+    """API simple pour le chat IA"""
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        """Traite un message de chat et retourne une réponse IA"""
+        try:
+            message = request.data.get('message', '').strip()
+            conversation_id = request.data.get('conversation_id')
+            
+            if not message:
+                return Response({
+                    'success': False,
+                    'error': 'Message requis'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Utiliser le vrai service IA au lieu de la simulation
+            ai_response = self._generate_ai_response_with_service(message, request.user)
+            
+            return Response({
+                'success': True,
+                'response': ai_response['response'],
+                'corrections': ai_response.get('corrections', []),
+                'conversation_id': conversation_id or 'default',
+                'timestamp': timezone.now().isoformat()
+            })
+            
+        except Exception as e:
+            logger.error(f"Error in chat API: {e}", exc_info=True)
+            return Response({
+                'success': False,
+                'error': f'Erreur: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def _generate_ai_response_with_service(self, message, user):
+        """Génère une réponse IA en utilisant le vrai service IA"""
+        try:
+            from .ai_service import ai_provider
+            
+            # Créer un contexte minimal pour l'IA
+            user_language = getattr(user, 'target_language', 'ES')
+            language_map = {
+                'FR': 'french',
+                'EN': 'english', 
+                'ES': 'spanish',
+                'NL': 'dutch'
+            }
+            target_language = language_map.get(user_language, 'spanish')
+            
+            conversation_context = [
+                {
+                    "role": "system", 
+                    "content": f"You are a friendly and helpful {target_language} language tutor. "
+                              f"Always respond in {target_language}. Be conversational, encouraging, and help "
+                              f"correct mistakes naturally. Keep responses under 100 words."
+                },
+                {
+                    "role": "user",
+                    "content": message
+                }
+            ]
+            
+            # Utiliser le provider AI configuré
+            if ai_provider and ai_provider.is_available():
+                try:
+                    logger.info(f"Calling AI provider for chat message: {message[:50]}...")
+                    
+                    ai_response = ai_provider.generate_response(
+                        messages=conversation_context,
+                        language=target_language,
+                        max_tokens=200
+                    )
+                    
+                    if ai_response:
+                        logger.info("AI provider response received successfully")
+                        return {
+                            'response': ai_response,
+                            'corrections': []
+                        }
+                    else:
+                        logger.warning("AI provider returned empty response")
+                        
+                except Exception as ai_error:
+                    logger.error(f"Error with AI provider: {str(ai_error)}", exc_info=True)
+            
+            # Fallback sur la réponse simple si l'IA n'est pas disponible
+            logger.info("Using fallback simple response")
+            return self._generate_simple_ai_response(message, user)
+            
+        except Exception as e:
+            logger.error(f"Error in AI response generation: {str(e)}")
+            return self._generate_simple_ai_response(message, user)
+    
+    def _generate_simple_ai_response(self, message, user):
+        """Génère une réponse IA simple"""
+        
+        # Réponses basées sur le contenu du message
+        message_lower = message.lower()
+        
+        # Réponses contextuelles
+        if 'hello' in message_lower or 'hi' in message_lower or 'bonjour' in message_lower:
+            return {
+                'response': f"Hello! Nice to meet you. I'm here to help you practice your language skills. How are you feeling about your language learning today?",
+                'corrections': []
+            }
+        
+        elif 'help' in message_lower or 'aide' in message_lower:
+            return {
+                'response': "I'm here to help you practice! You can ask me about grammar, vocabulary, or just have a conversation. What would you like to work on?",
+                'corrections': []
+            }
+        
+        elif 'grammar' in message_lower or 'grammaire' in message_lower:
+            return {
+                'response': "Grammar is important! Can you share a sentence you'd like me to check, or ask me about a specific grammar rule?",
+                'corrections': []
+            }
+        
+        elif 'travel' in message_lower or 'voyage' in message_lower:
+            return {
+                'response': "Travel is exciting! Tell me about a place you'd like to visit or a trip you've taken. I can help you practice travel-related vocabulary and phrases.",
+                'corrections': []
+            }
+        
+        elif any(word in message_lower for word in ['mistake', 'error', 'correct', 'correction']):
+            return {
+                'response': "I'd be happy to help with corrections! Share any text you'd like me to review, and I'll provide feedback on grammar and vocabulary.",
+                'corrections': []
+            }
+        
+        # Détecter des erreurs simples et proposer des corrections
+        corrections = []
+        if 'i am go' in message_lower:
+            corrections.append("Instead of 'I am go', try 'I am going' (present continuous)")
+        elif 'he are' in message_lower or 'she are' in message_lower:
+            corrections.append("Use 'he is' or 'she is' instead of 'he/she are'")
+        
+        # Réponse générale encourageante
+        responses = [
+            "That's interesting! Can you tell me more about that?",
+            "I see what you mean. How do you feel about this topic?",
+            "Great! Let's explore this further. What would you like to discuss?",
+            "Thanks for sharing! What's your opinion on this?",
+            "That's a good point. Can you give me an example?",
+            "I understand. What questions do you have about this?"
+        ]
+        
+        # Choisir une réponse basée sur la longueur du message
+        response_index = len(message) % len(responses)
+        
+        return {
+            'response': responses[response_index],
+            'corrections': corrections
+        }
