@@ -592,15 +592,44 @@ else:
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {name} {message}',
+            'style': '{',
+        },
+        'profile_picture': {
+            'format': '[ProfilePicture] {levelname} {asctime} {name} - {message}',
+            'style': '{',
+        }
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'profile_console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'profile_picture',
         },
     },
     'loggers': {
         'apps.authentication': {
             'handlers': ['console'],
             'level': 'DEBUG',
+        },
+        'saas_web.views': {
+            'handlers': ['profile_console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'apps.authentication.supabase_storage': {
+            'handlers': ['profile_console'],
+            'level': 'DEBUG',
+            'propagate': False,
         },
     },
 }

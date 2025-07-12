@@ -15,6 +15,9 @@ urlpatterns = [
     path('api/user/stats/', views.UserStatsAPI.as_view(), name='api_user_stats'),
     path('api/notifications/', views.NotificationAPI.as_view(), name='api_notifications'),
     path('api/apps/<int:app_id>/toggle/', views.AppToggleAPI.as_view(), name='api_app_toggle'),
+    path('api/check-username/', views.check_username_availability, name='api_check_username'),
+    path('api/save-draft/', views.save_draft_settings, name='api_save_draft'),
+    path('api/load-draft/', views.load_draft_settings, name='api_load_draft'),
     
     # Admin tools
     path('admin-tools/fix-apps/', views.AdminFixAppsView.as_view(), name='admin_fix_apps'),

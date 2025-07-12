@@ -10,15 +10,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Tab switching for settings
-    window.showTab = function(tabName) {
+    // Tab switching for dashboard (renamed to avoid conflicts)
+    window.showDashboardTab = function(tabName) {
         // Hide all tabs
-        document.querySelectorAll('.tab-content').forEach(tab => {
+        document.querySelectorAll('.dashboard-tab-content').forEach(tab => {
             tab.classList.remove('active');
         });
         
         // Remove active class from all nav links
-        document.querySelectorAll('.settings-nav .nav-link').forEach(link => {
+        document.querySelectorAll('.dashboard-nav .nav-link').forEach(link => {
             link.classList.remove('active');
         });
         

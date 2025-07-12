@@ -8,9 +8,21 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 import json
 from app_manager.models import App, UserAppSettings
 from apps.notification.models import Notification
+from apps.authentication.serializers import (
+    GeneralSettingsSerializer, NotificationSettingsSerializer,
+    LearningSettingsSerializer, PrivacySettingsSerializer,
+    AppearanceSettingsSerializer, ProfileUpdateSerializer
+)
+from rest_framework import status
+from django.contrib import messages
+from django.views.decorators.http import require_http_methods
+import logging
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -100,11 +112,316 @@ class AppStoreView(View):
 class UserSettingsView(View):
     """Page des paramètres utilisateur"""
     def get(self, request):
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        # Récupérer les paramètres d'applications utilisateur
+        user_apps = []
+        try:
+            from app_manager.models import UserAppSettings, App
+            
+            # Créer ou récupérer les paramètres utilisateur
+            user_app_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
+            
+            # Si l'utilisateur n'a pas d'apps activées, activer quelques apps par défaut
+            if created or user_app_settings.enabled_apps.count() == 0:
+                # Récupérer quelques apps disponibles pour les activer par défaut
+                default_apps = App.objects.filter(is_published=True, is_featured=True)[:3]
+                if default_apps.exists():
+                    user_app_settings.enabled_apps.set(default_apps)
+            
+            # Mapper les icônes
+            icon_mapping = {
+                'Book': 'bi-book',
+                'Cards': 'bi-collection',
+                'MessageSquare': 'bi-chat-dots',
+                'Brain': 'bi-lightbulb',
+                'App': 'bi-app-indicator',
+                'Zap': 'bi-lightning-fill',
+                'RotateCcw': 'bi-arrow-clockwise',
+                'Users': 'bi-people',
+                'Settings': 'bi-gear',
+                'FileText': 'bi-file-text',
+                'Calendar': 'bi-calendar',
+                'BarChart': 'bi-bar-chart',
+            }
+            
+            # Applications installées par l'utilisateur
+            for app in user_app_settings.enabled_apps.all():
+                user_apps.append({
+                    'display_name': app.display_name,
+                    'route_path': app.route_path,
+                    'icon_class': icon_mapping.get(app.icon_name, 'bi-app'),
+                    'last_used': timezone.now() - timedelta(hours=2),  # Simulé
+                })
+                
+        except Exception as e:
+            # En cas d'erreur, créer quelques apps d'exemple pour les paramètres
+            print(f"Erreur lors du chargement des apps: {e}")
+            user_apps = [
+                {
+                    'display_name': 'Révision',
+                    'route_path': '/revision',
+                    'icon_class': 'bi-arrow-clockwise',
+                    'last_used': timezone.now() - timedelta(hours=1),
+                },
+                {
+                    'display_name': 'Quiz',
+                    'route_path': '/quiz',
+                    'icon_class': 'bi-lightning-fill',
+                    'last_used': timezone.now() - timedelta(hours=2),
+                },
+                {
+                    'display_name': 'Chat',
+                    'route_path': '/chat',
+                    'icon_class': 'bi-chat-dots',
+                    'last_used': timezone.now() - timedelta(hours=3),
+                },
+            ]
+        
+        # Récupérer les préférences vocales avec valeurs par défaut
+        voice_preferences = {}
+        try:
+            from core.vocal.models import VoicePreference
+            voice_pref, created = VoicePreference.objects.get_or_create(user=request.user)
+            voice_preferences = {
+                'voice_commands_enabled': voice_pref.voice_commands_enabled,
+                'tts_enabled': voice_pref.tts_enabled,
+                'auto_listen': voice_pref.auto_listen,
+                'noise_suppression': voice_pref.noise_suppression,
+                'pronunciation_feedback': voice_pref.pronunciation_feedback,
+                'conversation_mode': voice_pref.conversation_mode,
+                'preferred_voice_speed': voice_pref.preferred_voice_speed,
+                'preferred_voice_pitch': voice_pref.preferred_voice_pitch,
+                'sensitivity': voice_pref.sensitivity,
+                'preferred_accent': voice_pref.preferred_accent,
+            }
+        except ImportError:
+            # Valeurs par défaut si le module vocal n'est pas disponible
+            voice_preferences = {
+                'voice_commands_enabled': True,
+                'tts_enabled': True,
+                'auto_listen': False,
+                'noise_suppression': True,
+                'pronunciation_feedback': True,
+                'conversation_mode': False,
+                'preferred_voice_speed': 'normal',
+                'preferred_voice_pitch': 50,
+                'sensitivity': 70,
+                'preferred_accent': '',
+            }
+        
         context = {
             'title': _('Paramètres - Open Linguify'),
             'user': request.user,
+            'user_apps': user_apps,
+            'voice_preferences': voice_preferences,
         }
         return render(request, 'saas_web/settings/settings.html', context)
+    
+    def post(self, request):
+        """Traiter la soumission du formulaire de paramètres utilisateur avec les serializers d'authentification"""
+        logger.info(f"POST settings request from user {request.user.id} ({request.user.username})")
+        logger.debug(f"POST data keys: {list(request.POST.keys())}")
+        logger.debug(f"FILES data keys: {list(request.FILES.keys())}")
+        
+        try:
+            user = request.user
+            settings_type = request.POST.get('settings_type', 'profile')
+            logger.info(f"Processing settings type: {settings_type}")
+            
+            # Utiliser les serializers appropriés selon le type de paramètres
+            if settings_type == 'profile':
+                logger.info(f"Processing profile update for user {user.username}")
+                serializer = ProfileUpdateSerializer(user, data=request.POST, partial=True)
+                if serializer.is_valid():
+                    logger.info(f"Profile serializer validation successful")
+                    serializer.save()
+                    logger.info(f"Profile saved successfully for user {user.username}")
+                    messages.success(request, "Profil utilisateur mis à jour avec succès!")
+                else:
+                    logger.warning(f"Profile serializer validation failed: {serializer.errors}")
+                    for field, errors in serializer.errors.items():
+                        for error in errors:
+                            logger.error(f"Profile field error - {field}: {error}")
+                            messages.error(request, f"{field}: {error}")
+                            
+            elif settings_type == 'general':
+                serializer = GeneralSettingsSerializer(user, data=request.POST, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                    messages.success(request, "Paramètres généraux mis à jour avec succès!")
+                else:
+                    for field, errors in serializer.errors.items():
+                        for error in errors:
+                            messages.error(request, f"{field}: {error}")
+                            
+            elif settings_type == 'notifications':
+                serializer = NotificationSettingsSerializer(user, data=request.POST, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                    messages.success(request, "Paramètres de notification mis à jour avec succès!")
+                else:
+                    for field, errors in serializer.errors.items():
+                        for error in errors:
+                            messages.error(request, f"{field}: {error}")
+                            
+            elif settings_type == 'learning':
+                serializer = LearningSettingsSerializer(user, data=request.POST, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                    messages.success(request, "Paramètres d'apprentissage mis à jour avec succès!")
+                else:
+                    for field, errors in serializer.errors.items():
+                        for error in errors:
+                            messages.error(request, f"{field}: {error}")
+                            
+            elif settings_type == 'privacy':
+                serializer = PrivacySettingsSerializer(user, data=request.POST, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                    messages.success(request, "Paramètres de confidentialité mis à jour avec succès!")
+                else:
+                    for field, errors in serializer.errors.items():
+                        for error in errors:
+                            messages.error(request, f"{field}: {error}")
+                            
+            elif settings_type == 'appearance':
+                serializer = AppearanceSettingsSerializer(user, data=request.POST, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                    messages.success(request, "Paramètres d'apparence mis à jour avec succès!")
+                else:
+                    for field, errors in serializer.errors.items():
+                        for error in errors:
+                            messages.error(request, f"{field}: {error}")
+                            
+            elif settings_type == 'voice':
+                # Gérer les paramètres vocaux spécialement
+                self._handle_voice_settings(request, user)
+                
+            # Gérer la photo de profil via l'API authentication (Supabase)
+            if 'profile_picture' in request.FILES:
+                logger.info(f"Profile picture upload detected for user {user.username}")
+                self._handle_profile_picture_via_api(request, user)
+            else:
+                logger.debug(f"No profile picture in upload request")
+            
+        except Exception as e:
+            logger.exception(f"Error processing settings update for user {request.user.username}: {str(e)}")
+            messages.error(request, f"Une erreur s'est produite lors de la mise à jour: {str(e)}")
+        
+        return self.get(request)
+    
+    def _handle_voice_settings(self, request, user):
+        """Gérer les paramètres vocaux"""
+        try:
+            from core.vocal.models import VoicePreference
+            voice_prefs, created = VoicePreference.objects.get_or_create(user=user)
+            
+            # Mettre à jour les paramètres vocaux
+            voice_prefs.voice_commands_enabled = request.POST.get('voice_commands_enabled') == 'on'
+            voice_prefs.tts_enabled = request.POST.get('tts_enabled') == 'on'
+            voice_prefs.auto_listen = request.POST.get('auto_listen') == 'on'
+            voice_prefs.noise_suppression = request.POST.get('noise_suppression') == 'on'
+            voice_prefs.pronunciation_feedback = request.POST.get('pronunciation_feedback') == 'on'
+            voice_prefs.conversation_mode = request.POST.get('conversation_mode') == 'on'
+            
+            # Préférences de voix
+            if 'preferred_voice_speed' in request.POST:
+                voice_prefs.preferred_voice_speed = request.POST.get('preferred_voice_speed', 'normal')
+            if 'preferred_voice_pitch' in request.POST:
+                try:
+                    voice_prefs.preferred_voice_pitch = int(request.POST.get('preferred_voice_pitch', 50))
+                except ValueError:
+                    voice_prefs.preferred_voice_pitch = 50
+            if 'sensitivity' in request.POST:
+                try:
+                    voice_prefs.sensitivity = int(request.POST.get('sensitivity', 70))
+                except ValueError:
+                    voice_prefs.sensitivity = 70
+            if 'preferred_accent' in request.POST:
+                voice_prefs.preferred_accent = request.POST.get('preferred_accent', '')
+            
+            voice_prefs.save()
+            messages.success(request, "Paramètres vocaux mis à jour avec succès!")
+            
+        except ImportError:
+            messages.warning(request, "Module vocal non disponible.")
+        except Exception as e:
+            messages.error(request, f"Erreur lors de la mise à jour des paramètres vocaux: {str(e)}")
+    
+    def _handle_profile_picture_via_api(self, request, user):
+        """Gérer l'upload de photo de profil via l'API authentication (Supabase)"""
+        logger.info(f"Starting profile picture upload for user {user.username} (ID: {user.id})")
+        
+        try:
+            from apps.authentication.supabase_storage import supabase_storage
+            logger.debug(f"Supabase storage service imported successfully")
+            
+            profile_picture = request.FILES['profile_picture']
+            logger.info(f"Profile picture file details: name={profile_picture.name}, size={profile_picture.size} bytes ({profile_picture.size/1024/1024:.2f}MB), content_type={getattr(profile_picture, 'content_type', 'unknown')}")
+            
+            # Validation de la taille
+            max_size = 5 * 1024 * 1024  # 5MB
+            if profile_picture.size > max_size:
+                logger.warning(f"Profile picture too large: {profile_picture.size} bytes > {max_size} bytes")
+                messages.error(request, "La photo de profil ne peut pas dépasser 5MB.")
+                return
+            logger.info(f"File size validation passed")
+            
+            # Validation du type de fichier
+            allowed_extensions = ('.png', '.jpg', '.jpeg', '.gif', '.webp')
+            file_extension = profile_picture.name.lower()
+            if not file_extension.endswith(allowed_extensions):
+                logger.warning(f"Invalid file extension: {file_extension}")
+                messages.error(request, "Type de fichier non autorisé. Utilisez PNG, JPG, JPEG, GIF ou WEBP.")
+                return
+            logger.info(f"File type validation passed: {file_extension}")
+            
+            # Upload vers Supabase via le service authentication
+            logger.info(f"Starting Supabase upload for user {user.id}")
+            upload_result = supabase_storage.upload_profile_picture(
+                user_id=str(user.id),
+                file=profile_picture,
+                original_filename=profile_picture.name
+            )
+            logger.info(f"Supabase upload result: success={upload_result.get('success')}")
+            
+            if upload_result.get('success'):
+                old_url = getattr(user, 'profile_picture_url', None)
+                old_filename = getattr(user, 'profile_picture_filename', None)
+                
+                logger.info(f"Upload successful - updating user profile")
+                logger.debug(f"Old URL: {old_url}")
+                logger.debug(f"New URL: {upload_result['public_url']}")
+                logger.debug(f"Old filename: {old_filename}")
+                logger.debug(f"New filename: {upload_result['filename']}")
+                
+                # Mettre à jour l'utilisateur avec les nouvelles URLs
+                user.profile_picture_url = upload_result['public_url']
+                user.profile_picture_filename = upload_result['filename']
+                
+                # Nettoyer l'ancien champ Django storage si il existe
+                if hasattr(user, 'profile_picture') and user.profile_picture:
+                    logger.info(f"Cleaning old Django storage field")
+                    user.profile_picture = None
+                
+                user.save(update_fields=['profile_picture_url', 'profile_picture_filename', 'profile_picture'])
+                logger.info(f"User profile updated successfully for user {user.username}")
+                messages.success(request, "Photo de profil mise à jour avec succès!")
+            else:
+                error_msg = upload_result.get('error', 'Erreur lors de l\'upload')
+                logger.error(f"Supabase upload failed: {error_msg}")
+                logger.debug(f"Full upload result: {upload_result}")
+                messages.error(request, f"Erreur lors de l'upload de la photo: {error_msg}")
+                
+        except ImportError as e:
+            logger.error(f"Failed to import Supabase storage service: {str(e)}")
+            messages.error(request, f"Service de stockage non disponible: {str(e)}")
+        except Exception as e:
+            logger.exception(f"Unexpected error during profile picture upload for user {user.username}: {str(e)}")
+            messages.error(request, f"Erreur lors de l'upload de la photo de profil: {str(e)}")
 
 
 @method_decorator(login_required, name='dispatch')
@@ -244,3 +561,92 @@ class AdminFixAppsView(View):
             'title': _('Fix Apps - Administration'),
         }
         return render(request, 'saas_web/admin/fix_apps.html', context)
+
+
+@require_http_methods(["GET"])
+@login_required
+def check_username_availability(request):
+    """API endpoint pour vérifier la disponibilité d'un nom d'utilisateur"""
+    username = request.GET.get('username', '').strip()
+    
+    if not username:
+        return JsonResponse({
+            'available': False,
+            'message': 'Le nom d\'utilisateur ne peut pas être vide.'
+        })
+    
+    if len(username) < 3:
+        return JsonResponse({
+            'available': False,
+            'message': 'Le nom d\'utilisateur doit contenir au moins 3 caractères.'
+        })
+    
+    if username == request.user.username:
+        return JsonResponse({
+            'available': True,
+            'message': 'Nom d\'utilisateur actuel.'
+        })
+    
+    # Vérifier si le nom d'utilisateur existe déjà
+    User = get_user_model()
+    exists = User.objects.filter(username=username).exists()
+    
+    if exists:
+        return JsonResponse({
+            'available': False,
+            'message': 'Ce nom d\'utilisateur est déjà pris.'
+        })
+    
+    return JsonResponse({
+        'available': True,
+        'message': 'Nom d\'utilisateur disponible.'
+    })
+
+
+@require_http_methods(["POST"])
+@login_required
+def save_draft_settings(request):
+    """API endpoint pour sauvegarder automatiquement les brouillons de paramètres"""
+    try:
+        data = json.loads(request.body)
+        settings_type = data.get('type', 'profile')
+        settings_data = data.get('data', {})
+        
+        # Sauvegarder dans la session utilisateur comme brouillon
+        draft_key = f'settings_draft_{settings_type}'
+        request.session[draft_key] = {
+            'data': settings_data,
+            'timestamp': timezone.now().isoformat()
+        }
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Brouillon sauvegardé.'
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@require_http_methods(["GET"])
+@login_required
+def load_draft_settings(request):
+    """API endpoint pour charger les brouillons de paramètres"""
+    settings_type = request.GET.get('type', 'profile')
+    draft_key = f'settings_draft_{settings_type}'
+    
+    draft = request.session.get(draft_key)
+    
+    if draft:
+        return JsonResponse({
+            'success': True,
+            'draft': draft
+        })
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'Aucun brouillon trouvé.'
+    })
