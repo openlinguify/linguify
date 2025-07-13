@@ -52,9 +52,35 @@ class FlashcardStudyMode {
             const allCards = response.results || response || [];
             console.log('Loaded cards:', allCards.length);
             
-            // Filter cards that need study (not learned or due for review)
-            this.studyCards = this.filterCardsForStudy(allCards);
-            console.log('Cards to study after filtering:', this.studyCards.length);
+            // Appliquer d'abord la limite des paramètres utilisateur
+            console.log('[FlashcardStudy] About to apply user settings limit...');
+            let cardsToStudy;
+            try {
+                const userSettings = await this.getUserSettings();
+                const maxCards = userSettings.cards_per_session || 20;
+                console.log(`[FlashcardStudy] User wants ${maxCards} cards per session`);
+                
+                // Filter cards that need study (not learned or due for review)
+                let filteredCards = this.filterCardsForStudy(allCards);
+                console.log('Cards to study after filtering:', filteredCards.length);
+                
+                // Si pas assez de cartes après filtrage, inclure toutes les cartes disponibles
+                if (filteredCards.length < maxCards && allCards.length > filteredCards.length) {
+                    console.log(`[FlashcardStudy] Not enough filtered cards (${filteredCards.length}), using all available cards (${allCards.length}) to maximize study content`);
+                    cardsToStudy = allCards.slice(0, maxCards);
+                } else {
+                    cardsToStudy = filteredCards.slice(0, maxCards);
+                }
+                
+                console.log('[FlashcardStudy] Successfully applied user settings limit');
+            } catch (error) {
+                console.error('[FlashcardStudy] Error applying user settings:', error);
+                // Fallback au comportement original
+                cardsToStudy = this.filterCardsForStudy(allCards).slice(0, 20);
+            }
+            
+            this.studyCards = cardsToStudy;
+            console.log('Cards to study after filtering and user settings:', this.studyCards.length);
             
             if (this.studyCards.length === 0) {
                 console.log('No cards to study, showing no cards message');
@@ -274,6 +300,45 @@ class FlashcardStudyMode {
             total: this.studyCards.length
         };
         this.updateStats();
+    }
+
+    // Méthode pour récupérer les paramètres utilisateur
+    async getUserSettings() {
+        try {
+            console.log('[FlashcardStudy] Fetching user settings...');
+            const response = await fetch('/api/v1/revision/user-settings/');
+            
+            if (!response.ok) {
+                console.warn('[FlashcardStudy] Could not fetch user settings, using defaults');
+                return {
+                    cards_per_session: 20,
+                    default_session_duration: 20,
+                    required_reviews_to_learn: 3
+                };
+            }
+            
+            const data = await response.json();
+            const settings = data.settings || {};
+            
+            console.log(`[FlashcardStudy] User settings loaded:`, settings);
+            return settings;
+            
+        } catch (error) {
+            console.error('[FlashcardStudy] Error fetching user settings:', error);
+            return {
+                cards_per_session: 20,
+                default_session_duration: 20,
+                required_reviews_to_learn: 3
+            };
+        }
+    }
+
+    // Nouvelle méthode pour appliquer les paramètres utilisateur (legacy)
+    async applyUserSettingsLimit(cards) {
+        const settings = await this.getUserSettings();
+        const maxCards = settings.cards_per_session || 20;
+        console.log(`[FlashcardStudy] Limiting from ${cards.length} to ${Math.min(cards.length, maxCards)} cards`);
+        return cards.slice(0, maxCards);
     }
 
     showCompletionMessage() {

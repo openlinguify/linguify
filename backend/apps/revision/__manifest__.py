@@ -59,6 +59,31 @@ Usage:
         'admin_registered': True,
         'rest_framework': True,
         'has_web_interface': True,
-        'web_url': '/revision/'
+        'web_url': '/revision/',
+        'has_settings': True,
+        'settings_component': 'RevisionSettings'
+    },
+    'settings_config': {
+        'component_name': 'RevisionSettings',
+        'display_name': 'Configuration Révision',
+        'description': 'Paramètres spécifiques à Révision à développer...',
+        'icon': 'bi-gear-fill',
+        'categories': [
+            {
+                'name': 'learning',
+                'label': 'Apprentissage',
+                'description': 'Paramètres d\'apprentissage et révision'
+            },
+            {
+                'name': 'sessions', 
+                'label': 'Sessions',
+                'description': 'Configuration des sessions de révision'
+            },
+            {
+                'name': 'notifications',
+                'label': 'Notifications',
+                'description': 'Rappels et notifications'
+            }
+        ]
     }
 }

@@ -12,6 +12,7 @@ from .views import (
     CreateRevisionListViewSet
 )
 from .views.flashcard_views import TagsAPIView
+from .views.user_settings_view import get_user_revision_settings
 app_name = 'revision'
 
 router = DefaultRouter()
@@ -27,9 +28,16 @@ router.register(r'vocabulary-lists', VocabularyListViewSet, basename='vocabulary
 router.register(r'revision-lists', CreateRevisionListViewSet, basename='revision-list')
 
 urlpatterns = [
+    # API principale de révision
     path('', include(router.urls)),
     path('decks/<int:deck_id>/import/', FlashcardImportView.as_view(), name='flashcard-import'),
     path('tags/', TagsAPIView.as_view(), name='tags-api'),
+    
+    # Paramètres de révision
+    path('settings/', include('apps.revision.settings.urls')),
+    
+    # Endpoint pour récupérer les paramètres utilisateur dans l'app
+    path('user-settings/', get_user_revision_settings, name='user-settings'),
 ]
 
 

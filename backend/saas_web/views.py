@@ -115,45 +115,84 @@ class UserSettingsView(View):
         from django.utils import timezone
         from datetime import timedelta
         
-        # Récupérer les paramètres d'applications utilisateur
+        # Récupérer les paramètres d'applications utilisateur via le nouveau système
         user_apps = []
+        app_recommendations = []
+        
         try:
+            from core.app_registry import get_app_registry
+            from core.app_synergies import get_synergy_manager
             from app_manager.models import UserAppSettings, App
+            
+            # Utiliser le registre optimisé
+            registry = get_app_registry()
+            synergy_manager = get_synergy_manager()
             
             # Créer ou récupérer les paramètres utilisateur
             user_app_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
             
             # Si l'utilisateur n'a pas d'apps activées, activer quelques apps par défaut
             if created or user_app_settings.enabled_apps.count() == 0:
-                # Récupérer quelques apps disponibles pour les activer par défaut
                 default_apps = App.objects.filter(is_published=True, is_featured=True)[:3]
                 if default_apps.exists():
                     user_app_settings.enabled_apps.set(default_apps)
             
+            # Récupérer toutes les apps via le registre optimisé
+            all_registered_apps = registry.discover_all_apps()
+            enabled_app_codes = list(user_app_settings.enabled_apps.values_list('code', flat=True))
+            
             # Mapper les icônes
             icon_mapping = {
-                'Book': 'bi-book',
-                'Cards': 'bi-collection',
-                'MessageSquare': 'bi-chat-dots',
-                'Brain': 'bi-lightbulb',
-                'App': 'bi-app-indicator',
-                'Zap': 'bi-lightning-fill',
-                'RotateCcw': 'bi-arrow-clockwise',
-                'Users': 'bi-people',
-                'Settings': 'bi-gear',
-                'FileText': 'bi-file-text',
-                'Calendar': 'bi-calendar',
-                'BarChart': 'bi-bar-chart',
+                'Book': 'bi-book', 'Cards': 'bi-collection', 'MessageSquare': 'bi-chat-dots',
+                'Brain': 'bi-lightbulb', 'App': 'bi-app-indicator', 'Zap': 'bi-lightning-fill',
+                'RotateCcw': 'bi-arrow-clockwise', 'Users': 'bi-people', 'Settings': 'bi-gear',
+                'FileText': 'bi-file-text', 'Calendar': 'bi-calendar', 'BarChart': 'bi-bar-chart',
             }
             
-            # Applications installées par l'utilisateur
+            # Applications installées par l'utilisateur avec informations enrichies
             for app in user_app_settings.enabled_apps.all():
-                user_apps.append({
+                app_code = app.code
+                registry_info = all_registered_apps.get(app_code, {})
+                
+                app_data = {
                     'display_name': app.display_name,
                     'route_path': app.route_path,
                     'icon_class': icon_mapping.get(app.icon_name, 'bi-app'),
                     'last_used': timezone.now() - timedelta(hours=2),  # Simulé
-                })
+                    'code': app_code,
+                    'category': registry_info.get('category', 'Education'),
+                    'version': registry_info.get('version', '1.0.0'),
+                    'capabilities': registry_info.get('capabilities', []),
+                }
+                
+                # Informations de paramètres enrichies
+                if registry_info.get('has_settings'):
+                    app_data['has_settings'] = True
+                    app_data['settings_config'] = registry_info.get('settings_config', {})
+                else:
+                    app_data['has_settings'] = False
+                
+                user_apps.append(app_data)
+            
+            # Générer des recommandations d'apps basées sur les synergies
+            try:
+                recommendations = synergy_manager.get_recommended_apps(enabled_app_codes, limit=3)
+                for rec in recommendations:
+                    rec_app_code = rec['app']
+                    rec_app_info = all_registered_apps.get(rec_app_code, {})
+                    
+                    if rec_app_info:
+                        app_recommendations.append({
+                            'code': rec_app_code,
+                            'name': rec_app_info.get('name', rec_app_code.title()),
+                            'category': rec_app_info.get('category', 'Education'),
+                            'strength': rec['total_strength'],
+                            'reasons': list(rec['reasons']),
+                            'icon_class': 'bi-plus-circle',
+                        })
+            except Exception as e:
+                logger.warning(f"Error generating app recommendations: {e}")
+                app_recommendations = []
                 
         except Exception as e:
             # En cas d'erreur, créer quelques apps d'exemple pour les paramètres
@@ -215,6 +254,7 @@ class UserSettingsView(View):
             'title': _('Paramètres - Open Linguify'),
             'user': request.user,
             'user_apps': user_apps,
+            'app_recommendations': app_recommendations,
             'voice_preferences': voice_preferences,
         }
         return render(request, 'saas_web/settings/settings.html', context)
@@ -422,6 +462,47 @@ class UserSettingsView(View):
         except Exception as e:
             logger.exception(f"Unexpected error during profile picture upload for user {user.username}: {str(e)}")
             messages.error(request, f"Erreur lors de l'upload de la photo de profil: {str(e)}")
+    
+    def _get_app_settings_config(self, app):
+        """
+        Récupère la configuration des paramètres d'une app en utilisant son manifest
+        """
+        try:
+            # Convertir le code app vers le module Django
+            django_app_name = f"apps.{app.code}"
+            
+            # Importer dynamiquement le module de l'app
+            from django.utils.module_loading import import_string
+            
+            # Essayer d'importer le manifest
+            try:
+                manifest_module = import_string(f"{django_app_name}.__manifest__")
+                manifest = getattr(manifest_module, '__manifest__', {})
+                
+                # Vérifier si l'app a des paramètres
+                if manifest.get('technical_info', {}).get('has_settings'):
+                    settings_config = manifest.get('settings_config', {})
+                    logger.debug(f"Found settings config for app {app.code}: {settings_config}")
+                    return settings_config
+                    
+            except (ImportError, AttributeError):
+                # Pas de manifest ou pas de paramètres
+                pass
+                
+            # Fallback: essayer d'importer directement le module settings
+            try:
+                settings_module = import_string(f"{django_app_name}.settings")
+                if hasattr(settings_module, 'get_settings_config'):
+                    config = settings_module.get_settings_config()
+                    logger.debug(f"Found settings config via settings module for app {app.code}")
+                    return config
+            except (ImportError, AttributeError):
+                pass
+                
+        except Exception as e:
+            logger.warning(f"Error getting settings config for app {app.code}: {e}")
+            
+        return None
 
 
 @method_decorator(login_required, name='dispatch')

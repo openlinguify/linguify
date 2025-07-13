@@ -39,7 +39,7 @@
         
         .settings-sidebar {
             width: 230px;
-            background: #875a7b;
+            background: #0077ff;
             color: white;
             padding: 0;
             overflow-y: auto;
@@ -1217,34 +1217,40 @@
             <!-- App Settings Tabs -->
             {% for app in user_apps %}
             <div id="app-{{ app.display_name|slugify }}" class="tab-content">
-                <div class="content-section">
-                    <div class="section-header">
-                        <div class="app-icon" style="margin-right: 8px;">
-                            <i class="bi {{ app.icon_class }}"></i>
+                {% if app.display_name == "Révision" %}
+                    <!-- Template spécialisé pour Révision -->
+                    {% include 'saas_web/settings/apps/revision_settings.html' %}
+                {% else %}
+                    <!-- Template générique pour les autres apps -->
+                    <div class="content-section">
+                        <div class="section-header">
+                            <div class="app-icon" style="margin-right: 8px;">
+                                <i class="bi {{ app.icon_class }}"></i>
+                            </div>
+                            Configuration {{ app.display_name }}
                         </div>
-                        Configuration {{ app.display_name }}
-                    </div>
-                    <div class="section-content">
-                        <div class="alert-info">
-                            <i class="bi bi-info-circle" style="margin-right: 8px;"></i>
-                            Paramètres spécifiques à {{ app.display_name }} à développer...
-                        </div>
-                        
-                        <!-- Example app settings structure -->
-                        <div style="margin-top: 16px;">
-                            <div class="form-group">
-                                <label class="form-label">Activer {{ app.display_name }}</label>
-                                <input type="checkbox" checked style="margin-right: 8px;">
-                                <span style="font-size: 12px; color: #6c757d;">Module activé</span>
+                        <div class="section-content">
+                            <div class="alert-info">
+                                <i class="bi bi-info-circle" style="margin-right: 8px;"></i>
+                                Paramètres spécifiques à {{ app.display_name }} à développer...
                             </div>
                             
-                            <div class="form-group">
-                                <label class="form-label">Paramètres avancés</label>
-                                <a href="#" class="btn-secondary">Configurer</a>
+                            <!-- Example app settings structure -->
+                            <div style="margin-top: 16px;">
+                                <div class="form-group">
+                                    <label class="form-label">Activer {{ app.display_name }}</label>
+                                    <input type="checkbox" checked style="margin-right: 8px;">
+                                    <span style="font-size: 12px; color: #6c757d;">Module activé</span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Paramètres avancés</label>
+                                    <a href="#" class="btn-secondary">Configurer</a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
@@ -1253,9 +1259,14 @@
 
 <script>
 function showTab(tabName) {
+    console.log('[Settings] Switching to tab:', tabName);
+    
     // Hide all tab contents
     const tabs = document.querySelectorAll('.tab-content');
-    tabs.forEach(tab => tab.classList.remove('active'));
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+        console.log('[Settings] Hiding tab:', tab.id);
+    });
     
     // Remove active class from all sidebar items
     const sidebarItems = document.querySelectorAll('.sidebar-item');
@@ -1265,11 +1276,17 @@ function showTab(tabName) {
     const selectedTab = document.getElementById(tabName);
     if (selectedTab) {
         selectedTab.classList.add('active');
+        console.log('[Settings] Showing tab:', tabName);
+    } else {
+        console.error('[Settings] Tab not found:', tabName);
+        // Liste tous les tabs disponibles
+        console.log('[Settings] Available tabs:', Array.from(tabs).map(t => t.id));
     }
     
     // Add active class to clicked sidebar item
     if (event && event.target) {
-        event.target.classList.add('active');
+        const button = event.target.closest('.sidebar-item');
+        if (button) button.classList.add('active');
     }
     
     // Update breadcrumb and header tabs
@@ -1310,6 +1327,8 @@ function updateHeaderForTab(tabName) {
 }
 
 function showSubTab(subTabName) {
+    console.log('[Settings] Switching to sub-tab:', subTabName);
+    
     // Hide all tab contents
     const tabContents = document.querySelectorAll('.tab-content');
     tabContents.forEach(content => content.classList.remove('active'));
@@ -1326,7 +1345,10 @@ function showSubTab(subTabName) {
     
     // Add active class to clicked tab
     if (event && event.target) {
-        event.target.classList.add('active');
+        const button = event.target.closest('.settings-tab');
+        if (button) {
+            button.classList.add('active');
+        }
     }
 }
 
@@ -1341,7 +1363,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Initialize first tab as active
-    showSubTab('user-profile');
+    const userProfileTab = document.getElementById('user-profile');
+    if (userProfileTab) {
+        userProfileTab.classList.add('active');
+    }
 });
 
 // Account management functions
