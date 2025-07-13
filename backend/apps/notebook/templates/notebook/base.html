@@ -23,10 +23,23 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- CSS personnalisé pour le notebook -->
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'src/css/main.css' %}">
+    
+    <!-- CSS personnalisé pour le notebook (avant app_header pour ne pas écraser) -->
     <link rel="stylesheet" href="{% static 'src/css/notebook.css' %}">
     
+    <!-- CSS du header (en dernier pour avoir la priorité) -->
+    <link rel="stylesheet" href="{% static 'src/css/app_header.css' %}">
+    
     {% block extra_css %}{% endblock %}
+    
+    <style>
+        /* Ajustement minimal pour le header fixe */
+        body {
+            padding-top: 64px; /* Hauteur standard du header */
+        }
+    </style>
 </head>
 <body>
     <div class="notebook-container">

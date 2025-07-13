@@ -23,14 +23,32 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- CSS spécifique à la révision -->
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'src/css/main.css' %}">
+    
+    <!-- CSS spécifique à la révision (avant app_header pour ne pas écraser) -->
     <link rel="stylesheet" href="{% static 'src/css/revision.css' %}">
     
+    <!-- CSS du header (en dernier pour avoir la priorité) -->
+    <link rel="stylesheet" href="{% static 'src/css/app_header.css' %}">
+    
     {% block extra_css %}{% endblock %}
+    
+    <style>
+        /* Ajustement minimal pour le header fixe */
+        body.revision-body {
+            padding-top: 64px; /* Hauteur standard du header */
+        }
+        
+        /* Cacher l'ancienne navigation de révision */
+        .revision-nav {
+            display: none;
+        }
+    </style>
 </head>
-<body>
-    <!-- Include the revision-specific header -->
-    {% include 'components/revision_header.html' %}
+<body class="revision-body">
+    <!-- Include the unified app header -->
+    {% include 'components/app_header.html' %}
     
     <div class="revision-container">
         <!-- App-specific header section (below main header) -->

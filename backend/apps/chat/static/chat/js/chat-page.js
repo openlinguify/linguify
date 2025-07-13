@@ -1,7 +1,7 @@
 /**
  * JavaScript pour la page de chat dédiée
  * Interface complète de messagerie style Discord/Slack
- * Version: 2024-07-13 - WebSockets désactivés
+ * Version: 2024-07-13.4 - Fixed message display and participant names
  */
 
 class ChatPage {
@@ -106,6 +106,12 @@ class ChatPage {
         const container = document.getElementById('conversations-list');
         if (!container) return;
 
+        // Sauvegarder les conversations dans le Map pour référence
+        this.conversations.clear();
+        conversations.forEach(conv => {
+            this.conversations.set(conv.id, conv);
+        });
+
         if (conversations.length === 0) {
             container.innerHTML = `
                 <div class="text-center p-4 text-muted">
@@ -158,6 +164,9 @@ class ChatPage {
             
             this.currentConversation = conversationId;
             
+            // Trouver les infos de la conversation dans la liste
+            const conversationData = this.conversations.get(conversationId);
+            
             // Charger les messages
             const response = await fetch(`/chat/api/conversations/${conversationId}/messages/`, {
                 method: 'GET',
@@ -171,6 +180,7 @@ class ChatPage {
             
             if (data.status === 'success') {
                 this.showConversationArea();
+                this.updateConversationHeader(conversationData);
                 this.displayMessages(data.messages);
                 // WebSocket désactivé temporairement
                 // this.connectToChatWebSocket(conversationId);
@@ -201,14 +211,41 @@ class ChatPage {
         document.getElementById('chat-header').style.display = 'none';
     }
 
+    updateConversationHeader(conversation) {
+        if (!conversation || !conversation.participant) return;
+        
+        const participantName = document.getElementById('current-participant-name');
+        const participantStatus = document.getElementById('current-participant-status');
+        const participantAvatar = document.getElementById('current-participant-avatar');
+        
+        if (participantName) {
+            participantName.textContent = conversation.participant.username;
+        }
+        
+        if (participantAvatar) {
+            participantAvatar.textContent = conversation.participant.username.charAt(0).toUpperCase();
+        }
+        
+        if (participantStatus) {
+            participantStatus.textContent = conversation.participant.is_online ? 'En ligne' : 'Hors ligne';
+            participantStatus.style.color = conversation.participant.is_online ? '#28a745' : '#6c757d';
+        }
+    }
+
     displayMessages(messages) {
         const container = document.getElementById('messages-area');
         if (!container) return;
 
+        console.log('[ChatPage] Displaying messages:', messages);
+
         container.innerHTML = messages.map(msg => {
-            const isOwn = msg.is_own_message;
+            console.log('[ChatPage] Message:', msg.content, 'is_own_message:', msg.is_own_message);
+            const isOwn = msg.is_own_message === true;
+            const messageClass = isOwn ? 'own' : 'other';
+            console.log('[ChatPage] Message class:', messageClass);
+            
             return `
-                <div class="message ${isOwn ? 'own' : 'other'}">
+                <div class="message ${messageClass}">
                     <div class="message-bubble">
                         <div class="message-content">${this.escapeHtml(msg.content)}</div>
                         <div class="message-time">${this.formatTime(msg.timestamp)}</div>
@@ -217,8 +254,10 @@ class ChatPage {
             `;
         }).join('');
 
-        // Scroll vers le bas
-        container.scrollTop = container.scrollHeight;
+        // Scroll vers le bas avec un petit délai pour s'assurer que le DOM est mis à jour
+        setTimeout(() => {
+            container.scrollTop = container.scrollHeight;
+        }, 10);
     }
 
     async sendMessage() {
@@ -273,7 +312,8 @@ class ChatPage {
         if (!container) return;
 
         const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
+        const messageClass = isOwn ? 'own' : 'other';
+        messageDiv.className = `message ${messageClass}`;
         messageDiv.innerHTML = `
             <div class="message-bubble">
                 <div class="message-content">${this.escapeHtml(message)}</div>
@@ -282,7 +322,10 @@ class ChatPage {
         `;
 
         container.appendChild(messageDiv);
-        container.scrollTop = container.scrollHeight;
+        // Scroll vers le bas avec un petit délai
+        setTimeout(() => {
+            container.scrollTop = container.scrollHeight;
+        }, 10);
     }
 
     connectWebSockets() {

@@ -1,18 +1,9 @@
+{% extends 'saas_web/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page_title }} - Linguify</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
-    
-    <!-- Meta tags -->
-    <meta name="description" content="Interface de révision pour l'apprentissage des langues avec Linguify">
-    <meta name="author" content="Linguify">
-    
+
+{% block title %}{{ page_title }} - Linguify{% endblock %}
+
+{% block extra_head %}
     <!-- CSS spécifique à la révision -->
     <link rel="stylesheet" href="{% static 'src/css/revision.css' %}">
     
@@ -20,45 +11,34 @@
     <script src="https://cdn.jsdelivr.net/npm/owl-framework@1.7.8/dist/owl.js"></script>
     
     {% block extra_css %}{% endblock %}
-</head>
-<body class="revision-body">
-    <!-- Navigation -->
-    <nav class="revision-nav">
-        <div class="nav-content">
-            <a href="{% url 'saas_web:dashboard' %}" class="nav-brand">
-                <img src="{% static 'images/favicon.svg' %}" alt="Linguify" class="nav-logo">
-                <span>Linguify</span>
-            </a>
-            
-            <div class="nav-links">
-                <a href="{% url 'revision_web:main' %}" 
-                   class="nav-link {% if app_name == 'revision' and not study_mode %}active{% endif %}">
-                    📚 Révision
-                </a>
-                
-                <a href="{% url 'revision_web:explore' %}" 
-                   class="nav-link {% if view_type == 'explore' %}active{% endif %}">
-                    🌐 Explorer
-                </a>
-                
-                {% if user.is_authenticated %}
-                    <div class="nav-user">
-                        <span>👤 {{ user.username }}</span>
-                        <a href="{% url 'auth:logout' %}" class="nav-link-logout">Déconnexion</a>
-                    </div>
-                {% else %}
-                    <a href="{% url 'auth:login' %}" class="nav-link">Connexion</a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
+{% endblock %}
 
-    <!-- Contenu principal -->
-    <main class="revision-main">
-        {% block content %}{% endblock %}
-    </main>
+{% block app_navigation %}
+    <!-- Navigation spécifique à l'app de révision -->
+    <div class="d-none d-lg-flex align-items-center gap-2">
+        <a href="{% url 'revision_web:main' %}" 
+           class="btn btn-outline-secondary btn-sm header-btn {% if app_name == 'revision' and not study_mode %}active{% endif %}">
+            <i class="bi bi-book me-1"></i>
+            <span class="d-none d-xl-inline">Révision</span>
+        </a>
+        
+        <a href="{% url 'revision_web:explore' %}" 
+           class="btn btn-outline-secondary btn-sm header-btn {% if view_type == 'explore' %}active{% endif %}">
+            <i class="bi bi-globe me-1"></i>
+            <span class="d-none d-xl-inline">Explorer</span>
+        </a>
+    </div>
+{% endblock %}
 
-    <!-- Scripts globaux -->
+{% block body_class %}revision-body{% endblock %}
+
+{% block content %}
+    <!-- Contenu principal de l'app de révision -->
+    {% block revision_content %}{% endblock %}
+{% endblock %}
+
+{% block extra_scripts %}
+    <!-- Scripts globaux pour la révision -->
     <script>
         // Configuration globale pour l'application
         window.DEBUG = {{ debug|yesno:"true,false" }};
@@ -181,5 +161,4 @@
     </script>
     
     {% block extra_js %}{% endblock %}
-</body>
-</html>
+{% endblock %}
