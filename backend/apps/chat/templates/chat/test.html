@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Chat - Linguify</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'chat/css/messenger.css' %}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Test du Chat Messenger</h1>
+        <p class="lead">Page de test pour vérifier le fonctionnement du chat</p>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Informations</h3>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <strong>Utilisateur :</strong> {{ user.username }} (ID: {{ user.id }})
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Chat activé :</strong> 
+                        <span id="chat-status" class="badge bg-warning">Vérification...</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Bouton visible :</strong> 
+                        <span id="button-status" class="badge bg-warning">Vérification...</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="col-md-6">
+                <h3>Actions de test</h3>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" onclick="testChat()">
+                        <i class="bi bi-chat"></i> Tester le chat
+                    </button>
+                    <button class="btn btn-info" onclick="showConsole()">
+                        <i class="bi bi-terminal"></i> Afficher les logs
+                    </button>
+                    <button class="btn btn-success" onclick="checkAPIs()">
+                        <i class="bi bi-cloud"></i> Tester les APIs
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h3>Console de debug</h3>
+            <div id="debug-console" class="bg-dark text-light p-3" style="height: 300px; overflow-y: auto; font-family: monospace;">
+                Console de debug - ouvrez la console développeur pour plus de détails
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Widget -->
+    {% if user.is_authenticated %}
+        {% include 'chat/messenger_widget.html' %}
+    {% endif %}
+
+    <script>
+        // Console de debug personnalisée
+        const debugConsole = document.getElementById('debug-console');
+        
+        function log(message) {
+            const now = new Date().toLocaleTimeString();
+            debugConsole.innerHTML += `[${now}] ${message}\n`;
+            debugConsole.scrollTop = debugConsole.scrollHeight;
+            console.log(message);
+        }
+        
+        function testChat() {
+            log('=== TEST DU CHAT ===');
+            
+            // Vérifier les variables globales
+            log(`currentUserId: ${window.currentUserId}`);
+            log(`currentUsername: ${window.currentUsername}`);
+            log(`csrfToken: ${window.csrfToken ? 'Présent' : 'Manquant'}`);
+            
+            // Vérifier l'objet chat
+            if (window.messengerChat) {
+                log('✅ window.messengerChat trouvé');
+                log(`Type: ${typeof window.messengerChat}`);
+                log(`Initialisé: ${window.messengerChat.isInitialized}`);
+            } else {
+                log('❌ window.messengerChat MANQUANT');
+            }
+            
+            // Vérifier les éléments DOM
+            const chatElement = document.getElementById('messenger-chat');
+            const buttonElement = document.getElementById('chat-toggle-btn');
+            
+            log(`Element messenger-chat: ${chatElement ? 'Trouvé' : 'MANQUANT'}`);
+            log(`Element chat-toggle-btn: ${buttonElement ? 'Trouvé' : 'MANQUANT'}`);
+            
+            if (chatElement) {
+                log(`Chat display: ${getComputedStyle(chatElement).display}`);
+            }
+            
+            // Essayer d'ouvrir le chat
+            if (window.messengerChat) {
+                log('Tentative d\'ouverture du chat...');
+                try {
+                    window.messengerChat.show();
+                    log('✅ Chat ouvert avec succès');
+                } catch (e) {
+                    log(`❌ Erreur ouverture chat: ${e.message}`);
+                }
+            }
+        }
+        
+        function showConsole() {
+            log('=== CONSOLE DÉVELOPPEUR ===');
+            log('Ouvrez la console développeur (F12) pour voir tous les logs');
+            log('Recherchez les messages [MessengerChat] et [Chat]');
+        }
+        
+        async function checkAPIs() {
+            log('=== TEST DES APIS ===');
+            
+            try {
+                // Test API conversations
+                const response = await fetch('/chat/api/conversations/');
+                log(`API conversations: ${response.status} ${response.statusText}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`Conversations trouvées: ${data.conversations ? data.conversations.length : 0}`);
+                } else {
+                    log(`Erreur: ${await response.text()}`);
+                }
+            } catch (e) {
+                log(`❌ Erreur API: ${e.message}`);
+            }
+        }
+        
+        // Vérifications automatiques au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Page chargée');
+            
+            setTimeout(() => {
+                const chatStatus = document.getElementById('chat-status');
+                const buttonStatus = document.getElementById('button-status');
+                
+                if (window.messengerChat) {
+                    chatStatus.textContent = 'Activé';
+                    chatStatus.className = 'badge bg-success';
+                } else {
+                    chatStatus.textContent = 'Non activé';
+                    chatStatus.className = 'badge bg-danger';
+                }
+                
+                const button = document.getElementById('chat-toggle-btn');
+                if (button) {
+                    buttonStatus.textContent = 'Visible';
+                    buttonStatus.className = 'badge bg-success';
+                } else {
+                    buttonStatus.textContent = 'Non visible';
+                    buttonStatus.className = 'badge bg-danger';
+                }
+                
+                log('Vérifications automatiques terminées');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -18,8 +18,7 @@ def notify_receiver(sender, instance, created, **kwargs):
     if created:
         Notification.objects.create(
             recipient=instance.receiver,
-            content=f"New message from {instance.sender.user.username}",
-            link=f"/chat/{instance.conversation.id}/"
+            content=f"New message from {instance.sender.user.username}: {instance.message[:50]}{'...' if len(instance.message) > 50 else ''}"
         )
 
 

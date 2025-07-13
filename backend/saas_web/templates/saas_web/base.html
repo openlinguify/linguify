@@ -193,5 +193,74 @@
     </script>
     
     {% block extra_js %}{% endblock %}
+    
+    <!-- Bouton chat flottant global (sauf sur la page de chat) -->
+    {% if user.is_authenticated and request.resolver_match.url_name != 'chat_home' %}
+        <style>
+            .global-chat-btn {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 1040;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                font-size: 24px;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+            }
+
+            .global-chat-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+                color: white;
+            }
+            
+            .global-chat-btn .chat-badge {
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                background: #ff4757;
+                color: white;
+                border-radius: 50%;
+                min-width: 20px;
+                height: 20px;
+                font-size: 12px;
+                font-weight: bold;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                border: 2px solid white;
+            }
+            
+            .global-chat-btn .chat-badge.visible {
+                display: flex;
+            }
+
+            @media (max-width: 768px) {
+                .global-chat-btn {
+                    width: 50px;
+                    height: 50px;
+                    bottom: 15px;
+                    right: 15px;
+                    font-size: 20px;
+                }
+            }
+        </style>
+        
+        <button class="global-chat-btn" id="global-chat-toggle" title="Ouvrir le chat">
+            <i class="bi bi-chat-dots-fill"></i>
+            <span class="chat-badge" id="global-chat-badge">0</span>
+        </button>
+        
+        <!-- Widget chat popup -->
+        {% include 'chat/messenger_widget.html' %}
+    {% endif %}
 </body>
 </html>

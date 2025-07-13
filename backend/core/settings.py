@@ -81,7 +81,7 @@ INSTALLED_APPS = [
 
     # Project django_apps
     'apps.authentication',
-    # 'apps.chat',
+    'apps.chat',
     # 'apps.coaching',
     'apps.community',
     'apps.course',

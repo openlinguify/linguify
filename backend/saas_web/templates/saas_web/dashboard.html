@@ -307,10 +307,20 @@
         {% endif %}
 
     </div>
+
+    <!-- Chat géré par le bouton global -->
 {% endblock %}
 
 {% block extra_js %}
 <script>
+        // Variables globales pour le chat (DOIVENT être définies en premier)
+        {% if user.is_authenticated %}
+        window.currentUserId = {{ user.id|default:'null' }};
+        window.currentUsername = '{{ user.username|default:'' }}';
+        window.csrfToken = '{{ csrf_token }}';
+        console.log('[Dashboard] Variables chat définies - userId:', window.currentUserId, 'username:', window.currentUsername);
+        {% endif %}
+        
         // Apply app icon gradients from data attributes
         document.addEventListener('DOMContentLoaded', function() {
             const appIcons = document.querySelectorAll('.app-icon[data-gradient], .app-icon-simple[data-gradient]');

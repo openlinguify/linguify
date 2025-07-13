@@ -93,7 +93,7 @@ urlpatterns = [
     path('api/v1/app-manager/', include('app_manager.urls', namespace='app_manager')),
     # path('api/v1/flashcard/', include('flashcard.urls', namespace='flashcard')),
     # path('api/v1/task/', include('task.urls', namespace='task')),
-    # path('api/v1/chat/', include('chat.urls', namespace='chat')),
+    path('chat/', include('apps.chat.urls', namespace='chat')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),

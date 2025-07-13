@@ -1,0 +1,234 @@
+{% load static %}
+
+<!-- Chat Messenger Widget Template -->
+<!-- À inclure dans les pages où le chat doit apparaître -->
+
+<!-- Chat Messenger Style Facebook -->
+<div id="messenger-chat" class="messenger-chat" style="display: none;">
+    <!-- En-tête du chat -->
+    <div class="messenger-header" id="messenger-header">
+        <div class="messenger-title">
+            <i class="bi bi-chat-dots-fill me-2"></i>
+            <span>Chat</span>
+            <span class="unread-badge" id="total-unread">0</span>
+        </div>
+        <div class="messenger-controls">
+            <button class="btn-minimize" id="messenger-minimize">
+                <i class="bi bi-dash-lg"></i>
+            </button>
+            <button class="btn-close-chat" id="messenger-close">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Corps du chat -->
+    <div class="messenger-body" id="messenger-body">
+        <!-- Liste des conversations -->
+        <div class="conversations-list" id="conversations-list">
+            <div class="search-bar">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Rechercher des conversations..." id="search-conversations">
+                </div>
+            </div>
+            
+            <div class="conversations-container" id="conversations-container">
+                <!-- Conversations chargées dynamiquement -->
+                <div class="loading-conversations">
+                    <div class="text-center p-3">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                        <div>Chargement...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-actions">
+                <button class="btn btn-primary btn-sm w-100" id="new-conversation-btn">
+                    <i class="bi bi-plus-circle me-1"></i>
+                    Nouvelle conversation
+                </button>
+            </div>
+        </div>
+
+        <!-- Zone de conversation active -->
+        <div class="active-conversation" id="active-conversation" style="display: none;">
+            <!-- En-tête de la conversation -->
+            <div class="conversation-header">
+                <button class="btn-back" id="conversation-back">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <div class="participant-info">
+                    <div class="participant-avatar avatar-circle" id="participant-avatar">?</div>
+                    <div class="participant-details">
+                        <div class="participant-name" id="participant-name">Nom</div>
+                        <div class="participant-status" id="participant-status">En ligne</div>
+                    </div>
+                </div>
+                <div class="conversation-actions">
+                    <button class="btn-conv-action" title="Appel vocal">
+                        <i class="bi bi-telephone"></i>
+                    </button>
+                    <button class="btn-conv-action" title="Appel vidéo">
+                        <i class="bi bi-camera-video"></i>
+                    </button>
+                    <button class="btn-conv-action" title="Plus d'options">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="messages-container" id="messages-container">
+                <!-- Messages chargés dynamiquement -->
+            </div>
+
+            <!-- Indicateur de frappe -->
+            <div class="typing-indicator" id="typing-indicator" style="display: none;">
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <span class="typing-text">quelqu'un écrit...</span>
+            </div>
+
+            <!-- Zone de saisie -->
+            <div class="message-input-area" onclick="document.getElementById('message-input').focus()">
+                <div class="input-group">
+                    <button class="btn btn-outline-secondary" type="button" id="attach-file">
+                        <i class="bi bi-paperclip"></i>
+                    </button>
+                    <input type="text" class="form-control" placeholder="💭 Écrivez votre message..." id="message-input" autocomplete="off">
+                    <button class="btn btn-outline-secondary" type="button" id="emoji-picker">
+                        <i class="bi bi-emoji-smile"></i>
+                    </button>
+                    <button class="btn btn-primary" type="button" id="send-message">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Toggle Button -->
+<button class="chat-toggle-btn" id="chat-toggle-btn" title="Ouvrir le chat">
+    <i class="bi bi-chat-dots-fill"></i>
+    <span class="chat-badge" id="chat-toggle-badge">0</span>
+</button>
+
+<!-- Chat Styles -->
+<link rel="stylesheet" href="{% static 'chat/css/messenger.css' %}">
+
+<!-- Chat JavaScript -->
+<script src="{% static 'chat/js/messenger-chat.js' %}"></script>
+
+<script>
+// Configuration du chat pour cette page
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('[Widget] Variables disponibles - userId:', window.currentUserId, 'username:', window.currentUsername);
+    
+    // Gestionnaire pour les boutons de chat
+    const chatToggleBtn = document.getElementById('chat-toggle-btn');
+    const globalChatToggle = document.getElementById('global-chat-toggle');
+    
+    // Gestionnaire pour le bouton flottant du widget (si présent)
+    if (chatToggleBtn) {
+        chatToggleBtn.addEventListener('click', function() {
+            toggleChat();
+        });
+    }
+    
+    // Gestionnaire pour le bouton global (toujours présent)
+    if (globalChatToggle) {
+        globalChatToggle.addEventListener('click', function() {
+            toggleChat();
+        });
+    }
+    
+    // Gestionnaire pour le bouton du header
+    const headerChatBtn = document.getElementById('header-chat-btn');
+    if (headerChatBtn) {
+        headerChatBtn.addEventListener('click', function() {
+            toggleChat();
+        });
+    }
+    
+    function toggleChat() {
+        console.log('[Chat] Bouton cliqué');
+        
+        if (window.messengerChat) {
+            console.log('[Chat] MessengerChat trouvé');
+            const chatElement = document.getElementById('messenger-chat');
+            
+            if (chatElement) {
+                // Vérifier si le chat est visible (display !== 'none')
+                const isVisible = chatElement.style.display !== 'none' && 
+                                 getComputedStyle(chatElement).display !== 'none';
+                
+                console.log('[Chat] Chat visible:', isVisible);
+                
+                if (!isVisible) {
+                    console.log('[Chat] Affichage du chat');
+                    window.messengerChat.show();
+                } else {
+                    console.log('[Chat] Basculement minimiser/maximiser');
+                    window.messengerChat.toggleMinimize();
+                }
+            } else {
+                console.error('[Chat] Élément messenger-chat non trouvé');
+            }
+        } else {
+            console.error('[Chat] window.messengerChat non trouvé');
+        }
+    }
+    
+    // Synchroniser les badges de notifications
+    function updateChatBadges() {
+        const messengerBadge = document.getElementById('total-unread');
+        const toggleBadge = document.getElementById('chat-toggle-badge');
+        const headerBadge = document.getElementById('header-chat-badge');
+        
+        if (messengerBadge && messengerBadge.classList.contains('visible')) {
+            const count = messengerBadge.textContent;
+            
+            // Badge bouton flottant
+            if (toggleBadge) {
+                toggleBadge.textContent = count;
+                toggleBadge.classList.add('visible');
+            }
+            
+            // Badge header
+            if (headerBadge) {
+                headerBadge.textContent = count;
+                headerBadge.style.display = 'inline-block';
+            }
+        } else {
+            // Cacher tous les badges
+            if (toggleBadge) {
+                toggleBadge.classList.remove('visible');
+            }
+            if (headerBadge) {
+                headerBadge.style.display = 'none';
+            }
+        }
+    }
+    
+    // Observer les changements du badge messenger
+    const targetNode = document.getElementById('total-unread');
+    if (targetNode) {
+        const observer = new MutationObserver(updateChatBadges);
+        observer.observe(targetNode, { 
+            attributes: true, 
+            childList: true, 
+            subtree: true 
+        });
+    }
+    
+    // Vérifier périodiquement les badges
+    setInterval(updateChatBadges, 2000);
+});
+</script>
