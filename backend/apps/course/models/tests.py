@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class TestRecap(models.Model):
     """Test récapitulatif d'une leçon."""
     
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='test_recaps')
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='test_recaps', null=True, blank=True)
     title_en = models.CharField(max_length=200, blank=False, null=False)
     title_fr = models.CharField(max_length=200, blank=False, null=False)
     title_es = models.CharField(max_length=200, blank=False, null=False)
@@ -42,8 +42,8 @@ class TestRecap(models.Model):
         help_text="Time limit in minutes"
     )
     is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         app_label = 'course'

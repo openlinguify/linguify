@@ -9,6 +9,7 @@ Contient Unit, Lesson et ContentLesson.
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from .mixins import MultilingualMixin
 
 # Type activity choices
@@ -312,7 +313,7 @@ class Lesson(models.Model):
     lesson_type = models.CharField(max_length=20, choices=LessonType.choices, default=LessonType.VOCABULARY)
     estimated_duration = models.PositiveIntegerField(default=10, help_text="Estimated duration in minutes")
     order = models.PositiveIntegerField(default=1)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

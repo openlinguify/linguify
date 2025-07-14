@@ -78,6 +78,18 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         ]
 
 
+    def validate_username(self, value):
+        """
+        Validate username format and uniqueness.
+        """
+        from .validators import validate_username_complete
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        
+        try:
+            return validate_username_complete(value)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(str(e))
+
     def validate(self, attrs):
         """
         Validate the password and target language fields.
@@ -200,7 +212,7 @@ class TermsAcceptanceSerializer(serializers.Serializer):
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'bio',
+        fields = ['username', 'first_name', 'last_name', 'phone_number', 'bio',
                  'birthday', 'native_language', 'target_language',
                  'language_level', 'objectives', 'gender']
         
@@ -220,6 +232,36 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         instance.save()
         
         return instance
+    def validate_username(self, value):
+        """
+        Validate username for case-insensitive uniqueness
+        """
+        if value:
+            # Check for case-insensitive duplicates, excluding current user
+            existing_users = User.objects.filter(username__iexact=value)
+            if self.instance:
+                existing_users = existing_users.exclude(pk=self.instance.pk)
+            
+            if existing_users.exists():
+                raise serializers.ValidationError(
+                    f'Username "{value}" is already taken.'
+                )
+        return value
+    
+    def validate_phone_number(self, value):
+        """
+        Validate phone number format
+        """
+        if value:
+            import re
+            # Allow + followed by digits, spaces, dashes, parentheses
+            pattern = r'^\+\d{1,4}[\s\-\(\)]*[\d\s\-\(\)]{8,}$'
+            if not re.match(pattern, value.strip()):
+                raise serializers.ValidationError(
+                    'Please enter a valid phone number with country code (e.g., +32 123 456 789)'
+                )
+        return value
+    
     def validate(self, data):
         """
         Custom validation

@@ -269,10 +269,12 @@ class RevisionSessionConfig(models.Model):
     
     # Configuration spécifique
     duration_minutes = models.PositiveIntegerField(
+        default=20,
         validators=[MinValueValidator(5), MaxValueValidator(120)]
     )
     
     target_cards = models.PositiveIntegerField(
+        default=20,
         validators=[MinValueValidator(5), MaxValueValidator(200)]
     )
     

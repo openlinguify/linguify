@@ -9,7 +9,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+import re
 from django.db.models import QuerySet, Q
+from django.db.models.functions import Lower
 from django.http import Http404
 from django.utils import timezone
 from django.conf import settings
@@ -91,6 +93,12 @@ def validate_profile_picture(file):
         file.seek(0)
     except Exception as e:
         raise ValidationError(f"Invalid image file: {str(e)}")
+
+
+# Import centralized validator
+from .validators import validate_username_format as validate_username
+
+
 class UserManager(BaseUserManager):
     def get_object_by_public_id(self, public_id: str) -> Any:
         """
@@ -117,6 +125,10 @@ class UserManager(BaseUserManager):
             raise TypeError('Users must have an email.')
         if not password:
             raise TypeError('Users must have a password.')
+
+        # Vérifier l'unicité case-insensitive du username
+        if self.filter(username__iexact=username).exists():
+            raise ValidationError(f'Username "{username}" is already taken.')
 
         user = self.model(
             username=username,
@@ -225,13 +237,22 @@ class User(AbstractBaseUser, PermissionsMixin):
     # Explicitly set app_label to solve the Django model registration issue
     class Meta:
         app_label = 'authentication'
+        # Contrainte d'unicité case-insensitive pour les usernames
+        constraints = [
+            models.UniqueConstraint(
+                Lower('username'),
+                name='unique_username_case_insensitive',
+                violation_error_message='This username is already taken.'
+            )
+        ]
     
     id = models.AutoField(primary_key=True)
     public_id = models.UUIDField(db_index=True, default=uuid4, editable=False, unique=True)
-    username = models.CharField(db_index=True, max_length=255, unique=True, blank=False, null=False)
+    username = models.CharField(db_index=True, max_length=255, unique=True, blank=False, null=False, validators=[validate_username])
     first_name = models.CharField(max_length=255, blank=True)
     last_name = models.CharField(max_length=255, blank=True)
     email = models.EmailField(db_index=True, unique=True, blank=False, null=False)
+    phone_number = models.CharField(max_length=20, blank=True, null=True, help_text="Phone number (e.g., +32 123 456 789)")
     birthday = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
     # in order to know if the user is active or not; if the user is not active, he/she can't log in to the platform
@@ -313,7 +334,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def update_profile(self, **kwargs):
         allowed_fields = {
-            "first_name", "last_name", "bio", "profile_picture", "native_language",
+            "first_name", "last_name", "phone_number", "bio", "profile_picture", "native_language",
             "target_language", "language_level", "objectives", "interface_language",
             "theme", "email_notifications", "push_notifications", "weekday_reminders",
             "weekend_reminders", "reminder_time", "speaking_exercises", "listening_exercises",
@@ -495,8 +516,19 @@ class User(AbstractBaseUser, PermissionsMixin):
         remaining = self.deletion_date - timezone.now()
         return max(0, remaining.days)
     def clean(self, *args, **kwargs):
+        # Validation des langues
         if self.native_language == self.target_language:
             raise ValidationError("Native language and target language cannot be the same.")
+        
+        # Validation case-insensitive du username
+        if self.username:
+            # Exclure l'instance actuelle lors de la mise à jour
+            existing_users = User.objects.filter(username__iexact=self.username)
+            if self.pk:
+                existing_users = existing_users.exclude(pk=self.pk)
+            
+            if existing_users.exists():
+                raise ValidationError(f'Username "{self.username}" is already taken.')
 
     def save(self, *args, **kwargs):
         """

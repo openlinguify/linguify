@@ -6,7 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 import base64
 import io
-import speech_recognition as sr
+try:
+    import speech_recognition as sr
+except ImportError:
+    sr = None
 from .serializers import (
     TextToSpeechSerializer, 
     SpeechToTextSerializer,
@@ -42,6 +45,11 @@ class SpeechToTextView(APIView):
     permission_classes = [IsAuthenticated]
     
     def post(self, request):
+        if sr is None:
+            return Response({
+                'error': 'Speech recognition not available. Please install speech_recognition package.'
+            }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            
         serializer = SpeechToTextSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -237,6 +245,11 @@ class SpeechToTextWithCommandView(APIView):
     
     def post(self, request):
         """Convertit l'audio en texte puis traite comme commande"""
+        if sr is None:
+            return Response({
+                'error': 'Speech recognition not available. Please install speech_recognition package.'
+            }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            
         try:
             # D'abord, faire la reconnaissance vocale
             stt_serializer = SpeechToTextSerializer(data=request.data)

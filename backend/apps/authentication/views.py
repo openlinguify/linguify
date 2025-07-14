@@ -1579,7 +1579,8 @@ class UserProfileView(View):
         
         # Récupérer l'utilisateur dont on veut voir le profil
         if username:
-            profile_user = get_object_or_404(User, username=username)
+            # Recherche case-insensitive pour les usernames
+            profile_user = get_object_or_404(User, username__iexact=username)
         else:
             profile_user = request.user
         

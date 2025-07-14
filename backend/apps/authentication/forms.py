@@ -5,6 +5,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -61,6 +62,16 @@ class CustomUserCreationForm(UserCreationForm):
         required=True,
         widget=forms.EmailInput(attrs={'class': 'form-input'})
     )
+    phone_number = forms.CharField(
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': '+32 123 456 789'
+        }),
+        label="Numéro de téléphone",
+        help_text="Optionnel. Format: +32 123 456 789"
+    )
     first_name = forms.CharField(
         max_length=30, 
         required=True,
@@ -114,7 +125,7 @@ class CustomUserCreationForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'birthday', 'gender', 'password1', 'password2', 'native_language', 'target_language', 'language_level', 'objectives', 'terms')
+        fields = ('username', 'email', 'phone_number', 'first_name', 'last_name', 'birthday', 'gender', 'password1', 'password2', 'native_language', 'target_language', 'language_level', 'objectives', 'terms')
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -122,6 +133,29 @@ class CustomUserCreationForm(UserCreationForm):
         self.fields['username'].widget.attrs.update({'class': 'form-input'})
         self.fields['password1'].widget.attrs.update({'class': 'form-input'})
         self.fields['password2'].widget.attrs.update({'class': 'form-input'})
+    
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if username:
+            from .validators import validate_username_complete
+            try:
+                username = validate_username_complete(username)
+            except ValidationError as e:
+                raise forms.ValidationError(str(e))
+        return username
+    
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get('phone_number')
+        if phone_number:
+            # Basic validation for international phone format
+            import re
+            # Allow + followed by digits, spaces, dashes, parentheses
+            pattern = r'^\+\d{1,4}[\s\-\(\)]*[\d\s\-\(\)]{8,}$'
+            if not re.match(pattern, phone_number.strip()):
+                raise forms.ValidationError(
+                    'Please enter a valid phone number with country code (e.g., +32 123 456 789)'
+                )
+        return phone_number
     
     def clean(self):
         cleaned_data = super().clean()
@@ -141,6 +175,7 @@ class CustomUserCreationForm(UserCreationForm):
             password=self.cleaned_data['password1'],
             first_name=self.cleaned_data['first_name'],
             last_name=self.cleaned_data['last_name'],
+            phone_number=self.cleaned_data.get('phone_number'),
             birthday=self.cleaned_data.get('birthday'),
             gender=self.cleaned_data.get('gender'),
             native_language=self.cleaned_data['native_language'],
@@ -152,7 +187,6 @@ class CustomUserCreationForm(UserCreationForm):
         # Handle terms acceptance
         if self.cleaned_data.get('terms'):
             user.terms_accepted = True
-            from django.utils import timezone
             user.terms_accepted_at = timezone.now()
             user.terms_version = 'v1.0'
             user.save()

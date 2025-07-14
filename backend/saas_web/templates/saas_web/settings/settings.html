@@ -6,480 +6,480 @@
 
 {% block extra_css %}
 <style>
-        body {
-            background: #f4f5f7 !important;
-            font-family: "Lucida Grande", Helvetica, Verdana, Arial, sans-serif !important;
-        }
-        
-        /* Override ALL base.html container styles */
-        .main-content {
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-        
-        .container,
-        .container-fluid {
-            max-width: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-        
-        .content-area {
-            max-width: none !important;
-            width: 100vw !important;
-            height: calc(100vh - 60px) !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            display: flex;
-            background: #f4f5f7;
-            position: absolute;
-            top: 60px;
-            left: 0;
-        }
-        
-        .settings-sidebar {
-            width: 230px;
-            background: #0077ff;
-            color: white;
-            padding: 0;
-            overflow-y: auto;
-            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
-            height: calc(100vh - 60px);
-            flex-shrink: 0;
-        }
-        
-        .settings-main {
-            flex: 1;
-            background: #f4f5f7;
-            padding: 0;
-            overflow-y: auto;
-            height: calc(100vh - 60px);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .main-content-header {
-            background: white;
-            border-bottom: 1px solid #dee2e6;
-            padding: 12px 16px;
-            flex-shrink: 0;
-            z-index: 10;
-        }
-        
-        .settings-tabs {
-            background: white;
-            border-bottom: 1px solid #dee2e6;
-            padding: 0 16px;
-            margin-bottom: 0;
-            flex-shrink: 0;
-        }
-        
-        .main-content-body {
-            padding: 16px;
-            flex: 1;
-            overflow-y: auto;
-        }
-        
-        .breadcrumb-nav {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: #6c757d;
-        }
-        
-        .breadcrumb-nav .active {
-            color: #495057;
-            font-weight: 500;
-        }
-        
-        .sidebar-header {
-            padding: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            background: #7c3b6e;
-        }
-        
-        .sidebar-user {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        .user-info {
-            color: white;
-        }
-        
-        .user-name {
-            font-size: 14px;
-            font-weight: 500;
-            margin: 0;
-        }
-        
-        .user-role {
-            font-size: 12px;
-            opacity: 0.8;
-            margin: 0;
-        }
-        
-        .sidebar-section {
-            margin: 0;
-        }
-        
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-            margin: 8px 0;
-        }
-        
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            padding: 8px 16px;
-            color: rgba(255,255,255,0.9);
-            text-decoration: none;
-            transition: all 0.15s ease;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-            cursor: pointer;
-            font-size: 13px;
-        }
-        
-        .sidebar-item:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            text-decoration: none;
-        }
-        
-        .sidebar-item.active {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border-right: 3px solid #f0ad4e;
-        }
-        
-        .sidebar-item.active:hover {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-        
-        .sidebar-item i {
-            width: 16px;
-            margin-right: 8px;
-            font-size: 14px;
-            text-align: center;
-        }
-        
-        .app-icon {
-            width: 16px;
-            height: 16px;
-            border-radius: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 8px;
-            font-size: 12px;
-            color: white;
-            background: rgba(255,255,255,0.2);
-        }
-        
-        .content-section {
-            background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            margin-bottom: 16px;
-            overflow: hidden;
-        }
-        
-        .section-header {
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-            padding: 12px 16px;
-            color: #495057;
-            font-weight: 500;
-            font-size: 14px;
-        }
-        
-        .section-content {
-            padding: 16px;
-        }
-        
-        .form-group {
-            margin-bottom: 16px;
-        }
-        
-        .form-label {
-            display: block;
-            font-weight: 500;
-            color: #495057;
-            margin-bottom: 4px;
-            font-size: 13px;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 6px 8px;
-            border: 1px solid #ced4da;
-            border-radius: 3px;
-            font-size: 13px;
-            color: #495057;
-            background: white;
-            transition: border-color 0.15s ease;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: #875a7b;
-            box-shadow: 0 0 0 2px rgba(135, 90, 123, 0.2);
-        }
-        
-        .form-control:disabled {
-            background: #f8f9fa;
-            color: #6c757d;
-        }
-        
-        .btn-primary {
-            background: #875a7b;
-            color: white;
-            border: 1px solid #875a7b;
-            padding: 6px 12px;
-            border-radius: 3px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-        
-        .btn-primary:hover {
-            background: #7c3b6e;
-            border-color: #7c3b6e;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-            border: 1px solid #6c757d;
-            padding: 6px 12px;
-            border-radius: 3px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.15s ease;
-        }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-            border-color: #545b62;
-            color: white;
-            text-decoration: none;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .file-upload-area {
-            border: 2px dashed #dee2e6;
-            border-radius: 4px;
-            padding: 24px;
-            text-align: center;
-            background: #f8f9fa;
-            transition: border-color 0.15s ease;
-        }
-        
-        .file-upload-area:hover {
-            border-color: #875a7b;
-        }
-        
-        .help-text {
-            font-size: 12px;
-            color: #6c757d;
-            margin-top: 4px;
-        }
-        
-        .alert-info {
-            background: #d1ecf1;
-            border: 1px solid #bee5eb;
-            color: #0c5460;
-            padding: 12px 16px;
-            border-radius: 4px;
-            font-size: 13px;
-        }
-        
+    body {
+        background: #f4f5f7 !important;
+        font-family: "Lucida Grande", Helvetica, Verdana, Arial, sans-serif !important;
+    }
+
+    /* Override ALL base.html container styles */
+    .main-content {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .container,
+    .container-fluid {
+        max-width: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .content-area {
+        max-width: none !important;
+        width: 100vw !important;
+        height: calc(100vh - 60px) !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: flex;
+        background: #f4f5f7;
+        position: absolute;
+        top: 60px;
+        left: 0;
+    }
+
+    .settings-sidebar {
+        width: 230px;
+        background: #0077ff;
+        color: white;
+        padding: 0;
+        overflow-y: auto;
+        box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+        height: calc(100vh - 60px);
+        flex-shrink: 0;
+    }
+
+    .settings-main {
+        flex: 1;
+        background: #f4f5f7;
+        padding: 0;
+        overflow-y: auto;
+        height: calc(100vh - 60px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-content-header {
+        background: white;
+        border-bottom: 1px solid #dee2e6;
+        padding: 12px 16px;
+        flex-shrink: 0;
+        z-index: 10;
+    }
+
+    .settings-tabs {
+        background: white;
+        border-bottom: 1px solid #dee2e6;
+        padding: 0 16px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+
+    .main-content-body {
+        padding: 16px;
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .breadcrumb-nav {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #6c757d;
+    }
+
+    .breadcrumb-nav .active {
+        color: #495057;
+        font-weight: 500;
+    }
+
+    .sidebar-header {
+        padding: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        background: #7c3b6e;
+    }
+
+    .sidebar-user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .user-info {
+        color: white;
+    }
+
+    .user-name {
+        font-size: 14px;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .user-role {
+        font-size: 12px;
+        opacity: 0.8;
+        margin: 0;
+    }
+
+    .sidebar-section {
+        margin: 0;
+    }
+
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 8px 0;
+    }
+
+    .sidebar-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 16px;
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        transition: all 0.15s ease;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .sidebar-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        text-decoration: none;
+    }
+
+    .sidebar-item.active {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border-right: 3px solid #f0ad4e;
+    }
+
+    .sidebar-item.active:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .sidebar-item i {
+        width: 16px;
+        margin-right: 8px;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .app-icon {
+        width: 16px;
+        height: 16px;
+        border-radius: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 8px;
+        font-size: 12px;
+        color: white;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .content-section {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        margin-bottom: 16px;
+        overflow: hidden;
+    }
+
+    .section-header {
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        padding: 12px 16px;
+        color: #495057;
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    .section-content {
+        padding: 16px;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 4px;
+        font-size: 13px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        font-size: 13px;
+        color: #495057;
+        background: white;
+        transition: border-color 0.15s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #875a7b;
+        box-shadow: 0 0 0 2px rgba(135, 90, 123, 0.2);
+    }
+
+    .form-control:disabled {
+        background: #f8f9fa;
+        color: #6c757d;
+    }
+
+    .btn-primary {
+        background: #875a7b;
+        color: white;
+        border: 1px solid #875a7b;
+        padding: 6px 12px;
+        border-radius: 3px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .btn-primary:hover {
+        background: #7c3b6e;
+        border-color: #7c3b6e;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        border: 1px solid #6c757d;
+        padding: 6px 12px;
+        border-radius: 3px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.15s ease;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        border-color: #545b62;
+        color: white;
+        text-decoration: none;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .file-upload-area {
+        border: 2px dashed #dee2e6;
+        border-radius: 4px;
+        padding: 24px;
+        text-align: center;
+        background: #f8f9fa;
+        transition: border-color 0.15s ease;
+    }
+
+    .file-upload-area:hover {
+        border-color: #875a7b;
+    }
+
+    .help-text {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 4px;
+    }
+
+    .alert-info {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+        padding: 12px 16px;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    @media (max-width: 768px) {
         .two-column {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            grid-template-columns: 1fr;
         }
-        
-        @media (max-width: 768px) {
-            .two-column {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* Form validation styles */
-        .form-control.is-valid {
-            border-color: #198754;
-            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23198754' d='m2.3 6.73.8-.77L4.7 7.6 8 4.33 7.23 3.56 4.7 6.1z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            background-size: 16px 16px;
-        }
-        
-        .form-control.is-invalid {
-            border-color: #dc3545;
-            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23dc3545' d='M1.5 1 6.5 6m0-5L1.5 6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            background-size: 16px 16px;
-        }
-        
-        .form-control.is-pending {
-            border-color: #6c757d;
-            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%236c757d' d='M4 0a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM2 4a2 2 0 1 1 4 0 2 2 0 0 1-4 0z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            background-size: 16px 16px;
-        }
-        
-        .form-feedback {
-            font-size: 12px;
-            margin-top: 4px;
-            transition: all 0.15s ease;
-        }
-        
-        /* Theme preview transitions */
-        body {
-            transition: filter 0.3s ease;
-        }
-        
-        .theme-dark {
-            filter: invert(0.05);
-        }
-        
-        /* Loading spinner for async operations */
-        .spinner-sm {
-            width: 1rem;
-            height: 1rem;
-            border-width: 0.1em;
-        }
-        
-        /* Enhanced button states */
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        .btn-secondary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        /* File upload enhancement */
-        .file-upload-area {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .file-upload-area.dragover {
-            border-color: #875a7b;
-            background: rgba(135, 90, 123, 0.1);
-        }
-        
-        /* Voice settings enhanced sliders */
-        .form-range::-webkit-slider-thumb {
-            background: #875a7b;
-        }
-        
-        .form-range::-moz-range-thumb {
-            background: #875a7b;
-            border: none;
-        }
-        
-        /* Accessibility improvements */
-        .form-label {
-            cursor: pointer;
-        }
-        
-        input[type="checkbox"]:focus,
-        input[type="radio"]:focus {
-            box-shadow: 0 0 0 2px rgba(135, 90, 123, 0.25);
-        }
-        
-        /* Auto-save indicator */
-        .auto-save-indicator {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 9999;
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: opacity 0.3s ease;
-        }
-        
-        .auto-save-indicator.saving {
-            background: #ffc107;
-            color: #000;
-            opacity: 1;
-        }
-        
-        .auto-save-indicator.saved {
-            background: #198754;
-            color: white;
-            opacity: 1;
-        }
-        
-        .auto-save-indicator.hidden {
-            opacity: 0;
-        }
-        
-        
-        .settings-tab {
-            display: inline-block;
-            padding: 12px 16px;
-            color: #6c757d;
-            text-decoration: none;
-            border-bottom: 2px solid transparent;
-            font-size: 13px;
-            font-weight: 500;
-            margin-right: 16px;
-            cursor: pointer;
-            background: none;
-            border-left: none;
-            border-right: none;
-            border-top: none;
-        }
-        
-        .settings-tab:hover {
-            color: #495057;
-            text-decoration: none;
-        }
-        
-        .settings-tab.active {
-            color: #875a7b;
-            border-bottom-color: #875a7b;
-        }
+    }
+
+    /* Form validation styles */
+    .form-control.is-valid {
+        border-color: #198754;
+        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23198754' d='m2.3 6.73.8-.77L4.7 7.6 8 4.33 7.23 3.56 4.7 6.1z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 16px 16px;
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23dc3545' d='M1.5 1 6.5 6m0-5L1.5 6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 16px 16px;
+    }
+
+    .form-control.is-pending {
+        border-color: #6c757d;
+        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%236c757d' d='M4 0a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM2 4a2 2 0 1 1 4 0 2 2 0 0 1-4 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 16px 16px;
+    }
+
+    .form-feedback {
+        font-size: 12px;
+        margin-top: 4px;
+        transition: all 0.15s ease;
+    }
+
+    /* Theme preview transitions */
+    body {
+        transition: filter 0.3s ease;
+    }
+
+    .theme-dark {
+        filter: invert(0.05);
+    }
+
+    /* Loading spinner for async operations */
+    .spinner-sm {
+        width: 1rem;
+        height: 1rem;
+        border-width: 0.1em;
+    }
+
+    /* Enhanced button states */
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .btn-secondary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* File upload enhancement */
+    .file-upload-area {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .file-upload-area.dragover {
+        border-color: #875a7b;
+        background: rgba(135, 90, 123, 0.1);
+    }
+
+    /* Voice settings enhanced sliders */
+    .form-range::-webkit-slider-thumb {
+        background: #875a7b;
+    }
+
+    .form-range::-moz-range-thumb {
+        background: #875a7b;
+        border: none;
+    }
+
+    /* Accessibility improvements */
+    .form-label {
+        cursor: pointer;
+    }
+
+    input[type="checkbox"]:focus,
+    input[type="radio"]:focus {
+        box-shadow: 0 0 0 2px rgba(135, 90, 123, 0.25);
+    }
+
+    /* Auto-save indicator */
+    .auto-save-indicator {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 9999;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: opacity 0.3s ease;
+    }
+
+    .auto-save-indicator.saving {
+        background: #ffc107;
+        color: #000;
+        opacity: 1;
+    }
+
+    .auto-save-indicator.saved {
+        background: #198754;
+        color: white;
+        opacity: 1;
+    }
+
+    .auto-save-indicator.hidden {
+        opacity: 0;
+    }
+
+
+    .settings-tab {
+        display: inline-block;
+        padding: 12px 16px;
+        color: #6c757d;
+        text-decoration: none;
+        border-bottom: 2px solid transparent;
+        font-size: 13px;
+        font-weight: 500;
+        margin-right: 16px;
+        cursor: pointer;
+        background: none;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+    }
+
+    .settings-tab:hover {
+        color: #495057;
+        text-decoration: none;
+    }
+
+    .settings-tab.active {
+        color: #875a7b;
+        border-bottom-color: #875a7b;
+    }
 </style>
 {% endblock %}
 
@@ -490,11 +490,14 @@
         <!-- User Profile Header -->
         <div class="sidebar-header">
             <div class="sidebar-user">
-                <div class="user-avatar" data-initials="{{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}">
+                <div class="user-avatar"
+                    data-initials="{{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}">
                     {% if user.get_profile_picture_url %}
-                        <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" data-original-src="{{ user.get_profile_picture_url }}">
+                    <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil"
+                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"
+                        data-original-src="{{ user.get_profile_picture_url }}">
                     {% else %}
-                        {{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}
+                    {{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}
                     {% endif %}
                 </div>
                 <div class="user-info">
@@ -503,7 +506,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- General Settings -->
         <div class="sidebar-section">
             <ul class="sidebar-menu">
@@ -515,7 +518,7 @@
                 </li>
             </ul>
         </div>
-        
+
         <!-- Apps Settings -->
         <div class="sidebar-section">
             <ul class="sidebar-menu">
@@ -536,7 +539,7 @@
             </ul>
         </div>
     </div>
-    
+
     <!-- Settings Main Content -->
     <div class="settings-main">
         <!-- Main Content Header -->
@@ -547,21 +550,22 @@
                 <span class="active">Paramètres</span>
             </div>
         </div>
-        
+
         <!-- Settings Tabs -->
         <div class="settings-tabs">
             <button class="settings-tab active" onclick="showSubTab('user-profile')">Profil utilisateur</button>
             <button class="settings-tab" onclick="showSubTab('general-settings')">Paramètres généraux</button>
             <button class="settings-tab" onclick="showSubTab('voice-settings')">Assistant vocal</button>
         </div>
-        
+
         <!-- Main Content Body -->
         <div class="main-content-body">
             <!-- User Profile Tab Content -->
             <div id="user-profile" class="tab-content active">
                 <form method="post" enctype="multipart/form-data" action="{% url 'saas_web:settings' %}">
                     {% csrf_token %}
-                    
+                    <input type="hidden" name="setting_type" value="profile">
+
                     <!-- Profile Picture Section -->
                     <div class="content-section">
                         <div class="section-header">
@@ -570,15 +574,20 @@
                         </div>
                         <div class="section-content">
                             <div style="display: flex; align-items: center; gap: 16px;">
-                                <div class="user-avatar" style="width: 80px; height: 80px; font-size: 24px;" data-initials="{{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}">
+                                <div class="user-avatar" style="width: 80px; height: 80px; font-size: 24px;"
+                                    data-initials="{{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}">
                                     {% if user.get_profile_picture_url %}
-                                        <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" data-original-src="{{ user.get_profile_picture_url }}">
+                                    <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil"
+                                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"
+                                        data-original-src="{{ user.get_profile_picture_url }}">
                                     {% else %}
-                                        {{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}
+                                    {{ user.first_name|first|default:user.username|first|upper }}{{
+                                    user.last_name|first|upper }}
                                     {% endif %}
                                 </div>
                                 <div>
-                                    <input type="file" name="profile_picture" accept="image/*" class="form-control" style="margin-bottom: 8px;">
+                                    <input type="file" name="profile_picture" accept="image/*" class="form-control"
+                                        style="margin-bottom: 8px;">
                                     <div class="help-text">Formats acceptés : JPG, PNG, WEBP. Taille max : 5MB</div>
                                 </div>
                             </div>
@@ -595,34 +604,46 @@
                             <div class="two-column">
                                 <div class="form-group">
                                     <label class="form-label">Prénom</label>
-                                    <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" placeholder="Votre prénom">
+                                    <input type="text" name="first_name" class="form-control"
+                                        value="{{ user.first_name }}" placeholder="Votre prénom">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Nom</label>
-                                    <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}" placeholder="Votre nom">
+                                    <input type="text" name="last_name" class="form-control"
+                                        value="{{ user.last_name }}" placeholder="Votre nom">
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label class="form-label">Email</label>
                                 <input type="email" class="form-control" value="{{ user.email }}" disabled>
                                 <div class="help-text">L'email ne peut pas être modifié</div>
                             </div>
-                            
+
+                            <div class="form-group">
+                                <label class="form-label">Numéro de téléphone</label>
+                                <input type="tel" name="phone_number" class="form-control"
+                                    value="{{ user.phone_number|default:'' }}" placeholder="+32 123 456 789">
+                                <div class="help-text">Optionnel. Format: +32 123 456 789</div>
+                            </div>
+
                             <div class="form-group">
                                 <label class="form-label">Nom d'utilisateur</label>
-                                <input type="text" name="username" class="form-control" value="{{ user.username }}" placeholder="Nom d'utilisateur" data-current-username="{{ user.username }}">
+                                <input type="text" name="username" class="form-control" value="{{ user.username }}"
+                                    placeholder="Nom d'utilisateur" data-current-username="{{ user.username }}">
                             </div>
-                            
+
                             <div class="form-group">
                                 <label class="form-label">Biographie</label>
-                                <textarea name="bio" class="form-control" rows="3" placeholder="Parlez-nous de vous...">{{ user.bio|default:'' }}</textarea>
+                                <textarea name="bio" class="form-control" rows="3"
+                                    placeholder="Parlez-nous de vous...">{{ user.bio|default:'' }}</textarea>
                             </div>
-                            
+
                             <div class="two-column">
                                 <div class="form-group">
                                     <label class="form-label">Date de naissance</label>
-                                    <input type="date" name="birthday" class="form-control" value="{{ user.birthday|date:'Y-m-d' }}">
+                                    <input type="date" name="birthday" class="form-control"
+                                        value="{{ user.birthday|date:'Y-m-d' }}">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Genre</label>
@@ -649,74 +670,109 @@
                                     <label class="form-label">Langue native</label>
                                     <select name="native_language" class="form-control">
                                         <option value="">Sélectionner...</option>
-                                        <option value="FR" {% if user.native_language == 'FR' %}selected{% endif %}>Français</option>
-                                        <option value="EN" {% if user.native_language == 'EN' %}selected{% endif %}>Anglais</option>
-                                        <option value="ES" {% if user.native_language == 'ES' %}selected{% endif %}>Espagnol</option>
-                                        <option value="DE" {% if user.native_language == 'DE' %}selected{% endif %}>Allemand</option>
-                                        <option value="IT" {% if user.native_language == 'IT' %}selected{% endif %}>Italien</option>
-                                        <option value="PT" {% if user.native_language == 'PT' %}selected{% endif %}>Portugais</option>
-                                        <option value="NL" {% if user.native_language == 'NL' %}selected{% endif %}>Néerlandais</option>
+                                        <option value="FR" {% if user.native_language == 'FR' %}selected{% endif %}>
+                                            Français</option>
+                                        <option value="EN" {% if user.native_language == 'EN' %}selected{% endif %}>
+                                            Anglais</option>
+                                        <option value="ES" {% if user.native_language == 'ES' %}selected{% endif %}>
+                                            Espagnol</option>
+                                        <option value="DE" {% if user.native_language == 'DE' %}selected{% endif %}>
+                                            Allemand</option>
+                                        <option value="IT" {% if user.native_language == 'IT' %}selected{% endif %}>
+                                            Italien</option>
+                                        <option value="PT" {% if user.native_language == 'PT' %}selected{% endif %}>
+                                            Portugais</option>
+                                        <option value="NL" {% if user.native_language == 'NL' %}selected{% endif %}>
+                                            Néerlandais</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Langue d'interface</label>
                                     <select name="interface_language" class="form-control">
                                         <option value="">Automatique</option>
-                                        <option value="fr" {% if user.interface_language == 'fr' %}selected{% endif %}>Français</option>
-                                        <option value="en" {% if user.interface_language == 'en' %}selected{% endif %}>English</option>
-                                        <option value="es" {% if user.interface_language == 'es' %}selected{% endif %}>Español</option>
-                                        <option value="de" {% if user.interface_language == 'de' %}selected{% endif %}>Deutsch</option>
-                                        <option value="it" {% if user.interface_language == 'it' %}selected{% endif %}>Italiano</option>
-                                        <option value="pt" {% if user.interface_language == 'pt' %}selected{% endif %}>Português</option>
-                                        <option value="nl" {% if user.interface_language == 'nl' %}selected{% endif %}>Nederlands</option>
+                                        <option value="fr" {% if user.interface_language == 'fr' %}selected{% endif %}>
+                                            Français</option>
+                                        <option value="en" {% if user.interface_language == 'en' %}selected{% endif %}>
+                                            English</option>
+                                        <option value="es" {% if user.interface_language == 'es' %}selected{% endif %}>
+                                            Español</option>
+                                        <option value="de" {% if user.interface_language == 'de' %}selected{% endif %}>
+                                            Deutsch</option>
+                                        <option value="it" {% if user.interface_language == 'it' %}selected{% endif %}>
+                                            Italiano</option>
+                                        <option value="pt" {% if user.interface_language == 'pt' %}selected{% endif %}>
+                                            Português</option>
+                                        <option value="nl" {% if user.interface_language == 'nl' %}selected{% endif %}>
+                                            Nederlands</option>
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <div class="two-column">
                                 <div class="form-group">
                                     <label class="form-label">Langue cible</label>
                                     <select name="target_language" class="form-control">
                                         <option value="">Sélectionner...</option>
-                                        <option value="ES" {% if user.target_language == 'ES' %}selected{% endif %}>Espagnol</option>
-                                        <option value="EN" {% if user.target_language == 'EN' %}selected{% endif %}>Anglais</option>
-                                        <option value="FR" {% if user.target_language == 'FR' %}selected{% endif %}>Français</option>
-                                        <option value="DE" {% if user.target_language == 'DE' %}selected{% endif %}>Allemand</option>
-                                        <option value="IT" {% if user.target_language == 'IT' %}selected{% endif %}>Italien</option>
-                                        <option value="PT" {% if user.target_language == 'PT' %}selected{% endif %}>Portugais</option>
-                                        <option value="NL" {% if user.target_language == 'NL' %}selected{% endif %}>Néerlandais</option>
+                                        <option value="ES" {% if user.target_language == 'ES' %}selected{% endif %}>
+                                            Espagnol</option>
+                                        <option value="EN" {% if user.target_language == 'EN' %}selected{% endif %}>
+                                            Anglais</option>
+                                        <option value="FR" {% if user.target_language == 'FR' %}selected{% endif %}>
+                                            Français</option>
+                                        <option value="DE" {% if user.target_language == 'DE' %}selected{% endif %}>
+                                            Allemand</option>
+                                        <option value="IT" {% if user.target_language == 'IT' %}selected{% endif %}>
+                                            Italien</option>
+                                        <option value="PT" {% if user.target_language == 'PT' %}selected{% endif %}>
+                                            Portugais</option>
+                                        <option value="NL" {% if user.target_language == 'NL' %}selected{% endif %}>
+                                            Néerlandais</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Niveau de langue</label>
                                     <select name="language_level" class="form-control">
                                         <option value="">Sélectionner...</option>
-                                        <option value="A1" {% if user.language_level == 'A1' %}selected{% endif %}>A1 - Débutant</option>
-                                        <option value="A2" {% if user.language_level == 'A2' %}selected{% endif %}>A2 - Élémentaire</option>
-                                        <option value="B1" {% if user.language_level == 'B1' %}selected{% endif %}>B1 - Intermédiaire</option>
-                                        <option value="B2" {% if user.language_level == 'B2' %}selected{% endif %}>B2 - Intermédiaire avancé</option>
-                                        <option value="C1" {% if user.language_level == 'C1' %}selected{% endif %}>C1 - Avancé</option>
-                                        <option value="C2" {% if user.language_level == 'C2' %}selected{% endif %}>C2 - Maîtrise</option>
+                                        <option value="A1" {% if user.language_level == 'A1' %}selected{% endif %}>A1 -
+                                            Débutant</option>
+                                        <option value="A2" {% if user.language_level == 'A2' %}selected{% endif %}>A2 -
+                                            Élémentaire</option>
+                                        <option value="B1" {% if user.language_level == 'B1' %}selected{% endif %}>B1 -
+                                            Intermédiaire</option>
+                                        <option value="B2" {% if user.language_level == 'B2' %}selected{% endif %}>B2 -
+                                            Intermédiaire avancé</option>
+                                        <option value="C1" {% if user.language_level == 'C1' %}selected{% endif %}>C1 -
+                                            Avancé</option>
+                                        <option value="C2" {% if user.language_level == 'C2' %}selected{% endif %}>C2 -
+                                            Maîtrise</option>
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label class="form-label">Objectif d'apprentissage</label>
                                 <select name="objectives" class="form-control">
-                                    <option value="Personal" {% if user.objectives == 'Personal' %}selected{% endif %}>Personnel</option>
-                                    <option value="Work" {% if user.objectives == 'Work' %}selected{% endif %}>Professionnel</option>
-                                    <option value="Study" {% if user.objectives == 'Study' %}selected{% endif %}>Académique</option>
-                                    <option value="Travel" {% if user.objectives == 'Travel' %}selected{% endif %}>Voyage</option>
-                                    <option value="Business" {% if user.objectives == 'Business' %}selected{% endif %}>Business</option>
-                                    <option value="For Fun" {% if user.objectives == 'For Fun' %}selected{% endif %}>Pour le plaisir</option>
-                                    <option value="Exam" {% if user.objectives == 'Exam' %}selected{% endif %}>Examens</option>
+                                    <option value="Personal" {% if user.objectives == 'Personal' %}selected{% endif %}>
+                                        Personnel</option>
+                                    <option value="Work" {% if user.objectives == 'Work' %}selected{% endif %}>
+                                        Professionnel</option>
+                                    <option value="Study" {% if user.objectives == 'Study' %}selected{% endif %}>
+                                        Académique</option>
+                                    <option value="Travel" {% if user.objectives == 'Travel' %}selected{% endif %}>Voyage
+                                    </option>
+                                    <option value="Business" {% if user.objectives == 'Business' %}selected{% endif %}>
+                                        Business</option>
+                                    <option value="For Fun" {% if user.objectives == 'For Fun' %}selected{% endif %}>Pour
+                                        le plaisir</option>
+                                    <option value="Exam" {% if user.objectives == 'Exam' %}selected{% endif %}>Examens
+                                    </option>
                                 </select>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label class="form-label">Objectif quotidien (minutes)</label>
-                                <input type="number" name="daily_goal" class="form-control" value="{{ user.daily_goal }}" min="5" max="120">
+                                <input type="number" name="daily_goal" class="form-control"
+                                    value="{{ user.daily_goal }}" min="5" max="120">
                             </div>
                         </div>
                     </div>
@@ -734,14 +790,14 @@
                                     <span>Notifications par email</span>
                                 </label>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label style="display: flex; align-items: center; gap: 8px;">
                                     <input type="checkbox" name="push_notifications" {% if user.push_notifications %}checked{% endif %}>
                                     <span>Notifications push</span>
                                 </label>
                             </div>
-                            
+
                             <div class="two-column">
                                 <div class="form-group">
                                     <label style="display: flex; align-items: center; gap: 8px;">
@@ -756,10 +812,11 @@
                                     </label>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label class="form-label">Heure des rappels</label>
-                                <input type="time" name="reminder_time" class="form-control" value="{{ user.reminder_time|time:'H:i' }}">
+                                <input type="time" name="reminder_time" class="form-control"
+                                    value="{{ user.reminder_time|time:'H:i' }}">
                             </div>
                         </div>
                     </div>
@@ -773,23 +830,26 @@
                         <div class="section-content">
                             <div class="form-group">
                                 <label style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" name="public_profile" {% if user.public_profile %}checked{% endif %}>
+                                    <input type="checkbox" name="public_profile" {% if user.public_profile %}checked{%
+                                        endif %}>
                                     <span>Profil public</span>
                                 </label>
                                 <div class="help-text">Permettre aux autres utilisateurs de voir votre profil</div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" name="share_progress" {% if user.share_progress %}checked{% endif %}>
+                                    <input type="checkbox" name="share_progress" {% if user.share_progress %}checked{%
+                                        endif %}>
                                     <span>Partager mes progrès</span>
                                 </label>
                                 <div class="help-text">Afficher vos statistiques d'apprentissage sur votre profil</div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" name="share_activity" {% if user.share_activity %}checked{% endif %}>
+                                    <input type="checkbox" name="share_activity" {% if user.share_activity %}checked{%
+                                        endif %}>
                                     <span>Partager mon activité</span>
                                 </label>
                                 <div class="help-text">Afficher votre activité récente aux autres utilisateurs</div>
@@ -807,14 +867,16 @@
                             <div class="form-group">
                                 <label class="form-label">Statut du compte</label>
                                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                                    <span style="background: #28a745; color: white; padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 500;">
+                                    <span
+                                        style="background: #28a745; color: white; padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 500;">
                                         <i class="bi bi-check-circle-fill" style="margin-right: 4px;"></i>
                                         Actif
                                     </span>
-                                    <span style="font-size: 13px; color: #6c757d;">Compte créé le {{ user.date_joined|date:"d/m/Y" }}</span>
+                                    <span style="font-size: 13px; color: #6c757d;">Compte créé le {{
+                                        user.date_joined|date:"d/m/Y" }}</span>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label class="form-label">Actions du compte</label>
                                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -834,13 +896,16 @@
                                         <i class="bi bi-box-arrow-right" style="margin-right: 4px;"></i>
                                         Déconnecter tous les appareils
                                     </button>
-                                    <button type="button" style="background: #dc3545; color: white; border: 1px solid #dc3545; padding: 6px 12px; border-radius: 3px; font-size: 13px; cursor: pointer;" onclick="deleteAccount()">
+                                    <button type="button"
+                                        style="background: #dc3545; color: white; border: 1px solid #dc3545; padding: 6px 12px; border-radius: 3px; font-size: 13px; cursor: pointer;"
+                                        onclick="deleteAccount()">
                                         <i class="bi bi-trash" style="margin-right: 4px;"></i>
                                         Supprimer mon compte
                                     </button>
                                 </div>
                                 <div class="help-text" style="margin-top: 8px;">
-                                    <strong>Attention :</strong> La suppression du compte est irréversible. Toutes vos données seront définitivement perdues.
+                                    <strong>Attention :</strong> La suppression du compte est irréversible. Toutes vos
+                                    données seront définitivement perdues.
                                 </div>
                             </div>
                         </div>
@@ -853,18 +918,19 @@
                                 <i class="bi bi-check2" style="margin-right: 6px;"></i>
                                 Enregistrer les modifications
                             </button>
-                            <a href="{% url 'saas_web:settings' %}" class="btn-secondary" style="margin-left: 8px;">Annuler</a>
+                            <a href="{% url 'saas_web:settings' %}" class="btn-secondary"
+                                style="margin-left: 8px;">Annuler</a>
                         </div>
                     </div>
                 </form>
             </div>
-            
+
             <!-- General Settings Tab Content -->
             <div id="general-settings" class="tab-content">
                 <form method="post" action="{% url 'saas_web:settings' %}">
                     {% csrf_token %}
-                    <input type="hidden" name="settings_type" value="general">
-                    
+                    <input type="hidden" name="setting_type" value="general">
+
                     <!-- Appearance Section -->
                     <div class="content-section">
                         <div class="section-header">
@@ -874,63 +940,93 @@
                         <div class="section-content">
                             <div class="form-group">
                                 <label class="form-label">Thème de l'interface</label>
-                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 8px;">
-                                    <label style="display: flex; align-items: center; gap: 8px; padding: 12px; border: 2px solid #dee2e6; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onclick="selectTheme(this, 'light')">
-                                        <input type="radio" name="theme" value="light" {% if user.theme == 'light' or not user.theme %}checked{% endif %} style="margin: 0;">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 8px;">
+                                    <label
+                                        style="display: flex; align-items: center; gap: 8px; padding: 12px; border: 2px solid #dee2e6; border-radius: 6px; cursor: pointer; transition: all 0.2s;"
+                                        onclick="selectTheme(this, 'light')">
+                                        <input type="radio" name="theme" value="light" {% if user.theme == 'light' or not
+                                            user.theme %}checked{% endif %} style="margin: 0;">
                                         <div>
                                             <div style="font-weight: 500; margin-bottom: 2px;">🌞 Clair</div>
-                                            <div style="font-size: 11px; color: #6c757d;">Interface claire et lumineuse</div>
+                                            <div style="font-size: 11px; color: #6c757d;">Interface claire et lumineuse
+                                            </div>
                                         </div>
                                     </label>
-                                    
-                                    <label style="display: flex; align-items: center; gap: 8px; padding: 12px; border: 2px solid #dee2e6; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onclick="selectTheme(this, 'dark')">
+
+                                    <label
+                                        style="display: flex; align-items: center; gap: 8px; padding: 12px; border: 2px solid #dee2e6; border-radius: 6px; cursor: pointer; transition: all 0.2s;"
+                                        onclick="selectTheme(this, 'dark')">
                                         <input type="radio" name="theme" value="dark" {% if user.theme == 'dark' %}checked{% endif %} style="margin: 0;">
                                         <div>
                                             <div style="font-weight: 500; margin-bottom: 2px;">🌙 Sombre</div>
-                                            <div style="font-size: 11px; color: #6c757d;">Interface sombre pour les yeux</div>
+                                            <div style="font-size: 11px; color: #6c757d;">Interface sombre pour les yeux
+                                            </div>
                                         </div>
                                     </label>
-                                    
-                                    <label style="display: flex; align-items: center; gap: 8px; padding: 12px; border: 2px solid #dee2e6; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onclick="selectTheme(this, 'auto')">
+
+                                    <label
+                                        style="display: flex; align-items: center; gap: 8px; padding: 12px; border: 2px solid #dee2e6; border-radius: 6px; cursor: pointer; transition: all 0.2s;"
+                                        onclick="selectTheme(this, 'auto')">
                                         <input type="radio" name="theme" value="auto" {% if user.theme == 'auto' %}checked{% endif %} style="margin: 0;">
                                         <div>
                                             <div style="font-weight: 500; margin-bottom: 2px;">🔄 Automatique</div>
-                                            <div style="font-size: 11px; color: #6c757d;">Suit les préférences système</div>
+                                            <div style="font-size: 11px; color: #6c757d;">Suit les préférences système
+                                            </div>
                                         </div>
                                     </label>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label class="form-label">Couleur d'accent</label>
-                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; margin-top: 8px;">
-                                    <label style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
-                                        <input type="radio" name="accent_color" value="purple" {% if user.accent_color == 'purple' or not user.accent_color %}checked{% endif %} style="margin: 0;">
-                                        <div style="width: 32px; height: 32px; background: #875a7b; border-radius: 50%; border: 3px solid transparent;"></div>
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; margin-top: 8px;">
+                                    <label
+                                        style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
+                                        <input type="radio" name="accent_color" value="purple" {% if
+                                            user.accent_color == 'purple' or not user.accent_color %}checked{% endif %}
+                                            style="margin: 0;">
+                                        <div
+                                            style="width: 32px; height: 32px; background: #875a7b; border-radius: 50%; border: 3px solid transparent;">
+                                        </div>
                                         <span style="font-size: 11px;">Violet</span>
                                     </label>
-                                    
-                                    <label style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
-                                        <input type="radio" name="accent_color" value="blue" {% if user.accent_color == 'blue' %}checked{% endif %} style="margin: 0;">
-                                        <div style="width: 32px; height: 32px; background: #007bff; border-radius: 50%; border: 3px solid transparent;"></div>
+
+                                    <label
+                                        style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
+                                        <input type="radio" name="accent_color" value="blue" {% if
+                                            user.accent_color == 'blue' %}checked{% endif %} style="margin: 0;">
+                                        <div
+                                            style="width: 32px; height: 32px; background: #007bff; border-radius: 50%; border: 3px solid transparent;">
+                                        </div>
                                         <span style="font-size: 11px;">Bleu</span>
                                     </label>
-                                    
-                                    <label style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
+
+                                    <label
+                                        style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
                                         <input type="radio" name="accent_color" value="green" {% if user.accent_color == 'green' %}checked{% endif %} style="margin: 0;">
-                                        <div style="width: 32px; height: 32px; background: #28a745; border-radius: 50%; border: 3px solid transparent;"></div>
+                                        <div
+                                            style="width: 32px; height: 32px; background: #28a745; border-radius: 50%; border: 3px solid transparent;">
+                                        </div>
                                         <span style="font-size: 11px;">Vert</span>
                                     </label>
-                                    
-                                    <label style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
+
+                                    <label
+                                        style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
                                         <input type="radio" name="accent_color" value="red" {% if user.accent_color == 'red' %}checked{% endif %} style="margin: 0;">
-                                        <div style="width: 32px; height: 32px; background: #dc3545; border-radius: 50%; border: 3px solid transparent;"></div>
+                                        <div
+                                            style="width: 32px; height: 32px; background: #dc3545; border-radius: 50%; border: 3px solid transparent;">
+                                        </div>
                                         <span style="font-size: 11px;">Rouge</span>
                                     </label>
-                                    
-                                    <label style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
+
+                                    <label
+                                        style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
                                         <input type="radio" name="accent_color" value="orange" {% if user.accent_color == 'orange' %}checked{% endif %} style="margin: 0;">
-                                        <div style="width: 32px; height: 32px; background: #fd7e14; border-radius: 50%; border: 3px solid transparent;"></div>
+                                        <div
+                                            style="width: 32px; height: 32px; background: #fd7e14; border-radius: 50%; border: 3px solid transparent;">
+                                        </div>
                                         <span style="font-size: 11px;">Orange</span>
                                     </label>
                                 </div>
@@ -948,12 +1044,13 @@
                             <div class="two-column">
                                 <div class="form-group">
                                     <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="compact_mode" {% if user.compact_mode %}checked{% endif %}>
+                                        <input type="checkbox" name="compact_mode" {% if user.compact_mode %}checked{%
+                                            endif %}>
                                         <span>Mode compact</span>
                                     </label>
                                     <div class="help-text">Réduire l'espacement pour afficher plus de contenu</div>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label style="display: flex; align-items: center; gap: 8px;">
                                         <input type="checkbox" name="animations" {% if user.animations != False %}checked{% endif %}>
@@ -962,24 +1059,30 @@
                                     <div class="help-text">Activer les transitions et animations</div>
                                 </div>
                             </div>
-                            
+
                             <div class="two-column">
                                 <div class="form-group">
                                     <label class="form-label">Taille de police</label>
                                     <select name="font_size" class="form-control">
-                                        <option value="small" {% if user.font_size == 'small' %}selected{% endif %}>Petite</option>
+                                        <option value="small" {% if user.font_size == 'small' %}selected{% endif %}>Petite
+                                        </option>
                                         <option value="medium" {% if user.font_size == 'medium' or not user.font_size %}selected{% endif %}>Normale</option>
-                                        <option value="large" {% if user.font_size == 'large' %}selected{% endif %}>Grande</option>
-                                        <option value="xlarge" {% if user.font_size == 'xlarge' %}selected{% endif %}>Très grande</option>
+                                        <option value="large" {% if user.font_size == 'large' %}selected{% endif %}>Grande
+                                        </option>
+                                        <option value="xlarge" {% if user.font_size == 'xlarge' %}selected{% endif %}>Très
+                                            grande</option>
                                     </select>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label class="form-label">Disposition des menus</label>
                                     <select name="menu_layout" class="form-control">
-                                        <option value="sidebar" {% if user.menu_layout == 'sidebar' or not user.menu_layout %}selected{% endif %}>Barre latérale</option>
-                                        <option value="top" {% if user.menu_layout == 'top' %}selected{% endif %}>En haut</option>
-                                        <option value="compact" {% if user.menu_layout == 'compact' %}selected{% endif %}>Compact</option>
+                                        <option value="sidebar" {% if user.menu_layout == 'sidebar' or not
+                                            user.menu_layout %}selected{% endif %}>Barre latérale</option>
+                                        <option value="top" {% if user.menu_layout == 'top' %}selected{% endif %}>En haut
+                                        </option>
+                                        <option value="compact" {% if user.menu_layout == 'compact' %}selected{% endif %}>
+                                            Compact</option>
                                     </select>
                                 </div>
                             </div>
@@ -996,21 +1099,23 @@
                             <div class="two-column">
                                 <div class="form-group">
                                     <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="high_contrast" {% if user.high_contrast %}checked{% endif %}>
+                                        <input type="checkbox" name="high_contrast" {% if user.high_contrast %}checked{%
+                                            endif %}>
                                         <span>Contraste élevé</span>
                                     </label>
                                     <div class="help-text">Améliorer la lisibilité avec plus de contraste</div>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="reduce_motion" {% if user.reduce_motion %}checked{% endif %}>
+                                        <input type="checkbox" name="reduce_motion" {% if user.reduce_motion %}checked{%
+                                            endif %}>
                                         <span>Réduire les mouvements</span>
                                     </label>
                                     <div class="help-text">Minimiser les animations pour les sensibilités</div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label style="display: flex; align-items: center; gap: 8px;">
                                     <input type="checkbox" name="screen_reader_mode" {% if user.screen_reader_mode %}checked{% endif %}>
@@ -1028,18 +1133,19 @@
                                 <i class="bi bi-check2" style="margin-right: 6px;"></i>
                                 Appliquer les paramètres
                             </button>
-                            <button type="button" class="btn-secondary" style="margin-left: 8px;" onclick="resetSettings()">Réinitialiser</button>
+                            <button type="button" class="btn-secondary" style="margin-left: 8px;"
+                                onclick="resetSettings()">Réinitialiser</button>
                         </div>
                     </div>
                 </form>
             </div>
-            
+
             <!-- Voice Settings Tab Content -->
             <div id="voice-settings" class="tab-content">
                 <form method="post" action="{% url 'saas_web:settings' %}">
                     {% csrf_token %}
-                    <input type="hidden" name="settings_type" value="voice">
-                    
+                    <input type="hidden" name="setting_type" value="voice">
+
                     <!-- Voice Assistant Status -->
                     <div class="content-section">
                         <div class="section-header">
@@ -1050,12 +1156,13 @@
                             <div class="two-column">
                                 <div class="form-group">
                                     <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="voice_commands_enabled" {% if voice_preferences.voice_commands_enabled %}checked{% endif %}>
+                                        <input type="checkbox" name="voice_commands_enabled" {% if
+                                            voice_preferences.voice_commands_enabled %}checked{% endif %}>
                                         <span>Commandes vocales</span>
                                     </label>
                                     <div class="help-text">Activer la reconnaissance des commandes vocales</div>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label style="display: flex; align-items: center; gap: 8px;">
                                         <input type="checkbox" name="tts_enabled" {% if voice_preferences.tts_enabled %}checked{% endif %}>
@@ -1064,7 +1171,7 @@
                                     <div class="help-text">Activer les réponses vocales</div>
                                 </div>
                             </div>
-                            
+
                             <div class="two-column">
                                 <div class="form-group">
                                     <label style="display: flex; align-items: center; gap: 8px;">
@@ -1073,10 +1180,11 @@
                                     </label>
                                     <div class="help-text">Écouter automatiquement après les réponses</div>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="noise_suppression" {% if voice_preferences.noise_suppression %}checked{% endif %}>
+                                        <input type="checkbox" name="noise_suppression" {% if
+                                            voice_preferences.noise_suppression %}checked{% endif %}>
                                         <span>Suppression du bruit</span>
                                     </label>
                                     <div class="help-text">Réduire le bruit de fond</div>
@@ -1101,20 +1209,23 @@
                                         <option value="fast" {% if voice_preferences.preferred_voice_speed == 'fast' %}selected{% endif %}>Rapide (240 mots/min)</option>
                                     </select>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label class="form-label">Hauteur de voix</label>
-                                    <input type="range" name="preferred_voice_pitch" class="form-range" min="0" max="100" value="{{ voice_preferences.preferred_voice_pitch }}" style="width: 100%;">
+                                    <input type="range" name="preferred_voice_pitch" class="form-range" min="0"
+                                        max="100" value="{{ voice_preferences.preferred_voice_pitch }}"
+                                        style="width: 100%;">
                                     <div class="help-text">Ajuster la hauteur de la voix synthétisée</div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label class="form-label">Sensibilité du microphone (%)</label>
-                                <input type="range" name="sensitivity" class="form-range" min="1" max="100" value="{{ voice_preferences.sensitivity }}" style="width: 100%;">
+                                <input type="range" name="sensitivity" class="form-range" min="1" max="100"
+                                    value="{{ voice_preferences.sensitivity }}" style="width: 100%;">
                                 <div class="help-text">Ajuster la sensibilité de détection vocale</div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label class="form-label">Accent préféré</label>
                                 <select name="preferred_accent" class="form-control">
@@ -1145,7 +1256,7 @@
                                     </label>
                                     <div class="help-text">Analyser et corriger votre prononciation</div>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label style="display: flex; align-items: center; gap: 8px;">
                                         <input type="checkbox" name="conversation_mode" {% if voice_preferences.conversation_mode %}checked{% endif %}>
@@ -1154,13 +1265,14 @@
                                     <div class="help-text">Conversation continue activée</div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <button type="button" class="btn-secondary" onclick="testVoice()">
                                     <i class="bi bi-volume-up" style="margin-right: 6px;"></i>
                                     Tester la voix
                                 </button>
-                                <button type="button" class="btn-secondary" style="margin-left: 8px;" onclick="testMicrophone()">
+                                <button type="button" class="btn-secondary" style="margin-left: 8px;"
+                                    onclick="testMicrophone()">
                                     <i class="bi bi-mic" style="margin-right: 6px;"></i>
                                     Tester le microphone
                                 </button>
@@ -1178,24 +1290,28 @@
                             <div class="two-column">
                                 <div class="form-group">
                                     <label class="form-label">Langue de reconnaissance</label>
-                                    <p style="margin: 0; padding: 8px 12px; background: #f8f9fa; border-radius: 4px; color: #6c757d;">
+                                    <p
+                                        style="margin: 0; padding: 8px 12px; background: #f8f9fa; border-radius: 4px; color: #6c757d;">
                                         <strong>{{ user.native_language|default:'Français' }}</strong>
                                         <br><small>Basée sur votre langue native</small>
                                     </p>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label class="form-label">Langue des réponses</label>
-                                    <p style="margin: 0; padding: 8px 12px; background: #f8f9fa; border-radius: 4px; color: #6c757d;">
+                                    <p
+                                        style="margin: 0; padding: 8px 12px; background: #f8f9fa; border-radius: 4px; color: #6c757d;">
                                         <strong>{{ user.interface_language|default:'Français' }}</strong>
                                         <br><small>Basée sur votre langue d'interface</small>
                                     </p>
                                 </div>
                             </div>
-                            
+
                             <div class="alert-info">
                                 <i class="bi bi-info-circle" style="margin-right: 8px;"></i>
-                                Les paramètres de langue sont automatiquement configurés selon vos préférences de profil. Modifiez votre langue native et d'interface dans l'onglet "Profil utilisateur" pour ajuster la reconnaissance et les réponses vocales.
+                                Les paramètres de langue sont automatiquement configurés selon vos préférences de
+                                profil. Modifiez votre langue native et d'interface dans l'onglet "Profil utilisateur"
+                                pour ajuster la reconnaissance et les réponses vocales.
                             </div>
                         </div>
                     </div>
@@ -1207,1119 +1323,58 @@
                                 <i class="bi bi-check2" style="margin-right: 6px;"></i>
                                 Sauvegarder les paramètres vocaux
                             </button>
-                            <button type="button" class="btn-secondary" style="margin-left: 8px;" onclick="resetVoiceSettings()">Réinitialiser</button>
+                            <button type="button" class="btn-secondary" style="margin-left: 8px;"
+                                onclick="resetVoiceSettings()">Réinitialiser</button>
                         </div>
                     </div>
                 </form>
             </div>
-        
-        
+
+
             <!-- App Settings Tabs -->
             {% for app in user_apps %}
             <div id="app-{{ app.display_name|slugify }}" class="tab-content">
                 {% if app.display_name == "Révision" %}
-                    <!-- Template spécialisé pour Révision -->
-                    {% include 'saas_web/settings/apps/revision_settings.html' %}
+                <!-- Template spécialisé pour Révision -->
+                {% include 'saas_web/settings/apps/revision_settings.html' %}
                 {% else %}
-                    <!-- Template générique pour les autres apps -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <div class="app-icon" style="margin-right: 8px;">
-                                <i class="bi {{ app.icon_class }}"></i>
-                            </div>
-                            Configuration {{ app.display_name }}
+                <!-- Template générique pour les autres apps -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="app-icon" style="margin-right: 8px;">
+                            <i class="bi {{ app.icon_class }}"></i>
                         </div>
-                        <div class="section-content">
-                            <div class="alert-info">
-                                <i class="bi bi-info-circle" style="margin-right: 8px;"></i>
-                                Paramètres spécifiques à {{ app.display_name }} à développer...
+                        Configuration {{ app.display_name }}
+                    </div>
+                    <div class="section-content">
+                        <div class="alert-info">
+                            <i class="bi bi-info-circle" style="margin-right: 8px;"></i>
+                            Paramètres spécifiques à {{ app.display_name }} à développer...
+                        </div>
+
+                        <!-- Example app settings structure -->
+                        <div style="margin-top: 16px;">
+                            <div class="form-group">
+                                <label class="form-label">Activer {{ app.display_name }}</label>
+                                <input type="checkbox" checked style="margin-right: 8px;">
+                                <span style="font-size: 12px; color: #6c757d;">Module activé</span>
                             </div>
-                            
-                            <!-- Example app settings structure -->
-                            <div style="margin-top: 16px;">
-                                <div class="form-group">
-                                    <label class="form-label">Activer {{ app.display_name }}</label>
-                                    <input type="checkbox" checked style="margin-right: 8px;">
-                                    <span style="font-size: 12px; color: #6c757d;">Module activé</span>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label">Paramètres avancés</label>
-                                    <a href="#" class="btn-secondary">Configurer</a>
-                                </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Paramètres avancés</label>
+                                <a href="#" class="btn-secondary">Configurer</a>
                             </div>
                         </div>
                     </div>
+                </div>
                 {% endif %}
             </div>
             {% endfor %}
         </div>
     </div>
 </div>
+{% endblock %}
 
-<script>
-function showTab(tabName) {
-    console.log('[Settings] Switching to tab:', tabName);
-    
-    // Hide all tab contents
-    const tabs = document.querySelectorAll('.tab-content');
-    tabs.forEach(tab => {
-        tab.classList.remove('active');
-        console.log('[Settings] Hiding tab:', tab.id);
-    });
-    
-    // Remove active class from all sidebar items
-    const sidebarItems = document.querySelectorAll('.sidebar-item');
-    sidebarItems.forEach(item => item.classList.remove('active'));
-    
-    // Show selected tab
-    const selectedTab = document.getElementById(tabName);
-    if (selectedTab) {
-        selectedTab.classList.add('active');
-        console.log('[Settings] Showing tab:', tabName);
-    } else {
-        console.error('[Settings] Tab not found:', tabName);
-        // Liste tous les tabs disponibles
-        console.log('[Settings] Available tabs:', Array.from(tabs).map(t => t.id));
-    }
-    
-    // Add active class to clicked sidebar item
-    if (event && event.target) {
-        const button = event.target.closest('.sidebar-item');
-        if (button) button.classList.add('active');
-    }
-    
-    // Update breadcrumb and header tabs
-    updateHeaderForTab(tabName);
-}
-
-function updateHeaderForTab(tabName) {
-    const breadcrumb = document.querySelector('.breadcrumb-nav .active');
-    
-    // Update breadcrumb
-    if (breadcrumb) {
-        if (tabName === 'general') {
-            breadcrumb.textContent = 'Paramètres généraux';
-        } else if (tabName.startsWith('app-')) {
-            const appName = tabName.replace('app-', '').replace(/-/g, ' ');
-            breadcrumb.textContent = appName.charAt(0).toUpperCase() + appName.slice(1);
-        }
-    }
-    
-    // Update header tabs visibility
-    const settingsTabs = document.querySelector('.settings-tabs');
-    if (settingsTabs) {
-        if (tabName === 'general') {
-            settingsTabs.style.display = 'block';
-        } else {
-            settingsTabs.style.display = 'none';
-        }
-    }
-    
-    // Update top tabs active state
-    const settingsTabButtons = document.querySelectorAll('.settings-tab');
-    settingsTabButtons.forEach(tab => tab.classList.remove('active'));
-    
-    if (tabName === 'general') {
-        const generalTab = document.querySelector('.settings-tab');
-        if (generalTab) generalTab.classList.add('active');
-    }
-}
-
-function showSubTab(subTabName) {
-    console.log('[Settings] Switching to sub-tab:', subTabName);
-    
-    // Hide all tab contents
-    const tabContents = document.querySelectorAll('.tab-content');
-    tabContents.forEach(content => content.classList.remove('active'));
-    
-    // Remove active class from all tabs
-    const tabs = document.querySelectorAll('.settings-tab');
-    tabs.forEach(tab => tab.classList.remove('active'));
-    
-    // Show selected tab content
-    const selectedContent = document.getElementById(subTabName);
-    if (selectedContent) {
-        selectedContent.classList.add('active');
-    }
-    
-    // Add active class to clicked tab
-    if (event && event.target) {
-        const button = event.target.closest('.settings-tab');
-        if (button) {
-            button.classList.add('active');
-        }
-    }
-}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', function() {
-    updateHeaderForTab('general');
-    
-    // Set initial active states
-    const firstSidebarItem = document.querySelector('.sidebar-item');
-    if (firstSidebarItem) {
-        firstSidebarItem.classList.add('active');
-    }
-    
-    // Initialize first tab as active
-    const userProfileTab = document.getElementById('user-profile');
-    if (userProfileTab) {
-        userProfileTab.classList.add('active');
-    }
-});
-
-// Account management functions
-async function suspendAccount() {
-    if (confirm('Êtes-vous sûr de vouloir suspendre temporairement votre compte ? Vous pourrez le réactiver à tout moment.')) {
-        try {
-            showTemporaryMessage('Suspension du compte en cours...', 'info');
-            
-            const response = await fetch('/auth/api/suspend-account/', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCsrfToken(),
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                showTemporaryMessage('Compte suspendu avec succès. Vous allez être déconnecté.', 'success');
-                setTimeout(() => {
-                    window.location.href = '/auth/logout/';
-                }, 2000);
-            } else {
-                showTemporaryMessage('Erreur lors de la suspension: ' + (result.error || 'Erreur inconnue'), 'error');
-            }
-        } catch (error) {
-            console.error('Suspension error:', error);
-            showTemporaryMessage('Erreur de connexion lors de la suspension', 'error');
-        }
-    }
-}
-
-async function exportData() {
-    if (confirm('Souhaitez-vous exporter toutes vos données personnelles ?')) {
-        try {
-            showTemporaryMessage('Export des données en cours...', 'info');
-            
-            const response = await fetch('/auth/api/export-data/', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCsrfToken(),
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                showTemporaryMessage('Export demandé avec succès ! Vous recevrez un email avec vos données dans quelques minutes.', 'success');
-                
-                // Si l'API retourne directement un lien de téléchargement
-                if (result.download_url) {
-                    const link = document.createElement('a');
-                    link.href = result.download_url;
-                    link.download = `linguify_data_export_${new Date().toISOString().split('T')[0]}.json`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }
-            } else {
-                showTemporaryMessage('Erreur lors de l\'export: ' + (result.error || 'Erreur inconnue'), 'error');
-            }
-        } catch (error) {
-            console.error('Export error:', error);
-            showTemporaryMessage('Erreur de connexion lors de l\'export', 'error');
-        }
-    }
-}
-
-async function deleteAccount() {
-    const confirmText = 'SUPPRIMER';
-    const userInput = prompt(
-        `⚠️ ATTENTION : Cette action est irréversible !\n\n` +
-        `Toutes vos données seront définitivement supprimées :\n` +
-        `• Profil utilisateur\n` +
-        `• Progression d'apprentissage\n` +
-        `• Notes et flashcards\n` +
-        `• Historique d'activité\n\n` +
-        `Pour confirmer, tapez exactement : ${confirmText}`
-    );
-    
-    if (userInput === confirmText) {
-        if (confirm('Dernière confirmation : êtes-vous absolument certain de vouloir supprimer votre compte ?')) {
-            try {
-                showTemporaryMessage('Suppression du compte en cours...', 'warning');
-                
-                const response = await fetch('/auth/api/delete-account/', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': getCsrfToken(),
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        confirmation: confirmText,
-                        immediate: false // Utilise la période de grâce de 30 jours
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert(`Votre compte a été programmé pour suppression.\n\n` +
-                          `• Date de suppression : ${new Date(result.deletion_date).toLocaleDateString('fr-FR')}\n` +
-                          `• Vous avez ${result.days_remaining} jours pour annuler\n` +
-                          `• Un email de confirmation vous a été envoyé\n\n` +
-                          `Vous pouvez annuler cette suppression en vous reconnectant avant la date limite.`);
-                    
-                    setTimeout(() => {
-                        window.location.href = '/auth/logout/';
-                    }, 3000);
-                } else {
-                    showTemporaryMessage('Erreur lors de la suppression: ' + (result.error || 'Erreur inconnue'), 'error');
-                }
-            } catch (error) {
-                console.error('Account deletion error:', error);
-                showTemporaryMessage('Erreur de connexion lors de la suppression', 'error');
-            }
-        }
-    } else if (userInput !== null) {
-        alert('Texte de confirmation incorrect. Suppression annulée.');
-    }
-}
-
-async function changePassword() {
-    // Créer un modal pour le changement de mot de passe
-    const modalHtml = `
-        <div class="modal fade" id="changePasswordModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Changer le mot de passe</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="changePasswordForm">
-                            <div class="form-group mb-3">
-                                <label class="form-label">Mot de passe actuel</label>
-                                <input type="password" id="currentPassword" class="form-control" required>
-                            </div>
-                            <div class="form-group mb-3">
-                                <label class="form-label">Nouveau mot de passe</label>
-                                <input type="password" id="newPassword" class="form-control" required>
-                                <div class="help-text">Au moins 8 caractères avec lettres et chiffres</div>
-                            </div>
-                            <div class="form-group mb-3">
-                                <label class="form-label">Confirmer le nouveau mot de passe</label>
-                                <input type="password" id="confirmPassword" class="form-control" required>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="button" class="btn-primary" onclick="submitPasswordChange()">Changer le mot de passe</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    // Ajouter le modal au DOM s'il n'existe pas
-    if (!document.getElementById('changePasswordModal')) {
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-    }
-    
-    // Afficher le modal
-    const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
-    modal.show();
-}
-
-async function submitPasswordChange() {
-    const currentPassword = document.getElementById('currentPassword').value;
-    const newPassword = document.getElementById('newPassword').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
-    
-    if (newPassword !== confirmPassword) {
-        showTemporaryMessage('Les mots de passe ne correspondent pas', 'error');
-        return;
-    }
-    
-    if (newPassword.length < 8) {
-        showTemporaryMessage('Le mot de passe doit contenir au moins 8 caractères', 'error');
-        return;
-    }
-    
-    try {
-        showTemporaryMessage('Changement du mot de passe...', 'info');
-        
-        const response = await fetch('/auth/api/change-password/', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCsrfToken(),
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                current_password: currentPassword,
-                new_password: newPassword
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            showTemporaryMessage('Mot de passe changé avec succès !', 'success');
-            bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
-            document.getElementById('changePasswordForm').reset();
-        } else {
-            showTemporaryMessage('Erreur: ' + (result.error || 'Mot de passe actuel incorrect'), 'error');
-        }
-    } catch (error) {
-        console.error('Password change error:', error);
-        showTemporaryMessage('Erreur de connexion', 'error');
-    }
-}
-
-async function logoutAllDevices() {
-    if (confirm('Êtes-vous sûr de vouloir déconnecter tous vos appareils ? Vous devrez vous reconnecter sur chaque appareil.')) {
-        try {
-            showTemporaryMessage('Déconnexion de tous les appareils...', 'info');
-            
-            const response = await fetch('/auth/api/logout-all/', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCsrfToken(),
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                showTemporaryMessage('Tous les appareils ont été déconnectés. Vous allez être redirigé...', 'success');
-                setTimeout(() => {
-                    window.location.href = '/auth/login/';
-                }, 2000);
-            } else {
-                showTemporaryMessage('Erreur: ' + (result.error || 'Erreur inconnue'), 'error');
-            }
-        } catch (error) {
-            console.error('Logout all devices error:', error);
-            showTemporaryMessage('Erreur de connexion', 'error');
-        }
-    }
-}
-
-// Theme selection function
-function selectTheme(element, theme) {
-    // Update visual selection
-    document.querySelectorAll('label[onclick*="selectTheme"]').forEach(label => {
-        label.style.borderColor = '#dee2e6';
-        label.style.backgroundColor = '';
-    });
-    element.style.borderColor = '#875a7b';
-    element.style.backgroundColor = 'rgba(135, 90, 123, 0.05)';
-    
-    // Apply theme preview (optional)
-    if (theme === 'dark') {
-        document.body.style.filter = 'invert(0.1)';
-    } else {
-        document.body.style.filter = '';
-    }
-}
-
-// Settings reset function
-function resetSettings() {
-    if (confirm('Êtes-vous sûr de vouloir réinitialiser tous les paramètres généraux aux valeurs par défaut ?')) {
-        // Reset form to defaults
-        const form = document.querySelector('#general-settings form');
-        if (form) {
-            // Reset theme to light
-            form.querySelector('input[name="theme"][value="light"]').checked = true;
-            // Reset accent color to purple
-            form.querySelector('input[name="accent_color"][value="purple"]').checked = true;
-            // Reset checkboxes
-            form.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            // Reset selects to default values
-            form.querySelector('select[name="font_size"]').value = 'medium';
-            form.querySelector('select[name="menu_layout"]').value = 'sidebar';
-            
-            alert('Paramètres réinitialisés. N\'oubliez pas de sauvegarder pour appliquer les changements.');
-        }
-    }
-}
-
-// Voice settings functions
-function testVoice() {
-    const utterance = new SpeechSynthesisUtterance('Test de l\'assistant vocal Linguify. Votre configuration fonctionne correctement !');
-    
-    // Apply current settings
-    const voiceSpeed = document.querySelector('select[name="preferred_voice_speed"]')?.value || 'normal';
-    const voicePitch = document.querySelector('input[name="preferred_voice_pitch"]')?.value || 50;
-    
-    // Set speech parameters
-    switch(voiceSpeed) {
-        case 'slow': utterance.rate = 0.7; break;
-        case 'fast': utterance.rate = 1.3; break;
-        default: utterance.rate = 1.0;
-    }
-    
-    utterance.pitch = voicePitch / 50; // Convert 0-100 to 0-2
-    utterance.lang = 'fr-FR';
-    
-    speechSynthesis.speak(utterance);
-}
-
-function testMicrophone() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert('Votre navigateur ne supporte pas l\'accès au microphone.');
-        return;
-    }
-    
-    navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(stream => {
-            // Test successful
-            alert('Microphone détecté et fonctionnel ! 🎤');
-            
-            // Stop the stream
-            stream.getTracks().forEach(track => track.stop());
-            
-            // Optional: Show volume levels for a few seconds
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const analyser = audioContext.createAnalyser();
-            const microphone = audioContext.createMediaStreamSource(stream);
-            const dataArray = new Uint8Array(analyser.frequencyBinCount);
-            
-            microphone.connect(analyser);
-            
-            // Simple volume indicator for 3 seconds
-            let countdown = 30;
-            const volumeTest = setInterval(() => {
-                analyser.getByteFrequencyData(dataArray);
-                const volume = dataArray.reduce((a, b) => a + b) / dataArray.length;
-                
-                if (countdown-- <= 0) {
-                    clearInterval(volumeTest);
-                    audioContext.close();
-                }
-            }, 100);
-        })
-        .catch(error => {
-            console.error('Erreur microphone:', error);
-            alert('Impossible d\'accéder au microphone. Vérifiez les permissions de votre navigateur.');
-        });
-}
-
-function resetVoiceSettings() {
-    if (confirm('Êtes-vous sûr de vouloir réinitialiser tous les paramètres vocaux aux valeurs par défaut ?')) {
-        const form = document.querySelector('#voice-settings form');
-        if (form) {
-            // Reset voice settings to defaults
-            form.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                // Default enabled: tts_enabled, voice_commands_enabled, noise_suppression, pronunciation_feedback
-                const defaultEnabled = ['tts_enabled', 'voice_commands_enabled', 'noise_suppression', 'pronunciation_feedback'];
-                checkbox.checked = defaultEnabled.includes(checkbox.name);
-            });
-            
-            // Reset voice speed to normal
-            form.querySelector('select[name="preferred_voice_speed"]').value = 'normal';
-            
-            // Reset pitch to 50
-            form.querySelector('input[name="preferred_voice_pitch"]').value = 50;
-            
-            // Reset sensitivity to 70
-            form.querySelector('input[name="sensitivity"]').value = 70;
-            
-            // Reset accent to auto
-            form.querySelector('select[name="preferred_accent"]').value = '';
-            
-            alert('Paramètres vocaux réinitialisés. N\'oubliez pas de sauvegarder pour appliquer les changements.');
-        }
-    }
-}
-
-// Form validation and real-time feedback
-function initializeFormValidation() {
-    // Username validation
-    const usernameField = document.querySelector('input[name="username"]');
-    if (usernameField) {
-        usernameField.addEventListener('input', validateUsername);
-        usernameField.addEventListener('blur', validateUsername);
-    }
-    
-    // Email validation (read-only, but for consistency)
-    const emailField = document.querySelector('input[type="email"]');
-    if (emailField) {
-        emailField.addEventListener('blur', validateEmail);
-    }
-    
-    // File upload validation
-    const profilePictureInput = document.querySelector('input[name="profile_picture"]');
-    if (profilePictureInput) {
-        profilePictureInput.addEventListener('change', validateProfilePicture);
-    }
-    
-    // Voice settings real-time updates
-    initializeVoiceSettingsPreview();
-    
-    // Password strength (if password fields exist)
-    initializePasswordValidation();
-}
-
-function validateUsername(event) {
-    const input = event.target;
-    const value = input.value.trim();
-    const feedback = getOrCreateFeedback(input, 'username-feedback');
-    
-    // Reset styling
-    input.classList.remove('is-invalid', 'is-valid');
-    
-    if (value.length === 0) {
-        feedback.textContent = '';
-        return;
-    }
-    
-    if (value.length < 3) {
-        showFieldError(input, feedback, 'Le nom d\'utilisateur doit contenir au moins 3 caractères');
-        return;
-    }
-    
-    if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
-        showFieldError(input, feedback, 'Seuls les lettres, chiffres, tirets et underscores sont autorisés');
-        return;
-    }
-    
-    // Vérification async de la disponibilité (si pas le nom actuel)
-    const currentUsername = input.getAttribute('data-current-username') || '';
-    if (value !== currentUsername && value.length >= 3) {
-        checkUsernameAvailability(value, input, feedback);
-    } else {
-        showFieldSuccess(input, feedback, 'Nom d\'utilisateur valide');
-    }
-}
-
-function validateEmail(event) {
-    const input = event.target;
-    const value = input.value.trim();
-    const feedback = getOrCreateFeedback(input, 'email-feedback');
-    
-    if (value.length === 0) return;
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(value)) {
-        showFieldError(input, feedback, 'Format d\'email invalide');
-    } else {
-        showFieldSuccess(input, feedback, 'Email valide');
-    }
-}
-
-function validateProfilePicture(event) {
-    const input = event.target;
-    const file = input.files[0];
-    const feedback = getOrCreateFeedback(input, 'picture-feedback');
-    
-    console.log('[ProfilePicture] File selection event triggered');
-    
-    if (!file) {
-        console.log('[ProfilePicture] No file selected, resetting');
-        feedback.textContent = '';
-        input.classList.remove('is-invalid', 'is-valid');
-        resetProfilePicturePreview();
-        return;
-    }
-    
-    console.log('[ProfilePicture] File selected:', {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        lastModified: new Date(file.lastModified)
-    });
-    
-    // Vérifier le type de fichier
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(file.type)) {
-        console.warn('[ProfilePicture] Invalid file type:', file.type);
-        showFieldError(input, feedback, 'Format non supporté. Utilisez JPG, PNG ou WEBP');
-        resetProfilePicturePreview();
-        return;
-    }
-    console.log('[ProfilePicture] File type validation passed');
-    
-    // Vérifier la taille (5MB max)
-    const maxSize = 5 * 1024 * 1024;
-    if (file.size > maxSize) {
-        console.warn('[ProfilePicture] File too large:', `${file.size} bytes > ${maxSize} bytes`);
-        showFieldError(input, feedback, 'Fichier trop volumineux. Maximum 5MB');
-        resetProfilePicturePreview();
-        return;
-    }
-    console.log('[ProfilePicture] File size validation passed');
-    
-    showFieldSuccess(input, feedback, `Image valide (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-    console.log('[ProfilePicture] Validation successful, starting preview');
-    
-    // Prévisualisation de l'image
-    previewProfilePicture(file);
-}
-
-function previewProfilePicture(file) {
-    console.log('[ProfilePicture] Starting preview for file:', file.name);
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-        console.log('[ProfilePicture] File read successfully, updating avatars');
-        // Trouver tous les avatars utilisateur et les mettre à jour
-        const avatars = document.querySelectorAll('.user-avatar img');
-        console.log('[ProfilePicture] Found', avatars.length, 'avatar images to update');
-        
-        avatars.forEach((avatar, index) => {
-            console.log(`[ProfilePicture] Updating avatar ${index + 1}:`, avatar);
-            avatar.src = e.target.result;
-        });
-        console.log('[ProfilePicture] Preview update complete');
-    };
-    
-    reader.onerror = function(e) {
-        console.error('[ProfilePicture] Error reading file:', e);
-    };
-    
-    reader.readAsDataURL(file);
-}
-
-function resetProfilePicturePreview() {
-    // Remettre l'image originale ou les initiales
-    const avatars = document.querySelectorAll('.user-avatar img');
-    avatars.forEach(avatar => {
-        const originalSrc = avatar.getAttribute('data-original-src');
-        if (originalSrc) {
-            avatar.src = originalSrc;
-        } else {
-            // Si pas d'image, remettre les initiales
-            const avatarContainer = avatar.parentElement;
-            const initials = avatarContainer.getAttribute('data-initials');
-            if (initials) {
-                avatarContainer.innerHTML = initials;
-            }
-        }
-    });
-}
-
-function initializeVoiceSettingsPreview() {
-    // Sliders avec preview temps réel
-    const pitchSlider = document.querySelector('input[name="preferred_voice_pitch"]');
-    const sensitivitySlider = document.querySelector('input[name="sensitivity"]');
-    
-    if (pitchSlider) {
-        pitchSlider.addEventListener('input', (e) => {
-            const value = e.target.value;
-            const label = e.target.parentNode.querySelector('.form-label');
-            if (label) {
-                label.textContent = `Hauteur de voix (${value}%)`;
-            }
-        });
-    }
-    
-    if (sensitivitySlider) {
-        sensitivitySlider.addEventListener('input', (e) => {
-            const value = e.target.value;
-            const label = e.target.parentNode.querySelector('.form-label');
-            if (label) {
-                label.textContent = `Sensibilité du microphone (${value}%)`;
-            }
-        });
-    }
-    
-    // Aperçu en temps réel du thème
-    const themeRadios = document.querySelectorAll('input[name="theme"]');
-    themeRadios.forEach(radio => {
-        radio.addEventListener('change', previewTheme);
-    });
-}
-
-function initializePasswordValidation() {
-    // Si des champs de mot de passe existent dans le futur
-    const passwordFields = document.querySelectorAll('input[type="password"]');
-    passwordFields.forEach(field => {
-        field.addEventListener('input', validatePasswordStrength);
-    });
-}
-
-async function checkUsernameAvailability(username, input, feedback) {
-    try {
-        showFieldPending(input, feedback, 'Vérification de la disponibilité...');
-        
-        const response = await fetch(`/api/check-username/?username=${encodeURIComponent(username)}`, {
-            method: 'GET',
-            headers: {
-                'X-CSRFToken': getCsrfToken(),
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const data = await response.json();
-        
-        if (data.available) {
-            showFieldSuccess(input, feedback, data.message);
-        } else {
-            showFieldError(input, feedback, data.message);
-        }
-    } catch (error) {
-        console.error('Username check error:', error);
-        showFieldError(input, feedback, 'Erreur lors de la vérification');
-    }
-}
-
-function previewProfilePicture(file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        // Trouver tous les avatars à mettre à jour
-        const avatars = document.querySelectorAll('.user-avatar img, .user-avatar');
-        avatars.forEach(avatar => {
-            if (avatar.tagName === 'IMG') {
-                avatar.src = e.target.result;
-            } else {
-                // Remplacer le contenu texte par l'image
-                avatar.innerHTML = `<img src="${e.target.result}" alt="Aperçu" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-            }
-        });
-    };
-    reader.readAsDataURL(file);
-}
-
-function previewTheme(event) {
-    const theme = event.target.value;
-    const body = document.body;
-    
-    // Appliquer temporairement le thème pour aperçu
-    body.classList.remove('theme-light', 'theme-dark', 'theme-auto');
-    
-    if (theme === 'dark') {
-        body.classList.add('theme-dark');
-        body.style.filter = 'invert(0.05)';
-    } else if (theme === 'light') {
-        body.classList.add('theme-light');
-        body.style.filter = 'none';
-    } else {
-        body.classList.add('theme-auto');
-        body.style.filter = 'none';
-    }
-}
-
-// Fonctions utilitaires pour le feedback
-function getOrCreateFeedback(input, id) {
-    let feedback = document.getElementById(id);
-    if (!feedback) {
-        feedback = document.createElement('div');
-        feedback.id = id;
-        feedback.className = 'form-feedback';
-        feedback.style.fontSize = '12px';
-        feedback.style.marginTop = '4px';
-        input.parentNode.appendChild(feedback);
-    }
-    return feedback;
-}
-
-function showFieldError(input, feedback, message) {
-    input.classList.remove('is-valid', 'is-pending');
-    input.classList.add('is-invalid');
-    feedback.textContent = message;
-    feedback.style.color = '#dc3545';
-}
-
-function showFieldSuccess(input, feedback, message) {
-    input.classList.remove('is-invalid', 'is-pending');
-    input.classList.add('is-valid');
-    feedback.textContent = message;
-    feedback.style.color = '#198754';
-}
-
-function showFieldPending(input, feedback, message) {
-    input.classList.remove('is-invalid', 'is-valid');
-    input.classList.add('is-pending');
-    feedback.textContent = message;
-    feedback.style.color = '#6c757d';
-}
-
-// Form submission validation
-function validateFormBeforeSubmit(form) {
-    const invalidFields = form.querySelectorAll('.is-invalid');
-    
-    if (invalidFields.length > 0) {
-        // Scroll to first invalid field
-        invalidFields[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-        invalidFields[0].focus();
-        
-        showNotification('Veuillez corriger les erreurs avant de continuer', 'error');
-        return false;
-    }
-    
-    return true;
-}
-
-// Auto-save functionality (draft)
-function initializeAutoSave() {
-    const forms = document.querySelectorAll('form');
-    forms.forEach(form => {
-        const inputs = form.querySelectorAll('input, select, textarea');
-        inputs.forEach(input => {
-            if (input.type !== 'file' && input.type !== 'submit') {
-                input.addEventListener('change', () => saveDraft(form));
-            }
-        });
-    });
-}
-
-async function saveDraft(form) {
-    const formData = new FormData(form);
-    const draftData = {};
-    const settingsType = form.querySelector('input[name="settings_type"]')?.value || 'profile';
-    
-    for (let [key, value] of formData.entries()) {
-        if (key !== 'csrfmiddlewaretoken' && key !== 'profile_picture') {
-            draftData[key] = value;
-        }
-    }
-    
-    try {
-        // Sauvegarder à la fois localement et sur le serveur
-        localStorage.setItem(`settings_draft_${settingsType}`, JSON.stringify(draftData));
-        
-        const response = await fetch('/api/save-draft/', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCsrfToken(),
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                type: settingsType,
-                data: draftData
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            showAutoSaveIndicator('saved');
-        } else {
-            console.warn('Server draft save failed:', result.error);
-            showTemporaryMessage('Brouillon sauvé localement', 'warning');
-        }
-    } catch (error) {
-        console.error('Draft save error:', error);
-        showTemporaryMessage('Brouillon sauvé localement', 'warning');
-    }
-}
-
-async function loadDraft(settingsType = 'profile') {
-    try {
-        // Essayer de charger depuis le serveur d'abord
-        const response = await fetch(`/api/load-draft/?type=${settingsType}`, {
-            method: 'GET',
-            headers: {
-                'X-CSRFToken': getCsrfToken(),
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const result = await response.json();
-        
-        let draftData = null;
-        if (result.success && result.draft) {
-            draftData = result.draft.data;
-            showTemporaryMessage('Brouillon chargé depuis le serveur', 'info');
-        } else {
-            // Fallback vers le stockage local
-            const localDraft = localStorage.getItem(`settings_draft_${settingsType}`);
-            if (localDraft) {
-                draftData = JSON.parse(localDraft);
-                showTemporaryMessage('Brouillon chargé localement', 'info');
-            }
-        }
-        
-        if (draftData) {
-            Object.entries(draftData).forEach(([key, value]) => {
-                const input = document.querySelector(`[name="${key}"]`);
-                if (input) {
-                    if (input.type === 'checkbox') {
-                        input.checked = value === 'on';
-                    } else {
-                        input.value = value;
-                    }
-                }
-            });
-        }
-    } catch (error) {
-        console.error('Error loading draft:', error);
-        // Fallback vers le stockage local en cas d'erreur
-        const localDraft = localStorage.getItem(`settings_draft_${settingsType}`);
-        if (localDraft) {
-            try {
-                const data = JSON.parse(localDraft);
-                Object.entries(data).forEach(([key, value]) => {
-                    const input = document.querySelector(`[name="${key}"]`);
-                    if (input) {
-                        if (input.type === 'checkbox') {
-                            input.checked = value === 'on';
-                        } else {
-                            input.value = value;
-                        }
-                    }
-                });
-                showTemporaryMessage('Brouillon chargé localement', 'warning');
-            } catch (parseError) {
-                console.error('Error parsing local draft:', parseError);
-            }
-        }
-    }
-}
-
-function clearDraft(settingsType = 'profile') {
-    localStorage.removeItem(`settings_draft_${settingsType}`);
-}
-
-function getCsrfToken() {
-    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-           document.cookie.match(/csrftoken=([^;]+)/)?.[1];
-}
-
-function showAutoSaveIndicator(status) {
-    let indicator = document.getElementById('auto-save-indicator');
-    if (!indicator) {
-        indicator = document.createElement('div');
-        indicator.id = 'auto-save-indicator';
-        indicator.className = 'auto-save-indicator';
-        document.body.appendChild(indicator);
-    }
-    
-    indicator.classList.remove('saving', 'saved', 'hidden');
-    
-    if (status === 'saving') {
-        indicator.textContent = '💾 Sauvegarde...';
-        indicator.classList.add('saving');
-    } else if (status === 'saved') {
-        indicator.textContent = '✅ Sauvegardé';
-        indicator.classList.add('saved');
-        setTimeout(() => {
-            indicator.classList.add('hidden');
-        }, 2000);
-    }
-}
-
-function showTemporaryMessage(message, type) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 300px;';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    document.body.appendChild(alertDiv);
-    
-    setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
-    }, 3000);
-}
-
-// Initialize everything when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize validation after a short delay to ensure all elements are loaded
-    setTimeout(() => {
-        initializeFormValidation();
-        initializeAutoSave();
-        
-        // Load draft if available
-        if (localStorage.getItem('settings_draft')) {
-            loadDraft();
-        }
-        
-        // Clear draft on successful submission
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                console.log('[Form] Submit event triggered');
-                
-                // Log form data
-                const formData = new FormData(this);
-                const formEntries = {};
-                for (let [key, value] of formData.entries()) {
-                    if (key === 'profile_picture' && value instanceof File) {
-                        formEntries[key] = `File: ${value.name} (${value.size} bytes)`;
-                    } else {
-                        formEntries[key] = value;
-                    }
-                }
-                console.log('[Form] Form data:', formEntries);
-                
-                if (validateFormBeforeSubmit(this)) {
-                    console.log('[Form] Validation passed, clearing draft');
-                    clearDraft();
-                } else {
-                    console.warn('[Form] Validation failed, preventing submission');
-                    e.preventDefault();
-                }
-            });
-        });
-    }, 100);
-});
-
-// Debug functions for profile picture testing
-window.debugProfilePicture = {
-    logFormData: function() {
-        const form = document.querySelector('form');
-        if (form) {
-            const formData = new FormData(form);
-            console.log('[DEBUG] Current form data:');
-            for (let [key, value] of formData.entries()) {
-                if (key === 'profile_picture' && value instanceof File) {
-                    console.log(`  ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
-                } else {
-                    console.log(`  ${key}: ${value}`);
-                }
-            }
-        }
-    },
-    
-    clearProfilePicture: function() {
-        const input = document.querySelector('input[name="profile_picture"]');
-        if (input) {
-            input.value = '';
-            console.log('[DEBUG] Profile picture input cleared');
-            resetProfilePicturePreview();
-        }
-    },
-    
-    testValidation: function(file) {
-        if (!file) {
-            console.log('[DEBUG] No file provided for validation test');
-            return;
-        }
-        console.log('[DEBUG] Testing validation for:', file);
-        const event = { target: { files: [file] } };
-        validateProfilePicture(event);
-    },
-    
-    getCurrentUser: function() {
-        console.log('[DEBUG] Current user avatar images:');
-        document.querySelectorAll('.user-avatar img').forEach((img, i) => {
-            console.log(`  Avatar ${i+1}: ${img.src}`);
-        });
-    }
-};
-
-console.log('[DEBUG] Profile picture debug functions available: window.debugProfilePicture');
-
-// Debug function to test if apps are loaded
-function debugApps() {
-    const appItems = document.querySelectorAll('[id^="app-"]');
-    console.log('Apps found:', appItems.length);
-    appItems.forEach(app => {
-        console.log('App ID:', app.id);
-    });
-}
-</script>
+{% block extra_js %}
+<script src="{% static 'src/js/settings.js' %}"></script>
 {% endblock %}

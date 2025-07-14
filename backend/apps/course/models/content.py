@@ -8,6 +8,7 @@ Contient TheoryContent et autres contenus pédagogiques.
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from .core import ContentLesson
 
 
@@ -20,7 +21,7 @@ class TheoryContent(models.Model):
     content_es = models.JSONField(default=dict, help_text="Theory content in Spanish")
     content_nl = models.JSONField(default=dict, help_text="Theory content in Dutch")
     available_languages = models.JSONField(default=list, help_text="List of available languages for this theory")
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

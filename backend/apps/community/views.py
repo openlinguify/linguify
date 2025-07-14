@@ -194,7 +194,8 @@ class UserProfileView(LoginRequiredMixin, TemplateView):
         # Get the profile user
         username = kwargs.get('username')
         try:
-            profile_user = User.objects.get(username=username)
+            # Recherche case-insensitive pour les usernames
+            profile_user = User.objects.get(username__iexact=username)
             profile, created = Profile.objects.get_or_create(user=profile_user)
         except User.DoesNotExist:
             raise Http404("User not found")

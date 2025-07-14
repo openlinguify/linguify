@@ -105,6 +105,9 @@ class MessengerChat {
 
         // Boutons d'appel
         this.setupCallButtons();
+        
+        // Bouton voir le profil
+        this.setupViewProfileButton();
     }
 
     setupCallButtons() {
@@ -125,6 +128,44 @@ class MessengerChat {
         } else {
             console.warn('[MessengerChat] Video call button not found');
         }
+    }
+
+    setupViewProfileButton() {
+        const viewProfileBtn = document.getElementById('view-profile-btn');
+        if (viewProfileBtn) {
+            viewProfileBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.viewUserProfile();
+            });
+            console.log('[MessengerChat] View profile button listener attached');
+        } else {
+            console.warn('[MessengerChat] View profile button not found');
+        }
+    }
+
+    viewUserProfile() {
+        if (!this.currentConversation) {
+            console.warn('[MessengerChat] No current conversation to view profile');
+            alert('Aucune conversation active pour voir le profil');
+            return;
+        }
+
+        // Récupérer les données de la conversation actuelle
+        const conversation = this.conversations.get(this.currentConversation);
+        if (!conversation || !conversation.participant) {
+            console.warn('[MessengerChat] No participant data found');
+            alert('Impossible de trouver les données du participant');
+            return;
+        }
+
+        const username = conversation.participant.username;
+        
+        console.log(`[MessengerChat] Viewing profile for user ${username}`);
+        
+        // Rediriger vers la page de profil (format court recommandé)
+        // Normaliser le username en minuscules pour l'URL
+        const normalizedUsername = username.toLowerCase();
+        window.open(`/u/${normalizedUsername}/`, '_blank');
     }
 
     async loadConversations() {
