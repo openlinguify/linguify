@@ -1,8 +1,70 @@
 /**
  * JavaScript pour la page de chat dédiée
  * Interface complète de messagerie style Discord/Slack
- * Version: 2024-07-13.4 - Fixed message display and participant names
+ * Version: 2025-07-13.4 - Fixed message display and participant names
  */
+
+// Initialiser les tooltips et améliorations UX
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser les tooltips Bootstrap
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Ajouter des effets visuels pour les boutons d'appel
+    document.querySelectorAll('.btn-conv-action[title*="appel"]').forEach(button => {
+        // Effet de survol amélioré
+        button.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.15)';
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+        
+        // Effet de clic
+        button.addEventListener('click', function() {
+            // Animation de clic
+            this.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 100);
+            }, 100);
+        });
+    });
+    
+    // Animation d'apparition des boutons quand une conversation est sélectionnée
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.target.id === 'chat-header' && mutation.type === 'attributes') {
+                const chatHeader = document.getElementById('chat-header');
+                const callButtons = chatHeader.querySelectorAll('.btn-conv-action[title*="appel"]');
+                
+                if (chatHeader.style.display !== 'none') {
+                    // Animation d'apparition des boutons
+                    callButtons.forEach((button, index) => {
+                        button.style.opacity = '0';
+                        button.style.transform = 'scale(0.5) translateY(20px)';
+                        
+                        setTimeout(() => {
+                            button.style.transition = 'all 0.4s ease-out';
+                            button.style.opacity = '1';
+                            button.style.transform = 'scale(1) translateY(0)';
+                        }, index * 100 + 200);
+                    });
+                }
+            }
+        });
+    });
+    
+    const chatHeader = document.getElementById('chat-header');
+    if (chatHeader) {
+        observer.observe(chatHeader, { attributes: true, attributeFilter: ['style'] });
+    }
+});
 
 class ChatPage {
     constructor() {
