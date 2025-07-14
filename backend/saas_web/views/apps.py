@@ -47,7 +47,7 @@ class AppStoreView(View):
             'enabled_app_ids': list(enabled_app_ids),
             'categories': [],  # Could be implemented if needed
         }
-        return render(request, 'saas_web/app_store.html', context)
+        return render(request, 'app_manager/app_store.html', context)
 
 
 @method_decorator(login_required, name='dispatch')

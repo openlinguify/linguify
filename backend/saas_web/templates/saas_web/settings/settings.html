@@ -2,1386 +2,529 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}Paramètres - Open Linguify{% endblock %}
+{% block title %}Paramètres - Linguify{% endblock %}
+
+{% block body_class %}settings-page{% endblock %}
 
 {% block extra_css %}
-<style>
-    body {
-        background: #f4f5f7 !important;
-        font-family: "Lucida Grande", Helvetica, Verdana, Arial, sans-serif !important;
-    }
-
-    /* Override ALL base.html container styles */
-    .main-content {
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-
-    .container,
-    .container-fluid {
-        max-width: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-
-    .content-area {
-        max-width: none !important;
-        width: 100vw !important;
-        height: calc(100vh - 60px) !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        display: flex;
-        background: #f4f5f7;
-        position: absolute;
-        top: 60px;
-        left: 0;
-    }
-
-    .settings-sidebar {
-        width: 230px;
-        background: #0077ff;
-        color: white;
-        padding: 0;
-        overflow-y: auto;
-        box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-        height: calc(100vh - 60px);
-        flex-shrink: 0;
-    }
-
-    .settings-main {
-        flex: 1;
-        background: #f4f5f7;
-        padding: 0;
-        overflow-y: auto;
-        height: calc(100vh - 60px);
-        display: flex;
-        flex-direction: column;
-    }
-
-    .main-content-header {
-        background: white;
-        border-bottom: 1px solid #dee2e6;
-        padding: 12px 16px;
-        flex-shrink: 0;
-        z-index: 10;
-    }
-
-    .settings-tabs {
-        background: white;
-        border-bottom: 1px solid #dee2e6;
-        padding: 0 16px;
-        margin-bottom: 0;
-        flex-shrink: 0;
-    }
-
-    .main-content-body {
-        padding: 16px;
-        flex: 1;
-        overflow-y: auto;
-    }
-
-    .breadcrumb-nav {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 13px;
-        color: #6c757d;
-    }
-
-    .breadcrumb-nav .active {
-        color: #495057;
-        font-weight: 500;
-    }
-
-    .sidebar-header {
-        padding: 16px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        background: #7c3b6e;
-    }
-
-    .sidebar-user {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .user-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-        font-size: 14px;
-    }
-
-    .user-info {
-        color: white;
-    }
-
-    .user-name {
-        font-size: 14px;
-        font-weight: 500;
-        margin: 0;
-    }
-
-    .user-role {
-        font-size: 12px;
-        opacity: 0.8;
-        margin: 0;
-    }
-
-    .sidebar-section {
-        margin: 0;
-    }
-
-    .sidebar-menu {
-        list-style: none;
-        padding: 0;
-        margin: 8px 0;
-    }
-
-    .sidebar-item {
-        display: flex;
-        align-items: center;
-        padding: 8px 16px;
-        color: rgba(255, 255, 255, 0.9);
-        text-decoration: none;
-        transition: all 0.15s ease;
-        border: none;
-        background: none;
-        width: 100%;
-        text-align: left;
-        cursor: pointer;
-        font-size: 13px;
-    }
-
-    .sidebar-item:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        text-decoration: none;
-    }
-
-    .sidebar-item.active {
-        background: rgba(255, 255, 255, 0.15);
-        color: white;
-        border-right: 3px solid #f0ad4e;
-    }
-
-    .sidebar-item.active:hover {
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-    }
-
-    .sidebar-item i {
-        width: 16px;
-        margin-right: 8px;
-        font-size: 14px;
-        text-align: center;
-    }
-
-    .app-icon {
-        width: 16px;
-        height: 16px;
-        border-radius: 2px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 8px;
-        font-size: 12px;
-        color: white;
-        background: rgba(255, 255, 255, 0.2);
-    }
-
-    .content-section {
-        background: white;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        margin-bottom: 16px;
-        overflow: hidden;
-    }
-
-    .section-header {
-        background: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
-        padding: 12px 16px;
-        color: #495057;
-        font-weight: 500;
-        font-size: 14px;
-    }
-
-    .section-content {
-        padding: 16px;
-    }
-
-    .form-group {
-        margin-bottom: 16px;
-    }
-
-    .form-label {
-        display: block;
-        font-weight: 500;
-        color: #495057;
-        margin-bottom: 4px;
-        font-size: 13px;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 6px 8px;
-        border: 1px solid #ced4da;
-        border-radius: 3px;
-        font-size: 13px;
-        color: #495057;
-        background: white;
-        transition: border-color 0.15s ease;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #875a7b;
-        box-shadow: 0 0 0 2px rgba(135, 90, 123, 0.2);
-    }
-
-    .form-control:disabled {
-        background: #f8f9fa;
-        color: #6c757d;
-    }
-
-    .btn-primary {
-        background: #875a7b;
-        color: white;
-        border: 1px solid #875a7b;
-        padding: 6px 12px;
-        border-radius: 3px;
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.15s ease;
-    }
-
-    .btn-primary:hover {
-        background: #7c3b6e;
-        border-color: #7c3b6e;
-    }
-
-    .btn-secondary {
-        background: #6c757d;
-        color: white;
-        border: 1px solid #6c757d;
-        padding: 6px 12px;
-        border-radius: 3px;
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-        transition: all 0.15s ease;
-    }
-
-    .btn-secondary:hover {
-        background: #5a6268;
-        border-color: #545b62;
-        color: white;
-        text-decoration: none;
-    }
-
-    .tab-content {
-        display: none;
-    }
-
-    .tab-content.active {
-        display: block;
-    }
-
-    .file-upload-area {
-        border: 2px dashed #dee2e6;
-        border-radius: 4px;
-        padding: 24px;
-        text-align: center;
-        background: #f8f9fa;
-        transition: border-color 0.15s ease;
-    }
-
-    .file-upload-area:hover {
-        border-color: #875a7b;
-    }
-
-    .help-text {
-        font-size: 12px;
-        color: #6c757d;
-        margin-top: 4px;
-    }
-
-    .alert-info {
-        background: #d1ecf1;
-        border: 1px solid #bee5eb;
-        color: #0c5460;
-        padding: 12px 16px;
-        border-radius: 4px;
-        font-size: 13px;
-    }
-
-    .two-column {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-    }
-
-    @media (max-width: 768px) {
-        .two-column {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    /* Form validation styles */
-    .form-control.is-valid {
-        border-color: #198754;
-        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23198754' d='m2.3 6.73.8-.77L4.7 7.6 8 4.33 7.23 3.56 4.7 6.1z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 8px center;
-        background-size: 16px 16px;
-    }
-
-    .form-control.is-invalid {
-        border-color: #dc3545;
-        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23dc3545' d='M1.5 1 6.5 6m0-5L1.5 6'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 8px center;
-        background-size: 16px 16px;
-    }
-
-    .form-control.is-pending {
-        border-color: #6c757d;
-        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%236c757d' d='M4 0a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM2 4a2 2 0 1 1 4 0 2 2 0 0 1-4 0z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 8px center;
-        background-size: 16px 16px;
-    }
-
-    .form-feedback {
-        font-size: 12px;
-        margin-top: 4px;
-        transition: all 0.15s ease;
-    }
-
-    /* Theme preview transitions */
-    body {
-        transition: filter 0.3s ease;
-    }
-
-    .theme-dark {
-        filter: invert(0.05);
-    }
-
-    /* Loading spinner for async operations */
-    .spinner-sm {
-        width: 1rem;
-        height: 1rem;
-        border-width: 0.1em;
-    }
-
-    /* Enhanced button states */
-    .btn-primary:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    .btn-secondary:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    /* File upload enhancement */
-    .file-upload-area {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .file-upload-area.dragover {
-        border-color: #875a7b;
-        background: rgba(135, 90, 123, 0.1);
-    }
-
-    /* Voice settings enhanced sliders */
-    .form-range::-webkit-slider-thumb {
-        background: #875a7b;
-    }
-
-    .form-range::-moz-range-thumb {
-        background: #875a7b;
-        border: none;
-    }
-
-    /* Accessibility improvements */
-    .form-label {
-        cursor: pointer;
-    }
-
-    input[type="checkbox"]:focus,
-    input[type="radio"]:focus {
-        box-shadow: 0 0 0 2px rgba(135, 90, 123, 0.25);
-    }
-
-    /* Auto-save indicator */
-    .auto-save-indicator {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        z-index: 9999;
-        font-size: 12px;
-        padding: 4px 8px;
-        border-radius: 4px;
-        transition: opacity 0.3s ease;
-    }
-
-    .auto-save-indicator.saving {
-        background: #ffc107;
-        color: #000;
-        opacity: 1;
-    }
-
-    .auto-save-indicator.saved {
-        background: #198754;
-        color: white;
-        opacity: 1;
-    }
-
-    .auto-save-indicator.hidden {
-        opacity: 0;
-    }
-
-
-    .settings-tab {
-        display: inline-block;
-        padding: 12px 16px;
-        color: #6c757d;
-        text-decoration: none;
-        border-bottom: 2px solid transparent;
-        font-size: 13px;
-        font-weight: 500;
-        margin-right: 16px;
-        cursor: pointer;
-        background: none;
-        border-left: none;
-        border-right: none;
-        border-top: none;
-    }
-
-    .settings-tab:hover {
-        color: #495057;
-        text-decoration: none;
-    }
-
-    .settings-tab.active {
-        color: #875a7b;
-        border-bottom-color: #875a7b;
-    }
-</style>
+<link rel="stylesheet" href="{% static 'src/css/settings.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="content-area">
-    <!-- Settings Sidebar -->
+<div class="settings-container">
+    <!-- Enhanced Sidebar -->
     <div class="settings-sidebar">
-        <!-- User Profile Header -->
         <div class="sidebar-header">
-            <div class="sidebar-user">
-                <div class="user-avatar"
-                    data-initials="{{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}">
-                    {% if user.get_profile_picture_url %}
-                    <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil"
-                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"
-                        data-original-src="{{ user.get_profile_picture_url }}">
-                    {% else %}
-                    {{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}
-                    {% endif %}
-                </div>
-                <div class="user-info">
-                    <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
-                    <div class="user-role">Administrateur</div>
-                </div>
+            <h3>Paramètres</h3>
+            <div class="subtitle">Personnalisez votre expérience Linguify</div>
+        </div>
+        
+        <!-- Search -->
+        <div class="settings-search">
+            <input type="text" class="search-input" placeholder="Rechercher des paramètres...">
+        </div>
+        
+        <!-- Navigation Categories -->
+        <nav class="settings-nav">
+            <div class="nav-category">
+                <div class="nav-category-title">Personnel</div>
+                <a href="#" class="nav-item active" data-tab="profile">
+                    <i class="bi bi-person-circle"></i>
+                    Profil & Compte
+                </a>
             </div>
-        </div>
-
-        <!-- General Settings -->
-        <div class="sidebar-section">
-            <ul class="sidebar-menu">
-                <li>
-                    <button class="sidebar-item active" onclick="showTab('general-settings')">
-                        <i class="bi bi-gear-fill"></i>
-                        Paramètres généraux
-                    </button>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Apps Settings -->
-        <div class="sidebar-section">
-            <ul class="sidebar-menu">
-                {% for app in user_apps %}
-                <li>
-                    <button class="sidebar-item" onclick="showTab('app-{{ app.display_name|slugify }}')">
-                        <div class="app-icon">
-                            <i class="bi {{ app.icon_class }}"></i>
-                        </div>
-                        {{ app.display_name }}
-                    </button>
-                </li>
-                {% empty %}
-                <li style="padding: 8px 16px; color: rgba(255,255,255,0.5); font-size: 12px;">
-                    Aucune app installée
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-title">Interface</div>
+                <a href="#" class="nav-item" data-tab="interface">
+                    <i class="bi bi-palette"></i>
+                    Thème & Apparence
+                </a>
+                <a href="#" class="nav-item" data-tab="voice">
+                    <i class="bi bi-mic"></i>
+                    Assistant Vocal
+                </a>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-title">Applications</div>
+                <a href="#" class="nav-item" data-tab="learning">
+                    <i class="bi bi-book"></i>
+                    Apprentissage
+                </a>
+                <a href="#" class="nav-item" data-tab="chat">
+                    <i class="bi bi-chat-dots"></i>
+                    Chat
+                </a>
+                <a href="#" class="nav-item" data-tab="community">
+                    <i class="bi bi-people"></i>
+                    Community
+                </a>
+                <a href="#" class="nav-item" data-tab="notes">
+                    <i class="bi bi-journal-text"></i>
+                    Notes
+                </a>
+                <a href="#" class="nav-item" data-tab="quiz">
+                    <i class="bi bi-question-circle"></i>
+                    Quiz
+                </a>
+            </div>
+        </nav>
     </div>
-
-    <!-- Settings Main Content -->
+    
+    <!-- Main Content -->
     <div class="settings-main">
-        <!-- Main Content Header -->
+        <!-- Header -->
         <div class="main-content-header">
             <div class="breadcrumb-nav">
                 <span>Linguify</span>
-                <span>›</span>
-                <span class="active">Paramètres</span>
+                <i class="bi bi-chevron-right"></i>
+                <span class="active">Profil & Compte</span>
             </div>
+            <h1 class="page-title">Profil & Compte</h1>
+            <p class="page-subtitle">Gérez vos informations personnelles et paramètres de compte</p>
         </div>
-
-        <!-- Settings Tabs -->
-        <div class="settings-tabs">
-            <button class="settings-tab active" onclick="showSubTab('user-profile')">Profil utilisateur</button>
-            <button class="settings-tab" onclick="showSubTab('general-settings')">Paramètres généraux</button>
-            <button class="settings-tab" onclick="showSubTab('voice-settings')">Assistant vocal</button>
-        </div>
-
-        <!-- Main Content Body -->
+        
+        <!-- Content Body -->
         <div class="main-content-body">
-            <!-- User Profile Tab Content -->
-            <div id="user-profile" class="tab-content active">
-                <form method="post" enctype="multipart/form-data" action="{% url 'saas_web:settings' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="setting_type" value="profile">
-
-                    <!-- Profile Picture Section -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <i class="bi bi-person-circle" style="margin-right: 8px;"></i>
+            <!-- Profile & Account Tab -->
+            <div id="profile" class="tab-content active">
+                <!-- Profile Picture Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-person-circle"></i>
                             Photo de profil
-                        </div>
-                        <div class="section-content">
-                            <div style="display: flex; align-items: center; gap: 16px;">
-                                <div class="user-avatar" style="width: 80px; height: 80px; font-size: 24px;"
-                                    data-initials="{{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}">
-                                    {% if user.get_profile_picture_url %}
-                                    <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil"
-                                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"
-                                        data-original-src="{{ user.get_profile_picture_url }}">
-                                    {% else %}
-                                    {{ user.first_name|first|default:user.username|first|upper }}{{
-                                    user.last_name|first|upper }}
-                                    {% endif %}
-                                </div>
-                                <div>
-                                    <input type="file" name="profile_picture" accept="image/*" class="form-control"
-                                        style="margin-bottom: 8px;">
-                                    <div class="help-text">Formats acceptés : JPG, PNG, WEBP. Taille max : 5MB</div>
-                                </div>
-                            </div>
+                        </h3>
+                        <div class="section-actions">
+                            <button class="section-toggle">
+                                <i class="bi bi-chevron-up"></i>
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Personal Information Section -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <i class="bi bi-person-fill" style="margin-right: 8px;"></i>
+                    <div class="section-content">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="form-label">Photo de profil</label>
+                                <input type="file" name="profile_picture" accept="image/*" class="form-control">
+                                <div class="form-help">Formats acceptés : JPG, PNG, WEBP. Taille max : 5MB</div>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn-primary">
+                                    <i class="bi bi-upload"></i>
+                                    Télécharger
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Personal Information Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-person-lines-fill"></i>
                             Informations personnelles
+                        </h3>
+                        <div class="section-actions">
+                            <button class="section-toggle">
+                                <i class="bi bi-chevron-up"></i>
+                            </button>
                         </div>
-                        <div class="section-content">
-                            <div class="two-column">
+                    </div>
+                    <div class="section-content">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Prénom</label>
-                                    <input type="text" name="first_name" class="form-control"
-                                        value="{{ user.first_name }}" placeholder="Votre prénom">
+                                    <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Nom</label>
-                                    <input type="text" name="last_name" class="form-control"
-                                        value="{{ user.last_name }}" placeholder="Votre nom">
+                                    <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}" required>
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 <label class="form-label">Email</label>
-                                <input type="email" class="form-control" value="{{ user.email }}" disabled>
-                                <div class="help-text">L'email ne peut pas être modifié</div>
+                                <input type="email" name="email" class="form-control" value="{{ user.email }}" disabled>
+                                <div class="form-help">L'email ne peut pas être modifié</div>
                             </div>
-
                             <div class="form-group">
                                 <label class="form-label">Numéro de téléphone</label>
-                                <input type="tel" name="phone_number" class="form-control"
-                                    value="{{ user.phone_number|default:'' }}" placeholder="+32 123 456 789">
-                                <div class="help-text">Optionnel. Format: +32 123 456 789</div>
+                                <input type="tel" name="phone" class="form-control" value="{{ user.profile.phone_number|default:'' }}" placeholder="+32 123 456 789">
+                                <div class="form-help">Optionnel. Format: +32 123 456 789</div>
                             </div>
-
                             <div class="form-group">
                                 <label class="form-label">Nom d'utilisateur</label>
-                                <input type="text" name="username" class="form-control" value="{{ user.username }}"
-                                    placeholder="Nom d'utilisateur" data-current-username="{{ user.username }}">
+                                <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
                             </div>
-
                             <div class="form-group">
                                 <label class="form-label">Biographie</label>
-                                <textarea name="bio" class="form-control" rows="3"
-                                    placeholder="Parlez-nous de vous...">{{ user.bio|default:'' }}</textarea>
+                                <textarea name="bio" class="form-control" rows="3" placeholder="Parlez-nous de vous...">{{ user.profile.bio|default:'' }}</textarea>
                             </div>
-
-                            <div class="two-column">
-                                <div class="form-group">
-                                    <label class="form-label">Date de naissance</label>
-                                    <input type="date" name="birthday" class="form-control"
-                                        value="{{ user.birthday|date:'Y-m-d' }}">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Genre</label>
-                                    <select name="gender" class="form-control">
-                                        <option value="">Sélectionner...</option>
-                                        <option value="M" {% if user.gender == 'M' %}selected{% endif %}>Homme</option>
-                                        <option value="F" {% if user.gender == 'F' %}selected{% endif %}>Femme</option>
-                                        <option value="O" {% if user.gender == 'O' %}selected{% endif %}>Autre</option>
-                                    </select>
-                                </div>
-                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Privacy & Security Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-shield-lock"></i>
+                            Confidentialité & Sécurité
+                        </h3>
+                        <div class="section-actions">
+                            <button class="section-toggle">
+                                <i class="bi bi-chevron-up"></i>
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Learning Preferences Section -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <i class="bi bi-mortarboard-fill" style="margin-right: 8px;"></i>
+                    <div class="section-content">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" name="public_profile" {% if user.profile.public_profile %}checked{% endif %}>
+                                    Profil public
+                                </label>
+                                <div class="form-help">Permettre aux autres utilisateurs de voir votre profil</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" name="share_progress" {% if user.profile.share_progress %}checked{% endif %}>
+                                    Partager mes progrès
+                                </label>
+                                <div class="form-help">Afficher vos statistiques d'apprentissage sur votre profil</div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Learning Tab -->
+            <div id="learning" class="tab-content">
+                <!-- Learning Preferences Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-translate"></i>
                             Préférences d'apprentissage
+                        </h3>
+                        <div class="section-actions">
+                            <button class="section-toggle">
+                                <i class="bi bi-chevron-up"></i>
+                            </button>
                         </div>
-                        <div class="section-content">
-                            <div class="two-column">
+                    </div>
+                    <div class="section-content">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Langue native</label>
                                     <select name="native_language" class="form-control">
-                                        <option value="">Sélectionner...</option>
-                                        <option value="FR" {% if user.native_language == 'FR' %}selected{% endif %}>
-                                            Français</option>
-                                        <option value="EN" {% if user.native_language == 'EN' %}selected{% endif %}>
-                                            Anglais</option>
-                                        <option value="ES" {% if user.native_language == 'ES' %}selected{% endif %}>
-                                            Espagnol</option>
-                                        <option value="DE" {% if user.native_language == 'DE' %}selected{% endif %}>
-                                            Allemand</option>
-                                        <option value="IT" {% if user.native_language == 'IT' %}selected{% endif %}>
-                                            Italien</option>
-                                        <option value="PT" {% if user.native_language == 'PT' %}selected{% endif %}>
-                                            Portugais</option>
-                                        <option value="NL" {% if user.native_language == 'NL' %}selected{% endif %}>
-                                            Néerlandais</option>
+                                        <option value="fr">Français</option>
+                                        <option value="en" selected>Anglais</option>
+                                        <option value="es">Espagnol</option>
+                                        <option value="de">Allemand</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label">Langue d'interface</label>
-                                    <select name="interface_language" class="form-control">
-                                        <option value="">Automatique</option>
-                                        <option value="fr" {% if user.interface_language == 'fr' %}selected{% endif %}>
-                                            Français</option>
-                                        <option value="en" {% if user.interface_language == 'en' %}selected{% endif %}>
-                                            English</option>
-                                        <option value="es" {% if user.interface_language == 'es' %}selected{% endif %}>
-                                            Español</option>
-                                        <option value="de" {% if user.interface_language == 'de' %}selected{% endif %}>
-                                            Deutsch</option>
-                                        <option value="it" {% if user.interface_language == 'it' %}selected{% endif %}>
-                                            Italiano</option>
-                                        <option value="pt" {% if user.interface_language == 'pt' %}selected{% endif %}>
-                                            Português</option>
-                                        <option value="nl" {% if user.interface_language == 'nl' %}selected{% endif %}>
-                                            Nederlands</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="two-column">
                                 <div class="form-group">
                                     <label class="form-label">Langue cible</label>
                                     <select name="target_language" class="form-control">
-                                        <option value="">Sélectionner...</option>
-                                        <option value="ES" {% if user.target_language == 'ES' %}selected{% endif %}>
-                                            Espagnol</option>
-                                        <option value="EN" {% if user.target_language == 'EN' %}selected{% endif %}>
-                                            Anglais</option>
-                                        <option value="FR" {% if user.target_language == 'FR' %}selected{% endif %}>
-                                            Français</option>
-                                        <option value="DE" {% if user.target_language == 'DE' %}selected{% endif %}>
-                                            Allemand</option>
-                                        <option value="IT" {% if user.target_language == 'IT' %}selected{% endif %}>
-                                            Italien</option>
-                                        <option value="PT" {% if user.target_language == 'PT' %}selected{% endif %}>
-                                            Portugais</option>
-                                        <option value="NL" {% if user.target_language == 'NL' %}selected{% endif %}>
-                                            Néerlandais</option>
+                                        <option value="fr">Français</option>
+                                        <option value="en">Anglais</option>
+                                        <option value="es" selected>Espagnol</option>
+                                        <option value="de">Allemand</option>
                                     </select>
                                 </div>
+                            </div>
+                            <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Niveau de langue</label>
                                     <select name="language_level" class="form-control">
-                                        <option value="">Sélectionner...</option>
-                                        <option value="A1" {% if user.language_level == 'A1' %}selected{% endif %}>A1 -
-                                            Débutant</option>
-                                        <option value="A2" {% if user.language_level == 'A2' %}selected{% endif %}>A2 -
-                                            Élémentaire</option>
-                                        <option value="B1" {% if user.language_level == 'B1' %}selected{% endif %}>B1 -
-                                            Intermédiaire</option>
-                                        <option value="B2" {% if user.language_level == 'B2' %}selected{% endif %}>B2 -
-                                            Intermédiaire avancé</option>
-                                        <option value="C1" {% if user.language_level == 'C1' %}selected{% endif %}>C1 -
-                                            Avancé</option>
-                                        <option value="C2" {% if user.language_level == 'C2' %}selected{% endif %}>C2 -
-                                            Maîtrise</option>
+                                        <option value="A1" selected>A1 - Débutant</option>
+                                        <option value="A2">A2 - Élémentaire</option>
+                                        <option value="B1">B1 - Intermédiaire</option>
+                                        <option value="B2">B2 - Intermédiaire supérieur</option>
+                                        <option value="C1">C1 - Avancé</option>
+                                        <option value="C2">C2 - Maîtrise</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Objectif d'apprentissage</label>
+                                    <select name="learning_goal" class="form-control">
+                                        <option value="travel" selected>Voyage</option>
+                                        <option value="business">Professionnel</option>
+                                        <option value="academic">Académique</option>
+                                        <option value="personal">Personnel</option>
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Objectif d'apprentissage</label>
-                                <select name="objectives" class="form-control">
-                                    <option value="Personal" {% if user.objectives == 'Personal' %}selected{% endif %}>
-                                        Personnel</option>
-                                    <option value="Work" {% if user.objectives == 'Work' %}selected{% endif %}>
-                                        Professionnel</option>
-                                    <option value="Study" {% if user.objectives == 'Study' %}selected{% endif %}>
-                                        Académique</option>
-                                    <option value="Travel" {% if user.objectives == 'Travel' %}selected{% endif %}>Voyage
-                                    </option>
-                                    <option value="Business" {% if user.objectives == 'Business' %}selected{% endif %}>
-                                        Business</option>
-                                    <option value="For Fun" {% if user.objectives == 'For Fun' %}selected{% endif %}>Pour
-                                        le plaisir</option>
-                                    <option value="Exam" {% if user.objectives == 'Exam' %}selected{% endif %}>Examens
-                                    </option>
-                                </select>
-                            </div>
-
                             <div class="form-group">
                                 <label class="form-label">Objectif quotidien (minutes)</label>
-                                <input type="number" name="daily_goal" class="form-control"
-                                    value="{{ user.daily_goal }}" min="5" max="120">
+                                <input type="number" name="daily_goal" class="form-control" value="15" min="5" max="120">
                             </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Notifications Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-bell"></i>
+                            Notifications d'apprentissage
+                        </h3>
+                        <div class="section-actions">
+                            <button class="section-toggle">
+                                <i class="bi bi-chevron-up"></i>
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Notification Preferences Section -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <i class="bi bi-bell-fill" style="margin-right: 8px;"></i>
-                            Notifications
-                        </div>
-                        <div class="section-content">
+                    <div class="section-content">
+                        <form method="post">
+                            {% csrf_token %}
                             <div class="form-group">
-                                <label style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" name="email_notifications" {% if user.email_notifications %}checked{% endif %}>
-                                    <span>Notifications par email</span>
+                                <label class="form-label">
+                                    <input type="checkbox" name="email_notifications" checked>
+                                    Notifications par email
                                 </label>
                             </div>
-
                             <div class="form-group">
-                                <label style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" name="push_notifications" {% if user.push_notifications %}checked{% endif %}>
-                                    <span>Notifications push</span>
+                                <label class="form-label">
+                                    <input type="checkbox" name="push_notifications" checked>
+                                    Notifications push
                                 </label>
                             </div>
-
-                            <div class="two-column">
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="weekday_reminders" {% if user.weekday_reminders %}checked{% endif %}>
-                                        <span>Rappels en semaine</span>
-                                    </label>
-                                </div>
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="weekend_reminders" {% if user.weekend_reminders %}checked{% endif %}>
-                                        <span>Rappels le weekend</span>
-                                    </label>
-                                </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" name="weekday_reminders" checked>
+                                    Rappels en semaine
+                                </label>
                             </div>
-
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" name="weekend_reminders">
+                                    Rappels le weekend
+                                </label>
+                            </div>
                             <div class="form-group">
                                 <label class="form-label">Heure des rappels</label>
-                                <input type="time" name="reminder_time" class="form-control"
-                                    value="{{ user.reminder_time|time:'H:i' }}">
+                                <input type="time" name="reminder_time" class="form-control" value="18:00">
                             </div>
-                        </div>
+                        </form>
                     </div>
-
-                    <!-- Privacy Settings Section -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <i class="bi bi-shield-lock-fill" style="margin-right: 8px;"></i>
-                            Confidentialité
-                        </div>
-                        <div class="section-content">
-                            <div class="form-group">
-                                <label style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" name="public_profile" {% if user.public_profile %}checked{%
-                                        endif %}>
-                                    <span>Profil public</span>
-                                </label>
-                                <div class="help-text">Permettre aux autres utilisateurs de voir votre profil</div>
-                            </div>
-
-                            <div class="form-group">
-                                <label style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" name="share_progress" {% if user.share_progress %}checked{%
-                                        endif %}>
-                                    <span>Partager mes progrès</span>
-                                </label>
-                                <div class="help-text">Afficher vos statistiques d'apprentissage sur votre profil</div>
-                            </div>
-
-                            <div class="form-group">
-                                <label style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" name="share_activity" {% if user.share_activity %}checked{%
-                                        endif %}>
-                                    <span>Partager mon activité</span>
-                                </label>
-                                <div class="help-text">Afficher votre activité récente aux autres utilisateurs</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Account Management Section -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <i class="bi bi-person-gear" style="margin-right: 8px;"></i>
-                            Gestion de compte
-                        </div>
-                        <div class="section-content">
-                            <div class="form-group">
-                                <label class="form-label">Statut du compte</label>
-                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                                    <span
-                                        style="background: #28a745; color: white; padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 500;">
-                                        <i class="bi bi-check-circle-fill" style="margin-right: 4px;"></i>
-                                        Actif
-                                    </span>
-                                    <span style="font-size: 13px; color: #6c757d;">Compte créé le {{
-                                        user.date_joined|date:"d/m/Y" }}</span>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Actions du compte</label>
-                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                    <button type="button" class="btn-secondary" onclick="suspendAccount()">
-                                        <i class="bi bi-pause-circle" style="margin-right: 4px;"></i>
-                                        Suspendre temporairement
-                                    </button>
-                                    <button type="button" class="btn-secondary" onclick="exportData()">
-                                        <i class="bi bi-download" style="margin-right: 4px;"></i>
-                                        Exporter mes données
-                                    </button>
-                                    <button type="button" class="btn-secondary" onclick="changePassword()">
-                                        <i class="bi bi-key" style="margin-right: 4px;"></i>
-                                        Changer mot de passe
-                                    </button>
-                                    <button type="button" class="btn-secondary" onclick="logoutAllDevices()">
-                                        <i class="bi bi-box-arrow-right" style="margin-right: 4px;"></i>
-                                        Déconnecter tous les appareils
-                                    </button>
-                                    <button type="button"
-                                        style="background: #dc3545; color: white; border: 1px solid #dc3545; padding: 6px 12px; border-radius: 3px; font-size: 13px; cursor: pointer;"
-                                        onclick="deleteAccount()">
-                                        <i class="bi bi-trash" style="margin-right: 4px;"></i>
-                                        Supprimer mon compte
-                                    </button>
-                                </div>
-                                <div class="help-text" style="margin-top: 8px;">
-                                    <strong>Attention :</strong> La suppression du compte est irréversible. Toutes vos
-                                    données seront définitivement perdues.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Save Button -->
-                    <div class="content-section">
-                        <div class="section-content">
-                            <button type="submit" class="btn-primary">
-                                <i class="bi bi-check2" style="margin-right: 6px;"></i>
-                                Enregistrer les modifications
-                            </button>
-                            <a href="{% url 'saas_web:settings' %}" class="btn-secondary"
-                                style="margin-left: 8px;">Annuler</a>
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
-
-            <!-- General Settings Tab Content -->
-            <div id="general-settings" class="tab-content">
-                <form method="post" action="{% url 'saas_web:settings' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="setting_type" value="general">
-
-                    <!-- Appearance Section -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <i class="bi bi-palette-fill" style="margin-right: 8px;"></i>
-                            Apparence
+            
+            <!-- Interface Tab -->
+            <div id="interface" class="tab-content">
+                <!-- Theme Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-palette"></i>
+                            Thème
+                        </h3>
+                        <div class="section-actions">
+                            <button class="section-toggle">
+                                <i class="bi bi-chevron-up"></i>
+                            </button>
                         </div>
-                        <div class="section-content">
+                    </div>
+                    <div class="section-content">
+                        <form method="post">
+                            {% csrf_token %}
                             <div class="form-group">
-                                <label class="form-label">Thème de l'interface</label>
-                                <div
-                                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 8px;">
-                                    <label
-                                        style="display: flex; align-items: center; gap: 8px; padding: 12px; border: 2px solid #dee2e6; border-radius: 6px; cursor: pointer; transition: all 0.2s;"
-                                        onclick="selectTheme(this, 'light')">
-                                        <input type="radio" name="theme" value="light" {% if user.theme == 'light' or not
-                                            user.theme %}checked{% endif %} style="margin: 0;">
-                                        <div>
-                                            <div style="font-weight: 500; margin-bottom: 2px;">🌞 Clair</div>
-                                            <div style="font-size: 11px; color: #6c757d;">Interface claire et lumineuse
-                                            </div>
-                                        </div>
-                                    </label>
-
-                                    <label
-                                        style="display: flex; align-items: center; gap: 8px; padding: 12px; border: 2px solid #dee2e6; border-radius: 6px; cursor: pointer; transition: all 0.2s;"
-                                        onclick="selectTheme(this, 'dark')">
-                                        <input type="radio" name="theme" value="dark" {% if user.theme == 'dark' %}checked{% endif %} style="margin: 0;">
-                                        <div>
-                                            <div style="font-weight: 500; margin-bottom: 2px;">🌙 Sombre</div>
-                                            <div style="font-size: 11px; color: #6c757d;">Interface sombre pour les yeux
-                                            </div>
-                                        </div>
-                                    </label>
-
-                                    <label
-                                        style="display: flex; align-items: center; gap: 8px; padding: 12px; border: 2px solid #dee2e6; border-radius: 6px; cursor: pointer; transition: all 0.2s;"
-                                        onclick="selectTheme(this, 'auto')">
-                                        <input type="radio" name="theme" value="auto" {% if user.theme == 'auto' %}checked{% endif %} style="margin: 0;">
-                                        <div>
-                                            <div style="font-weight: 500; margin-bottom: 2px;">🔄 Automatique</div>
-                                            <div style="font-size: 11px; color: #6c757d;">Suit les préférences système
-                                            </div>
-                                        </div>
-                                    </label>
+                                <label class="form-label">Apparence</label>
+                                <div class="theme-options">
+                                    <div class="theme-option" data-theme="light">
+                                        <div class="theme-preview light"></div>
+                                        <span>🌞 Clair</span>
+                                    </div>
+                                    <div class="theme-option" data-theme="dark">
+                                        <div class="theme-preview dark"></div>
+                                        <span>🌙 Sombre</span>
+                                    </div>
+                                    <div class="theme-option active" data-theme="auto">
+                                        <div class="theme-preview auto"></div>
+                                        <span>🔄 Automatique</span>
+                                    </div>
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 <label class="form-label">Couleur d'accent</label>
-                                <div
-                                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; margin-top: 8px;">
-                                    <label
-                                        style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
-                                        <input type="radio" name="accent_color" value="purple" {% if
-                                            user.accent_color == 'purple' or not user.accent_color %}checked{% endif %}
-                                            style="margin: 0;">
-                                        <div
-                                            style="width: 32px; height: 32px; background: #875a7b; border-radius: 50%; border: 3px solid transparent;">
-                                        </div>
-                                        <span style="font-size: 11px;">Violet</span>
-                                    </label>
-
-                                    <label
-                                        style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
-                                        <input type="radio" name="accent_color" value="blue" {% if
-                                            user.accent_color == 'blue' %}checked{% endif %} style="margin: 0;">
-                                        <div
-                                            style="width: 32px; height: 32px; background: #007bff; border-radius: 50%; border: 3px solid transparent;">
-                                        </div>
-                                        <span style="font-size: 11px;">Bleu</span>
-                                    </label>
-
-                                    <label
-                                        style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
-                                        <input type="radio" name="accent_color" value="green" {% if user.accent_color == 'green' %}checked{% endif %} style="margin: 0;">
-                                        <div
-                                            style="width: 32px; height: 32px; background: #28a745; border-radius: 50%; border: 3px solid transparent;">
-                                        </div>
-                                        <span style="font-size: 11px;">Vert</span>
-                                    </label>
-
-                                    <label
-                                        style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
-                                        <input type="radio" name="accent_color" value="red" {% if user.accent_color == 'red' %}checked{% endif %} style="margin: 0;">
-                                        <div
-                                            style="width: 32px; height: 32px; background: #dc3545; border-radius: 50%; border: 3px solid transparent;">
-                                        </div>
-                                        <span style="font-size: 11px;">Rouge</span>
-                                    </label>
-
-                                    <label
-                                        style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
-                                        <input type="radio" name="accent_color" value="orange" {% if user.accent_color == 'orange' %}checked{% endif %} style="margin: 0;">
-                                        <div
-                                            style="width: 32px; height: 32px; background: #fd7e14; border-radius: 50%; border: 3px solid transparent;">
-                                        </div>
-                                        <span style="font-size: 11px;">Orange</span>
-                                    </label>
+                                <div class="color-options">
+                                    <div class="color-option active violet" data-color="violet"></div>
+                                    <div class="color-option blue" data-color="blue"></div>
+                                    <div class="color-option green" data-color="green"></div>
+                                    <div class="color-option red" data-color="red"></div>
+                                    <div class="color-option orange" data-color="orange"></div>
                                 </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
-
-                    <!-- Interface Preferences Section -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <i class="bi bi-sliders" style="margin-right: 8px;"></i>
-                            Préférences d'interface
-                        </div>
-                        <div class="section-content">
-                            <div class="two-column">
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="compact_mode" {% if user.compact_mode %}checked{%
-                                            endif %}>
-                                        <span>Mode compact</span>
-                                    </label>
-                                    <div class="help-text">Réduire l'espacement pour afficher plus de contenu</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="animations" {% if user.animations != False %}checked{% endif %}>
-                                        <span>Animations</span>
-                                    </label>
-                                    <div class="help-text">Activer les transitions et animations</div>
-                                </div>
-                            </div>
-
-                            <div class="two-column">
-                                <div class="form-group">
-                                    <label class="form-label">Taille de police</label>
-                                    <select name="font_size" class="form-control">
-                                        <option value="small" {% if user.font_size == 'small' %}selected{% endif %}>Petite
-                                        </option>
-                                        <option value="medium" {% if user.font_size == 'medium' or not user.font_size %}selected{% endif %}>Normale</option>
-                                        <option value="large" {% if user.font_size == 'large' %}selected{% endif %}>Grande
-                                        </option>
-                                        <option value="xlarge" {% if user.font_size == 'xlarge' %}selected{% endif %}>Très
-                                            grande</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label">Disposition des menus</label>
-                                    <select name="menu_layout" class="form-control">
-                                        <option value="sidebar" {% if user.menu_layout == 'sidebar' or not
-                                            user.menu_layout %}selected{% endif %}>Barre latérale</option>
-                                        <option value="top" {% if user.menu_layout == 'top' %}selected{% endif %}>En haut
-                                        </option>
-                                        <option value="compact" {% if user.menu_layout == 'compact' %}selected{% endif %}>
-                                            Compact</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Accessibility Section -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <i class="bi bi-universal-access" style="margin-right: 8px;"></i>
-                            Accessibilité
-                        </div>
-                        <div class="section-content">
-                            <div class="two-column">
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="high_contrast" {% if user.high_contrast %}checked{%
-                                            endif %}>
-                                        <span>Contraste élevé</span>
-                                    </label>
-                                    <div class="help-text">Améliorer la lisibilité avec plus de contraste</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="reduce_motion" {% if user.reduce_motion %}checked{%
-                                            endif %}>
-                                        <span>Réduire les mouvements</span>
-                                    </label>
-                                    <div class="help-text">Minimiser les animations pour les sensibilités</div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" name="screen_reader_mode" {% if user.screen_reader_mode %}checked{% endif %}>
-                                    <span>Mode lecteur d'écran</span>
-                                </label>
-                                <div class="help-text">Optimiser l'interface pour les lecteurs d'écran</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Save Button -->
-                    <div class="content-section">
-                        <div class="section-content">
-                            <button type="submit" class="btn-primary">
-                                <i class="bi bi-check2" style="margin-right: 6px;"></i>
-                                Appliquer les paramètres
+                </div>
+                
+                <!-- Layout Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-layout-sidebar"></i>
+                            Mise en page
+                        </h3>
+                        <div class="section-actions">
+                            <button class="section-toggle">
+                                <i class="bi bi-chevron-up"></i>
                             </button>
-                            <button type="button" class="btn-secondary" style="margin-left: 8px;"
-                                onclick="resetSettings()">Réinitialiser</button>
                         </div>
                     </div>
-                </form>
-            </div>
-
-            <!-- Voice Settings Tab Content -->
-            <div id="voice-settings" class="tab-content">
-                <form method="post" action="{% url 'saas_web:settings' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="setting_type" value="voice">
-
-                    <!-- Voice Assistant Status -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <i class="bi bi-mic-fill" style="margin-right: 8px;"></i>
-                            État de l'Assistant Vocal
-                        </div>
-                        <div class="section-content">
-                            <div class="two-column">
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="voice_commands_enabled" {% if
-                                            voice_preferences.voice_commands_enabled %}checked{% endif %}>
-                                        <span>Commandes vocales</span>
-                                    </label>
-                                    <div class="help-text">Activer la reconnaissance des commandes vocales</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="tts_enabled" {% if voice_preferences.tts_enabled %}checked{% endif %}>
-                                        <span>Synthèse vocale</span>
-                                    </label>
-                                    <div class="help-text">Activer les réponses vocales</div>
-                                </div>
-                            </div>
-
-                            <div class="two-column">
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="auto_listen" {% if voice_preferences.auto_listen %}checked{% endif %}>
-                                        <span>Écoute automatique</span>
-                                    </label>
-                                    <div class="help-text">Écouter automatiquement après les réponses</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="noise_suppression" {% if
-                                            voice_preferences.noise_suppression %}checked{% endif %}>
-                                        <span>Suppression du bruit</span>
-                                    </label>
-                                    <div class="help-text">Réduire le bruit de fond</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Voice Preferences -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <i class="bi bi-sliders" style="margin-right: 8px;"></i>
-                            Préférences Vocales
-                        </div>
-                        <div class="section-content">
-                            <div class="two-column">
-                                <div class="form-group">
-                                    <label class="form-label">Vitesse de parole</label>
-                                    <select name="preferred_voice_speed" class="form-control">
-                                        <option value="slow" {% if voice_preferences.preferred_voice_speed == 'slow' %}selected{% endif %}>Lent (120 mots/min)</option>
-                                        <option value="normal" {% if voice_preferences.preferred_voice_speed == 'normal' %}selected{% endif %}>Normal (180 mots/min)</option>
-                                        <option value="fast" {% if voice_preferences.preferred_voice_speed == 'fast' %}selected{% endif %}>Rapide (240 mots/min)</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label">Hauteur de voix</label>
-                                    <input type="range" name="preferred_voice_pitch" class="form-range" min="0"
-                                        max="100" value="{{ voice_preferences.preferred_voice_pitch }}"
-                                        style="width: 100%;">
-                                    <div class="help-text">Ajuster la hauteur de la voix synthétisée</div>
-                                </div>
-                            </div>
-
+                    <div class="section-content">
+                        <form method="post">
+                            {% csrf_token %}
                             <div class="form-group">
-                                <label class="form-label">Sensibilité du microphone (%)</label>
-                                <input type="range" name="sensitivity" class="form-range" min="1" max="100"
-                                    value="{{ voice_preferences.sensitivity }}" style="width: 100%;">
-                                <div class="help-text">Ajuster la sensibilité de détection vocale</div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Accent préféré</label>
-                                <select name="preferred_accent" class="form-control">
-                                    <option value="">Automatique</option>
-                                    <option value="fr-FR" {% if voice_preferences.preferred_accent == 'fr-FR' %}selected{% endif %}>Français (France)</option>
-                                    <option value="en-US" {% if voice_preferences.preferred_accent == 'en-US' %}selected{% endif %}>Anglais (États-Unis)</option>
-                                    <option value="en-GB" {% if voice_preferences.preferred_accent == 'en-GB' %}selected{% endif %}>Anglais (Royaume-Uni)</option>
-                                    <option value="es-ES" {% if voice_preferences.preferred_accent == 'es-ES' %}selected{% endif %}>Espagnol (Espagne)</option>
-                                    <option value="de-DE" {% if voice_preferences.preferred_accent == 'de-DE' %}selected{% endif %}>Allemand</option>
-                                    <option value="it-IT" {% if voice_preferences.preferred_accent == 'it-IT' %}selected{% endif %}>Italien</option>
+                                <label class="form-label">Disposition de la barre latérale</label>
+                                <select name="sidebar_layout" class="form-control">
+                                    <option value="left" selected>Barre latérale</option>
+                                    <option value="top">En haut</option>
+                                    <option value="compact">Compact</option>
                                 </select>
                             </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Accessibility Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-universal-access"></i>
+                            Accessibilité
+                        </h3>
+                        <div class="section-actions">
+                            <button class="section-toggle">
+                                <i class="bi bi-chevron-up"></i>
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Advanced Voice Features -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <i class="bi bi-gear-fill" style="margin-right: 8px;"></i>
-                            Fonctionnalités Avancées
-                        </div>
-                        <div class="section-content">
-                            <div class="two-column">
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="pronunciation_feedback" {% if voice_preferences.pronunciation_feedback %}checked{% endif %}>
-                                        <span>Feedback de prononciation</span>
-                                    </label>
-                                    <div class="help-text">Analyser et corriger votre prononciation</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" name="conversation_mode" {% if voice_preferences.conversation_mode %}checked{% endif %}>
-                                        <span>Mode conversation</span>
-                                    </label>
-                                    <div class="help-text">Conversation continue activée</div>
-                                </div>
-                            </div>
-
+                    <div class="section-content">
+                        <form method="post">
+                            {% csrf_token %}
                             <div class="form-group">
-                                <button type="button" class="btn-secondary" onclick="testVoice()">
-                                    <i class="bi bi-volume-up" style="margin-right: 6px;"></i>
+                                <label class="form-label">
+                                    <input type="checkbox" name="reduce_motion">
+                                    Réduire les animations
+                                </label>
+                                <div class="form-help">Désactive les animations pour une meilleure accessibilité</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" name="high_contrast">
+                                    Contraste élevé
+                                </label>
+                                <div class="form-help">Améliore la lisibilité pour les malvoyants</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" name="large_text">
+                                    Texte agrandi
+                                </label>
+                                <div class="form-help">Augmente la taille du texte par défaut</div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Voice Tab -->
+            <div id="voice" class="tab-content">
+                <!-- Voice Settings Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-mic"></i>
+                            Préférences vocales
+                        </h3>
+                        <div class="section-actions">
+                            <button class="section-toggle">
+                                <i class="bi bi-chevron-up"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="form-label">Vitesse de parole</label>
+                                <select name="speech_rate" class="form-control">
+                                    <option value="slow" selected>Lent (120 mots/min)</option>
+                                    <option value="normal">Normal (160 mots/min)</option>
+                                    <option value="fast">Rapide (200 mots/min)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hauteur de voix</label>
+                                <input type="range" name="voice_pitch" class="form-control" min="0.5" max="2" step="0.1" value="1">
+                                <div class="form-help">Ajuster la hauteur de la voix synthétisée</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Sensibilité du microphone (%)</label>
+                                <input type="range" name="mic_sensitivity" class="form-control" min="0" max="100" value="70">
+                                <div class="form-help">Ajuster la sensibilité de détection vocale</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Accent préféré</label>
+                                <select name="accent" class="form-control">
+                                    <option value="auto" selected>Automatique</option>
+                                    <option value="us">Américain</option>
+                                    <option value="uk">Britannique</option>
+                                    <option value="fr">Français</option>
+                                </select>
+                            </div>
+                            <div class="btn-group">
+                                <button type="button" class="btn-secondary">
+                                    <i class="bi bi-volume-up"></i>
                                     Tester la voix
                                 </button>
-                                <button type="button" class="btn-secondary" style="margin-left: 8px;"
-                                    onclick="testMicrophone()">
-                                    <i class="bi bi-mic" style="margin-right: 6px;"></i>
+                                <button type="button" class="btn-secondary">
+                                    <i class="bi bi-mic"></i>
                                     Tester le microphone
                                 </button>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Language Settings Info -->
-                    <div class="content-section">
-                        <div class="section-header">
-                            <i class="bi bi-globe" style="margin-right: 8px;"></i>
-                            Configuration Linguistique
-                        </div>
-                        <div class="section-content">
-                            <div class="two-column">
-                                <div class="form-group">
-                                    <label class="form-label">Langue de reconnaissance</label>
-                                    <p
-                                        style="margin: 0; padding: 8px 12px; background: #f8f9fa; border-radius: 4px; color: #6c757d;">
-                                        <strong>{{ user.native_language|default:'Français' }}</strong>
-                                        <br><small>Basée sur votre langue native</small>
-                                    </p>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label">Langue des réponses</label>
-                                    <p
-                                        style="margin: 0; padding: 8px 12px; background: #f8f9fa; border-radius: 4px; color: #6c757d;">
-                                        <strong>{{ user.interface_language|default:'Français' }}</strong>
-                                        <br><small>Basée sur votre langue d'interface</small>
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="alert-info">
-                                <i class="bi bi-info-circle" style="margin-right: 8px;"></i>
-                                Les paramètres de langue sont automatiquement configurés selon vos préférences de
-                                profil. Modifiez votre langue native et d'interface dans l'onglet "Profil utilisateur"
-                                pour ajuster la reconnaissance et les réponses vocales.
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Save Button -->
-                    <div class="content-section">
-                        <div class="section-content">
-                            <button type="submit" class="btn-primary">
-                                <i class="bi bi-check2" style="margin-right: 6px;"></i>
-                                Sauvegarder les paramètres vocaux
-                            </button>
-                            <button type="button" class="btn-secondary" style="margin-left: 8px;"
-                                onclick="resetVoiceSettings()">Réinitialiser</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-
-            <!-- App Settings Tabs -->
-            {% for app in user_apps %}
-            <div id="app-{{ app.display_name|slugify }}" class="tab-content">
-                {% if app.display_name == "Révision" %}
-                <!-- Template spécialisé pour Révision -->
-                {% include 'saas_web/settings/apps/revision_settings.html' %}
-                {% else %}
-                <!-- Template générique pour les autres apps -->
-                <div class="content-section">
-                    <div class="section-header">
-                        <div class="app-icon" style="margin-right: 8px;">
-                            <i class="bi {{ app.icon_class }}"></i>
-                        </div>
-                        Configuration {{ app.display_name }}
-                    </div>
-                    <div class="section-content">
-                        <div class="alert-info">
-                            <i class="bi bi-info-circle" style="margin-right: 8px;"></i>
-                            Paramètres spécifiques à {{ app.display_name }} à développer...
-                        </div>
-
-                        <!-- Example app settings structure -->
-                        <div style="margin-top: 16px;">
-                            <div class="form-group">
-                                <label class="form-label">Activer {{ app.display_name }}</label>
-                                <input type="checkbox" checked style="margin-right: 8px;">
-                                <span style="font-size: 12px; color: #6c757d;">Module activé</span>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Paramètres avancés</label>
-                                <a href="#" class="btn-secondary">Configurer</a>
-                            </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
-                {% endif %}
             </div>
-            {% endfor %}
+            
+            <!-- Chat Tab -->
+            <div id="chat" class="tab-content">
+                {% include 'saas_web/settings/apps/chat_settings.html' %}
+            </div>
+            
+            <!-- Community Tab -->
+            <div id="community" class="tab-content">
+                {% include 'saas_web/settings/apps/community_settings.html' %}
+            </div>
+            
+            <!-- Notes Tab -->
+            <div id="notes" class="tab-content">
+                {% include 'saas_web/settings/apps/notebook_settings.html' %}
+            </div>
+            
+            <!-- Quiz Tab -->
+            <div id="quiz" class="tab-content">
+                {% include 'saas_web/settings/apps/quizz_settings.html' %}
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Auto-save indicator (dynamically created) -->
 {% endblock %}
 
 {% block extra_js %}
-<script>
-// Variables globales pour le chat et l'interface
-window.currentUserId = {{ user.id|default:'null' }};
-window.currentUsername = '{{ user.username|default:'' }}';
-window.csrfToken = '{{ csrf_token }}';
-console.log('[Settings] Variables définies - userId:', window.currentUserId, 'username:', window.currentUsername);
-</script>
 <script src="{% static 'src/js/settings.js' %}"></script>
 {% endblock %}

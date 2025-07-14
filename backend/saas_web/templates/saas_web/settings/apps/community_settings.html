@@ -1,0 +1,135 @@
+<!-- Community Settings - Improved -->
+<div class="content-section">
+    <div class="section-header">
+        <h3 class="section-title">
+            <i class="bi bi-people"></i>
+            Paramètres de la Communauté
+        </h3>
+        <div class="section-actions">
+            <button class="section-toggle">
+                <i class="bi bi-chevron-up"></i>
+            </button>
+        </div>
+    </div>
+    <div class="section-content">
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="setting_type" value="community">
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <input type="checkbox" name="community_notifications" checked>
+                    Notifications de la communauté
+                </label>
+                <div class="form-help">Recevoir des notifications pour les nouvelles publications</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <input type="checkbox" name="mention_notifications" checked>
+                    Notifications de mentions
+                </label>
+                <div class="form-help">Être notifié quand quelqu'un vous mentionne</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <input type="checkbox" name="follow_notifications" checked>
+                    Notifications de nouveaux followers
+                </label>
+                <div class="form-help">Être notifié quand quelqu'un vous suit</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <input type="checkbox" name="post_reactions" checked>
+                    Notifications de réactions
+                </label>
+                <div class="form-help">Être notifié des likes et réactions sur vos publications</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Visibilité des publications</label>
+                <select name="post_visibility" class="form-control">
+                    <option value="public" selected>Public</option>
+                    <option value="followers">Followers uniquement</option>
+                    <option value="private">Privé</option>
+                </select>
+                <div class="form-help">Qui peut voir vos publications par défaut</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Modération du contenu</label>
+                <select name="content_moderation" class="form-control">
+                    <option value="strict">Strict</option>
+                    <option value="moderate" selected>Modéré</option>
+                    <option value="relaxed">Détendu</option>
+                </select>
+                <div class="form-help">Niveau de filtrage du contenu</div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="content-section">
+    <div class="section-header">
+        <h3 class="section-title">
+            <i class="bi bi-heart"></i>
+            Interactions Sociales
+        </h3>
+        <div class="section-actions">
+            <button class="section-toggle">
+                <i class="bi bi-chevron-up"></i>
+            </button>
+        </div>
+    </div>
+    <div class="section-content">
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="setting_type" value="social">
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <input type="checkbox" name="auto_follow_back">
+                    Suivre automatiquement en retour
+                </label>
+                <div class="form-help">Suivre automatiquement les personnes qui vous suivent</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <input type="checkbox" name="show_activity_status" checked>
+                    Afficher mon statut d'activité
+                </label>
+                <div class="form-help">Montrer votre activité récente dans la communauté</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <input type="checkbox" name="share_learning_progress" checked>
+                    Partager mes progrès d'apprentissage
+                </label>
+                <div class="form-help">Permettre aux autres de voir vos progrès</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <input type="checkbox" name="allow_study_groups" checked>
+                    Autoriser les invitations aux groupes d'étude
+                </label>
+                <div class="form-help">Permettre aux autres de vous inviter dans des groupes</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Fréquence des digest</label>
+                <select name="digest_frequency" class="form-control">
+                    <option value="daily">Quotidien</option>
+                    <option value="weekly" selected>Hebdomadaire</option>
+                    <option value="monthly">Mensuel</option>
+                    <option value="never">Jamais</option>
+                </select>
+                <div class="form-help">Fréquence des résumés de l'activité communautaire</div>
+            </div>
+        </form>
+    </div>
+</div>
