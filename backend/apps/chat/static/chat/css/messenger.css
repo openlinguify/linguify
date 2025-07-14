@@ -1,8 +1,8 @@
 /* Chat Messenger Facebook Style - v2024.07.13.3 - Improved input styling */
 .messenger-chat {
     position: fixed;
-    bottom: 85px; /* Remonté pour voir le bouton widget */
-    right: 20px;
+    bottom: 60px; /* Remettre à la position normale */
+    right: 100px; /* À gauche du bouton widget (20px + 60px bouton + 20px marge) */
     width: 420px; /* Plus large */
     height: 550px; /* Plus haut pour plus d'espace */
     background: #fff;
@@ -464,8 +464,8 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    min-height: 400px; /* Plus d'espace avec le widget plus grand */
-    max-height: 420px;
+    min-height: 410px; /* Plus d'espace avec l'en-tête réduit */
+    max-height: 430px;
 }
 
 .message {
@@ -644,14 +644,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px; /* Padding réduit */
+    padding: 6px 10px; /* Padding très réduit */
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
     border-bottom: 1px solid #e2e8f0;
     backdrop-filter: blur(20px);
     position: relative;
     overflow: visible !important; /* Permettre au dropdown de déborder */
     flex-shrink: 0;
-    height: 60px; /* Hauteur fixe */
+    height: 48px; /* Hauteur encore plus réduite */
 }
 
 .conversation-header-modern::before {
@@ -672,17 +672,19 @@
 .header-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 6px; /* Espacement minimal */
     flex: 1;
     z-index: 1;
+    min-width: 0; /* Permettre la compression */
 }
 
 .header-right {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px; /* Espacement très réduit */
     z-index: 9999;
     position: relative;
+    flex-shrink: 0; /* Empêcher la compression des boutons */
 }
 
 .header-right .dropdown {
@@ -693,16 +695,16 @@
 .btn-back-modern {
     background: rgba(102, 126, 234, 0.1);
     border: none;
-    width: 32px; /* Plus petit */
-    height: 32px;
-    border-radius: 8px;
+    width: 28px; /* Encore plus petit */
+    height: 28px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
     color: #667eea;
-}
+}   
 
 .btn-back-modern:hover {
     background: rgba(102, 126, 234, 0.2);
@@ -711,43 +713,44 @@
 }
 
 .btn-back-modern i {
-    font-size: 16px;
+    font-size: 14px; /* Plus petit */
     font-weight: bold;
 }
 
 /* Avatar moderne avec anneau */
 .participant-avatar-modern {
     position: relative;
-    margin-right: 12px;
+    margin-right: 0; /* Pas de marge, géré par le gap du parent */
+    flex-shrink: 0; /* Empêcher la compression de l'avatar */
 }
 
 .avatar-ring {
-    width: 36px; /* Plus petit */
-    height: 36px;
+    width: 28px; /* Plus petit */
+    height: 28px;
     border-radius: 50%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 1px 4px rgba(102, 126, 234, 0.2); /* Ombre réduite */
 }
 
 .avatar-letter {
     color: white;
-    font-size: 14px; /* Plus petit */
+    font-size: 13px; /* Légèrement plus grand */
     font-weight: 600;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
 }
 
 .status-indicator {
     position: absolute;
-    bottom: 2px;
-    right: 2px;
-    width: 12px;
-    height: 12px;
+    bottom: 0px;
+    right: 0px;
+    width: 8px; /* Très petit */
+    height: 8px;
     border-radius: 50%;
-    border: 2px solid white;
+    border: 1px solid white;
     background: #e5e7eb;
 }
 
@@ -756,26 +759,44 @@
     box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
 }
 
-/* Détails du participant */
-.participant-details-modern {
+/* Info participant - TOUT en horizontal */
+.participant-info-modern {
+    display: flex;
+    align-items: center;
     flex: 1;
+    min-width: 0;
+    gap: 6px; /* Espacement entre avatar, nom et statut */
+}
+
+/* Plus besoin de conteneur séparé pour les détails */
+.participant-details-modern {
+    display: contents; /* Les enfants se comportent comme s'ils étaient directement dans le parent */
 }
 
 .participant-name-modern {
-    font-size: 15px;
+    font-size: 14px; /* Plus lisible */
     font-weight: 600;
     color: #1f2937;
-    margin: 0 0 2px 0;
-    line-height: 1.2;
+    margin: 0;
+    line-height: 1.0;
+    white-space: nowrap; /* Empêcher le retour à la ligne */
+    overflow: hidden; /* Masquer le débordement */
+    text-overflow: ellipsis; /* Points de suspension si trop long */
+    flex-shrink: 0; /* Le nom ne se compresse pas */
 }
 
 .participant-status-modern {
-    font-size: 12px;
+    font-size: 11px; /* Plus lisible */
     color: #6b7280;
     margin: 0;
-    display: flex;
+    white-space: nowrap; /* Empêcher le retour à la ligne */
+    overflow: hidden; /* Masquer le débordement */
+    text-overflow: ellipsis; /* Points de suspension si trop long */
+    flex: 1; /* Prend l'espace restant et se compresse si nécessaire */
+    min-width: 0; /* Permet la compression */
+    display: flex; /* Pour aligner les éléments internes */
     align-items: center;
-    gap: 4px;
+    gap: 3px; /* Espacement légèrement augmenté */
 }
 
 .status-text-modern {
@@ -796,10 +817,10 @@
 
 .btn-call-modern {
     position: relative;
-    width: 30px; /* Plus petit et discret */
-    height: 30px;
+    width: 26px; /* Encore plus petit pour s'adapter */
+    height: 26px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -837,7 +858,7 @@
 
 .btn-icon {
     color: white;
-    font-size: 14px; /* Plus petit et discret */
+    font-size: 12px; /* Encore plus petit */
     z-index: 2;
     position: relative;
 }
@@ -863,9 +884,9 @@
 .btn-more-modern {
     background: #f1f5f9;
     border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 26px; /* Même taille que les boutons d'appel */
+    height: 26px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -881,7 +902,7 @@
 }
 
 .btn-more-modern i {
-    font-size: 16px;
+    font-size: 12px; /* Plus petit */
 }
 
 /* Dropdown moderne */
@@ -960,8 +981,9 @@
 /* Responsive */
 @media (max-width: 768px) {
     .messenger-chat {
-        right: 10px;
+        right: 80px; /* Ajusté pour mobile avec bouton widget */
         width: 360px; /* Plus large sur mobile aussi */
+        bottom: 20px; /* Position normale sur mobile */
     }
 }
 
@@ -970,6 +992,7 @@
         right: 5px;
         left: 5px;
         width: auto;
+        bottom: 80px; /* Plus haut sur très petit écran pour éviter le bouton */
     }
 }
 
