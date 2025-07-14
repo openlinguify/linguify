@@ -296,3 +296,14 @@ def send_message(request):
             'status': 'error',
             'message': str(e)
         }, status=500)
+
+
+@login_required
+def call_test_page(request):
+    """Page de test pour les appels audio/vidéo"""
+    return render(request, 'chat/call_test.html')
+
+@login_required
+def debug_calls_page(request):
+    """Page de debug pour diagnostiquer les problèmes d'appels"""
+    return render(request, 'chat/debug_calls.html')

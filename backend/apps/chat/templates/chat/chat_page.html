@@ -57,8 +57,109 @@
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         padding: 1rem;
-        text-align: center;
         flex-shrink: 0;
+    }
+    
+    /* Styles pour les boutons d'appel dans la page de chat */
+    .chat-header .conversation-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+    
+    .chat-header .btn-conv-action {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 10px;
+        border-radius: 50%;
+        cursor: pointer;
+        color: white;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        font-size: 16px;
+    }
+    
+    .chat-header .btn-conv-action:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    .chat-header .btn-conv-action:active {
+        transform: scale(0.95);
+    }
+    
+    /* Couleurs spécifiques pour les boutons d'appel dans le header */
+    .chat-header .btn-conv-action[title*="appel vocal"] {
+        background: rgba(40, 167, 69, 0.8);
+        border-color: rgba(40, 167, 69, 0.9);
+    }
+    
+    .chat-header .btn-conv-action[title*="appel vocal"]:hover {
+        background: rgba(40, 167, 69, 1);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+    }
+    
+    .chat-header .btn-conv-action[title*="appel vidéo"] {
+        background: rgba(0, 123, 255, 0.8);
+        border-color: rgba(0, 123, 255, 0.9);
+    }
+    
+    .chat-header .btn-conv-action[title*="appel vidéo"]:hover {
+        background: rgba(0, 123, 255, 1);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+    }
+    
+    /* Animation d'apparition pour les boutons d'appel */
+    .conversation-actions {
+        opacity: 0;
+        animation: fadeInButtons 0.5s ease-in-out 0.3s forwards;
+    }
+    
+    @keyframes fadeInButtons {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    /* Effet de pulsation pour attirer l'attention */
+    .btn-conv-action[title*="appel"]:not(:hover) {
+        animation: subtle-pulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes subtle-pulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        50% {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+    }
+    
+    /* Style pour l'avatar dans le header */
+    .conversation-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
     }
     
     .conversation-area {
@@ -252,6 +353,165 @@
             height: calc(100vh - 50px);
         }
     }
+    
+    /* Styles pour la modal d'appel */
+    .call-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        backdrop-filter: blur(5px);
+    }
+    
+    .call-container {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        min-width: 400px;
+        max-width: 600px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        animation: callModalSlideIn 0.3s ease-out;
+    }
+    
+    @keyframes callModalSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    
+    .call-header h3 {
+        margin: 0 0 1rem 0;
+        color: #333;
+        font-size: 1.5rem;
+    }
+    
+    .call-status {
+        padding: 0.5rem 1rem;
+        background: #f8f9fa;
+        border-radius: 25px;
+        margin-bottom: 2rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .call-participants {
+        margin: 2rem 0;
+    }
+    
+    .participant-card {
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .participant-avatar {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1rem auto;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        font-weight: bold;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .participant-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .call-videos {
+        position: relative;
+        margin: 2rem 0;
+        height: 300px;
+        background: #000;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .remote-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .local-video {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 120px;
+        height: 90px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 2px solid white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .call-controls {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .call-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .call-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    .call-btn-audio {
+        background: #28a745;
+        color: white;
+    }
+    
+    .call-btn-audio.muted {
+        background: #dc3545;
+    }
+    
+    .call-btn-video {
+        background: #007bff;
+        color: white;
+    }
+    
+    .call-btn-video.disabled {
+        background: #6c757d;
+    }
+    
+    .call-btn-end {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .call-btn-end:hover {
+        background: #c82333;
+    }
 </style>
 {% endblock %}
 
@@ -301,11 +561,26 @@
             <div class="chat-main">
                 <!-- Header de conversation -->
                 <div class="chat-header" id="chat-header" style="display: none;">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <div class="conversation-avatar me-3" id="current-participant-avatar">?</div>
-                        <div>
-                            <div class="fw-bold" id="current-participant-name">Nom</div>
-                            <small id="current-participant-status">En ligne</small>
+                    <div class="d-flex align-items-center justify-content-between w-100">
+                        <div class="d-flex align-items-center">
+                            <div class="conversation-avatar me-3" id="current-participant-avatar">?</div>
+                            <div>
+                                <div class="fw-bold" id="current-participant-name">Nom</div>
+                                <small id="current-participant-status">En ligne</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Boutons d'appel -->
+                        <div class="conversation-actions">
+                            <button class="btn-conv-action" title="Démarrer un appel vocal" id="audio-call-btn" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                <i class="bi bi-telephone-fill"></i>
+                            </button>
+                            <button class="btn-conv-action" title="Démarrer un appel vidéo" id="video-call-btn" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                <i class="bi bi-camera-video-fill"></i>
+                            </button>
+                            <button class="btn-conv-action" title="Plus d'options" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -376,4 +651,68 @@ window.csrfToken = '{{ csrf_token }}';
 
 <script src="{% static 'chat/js/chat-page.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Initialiser les tooltips et améliorations UX
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser les tooltips Bootstrap
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Ajouter des effets visuels pour les boutons d'appel
+    document.querySelectorAll('.btn-conv-action[title*="appel"]').forEach(button => {
+        // Effet de survol amélioré
+        button.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.15)';
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+        
+        // Effet de clic
+        button.addEventListener('click', function() {
+            // Animation de clic
+            this.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 100);
+            }, 100);
+        });
+    });
+    
+    // Animation d'apparition des boutons quand une conversation est sélectionnée
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.target.id === 'chat-header' && mutation.type === 'attributes') {
+                const chatHeader = document.getElementById('chat-header');
+                const callButtons = chatHeader.querySelectorAll('.btn-conv-action[title*="appel"]');
+                
+                if (chatHeader.style.display !== 'none') {
+                    // Animation d'apparition des boutons
+                    callButtons.forEach((button, index) => {
+                        button.style.opacity = '0';
+                        button.style.transform = 'scale(0.5) translateY(20px)';
+                        
+                        setTimeout(() => {
+                            button.style.transition = 'all 0.4s ease-out';
+                            button.style.opacity = '1';
+                            button.style.transform = 'scale(1) translateY(0)';
+                        }, index * 100 + 200);
+                    });
+                }
+            }
+        });
+    });
+    
+    const chatHeader = document.getElementById('chat-header');
+    if (chatHeader) {
+        observer.observe(chatHeader, { attributes: true, attributeFilter: ['style'] });
+    }
+});
+</script>
 {% endblock %}

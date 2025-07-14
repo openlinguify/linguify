@@ -55,28 +55,64 @@
 
         <!-- Zone de conversation active -->
         <div class="active-conversation" id="active-conversation" style="display: none;">
-            <!-- En-tête de la conversation -->
-            <div class="conversation-header">
-                <button class="btn-back" id="conversation-back">
-                    <i class="bi bi-arrow-left"></i>
-                </button>
-                <div class="participant-info">
-                    <div class="participant-avatar avatar-circle" id="participant-avatar">?</div>
-                    <div class="participant-details">
-                        <div class="participant-name" id="participant-name">Nom</div>
-                        <div class="participant-status" id="participant-status">En ligne</div>
+            <!-- En-tête de la conversation redesigné -->
+            <div class="conversation-header-modern">
+                <div class="header-left">
+                    <button class="btn-back-modern" id="conversation-back">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <div class="participant-info-modern">
+                        <div class="participant-avatar-modern" id="participant-avatar">
+                            <div class="avatar-ring">
+                                <span class="avatar-letter">?</span>
+                            </div>
+                            <div class="status-indicator online" id="status-indicator"></div>
+                        </div>
+                        <div class="participant-details-modern">
+                            <h4 class="participant-name-modern" id="participant-name">Nom d'utilisateur</h4>
+                            <p class="participant-status-modern" id="participant-status">
+                                <span class="status-text-modern">En ligne</span>
+                                <span class="last-seen">• Actif maintenant</span>
+                            </p>
+                        </div>
                     </div>
                 </div>
-                <div class="conversation-actions">
-                    <button class="btn-conv-action" title="Appel vocal">
-                        <i class="bi bi-telephone"></i>
-                    </button>
-                    <button class="btn-conv-action" title="Appel vidéo">
-                        <i class="bi bi-camera-video"></i>
-                    </button>
-                    <button class="btn-conv-action" title="Plus d'options">
-                        <i class="bi bi-three-dots"></i>
-                    </button>
+                
+                <div class="header-right">
+                    <div class="call-actions-group">
+                        <button class="btn-call-modern audio" title="Appel vocal" id="messenger-audio-call-btn">
+                            <div class="btn-icon">
+                                <i class="bi bi-telephone-fill"></i>
+                            </div>
+                            <div class="btn-ripple"></div>
+                        </button>
+                        <button class="btn-call-modern video" title="Appel vidéo" id="messenger-video-call-btn">
+                            <div class="btn-icon">
+                                <i class="bi bi-camera-video-fill"></i>
+                            </div>
+                            <div class="btn-ripple"></div>
+                        </button>
+                    </div>
+                    
+                    <div class="dropdown">
+                        <button class="btn-more-modern" data-bs-toggle="dropdown" aria-expanded="false" title="Plus d'options">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end modern-dropdown">
+                            <li><a class="dropdown-item-modern" href="#">
+                                <i class="bi bi-person-circle"></i>
+                                <span>Voir le profil</span>
+                            </a></li>
+                            <li><a class="dropdown-item-modern" href="#">
+                                <i class="bi bi-search"></i>
+                                <span>Rechercher</span>
+                            </a></li>
+                            <li><a class="dropdown-item-modern" href="#">
+                                <i class="bi bi-bell-slash"></i>
+                                <span>Notifications</span>
+                            </a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
@@ -114,11 +150,7 @@
     </div>
 </div>
 
-<!-- Chat Toggle Button -->
-<button class="chat-toggle-btn" id="chat-toggle-btn" title="Ouvrir le chat">
-    <i class="bi bi-chat-dots-fill"></i>
-    <span class="chat-badge" id="chat-toggle-badge">0</span>
-</button>
+<!-- Chat Toggle Button supprimé - géré dans base.html avec global-chat-btn -->
 
 <!-- Chat Styles -->
 <link rel="stylesheet" href="{% static 'chat/css/messenger.css' %}">

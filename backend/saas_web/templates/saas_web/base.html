@@ -215,12 +215,24 @@
                 align-items: center;
                 justify-content: center;
                 text-decoration: none;
+                border: none !important; /* Supprimer toute bordure */
+                outline: none !important; /* Supprimer l'outline */
+                cursor: pointer;
             }
 
             .global-chat-btn:hover {
                 transform: scale(1.1);
                 box-shadow: 0 6px 20px rgba(0,0,0,0.3);
                 color: white;
+                border: none !important;
+                outline: none !important;
+            }
+            
+            .global-chat-btn:focus,
+            .global-chat-btn:active {
+                border: none !important;
+                outline: none !important;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.2);
             }
             
             .global-chat-btn .chat-badge {
