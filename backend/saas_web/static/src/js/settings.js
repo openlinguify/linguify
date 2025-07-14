@@ -41,7 +41,7 @@ function updateHeaderForTab(tabName) {
 
   // Update breadcrumb
   if (breadcrumb) {
-    if (tabName === "general") {
+    if (tabName === "general-settings" || tabName === "general") {
       breadcrumb.textContent = "Paramètres généraux";
     } else if (tabName.startsWith("app-")) {
       const appName = tabName.replace("app-", "").replace(/-/g, " ");
@@ -53,7 +53,7 @@ function updateHeaderForTab(tabName) {
   // Update header tabs visibility
   const settingsTabs = document.querySelector(".settings-tabs");
   if (settingsTabs) {
-    if (tabName === "general") {
+    if (tabName === "general-settings" || tabName === "general") {
       settingsTabs.style.display = "block";
     } else {
       settingsTabs.style.display = "none";
@@ -64,7 +64,7 @@ function updateHeaderForTab(tabName) {
   const settingsTabButtons = document.querySelectorAll(".settings-tab");
   settingsTabButtons.forEach((tab) => tab.classList.remove("active"));
 
-  if (tabName === "general") {
+  if (tabName === "general-settings" || tabName === "general") {
     const generalTab = document.querySelector(".settings-tab");
     if (generalTab) generalTab.classList.add("active");
   }
@@ -98,7 +98,7 @@ function showSubTab(subTabName) {
 
 // Initialize
 document.addEventListener("DOMContentLoaded", function () {
-  updateHeaderForTab("general");
+  updateHeaderForTab("general-settings");
 
   // Set initial active states
   const firstSidebarItem = document.querySelector(".sidebar-item");
@@ -1118,6 +1118,28 @@ function showAutoSaveIndicator(status) {
   }
 }
 
+function updateAllProfilePictures(newUrl) {
+  console.log("[ProfilePicture] Updating all profile pictures to:", newUrl);
+  
+  // Update all user avatar images throughout the page
+  const avatars = document.querySelectorAll(".user-avatar img");
+  avatars.forEach((avatar, index) => {
+    console.log(`[ProfilePicture] Updating avatar ${index + 1}:`, avatar);
+    avatar.src = newUrl;
+    // Also update the data-original-src attribute
+    avatar.setAttribute("data-original-src", newUrl);
+  });
+  
+  // Update any other profile picture elements
+  const otherProfileImages = document.querySelectorAll('img[alt*="Photo de profil"], img[alt*="profile"]');
+  otherProfileImages.forEach((img, index) => {
+    console.log(`[ProfilePicture] Updating profile image ${index + 1}:`, img);
+    img.src = newUrl;
+  });
+  
+  console.log(`[ProfilePicture] Updated ${avatars.length + otherProfileImages.length} profile picture elements`);
+}
+
 function showTemporaryMessage(message, type) {
   const alertDiv = document.createElement("div");
   alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
@@ -1148,29 +1170,73 @@ document.addEventListener("DOMContentLoaded", function () {
       loadDraft();
     }
 
-    // Clear draft on successful submission
+    // Handle form submission with AJAX
     document.querySelectorAll("form").forEach((form) => {
-      form.addEventListener("submit", function (e) {
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault(); // Always prevent default form submission
         console.log("[Form] Submit event triggered");
 
         // Log form data
         const formData = new FormData(this);
         const formEntries = {};
+        let hasProfilePicture = false;
+        
         for (let [key, value] of formData.entries()) {
-          if (key === "profile_picture" && value instanceof File) {
-            formEntries[key] = `File: ${value.name} (${value.size} bytes)`;
+          if (key === "profile_picture") {
+            if (value instanceof File && value.size > 0) {
+              formEntries[key] = `File: ${value.name} (${value.size} bytes)`;
+              hasProfilePicture = true;
+              console.log("[Form] Profile picture file found:", value);
+            } else {
+              formEntries[key] = `Empty file input`;
+              console.log("[Form] Profile picture input is empty or invalid:", value);
+            }
           } else {
             formEntries[key] = value;
           }
         }
         console.log("[Form] Form data:", formEntries);
+        console.log("[Form] Has profile picture:", hasProfilePicture);
 
-        if (validateFormBeforeSubmit(this)) {
-          console.log("[Form] Validation passed, clearing draft");
-          clearDraft();
-        } else {
+        if (!validateFormBeforeSubmit(this)) {
           console.warn("[Form] Validation failed, preventing submission");
-          e.preventDefault();
+          return;
+        }
+
+        try {
+          console.log("[Form] Validation passed, submitting via AJAX");
+          
+          // Show loading message
+          showTemporaryMessage("Sauvegarde en cours...", "info");
+          
+          // Submit form via AJAX
+          const response = await fetch(this.action, {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-CSRFToken": getCsrfToken(),
+            },
+          });
+
+          const result = await response.json();
+          
+          if (result.success) {
+            console.log("[Form] Success:", result.message);
+            showTemporaryMessage(result.message, "success");
+            clearDraft();
+            
+            // Update profile picture if a new one was uploaded
+            if (result.profile_picture_url) {
+              console.log("[Form] Updating profile picture to:", result.profile_picture_url);
+              updateAllProfilePictures(result.profile_picture_url);
+            }
+          } else {
+            console.error("[Form] Error:", result.message || result.errors);
+            showTemporaryMessage(result.message || "Erreur lors de la sauvegarde", "error");
+          }
+        } catch (error) {
+          console.error("[Form] AJAX Error:", error);
+          showTemporaryMessage("Erreur de connexion", "error");
         }
       });
     });

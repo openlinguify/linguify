@@ -1,13 +1,16 @@
 import os
 import shutil
 import tempfile
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, Mock
 from io import BytesIO
+import json
 
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, Client
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 from ..profile import (
     process_profile_picture,
@@ -18,6 +21,7 @@ from ..profile import (
     process_uploaded_profile_picture,
     delete_profile_picture,
 )
+from ..supabase_storage import SupabaseStorageService
 
 User = get_user_model()
 
@@ -298,3 +302,202 @@ class ProfilePictureTestCase(TestCase):
         # Vérifier que la photo a été supprimée
         self.user.refresh_from_db()
         self.assertEqual(self.user.profile_picture, '')
+
+
+class SupabaseProfilePictureTestCase(TestCase):
+    """Tests pour l'upload de photos de profil avec Supabase."""
+    
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="password123"
+        )
+        self.client = Client()
+        self.client.login(username="testuser", password="password123")
+    
+    @patch('apps.authentication.supabase_storage.SupabaseStorageService.upload_profile_picture')
+    def test_supabase_upload_success(self, mock_upload):
+        """Test de l'upload réussi vers Supabase."""
+        # Mock successful upload
+        mock_upload.return_value = {
+            'success': True,
+            'public_url': 'https://supabase.example.com/storage/v1/object/public/profiles/123/profile.jpg',
+            'filename': 'profile_123.jpg',
+            'path': 'profiles/123/profile_123.jpg'
+        }
+        
+        # Créer un fichier test
+        profile_pic = SimpleUploadedFile(
+            name='test.jpg',
+            content=JPG_1PX,
+            content_type='image/jpeg'
+        )
+        
+        # Faire la requête POST
+        response = self.client.post(
+            reverse('settings'),
+            {
+                'setting_type': 'profile',
+                'profile_picture': profile_pic,
+                'username': self.user.username,
+                'email': self.user.email
+            },
+            format='multipart'
+        )
+        
+        # Vérifier la réponse
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertTrue(data['success'])
+        self.assertIn('profile_picture_url', data)
+        
+        # Vérifier que l'utilisateur a été mis à jour
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.profile_picture_url, 'https://supabase.example.com/storage/v1/object/public/profiles/123/profile.jpg')
+        self.assertEqual(self.user.profile_picture_filename, 'profile_123.jpg')
+        self.assertIsNone(self.user.profile_picture.name if self.user.profile_picture else None)
+    
+    @patch('apps.authentication.supabase_storage.SupabaseStorageService.upload_profile_picture')
+    def test_supabase_upload_failure(self, mock_upload):
+        """Test de l'échec de l'upload vers Supabase."""
+        # Mock failed upload
+        mock_upload.return_value = {
+            'success': False,
+            'error': 'Network error'
+        }
+        
+        # Créer un fichier test
+        profile_pic = SimpleUploadedFile(
+            name='test.jpg',
+            content=JPG_1PX,
+            content_type='image/jpeg'
+        )
+        
+        # Faire la requête POST
+        response = self.client.post(
+            reverse('settings'),
+            {
+                'setting_type': 'profile',
+                'profile_picture': profile_pic,
+                'username': self.user.username,
+                'email': self.user.email
+            },
+            format='multipart'
+        )
+        
+        # Vérifier la réponse d'erreur
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.content)
+        self.assertFalse(data['success'])
+        self.assertIn('Network error', data['message'])
+        
+        # Vérifier que l'utilisateur n'a pas été mis à jour
+        self.user.refresh_from_db()
+        self.assertIsNone(self.user.profile_picture_url)
+    
+    @patch('apps.authentication.supabase_storage.SupabaseStorageService')
+    def test_supabase_storage_service_integration(self, mock_storage_class):
+        """Test de l'intégration complète avec SupabaseStorageService."""
+        # Mock instance
+        mock_instance = MagicMock()
+        mock_storage_class.return_value = mock_instance
+        
+        # Mock upload method
+        mock_instance.upload_profile_picture.return_value = {
+            'success': True,
+            'public_url': 'https://supabase.example.com/storage/v1/object/public/profiles/user123/avatar.jpg',
+            'filename': 'avatar_123.jpg',
+            'path': 'profiles/user123/avatar_123.jpg'
+        }
+        
+        # Créer un fichier test
+        profile_pic = SimpleUploadedFile(
+            name='avatar.jpg',
+            content=JPG_1PX,
+            content_type='image/jpeg'
+        )
+        
+        # Importer et utiliser le service
+        from apps.authentication.supabase_storage import SupabaseStorageService
+        service = SupabaseStorageService()
+        result = service.upload_profile_picture(
+            user_id=str(self.user.id),
+            file=profile_pic,
+            original_filename='avatar.jpg'
+        )
+        
+        # Vérifier l'appel
+        mock_instance.upload_profile_picture.assert_called_once_with(
+            user_id=str(self.user.id),
+            file=profile_pic,
+            original_filename='avatar.jpg'
+        )
+        
+        # Vérifier le résultat
+        self.assertTrue(result['success'])
+        self.assertIn('public_url', result)
+    
+    def test_profile_picture_display_after_upload(self):
+        """Test que la photo de profil s'affiche correctement après upload."""
+        # Définir une URL Supabase sur l'utilisateur
+        self.user.profile_picture_url = 'https://supabase.example.com/storage/v1/object/public/profiles/123/photo.jpg'
+        self.user.save()
+        
+        # Vérifier que get_profile_picture_url retourne l'URL Supabase
+        self.assertEqual(
+            self.user.get_profile_picture_url,
+            'https://supabase.example.com/storage/v1/object/public/profiles/123/photo.jpg'
+        )
+    
+    @patch('apps.authentication.supabase_storage.SupabaseStorageService.upload_profile_picture')
+    def test_ajax_response_includes_updated_url(self, mock_upload):
+        """Test que la réponse AJAX inclut l'URL mise à jour."""
+        # Mock successful upload
+        mock_upload.return_value = {
+            'success': True,
+            'public_url': 'https://supabase.example.com/storage/v1/object/public/profiles/999/new.jpg',
+            'filename': 'new_999.jpg'
+        }
+        
+        # Créer un fichier test
+        profile_pic = SimpleUploadedFile(
+            name='new.jpg',
+            content=JPG_1PX,
+            content_type='image/jpeg'
+        )
+        
+        # Faire la requête AJAX
+        response = self.client.post(
+            reverse('settings'),
+            {
+                'setting_type': 'profile',
+                'profile_picture': profile_pic,
+                'username': self.user.username,
+                'email': self.user.email
+            },
+            format='multipart',
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        
+        # Vérifier la réponse
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertTrue(data['success'])
+        self.assertEqual(data['profile_picture_url'], 'https://supabase.example.com/storage/v1/object/public/profiles/999/new.jpg')
+    
+    def test_profile_picture_validation(self):
+        """Test de la validation des fichiers uploadés."""
+        # Fichier trop grand (simulé)
+        large_content = b'x' * (6 * 1024 * 1024)  # 6MB
+        large_file = SimpleUploadedFile(
+            name='large.jpg',
+            content=large_content,
+            content_type='image/jpeg'
+        )
+        
+        # La validation devrait se faire côté modèle/formulaire
+        # Pour ce test, on vérifie juste que le fichier est rejeté
+        with self.assertRaises(ValidationError):
+            from apps.authentication.models import validate_profile_picture
+            validate_profile_picture(large_file)

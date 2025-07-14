@@ -1,5 +1,8 @@
 import pyttsx3
-import speech_recognition as sr
+try:
+    import speech_recognition as sr
+except ImportError:
+    sr = None
 import base64
 import io
 import json

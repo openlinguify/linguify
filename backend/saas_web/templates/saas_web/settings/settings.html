@@ -511,7 +511,7 @@
         <div class="sidebar-section">
             <ul class="sidebar-menu">
                 <li>
-                    <button class="sidebar-item active" onclick="showTab('general')">
+                    <button class="sidebar-item active" onclick="showTab('general-settings')">
                         <i class="bi bi-gear-fill"></i>
                         Paramètres généraux
                     </button>
@@ -1376,5 +1376,12 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+// Variables globales pour le chat et l'interface
+window.currentUserId = {{ user.id|default:'null' }};
+window.currentUsername = '{{ user.username|default:'' }}';
+window.csrfToken = '{{ csrf_token }}';
+console.log('[Settings] Variables définies - userId:', window.currentUserId, 'username:', window.currentUsername);
+</script>
 <script src="{% static 'src/js/settings.js' %}"></script>
 {% endblock %}

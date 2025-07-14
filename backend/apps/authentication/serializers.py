@@ -214,13 +214,15 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'first_name', 'last_name', 'phone_number', 'bio',
                  'birthday', 'native_language', 'target_language',
-                 'language_level', 'objectives', 'gender']
+                 'language_level', 'objectives', 'gender', 'profile_picture']
         
     def update(self, instance, validated_data):
         logger.info(f"Updating user profile with data: {validated_data}")
         
+        # Remove profile_picture from validated_data as it's handled separately in the view
+        validated_data.pop('profile_picture', None)
+        
         # Don't try to use "update_fields" that might be passed from the view
-        # It should be a parameter to save(), not a field in the model
         if 'update_fields' in validated_data:
             validated_data.pop('update_fields')
         
@@ -228,7 +230,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         
-        # Simply save without trying to specify update_fields
+        # Save the instance
         instance.save()
         
         return instance
