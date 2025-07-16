@@ -37,4 +37,17 @@ class RegisterView(View):
 
 def logout_view(request):
     """Vue de deconnexion"""
-    return JsonResponse({'status': 'logged_out'})
+    from django.contrib.auth import logout
+    from django.shortcuts import redirect
+    from django.contrib import messages
+    from django.conf import settings
+    
+    # Effectuer la déconnexion
+    logout(request)
+    
+    # Message de succès
+    messages.success(request, 'Vous avez été déconnecté avec succès.')
+    
+    # Rediriger vers le portal
+    portal_url = 'http://127.0.0.1:8080' if settings.DEBUG else 'https://openlinguify.com'
+    return redirect(portal_url)
