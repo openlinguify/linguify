@@ -21,20 +21,20 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('tenants/', include('lms.apps.tenants.urls')),
+    path('tenants/', include('apps.tenants.urls')),
     path('org/<str:org_slug>/', include([
-        path('', include('lms.apps.core.urls', namespace='org-core')),
-        path('courses/', include('lms.apps.courses.urls', namespace='org-courses')),
-        path('students/', include('lms.apps.students.urls', namespace='org-students')),
-        path('instructors/', include('lms.apps.instructors.urls', namespace='org-instructors')),
-        path('assessments/', include('lms.apps.assessments.urls', namespace='org-assessments')),
-        path('analytics/', include('lms.apps.analytics.urls', namespace='org-analytics')),
-        path('content/', include('lms.apps.content.urls', namespace='org-content')),
-        path('administration/', include('lms.apps.administration.urls', namespace='org-administration')),
+        path('', include('apps.core.urls', namespace='org-core')),
+        path('courses/', include('apps.courses.urls', namespace='org-courses')),
+        path('students/', include('apps.students.urls', namespace='org-students')),
+        path('instructors/', include('apps.instructors.urls', namespace='org-instructors')),
+        path('assessments/', include('apps.assessments.urls', namespace='org-assessments')),
+        path('analytics/', include('apps.analytics.urls', namespace='org-analytics')),
+        path('content/', include('apps.content.urls', namespace='org-content')),
+        path('administration/', include('apps.administration.urls', namespace='org-administration')),
     ])),
-    path('institutions/', include('lms.apps.institutions.urls')),
-    path('api/', include('lms.apps.api.urls')),
-    path('', include('lms.apps.core.urls')),  # Must be last
+    path('institutions/', include('apps.institutions.urls')),
+    path('api/', include('apps.api.urls')),
+    path('', include('apps.core.urls')),  # Must be last
 ]
 
 if settings.DEBUG:

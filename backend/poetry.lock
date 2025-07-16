@@ -5612,7 +5612,7 @@ version = "4.11.1"
 description = "A Django plugin for pytest."
 optional = false
 python-versions = ">=3.8"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "pytest_django-4.11.1-py3-none-any.whl", hash = "sha256:1b63773f648aa3d8541000c26929c1ea63934be1cfa674c76436966d73fe6a10"},
     {file = "pytest_django-4.11.1.tar.gz", hash = "sha256:a949141a1ee103cb0e7a20f1451d355f83f5e4a5d07bdd4dcfdd1fd0ff227991"},
@@ -6476,4 +6476,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "b8d8e257406c35955a5b9fd7ac696740a2e83c565f6133bfed283574067d3ac2"
+content-hash = "82aebb1019a7bc256f7e3f7165db64a57fd37149f6b204ecbcf1d35a37cfc2f2"

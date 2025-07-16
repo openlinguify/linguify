@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse
 from django.conf import settings
-from lms.apps.tenants.models import Organization
+from apps.tenants.models import Organization
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ def dashboard(request, org_slug=None):
         # Check if we're in an organization context
         if hasattr(request, 'organization') and request.organization:
             # Get user's role in this organization
-            from lms.apps.tenants.models import OrganizationMembership
+            from apps.tenants.models import OrganizationMembership
             try:
                 membership = OrganizationMembership.objects.get(
                     user=request.user,
@@ -41,7 +41,7 @@ def dashboard(request, org_slug=None):
             if user_role == 'student':
                 # Get student profile and enrollments from tenant database
                 try:
-                    from lms.apps.students.models import StudentProfile
+                    from apps.students.models import StudentProfile
                     db_name = request.organization.database_name
                     student_profile = StudentProfile.objects.using(db_name).get(
                         user=request.user
@@ -72,7 +72,7 @@ def dashboard(request, org_slug=None):
             elif user_role in ['owner', 'administrator']:
                 # Add admin statistics from tenant database
                 try:
-                    from lms.apps.students.models import StudentProfile
+                    from apps.students.models import StudentProfile
                     db_name = request.organization.database_name
                     context['total_students'] = StudentProfile.objects.using(db_name).filter(
                         organization_id=request.organization.slug
@@ -118,8 +118,8 @@ def login_view(request, org_slug=None):
         logger.info(f"Authentication attempt: username={username}, org_slug={org_slug}")
         
         # Force authentication to use default database (where users are stored)
-        from lms.apps.tenants.db_router import clear_current_database, get_current_database, set_current_database
-        from lms.apps.tenants.models import OrganizationUser
+        from apps.tenants.db_router import clear_current_database, get_current_database, set_current_database
+        from apps.tenants.models import OrganizationUser
         current_db = get_current_database()
         logger.debug(f"Current DB before auth: {current_db}")
         

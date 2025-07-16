@@ -8,16 +8,20 @@ PORTAL_PORT = 8080
 LMS_PORT = 8001
 BACKEND_PORT = 8000
 
-# Commandes Python - Détection automatique de l'environnement virtuel
-VENV_PATH = $(shell find . -name "venv" -o -name ".venv" -o -name "env" -o -name ".env" -type d | head -n1)
-ifneq ($(VENV_PATH),)
-	PYTHON = $(VENV_PATH)/bin/python
-	PIP = $(VENV_PATH)/bin/pip
-else
-	PYTHON = python3
-	PIP = pip3
-endif
-MANAGE = $(PYTHON) manage.py
+# Commandes Python - Utilisation de l'environnement virtuel du backend
+BACKEND_VENV = ./backend/venv
+PORTAL_VENV = ./portal/venv
+LMS_VENV = ./lms/venv
+
+# Python pour chaque projet (avec fallback vers système)
+BACKEND_PYTHON = cd backend && poetry run python
+PORTAL_PYTHON = $(shell if [ -f $(PORTAL_VENV)/bin/python ]; then echo $(PORTAL_VENV)/bin/python; else echo python3; fi)
+LMS_PYTHON = $(shell if [ -f $(LMS_VENV)/bin/python ]; then echo $(LMS_VENV)/bin/python; else echo python3; fi)
+
+# Manage commands pour chaque projet
+MANAGE_BACKEND = cd backend && poetry run python ../manage.py backend
+MANAGE_PORTAL = cd portal && ./venv/bin/python manage.py  
+MANAGE_LMS = cd lms && ./venv/bin/python manage.py
 
 # Couleurs pour l'affichage
 RED = \033[0;31m
@@ -38,7 +42,7 @@ portal: ## Lance le serveur Portal (port 8080)
 		echo "$(YELLOW)💡 Essayez: make stop-portal ou utilisez un autre port$(NC)"; \
 		exit 1; \
 	fi
-	$(MANAGE) portal runserver $(PORTAL_PORT)
+	$(MANAGE_PORTAL) runserver $(PORTAL_PORT)
 
 lms: ## Lance le serveur LMS (port 8001)
 	@echo "$(BLUE)🎓 Lancement du LMS Linguify sur le port $(LMS_PORT)...$(NC)"
@@ -47,7 +51,7 @@ lms: ## Lance le serveur LMS (port 8001)
 		echo "$(YELLOW)💡 Essayez: make stop-lms ou utilisez un autre port$(NC)"; \
 		exit 1; \
 	fi
-	$(MANAGE) lms runserver $(LMS_PORT)
+	$(MANAGE_LMS) runserver $(LMS_PORT)
 
 backend: ## Lance le serveur Backend (port 8000)
 	@echo "$(BLUE)⚙️ Lancement du Backend Linguify...$(NC)"
@@ -58,7 +62,7 @@ backend: ## Lance le serveur Backend (port 8000)
 		echo "$(YELLOW)💡 Essayez: make stop-backend ou utilisez un autre port$(NC)"; \
 		exit 1; \
 	fi
-	cd backend && poetry run python manage.py runserver 0.0.0.0:$(BACKEND_PORT)
+	cd backend && poetry run python ../manage.py backend runserver 0.0.0.0:$(BACKEND_PORT)
 
 all: ## Lance les 3 serveurs en parallèle
 	@echo "$(BLUE) Lancement de tous les serveurs Linguify...$(NC)"
@@ -67,9 +71,9 @@ all: ## Lance les 3 serveurs en parallèle
 	@echo "$(YELLOW)Backend: http://127.0.0.1:$(BACKEND_PORT)$(NC)"
 	@echo "$(RED)Utilisez Ctrl+C pour arrêter tous les serveurs$(NC)"
 	@echo "$(BLUE)⏳ Démarrage en cours... (peut prendre 30s sur WSL)$(NC)"
-	$(MANAGE) portal runserver $(PORTAL_PORT) --nothreading & \
-	sleep 2 && $(MANAGE) lms runserver $(LMS_PORT) --nothreading & \
-	sleep 2 && $(MANAGE) backend runserver $(BACKEND_PORT) --nothreading & \
+	cd portal && ./venv/bin/python manage.py runserver $(PORTAL_PORT) --nothreading & \
+	sleep 2 && cd lms && ./venv/bin/python manage.py runserver $(LMS_PORT) --nothreading & \
+	sleep 2 && cd backend && poetry run python ../manage.py backend runserver 0.0.0.0:$(BACKEND_PORT) --nothreading & \
 	wait
 
 stop: ## Arrête tous les serveurs Django
@@ -105,50 +109,50 @@ restart-backend: ## Redémarre le serveur Backend
 status: ## Vérifie le statut des projets
 	@echo "$(BLUE)📊 Vérification du statut des projets...$(NC)"
 	@echo "$(YELLOW)Portal:$(NC)"
-	@$(MANAGE) portal check --quiet && echo "  $(GREEN)✅ OK$(NC)" || echo "  $(RED)❌ Erreur$(NC)"
+	@$(MANAGE_PORTAL) check > /dev/null 2>&1 && echo "  $(GREEN)✅ OK$(NC)" || echo "  $(RED)❌ Erreur$(NC)"
 	@echo "$(YELLOW)LMS:$(NC)"
-	@$(MANAGE) lms check --quiet && echo "  $(GREEN)✅ OK$(NC)" || echo "  $(RED)❌ Erreur$(NC)"
+	@$(MANAGE_LMS) check > /dev/null 2>&1 && echo "  $(GREEN)✅ OK$(NC)" || echo "  $(RED)❌ Erreur$(NC)"
 	@echo "$(YELLOW)Backend:$(NC)"
-	@$(MANAGE) backend check --quiet && echo "  $(GREEN)✅ OK$(NC)" || echo "  $(RED)❌ Erreur$(NC)"
+	@$(MANAGE_BACKEND) check > /dev/null 2>&1 && echo "  $(GREEN)✅ OK$(NC)" || echo "  $(RED)❌ Erreur$(NC)"
 
 migrate: ## Applique les migrations sur tous les projets
 	@echo "$(BLUE)📦 Application des migrations...$(NC)"
 	@echo "$(YELLOW)Portal:$(NC)"
-	$(MANAGE) portal migrate
+	$(MANAGE_PORTAL) migrate
 	@echo "$(YELLOW)LMS:$(NC)"
-	$(MANAGE) lms migrate
+	$(MANAGE_LMS) migrate
 	@echo "$(YELLOW)Backend:$(NC)"
-	$(MANAGE) backend migrate
+	$(MANAGE_BACKEND) migrate
 
 migrate-portal: ## Applique les migrations sur le Portal seulement
 	@echo "$(BLUE)📦 Migration du Portal...$(NC)"
-	$(MANAGE) portal migrate
+	$(MANAGE_PORTAL) migrate
 
 migrate-lms: ## Applique les migrations sur le LMS seulement
 	@echo "$(BLUE)📦 Migration du LMS...$(NC)"
-	$(MANAGE) lms migrate
+	$(MANAGE_LMS) migrate
 
 migrate-backend: ## Applique les migrations sur le Backend seulement
 	@echo "$(BLUE)📦 Migration du Backend...$(NC)"
-	$(MANAGE) backend migrate
+	$(MANAGE_BACKEND) migrate
 
 shell-portal: ## Ouvre le shell Django pour le Portal
 	@echo "$(BLUE)🐚 Shell Django Portal...$(NC)"
-	$(MANAGE) portal shell
+	$(MANAGE_PORTAL) shell
 
 shell-lms: ## Ouvre le shell Django pour le LMS
 	@echo "$(BLUE)🐚 Shell Django LMS...$(NC)"
-	$(MANAGE) lms shell
+	$(MANAGE_LMS) shell
 
 shell-backend: ## Ouvre le shell Django pour le Backend
 	@echo "$(BLUE)🐚 Shell Django Backend...$(NC)"
-	$(MANAGE) backend shell
+	$(MANAGE_BACKEND) shell
 
 collectstatic: ## Collecte les fichiers statiques pour tous les projets
 	@echo "$(BLUE)📁 Collecte des fichiers statiques...$(NC)"
-	$(MANAGE) portal collectstatic --noinput
-	$(MANAGE) lms collectstatic --noinput
-	$(MANAGE) backend collectstatic --noinput
+	$(MANAGE_PORTAL) collectstatic --noinput
+	$(MANAGE_LMS) collectstatic --noinput
+	$(MANAGE_BACKEND) collectstatic --noinput
 
 clean: ## Nettoie les fichiers temporaires
 	@echo "$(BLUE)🧹 Nettoyage des fichiers temporaires...$(NC)"
@@ -174,41 +178,41 @@ check-env: ## Vérifie l'environnement Python et Django
 # Commandes de développement
 dev-portal: ## Lance le Portal en mode développement avec reload automatique
 	@echo "$(BLUE)🔄 Portal en mode développement...$(NC)"
-	$(MANAGE) portal runserver $(PORTAL_PORT) --settings=portal.settings
+	$(MANAGE_PORTAL) runserver $(PORTAL_PORT) --settings=portal.settings
 
 dev-lms: ## Lance le LMS en mode développement avec reload automatique
 	@echo "$(BLUE)🔄 LMS en mode développement...$(NC)"
-	$(MANAGE) lms runserver $(LMS_PORT)
+	$(MANAGE_LMS) runserver $(LMS_PORT)
 
 dev-backend: ## Lance le Backend en mode développement avec reload automatique
 	@echo "$(BLUE)🔄 Backend en mode développement...$(NC)"
-	$(MANAGE) backend runserver $(BACKEND_PORT)
+	$(MANAGE_BACKEND) runserver $(BACKEND_PORT)
 
 # Commandes de test
 test: ## Lance les tests pour tous les projets
 	@echo "$(BLUE)🧪 Lancement des tests...$(NC)"
-	$(MANAGE) portal test
-	$(MANAGE) lms test
-	$(MANAGE) backend test
+	$(MANAGE_PORTAL) test
+	$(MANAGE_LMS) test
+	$(MANAGE_BACKEND) test
 
 test-portal: ## Lance les tests pour le Portal
 	@echo "$(BLUE)🧪 Tests Portal...$(NC)"
-	$(MANAGE) portal test
+	$(MANAGE_PORTAL) test
 
 test-lms: ## Lance les tests pour le LMS
 	@echo "$(BLUE)🧪 Tests LMS...$(NC)"
-	$(MANAGE) lms test
+	$(MANAGE_LMS) test
 
 test-backend: ## Lance les tests pour le Backend
 	@echo "$(BLUE)🧪 Tests Backend...$(NC)"
-	$(MANAGE) backend test
+	$(MANAGE_BACKEND) test
 
 # Commandes de production
 prod-check: ## Vérifie la configuration pour la production
 	@echo "$(BLUE)🔍 Vérification de la configuration de production...$(NC)"
-	$(MANAGE) portal check --deploy
-	$(MANAGE) lms check --deploy
-	$(MANAGE) backend check --deploy
+	$(MANAGE_PORTAL) check --deploy
+	$(MANAGE_LMS) check --deploy
+	$(MANAGE_BACKEND) check --deploy
 
 # Commandes pratiques
 urls: ## Affiche les URLs disponibles

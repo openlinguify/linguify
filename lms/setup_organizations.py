@@ -14,8 +14,8 @@ sys.path.insert(0, parent_dir)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'lms.settings')
 django.setup()
 
-from lms.apps.tenants.models import Organization, OrganizationUser, OrganizationMembership
-from lms.apps.tenants.utils import create_tenant_database
+from apps.tenants.models import Organization, OrganizationUser, OrganizationMembership
+from apps.tenants.utils import create_tenant_database
 
 def setup_organizations():
     """Create organizations and add user as owner"""

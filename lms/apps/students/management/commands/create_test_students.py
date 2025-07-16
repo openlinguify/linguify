@@ -2,8 +2,8 @@ from django.core.management.base import BaseCommand
 from django.db import connection
 from django.conf import settings
 from datetime import date
-from lms.apps.tenants.models import Organization, OrganizationUser, OrganizationMembership
-from lms.apps.students.models import StudentProfile, CourseEnrollment
+from apps.tenants.models import Organization, OrganizationUser, OrganizationMembership
+from apps.students.models import StudentProfile, CourseEnrollment
 
 
 class Command(BaseCommand):

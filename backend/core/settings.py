@@ -106,8 +106,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
 
-    # test
-    'pytest_django',
+    # test - commented out for production
+    # 'pytest_django',
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -580,7 +580,7 @@ else:
                 },
             },
         }
-    except (ImportError, redis.exceptions.ConnectionError, redis.exceptions.TimeoutError):
+    except Exception:
         # Fallback to in-memory layer if Redis is not available
         CHANNEL_LAYERS = {
             "default": {

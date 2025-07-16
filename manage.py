@@ -64,9 +64,12 @@ def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     
     if project == 'lms':
-        sys.path.insert(0, os.path.join(base_dir, 'lms'))
+        lms_path = os.path.join(base_dir, 'lms')
+        sys.path.insert(0, lms_path)
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'lms.settings')
         print(f"Managing Linguify LMS...")
+        # Change to LMS directory to avoid backend imports
+        os.chdir(lms_path)
     elif project == 'portal':
         portal_path = os.path.join(base_dir, 'portal')
         sys.path.insert(0, portal_path)

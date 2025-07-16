@@ -33,6 +33,9 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',') if env('ALLOWED_HOSTS') else []
 
+# Multi-tenant configuration
+LMS_MULTI_TENANT_MODE = env.bool('LMS_MULTI_TENANT_MODE', default=False)
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -43,16 +46,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # LMS specific apps
-    'lms.apps.tenants',  # Must be first for multi-tenant support
-    'lms.apps.core',
-    'lms.apps.institutions',
-    'lms.apps.courses',
-    'lms.apps.students',
-    'lms.apps.instructors',
-    'lms.apps.assessments',
-    'lms.apps.analytics',
-    'lms.apps.content',
-    'lms.apps.administration',
+    'apps.tenants',  # Must be first for multi-tenant support
+    'apps.core',
+    'apps.institutions',
+    'apps.courses',
+    'apps.students',
+    'apps.instructors',
+    'apps.assessments',
+    'apps.analytics',
+    'apps.content',
+    'apps.administration',
     
     # Third party apps
     'rest_framework',
@@ -66,12 +69,12 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'lms.apps.tenants.middleware.TenantMiddleware',  # Multi-tenant middleware
+    'apps.tenants.middleware.TenantMiddleware',  # Multi-tenant middleware
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'lms.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATES = [
     {
@@ -91,21 +94,32 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'lms.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 # Database
-# LMS uses its own master database for organizations
-# Each organization will have its own database created dynamically
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME'),  # db_linguify_lms_dev
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT'),
+# Multi-tenant database configuration
+if LMS_MULTI_TENANT_MODE:
+    # Production: Use DATABASE_URL for default LMS database
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.parse(env('DATABASE_URL'))
     }
-}
+    
+    # Database router for multi-tenant
+    DATABASE_ROUTERS = ['db_router.LMSMultiTenantRouter']
+    
+else:
+    # Development: Use individual database settings
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME', default='lms_dev'),
+            'USER': env('DB_USER', default='postgres'),
+            'PASSWORD': env('DB_PASSWORD', default=''),
+            'HOST': env('DB_HOST', default='localhost'),
+            'PORT': env('DB_PORT', default='5432'),
+        }
+    }
 
 # Organizations' databases will be added dynamically by the TenantMiddleware
 
@@ -179,7 +193,7 @@ LMS_CONTENT_SHARING_ENABLED = True
 LMS_ANALYTICS_ENABLED = True
 
 # Multi-tenant settings
-DATABASE_ROUTERS = ['lms.apps.tenants.db_router.TenantRouter']
+DATABASE_ROUTERS = ['apps.tenants.db_router.TenantRouter']
 
 # Custom auth user model
 AUTH_USER_MODEL = 'tenants.OrganizationUser'

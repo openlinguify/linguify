@@ -1,0 +1,115 @@
+services:
+  # 1. PORTAL - Site vitrine principal (openlinguify.com)
+  - type: web
+    name: linguify-portal
+    env: python
+    region: frankfurt
+    plan: starter
+    rootDir: portal
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn portal.wsgi:application --bind 0.0.0.0:$PORT
+    domains:
+      - openlinguify.com
+      - www.openlinguify.com
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DEBUG
+        value: False
+      - key: DJANGO_ENV
+        value: production
+      - key: SECRET_KEY
+        sync: false
+      - key: ALLOWED_HOSTS
+        value: openlinguify.com,www.openlinguify.com
+      - key: DATABASE_URL
+        sync: false
+
+  # 2. BACKEND - SaaS pour particuliers (app.openlinguify.com)
+  - type: web
+    name: linguify-backend
+    env: python
+    region: frankfurt
+    plan: starter
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
+    domains:
+      - app.openlinguify.com
+      - backend.openlinguify.com
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DEBUG
+        value: False
+      - key: DJANGO_ENV
+        value: production
+      - key: ALLOWED_HOSTS
+        value: app.openlinguify.com,backend.openlinguify.com
+      - key: SECRET_KEY
+        sync: false
+      - key: USE_SUPABASE_DB
+        value: True
+      - key: SUPABASE_DB_NAME
+        sync: false
+      - key: SUPABASE_DB_USER
+        sync: false
+      - key: SUPABASE_DB_PASSWORD
+        sync: false
+      - key: SUPABASE_DB_HOST
+        sync: false
+      - key: SUPABASE_DB_PORT
+        value: 5432
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_PROJECT_ID
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: BACKEND_URL
+        value: https://app.openlinguify.com
+
+  # 3. LMS - Learning Management System (lms.openlinguify.com)
+  - type: web
+    name: linguify-lms
+    env: python
+    region: frankfurt
+    plan: starter
+    rootDir: lms
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn lms.wsgi:application --bind 0.0.0.0:$PORT
+    domains:
+      - lms.openlinguify.com
+      - edu.openlinguify.com
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DEBUG
+        value: False
+      - key: DJANGO_ENV
+        value: production
+      - key: ALLOWED_HOSTS
+        value: lms.openlinguify.com,edu.openlinguify.com
+      - key: SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+
+  # Services partagés
+  - type: redis
+    name: linguify-redis
+    region: frankfurt
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
+
+databases:
+  # Base de données partagée ou séparée selon besoins
+  - name: linguify-main-db
+    plan: starter
+    region: frankfurt

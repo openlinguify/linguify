@@ -4,8 +4,8 @@ Management command to create a new tenant (organization) with its database
 
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
-from lms.apps.tenants.models import Organization, OrganizationUser, OrganizationMembership
-from lms.apps.tenants.utils import create_tenant_database
+from apps.tenants.models import Organization, OrganizationUser, OrganizationMembership
+from apps.tenants.utils import create_tenant_database
 
 
 class Command(BaseCommand):
