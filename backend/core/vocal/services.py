@@ -1,4 +1,3 @@
-import pyttsx3
 try:
     import speech_recognition as sr
 except ImportError:
@@ -296,15 +295,10 @@ class VoiceAssistantService:
         
     def _init_tts(self):
         """Initialise le moteur TTS"""
-        try:
-            self.engine = pyttsx3.init()
-            self.engine.setProperty('rate', 180)
-            self.tts_available = True
-            logger.info("TTS engine initialized successfully")
-        except Exception as e:
-            logger.warning(f"TTS engine initialization failed: {e}")
-            self.tts_available = False
-            self.engine = None
+        # TTS désactivé - utiliser Web Speech API côté client
+        self.tts_available = False
+        self.engine = None
+        logger.info("TTS désactivé - utilisation de Web Speech API recommandée")
     
     def get_language_mapping(self) -> Dict[str, str]:
         """Retourne le mapping des codes de langue pour la reconnaissance vocale"""
@@ -1576,14 +1570,9 @@ class VoiceAssistantService:
 # Instance globale du service
 voice_service = VoiceAssistantService()
 
-# Initialisation du moteur TTS (optionnel - pour génération côté serveur)
-try:
-    engine = pyttsx3.init()
-    engine.setProperty('rate', 180)
-    TTS_AVAILABLE = True
-except Exception:
-    TTS_AVAILABLE = False
-    engine = None
+# TTS désactivé - utiliser Web Speech API côté client
+TTS_AVAILABLE = False
+engine = None
 
 def get_language_code(language):
     """

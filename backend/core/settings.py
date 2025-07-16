@@ -260,8 +260,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'apps.authentication.middleware.JWTMiddleware',  # Disabled - using Supabase now
-    'apps.authentication.middleware_terms.TermsAcceptanceMiddleware',  # Check terms acceptance
+    # 'apps.authentication.middleware.middleware.JWTMiddleware',  # Disabled - using Supabase now
+    'apps.authentication.middleware.terms_middleware.TermsAcceptanceMiddleware',  # Check terms acceptance
     # 'core.jobs.middleware.JobsErrorHandlingMiddleware',  # Jobs error handling - moved to portal
     # SEO Optimization Middleware (simplified version)
     'core.seo.middleware.simple.SimpleSEOMiddleware',

@@ -1,6 +1,6 @@
 from django import template
 from django.utils.html import mark_safe, escape
-from apps.authentication.helpers import get_profile_picture_html, get_profile_picture_urls
+from apps.authentication.utils.helpers import get_profile_picture_html, get_profile_picture_urls
 
 register = template.Library()
 

@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 # REMOVED: rest_framework_simplejwt - Using Django+Supabase authentication now
-from .models import CoachProfile, Review, UserFeedback, CookieConsent, CookieConsentLog
+from ..models import CoachProfile, Review, UserFeedback, CookieConsent, CookieConsentLog
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -82,7 +82,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         """
         Validate username format and uniqueness.
         """
-        from .validators import validate_username_complete
+        from .utils.validators import validate_username_complete
         from django.core.exceptions import ValidationError as DjangoValidationError
         
         try:

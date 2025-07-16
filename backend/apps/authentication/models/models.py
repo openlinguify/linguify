@@ -17,7 +17,7 @@ from django.utils import timezone
 from django.conf import settings
 from PIL import Image
 
-from .storage import ProfileStorage
+from ..utils.storage import ProfileStorage
 
 LANGUAGE_CHOICES = [
     ('EN', 'English'),
@@ -96,7 +96,7 @@ def validate_profile_picture(file):
 
 
 # Import centralized validator
-from .validators import validate_username_format as validate_username
+from ..utils.validators import validate_username_format as validate_username
 
 
 class UserManager(BaseUserManager):
@@ -606,7 +606,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         Returns:
             dict: Dictionnaire avec les URLs pour chaque taille (small, medium, large, optimized, original)
         """
-        from .helpers import get_profile_picture_urls
+        from ..utils.helpers import get_profile_picture_urls
         return get_profile_picture_urls(self)
 
 # Extended Coach Profile Model: the additional fields for a coach profile are added here as a separate model.

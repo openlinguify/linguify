@@ -57,8 +57,8 @@ urlpatterns = [
     path('apps/<slug:app_slug>/', views.app_language_redirect_view, name='app_detail_no_lang_redirect'),
     
     # User profile routes (must be before saas_web.urls to avoid conflicts)
-    path('profile/', include('apps.authentication.urls_profile')),
-    path('u/', include('apps.authentication.urls_profile')),
+    path('profile/', include('apps.authentication.urls.profile')),
+    path('u/', include('apps.authentication.urls.profile')),
     
     # SaaS application (protected routes) - no language prefix
     path('', include('saas_web.urls')),
@@ -71,7 +71,7 @@ urlpatterns = [
     path('admin/stats/users/', include('apps.authentication.enhanced_admin.urls')),
     path('csrf/', utils.get_csrf_token, name='get_csrf_token'),
     path('api/', include('rest_framework.urls')),
-    path('api/auth/', include('apps.authentication.urls')),
+    path('api/auth/', include('apps.authentication.urls.main')),
     # Test settings interface
     path('test-settings/', test_settings, name='test_settings'),
     # Terms and conditions endpoints
@@ -125,7 +125,7 @@ urlpatterns = [
 # URLs with language prefix (for public website and authentication)
 urlpatterns += i18n_patterns(
     # Authentication (login/register pages) - with language prefix
-    path('auth/', include('apps.authentication.urls_auth')),
+    path('auth/', include('apps.authentication.urls.auth')),
     
     # Careers/Jobs pages moved to portal
     # path('careers/', include('core.jobs.urls_web', namespace='jobs_web')),

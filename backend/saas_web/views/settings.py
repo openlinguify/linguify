@@ -198,7 +198,7 @@ class UserSettingsView(View):
             profile_picture = request.FILES.get('profile_picture')
             if profile_picture:
                 logger.info(f"Processing profile picture upload: {profile_picture.name}, size: {profile_picture.size}")
-                from apps.authentication.supabase_storage import SupabaseStorageService
+                from apps.authentication.utils.supabase_storage import SupabaseStorageService
                 
                 # Upload to Supabase Storage
                 supabase_storage = SupabaseStorageService()

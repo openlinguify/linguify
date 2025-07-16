@@ -15,14 +15,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from .profile import (
+from ..profile import (
     process_uploaded_profile_picture,
     delete_profile_picture,
     get_profile_picture_urls,
     migrate_legacy_profile_picture,
     clean_old_versions
 )
-from .models import User
+from ..models import User
 
 logger = logging.getLogger(__name__)
 

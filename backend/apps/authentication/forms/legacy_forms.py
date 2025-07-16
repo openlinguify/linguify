@@ -137,7 +137,7 @@ class CustomUserCreationForm(UserCreationForm):
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if username:
-            from .validators import validate_username_complete
+            from .utils.validators import validate_username_complete
             try:
                 username = validate_username_complete(username)
             except ValidationError as e:

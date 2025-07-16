@@ -20,7 +20,6 @@ __all__ = [
     'RevisionSessionSerializer',
     'VocabularyWordSerializer',
     'VocabularyListSerializer',
-    
     'FlashcardSerializer',
     'FlashcardDeckSerializer',
     'FlashcardDeckCreateSerializer',

@@ -19,7 +19,7 @@ def check_username_availability(request):
     username = request.GET.get('username', '').strip()
     
     # Import centralized validation function
-    from apps.authentication.validators import is_username_available
+    from backend.apps.authentication.utils.validators import is_username_available
     
     # Special case: if it's the current user's username, it's available for them
     exclude_user = request.user if request.user.is_authenticated else None

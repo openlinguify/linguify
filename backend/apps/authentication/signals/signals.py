@@ -5,7 +5,7 @@ from django.db.models.signals import post_save, pre_save
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
 from django.utils import timezone
-from .models import CookieConsent, CookieConsentLog
+from ..models import CookieConsent, CookieConsentLog
 
 
 @receiver(post_save, sender=CookieConsent)

@@ -1,6 +1,6 @@
 # authentication/urls.py
 from django.urls import path
-from .views import (
+from ..views import (
     get_me,
     user_settings,
     user_profile,
@@ -28,12 +28,12 @@ from .views import (
 )
 
 # Settings views
-from .views import (
+from ..views import (
     settings_stats
 )
 from django.conf import settings
 from .debug_views import cors_debug, test_token_verification, debug_auth_headers, debug_apps_system, test_token
-from .views_terms import accept_terms, terms_status
+from ..views_terms import accept_terms, terms_status
 
 urlpatterns = [
     # Django authentication endpoints

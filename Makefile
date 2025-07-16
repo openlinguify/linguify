@@ -50,13 +50,15 @@ lms: ## Lance le serveur LMS (port 8001)
 	$(MANAGE) lms runserver $(LMS_PORT)
 
 backend: ## Lance le serveur Backend (port 8000)
-	@echo "$(BLUE)⚙️ Lancement du Backend Linguify sur le port $(BACKEND_PORT)...$(NC)"
+	@echo "$(BLUE)⚙️ Lancement du Backend Linguify...$(NC)"
+	@echo "$(GREEN)🌐 Accédez au serveur sur : http://localhost:$(BACKEND_PORT)/$(NC)"
+	@echo ""
 	@if lsof -Pi :$(BACKEND_PORT) -t >/dev/null 2>&1; then \
 		echo "$(RED)❌ Erreur: Le port $(BACKEND_PORT) est déjà utilisé!$(NC)"; \
 		echo "$(YELLOW)💡 Essayez: make stop-backend ou utilisez un autre port$(NC)"; \
 		exit 1; \
 	fi
-	cd backend && poetry run python manage.py runserver $(BACKEND_PORT)
+	cd backend && poetry run python manage.py runserver 0.0.0.0:$(BACKEND_PORT)
 
 all: ## Lance les 3 serveurs en parallèle
 	@echo "$(BLUE) Lancement de tous les serveurs Linguify...$(NC)"

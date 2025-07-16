@@ -419,7 +419,7 @@ class SupabaseProfilePictureTestCase(TestCase):
         )
         
         # Importer et utiliser le service
-        from apps.authentication.supabase_storage import SupabaseStorageService
+        from apps.authentication.utils.supabase_storage import SupabaseStorageService
         service = SupabaseStorageService()
         result = service.upload_profile_picture(
             user_id=str(self.user.id),
