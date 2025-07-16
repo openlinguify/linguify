@@ -1,276 +1,397 @@
 <!-- Revision Tab -->
 <div id="revision" class="tab-content">
-<!-- Template pour les paramètres de révision -->
-<div class="settings-header">
-    <div class="settings-title">
-        <i class="bi bi-arrow-clockwise" style="margin-right: 8px; color: #875a7b;"></i>
-        Configuration Révision
-    </div>
-    <div class="settings-description">
-        Personnalisez votre expérience de révision avec des flashcards
-    </div>
-</div>
-
-<!-- Statistiques rapides -->
-<div class="stats-overview" style="margin-bottom: 24px;">
-    <div class="stats-grid"
-        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
-        <div class="stat-card">
-            <div class="stat-value" id="total-cards">0</div>
-            <div class="stat-label">Cartes totales</div>
+    <!-- Statistics Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-bar-chart"></i>
+                Statistiques de révision
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-value" id="cards-learned">0</div>
-            <div class="stat-label">Cartes apprises</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value" id="daily-streak">0</div>
-            <div class="stat-label">Série quotidienne</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value" id="success-rate">0%</div>
-            <div class="stat-label">Taux de réussite</div>
-        </div>
-    </div>
-</div>
-
-<!-- Presets rapides -->
-<div class="content-section">
-    <div class="section-header">
-        <i class="bi bi-lightning-fill" style="margin-right: 8px;"></i>
-        Configuration rapide
-    </div>
-    <div class="section-content">
-        <div class="preset-buttons"
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
-            <button type="button" class="preset-btn" data-preset="beginner">
-                <i class="bi bi-star"></i>
-                <span>Débutant</span>
-                <small>10 cartes, 15 min</small>
-            </button>
-            <button type="button" class="preset-btn" data-preset="intermediate">
-                <i class="bi bi-lightning"></i>
-                <span>Intermédiaire</span>
-                <small>20 cartes, 20 min</small>
-            </button>
-            <button type="button" class="preset-btn" data-preset="advanced">
-                <i class="bi bi-fire"></i>
-                <span>Avancé</span>
-                <small>30 cartes, 30 min</small>
-            </button>
-            <button type="button" class="preset-btn" data-preset="intensive">
-                <i class="bi bi-rocket"></i>
-                <span>Intensif</span>
-                <small>50 cartes, 45 min</small>
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Paramètres détaillés -->
-<div class="content-section">
-    <div class="section-header">
-        <i class="bi bi-sliders" style="margin-right: 8px;"></i>
-        Paramètres d'apprentissage
-    </div>
-    <div class="section-content">
-        <form id="revision-settings-form">
-            <input type="hidden" name="settings_type" value="revision">
-
-            <div class="two-column">
-                <div class="form-group">
-                    <label class="form-label">Mode d'étude par défaut</label>
-                    <select name="default_study_mode" class="form-control">
-                        <option value="spaced">Répétition espacée</option>
-                        <option value="intensive">Révision intensive</option>
-                        <option value="mixed">Mode mixte</option>
-                        <option value="custom">Personnalisé</option>
-                    </select>
-                    <div class="help-text">Algorithme utilisé pour planifier vos révisions</div>
+        <div class="section-content">
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-cards">0</div>
+                    <div class="stat-label">Cartes totales</div>
                 </div>
-
-                <div class="form-group">
-                    <label class="form-label">Difficulté par défaut</label>
-                    <select name="default_difficulty" class="form-control">
-                        <option value="easy">Facile</option>
-                        <option value="normal">Normal</option>
-                        <option value="hard">Difficile</option>
-                        <option value="expert">Expert</option>
-                    </select>
-                    <div class="help-text">Niveau de difficulté pour les nouvelles cartes</div>
+                <div class="stat-card">
+                    <div class="stat-value" id="cards-learned">0</div>
+                    <div class="stat-label">Cartes apprises</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="daily-streak">0</div>
+                    <div class="stat-label">Série quotidienne</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="success-rate">0%</div>
+                    <div class="stat-label">Taux de réussite</div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="two-column">
-                <div class="form-group">
-                    <label class="form-label">Cartes par session</label>
-                    <div class="range-input">
-                        <input type="range" name="cards_per_session" min="5" max="100" value="20" class="form-range">
-                        <span class="range-value">20</span>
-                    </div>
-                    <div class="help-text">Nombre de cartes à réviser par session</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Durée de session (minutes)</label>
-                    <div class="range-input">
-                        <input type="range" name="default_session_duration" min="5" max="120" value="20"
-                            class="form-range">
-                        <span class="range-value">20</span>
-                    </div>
-                    <div class="help-text">Durée recommandée par session</div>
-                </div>
+    <!-- Quick Configuration Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-lightning-fill"></i>
+                Configuration rapide
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
             </div>
+        </div>
+        <div class="section-content">
+            <div class="form-help">Choisissez un profil de révision prédéfini</div>
+            <div class="preset-buttons" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 16px;">
+                <button type="button" class="preset-btn" data-preset="beginner">
+                    <i class="bi bi-star"></i>
+                    <span>Débutant</span>
+                    <small>10 cartes, 15 min</small>
+                </button>
+                <button type="button" class="preset-btn" data-preset="intermediate">
+                    <i class="bi bi-lightning"></i>
+                    <span>Intermédiaire</span>
+                    <small>20 cartes, 20 min</small>
+                </button>
+                <button type="button" class="preset-btn" data-preset="advanced">
+                    <i class="bi bi-fire"></i>
+                    <span>Avancé</span>
+                    <small>30 cartes, 30 min</small>
+                </button>
+                <button type="button" class="preset-btn" data-preset="intensive">
+                    <i class="bi bi-rocket"></i>
+                    <span>Intensif</span>
+                    <small>50 cartes, 45 min</small>
+                </button>
+            </div>
+        </div>
+    </div>
 
-            <div class="two-column">
-                <div class="form-group">
-                    <label class="form-label">Révisions pour apprendre</label>
-                    <div class="range-input">
-                        <input type="range" name="required_reviews_to_learn" min="1" max="10" value="3"
-                            class="form-range">
-                        <span class="range-value">3</span>
+    <!-- Learning Settings Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-sliders"></i>
+                Paramètres d'apprentissage
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form id="revision-settings-form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="revision">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Mode d'étude par défaut</label>
+                        <select name="default_study_mode" class="form-control">
+                            <option value="spaced">Répétition espacée</option>
+                            <option value="intensive">Révision intensive</option>
+                            <option value="mixed">Mode mixte</option>
+                            <option value="custom">Personnalisé</option>
+                        </select>
+                        <div class="form-help">Algorithme utilisé pour planifier vos révisions</div>
                     </div>
-                    <div class="help-text">Nombre de révisions correctes nécessaires</div>
+
+                    <div class="form-group">
+                        <label class="form-label">Difficulté par défaut</label>
+                        <select name="default_difficulty" class="form-control">
+                            <option value="easy">Facile</option>
+                            <option value="normal">Normal</option>
+                            <option value="hard">Difficile</option>
+                            <option value="expert">Expert</option>
+                        </select>
+                        <div class="form-help">Niveau de difficulté pour les nouvelles cartes</div>
+                    </div>
                 </div>
 
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Cartes par session</label>
+                        <div class="range-input">
+                            <input type="range" name="cards_per_session" min="5" max="100" value="20" class="form-range">
+                            <span class="range-value">20</span>
+                        </div>
+                        <div class="form-help">Nombre de cartes à réviser par session</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Durée de session (minutes)</label>
+                        <div class="range-input">
+                            <input type="range" name="default_session_duration" min="5" max="120" value="20" class="form-range">
+                            <span class="range-value">20</span>
+                        </div>
+                        <div class="form-help">Durée recommandée par session</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Révisions pour apprendre</label>
+                        <div class="range-input">
+                            <input type="range" name="required_reviews_to_learn" min="1" max="10" value="3" class="form-range">
+                            <span class="range-value">3</span>
+                        </div>
+                        <div class="form-help">Nombre de révisions correctes nécessaires</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <input type="checkbox" name="auto_advance" checked>
+                            Passage automatique
+                        </label>
+                        <div class="form-help">Passer automatiquement à la carte suivante</div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Spaced Repetition Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-calendar3"></i>
+                Répétition espacée
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="spaced_repetition">
+                
                 <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 8px;">
-                        <input type="checkbox" name="auto_advance" checked>
-                        <span>Passage automatique</span>
+                    <label class="form-label">
+                        <input type="checkbox" name="spaced_repetition_enabled" checked>
+                        Activer la répétition espacée
                     </label>
-                    <div class="help-text">Passer automatiquement à la carte suivante</div>
+                    <div class="form-help">Utilise l'algorithme de Leitner pour optimiser la mémorisation</div>
                 </div>
-            </div>
-        </form>
-    </div>
-</div>
 
-<!-- Paramètres de répétition espacée -->
-<div class="content-section">
-    <div class="section-header">
-        <i class="bi bi-calendar3" style="margin-right: 8px;"></i>
-        Répétition espacée
-    </div>
-    <div class="section-content">
-        <div class="form-group">
-            <label style="display: flex; align-items: center; gap: 8px;">
-                <input type="checkbox" name="spaced_repetition_enabled" checked>
-                <span>Activer la répétition espacée</span>
-            </label>
-            <div class="help-text">Utilise l'algorithme de Leitner pour optimiser la mémorisation</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Intervalle facile (jours)</label>
+                        <input type="number" name="initial_interval_easy" min="1" max="30" value="4" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Intervalle normal (jours)</label>
+                        <input type="number" name="initial_interval_normal" min="1" max="30" value="2" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Intervalle difficile (jours)</label>
+                        <input type="number" name="initial_interval_hard" min="1" max="30" value="1" class="form-control">
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <div class="spaced-repetition-settings">
-            <div class="three-column">
+    <!-- Notifications Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-bell"></i>
+                Rappels et notifications
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="notifications">
+                
                 <div class="form-group">
-                    <label class="form-label">Intervalle facile (jours)</label>
-                    <input type="number" name="initial_interval_easy" min="1" max="30" value="4" class="form-control">
+                    <label class="form-label">
+                        <input type="checkbox" name="daily_reminder_enabled" checked>
+                        Rappel quotidien
+                    </label>
+                    <div class="form-help">Recevoir un rappel pour réviser quotidiennement</div>
                 </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Heure du rappel</label>
+                        <input type="time" name="reminder_time" value="18:00" class="form-control">
+                        <div class="form-help">Heure à laquelle recevoir le rappel</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Fréquence des notifications</label>
+                        <select name="notification_frequency" class="form-control">
+                            <option value="daily">Quotidienne</option>
+                            <option value="weekly">Hebdomadaire</option>
+                            <option value="custom">Personnalisée</option>
+                            <option value="disabled">Désactivée</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Interface Settings Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-palette"></i>
+                Interface et expérience
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="interface">
+                
                 <div class="form-group">
-                    <label class="form-label">Intervalle normal (jours)</label>
-                    <input type="number" name="initial_interval_normal" min="1" max="30" value="2" class="form-control">
+                    <label class="form-label">
+                        <input type="checkbox" name="enable_animations" checked>
+                        Animations
+                    </label>
+                    <div class="form-help">Effets visuels lors des transitions</div>
                 </div>
+
                 <div class="form-group">
-                    <label class="form-label">Intervalle difficile (jours)</label>
-                    <input type="number" name="initial_interval_hard" min="1" max="30" value="1" class="form-control">
+                    <label class="form-label">
+                        <input type="checkbox" name="auto_play_audio">
+                        Audio automatique
+                    </label>
+                    <div class="form-help">Jouer automatiquement les prononciations</div>
                 </div>
-            </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="keyboard_shortcuts_enabled" checked>
+                        Raccourcis clavier
+                    </label>
+                    <div class="form-help">Utiliser les raccourcis pour naviguer</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="show_progress_stats" checked>
+                        Afficher les statistiques de progression
+                    </label>
+                    <div class="form-help">Voir vos statistiques en temps réel pendant l'étude</div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
-
-<!-- Paramètres de notifications -->
-<div class="content-section">
-    <div class="section-header">
-        <i class="bi bi-bell" style="margin-right: 8px;"></i>
-        Rappels et notifications
-    </div>
-    <div class="section-content">
-        <div class="two-column">
-            <div class="form-group">
-                <label style="display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" name="daily_reminder_enabled" checked>
-                    <span>Rappel quotidien</span>
-                </label>
-                <div class="help-text">Recevoir un rappel pour réviser quotidiennement</div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Heure du rappel</label>
-                <input type="time" name="reminder_time" value="18:00" class="form-control">
-                <div class="help-text">Heure à laquelle recevoir le rappel</div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Fréquence des notifications</label>
-            <select name="notification_frequency" class="form-control">
-                <option value="daily">Quotidienne</option>
-                <option value="weekly">Hebdomadaire</option>
-                <option value="custom">Personnalisée</option>
-                <option value="disabled">Désactivée</option>
-            </select>
-        </div>
-    </div>
-</div>
-
-<!-- Paramètres d'interface -->
-<div class="content-section">
-    <div class="section-header">
-        <i class="bi bi-palette" style="margin-right: 8px;"></i>
-        Interface et expérience
-    </div>
-    <div class="section-content">
-        <div class="three-column">
-            <div class="form-group">
-                <label style="display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" name="enable_animations" checked>
-                    <span>Animations</span>
-                </label>
-                <div class="help-text">Effets visuels lors des transitions</div>
-            </div>
-
-            <div class="form-group">
-                <label style="display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" name="auto_play_audio">
-                    <span>Audio automatique</span>
-                </label>
-                <div class="help-text">Jouer automatiquement les prononciations</div>
-            </div>
-
-            <div class="form-group">
-                <label style="display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" name="keyboard_shortcuts_enabled" checked>
-                    <span>Raccourcis clavier</span>
-                </label>
-                <div class="help-text">Utiliser les raccourcis pour naviguer</div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label style="display: flex; align-items: center; gap: 8px;">
-                <input type="checkbox" name="show_progress_stats" checked>
-                <span>Afficher les statistiques de progression</span>
-            </label>
-            <div class="help-text">Voir vos statistiques en temps réel pendant l'étude</div>
-        </div>
-    </div>
-</div>
-
-<!-- Boutons d'action -->
-<div class="settings-actions">
-    <button type="submit" form="revision-settings-form" class="btn btn-primary">
-        <i class="bi bi-check-lg" style="margin-right: 8px;"></i>
-        Sauvegarder les paramètres
-    </button>
-    <button type="button" class="btn btn-secondary" onclick="resetRevisionSettings()">
-        <i class="bi bi-arrow-clockwise" style="margin-right: 8px;"></i>
-        Remettre par défaut
-    </button>
 </div>
 
 <style>
-    /* Styles spécifiques aux paramètres de révision */
+    /* Styles for revision settings */
+    .stat-card {
+        background: white;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-color: var(--card-color);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--card-color);
+    }
+
+    .stat-card:nth-child(1) {
+        --card-color: #3b82f6; /* Blue for total cards */
+    }
+
+    .stat-card:nth-child(2) {
+        --card-color: #10b981; /* Green for cards learned */
+    }
+
+    .stat-card:nth-child(3) {
+        --card-color: #f59e0b; /* Orange for daily streak */
+    }
+
+    .stat-card:nth-child(4) {
+        --card-color: #8b5cf6; /* Purple for success rate */
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--card-color);
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
     .preset-btn {
         display: flex;
         flex-direction: column;
@@ -282,23 +403,60 @@
         cursor: pointer;
         transition: all 0.2s ease;
         text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .preset-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--preset-color);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .preset-btn:hover::before,
+    .preset-btn.active::before {
+        opacity: 1;
+    }
+
+    .preset-btn[data-preset="beginner"] {
+        --preset-color: #22c55e; /* Green for beginner */
+    }
+
+    .preset-btn[data-preset="intermediate"] {
+        --preset-color: #3b82f6; /* Blue for intermediate */
+    }
+
+    .preset-btn[data-preset="advanced"] {
+        --preset-color: #f59e0b; /* Orange for advanced */
+    }
+
+    .preset-btn[data-preset="intensive"] {
+        --preset-color: #ef4444; /* Red for intensive */
     }
 
     .preset-btn:hover {
-        border-color: #875a7b;
+        border-color: var(--preset-color);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(135, 90, 123, 0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.95);
     }
 
     .preset-btn.active {
-        border-color: #875a7b;
-        background: rgba(135, 90, 123, 0.1);
+        border-color: var(--preset-color);
+        background: color-mix(in srgb, var(--preset-color) 8%, white);
     }
 
     .preset-btn i {
         font-size: 24px;
-        color: #875a7b;
+        color: var(--preset-color);
         margin-bottom: 8px;
+        transition: color 0.2s ease;
     }
 
     .preset-btn span {
@@ -310,28 +468,6 @@
     .preset-btn small {
         font-size: 12px;
         color: #666;
-    }
-
-    .stat-card {
-        background: white;
-        padding: 16px;
-        border-radius: 8px;
-        border: 1px solid #e9ecef;
-        text-align: center;
-    }
-
-    .stat-value {
-        font-size: 24px;
-        font-weight: bold;
-        color: #875a7b;
-        margin-bottom: 4px;
-    }
-
-    .stat-label {
-        font-size: 12px;
-        color: #666;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
 
     .range-input {
@@ -350,28 +486,15 @@
         font-weight: 600;
         color: #875a7b;
     }
-
-    .spaced-repetition-settings {
-        margin-top: 16px;
-        padding: 16px;
-        background: #f8f9fa;
-        border-radius: 6px;
-    }
-
-    .three-column {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 16px;
-    }
 </style>
 
 <script>
-    // JavaScript pour les paramètres de révision
+    // JavaScript for revision settings
     document.addEventListener('DOMContentLoaded', function () {
-        // Initialiser les paramètres de révision
+        // Initialize revision settings
         initRevisionSettings();
 
-        // Gestionnaires d'événements pour les presets
+        // Preset button handlers
         document.querySelectorAll('.preset-btn').forEach(btn => {
             btn.addEventListener('click', function () {
                 const preset = this.dataset.preset;
@@ -379,237 +502,69 @@
             });
         });
 
-        // Gestionnaires pour les sliders
+        // Range slider handlers
         document.querySelectorAll('.range-input input[type="range"]').forEach(slider => {
             slider.addEventListener('input', function () {
                 const valueSpan = this.parentElement.querySelector('.range-value');
                 valueSpan.textContent = this.value;
             });
         });
-
-        // Soumission du formulaire
-        document.getElementById('revision-settings-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            saveRevisionSettings();
-        });
     });
 
     function initRevisionSettings() {
         console.log('[RevisionSettings] Initializing revision settings');
-
-        // Charger les statistiques
         loadRevisionStats();
-
-        // Charger les paramètres actuels
-        loadCurrentRevisionSettings();
     }
 
     function loadRevisionStats() {
         console.log('[RevisionSettings] Loading revision statistics');
+        
+        // Mock data for demonstration
+        const stats = {
+            total_cards: 28,
+            cards_learned: 15,
+            daily_streak: 5,
+            success_rate: 0.75
+        };
 
-        // Charger les statistiques depuis l'API (mode simple)
-        fetch('/api/v1/revision/settings/simple/stats/')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById('total-cards').textContent = data.total_cards || 0;
-                document.getElementById('cards-learned').textContent = data.cards_learned || 0;
-                document.getElementById('daily-streak').textContent = data.daily_streak || 0;
-                document.getElementById('success-rate').textContent =
-                    data.success_rate ? Math.round(data.success_rate * 100) + '%' : '0%';
-            })
-            .catch(error => {
-                console.warn('[RevisionSettings] Could not load stats:', error);
-                // Valeurs par défaut en cas d'erreur
-                document.getElementById('total-cards').textContent = '0';
-                document.getElementById('cards-learned').textContent = '0';
-                document.getElementById('daily-streak').textContent = '0';
-                document.getElementById('success-rate').textContent = '0%';
-            });
-    }
-
-    function loadCurrentRevisionSettings() {
-        console.log('[RevisionSettings] Loading current settings');
-
-        // Utiliser l'endpoint simple (session-based)
-        fetch('/api/v1/revision/settings/simple/config/')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Remplir le formulaire avec les données
-                populateRevisionForm(data);
-            })
-            .catch(error => {
-                console.warn('[RevisionSettings] Could not load current settings:', error);
-            });
-    }
-
-    function populateRevisionForm(data) {
-        const form = document.getElementById('revision-settings-form');
-
-        console.log('[RevisionSettings] Populating form with data:', data);
-
-        // Remplir tous les champs du formulaire
-        Object.keys(data).forEach(key => {
-            const field = form.querySelector(`[name="${key}"]`);
-            if (field) {
-                if (field.type === 'checkbox') {
-                    field.checked = data[key];
-                    console.log(`[RevisionSettings] Set checkbox ${key} = ${data[key]}`);
-                } else if (field.type === 'range') {
-                    field.value = data[key];
-                    const valueSpan = field.parentElement.querySelector('.range-value');
-                    if (valueSpan) valueSpan.textContent = data[key];
-                    console.log(`[RevisionSettings] Set range ${key} = ${data[key]}`);
-                } else {
-                    field.value = data[key];
-                    console.log(`[RevisionSettings] Set field ${key} = ${data[key]}`);
-                }
-            } else {
-                console.warn(`[RevisionSettings] Field not found: ${key}`);
-            }
-        });
-
-        console.log('[RevisionSettings] Form populated with current settings');
+        document.getElementById('total-cards').textContent = stats.total_cards || 0;
+        document.getElementById('cards-learned').textContent = stats.cards_learned || 0;
+        document.getElementById('daily-streak').textContent = stats.daily_streak || 0;
+        document.getElementById('success-rate').textContent = 
+            stats.success_rate ? Math.round(stats.success_rate * 100) + '%' : '0%';
     }
 
     function applyRevisionPreset(presetName) {
         console.log(`[RevisionSettings] Applying preset: ${presetName}`);
-
-        // Marquer le preset comme actif
+        
+        // Mark preset as active
         document.querySelectorAll('.preset-btn').forEach(btn => {
             btn.classList.remove('active');
         });
         document.querySelector(`[data-preset="${presetName}"]`).classList.add('active');
-
-        // Appeler l'API pour appliquer le preset (mode debug temporaire)
-        fetch('/api/v1/revision/settings/debug/presets/apply/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCsrfToken()
-            },
-            body: JSON.stringify({
-                preset_name: presetName,
-                override_user_settings: true
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log(`[RevisionSettings] Preset ${presetName} applied successfully`);
-                    populateRevisionForm(data.settings);
-                    showNotification(`Configuration "${data.preset_applied}" appliquée avec succès`, 'success');
-                } else {
-                    console.error('[RevisionSettings] Failed to apply preset:', data.error);
-                    showNotification('Erreur lors de l\'application du preset', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('[RevisionSettings] Error applying preset:', error);
-                showNotification('Erreur lors de l\'application du preset', 'error');
-            });
-    }
-
-    function saveRevisionSettings() {
-        console.log('[RevisionSettings] Saving settings');
-
-        const form = document.getElementById('revision-settings-form');
-        const formData = new FormData(form);
-
-        // Convertir en objet JSON en incluant TOUS les champs
-        const settings = {};
-
-        // Récupérer tous les champs du formulaire (pas seulement ceux soumis)
-        const allFields = form.querySelectorAll('input, select, textarea');
-        allFields.forEach(field => {
-            if (field.name && field.name !== 'settings_type') {
-                if (field.type === 'checkbox') {
-                    settings[field.name] = field.checked;
-                } else if (field.type === 'range' || field.type === 'number') {
-                    settings[field.name] = parseInt(field.value);
-                } else {
-                    settings[field.name] = field.value;
-                }
+        
+        // Apply preset values
+        const presets = {
+            beginner: { cards_per_session: 10, default_session_duration: 15 },
+            intermediate: { cards_per_session: 20, default_session_duration: 20 },
+            advanced: { cards_per_session: 30, default_session_duration: 30 },
+            intensive: { cards_per_session: 50, default_session_duration: 45 }
+        };
+        
+        if (presets[presetName]) {
+            const settings = presets[presetName];
+            const cardsSlider = document.querySelector('[name="cards_per_session"]');
+            const durationSlider = document.querySelector('[name="default_session_duration"]');
+            
+            if (cardsSlider) {
+                cardsSlider.value = settings.cards_per_session;
+                cardsSlider.parentElement.querySelector('.range-value').textContent = settings.cards_per_session;
             }
-        });
-
-        console.log('[RevisionSettings] Settings to save:', settings);
-
-        // Utiliser l'endpoint simple (session-based)
-        fetch('/api/v1/revision/settings/simple/config/', {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCsrfToken()
-            },
-            body: JSON.stringify(settings)
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('[RevisionSettings] Settings saved successfully');
-                showNotification('Paramètres de révision sauvegardés', 'success');
-            })
-            .catch(error => {
-                console.error('[RevisionSettings] Error saving settings:', error);
-                showNotification('Erreur lors de la sauvegarde', 'error');
-            });
-    }
-
-    function resetRevisionSettings() {
-        if (confirm('Êtes-vous sûr de vouloir remettre les paramètres par défaut ?')) {
-            console.log('[RevisionSettings] Resetting to default settings');
-
-            // Utiliser l'endpoint simple (session-based)
-            fetch('/api/v1/revision/settings/simple/config/', {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRFToken': getCsrfToken()
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('[RevisionSettings] Settings reset successfully');
-                    populateRevisionForm(data);
-                    showNotification('Paramètres remis par défaut', 'success');
-
-                    // Désactiver tous les presets
-                    document.querySelectorAll('.preset-btn').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                })
-                .catch(error => {
-                    console.error('[RevisionSettings] Error resetting settings:', error);
-                    showNotification('Erreur lors de la remise à zéro', 'error');
-                });
+            
+            if (durationSlider) {
+                durationSlider.value = settings.default_session_duration;
+                durationSlider.parentElement.querySelector('.range-value').textContent = settings.default_session_duration;
+            }
         }
-    }
-
-    // Fonction utilitaire pour les notifications
-    function showNotification(message, type = 'info') {
-        // Utiliser le système de notification existant ou créer une notification simple
-        console.log(`[RevisionSettings] ${type.toUpperCase()}: ${message}`);
-
-        // Si des messages Django sont disponibles, les utiliser
-        if (typeof showDjangoMessage === 'function') {
-            showDjangoMessage(message, type);
-        } else {
-            // Notification simple
-            alert(message);
-        }
-    }
-
-    // Fonction utilitaire pour obtenir le token CSRF
-    function getCsrfToken() {
-        return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
     }
 </script>
-</div>
