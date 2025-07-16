@@ -1,0 +1,130 @@
+<!-- Profile & Account Tab -->
+<div id="profile" class="tab-content active">
+    <!-- Profile Picture Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-person-circle"></i>
+                Photo de profil
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="profile">
+                <div class="form-group">
+                    <label class="form-label">Photo de profil</label>
+                    <input type="file" name="profile_picture" accept="image/*" class="form-control">
+                    <div class="form-help">Formats acceptés : JPG, PNG, WEBP. Taille max : 5MB</div>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-upload"></i>
+                        Télécharger
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Personal Information Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-person-lines-fill"></i>
+                Informations personnelles
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="profile">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Prénom</label>
+                        <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nom</label>
+                        <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ user.email }}" disabled>
+                    <div class="form-help">L'email ne peut pas être modifié</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Numéro de téléphone</label>
+                    <input type="tel" name="phone_number" class="form-control" value="{{ user.profile.phone_number|default:'' }}" placeholder="+32 123 456 789">
+                    <div class="form-help">Optionnel. Format: +32 123 456 789</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nom d'utilisateur</label>
+                    <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Biographie</label>
+                    <textarea name="bio" class="form-control" rows="3" placeholder="Parlez-nous de vous...">{{ user.profile.bio|default:'' }}</textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Privacy & Security Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-shield-lock"></i>
+                Confidentialité & Sécurité
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="privacy">
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="public_profile" {% if user.profile.public_profile %}checked{% endif %}>
+                        Profil public
+                    </label>
+                    <div class="form-help">Permettre aux autres utilisateurs de voir votre profil</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="share_progress" {% if user.profile.share_progress %}checked{% endif %}>
+                        Partager mes progrès
+                    </label>
+                    <div class="form-help">Afficher vos statistiques d'apprentissage sur votre profil</div>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

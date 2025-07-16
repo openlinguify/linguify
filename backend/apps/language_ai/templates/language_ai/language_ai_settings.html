@@ -1,0 +1,64 @@
+<!-- Language AI Tab -->
+<div id="language_ai" class="tab-content">
+    <!-- IA Linguistique Settings -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-cpu"></i>
+                Paramètres IA Linguistique
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="language_ai">
+                
+                <div class="form-group">
+                    <label class="form-label">Modèle d'IA préféré</label>
+                    <select name="preferred_model" class="form-control">
+                        <option value="gpt-4" selected>GPT-4</option>
+                        <option value="claude">Claude</option>
+                        <option value="gemini">Gemini</option>
+                    </select>
+                    <div class="form-help">Choisissez le modèle d'IA pour les interactions linguistiques</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="auto_correction" checked>
+                        Correction automatique
+                    </label>
+                    <div class="form-help">Corriger automatiquement les erreurs de langue</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="suggestions_enabled" checked>
+                        Suggestions d'amélioration
+                    </label>
+                    <div class="form-help">Recevoir des suggestions pour améliorer votre expression</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="context_aware" checked>
+                        Analyse contextuelle
+                    </label>
+                    <div class="form-help">Analyser le contexte pour des suggestions plus pertinentes</div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
