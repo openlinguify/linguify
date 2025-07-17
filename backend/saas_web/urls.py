@@ -13,7 +13,7 @@ from apps.community.views.community_settings_views import CommunitySettingsView
 from core.vocal.views.voice_settings_views import VoiceSettingsView
 from apps.notification.views.notification_settings_views import NotificationSettingsView
 from apps.course.views.learning_settings_views import LearningSettingsView
-from apps.notebook.views.settings_views import NotebookSettingsView
+from apps.notebook.views.notebook_settings_views import NotebookSettingsView
 from apps.quizz.views.quizz_settings_views import QuizSettingsView
 from apps.revision.views.revision_settings_views import RevisionSettingsView
 from apps.language_ai.views.language_ai_settings_views import LanguageAISettingsView

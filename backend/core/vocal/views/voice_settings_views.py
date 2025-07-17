@@ -55,14 +55,12 @@ class VoiceSettingsView(View):
             # Store validated voice settings
             validated_data = serializer.validated_data
             
-            # Store voice settings in user profile
-            user_profile = request.user.profile if hasattr(request.user, 'profile') else None
-            if user_profile:
-                user_profile.voice_settings = json.dumps(validated_data)
-                user_profile.save()
-                logger.info(f"Voice settings updated for user {request.user.id}")
-            else:
-                logger.warning(f"No user profile found for user {request.user.id}")
+            # Store validated voice settings
+            # TODO: Consider creating a dedicated VoiceUserSettings model
+            # For now, store in user session since Profile model doesn't have voice_settings field
+            session_key = f'voice_settings_{request.user.id}'
+            request.session[session_key] = validated_data
+            logger.info(f"Voice settings updated for user {request.user.id} (stored in session)")
             
             if is_ajax:
                 return JsonResponse({
@@ -102,25 +100,79 @@ class VoiceSettingsView(View):
                 return redirect('saas_web:settings')
     
     def get(self, request):
-        """Get current voice settings"""
+        """Display voice settings page"""
+        from django.shortcuts import render
+        from app_manager.services import UserAppService, AppSettingsService
+        
         try:
-            user_profile = request.user.profile if hasattr(request.user, 'profile') else None
+            # Check if it's an AJAX request for getting settings as JSON
+            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
             
-            if user_profile and user_profile.voice_settings:
-                settings = json.loads(user_profile.voice_settings)
-            else:
+            # Get settings from session since Profile model doesn't have voice_settings field
+            session_key = f'voice_settings_{request.user.id}'
+            settings = request.session.get(session_key, {})
+            
+            if not settings:
                 # Return default settings
                 serializer = VoiceSettingsSerializer()
                 settings = {field: field_obj.default for field, field_obj in serializer.fields.items() if hasattr(field_obj, 'default')}
             
-            return JsonResponse({
-                'success': True,
-                'settings': settings
-            })
-            
+            if is_ajax:
+                return JsonResponse({
+                    'success': True,
+                    'settings': settings
+                })
+            else:
+                # Render the settings page
+                user_apps, app_recommendations = UserAppService.get_user_apps_with_registry_info(request.user)
+                settings_categories, settings_tabs = AppSettingsService.get_all_settings_tabs(user=request.user)
+                
+                # Mark the voice tab as active
+                for tab in settings_tabs:
+                    tab['active'] = tab.get('id') in ['voice', 'vocal']
+                
+                # Build URL mapping for template
+                from django.urls import reverse
+                settings_urls = {
+                    'profile': reverse('saas_web:profile_settings'),
+                    'interface': reverse('saas_web:interface_settings'),
+                    'voice': reverse('saas_web:voice_settings'),
+                    'vocal': reverse('saas_web:voice_settings'),
+                    'learning': reverse('saas_web:learning_settings'),
+                    'chat': reverse('saas_web:chat_settings'),
+                    'community': reverse('saas_web:community_settings'),
+                    'notebook': reverse('saas_web:notebook_settings'),
+                    'notes': reverse('saas_web:notebook_settings'),
+                    'quiz': reverse('saas_web:quiz_settings'),
+                    'quizz': reverse('saas_web:quiz_settings'),
+                    'revision': reverse('saas_web:revision_settings'),
+                    'language_ai': reverse('saas_web:language_ai_settings'),
+                    'language-ai': reverse('saas_web:language_ai_settings'),
+                    'notifications': reverse('saas_web:notification_settings'),
+                    'notification': reverse('saas_web:notification_settings'),
+                }
+                
+                context = {
+                    'title': 'Paramètres Vocaux - Linguify',
+                    'user': request.user,
+                    'user_apps': user_apps,
+                    'app_recommendations': app_recommendations,
+                    'settings_categories': settings_categories,
+                    'settings_tabs': settings_tabs,
+                    'settings_urls': settings_urls,
+                    'voice_settings': settings,
+                    'active_tab': 'voice',
+                }
+                
+                return render(request, 'saas_web/settings/settings.html', context)
+                
         except Exception as e:
             logger.error(f"Error retrieving voice settings: {e}")
-            return JsonResponse({
-                'success': False,
-                'message': 'Erreur lors de la récupération des paramètres'
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            if is_ajax:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Erreur lors de la récupération des paramètres'
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                messages.error(request, "Erreur lors du chargement des paramètres vocaux")
+                return redirect('saas_web:settings')

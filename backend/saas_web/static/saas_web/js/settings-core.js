@@ -26,67 +26,41 @@ class SettingsManager {
 
     init() {
         console.log('[Settings Core] Initializing settings navigation...');
+        console.log('[Settings Core] JavaScript navigation completely disabled for normal URL navigation');
         
-        this.setupNavigation();
+        // Clear any saved tab state to prevent interference
+        localStorage.removeItem('settings-current-tab');
+        
+        // Only setup non-interfering features
+        this.setupNavigation(); // This only adds hover effects now
         this.setupSearch();
         this.setupAutoSave();
         this.setupKeyboardShortcuts();
         
-        // Load saved tab from localStorage
-        const savedTab = localStorage.getItem('settings-current-tab');
-        if (savedTab) {
-            this.switchTab(savedTab);
-        }
+        // DO NOT load saved tab or call switchTab() - let normal navigation work
         
         console.log('[Settings Core] Navigation initialized successfully');
     }
 
     setupNavigation() {
+        // Disable JavaScript navigation entirely to allow normal href navigation
+        console.log('[Settings Core] JavaScript navigation disabled - using normal href navigation');
+        
+        // Optional: Add hover effects or other non-interfering interactions
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                const tabId = item.getAttribute('data-tab');
-                if (tabId) {
-                    this.switchTab(tabId);
-                }
+            item.addEventListener('mouseenter', () => {
+                console.log(`[Settings Core] Hovering over: ${item.getAttribute('href')}`);
             });
         });
     }
 
     switchTab(tabId) {
-        console.log(`[Settings Core] Switching to tab: ${tabId}`);
+        console.log(`[Settings Core] switchTab() called with: ${tabId} - but JavaScript navigation is disabled`);
+        console.log(`[Settings Core] Use normal navigation instead: navigate to appropriate URL`);
         
-        // Update navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.classList.remove('active');
-        });
-        
-        const activeNavItem = document.querySelector(`[data-tab="${tabId}"]`);
-        if (activeNavItem) {
-            activeNavItem.classList.add('active');
-        }
-        
-        // Update content
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
-        
-        const activeContent = document.getElementById(tabId);
-        if (activeContent) {
-            activeContent.classList.add('active');
-        }
-        
-        // Update page title
-        this.updatePageTitle(tabId);
-        
-        // Save current tab
-        this.currentTab = tabId;
-        localStorage.setItem('settings-current-tab', tabId);
-        
-        // Update URL without page reload
-        const newUrl = `${window.location.pathname}?tab=${tabId}`;
-        window.history.replaceState({}, '', newUrl);
+        // Do nothing - let normal navigation work
+        return;
     }
 
     updatePageTitle(tabId) {

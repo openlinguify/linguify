@@ -509,7 +509,12 @@ body.settings-page {
 
 /* Animation improvements */
 .tab-content {
+    display: none;
     animation: fadeIn 0.3s ease-in-out;
+}
+
+.tab-content.active {
+    display: block;
 }
 
 @keyframes fadeIn {

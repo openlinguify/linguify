@@ -19,20 +19,75 @@ class InterfaceSettingsView(View):
     
     def get(self, request):
         """Display interface settings page"""
+        from app_manager.services import UserAppService, AppSettingsService
+        
         try:
-            # Get current interface settings from user profile
-            interface_settings = {}
-            if hasattr(request.user, 'profile') and request.user.profile:
-                interface_settings = request.user.profile.interface_settings or {}
+            # Check if it's an AJAX request for getting settings as JSON
+            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
             
-            context = {
-                'title': _('Interface & Thème - Linguify'),
-                'user': request.user,
-                'interface_settings': interface_settings,
-                'active_tab': 'interface',
-            }
+            # Get settings from session since Profile model doesn't have interface_settings field
+            session_key = f'interface_settings_{request.user.id}'
+            interface_settings = request.session.get(session_key, {})
             
-            return render(request, 'authentication/interface_settings.html', context)
+            if not interface_settings:
+                # Return default settings
+                interface_settings = {
+                    'theme': 'light',
+                    'color_scheme': 'default',
+                    'font_size': 'medium',
+                    'language': 'fr',
+                    'sidebar_collapsed': False,
+                    'animations_enabled': True,
+                }
+            
+            if is_ajax:
+                return JsonResponse({
+                    'success': True,
+                    'settings': interface_settings
+                })
+            else:
+                # Render the settings page with full navigation
+                user_apps, app_recommendations = UserAppService.get_user_apps_with_registry_info(request.user)
+                settings_categories, settings_tabs = AppSettingsService.get_all_settings_tabs(user=request.user)
+                
+                # Mark the interface tab as active
+                for tab in settings_tabs:
+                    tab['active'] = tab.get('id') == 'interface'
+                
+                # Build URL mapping for template
+                from django.urls import reverse
+                settings_urls = {
+                    'profile': reverse('saas_web:profile_settings'),
+                    'interface': reverse('saas_web:interface_settings'),
+                    'voice': reverse('saas_web:voice_settings'),
+                    'vocal': reverse('saas_web:voice_settings'),
+                    'learning': reverse('saas_web:learning_settings'),
+                    'chat': reverse('saas_web:chat_settings'),
+                    'community': reverse('saas_web:community_settings'),
+                    'notebook': reverse('saas_web:notebook_settings'),
+                    'notes': reverse('saas_web:notebook_settings'),
+                    'quiz': reverse('saas_web:quiz_settings'),
+                    'quizz': reverse('saas_web:quiz_settings'),
+                    'revision': reverse('saas_web:revision_settings'),
+                    'language_ai': reverse('saas_web:language_ai_settings'),
+                    'language-ai': reverse('saas_web:language_ai_settings'),
+                    'notifications': reverse('saas_web:notification_settings'),
+                    'notification': reverse('saas_web:notification_settings'),
+                }
+                
+                context = {
+                    'title': _('Interface & Thème - Linguify'),
+                    'user': request.user,
+                    'user_apps': user_apps,
+                    'app_recommendations': app_recommendations,
+                    'settings_categories': settings_categories,
+                    'settings_tabs': settings_tabs,
+                    'settings_urls': settings_urls,
+                    'interface_settings': interface_settings,
+                    'active_tab': 'interface',
+                }
+                
+                return render(request, 'saas_web/settings/settings.html', context)
             
         except Exception as e:
             logger.error(f"Error in InterfaceSettingsView GET: {e}")
@@ -63,10 +118,10 @@ class InterfaceSettingsView(View):
                 'animations_enabled': animations_enabled,
             }
             
-            # Update user profile
-            if hasattr(request.user, 'profile') and request.user.profile:
-                request.user.profile.interface_settings = interface_settings
-                request.user.profile.save(update_fields=['interface_settings'])
+            # Store in session since Profile model doesn't have interface_settings field
+            session_key = f'interface_settings_{request.user.id}'
+            request.session[session_key] = interface_settings
+            logger.info(f"Interface settings updated for user {request.user.id} (stored in session)")
             
             if is_ajax:
                 return JsonResponse({
@@ -75,7 +130,7 @@ class InterfaceSettingsView(View):
                 })
             else:
                 messages.success(request, _("Paramètres d'interface mis à jour avec succès"))
-                return redirect('saas_web:interface_settings')
+                return redirect('saas_web:settings')
                 
         except Exception as e:
             logger.error(f"Error in InterfaceSettingsView POST: {e}")
@@ -87,4 +142,4 @@ class InterfaceSettingsView(View):
                 }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             else:
                 messages.error(request, _("Erreur lors de la mise à jour des paramètres"))
-                return redirect('saas_web:interface_settings')
+                return redirect('saas_web:settings')

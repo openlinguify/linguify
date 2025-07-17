@@ -60,14 +60,10 @@ class ChatSettingsView(View):
             validated_data = serializer.validated_data
             
             # TODO: Consider creating a dedicated ChatUserSettings model
-            # For now, store in user profile
-            user_profile = request.user.profile if hasattr(request.user, 'profile') else None
-            if user_profile:
-                user_profile.chat_settings = json.dumps(validated_data)
-                user_profile.save()
-                logger.info(f"Chat settings updated for user {request.user.id}")
-            else:
-                logger.warning(f"No user profile found for user {request.user.id}")
+            # For now, store in user session since Profile model doesn't have chat_settings field
+            session_key = f'chat_settings_{request.user.id}'
+            request.session[session_key] = validated_data
+            logger.info(f"Chat settings updated for user {request.user.id} (stored in session)")
             
             if is_ajax:
                 return JsonResponse({
@@ -115,11 +111,11 @@ class ChatSettingsView(View):
             # Check if it's an AJAX request for getting settings as JSON
             is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
             
-            user_profile = request.user.profile if hasattr(request.user, 'profile') else None
+            # Get settings from session since Profile model doesn't have chat_settings field
+            session_key = f'chat_settings_{request.user.id}'
+            settings = request.session.get(session_key, {})
             
-            if user_profile and user_profile.chat_settings:
-                settings = json.loads(user_profile.chat_settings)
-            else:
+            if not settings:
                 # Return default settings
                 serializer = ChatSettingsSerializer()
                 settings = {field: field_obj.default for field, field_obj in serializer.fields.items() if hasattr(field_obj, 'default')}
@@ -133,6 +129,10 @@ class ChatSettingsView(View):
                 # Render the settings page
                 user_apps, app_recommendations = UserAppService.get_user_apps_with_registry_info(request.user)
                 settings_categories, settings_tabs = AppSettingsService.get_all_settings_tabs(user=request.user)
+                
+                # Mark the chat tab as active
+                for tab in settings_tabs:
+                    tab['active'] = tab.get('id') == 'chat'
                 
                 # Build URL mapping for template
                 from django.urls import reverse

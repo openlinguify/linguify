@@ -56,10 +56,10 @@
             <div class="breadcrumb-nav">
                 <span>Linguify</span>
                 <i class="bi bi-chevron-right"></i>
-                <span class="active">Profil & Compte</span>
+                <span class="active">{{ breadcrumb_active|default:"Profil & Compte" }}</span>
             </div>
-            <h1 class="page-title">Profil & Compte</h1>
-            <p class="page-subtitle">Gérez vos informations personnelles et paramètres de compte</p>
+            <h1 class="page-title">{{ page_title|default:"Profil & Compte" }}</h1>
+            <p class="page-subtitle">{{ page_subtitle|default:"Gérez vos informations personnelles et paramètres de compte" }}</p>
         </div>
         
         <!-- Content Body -->
@@ -67,7 +67,35 @@
             <!-- Dynamic Settings Tabs -->
             {% for tab in settings_tabs %}
                 {% if tab.template %}
-                    {% include tab.template %}
+                    <div id="{{ tab.id }}" class="tab-content{% if tab.active %} active{% endif %}">
+                        {% include tab.template %}
+                    </div>
+                {% elif tab.id == 'revision' and revision_content %}
+                    <div id="{{ tab.id }}" class="tab-content{% if tab.active %} active{% endif %}">
+                        {{ revision_content|safe }}
+                    </div>
+                {% elif tab.id == 'language_ai' and language_ai_content %}
+                    <div id="{{ tab.id }}" class="tab-content{% if tab.active %} active{% endif %}">
+                        {{ language_ai_content|safe }}
+                    </div>
+                {% elif tab.id == 'notebook' and notebook_content %}
+                    <div id="{{ tab.id }}" class="tab-content{% if tab.active %} active{% endif %}">
+                        {{ notebook_content|safe }}
+                    </div>
+                {% elif tab.active %}
+                    <div id="{{ tab.id }}" class="tab-content active">
+                        <div class="content-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="{{ tab.icon|default:'bi-gear' }}"></i>
+                                    {{ tab.name }}
+                                </h3>
+                            </div>
+                            <div class="section-content">
+                                <p>Paramètres de {{ tab.name|lower }} disponibles bientôt...</p>
+                            </div>
+                        </div>
+                    </div>
                 {% endif %}
             {% endfor %}
         </div>
@@ -79,8 +107,8 @@
 
 {% block extra_js %}
 <!-- Core settings functionality -->
-<script src="{% static 'src/js/settings-utils.js' %}"></script>
-<script src="{% static 'src/js/settings-core.js' %}"></script>
+<script src="{% static 'saas_web/js/settings-utils.js' %}?v=2025.2"></script>
+<script src="{% static 'saas_web/js/settings-core.js' %}?v=2025.2"></script>
 
 <!-- App-specific settings scripts -->
 <script src="{% static 'authentication/js/settings.js' %}"></script>

@@ -1,0 +1,401 @@
+<!-- Statistics Section -->
+<div class="content-section">
+    <div class="section-header">
+        <h3 class="section-title">
+            <i class="bi bi-bar-chart"></i>
+            Statistiques de révision
+        </h3>
+        <div class="section-actions">
+            <button class="section-toggle">
+                <i class="bi bi-chevron-up"></i>
+            </button>
+        </div>
+    </div>
+    <div class="section-content">
+        <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+            <div class="stat-card">
+                <div class="stat-value" id="total-cards">0</div>
+                <div class="stat-label">Cartes totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="cards-learned">0</div>
+                <div class="stat-label">Cartes apprises</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="daily-streak">0</div>
+                <div class="stat-label">Série quotidienne</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="success-rate">0%</div>
+                <div class="stat-label">Taux de réussite</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Configuration Section -->
+<div class="content-section">
+    <div class="section-header">
+        <h3 class="section-title">
+            <i class="bi bi-lightning-fill"></i>
+            Configuration rapide
+        </h3>
+        <div class="section-actions">
+            <button class="section-toggle">
+                <i class="bi bi-chevron-up"></i>
+            </button>
+        </div>
+    </div>
+    <div class="section-content">
+        <div class="form-help">Choisissez un profil de révision prédéfini</div>
+        <div class="preset-buttons" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 16px;">
+            <button type="button" class="preset-btn" data-preset="beginner">
+                <i class="bi bi-star"></i>
+                <span>Débutant</span>
+                <small>10 cartes, 15 min</small>
+            </button>
+            <button type="button" class="preset-btn" data-preset="intermediate">
+                <i class="bi bi-lightning"></i>
+                <span>Intermédiaire</span>
+                <small>20 cartes, 20 min</small>
+            </button>
+            <button type="button" class="preset-btn" data-preset="advanced">
+                <i class="bi bi-fire"></i>
+                <span>Avancé</span>
+                <small>30 cartes, 30 min</small>
+            </button>
+            <button type="button" class="preset-btn" data-preset="intensive">
+                <i class="bi bi-rocket"></i>
+                <span>Intensif</span>
+                <small>50 cartes, 45 min</small>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Learning Settings Section -->
+<div class="content-section">
+    <div class="section-header">
+        <h3 class="section-title">
+            <i class="bi bi-sliders"></i>
+            Paramètres d'apprentissage
+        </h3>
+        <div class="section-actions">
+            <button class="section-toggle">
+                <i class="bi bi-chevron-up"></i>
+            </button>
+        </div>
+    </div>
+    <div class="section-content">
+        <form id="revision-settings-form" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="setting_type" value="revision">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Mode d'étude par défaut</label>
+                    <select name="default_study_mode" class="form-control">
+                        <option value="spaced" {% if revision_settings.default_study_mode == 'spaced' %}selected{% endif %}>Répétition espacée</option>
+                        <option value="intensive" {% if revision_settings.default_study_mode == 'intensive' %}selected{% endif %}>Révision intensive</option>
+                        <option value="mixed" {% if revision_settings.default_study_mode == 'mixed' %}selected{% endif %}>Mode mixte</option>
+                        <option value="custom" {% if revision_settings.default_study_mode == 'custom' %}selected{% endif %}>Personnalisé</option>
+                    </select>
+                    <div class="form-help">Algorithme utilisé pour planifier vos révisions</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Difficulté par défaut</label>
+                    <select name="default_difficulty" class="form-control">
+                        <option value="easy" {% if revision_settings.default_difficulty == 'easy' %}selected{% endif %}>Facile</option>
+                        <option value="normal" {% if revision_settings.default_difficulty == 'normal' %}selected{% endif %}>Normal</option>
+                        <option value="hard" {% if revision_settings.default_difficulty == 'hard' %}selected{% endif %}>Difficile</option>
+                        <option value="expert" {% if revision_settings.default_difficulty == 'expert' %}selected{% endif %}>Expert</option>
+                    </select>
+                    <div class="form-help">Niveau de difficulté pour les nouvelles cartes</div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Cartes par session</label>
+                    <div class="range-input">
+                        <input type="range" name="cards_per_session" min="5" max="100" value="{{ revision_settings.cards_per_session|default:'20' }}" class="form-range">
+                        <span class="range-value">{{ revision_settings.cards_per_session|default:'20' }}</span>
+                    </div>
+                    <div class="form-help">Nombre de cartes à réviser par session</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Durée de session (minutes)</label>
+                    <div class="range-input">
+                        <input type="range" name="default_session_duration" min="5" max="120" value="{{ revision_settings.session_duration|default:'20' }}" class="form-range">
+                        <span class="range-value">{{ revision_settings.session_duration|default:'20' }}</span>
+                    </div>
+                    <div class="form-help">Durée recommandée par session</div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="spaced_repetition" {% if revision_settings.spaced_repetition %}checked{% endif %}>
+                        Répétition espacée
+                    </label>
+                    <div class="form-help">Utiliser l'algorithme de répétition espacée</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="auto_advance" {% if revision_settings.auto_advance %}checked{% endif %}>
+                        Passage automatique
+                    </label>
+                    <div class="form-help">Passer automatiquement à la carte suivante</div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn-primary">
+                    <i class="bi bi-save"></i>
+                    Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Styles for revision settings */
+    .stat-card {
+        background: white;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-color: var(--card-color);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--card-color);
+    }
+
+    .stat-card:nth-child(1) {
+        --card-color: #3b82f6; /* Blue for total cards */
+    }
+
+    .stat-card:nth-child(2) {
+        --card-color: #10b981; /* Green for cards learned */
+    }
+
+    .stat-card:nth-child(3) {
+        --card-color: #f59e0b; /* Orange for daily streak */
+    }
+
+    .stat-card:nth-child(4) {
+        --card-color: #8b5cf6; /* Purple for success rate */
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--card-color);
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .preset-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .preset-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--preset-color);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .preset-btn:hover::before,
+    .preset-btn.active::before {
+        opacity: 1;
+    }
+
+    .preset-btn[data-preset="beginner"] {
+        --preset-color: #22c55e; /* Green for beginner */
+    }
+
+    .preset-btn[data-preset="intermediate"] {
+        --preset-color: #3b82f6; /* Blue for intermediate */
+    }
+
+    .preset-btn[data-preset="advanced"] {
+        --preset-color: #f59e0b; /* Orange for advanced */
+    }
+
+    .preset-btn[data-preset="intensive"] {
+        --preset-color: #ef4444; /* Red for intensive */
+    }
+
+    .preset-btn:hover {
+        border-color: var(--preset-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    .preset-btn.active {
+        border-color: var(--preset-color);
+        background: color-mix(in srgb, var(--preset-color) 8%, white);
+    }
+
+    .preset-btn i {
+        font-size: 24px;
+        color: var(--preset-color);
+        margin-bottom: 8px;
+        transition: color 0.2s ease;
+    }
+
+    .preset-btn span {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+    }
+
+    .preset-btn small {
+        font-size: 12px;
+        color: #666;
+    }
+
+    .range-input {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .range-input .form-range {
+        flex: 1;
+    }
+
+    .range-value {
+        min-width: 30px;
+        text-align: center;
+        font-weight: 600;
+        color: #875a7b;
+    }
+</style>
+
+<script>
+    // JavaScript for revision settings
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize revision settings
+        initRevisionSettings();
+
+        // Preset button handlers
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const preset = this.dataset.preset;
+                applyRevisionPreset(preset);
+            });
+        });
+
+        // Range slider handlers
+        document.querySelectorAll('.range-input input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', function () {
+                const valueSpan = this.parentElement.querySelector('.range-value');
+                valueSpan.textContent = this.value;
+            });
+        });
+    });
+
+    function initRevisionSettings() {
+        console.log('[RevisionSettings] Initializing revision settings');
+        loadRevisionStats();
+    }
+
+    function loadRevisionStats() {
+        console.log('[RevisionSettings] Loading revision statistics');
+        
+        // Mock data for demonstration
+        const stats = {
+            total_cards: 28,
+            cards_learned: 15,
+            daily_streak: 5,
+            success_rate: 0.75
+        };
+
+        document.getElementById('total-cards').textContent = stats.total_cards || 0;
+        document.getElementById('cards-learned').textContent = stats.cards_learned || 0;
+        document.getElementById('daily-streak').textContent = stats.daily_streak || 0;
+        document.getElementById('success-rate').textContent = 
+            stats.success_rate ? Math.round(stats.success_rate * 100) + '%' : '0%';
+    }
+
+    function applyRevisionPreset(presetName) {
+        console.log(`[RevisionSettings] Applying preset: ${presetName}`);
+        
+        // Mark preset as active
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-preset="${presetName}"]`).classList.add('active');
+        
+        // Apply preset values
+        const presets = {
+            beginner: { cards_per_session: 10, default_session_duration: 15 },
+            intermediate: { cards_per_session: 20, default_session_duration: 20 },
+            advanced: { cards_per_session: 30, default_session_duration: 30 },
+            intensive: { cards_per_session: 50, default_session_duration: 45 }
+        };
+        
+        if (presets[presetName]) {
+            const settings = presets[presetName];
+            const cardsSlider = document.querySelector('[name="cards_per_session"]');
+            const durationSlider = document.querySelector('[name="default_session_duration"]');
+            
+            if (cardsSlider) {
+                cardsSlider.value = settings.cards_per_session;
+                cardsSlider.parentElement.querySelector('.range-value').textContent = settings.cards_per_session;
+            }
+            
+            if (durationSlider) {
+                durationSlider.value = settings.default_session_duration;
+                durationSlider.parentElement.querySelector('.range-value').textContent = settings.default_session_duration;
+            }
+        }
+    }
+</script>

@@ -38,6 +38,10 @@ class UserSettingsView(View):
             # Get dynamic settings tabs and categories (filtered by user activation)
             settings_categories, settings_tabs = AppSettingsService.get_all_settings_tabs(user=request.user)
             
+            # Mark the profile tab as active by default (since this is the main settings view)
+            for tab in settings_tabs:
+                tab['active'] = tab.get('id') == 'profile'
+            
             # Get serializers for settings forms
             general_serializer = GeneralSettingsSerializer(instance=request.user)
             notification_serializer = NotificationSettingsSerializer(instance=request.user)

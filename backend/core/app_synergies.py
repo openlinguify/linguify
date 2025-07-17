@@ -330,6 +330,12 @@ class AppSynergyManager:
         
         return sorted_recommendations[:limit]
     
+    def get_recommendations_for_user(self, user_apps: List[str], limit: int = 5) -> List[Dict[str, Any]]:
+        """
+        Alias for get_recommended_apps for backward compatibility
+        """
+        return self.get_recommended_apps(user_apps, limit)
+    
     def get_app_ecosystem_map(self) -> Dict[str, Any]:
         """
         Génère une carte de l'écosystème complet des apps
