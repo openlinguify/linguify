@@ -5,7 +5,7 @@ from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.utils import timezone
 
-from .models import Call, CallParticipant
+from .models.chat_models import Call, CallParticipant
 from apps.authentication.models import User
 
 logger = logging.getLogger(__name__)

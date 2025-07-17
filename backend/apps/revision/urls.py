@@ -12,7 +12,7 @@ from .views import (
     CreateRevisionListViewSet
 )
 from .views.flashcard_views import TagsAPIView
-from .views.user_settings_view import get_user_revision_settings
+from .views.revision_settings_views import get_user_revision_settings
 app_name = 'revision'
 
 router = DefaultRouter()

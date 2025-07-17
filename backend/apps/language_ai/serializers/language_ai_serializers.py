@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ConversationTopic, AIConversation, ConversationMessage, ConversationFeedback
+from ..models import ConversationTopic, AIConversation, ConversationMessage, ConversationFeedback
 
 
 class ConversationTopicSerializer(serializers.ModelSerializer):

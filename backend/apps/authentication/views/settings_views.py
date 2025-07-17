@@ -46,6 +46,27 @@ class UserSettingsView(View):
             appearance_serializer = AppearanceSettingsSerializer(instance=request.user)
             profile_serializer = ProfileUpdateSerializer(instance=request.user)
             
+            # Build URL mapping for template
+            from django.urls import reverse
+            settings_urls = {
+                'profile': reverse('saas_web:profile_settings'),
+                'interface': reverse('saas_web:interface_settings'),
+                'voice': reverse('saas_web:voice_settings'),
+                'vocal': reverse('saas_web:voice_settings'),
+                'learning': reverse('saas_web:learning_settings'),
+                'chat': reverse('saas_web:chat_settings'),
+                'community': reverse('saas_web:community_settings'),
+                'notebook': reverse('saas_web:notebook_settings'),
+                'notes': reverse('saas_web:notebook_settings'),
+                'quiz': reverse('saas_web:quiz_settings'),
+                'quizz': reverse('saas_web:quiz_settings'),
+                'revision': reverse('saas_web:revision_settings'),
+                'language_ai': reverse('saas_web:language_ai_settings'),
+                'language-ai': reverse('saas_web:language_ai_settings'),
+                'notifications': reverse('saas_web:notification_settings'),
+                'notification': reverse('saas_web:notification_settings'),
+            }
+            
             context = {
                 'title': _('Paramètres - Open Linguify'),
                 'user': request.user,
@@ -53,6 +74,7 @@ class UserSettingsView(View):
                 'app_recommendations': app_recommendations,
                 'settings_categories': settings_categories,
                 'settings_tabs': settings_tabs,
+                'settings_urls': settings_urls,
                 'general_form': general_serializer,
                 'notification_form': notification_serializer,
                 'learning_form': learning_serializer,

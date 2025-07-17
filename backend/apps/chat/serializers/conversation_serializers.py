@@ -1,7 +1,7 @@
 # backend/chat/serializers/conversation_serializers.py
 from rest_framework import serializers
 from apps.community.models import Conversation
-from ..models import ConversationMessage, Call, CallParticipant
+from ..models.chat_models import ConversationMessage, Call, CallParticipant
 from apps.authentication.serializers.settings_serializers import UserSerializer
 
 class ConversationListSerializer(serializers.ModelSerializer):

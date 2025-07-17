@@ -5,12 +5,12 @@ from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 import logging
 
-from .models import ConversationTopic, AIConversation, ConversationMessage, ConversationFeedback
-from .serializers import (
+from ..models import ConversationTopic, AIConversation, ConversationMessage, ConversationFeedback
+from ..serializers.language_ai_serializers import (
     ConversationTopicSerializer, AIConversationSerializer, ConversationMessageSerializer,
     ConversationFeedbackSerializer, ConversationDetailSerializer
 )
-from .ai_service import generate_ai_response  # Ce service sera défini plus tard
+from ..ai_service import generate_ai_response  # Ce service sera défini plus tard
 
 logger = logging.getLogger(__name__)
 

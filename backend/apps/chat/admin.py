@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Conversation, ConversationMessage, Call, CallParticipant
+from .models.chat_models import Conversation, ConversationMessage, Call, CallParticipant
 
 class ConversationMessageInline(admin.TabularInline):
     model = ConversationMessage

@@ -4,7 +4,7 @@ from rest_framework import status
 from django.utils import timezone
 import uuid
 
-from .models import Call, CallParticipant
+from .models.chat_models import Call, CallParticipant
 from .serializers import ConversationListSerializer, ConversationDetailSerializer, ConversationMessageSerializer
 from apps.authentication.models import User
 from apps.community.models import Conversation, Profile
