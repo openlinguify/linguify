@@ -52,15 +52,15 @@
         <div id="multiSelectControls" class="btn-toolbar fade" style="display: none;" role="toolbar">
             <div class="btn-group btn-group-sm me-2" role="group">
                 <button type="button" class="btn btn-outline-secondary" onclick="bulkDelete()" id="bulkDeleteBtn" title="Supprimer la sélection">
-                    <img src="{% static 'src/img/trash.png' %}" alt="Delete" style="width: 16px; height: 16px;">
+                    <img src="{% static 'notebook/img/trash.png' %}" alt="Delete" style="width: 16px; height: 16px;">
                     <span class="badge bg-secondary ms-1" id="selectedCount">0</span>
                 </button>
                 <button type="button" class="btn btn-outline-secondary" onclick="bulkArchive()" title="Archiver la sélection">
-                    <img src="{% static 'src/img/archive.png' %}" alt="Archive" style="width: 16px; height: 16px;">
+                    <img src="{% static 'notebook/img/archive.png' %}" alt="Archive" style="width: 16px; height: 16px;">
                     <span class="badge bg-secondary ms-1" id="selectedCountArchive">0</span>
                 </button>
                 <button type="button" class="btn btn-outline-secondary" onclick="bulkUnarchive()" title="Désarchiver la sélection">
-                    <img src="{% static 'src/img/archive.png' %}" alt="Unarchive" style="width: 16px; height: 16px; transform: rotate(180deg);">
+                    <img src="{% static 'notebook/img/archive.png' %}" alt="Unarchive" style="width: 16px; height: 16px; transform: rotate(180deg);">
                     <span class="badge bg-secondary ms-1" id="selectedCountUnarchive">0</span>
                 </button>
             </div>
@@ -73,13 +73,13 @@
         <div id="normalControls" class="btn-toolbar fade show" role="toolbar">
             <div class="btn-group btn-group-sm me-2" role="group">
                 <button type="button" class="btn btn-outline-secondary" onclick="toggleMultiSelect()" title="Mode sélection multiple">
-                    <img src="{% static 'src/img/select.png' %}" alt="Select" style="width: 16px; height: 16px;">
+                    <img src="{% static 'notebook/img/select.png' %}" alt="Select" style="width: 16px; height: 16px;">
                 </button>
                 <button type="button" class="btn btn-outline-secondary" onclick="saveCurrentNote(true)" id="saveButton" title="Sauvegarder la note">
-                    <img src="{% static 'src/img/save-cloud.png' %}" alt="Save" style="width: 18px; height: 14px;">
+                    <img src="{% static 'notebook/img/save-cloud.png' %}" alt="Save" style="width: 18px; height: 14px;">
                 </button>
                 <button type="button" class="btn btn-outline-secondary" onclick="refreshNotes()" title="Actualiser les notes">
-                    <img src="{% static 'src/img/refresh.png' %}" alt="Refresh" style="width: 16px; height: 16px;">
+                    <img src="{% static 'notebook/img/refresh.png' %}" alt="Refresh" style="width: 16px; height: 16px;">
                 </button>
             </div>
             <button type="button" class="btn btn-outline-secondary btn-sm d-md-none" onclick="toggleSidebar()" title="Afficher/masquer la sidebar">
@@ -141,10 +141,10 @@
                     
                     <div class="d-flex align-items-center gap-2 ms-3">
                         <button class="btn btn-outline-secondary btn-sm" onclick="toggleArchiveCurrentNote()" id="archiveToggleBtn" title="Archiver/Désarchiver">
-                            <img src="{% static 'src/img/archive.png' %}" alt="Archive" style="width: 16px; height: 16px;">
+                            <img src="{% static 'notebook/img/archive.png' %}" alt="Archive" style="width: 16px; height: 16px;">
                         </button>
                         <button class="btn btn-outline-secondary btn-sm" onclick="deleteCurrentNote()">
-                            <img src="{% static 'src/img/trash.png' %}" alt="Delete" style="width: 16px; height: 16px;">
+                            <img src="{% static 'notebook/img/trash.png' %}" alt="Delete" style="width: 16px; height: 16px;">
                         </button>
                     </div>
                 </div>
@@ -446,6 +446,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'src/js/notebook.js' %}"></script>
-<script src="{% static 'src/js/notebook-tags-management.js' %}"></script>
+<script src="{% static 'notebook/js/notebook.js' %}"></script>
+<script src="{% static 'notebook/js/notebook-tags-management.js' %}"></script>
 {% endblock %}

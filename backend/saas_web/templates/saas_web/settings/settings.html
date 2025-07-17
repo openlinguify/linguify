@@ -7,7 +7,7 @@
 {% block body_class %}settings-page{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'src/css/settings.css' %}">
+<link rel="stylesheet" href="{% static 'saas_web/css/settings.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -82,12 +82,12 @@
 <script src="{% static 'src/js/settings-core.js' %}"></script>
 
 <!-- App-specific settings scripts -->
-<script src="{% static 'apps/authentication/js/settings.js' %}"></script>
-<script src="{% static 'core/vocal/js/settings.js' %}"></script>
-<script src="{% static 'apps/chat/js/settings.js' %}"></script>
-<script src="{% static 'apps/quizz/js/settings.js' %}"></script>
-<script src="{% static 'apps/notebook/js/settings.js' %}"></script>
-<script src="{% static 'apps/community/js/settings.js' %}"></script>
-<script src="{% static 'apps/course/js/settings.js' %}"></script>
-<script src="{% static 'apps/notification/js/settings.js' %}"></script>
+<script src="{% static 'authentication/js/settings.js' %}"></script>
+<script src="{% static 'vocal/js/settings.js' %}"></script>
+<script src="{% static 'chat/js/settings.js' %}"></script>
+<script src="{% static 'quizz/js/settings.js' %}"></script>
+<script src="{% static 'notebook/js/settings.js' %}"></script>
+<script src="{% static 'community/js/settings.js' %}"></script>
+<script src="{% static 'course/js/settings.js' %}"></script>
+<script src="{% static 'notification/js/settings.js' %}"></script>
 {% endblock %}

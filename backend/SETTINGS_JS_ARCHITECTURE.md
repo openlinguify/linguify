@@ -13,16 +13,16 @@ backend/
 │   └── settings-utils.js     # Shared utility functions
 │
 ├── apps/
-│   ├── authentication/static/apps/authentication/js/settings.js
-│   ├── chat/static/apps/chat/js/settings.js
-│   ├── community/static/apps/community/js/settings.js
-│   ├── course/static/apps/course/js/settings.js
-│   ├── notebook/static/apps/notebook/js/settings.js
-│   ├── notification/static/apps/notification/js/settings.js
-│   └── quizz/static/apps/quizz/js/settings.js
+│   ├── authentication/static/authentication/js/settings.js
+│   ├── chat/static/chat/js/settings.js
+│   ├── community/static/community/js/settings.js
+│   ├── course/static/course/js/settings.js
+│   ├── notebook/static/notebook/js/settings.js
+│   ├── notification/static/notification/js/settings.js
+│   └── quizz/static/quizz/js/settings.js
 │
 └── core/
-    └── vocal/static/core/vocal/js/settings.js
+    └── vocal/static/vocal/js/settings.js
 ```
 
 ## Module Descriptions
@@ -62,7 +62,8 @@ Each app has its own `settings.js` file that handles:
 <script src="{% static 'src/js/settings-core.js' %}"></script>
 
 <!-- App-specific settings scripts -->
-<script src="{% static 'apps/authentication/js/settings.js' %}"></script>
+<script src="{% static 'authentication/js/settings.js' %}"></script>
+<script src="{% static 'chat/js/settings.js' %}"></script>
 <!-- ... other app scripts ... -->
 {% endblock %}
 ```
@@ -91,7 +92,7 @@ When adding settings to a new app:
 
 1. Create the static directory structure:
    ```
-   apps/your_app/static/apps/your_app/js/
+   apps/your_app/static/your_app/js/
    ```
 
 2. Create `settings.js` with initialization function:
@@ -108,7 +109,7 @@ When adding settings to a new app:
 
 3. Add to the settings template:
    ```django
-   <script src="{% static 'apps/your_app/js/settings.js' %}"></script>
+   <script src="{% static 'your_app/js/settings.js' %}"></script>
    ```
 
 ## Benefits
