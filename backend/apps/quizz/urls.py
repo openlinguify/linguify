@@ -5,7 +5,8 @@ from .views import (
     AnalyticsStatsView,
     AnalyticsCategoriesView,
     AnalyticsTimelineView,
-    AnalyticsDifficultyView
+    AnalyticsDifficultyView,
+    QuizSettingsView
 )
 from .analytics_views import (
     LeaderboardView,
@@ -35,4 +36,7 @@ urlpatterns = [
     
     # Achievements endpoint
     path('achievements/', AchievementsView.as_view(), name='achievements'),
+    
+    # Settings endpoint
+    path('settings/', QuizSettingsView.as_view(), name='quiz-settings'),
 ]

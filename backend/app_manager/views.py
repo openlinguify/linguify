@@ -9,8 +9,12 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.conf import settings
+from django.http import JsonResponse
 from .models import App, UserAppSettings
 from .serializers import AppSerializer, UserAppSettingsSerializer, AppToggleSerializer
+import logging
+
+logger = logging.getLogger(__name__)
 
 class AppListView(generics.ListAPIView):
     """
@@ -507,3 +511,47 @@ class AppStoreView(View):
             'enabled_app_ids': list(enabled_app_ids),
         }
         return render(request, 'app_manager/app_store.html', context)
+
+
+@method_decorator(login_required, name='dispatch')
+class AppToggleAPI(View):
+    """API pour activer/désactiver une application"""
+    
+    def post(self, request, app_id):
+        try:
+            app = get_object_or_404(App, id=app_id, is_enabled=True)
+            user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
+            
+            # Check if app is already installed
+            if user_settings.enabled_apps.filter(id=app_id).exists():
+                # Uninstall the app
+                user_settings.enabled_apps.remove(app)
+                is_enabled = False
+                message = f"{app.display_name} a été désinstallée avec succès"
+                logger.info(f"User {request.user.id} uninstalled app {app.code}")
+            else:
+                # Install the app
+                user_settings.enabled_apps.add(app)
+                is_enabled = True
+                message = f"{app.display_name} a été installée avec succès"
+                logger.info(f"User {request.user.id} installed app {app.code}")
+            
+            return JsonResponse({
+                'success': True,
+                'is_enabled': is_enabled,
+                'message': message,
+                'app_name': app.display_name
+            })
+            
+        except App.DoesNotExist:
+            logger.warning(f"User {request.user.id} tried to toggle non-existent app {app_id}")
+            return JsonResponse({
+                'success': False,
+                'error': 'Application non trouvée'
+            }, status=404)
+        except Exception as e:
+            logger.error(f"Error toggling app {app_id} for user {request.user.id}: {e}")
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)

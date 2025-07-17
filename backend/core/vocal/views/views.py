@@ -10,12 +10,12 @@ try:
     import speech_recognition as sr
 except ImportError:
     sr = None
-from .serializers import (
+from ..serializers import (
     TextToSpeechSerializer, 
     SpeechToTextSerializer,
     TranscriptionResultSerializer
 )
-from .services import voice_service
+from ..services import voice_service
 import time
 
 
@@ -66,7 +66,7 @@ class SpeechToTextView(APIView):
                     audio = r.record(source)
                     
             # Reconnaissance vocale
-            from .services import get_language_code
+            from ..services import get_language_code
             lang_code = get_language_code(language)
             text = r.recognize_google(audio, language=lang_code)
             
@@ -266,7 +266,7 @@ class SpeechToTextWithCommandView(APIView):
                 with sr.AudioFile(audio_file) as source:
                     audio = r.record(source)
                     
-            from .services import get_language_code
+            from ..services import get_language_code
             lang_code = get_language_code(language)
             recognized_text = r.recognize_google(audio, language=lang_code)
             
@@ -373,7 +373,7 @@ class VoicePreferencesView(APIView):
     def get(self, request):
         """Récupère les préférences vocales de l'utilisateur"""
         try:
-            from .models import VoicePreference
+            from ..models import VoicePreference
             
             preference, created = VoicePreference.objects.get_or_create(
                 user=request.user,
@@ -410,7 +410,7 @@ class VoicePreferencesView(APIView):
     def post(self, request):
         """Met à jour les préférences vocales de l'utilisateur"""
         try:
-            from .models import VoicePreference
+            from ..models import VoicePreference
             
             preference, created = VoicePreference.objects.get_or_create(
                 user=request.user
@@ -446,7 +446,7 @@ class UserCommandsView(APIView):
     def get(self, request):
         """Récupère les commandes personnalisées de l'utilisateur"""
         try:
-            from .models import VoiceCommand
+            from ..models import VoiceCommand
             
             commands = VoiceCommand.objects.filter(user=request.user, is_active=True)
             
@@ -476,7 +476,7 @@ class UserCommandsView(APIView):
     def delete(self, request, command_id=None):
         """Supprime une commande personnalisée"""
         try:
-            from .models import VoiceCommand
+            from ..models import VoiceCommand
             
             if not command_id:
                 command_id = request.data.get('command_id')
@@ -753,7 +753,7 @@ class AIAssistantView(APIView):
     def post(self, request):
         """Traite une demande conversationnelle avec l'IA"""
         try:
-            from .services import voice_service
+            from ..services import voice_service
             
             user_input = request.data.get('message', '').strip()
             context_type = request.data.get('context_type', 'general')
@@ -945,7 +945,7 @@ class VocabularyExtractionView(APIView):
         """Extrait du vocabulaire d'un texte et crée des flashcards"""
         try:
             from apps.revision.models.revision_flashcard import FlashcardDeck, Flashcard
-            from .claude_service import claude_service
+            from ..claude_service import claude_service
             
             text_content = request.data.get('text', '').strip()
             deck_name = request.data.get('deck_name', 'Vocabulaire extrait')

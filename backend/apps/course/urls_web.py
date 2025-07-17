@@ -20,6 +20,7 @@ from .views_web import (
     complete_lesson,
 )
 from .debug_view import debug_data
+from .views import LearningSettingsView
 
 def test_view(request):
     return render(request, 'course/learning/test.html')
@@ -71,6 +72,7 @@ urlpatterns = [
     
     # Paramètres
     path('settings/language/', language_settings_view, name='language-settings'),
+    path('settings/learning/', LearningSettingsView.as_view(), name='learning-settings'),
     
     # API AJAX
     path('ajax/complete-lesson/', complete_lesson_ajax, name='complete-lesson-ajax'),

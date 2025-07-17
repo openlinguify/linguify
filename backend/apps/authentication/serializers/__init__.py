@@ -4,10 +4,10 @@
 from . import user_serializers
 from . import profile_serializers
 from . import auth_serializers
-from . import legacy_serializers
+from . import settings_serializers
 
 # Export des serializers pour la compatibilité
-from .legacy_serializers import (
+from .settings_serializers import (
     UserSerializer, UserRegistrationSerializer, MeSerializer, 
     ProfileUpdateSerializer, GeneralSettingsSerializer, 
     CookieConsentSerializer, CookieConsentCreateSerializer,

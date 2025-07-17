@@ -4,7 +4,7 @@ Service for managing user applications and settings.
 import logging
 from django.utils import timezone
 from datetime import timedelta
-from app_manager.models import App, UserAppSettings
+from ..models import App, UserAppSettings
 from .app_icon_service import AppIconService
 
 logger = logging.getLogger(__name__)

@@ -7,7 +7,7 @@ Test simple pour vérifier la validation case-insensitive dans ProfileUpdateSeri
 # python manage.py shell < test_serializer_validation.py
 
 from django.contrib.auth import get_user_model
-from apps.authentication.serializers import ProfileUpdateSerializer
+from apps.authentication.serializers.settings_serializers import ProfileUpdateSerializer
 
 User = get_user_model()
 

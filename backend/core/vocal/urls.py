@@ -35,4 +35,7 @@ urlpatterns = [
     # Endpoints IA + Flashcards
     path('create-flashcard/', views.FlashcardCreationView.as_view(), name='create-flashcard'),
     path('extract-vocabulary/', views.VocabularyExtractionView.as_view(), name='extract-vocabulary'),
+    
+    # Settings endpoint
+    path('settings/', views.VoiceSettingsView.as_view(), name='voice-settings'),
 ]

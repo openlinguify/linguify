@@ -106,3 +106,11 @@ class AppSystemIntegrationTest(TestCase):
         )
         user_count_after = User.objects.count()
         self.assertEqual(user_count_after, user_count_before + 1)
+
+class InstallApp():
+    """Tests d'intégration du système d'applications"""
+    
+
+
+class UninstallApp():
+

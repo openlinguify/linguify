@@ -1,118 +1,119 @@
 <!-- Interface Tab -->
+{% load i18n %}
 <div id="interface" class="tab-content">
-    <!-- Theme Section -->
-    <div class="content-section">
-        <div class="section-header">
-            <h3 class="section-title">
-                <i class="bi bi-palette"></i>
-                Thème
-            </h3>
-            <div class="section-actions">
-                <button class="section-toggle">
-                    <i class="bi bi-chevron-up"></i>
-                </button>
-            </div>
-        </div>
-        <div class="section-content">
-            <form method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label class="form-label">Apparence</label>
-                    <div class="theme-options">
-                        <div class="theme-option" data-theme="light">
-                            <div class="theme-preview light"></div>
-                            <span>☀️ Clair</span>
-                        </div>
-                        <div class="theme-option" data-theme="dark">
-                            <div class="theme-preview dark"></div>
-                            <span>🌙 Sombre</span>
-                        </div>
-                        <div class="theme-option active" data-theme="auto">
-                            <div class="theme-preview auto"></div>
-                            <span>🔄 Automatique</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Couleur d'accent</label>
-                    <div class="color-options">
-                        <div class="color-option active violet" data-color="violet"></div>
-                        <div class="color-option blue" data-color="blue"></div>
-                        <div class="color-option green" data-color="green"></div>
-                        <div class="color-option red" data-color="red"></div>
-                        <div class="color-option orange" data-color="orange"></div>
-                    </div>
-                </div>
-            </form>
-        </div>
+  <!-- Theme Section -->
+  <div class="content-section">
+    <div class="section-header">
+      <h3 class="section-title">
+        <i class="bi bi-palette"></i>
+        {% trans "Theme" %}
+      </h3>
+      <div class="section-actions">
+        <button class="section-toggle">
+          <i class="bi bi-chevron-up"></i>
+        </button>
+      </div>
     </div>
+    <div class="section-content">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">{% trans "Appearance" %}</label>
+          <div class="theme-options">
+            <div class="theme-option" data-theme="light">
+              <div class="theme-preview light"></div>
+              <span>{% trans "☀️ Light" %}</span>
+            </div>
+            <div class="theme-option" data-theme="dark">
+              <div class="theme-preview dark"></div>
+              <span>{% trans "🌙 Dark" %}</span>
+            </div>
+            <div class="theme-option active" data-theme="auto">
+              <div class="theme-preview auto"></div>
+              <span>{% trans "🔄 Auto" %}</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{% trans "Accent Color" %}</label>
+          <div class="color-options">
+            <div class="color-option active violet" data-color="violet"></div>
+            <div class="color-option blue" data-color="blue"></div>
+            <div class="color-option green" data-color="green"></div>
+            <div class="color-option red" data-color="red"></div>
+            <div class="color-option orange" data-color="orange"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    <!-- Layout Section -->
-    <div class="content-section">
-        <div class="section-header">
-            <h3 class="section-title">
-                <i class="bi bi-layout-sidebar"></i>
-                Mise en page
-            </h3>
-            <div class="section-actions">
-                <button class="section-toggle">
-                    <i class="bi bi-chevron-up"></i>
-                </button>
-            </div>
-        </div>
-        <div class="section-content">
-            <form method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label class="form-label">Disposition de la barre latérale</label>
-                    <select name="sidebar_layout" class="form-control">
-                        <option value="left" selected>Barre latérale</option>
-                        <option value="top">En haut</option>
-                        <option value="compact">Compact</option>
-                    </select>
-                </div>
-            </form>
-        </div>
+  <!-- Layout Section -->
+  <div class="content-section">
+    <div class="section-header">
+      <h3 class="section-title">
+        <i class="bi bi-layout-sidebar"></i>
+        {% trans "Layout" %}
+      </h3>
+      <div class="section-actions">
+        <button class="section-toggle">
+          <i class="bi bi-chevron-up"></i>
+        </button>
+      </div>
     </div>
+    <div class="section-content">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">{% trans "Sidebar Layout" %}</label>
+          <select name="sidebar_layout" class="form-control">
+            <option value="left" selected>{% trans "Sidebar" %}</option>
+            <option value="top">{% trans "Top" %}</option>
+            <option value="compact">{% trans "Compact" %}</option>
+          </select>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    <!-- Accessibility Section -->
-    <div class="content-section">
-        <div class="section-header">
-            <h3 class="section-title">
-                <i class="bi bi-universal-access"></i>
-                Accessibilité
-            </h3>
-            <div class="section-actions">
-                <button class="section-toggle">
-                    <i class="bi bi-chevron-up"></i>
-                </button>
-            </div>
-        </div>
-        <div class="section-content">
-            <form method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label class="form-label">
-                        <input type="checkbox" name="reduce_motion">
-                        Réduire les animations
-                    </label>
-                    <div class="form-help">Désactive les animations pour une meilleure accessibilité</div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">
-                        <input type="checkbox" name="high_contrast">
-                        Contraste élevé
-                    </label>
-                    <div class="form-help">Améliore la lisibilité pour les malvoyants</div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">
-                        <input type="checkbox" name="large_text">
-                        Texte agrandi
-                    </label>
-                    <div class="form-help">Augmente la taille du texte par défaut</div>
-                </div>
-            </form>
-        </div>
+  <!-- Accessibility Section -->
+  <div class="content-section">
+    <div class="section-header">
+      <h3 class="section-title">
+        <i class="bi bi-universal-access"></i>
+        {% trans "Accessibility" %}
+      </h3>
+      <div class="section-actions">
+        <button class="section-toggle">
+          <i class="bi bi-chevron-up"></i>
+        </button>
+      </div>
     </div>
+    <div class="section-content">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">
+            <input type="checkbox" name="reduce_motion">
+            {% trans "Reduce motion" %}
+          </label>
+          <div class="form-help">{% trans "Disable animations for improved accessibility" %}</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            <input type="checkbox" name="high_contrast">
+            {% trans "High contrast" %}
+          </label>
+          <div class="form-help">{% trans "Improve readability for visually impaired users" %}</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            <input type="checkbox" name="large_text">
+            {% trans "Large text" %}
+          </label>
+          <div class="form-help">{% trans "Increase default text size" %}</div>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

@@ -1,7 +1,7 @@
 # backend/chat/serializers.py
 from rest_framework import serializers
 from .models import Conversation, ConversationMessage, Call, CallParticipant
-from apps.authentication.serializers import UserSerializer
+from apps.authentication.serializers.settings_serializers import UserSerializer
 
 class ConversationListSerializer(serializers.ModelSerializer):
     users = UserSerializer(many=True, read_only=True)

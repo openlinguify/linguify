@@ -1,172 +1,132 @@
 /* App Store JavaScript for Open Linguify */
 
-class AppStore {
-    constructor() {
-        this.apps = [];
-        this.userSettings = [];
-        this.currentCategory = 'all';
-        this.searchQuery = '';
-        this.isLoading = false;
-
-        this.init();
-    }
-
-    async init() {
-        await this.loadApps();
-        await this.loadUserSettings();
-        this.setupEventListeners();
-        this.renderApps();
-        this.updateCategoryCounts();
-    }
-
-    async loadApps() {
-        try {
-            const response = await fetch('/api/v1/app-manager/apps/');
-            const data = await response.json();
-            this.apps = data;
-        } catch (error) {
-            console.error('Erreur lors du chargement des apps:', error);
-            this.showToast('Erreur lors du chargement des applications', 'error');
-        }
-    }
-
-    async loadUserSettings() {
-        try {
-            const response = await fetch('/api/v1/app-manager/enabled/');
-            const data = await response.json();
-            this.userSettings = data.enabled_app_codes || [];
-        } catch (error) {
-            console.error('Erreur lors du chargement des paramètres utilisateur:', error);
-        }
-    }
-
-    setupEventListeners() {
-        // Category filter
-        document.querySelectorAll('.category-item').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.category-item').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.currentCategory = btn.dataset.category;
-                this.renderApps();
-            });
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements
+    const categoryButtons = document.querySelectorAll('.category-item');
+    const searchInput = document.getElementById('searchInput');
+    const appsGrid = document.getElementById('appsGrid');
+    const emptyState = document.getElementById('emptyState');
+    const toggleInputs = document.querySelectorAll('.install-toggle input[type="checkbox"]');
+    
+    // Current filter
+    let currentCategory = 'all';
+    let currentSearch = '';
+    
+    // Category filtering
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            currentCategory = this.dataset.category;
+            filterApps();
         });
-
-        // Search
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                this.searchQuery = e.target.value.toLowerCase();
-                this.renderApps();
-            });
-        }
-    }
-
-    renderApps() {
-        const grid = document.getElementById('appsGrid');
-        const emptyState = document.getElementById('emptyState');
-        
-        if (!grid) return;
-
-        // Filter apps
-        let filteredApps = this.apps;
-        
-        if (this.currentCategory !== 'all') {
-            filteredApps = filteredApps.filter(app => 
-                app.category.toLowerCase().replace(' ', '_') === this.currentCategory
-            );
-        }
-        
-        if (this.searchQuery) {
-            filteredApps = filteredApps.filter(app => 
-                app.display_name.toLowerCase().includes(this.searchQuery) || 
-                app.description.toLowerCase().includes(this.searchQuery)
-            );
-        }
-
-        // Clear grid
-        grid.innerHTML = '';
-
-        if (filteredApps.length === 0) {
-            grid.style.display = 'none';
-            if (emptyState) emptyState.style.display = 'block';
-            return;
-        }
-
-        grid.style.display = 'grid';
-        if (emptyState) emptyState.style.display = 'none';
-
-        // Render each app
-        filteredApps.forEach(app => {
-            const appCard = this.createAppCard(app);
-            grid.appendChild(appCard);
+    });
+    
+    // Search functionality
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            currentSearch = this.value.toLowerCase();
+            filterApps();
         });
     }
-
-    createAppCard(app) {
-        const isInstalled = this.userSettings.includes(app.code);
-        const iconMapping = this.getIconMapping();
-        const icon = iconMapping[app.manifest_data?.frontend_components?.icon] || 'bi-app';
-        const colorMapping = this.getColorMapping();
-        const color = colorMapping[app.display_name.toLowerCase()] || 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
-
-        const card = document.createElement('div');
-        card.className = 'app-card';
-        card.innerHTML = `
-            <div class="app-header">
-                <div class="app-icon" style="background: ${color};">
-                    <i class="bi ${icon}"></i>
-                </div>
-                <div class="app-info">
-                    <h6 class="app-title">${app.display_name}</h6>
-                    <div class="app-category">${app.category}</div>
-                </div>
-            </div>
-            <p class="app-description">${app.description}</p>
-            <div class="app-footer">
-                <span class="install-status ${isInstalled ? 'installed' : ''}">
-                    ${isInstalled ? 'Installé' : 'Non installé'}
-                </span>
-                <label class="install-toggle">
-                    <input type="checkbox" ${isInstalled ? 'checked' : ''} 
-                           onchange="appStore.toggleApp('${app.code}', this)">
-                    <span class="install-toggle-slider"></span>
-                </label>
-            </div>
-        `;
-
-        // Click on card opens app if installed
-        if (isInstalled && app.manifest_data?.technical_info?.web_url) {
-            card.addEventListener('click', (e) => {
-                if (!e.target.closest('.install-toggle')) {
-                    window.location.href = app.manifest_data.technical_info.web_url;
+    
+    // Filter apps function
+    function filterApps() {
+        const appCards = document.querySelectorAll('.app-card');
+        let visibleCount = 0;
+        
+        console.log(`=== FILTRAGE CATÉGORIE: ${currentCategory} ===`);
+        
+        appCards.forEach(card => {
+            const category = card.dataset.category || '';
+            const title = card.querySelector('.app-title').textContent;
+            const titleLower = title.toLowerCase();
+            const description = card.querySelector('.app-description').textContent.toLowerCase();
+            
+            // Category matching avec mapping des catégories
+            let matchesCategory = currentCategory === 'all';
+            if (!matchesCategory) {
+                const categoryLower = category.toLowerCase();
+                switch(currentCategory) {
+                    case 'learning':
+                        matchesCategory = categoryLower.includes('apprentissage') || 
+                                        categoryLower.includes('learning') || 
+                                        categoryLower.includes('education');
+                        break;
+                    case 'productivity':
+                        matchesCategory = categoryLower.includes('productivité') || 
+                                        categoryLower.includes('productivity');
+                        break;
+                    case 'ai':
+                        matchesCategory = categoryLower.includes('intelligence') || 
+                                        categoryLower.includes('ia') || 
+                                        categoryLower.includes('ai');
+                        break;
+                    default:
+                        matchesCategory = categoryLower === currentCategory;
                 }
-            });
-        }
-
-        return card;
-    }
-
-    async toggleApp(appCode, toggle) {
-        if (this.isLoading) return;
-
-        const app = this.apps.find(a => a.code === appCode);
-        if (!app) return;
-
-        const card = toggle.closest('.app-card');
+            }
+            
+            const matchesSearch = currentSearch === '' || 
+                                titleLower.includes(currentSearch) || 
+                                description.includes(currentSearch);
+            
+            const shouldShow = matchesCategory && matchesSearch;
+            
+            // Debug pour productivité
+            if (currentCategory === 'productivity') {
+                console.log(`${title}:`);
+                console.log(`  - Catégorie: "${category}"`);
+                console.log(`  - Catégorie lowercase: "${category.toLowerCase()}"`);
+                console.log(`  - Matches category: ${matchesCategory}`);
+                console.log(`  - Matches search: ${matchesSearch}`);
+                console.log(`  - Should show: ${shouldShow}`);
+            }
+            
+            if (shouldShow) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
         
-        // Si on désinstalle, montrer la modal de confirmation
-        if (!toggle.checked && this.userSettings.includes(appCode)) {
-            this.showUninstallModal(app, appCode, toggle, card);
-            return;
+        // Show/hide empty state
+        if (visibleCount === 0 && appsGrid) {
+            appsGrid.style.display = 'none';
+            if (emptyState) emptyState.style.display = 'block';
+        } else if (appsGrid) {
+            appsGrid.style.display = 'grid';
+            if (emptyState) emptyState.style.display = 'none';
         }
-        
-        // Sinon, installer directement
-        this.performToggle(appCode, toggle, card, toggle.checked);
     }
-
-    showUninstallModal(app, appCode, toggle, card) {
+    
+    // Toggle functionality
+    toggleInputs.forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            const appId = this.dataset.appId;
+            const isInstalling = this.checked;
+            const card = this.closest('.app-card');
+            
+            // Si on désinstalle, montrer la modal de confirmation
+            if (!isInstalling) {
+                showUninstallModal(appId, this, card);
+                return;
+            }
+            
+            // Sinon, installer directement
+            toggleApp(appId, this, card, isInstalling);
+        });
+    });
+    
+    function showUninstallModal(appId, toggle, card) {
         // Remettre le toggle en position "on" temporairement
         toggle.checked = true;
+        
+        // Récupérer les infos de l'app
+        const appName = card.querySelector('.app-title').textContent;
+        const appIcon = card.querySelector('.app-icon i').className;
+        const appIconBg = card.querySelector('.app-icon').style.background;
         
         // Configurer la modal
         const modal = document.getElementById('uninstallModal');
@@ -175,21 +135,15 @@ class AppStore {
         const confirmButton = document.getElementById('confirmUninstall');
         
         // Mettre à jour le contenu de la modal
-        modalAppName.textContent = app.display_name;
-        const iconMapping = this.getIconMapping();
-        const icon = iconMapping[app.manifest_data?.frontend_components?.icon] || 'bi-app';
-        modalAppIcon.innerHTML = `<i class="bi ${icon}"></i>`;
-        
-        // Couleur de l'icône
-        const colorMapping = this.getColorMapping();
-        const color = colorMapping[app.display_name.toLowerCase()] || 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
-        modalAppIcon.style.background = color;
+        modalAppName.textContent = appName;
+        modalAppIcon.innerHTML = `<i class="${appIcon}"></i>`;
+        modalAppIcon.style.background = appIconBg;
         
         // Gérer la confirmation
         const handleConfirm = () => {
             const bootstrapModal = bootstrap.Modal.getInstance(modal);
             bootstrapModal.hide();
-            this.performToggle(appCode, toggle, card, false);
+            toggleApp(appId, toggle, card, false);
             confirmButton.removeEventListener('click', handleConfirm);
         };
         
@@ -206,208 +160,172 @@ class AppStore {
         const bootstrapModal = new bootstrap.Modal(modal);
         bootstrapModal.show();
     }
-
-    async performToggle(appCode, toggle, card, isInstalling) {
-        if (this.isLoading) return;
-        
-        const app = this.apps.find(a => a.code === appCode);
-        if (!app) return;
-        
+    
+    function toggleApp(appId, toggleInput, card, isInstalling) {
         // Show loading
-        this.showLoading(card);
-        this.isLoading = true;
-
-        try {
-            const response = await fetch('/api/v1/app-manager/toggle/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': this.getCookie('csrftoken')
-                },
-                body: JSON.stringify({
-                    app_code: appCode,
-                    enabled: isInstalling
-                })
-            });
-
-            const data = await response.json();
-            
+        const loadingOverlay = card.querySelector('.loading-overlay');
+        const statusDiv = card.querySelector('.install-status');
+        const openButton = card.querySelector('.btn');
+        
+        loadingOverlay.style.display = 'flex';
+        card.classList.add('installing');
+        
+        // Get toggle URL from data attribute
+        const toggleUrl = document.querySelector('[data-toggle-url]')?.dataset.toggleUrl || `/api/app-manager/apps/${appId}/toggle/`;
+        
+        fetch(toggleUrl.replace('0', appId), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken(),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
             if (data.success) {
                 // Update toggle state
-                toggle.checked = isInstalling;
+                toggleInput.checked = isInstalling;
                 
-                // Update user settings
-                if (isInstalling) {
-                    if (!this.userSettings.includes(appCode)) {
-                        this.userSettings.push(appCode);
-                    }
-                } else {
-                    this.userSettings = this.userSettings.filter(code => code !== appCode);
-                }
-
-                // Update status text
-                const statusText = card.querySelector('.install-status');
-                statusText.textContent = isInstalling ? 'Installée' : 'Non installée';
-                statusText.classList.toggle('installed', isInstalling);
+                // Update status
+                statusDiv.className = `install-status ${data.is_enabled ? 'installed' : ''}`;
+                statusDiv.innerHTML = data.is_enabled ? 
+                    '<i class="bi bi-check-circle me-1"></i>Installée' : 
+                    '<i class="bi bi-download me-1"></i>Non installée';
                 
-                // Update card behavior
-                if (isInstalling && app.manifest_data?.technical_info?.web_url) {
-                    card.style.cursor = 'pointer';
-                    card.onclick = (e) => {
-                        if (!e.target.closest('.install-toggle')) {
-                            window.location.href = app.manifest_data.technical_info.web_url;
-                        }
-                    };
-                } else {
-                    card.style.cursor = 'default';
-                    card.onclick = null;
+                // Update open button
+                const footer = card.querySelector('.app-footer');
+                if (data.is_enabled && !openButton) {
+                    footer.innerHTML += `
+                        <a href="#" class="btn btn-primary btn-sm">
+                            <i class="bi bi-box-arrow-up-right me-1"></i>Ouvrir
+                        </a>
+                    `;
+                } else if (!data.is_enabled && openButton) {
+                    openButton.remove();
                 }
                 
                 // Show success message with data retention info for uninstall
-                let message;
-                if (isInstalling) {
-                    message = `${app.display_name} a été installée avec succès`;
-                } else {
-                    message = `${app.display_name} a été désinstallée. Vos données seront conservées 30 jours.`;
+                let message = data.message;
+                if (!isInstalling) {
+                    message += '. Vos données seront conservées 30 jours.';
                 }
                 
-                this.showToast(message, 'success');
+                showToast(message, 'success');
             } else {
                 // Revert toggle on error
-                toggle.checked = !isInstalling;
-                this.showToast(data.message || 'Une erreur est survenue', 'error');
+                toggleInput.checked = !isInstalling;
+                throw new Error(data.error || 'Erreur lors de l\'opération');
             }
-        } catch (error) {
-            console.error('Erreur lors du toggle de l\'app:', error);
-            toggle.checked = !isInstalling;
-            this.showToast('Erreur de connexion', 'error');
-        } finally {
-            this.hideLoading(card);
-            this.isLoading = false;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toggleInput.checked = !isInstalling;
+            showToast('Erreur lors de l\'opération', 'error');
+        })
+        .finally(() => {
+            loadingOverlay.style.display = 'none';
+            card.classList.remove('installing');
+        });
+    }
+    
+    function getCsrfToken() {
+        const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (csrfInput) return csrfInput.value;
+        
+        const csrfCookie = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
+        if (csrfCookie) return csrfCookie.split('=')[1];
+        
+        return '';
+    }
+    
+    function showToast(message, type) {
+        const toastContainer = document.querySelector('.toast-container');
+        const isSuccess = type === 'success';
+        
+        const toast = document.createElement('div');
+        toast.className = `toast ${isSuccess ? 'bg-success' : 'bg-danger'} text-white`;
+        toast.innerHTML = `
+            <div class="toast-body d-flex align-items-center">
+                <i class="bi ${isSuccess ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill'} me-2"></i>
+                ${message}
+            </div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        
+        // Show toast with Bootstrap
+        if (typeof bootstrap !== 'undefined') {
+            const bsToast = new bootstrap.Toast(toast, {
+                autohide: true,
+                delay: 3000
+            });
+            bsToast.show();
+            
+            // Remove after hiding
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        } else {
+            // Fallback without Bootstrap
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
     }
-
-    updateCategoryCounts() {
+    
+    // Mettre à jour les compteurs de catégories
+    function updateCategoryCounts() {
+        const appCards = document.querySelectorAll('.app-card');
         const counts = {
-            all: this.apps.length,
-            learning: this.apps.filter(a => 
-                a.category.toLowerCase().includes('apprentissage') || 
-                a.category.toLowerCase().includes('learning') ||
-                a.category.toLowerCase().includes('education')
-            ).length,
-            productivity: this.apps.filter(a => 
-                a.category.toLowerCase().includes('productivité') || 
-                a.category.toLowerCase().includes('productivity')
-            ).length,
-            ai: this.apps.filter(a => 
-                a.category.toLowerCase().includes('ia') || 
-                a.category.toLowerCase().includes('intelligence') ||
-                a.category.toLowerCase().includes('ai')
-            ).length
+            all: appCards.length,
+            learning: 0,
+            productivity: 0,
+            ai: 0
         };
-
+        
+        appCards.forEach(card => {
+            const category = (card.dataset.category || '').toLowerCase();
+            
+            if (category.includes('apprentissage') || category.includes('learning') || category.includes('education')) {
+                counts.learning++;
+            }
+            if (category.includes('productivité') || category.includes('productivity')) {
+                counts.productivity++;
+            }
+            if (category.includes('intelligence') || category.includes('ia') || category.includes('ai')) {
+                counts.ai++;
+            }
+        });
+        
+        // Mettre à jour les compteurs dans l'interface
         Object.keys(counts).forEach(cat => {
             const elem = document.getElementById(`count-${cat}`);
             if (elem) elem.textContent = counts[cat];
         });
     }
-
-    showLoading(card) {
-        const loadingOverlay = document.createElement('div');
-        loadingOverlay.className = 'loading-overlay';
-        loadingOverlay.innerHTML = '<div class="spinner-border text-primary" role="status"></div>';
-        card.style.position = 'relative';
-        card.appendChild(loadingOverlay);
-        card.classList.add('installing');
-    }
-
-    hideLoading(card) {
-        const loadingOverlay = card.querySelector('.loading-overlay');
-        if (loadingOverlay) {
-            loadingOverlay.remove();
-        }
-        card.classList.remove('installing');
-    }
-
-    showToast(message, type = 'success') {
-        // Create toast container if it doesn't exist
-        let toastContainer = document.getElementById('toastContainer');
-        if (!toastContainer) {
-            toastContainer = document.createElement('div');
-            toastContainer.id = 'toastContainer';
-            toastContainer.className = 'toast-container';
-            document.body.appendChild(toastContainer);
-        }
-
-        // Create toast
-        const toast = document.createElement('div');
-        const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
-        const iconClass = type === 'error' ? 'bi-exclamation-triangle' : 'bi-check-circle';
+    
+    // Appeler la fonction au chargement
+    updateCategoryCounts();
+    
+    // Debug: afficher les catégories des apps au chargement
+    console.log('=== DEBUG CATÉGORIES ===');
+    document.querySelectorAll('.app-card').forEach(card => {
+        const title = card.querySelector('.app-title').textContent;
+        const category = card.dataset.category;
+        const categoryLower = (category || '').toLowerCase();
         
-        toast.className = `alert ${alertClass} alert-dismissible fade show toast`;
-        toast.innerHTML = `
-            <i class="bi ${iconClass} me-2"></i>
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-
-        toastContainer.appendChild(toast);
-
-        // Auto remove after 4 seconds
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 150);
-        }, 4000);
-    }
-
-    getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    getIconMapping() {
-        return {
-            '📓': 'bi-journal-text',
-            '📚': 'bi-book',
-            '🃏': 'bi-collection',
-            '🤖': 'bi-robot',
-            '📊': 'bi-graph-up',
-            '🎯': 'bi-bullseye',
-            '💬': 'bi-chat-dots',
-            '❓': 'bi-patch-question'
-        };
-    }
-
-    getColorMapping() {
-        return {
-            'notebook': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            'cours': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-            'révision': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-            'revision': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-            'ia': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            'language ai': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            'assistant ia': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            'quiz': 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-            'quizz': 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-            'chat': 'linear-gradient(135deg, #ec4899 0%, #d946ef 100%)'
-        };
-    }
-}
-
-// Initialize App Store when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    window.appStore = new AppStore();
+        const isLearning = categoryLower.includes('apprentissage') || categoryLower.includes('learning') || categoryLower.includes('education');
+        const isProductivity = categoryLower.includes('productivité') || categoryLower.includes('productivity');
+        const isAI = categoryLower.includes('intelligence') || categoryLower.includes('ia') || categoryLower.includes('ai');
+        
+        console.log(`${title}:`);
+        console.log(`  - Catégorie brute: "${category}"`);
+        console.log(`  - Catégorie lowercase: "${categoryLower}"`);
+        console.log(`  - Apprentissage: ${isLearning}`);
+        console.log(`  - Productivité: ${isProductivity}`);
+        console.log(`  - IA: ${isAI}`);
+        console.log('---');
+    });
 });
-
-// Export for use in other scripts
-window.AppStore = AppStore;

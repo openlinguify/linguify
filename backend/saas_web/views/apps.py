@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from app_manager.models import App, UserAppSettings
-from ..services.app_icon_service import AppIconService
+from app_manager.services import AppIconService
 import logging
 
 logger = logging.getLogger(__name__)

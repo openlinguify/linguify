@@ -1,0 +1,181 @@
+<!-- App Manager Tab -->
+<div id="app_manager" class="tab-content">
+    <!-- App Store Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-shop"></i>
+                Boutique d'Applications
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="app_store">
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="auto_updates" checked>
+                        Mises à jour automatiques
+                    </label>
+                    <div class="form-help">Mettre à jour automatiquement les applications installées</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="beta_apps">
+                        Applications bêta
+                    </label>
+                    <div class="form-help">Afficher les applications en version bêta dans la boutique</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="community_apps" checked>
+                        Applications communautaires
+                    </label>
+                    <div class="form-help">Afficher les applications développées par la communauté</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Région de la boutique</label>
+                    <select name="store_region" class="form-control">
+                        <option value="global" selected>Monde entier</option>
+                        <option value="eu">Europe</option>
+                        <option value="na">Amérique du Nord</option>
+                        <option value="asia">Asie</option>
+                    </select>
+                    <div class="form-help">Région pour filtrer les applications disponibles</div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Installed Apps Management -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-grid-3x3-gap"></i>
+                Applications Installées
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="form-help">Gérez vos applications installées</div>
+            
+            <div class="installed-apps-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
+                <!-- Example installed app -->
+                <div class="app-card">
+                    <div class="app-icon">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <div class="app-info">
+                        <h4 class="app-name">Chat</h4>
+                        <p class="app-version">v1.2.0</p>
+                    </div>
+                    <div class="app-actions">
+                        <button class="btn-secondary btn-sm">
+                            <i class="bi bi-gear"></i>
+                            Configurer
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="app-card">
+                    <div class="app-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="app-info">
+                        <h4 class="app-name">Communauté</h4>
+                        <p class="app-version">v2.1.0</p>
+                    </div>
+                    <div class="app-actions">
+                        <button class="btn-secondary btn-sm">
+                            <i class="bi bi-gear"></i>
+                            Configurer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Installation Settings -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-download"></i>
+                Installation et Sécurité
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="app_security">
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="verify_signatures" checked>
+                        Vérifier les signatures d'applications
+                    </label>
+                    <div class="form-help">Vérifier l'authenticité des applications avant installation</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="sandbox_apps" checked>
+                        Exécuter les apps en mode sandbox
+                    </label>
+                    <div class="form-help">Isoler les applications pour une sécurité renforcée</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="allow_external_sources">
+                        Autoriser les sources externes
+                    </label>
+                    <div class="form-help">Permettre l'installation d'applications depuis des sources non officielles</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Niveau de sécurité</label>
+                    <select name="security_level" class="form-control">
+                        <option value="high" selected>Élevé</option>
+                        <option value="medium">Moyen</option>
+                        <option value="low">Faible</option>
+                    </select>
+                    <div class="form-help">Niveau de vérification des permissions d'applications</div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="{% static 'app_manager/css/app_manager_settings.css' %}">

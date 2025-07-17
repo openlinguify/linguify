@@ -26,4 +26,7 @@ urlpatterns = [
     # Page de test pour les appels
     path('test-calls/', views.call_test_page, name='call_test_page'),
     path('debug-calls/', views.debug_calls_page, name='debug_calls_page'),
+    
+    # Settings endpoint
+    path('settings/', views.ChatSettingsView.as_view(), name='chat-settings'),
 ]

@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     AppListView,
     UserAppSettingsView,
+    AppToggleAPI,
     toggle_app,
     user_enabled_apps,
     debug_apps
@@ -22,6 +23,9 @@ urlpatterns = [
     
     # Toggle app on/off
     path('toggle/', toggle_app, name='toggle-app'),
+    
+    # API endpoint to toggle app on/off (from app store)
+    path('apps/<int:app_id>/toggle/', AppToggleAPI.as_view(), name='api_app_toggle'),
     
     # Debug view
     path('debug/', debug_apps, name='debug-apps'),

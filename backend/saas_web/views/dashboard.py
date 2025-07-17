@@ -6,7 +6,7 @@ from django.views import View
 from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from ..services.user_app_service import UserAppService
+from app_manager.services import UserAppService
 
 
 @method_decorator(login_required, name='dispatch')

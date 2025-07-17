@@ -6,8 +6,8 @@
 {% block body_class %}chat-page{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'src/css/messenger.css' %}">
-<link rel="stylesheet" href="{% static 'src/css/chat_page.css' %}">
+<link rel="stylesheet" href="{% static 'chat/css/messenger.css' %}">
+<link rel="stylesheet" href="{% static 'chat/css/chat_page.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -144,6 +144,6 @@ window.currentUsername = '{{ user.username|default:'' }}';
 window.csrfToken = '{{ csrf_token }}';
 </script>
 
-<script src="{% static 'src/js/chat-page.js' %}"></script>
+<script src="{% static 'chat/js/chat-page.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}

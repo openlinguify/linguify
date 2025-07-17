@@ -31,6 +31,13 @@ from ..views import (
 from ..views import (
     settings_stats
 )
+from ..views.settings_views import (
+    UserSettingsView, 
+    GeneralSettingsView,
+    ProfileSettingsView, 
+    PrivacySettingsView, 
+    AppearanceSettingsView
+)
 from django.conf import settings
 from .debug_views import cors_debug, test_token_verification, debug_auth_headers, debug_apps_system, test_token
 from ..views.terms_views import accept_terms, terms_status
@@ -64,7 +71,11 @@ urlpatterns = [
     path('cookie-consent/debug/', debug_cookie_consent, name='debug_cookie_consent'),
     
     # Settings endpoints (unified Django views)
-    path('settings/', update_user_profile, name='update_user_profile'),
+    path('settings/', UserSettingsView.as_view(), name='user_settings'),
+    path('settings/general/', GeneralSettingsView.as_view(), name='general_settings'),
+    path('settings/profile/', ProfileSettingsView.as_view(), name='profile_settings'),
+    path('settings/privacy/', PrivacySettingsView.as_view(), name='privacy_settings'),
+    path('settings/appearance/', AppearanceSettingsView.as_view(), name='appearance_settings'),
     path('settings/learning/', update_learning_settings, name='update_learning_settings'),
     path('settings/password/', change_user_password, name='change_user_password'),
     path('settings/stats/', settings_stats, name='settings_stats'),
