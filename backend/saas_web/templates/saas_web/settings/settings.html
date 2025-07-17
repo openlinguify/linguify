@@ -70,18 +70,20 @@
                     <div id="{{ tab.id }}" class="tab-content{% if tab.active %} active{% endif %}">
                         {% include tab.template %}
                     </div>
-                {% elif tab.id == 'revision' and revision_content %}
-                    <div id="{{ tab.id }}" class="tab-content{% if tab.active %} active{% endif %}">
-                        {{ revision_content|safe }}
-                    </div>
-                {% elif tab.id == 'language_ai' and language_ai_content %}
-                    <div id="{{ tab.id }}" class="tab-content{% if tab.active %} active{% endif %}">
-                        {{ language_ai_content|safe }}
-                    </div>
+                {% elif tab.id == 'revision' and tab.active %}
+                    {% include 'revision/revision_settings.html' %}
+                {% elif tab.id == 'language_ai' and tab.active %}
+                    {% include 'language_ai/language_ai_settings.html' %}
+                {% elif tab.id == 'learning' and tab.active %}
+                    {% include 'course/course_settings.html' %}
                 {% elif tab.id == 'notebook' and notebook_content %}
                     <div id="{{ tab.id }}" class="tab-content{% if tab.active %} active{% endif %}">
                         {{ notebook_content|safe }}
                     </div>
+                {% elif tab.id == 'interface' and tab.active %}
+                    {% include 'authentication/interface_settings.html' %}
+                {% elif tab.id == 'voice' and tab.active %}
+                    {% include 'vocal/voice_settings.html' %}
                 {% elif tab.active %}
                     <div id="{{ tab.id }}" class="tab-content active">
                         <div class="content-section">

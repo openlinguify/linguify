@@ -110,22 +110,6 @@ class LanguageAISettingsView(View):
                     }
                 }
                 
-                # Add the language AI settings content
-                from django.template.loader import render_to_string
-                
-                try:
-                    language_ai_content = render_to_string('language_ai/language_ai_content.html', {
-                        'language_ai_settings': settings
-                    }, request=request)
-                    context['language_ai_content'] = language_ai_content
-                except Exception as e:
-                    logger.error(f"Error loading language AI template: {e}")
-                    context['language_ai_content'] = """
-                    <div class="content-section">
-                        <h3>Paramètres IA Linguistique</h3>
-                        <p>Erreur lors du chargement du template: """ + str(e) + """</p>
-                    </div>
-                    """
                 
                 return render(request, 'saas_web/settings/settings.html', context)
             

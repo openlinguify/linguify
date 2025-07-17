@@ -46,46 +46,70 @@ class InterfaceSettingsView(View):
                     'settings': interface_settings
                 })
             else:
-                # Render the settings page with full navigation
-                user_apps, app_recommendations = UserAppService.get_user_apps_with_registry_info(request.user)
-                settings_categories, settings_tabs = AppSettingsService.get_all_settings_tabs(user=request.user)
-                
-                # Mark the interface tab as active
-                for tab in settings_tabs:
-                    tab['active'] = tab.get('id') == 'interface'
-                
-                # Build URL mapping for template
-                from django.urls import reverse
-                settings_urls = {
-                    'profile': reverse('saas_web:profile_settings'),
-                    'interface': reverse('saas_web:interface_settings'),
-                    'voice': reverse('saas_web:voice_settings'),
-                    'vocal': reverse('saas_web:voice_settings'),
-                    'learning': reverse('saas_web:learning_settings'),
-                    'chat': reverse('saas_web:chat_settings'),
-                    'community': reverse('saas_web:community_settings'),
-                    'notebook': reverse('saas_web:notebook_settings'),
-                    'notes': reverse('saas_web:notebook_settings'),
-                    'quiz': reverse('saas_web:quiz_settings'),
-                    'quizz': reverse('saas_web:quiz_settings'),
-                    'revision': reverse('saas_web:revision_settings'),
-                    'language_ai': reverse('saas_web:language_ai_settings'),
-                    'language-ai': reverse('saas_web:language_ai_settings'),
-                    'notifications': reverse('saas_web:notification_settings'),
-                    'notification': reverse('saas_web:notification_settings'),
-                }
-                
                 context = {
                     'title': _('Interface & Thème - Linguify'),
                     'user': request.user,
-                    'user_apps': user_apps,
-                    'app_recommendations': app_recommendations,
-                    'settings_categories': settings_categories,
-                    'settings_tabs': settings_tabs,
-                    'settings_urls': settings_urls,
                     'interface_settings': interface_settings,
                     'active_tab': 'interface',
+                    'page_title': 'Thème & Apparence',
+                    'page_subtitle': 'Personnalisez l\'apparence et l\'interface de Linguify',
+                    'breadcrumb_active': 'Thème & Apparence',
+                    'settings_categories': {
+                        'personal': {
+                            'name': 'Personnel',
+                            'icon': 'bi-person',
+                            'order': 1,
+                            'tabs': [
+                                {'id': 'profile', 'name': 'Profil & Compte', 'icon': 'bi-person-circle', 'active': False}
+                            ]
+                        },
+                        'interface': {
+                            'name': 'Interface',
+                            'icon': 'bi-palette',
+                            'order': 2,
+                            'tabs': [
+                                {'id': 'interface', 'name': 'Thème & Apparence', 'icon': 'bi-palette', 'active': True},
+                                {'id': 'voice', 'name': 'Assistant Vocal', 'icon': 'bi-mic', 'active': False}
+                            ]
+                        },
+                        'applications': {
+                            'name': 'Applications',
+                            'icon': 'bi-grid-3x3-gap',
+                            'order': 3,
+                            'tabs': [
+                                {'id': 'learning', 'name': 'Apprentissage', 'icon': 'bi-book', 'active': False},
+                                {'id': 'chat', 'name': 'Chat', 'icon': 'bi-chat-dots', 'active': False},
+                                {'id': 'community', 'name': 'Communauté', 'icon': 'bi-people', 'active': False},
+                                {'id': 'notebook', 'name': 'Notes', 'icon': 'bi-journal-text', 'active': False},
+                                {'id': 'quiz', 'name': 'Quiz', 'icon': 'bi-question-circle', 'active': False},
+                                {'id': 'revision', 'name': 'Révision', 'icon': 'bi-arrow-repeat', 'active': False},
+                                {'id': 'language_ai', 'name': 'IA Linguistique', 'icon': 'bi-cpu', 'active': False}
+                            ]
+                        }
+                    },
+                    'settings_tabs': [
+                        {'id': 'interface', 'name': 'Thème & Apparence', 'icon': 'bi-palette', 'active': True}
+                    ],
+                    'settings_urls': {
+                        'profile': '/settings/profile/',
+                        'interface': '/settings/interface/',
+                        'voice': '/settings/voice/',
+                        'vocal': '/settings/voice/',
+                        'learning': '/settings/learning/',
+                        'chat': '/settings/chat/',
+                        'community': '/settings/community/',
+                        'notebook': '/settings/notebook/',
+                        'notes': '/settings/notebook/',
+                        'quiz': '/settings/quiz/',
+                        'quizz': '/settings/quiz/',
+                        'revision': '/settings/revision/',
+                        'language_ai': '/settings/language-ai/',
+                        'language-ai': '/settings/language-ai/',
+                        'notifications': '/settings/notifications/',
+                        'notification': '/settings/notifications/',
+                    }
                 }
+                
                 
                 return render(request, 'saas_web/settings/settings.html', context)
             

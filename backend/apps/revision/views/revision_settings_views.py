@@ -113,22 +113,6 @@ class RevisionSettingsView(View):
                     }
                 }
                 
-                # Add the revision settings content using your original template
-                from django.template.loader import render_to_string
-                
-                try:
-                    revision_content = render_to_string('revision/revision_content.html', {
-                        'revision_settings': settings
-                    }, request=request)
-                    context['revision_content'] = revision_content
-                except Exception as e:
-                    logger.error(f"Error loading revision template: {e}")
-                    context['revision_content'] = """
-                    <div class="content-section">
-                        <h3>Paramètres de révision</h3>
-                        <p>Erreur lors du chargement du template de révision: """ + str(e) + """</p>
-                    </div>
-                    """
                 
                 return render(request, 'saas_web/settings/settings.html', context)
             
