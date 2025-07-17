@@ -6,7 +6,7 @@ from django.utils import timezone
 from datetime import timedelta
 from asgiref.sync import async_to_sync
 
-from .models import Notification, NotificationSetting
+from .models.notification_models import Notification, NotificationSetting
 from .utils import NotificationManager
 from .serializers import NotificationSerializer
 

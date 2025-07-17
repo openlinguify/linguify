@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.utils import timezone
 from apps.notification.services import send_terms_acceptance_email_and_notification
-from apps.notification.models import Notification
+from apps.notification.models.notification_models import Notification
 
 logger = logging.getLogger(__name__)
 User = get_user_model()

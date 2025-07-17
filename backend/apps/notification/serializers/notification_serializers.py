@@ -1,6 +1,6 @@
 # backend/apps/notification/serializers/notification_serializers.py
 from rest_framework import serializers
-from ..models import Notification, NotificationSetting, NotificationDevice
+from ..models.notification_models import Notification, NotificationSetting, NotificationDevice
 
 class NotificationSerializer(serializers.ModelSerializer):
     """

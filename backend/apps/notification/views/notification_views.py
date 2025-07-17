@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from django.utils import timezone
 from django.db.models import Q
 
-from .models import Notification, NotificationSetting, NotificationDevice
-from .serializers import (
+from ..models.notification_models import Notification, NotificationSetting, NotificationDevice
+from ..serializers import (
     NotificationSerializer, 
     NotificationCreateSerializer,
     NotificationSettingSerializer, 

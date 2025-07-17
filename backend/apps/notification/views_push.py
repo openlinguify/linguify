@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from .models import NotificationDevice
+from .models.notification_models import NotificationDevice
 
 logger = logging.getLogger(__name__)
 
@@ -183,7 +183,7 @@ def send_test_notification(request: Request) -> Response:
     """
     try:
         from .services import NotificationDeliveryService
-        from .models import NotificationType, NotificationPriority
+        from .models.notification_models import NotificationType, NotificationPriority
         
         # Create and deliver a test notification
         notification = NotificationDeliveryService.create_and_deliver(

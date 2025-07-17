@@ -4,7 +4,7 @@ Command to manually send terms acceptance notification to users
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from apps.notification.services import send_terms_acceptance_email_and_notification
-from apps.notification.models import Notification
+from backend.apps.notification.models.notification_models import Notification
 
 User = get_user_model()
 
