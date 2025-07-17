@@ -1,6 +1,7 @@
-# backend/chat/serializers.py
+# backend/chat/serializers/conversation_serializers.py
 from rest_framework import serializers
-from .models import Conversation, ConversationMessage, Call, CallParticipant
+from apps.community.models import Conversation
+from ..models import ConversationMessage, Call, CallParticipant
 from apps.authentication.serializers.settings_serializers import UserSerializer
 
 class ConversationListSerializer(serializers.ModelSerializer):
@@ -28,30 +29,11 @@ class CallParticipantSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CallParticipant
-        fields = ('id', 'user', 'joined_at', 'left_at', 'is_muted_audio', 'is_muted_video')
+        fields = ('id', 'call', 'user', 'joined_at', 'left_at', 'is_active')
 
 class CallSerializer(serializers.ModelSerializer):
-    caller = UserSerializer(read_only=True)
-    receiver = UserSerializer(read_only=True)
     participants = CallParticipantSerializer(many=True, read_only=True)
-    conversation = serializers.StringRelatedField(read_only=True)
     
     class Meta:
         model = Call
-        fields = (
-            'id', 'conversation', 'caller', 'receiver', 'call_type', 
-            'status', 'started_at', 'ended_at', 'duration', 'room_id', 'participants'
-        )
-        read_only_fields = ('id', 'room_id', 'started_at')
-
-class CallListSerializer(serializers.ModelSerializer):
-    caller = UserSerializer(read_only=True)
-    receiver = UserSerializer(read_only=True)
-    
-    class Meta:
-        model = Call
-        fields = (
-            'id', 'caller', 'receiver', 'call_type', 'status', 
-            'started_at', 'ended_at', 'duration'
-        )
-
+        fields = ('id', 'call_id', 'started_at', 'ended_at', 'is_active', 'participants')

@@ -72,17 +72,17 @@ class ChatSettingsView(View):
             if is_ajax:
                 return JsonResponse({
                     'success': True,
-                    'message': 'Paramètres du chat mis à jour avec succès',
+                    'message': 'ParamÃ¨tres du chat mis Ã  jour avec succÃ¨s',
                     'data': validated_data
                 })
             else:
-                messages.success(request, 'Paramètres du chat mis à jour avec succès')
+                messages.success(request, 'ParamÃ¨tres du chat mis Ã  jour avec succÃ¨s')
                 return redirect('saas_web:settings')
                 
         except ValueError as e:
             # Handle conversion errors
             logger.error(f"Value error in chat settings: {e}")
-            error_message = "Valeur invalide dans les paramètres"
+            error_message = "Valeur invalide dans les paramÃ¨tres"
             
             if is_ajax:
                 return JsonResponse({
@@ -95,7 +95,7 @@ class ChatSettingsView(View):
                 
         except Exception as e:
             logger.error(f"Error in chat settings update: {e}")
-            error_message = 'Erreur lors de la mise à jour des paramètres du chat'
+            error_message = 'Erreur lors de la mise Ã  jour des paramÃ¨tres du chat'
             
             if is_ajax:
                 return JsonResponse({
@@ -127,5 +127,5 @@ class ChatSettingsView(View):
             logger.error(f"Error retrieving chat settings: {e}")
             return JsonResponse({
                 'success': False,
-                'message': 'Erreur lors de la récupération des paramètres'
+                'message': 'Erreur lors de la rÃ©cupÃ©ration des paramÃ¨tres'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
