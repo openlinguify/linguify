@@ -373,7 +373,7 @@ class VoicePreferencesView(APIView):
     def get(self, request):
         """Récupère les préférences vocales de l'utilisateur"""
         try:
-            from ..models import VoicePreference
+            from ..models.vocal_models import VoicePreference
             
             preference, created = VoicePreference.objects.get_or_create(
                 user=request.user,
@@ -410,7 +410,7 @@ class VoicePreferencesView(APIView):
     def post(self, request):
         """Met à jour les préférences vocales de l'utilisateur"""
         try:
-            from ..models import VoicePreference
+            from ..models.vocal_models import VoicePreference
             
             preference, created = VoicePreference.objects.get_or_create(
                 user=request.user
@@ -446,7 +446,7 @@ class UserCommandsView(APIView):
     def get(self, request):
         """Récupère les commandes personnalisées de l'utilisateur"""
         try:
-            from ..models import VoiceCommand
+            from ..models.vocal_models import VoiceCommand
             
             commands = VoiceCommand.objects.filter(user=request.user, is_active=True)
             
@@ -476,7 +476,7 @@ class UserCommandsView(APIView):
     def delete(self, request, command_id=None):
         """Supprime une commande personnalisée"""
         try:
-            from ..models import VoiceCommand
+            from ..models.vocal_models import VoiceCommand
             
             if not command_id:
                 command_id = request.data.get('command_id')
@@ -945,7 +945,7 @@ class VocabularyExtractionView(APIView):
         """Extrait du vocabulaire d'un texte et crée des flashcards"""
         try:
             from apps.revision.models.revision_flashcard import FlashcardDeck, Flashcard
-            from ..claude_service import claude_service
+            from ..services.claude_service import claude_service
             
             text_content = request.data.get('text', '').strip()
             deck_name = request.data.get('deck_name', 'Vocabulaire extrait')

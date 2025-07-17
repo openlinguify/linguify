@@ -1,9 +1,5 @@
 """
 Vocal serializers package.
 """
-
-from .settings_serializers import VoiceSettingsSerializer
-
-__all__ = [
-    'VoiceSettingsSerializer',
-]
+from .settings_serializers import *
+from .vocal_serializers import *

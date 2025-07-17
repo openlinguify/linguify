@@ -1,3 +1,3 @@
-from .settings_views import QuizSettingsView
-
-__all__ = ['QuizSettingsView']
+from .quizz_settings_views import *
+from .quizz_views import *
+from .quizz_analytics_views import *

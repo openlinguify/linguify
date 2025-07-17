@@ -6,8 +6,8 @@ from django.db import models
 from django.db.models import Q, Count, Avg, Sum, Max, F
 from django.db.models.functions import TruncDate
 from datetime import datetime, timedelta
-from .models import Quiz, QuizSession, QuizResult
-from .utils import get_timeframe_filter
+from ..models import Quiz, QuizSession, QuizResult
+from ..utils import get_timeframe_filter
 
 
 class LeaderboardView(APIView):

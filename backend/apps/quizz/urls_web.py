@@ -1,8 +1,9 @@
 from django.urls import path
-from .views_web import QuizzMainView
+from .views import QuizzMainView, QuizSettingsView
 
 app_name = 'quizz_web'
 
 urlpatterns = [
-    path('', QuizzMainView.as_view(), name='app'),
+    path('', QuizzMainView.as_view(), name='main'),
+    path('settings/', QuizSettingsView.as_view(), name='settings'),
 ]

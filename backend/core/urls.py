@@ -91,7 +91,6 @@ urlpatterns = [
     # Jobs API moved to portal
     # path('api/v1/jobs/', include('core.jobs.urls', namespace='jobs')),
     path('api/v1/app-manager/', include('app_manager.urls', namespace='app_manager')),
-    # path('api/v1/flashcard/', include('flashcard.urls', namespace='flashcard')),
     # path('api/v1/task/', include('task.urls', namespace='task')),
     path('chat/', include('apps.chat.urls', namespace='chat')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

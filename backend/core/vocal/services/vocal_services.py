@@ -71,7 +71,7 @@ Tu dois analyser les demandes en langage naturel et les convertir en actions Lin
         """Analyse la demande avec Claude (intégration réelle)"""
         
         # Utiliser le service Claude réel
-        from .claude_service import claude_service
+        from .services.claude_service import claude_service
         
         try:
             claude_result = claude_service.analyze_voice_command(user_input, user_context)
@@ -1313,7 +1313,7 @@ class VoiceAssistantService:
             
             # Ajouter les préférences vocales si disponibles
             try:
-                from .models import VoicePreference
+                from .models.vocal_models import VoicePreference
                 voice_pref = VoicePreference.objects.filter(user=user).first()
                 if voice_pref:
                     context['preferences'].update({
@@ -1342,7 +1342,7 @@ class VoiceAssistantService:
     def learn_new_command(self, trigger_phrase: str, action: str, params: dict, response: str, user=None):
         """Apprend une nouvelle commande personnalisée"""
         try:
-            from .models import VoiceCommand
+            from .models.vocal_models import VoiceCommand
             
             if user:
                 # Sauvegarder en base de données
@@ -1373,7 +1373,7 @@ class VoiceAssistantService:
     def get_user_custom_commands(self, user):
         """Récupère les commandes personnalisées de l'utilisateur"""
         try:
-            from .models import VoiceCommand
+            from .models.vocal_models import VoiceCommand
             
             if user:
                 custom_commands = VoiceCommand.objects.filter(

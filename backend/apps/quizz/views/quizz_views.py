@@ -1,3 +1,5 @@
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -7,12 +9,34 @@ from django.utils import timezone
 from django.db.models import Q, Count, Avg, Sum, Max
 from django.db.models.functions import TruncDate
 from datetime import datetime, timedelta
-from .models import Quiz, Question, Answer, QuizSession, QuizResult
-from .serializers import (
+from ..models import Quiz, Question, Answer, QuizSession, QuizResult
+from ..serializers import (
     QuizSerializer, QuestionSerializer, AnswerSerializer,
     QuizSessionSerializer, QuizResultSerializer
 )
-from .utils import get_timeframe_filter
+from ..utils import get_timeframe_filter
+
+class QuizzMainView(LoginRequiredMixin, TemplateView):
+    """Vue principale pour l'app Quizz"""
+    template_name = 'quizz/app.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # App info pour le header
+        current_app_info = {
+            'name': 'quizz',
+            'display_name': 'Quizz',
+            'static_icon': '/app-icons/quizz/icon.png',
+            'route_path': '/quizz/'
+        }
+        
+        context.update({
+            'current_app': current_app_info,
+        })
+        
+        return context
+    
 
 
 class QuizViewSet(viewsets.ModelViewSet):
