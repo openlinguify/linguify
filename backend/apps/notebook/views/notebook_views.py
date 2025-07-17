@@ -14,8 +14,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from datetime import timedelta
 import base64
 
-from .models import Note, NoteCategory, Tag, SharedNote
-from .serializers import (
+from ..models import Note, NoteCategory, Tag, SharedNote
+from ..serializers import (
     NoteSerializer, NoteCategorySerializer, TagSerializer,
     SharedNoteSerializer, NoteDetailSerializer, NoteListSerializer
 )

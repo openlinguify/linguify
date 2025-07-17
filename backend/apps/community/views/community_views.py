@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
 
 from apps.authentication.models import User
-from .models import (Profile, FriendRequest, Post, Group, ActivityFeed, Recommendation,
+from ..models import (Profile, FriendRequest, Post, Group, ActivityFeed, Recommendation,
                      LanguageExchangeSession, StudySession, LanguagePartnerMatch)
 
 

@@ -2,7 +2,7 @@
 # Part of Open Linguify. See LICENSE file for full copyright and licensing details.
 from rest_framework import serializers
 from django.utils import timezone
-from .models import Note, NoteCategory, Tag, SharedNote
+from ..models import Note, NoteCategory, Tag, SharedNote
 
 class TagSerializer(serializers.ModelSerializer):
     notes_count = serializers.SerializerMethodField()
@@ -68,7 +68,7 @@ class NoteCategorySerializer(serializers.ModelSerializer):
             notes = obj.recent_notes
         else:
             notes = obj.note_set.order_by('-created_at').all()[:5]
-        from .serializers import NoteListSerializer
+        from .notebook_serializers import NoteListSerializer
         return NoteListSerializer(notes, many=True, context=self.context).data
 
     def validate_name(self, value):
