@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from rest_framework import status
+from app_manager.mixins import SettingsContextMixin
 import json
 import logging
 
@@ -19,7 +20,6 @@ class InterfaceSettingsView(View):
     
     def get(self, request):
         """Display interface settings page"""
-        from app_manager.services import UserAppService, AppSettingsService
         
         try:
             # Check if it's an AJAX request for getting settings as JSON
@@ -46,70 +46,20 @@ class InterfaceSettingsView(View):
                     'settings': interface_settings
                 })
             else:
-                context = {
-                    'title': _('Interface & Thème - Linguify'),
-                    'user': request.user,
-                    'interface_settings': interface_settings,
-                    'active_tab': 'interface',
-                    'page_title': 'Thème & Apparence',
-                    'page_subtitle': 'Personnalisez l\'apparence et l\'interface de Linguify',
-                    'breadcrumb_active': 'Thème & Apparence',
-                    'settings_categories': {
-                        'personal': {
-                            'name': 'Personnel',
-                            'icon': 'bi-person',
-                            'order': 1,
-                            'tabs': [
-                                {'id': 'profile', 'name': 'Profil & Compte', 'icon': 'bi-person-circle', 'active': False}
-                            ]
-                        },
-                        'interface': {
-                            'name': 'Interface',
-                            'icon': 'bi-palette',
-                            'order': 2,
-                            'tabs': [
-                                {'id': 'interface', 'name': 'Thème & Apparence', 'icon': 'bi-palette', 'active': True},
-                                {'id': 'voice', 'name': 'Assistant Vocal', 'icon': 'bi-mic', 'active': False}
-                            ]
-                        },
-                        'applications': {
-                            'name': 'Applications',
-                            'icon': 'bi-grid-3x3-gap',
-                            'order': 3,
-                            'tabs': [
-                                {'id': 'learning', 'name': 'Apprentissage', 'icon': 'bi-book', 'active': False},
-                                {'id': 'chat', 'name': 'Chat', 'icon': 'bi-chat-dots', 'active': False},
-                                {'id': 'community', 'name': 'Communauté', 'icon': 'bi-people', 'active': False},
-                                {'id': 'notebook', 'name': 'Notes', 'icon': 'bi-journal-text', 'active': False},
-                                {'id': 'quiz', 'name': 'Quiz', 'icon': 'bi-question-circle', 'active': False},
-                                {'id': 'revision', 'name': 'Révision', 'icon': 'bi-arrow-repeat', 'active': False},
-                                {'id': 'language_ai', 'name': 'IA Linguistique', 'icon': 'bi-cpu', 'active': False}
-                            ]
-                        }
-                    },
-                    'settings_tabs': [
-                        {'id': 'interface', 'name': 'Thème & Apparence', 'icon': 'bi-palette', 'active': True}
-                    ],
-                    'settings_urls': {
-                        'profile': '/settings/profile/',
-                        'interface': '/settings/interface/',
-                        'voice': '/settings/voice/',
-                        'vocal': '/settings/voice/',
-                        'learning': '/settings/learning/',
-                        'chat': '/settings/chat/',
-                        'community': '/settings/community/',
-                        'notebook': '/settings/notebook/',
-                        'notes': '/settings/notebook/',
-                        'quiz': '/settings/quiz/',
-                        'quizz': '/settings/quiz/',
-                        'revision': '/settings/revision/',
-                        'language_ai': '/settings/language-ai/',
-                        'language-ai': '/settings/language-ai/',
-                        'notifications': '/settings/notifications/',
-                        'notification': '/settings/notifications/',
-                    }
-                }
+                # Use standardized context mixin
+                mixin = SettingsContextMixin()
+                context = mixin.get_settings_context(
+                    user=request.user,
+                    active_tab_id='interface',
+                    page_title='Thème & Apparence',
+                    page_subtitle='Personnalisez l\'apparence et l\'interface de Linguify'
+                )
                 
+                # Add Interface specific data
+                context.update({
+                    'title': _('Interface & Thème - Linguify'),
+                    'interface_settings': interface_settings,
+                })
                 
                 return render(request, 'saas_web/settings/settings.html', context)
             

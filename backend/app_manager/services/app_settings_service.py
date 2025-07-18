@@ -1,5 +1,45 @@
 """
 Service pour la découverte dynamique des paramètres d'applications.
+
+IMPORTANT: Ce service fait partie de l'architecture centralisée des paramètres de Linguify.
+
+CONTEXTE HISTORIQUE ET PROBLÈME RÉSOLU:
+Avant la refactorisation de juillet 2025, chaque vue de paramètres (chat_settings_views.py,
+community_settings_views.py, etc.) hardcodait sa propre navigation sidebar. Cela causait:
+
+1. DUPLICATION MASSIVE: Chaque vue répétait le même code de navigation (50+ lignes identiques)
+2. MAINTENANCE DIFFICILE: Ajouter une nouvelle app nécessitait de modifier 8+ fichiers
+3. NAVIGATION INCOHÉRENTE: Naviguer vers Language AI faisait disparaître Documents de la sidebar
+4. ERREURS FRÉQUENTES: Les URLs et IDs n'étaient pas synchronisés entre les vues
+
+SOLUTION ARCHITECTURALE:
+Ce service centralise la génération de toute la navigation des paramètres:
+- CORE_APP_SETTINGS: Configuration centralisée de toutes les applications
+- get_all_settings_tabs(): Génère dynamiquement la navigation complète
+- Filtrage automatique selon les apps activées par l'utilisateur
+
+COMMENT ÇA MARCHE:
+1. Chaque vue de paramètres utilise SettingsContextMixin
+2. Le mixin appelle ce service pour générer le contexte
+3. Toutes les vues ont exactement la même navigation
+4. Ajouter une nouvelle app = modifier uniquement CORE_APP_SETTINGS
+
+FICHIERS REFACTORISÉS POUR UTILISER CE SERVICE:
+- /apps/chat/views/chat_settings_views.py
+- /apps/community/views/community_settings_views.py
+- /apps/notebook/views/notebook_settings_views.py
+- /apps/quizz/views/quizz_settings_views.py
+- /apps/revision/views/revision_settings_views.py
+- /apps/course/views/learning_settings_views.py
+- /apps/authentication/views/interface_settings_views.py
+- /core/vocal/views/voice_settings_views.py
+- /apps/documents/views/documents_settings_views.py
+- /apps/language_ai/views/language_ai_settings_views.py
+
+POUR AJOUTER UNE NOUVELLE APP:
+1. Ajouter l'entrée dans CORE_APP_SETTINGS ci-dessous
+2. Créer la vue avec SettingsContextMixin
+3. C'est tout ! La navigation sera automatiquement mise à jour partout.
 """
 import os
 import json
@@ -14,7 +54,22 @@ logger = logging.getLogger(__name__)
 
 
 class AppSettingsService:
-    """Service pour gérer dynamiquement les paramètres des applications"""
+    """
+    Service pour gérer dynamiquement les paramètres des applications.
+    
+    RÔLE CENTRAL: Ce service est le cœur du système de navigation des paramètres.
+    Il génère de manière cohérente la sidebar et les onglets pour toutes les pages de settings.
+    
+    AVANT LA REFACTORISATION:
+    - Chaque vue hardcodait settings_categories, settings_tabs, settings_urls
+    - Navigation incohérente (apps manquantes selon la page visitée)
+    - Code dupliqué dans 10+ fichiers de vues
+    
+    APRÈS LA REFACTORISATION:
+    - Une seule source de vérité (CORE_APP_SETTINGS)
+    - Navigation générée dynamiquement et cohérente partout
+    - Maintenance centralisée et simple
+    """
     
     # Configuration des catégories et métadonnées par défaut
     DEFAULT_CATEGORIES = {
@@ -36,6 +91,8 @@ class AppSettingsService:
     }
     
     # Configuration des apps core avec leurs métadonnées
+    # IMPORTANT: Cette configuration centralise TOUTES les applications de paramètres.
+    # Modifier ici met automatiquement à jour la navigation dans toutes les vues de settings.
     CORE_APP_SETTINGS = {
         'authentication': {
             'tabs': [
@@ -151,6 +208,18 @@ class AppSettingsService:
                     'template': 'language_ai/language_ai_settings.html',
                     'category': 'applications',
                     'order': 7
+                }
+            ]
+        },
+        'documents': {
+            'tabs': [
+                {
+                    'id': 'documents',
+                    'name': 'Documents',
+                    'icon': 'bi-file-earmark-text',
+                    'template': 'documents/documents_settings.html',
+                    'category': 'applications',
+                    'order': 8
                 }
             ]
         }
@@ -469,6 +538,7 @@ class AppSettingsService:
                 'quiz',          # Quiz
                 'language_ai',   # IA Linguistique
                 'learning',      # Apprentissage (si elle existe)
+                'documents',     # Documents collaboratifs
             ]
             
             # Activer les apps par défaut

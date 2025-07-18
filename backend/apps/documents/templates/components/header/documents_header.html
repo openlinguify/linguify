@@ -1,0 +1,89 @@
+{% load static %}
+{% load i18n %}
+
+<!-- Documents Settings Header -->
+<div class="settings-header mb-4">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="header-content">
+            <div class="d-flex align-items-center">
+                <div class="app-icon me-3">
+                    <i class="bi bi-file-earmark-text text-primary fs-1"></i>
+                </div>
+                <div>
+                    <h2 class="mb-1 fw-bold">Documents</h2>
+                    <p class="text-muted mb-0">Gérez vos paramètres de collaboration et d'édition</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header-actions">
+            <a href="/documents/" class="btn btn-outline-primary me-2">
+                <i class="bi bi-arrow-left me-2"></i>
+                Retour aux documents
+            </a>
+            <a href="/documents/create/" class="btn btn-primary">
+                <i class="bi bi-plus me-2"></i>
+                Nouveau document
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.settings-header {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 2rem;
+}
+
+.app-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: rgba(13, 110, 253, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-content h2 {
+    color: #2c3e50;
+    font-size: 1.75rem;
+}
+
+.header-actions .btn {
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .settings-header {
+        padding: 1rem 0;
+    }
+    
+    .settings-header .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+    
+    .header-actions {
+        width: 100%;
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .header-actions .btn {
+        flex: 1;
+        text-align: center;
+    }
+    
+    .app-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .header-content h2 {
+        font-size: 1.5rem;
+    }
+}
+</style>

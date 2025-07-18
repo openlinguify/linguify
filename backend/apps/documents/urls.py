@@ -7,6 +7,10 @@ from .views import (
     DocumentEditView, DocumentDeleteView, document_editor,
     folder_list, document_share, main_view
 )
+from .views.documents_settings_views import (
+    documents_settings_view, save_documents_settings, 
+    get_documents_settings, reset_documents_settings
+)
 from .views.logging_views import (
     log_client_event, get_client_metrics, report_bug, system_health
 )
@@ -29,12 +33,19 @@ api_urlpatterns = [
     path('api/v1/metrics/', get_client_metrics, name='get_client_metrics'),
     path('api/v1/report-bug/', report_bug, name='report_bug'),
     path('api/v1/health/', system_health, name='system_health'),
+    # Settings endpoints
+    path('api/v1/save-settings/', save_documents_settings, name='save_documents_settings'),
+    path('api/v1/get-settings/', get_documents_settings, name='get_documents_settings'),
+    path('api/v1/reset-settings/', reset_documents_settings, name='reset_documents_settings'),
 ]
 
 # Web URLs
 web_urlpatterns = [
     # Main dashboard
     path('', main_view, name='main'),
+    
+    # Settings (for main Linguify settings integration)
+    path('settings/', documents_settings_view, name='documents_settings'),
     
     # Document CRUD
     path('list/', DocumentListView.as_view(), name='document_list'),

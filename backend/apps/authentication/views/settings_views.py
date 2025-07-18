@@ -69,6 +69,7 @@ class UserSettingsView(View):
                 'language-ai': reverse('saas_web:language_ai_settings'),
                 'notifications': reverse('saas_web:notification_settings'),
                 'notification': reverse('saas_web:notification_settings'),
+                'documents': reverse('saas_web:documents_settings'),
             }
             
             context = {

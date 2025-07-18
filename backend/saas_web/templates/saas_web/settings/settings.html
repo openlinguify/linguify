@@ -90,6 +90,8 @@
                     {% include 'chat/chat_settings.html' %}
                 {% elif tab.id == 'community' and tab.active %}
                     {% include 'community/community_settings.html' %}
+                {% elif tab.id == 'documents' and tab.active %}
+                    {% include 'documents/documents_settings.html' %}
                 {% elif tab.active %}
                     <div id="{{ tab.id }}" class="tab-content active">
                         <div class="content-section">
@@ -127,4 +129,5 @@
 <script src="{% static 'community/js/settings.js' %}"></script>
 <script src="{% static 'course/js/settings.js' %}"></script>
 <script src="{% static 'notification/js/settings.js' %}"></script>
+<script src="{% static 'documents/js/documents_settings.js' %}"></script>
 {% endblock %}

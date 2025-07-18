@@ -1,5 +1,20 @@
 """
 Chat settings views
+
+IMPORTANT: Ce fichier illustre l'usage du système centralisé de paramètres.
+
+AVANT LA REFACTORISATION (Juillet 2025):
+Cette vue hardcodait 60+ lignes de navigation sidebar, dupliquées dans toutes les autres
+vues de paramètres. Naviguer vers Language AI faisait disparaître Documents de la sidebar.
+
+APRÈS LA REFACTORISATION:
+La vue utilise SettingsContextMixin qui génère automatiquement une navigation cohérente
+depuis AppSettingsService. Code réduit de 60+ à 10 lignes, maintenance centralisée.
+
+PATTERN À SUIVRE pour toute nouvelle vue de paramètres:
+1. Importer SettingsContextMixin
+2. Utiliser mixin.get_settings_context() au lieu de hardcoder le contexte
+3. Ajouter seulement les données spécifiques à votre app
 """
 from django.http import JsonResponse
 from django.contrib import messages
@@ -9,6 +24,7 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import redirect
 from rest_framework import status
 from ..serializers import ChatSettingsSerializer
+from app_manager.mixins import SettingsContextMixin
 import json
 import logging
 
@@ -126,70 +142,21 @@ class ChatSettingsView(View):
                     'settings': settings
                 })
             else:
-                # Complete context with full sidebar
-                context = {
+                # EXEMPLE D'USAGE DU SYSTÈME CENTRALISÉ:
+                # Au lieu de hardcoder 60+ lignes de navigation, on utilise le mixin
+                mixin = SettingsContextMixin()
+                context = mixin.get_settings_context(
+                    user=request.user,
+                    active_tab_id='chat',  # Doit correspondre à l'ID dans AppSettingsService.CORE_APP_SETTINGS
+                    page_title='Chat',
+                    page_subtitle='Configurez vos préférences de messagerie et de notification'
+                )
+                
+                # Ajouter uniquement les données spécifiques au Chat
+                context.update({
                     'title': 'Paramètres Chat - Linguify',
-                    'user': request.user,
                     'chat_settings': settings,
-                    'active_tab': 'chat',
-                    'page_title': 'Chat',
-                    'page_subtitle': 'Configurez vos préférences de messagerie et de notification',
-                    'breadcrumb_active': 'Chat',
-                    'settings_categories': {
-                        'personal': {
-                            'name': 'Personnel',
-                            'icon': 'bi-person',
-                            'order': 1,
-                            'tabs': [
-                                {'id': 'profile', 'name': 'Profil & Compte', 'icon': 'bi-person-circle', 'active': False}
-                            ]
-                        },
-                        'interface': {
-                            'name': 'Interface',
-                            'icon': 'bi-palette',
-                            'order': 2,
-                            'tabs': [
-                                {'id': 'interface', 'name': 'Thème & Apparence', 'icon': 'bi-palette', 'active': False},
-                                {'id': 'voice', 'name': 'Assistant Vocal', 'icon': 'bi-mic', 'active': False}
-                            ]
-                        },
-                        'applications': {
-                            'name': 'Applications',
-                            'icon': 'bi-grid-3x3-gap',
-                            'order': 3,
-                            'tabs': [
-                                {'id': 'learning', 'name': 'Apprentissage', 'icon': 'bi-book', 'active': False},
-                                {'id': 'chat', 'name': 'Chat', 'icon': 'bi-chat-dots', 'active': True},
-                                {'id': 'community', 'name': 'Communauté', 'icon': 'bi-people', 'active': False},
-                                {'id': 'notebook', 'name': 'Notes', 'icon': 'bi-journal-text', 'active': False},
-                                {'id': 'quiz', 'name': 'Quiz', 'icon': 'bi-question-circle', 'active': False},
-                                {'id': 'revision', 'name': 'Révision', 'icon': 'bi-arrow-repeat', 'active': False},
-                                {'id': 'language_ai', 'name': 'IA Linguistique', 'icon': 'bi-cpu', 'active': False}
-                            ]
-                        }
-                    },
-                    'settings_tabs': [
-                        {'id': 'chat', 'name': 'Chat', 'icon': 'bi-chat-dots', 'active': True}
-                    ],
-                    'settings_urls': {
-                        'profile': '/settings/profile/',
-                        'interface': '/settings/interface/',
-                        'voice': '/settings/voice/',
-                        'vocal': '/settings/voice/',
-                        'learning': '/settings/learning/',
-                        'chat': '/settings/chat/',
-                        'community': '/settings/community/',
-                        'notebook': '/settings/notebook/',
-                        'notes': '/settings/notebook/',
-                        'quiz': '/settings/quiz/',
-                        'quizz': '/settings/quiz/',
-                        'revision': '/settings/revision/',
-                        'language_ai': '/settings/language-ai/',
-                        'language-ai': '/settings/language-ai/',
-                        'notifications': '/settings/notifications/',
-                        'notification': '/settings/notifications/',
-                    }
-                }
+                })
                 
                 return render(request, 'saas_web/settings/settings.html', context)
             

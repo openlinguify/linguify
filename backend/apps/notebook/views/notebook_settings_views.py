@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import redirect
 from rest_framework import status
 from ..serializers import NotebookSettingsSerializer
+from app_manager.mixins import SettingsContextMixin
 import logging
 
 logger = logging.getLogger(__name__)
@@ -137,87 +138,20 @@ class NotebookSettingsView(View):
                     'settings': settings
                 })
             else:
-                # Complete context with full sidebar
-                context = {
+                # Use standardized context mixin
+                mixin = SettingsContextMixin()
+                context = mixin.get_settings_context(
+                    user=request.user,
+                    active_tab_id='notes',
+                    page_title='Notes',
+                    page_subtitle='Configurez votre espace de prise de notes et d\'organisation'
+                )
+                
+                # Add Notebook specific data
+                context.update({
                     'title': 'Paramètres Carnet - Linguify',
-                    'user': request.user,
                     'notebook_settings': settings,
-                    'active_tab': 'notebook',
-                    'page_title': 'Notes & Carnet',
-                    'page_subtitle': 'Configurez votre espace de prise de notes et d\'organisation',
-                    'breadcrumb_active': 'Notes & Carnet',
-                    'settings_categories': {
-                        'personal': {
-                            'name': 'Personnel',
-                            'icon': 'bi-person',
-                            'order': 1,
-                            'tabs': [
-                                {'id': 'profile', 'name': 'Profil & Compte', 'icon': 'bi-person-circle', 'active': False}
-                            ]
-                        },
-                        'interface': {
-                            'name': 'Interface',
-                            'icon': 'bi-palette',
-                            'order': 2,
-                            'tabs': [
-                                {'id': 'interface', 'name': 'Thème & Apparence', 'icon': 'bi-palette', 'active': False},
-                                {'id': 'voice', 'name': 'Assistant Vocal', 'icon': 'bi-mic', 'active': False}
-                            ]
-                        },
-                        'applications': {
-                            'name': 'Applications',
-                            'icon': 'bi-grid-3x3-gap',
-                            'order': 3,
-                            'tabs': [
-                                {'id': 'learning', 'name': 'Apprentissage', 'icon': 'bi-book', 'active': False},
-                                {'id': 'chat', 'name': 'Chat', 'icon': 'bi-chat-dots', 'active': False},
-                                {'id': 'community', 'name': 'Communauté', 'icon': 'bi-people', 'active': False},
-                                {'id': 'notebook', 'name': 'Notes', 'icon': 'bi-journal-text', 'active': True},
-                                {'id': 'quiz', 'name': 'Quiz', 'icon': 'bi-question-circle', 'active': False},
-                                {'id': 'revision', 'name': 'Révision', 'icon': 'bi-arrow-repeat', 'active': False},
-                                {'id': 'language_ai', 'name': 'IA Linguistique', 'icon': 'bi-cpu', 'active': False}
-                            ]
-                        }
-                    },
-                    'settings_tabs': [
-                        {'id': 'notebook', 'name': 'Notes', 'icon': 'bi-journal-text', 'active': True}
-                    ],
-                    'settings_urls': {
-                        'profile': '/settings/profile/',
-                        'interface': '/settings/interface/',
-                        'voice': '/settings/voice/',
-                        'vocal': '/settings/voice/',
-                        'learning': '/settings/learning/',
-                        'chat': '/settings/chat/',
-                        'community': '/settings/community/',
-                        'notebook': '/settings/notebook/',
-                        'notes': '/settings/notebook/',
-                        'quiz': '/settings/quiz/',
-                        'quizz': '/settings/quiz/',
-                        'revision': '/settings/revision/',
-                        'language_ai': '/settings/language-ai/',
-                        'language-ai': '/settings/language-ai/',
-                        'notifications': '/settings/notifications/',
-                        'notification': '/settings/notifications/',
-                    }
-                }
-                
-                # Add the notebook settings content
-                from django.template.loader import render_to_string
-                
-                try:
-                    notebook_content = render_to_string('notebook/notebook_content.html', {
-                        'notebook_settings': settings
-                    }, request=request)
-                    context['notebook_content'] = notebook_content
-                except Exception as e:
-                    logger.error(f"Error loading notebook template: {e}")
-                    context['notebook_content'] = """
-                    <div class="content-section">
-                        <h3>Paramètres de carnet</h3>
-                        <p>Erreur lors du chargement du template: """ + str(e) + """</p>
-                    </div>
-                    """
+                })
                 
                 return render(request, 'saas_web/settings/settings.html', context)
                 
