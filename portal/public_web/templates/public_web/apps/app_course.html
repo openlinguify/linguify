@@ -1,0 +1,165 @@
+{% extends 'public_web/public_base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Courses" %} - Open Linguify{% endblock %}
+
+{% block meta_description %}{% trans "Structured courses with progressive lessons, interactive exercises and personalized assessments for effective learning." %}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section hero-gradient">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="app-icon me-3">
+                        <img src="{% static 'img/app_icon/langue.png' %}" alt="Courses" style="width: 80px; height: 80px;">
+                    </div>
+                    <div>
+                        <h1 class="display-4 fw-bold mb-2 text-white">
+                            {% trans "Courses" %}
+                        </h1>
+                        <p class="lead mb-0 text-white-75">{% trans "Structured learning with progressive lessons" %}</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3">
+                    {% if not user.is_authenticated %}
+                        <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg">
+                            <i class="bi bi-person-plus me-2"></i>{% trans "Start for free" %}
+                        </a>
+                    {% else %}
+                        <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-light btn-lg">
+                            <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <img src="{% static 'img/app_icon/langue.png' %}" alt="Courses" style="width: 300px; height: 300px; opacity: 0.3;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-4">{% trans "Structured Learning Experience" %}</h2>
+                    <p class="lead">{% trans "Learn efficiently with our progressive course system designed for optimal knowledge acquisition." %}</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-book text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">{% trans "Progressive Lessons" %}</h5>
+                                <p class="card-text">{% trans "Carefully structured lessons that build upon each other for comprehensive understanding." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-controller text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">{% trans "Interactive Exercises" %}</h5>
+                                <p class="card-text">{% trans "Engage with interactive exercises that reinforce learning and test comprehension." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-graph-up text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">{% trans "Progress Tracking" %}</h5>
+                                <p class="card-text">{% trans "Monitor your learning progress with detailed analytics and personalized feedback." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-person-check text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">{% trans "Personalized Assessments" %}</h5>
+                                <p class="card-text">{% trans "Adaptive assessments that adjust to your learning pace and style." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-trophy text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">{% trans "Achievement System" %}</h5>
+                                <p class="card-text">{% trans "Earn badges and achievements as you complete lessons and reach milestones." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-calendar-check text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">{% trans "Flexible Schedule" %}</h5>
+                                <p class="card-text">{% trans "Learn at your own pace with flexible scheduling and course organization." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">
+            {% trans "Ready to start your learning journey?" %}
+        </h2>
+        <p class="lead mb-5">
+            {% trans "Join thousands of learners who have transformed their skills with our structured course system." %}
+        </p>
+        {% if not user.is_authenticated %}
+            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-primary btn-lg me-3">
+                <i class="bi bi-rocket me-2"></i>{% trans "Start for free" %}
+            </a>
+            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
+            </a>
+        {% else %}
+            <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-primary btn-lg me-3">
+                <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
+            </a>
+            <a href="http://127.0.0.1:8000/app-store/" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-shop me-2"></i>{% trans "Explore App Store" %}
+            </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

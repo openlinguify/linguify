@@ -26,6 +26,18 @@ class AppManifestParser:
         # Pour le portal, on retourne des apps de démonstration
         return [
             {
+                'name': 'Cours',
+                'slug': 'course',
+                'category': 'Learning',
+                'summary': 'Cours structurés avec leçons progressives et exercices interactifs',
+                'description': 'Apprenez avec des cours structurés, des leçons progressives et des évaluations personnalisées.',
+                'icon': 'langue',
+                'route': '/course/',
+                'menu_order': 0,
+                'version': '1.0.0',
+                'author': 'Linguify Team',
+            },
+            {
                 'name': 'Révision',
                 'slug': 'revision',
                 'category': 'Learning',
@@ -38,7 +50,7 @@ class AppManifestParser:
                 'author': 'Linguify Team',
             },
             {
-                'name': 'Notes',
+                'name': 'Notebook',
                 'slug': 'notebook',
                 'category': 'Productivity',
                 'summary': 'Prise de notes centralisée avec organisation intelligente',
@@ -72,6 +84,42 @@ class AppManifestParser:
                 'menu_order': 4,
                 'version': '1.0.0',
                 'author': 'Linguify Team',
+            },
+            {
+                'name': 'Documents',
+                'slug': 'documents',
+                'category': 'Collaboration',
+                'summary': 'Documents collaboratifs en temps réel avec éditeur riche',
+                'description': 'Créez et partagez des documents éducatifs avec contrôle de version.',
+                'icon': 'documents',
+                'route': '/documents/',
+                'menu_order': 5,
+                'version': '1.0.0',
+                'author': 'Linguify Team',
+            },
+            {
+                'name': 'Chat',
+                'slug': 'chat',
+                'category': 'Communication',
+                'summary': 'Chat collaboratif en temps réel pour les groupes d\'étude',
+                'description': 'Communiquez et collaborez avec d\'autres apprenants en temps réel.',
+                'icon': 'Chat',
+                'route': '/chat/',
+                'menu_order': 6,
+                'version': '1.0.0',
+                'author': 'Linguify Team',
+            },
+            {
+                'name': 'Community',
+                'slug': 'community',
+                'category': 'Social',
+                'summary': 'Communauté d\'apprenants pour partager et découvrir du contenu',
+                'description': 'Connectez-vous avec d\'autres apprenants et découvrez du contenu créé par la communauté.',
+                'icon': 'community',
+                'route': '/community/',
+                'menu_order': 7,
+                'version': '1.0.0',
+                'author': 'Linguify Team',
             }
         ]
     
@@ -82,6 +130,10 @@ class AppManifestParser:
             if app['slug'] == slug:
                 return app
         return None
+    
+    def clear_cache(self):
+        """Clear the cached manifests"""
+        self._cached_manifests = None
 
 
 # Global instance

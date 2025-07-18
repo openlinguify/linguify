@@ -1,55 +1,294 @@
-{% extends "public_web/public_base.html" %}
+{% extends 'public_web/public_base.html' %}
+{% load static %}
 {% load i18n %}
 
-{% block title %}{{ page_title }}{% endblock %}
+{% block title %}{% trans "Language AI" %} - Open Linguify{% endblock %}
+
+{% block meta_description %}{% trans "AI assistant for natural conversations and intelligent real-time corrections to improve your language skills." %}{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="text-center mb-5">
-                <h1 class="display-4 fw-bold text-success">{% trans "Language AI" %}</h1>
-                <p class="lead text-muted">{% trans "Converse with AI to improve your speaking skills" %}</p>
+<!-- Hero Section -->
+<section class="hero-section hero-gradient">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="app-icon me-3">
+                        <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI" style="width: 80px; height: 80px;">
+                    </div>
+                    <div>
+                        <h1 class="display-4 fw-bold mb-2 text-white">
+                            {% trans "Language AI" %}
+                        </h1>
+                        <p class="lead mb-0 text-white-75">{% trans "Your AI-powered language learning companion" %}</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3">
+                    {% if not user.is_authenticated %}
+                        <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg">
+                            <i class="bi bi-robot me-2"></i>{% trans "Start Learning" %}
+                        </a>
+                    {% else %}
+                        <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-light btn-lg">
+                            <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
+                    </a>
+                </div>
             </div>
-            
-            <div class="card shadow-lg">
-                <div class="card-body p-5">
-                    <h3 class="mb-4">{% trans "AI-Powered Conversations" %}</h3>
-                    <p class="mb-4">{% trans "Practice speaking with our advanced AI assistant. Get real-time feedback and improve your pronunciation." %}</p>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="feature-item">
-                                <i class="bi bi-robot text-success me-3"></i>
-                                <span>{% trans "AI conversations" %}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="feature-item">
-                                <i class="bi bi-mic text-success me-3"></i>
-                                <span>{% trans "Speech recognition" %}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="feature-item">
-                                <i class="bi bi-chat-dots text-success me-3"></i>
-                                <span>{% trans "Real-time feedback" %}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="feature-item">
-                                <i class="bi bi-translate text-success me-3"></i>
-                                <span>{% trans "Multiple languages" %}</span>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI" style="width: 300px; height: 300px; opacity: 0.3;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-4">{% trans "AI-Powered Language Learning" %}</h2>
+                    <p class="lead">{% trans "Experience the future of language learning with our intelligent AI assistant that adapts to your learning style." %}</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-chat-square-text text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">{% trans "Natural Conversations" %}</h5>
+                                <p class="card-text">{% trans "Practice speaking with our AI in natural, flowing conversations that feel authentic and engaging." %}</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="text-center mt-4">
-                        <a href="http://127.0.0.1:8000/fr/auth/login/" class="btn btn-success btn-lg">{% trans "Start Conversation" %}</a>
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-mic text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">{% trans "Speech Recognition" %}</h5>
+                                <p class="card-text">{% trans "Advanced speech recognition technology that understands your pronunciation and helps you improve." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-lightning-charge text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">{% trans "Real-time Corrections" %}</h5>
+                                <p class="card-text">{% trans "Get instant feedback on grammar, pronunciation, and vocabulary with intelligent corrections." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-translate text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">{% trans "Multi-language Support" %}</h5>
+                                <p class="card-text">{% trans "Practice multiple languages with native-level AI assistants tailored to each language." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-person-gear text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">{% trans "Personalized Learning" %}</h5>
+                                <p class="card-text">{% trans "AI adapts to your learning pace, preferences, and goals for a customized experience." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-graph-up text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">{% trans "Progress Tracking" %}</h5>
+                                <p class="card-text">{% trans "Monitor your improvement with detailed analytics and progress reports." %}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- AI Capabilities Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-4">{% trans "Advanced AI Capabilities" %}</h2>
+                    <p class="lead">{% trans "Powered by cutting-edge AI technology to provide the most effective language learning experience." %}</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                <i class="bi bi-brain text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                            <div>
+                                <h5>{% trans "Contextual Understanding" %}</h5>
+                                <p>{% trans "AI understands context and nuance, providing relevant responses and corrections based on the conversation flow." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                <i class="bi bi-ear text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                            <div>
+                                <h5>{% trans "Pronunciation Analysis" %}</h5>
+                                <p>{% trans "Advanced phonetic analysis helps you perfect your pronunciation with detailed feedback on accent and intonation." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                <i class="bi bi-book text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                            <div>
+                                <h5>{% trans "Grammar Coaching" %}</h5>
+                                <p>{% trans "Intelligent grammar correction with explanations to help you understand and remember the rules." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                <i class="bi bi-lightbulb text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                            <div>
+                                <h5>{% trans "Vocabulary Building" %}</h5>
+                                <p>{% trans "Smart vocabulary suggestions and contextual learning to expand your word knowledge naturally." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Conversation Topics Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-4">{% trans "Diverse Conversation Topics" %}</h2>
+                    <p class="lead">{% trans "Practice speaking about topics that interest you with our variety of conversation scenarios." %}</p>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="topic-card p-3 rounded shadow-sm bg-white">
+                            <i class="bi bi-briefcase text-primary me-2"></i>
+                            <strong>{% trans "Business & Career" %}</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="topic-card p-3 rounded shadow-sm bg-white">
+                            <i class="bi bi-airplane text-primary me-2"></i>
+                            <strong>{% trans "Travel & Culture" %}</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="topic-card p-3 rounded shadow-sm bg-white">
+                            <i class="bi bi-heart text-primary me-2"></i>
+                            <strong>{% trans "Daily Life" %}</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="topic-card p-3 rounded shadow-sm bg-white">
+                            <i class="bi bi-mortarboard text-primary me-2"></i>
+                            <strong>{% trans "Education" %}</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="topic-card p-3 rounded shadow-sm bg-white">
+                            <i class="bi bi-palette text-primary me-2"></i>
+                            <strong>{% trans "Arts & Entertainment" %}</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="topic-card p-3 rounded shadow-sm bg-white">
+                            <i class="bi bi-tree text-primary me-2"></i>
+                            <strong>{% trans "Nature & Environment" %}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">
+            {% trans "Ready to start conversing with AI?" %}
+        </h2>
+        <p class="lead mb-5">
+            {% trans "Join thousands of learners who are improving their language skills with our AI-powered conversations." %}
+        </p>
+        {% if not user.is_authenticated %}
+            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-primary btn-lg me-3">
+                <i class="bi bi-robot me-2"></i>{% trans "Start AI Conversation" %}
+            </a>
+            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
+            </a>
+        {% else %}
+            <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-primary btn-lg me-3">
+                <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
+            </a>
+            <a href="http://127.0.0.1:8000/app-store/" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-shop me-2"></i>{% trans "Explore App Store" %}
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+.topic-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.topic-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+}
+</style>
 {% endblock %}

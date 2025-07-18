@@ -384,6 +384,30 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
         
+        /* Make feature cards clickable */
+        a.text-decoration-none .feature-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        a.text-decoration-none .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        a.text-decoration-none .feature-title {
+            color: var(--gray-900);
+            transition: color 0.3s ease;
+        }
+        
+        a.text-decoration-none:hover .feature-title {
+            color: var(--primary-color);
+        }
+        
+        a.text-decoration-none .feature-description {
+            color: var(--gray-600);
+        }
+        
         .feature-icon {
             width: 60px;
             height: 60px;
@@ -921,88 +945,116 @@
             </div>
             
             <div class="row g-4">
-                <div class="col-lg-4 col-md-6 animate-on-scroll">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <img src="{% static 'img/app_icon/langue.png' %}" alt="Revision">
-                        </div>
-                        <h3 class="feature-title">{% trans "Courses" %}</h3>
-                        <p class="feature-description">
-                            {% trans "Structured courses with progressive lessons, interactive exercises and personalized assessments." %}
-                        </p>
-                    </div>
-                </div>
-                
                 <div class="col-lg-4 col-md-6 animate-on-scroll delay-1">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='course' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/langue.png' %}" alt="Courses">
+                            </div>
+                            <h3 class="feature-title">{% trans "Courses" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Structured courses with progressive lessons, interactive exercises and personalized assessments." %}
+                            </p>
                         </div>
-                        <h3 class="feature-title">{% trans "Revision" %}</h3>
-                        <p class="feature-description">
-                            {% trans "Spaced repetition system with smart flashcards for optimal memorization." %}
-                        </p>
-                    </div>
+                    </a>
                 </div>
                 
                 <div class="col-lg-4 col-md-6 animate-on-scroll delay-2">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='revision' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision">
+                            </div>
+                            <h3 class="feature-title">{% trans "Revision" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Spaced repetition system with smart flashcards for optimal memorization." %}
+                            </p>
                         </div>
-                        <h3 class="feature-title">{% trans "Notebook" %}</h3>
-                        <p class="feature-description">
-                            {% trans "Centralized note-taking with intelligent organization and advanced search." %}
-                        </p>
-                    </div>
+                    </a>
                 </div>
                 
                 <div class="col-lg-4 col-md-6 animate-on-scroll delay-3">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <img src="{% static 'img/app_icon/quizz.png' %}" alt="Quizz">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='notebook' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook">
+                            </div>
+                            <h3 class="feature-title">{% trans "Notebook" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Centralized note-taking with intelligent organization and advanced search." %}
+                            </p>
                         </div>
-                        <h3 class="feature-title">{% trans "Quiz" %}</h3>
-                        <p class="feature-description">
-                            {% trans "Adaptive quiz system to test your knowledge and identify weak points." %}
-                        </p>
-                    </div>
+                    </a>
                 </div>
                 
                 <div class="col-lg-4 col-md-6 animate-on-scroll delay-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <img src="{% static 'img/app_icon/community.png' %}" alt="Community">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='quizz' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/quizz.png' %}" alt="Quizz">
+                            </div>
+                            <h3 class="feature-title">{% trans "Quiz" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Adaptive quiz system to test your knowledge and identify weak points." %}
+                            </p>
                         </div>
-                        <h3 class="feature-title">{% trans "Community" %}</h3>
-                        <p class="feature-description">
-                            {% trans "Connect with other learners, share progress and discover content created by the community." %}
-                        </p>
-                    </div>
+                    </a>
                 </div>
                 
                 <div class="col-lg-4 col-md-6 animate-on-scroll delay-5">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <img src="{% static 'img/app_icon/Chat.png' %}" alt="Chat">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='community' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/community.png' %}" alt="Community">
+                            </div>
+                            <h3 class="feature-title">{% trans "Community" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Connect with other learners, share progress and discover content created by the community." %}
+                            </p>
                         </div>
-                        <h3 class="feature-title">{% trans "Chat" %}</h3>
-                        <p class="feature-description">
-                            {% trans "Real-time collaborative chat for study groups and language exchange with other learners." %}
-                        </p>
-                    </div>
+                    </a>
                 </div>
                 
                 <div class="col-lg-4 col-md-6 animate-on-scroll delay-6">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='chat' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/Chat.png' %}" alt="Chat">
+                            </div>
+                            <h3 class="feature-title">{% trans "Chat" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Real-time collaborative chat for study groups and language exchange with other learners." %}
+                            </p>
                         </div>
-                        <h3 class="feature-title">{% trans "Language AI" %}</h3>
-                        <p class="feature-description">
-                            {% trans "AI assistant for natural conversations and intelligent real-time corrections." %}
-                        </p>
-                    </div>
+                    </a>
+                </div>
+
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-7">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='documents' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/documents.png' %}" alt="Documents">
+                            </div>
+                            <h3 class="feature-title">{% trans "Documents" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Real-time collaborative documents with rich text editing, version control, and sharing capabilities for educational content." %}
+                            </p>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-8">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='language_ai' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI">
+                            </div>
+                            <h3 class="feature-title">{% trans "Language AI" %}</h3>
+                            <p class="feature-description">
+                                {% trans "AI assistant for natural conversations and intelligent real-time corrections." %}
+                            </p>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
