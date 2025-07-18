@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'apps.community',
     'apps.course',
     'apps.data',
+    'apps.documents',
     'apps.language_ai',
     # 'apps.payments',
     'apps.revision',

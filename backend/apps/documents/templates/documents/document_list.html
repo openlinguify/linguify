@@ -1,0 +1,395 @@
+{% extends 'documents/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block document_content %}
+<div class="documents-list-container">
+    <!-- Header -->
+    <div class="list-header">
+        <div class="header-title">
+            <h1>
+                <i class="bi bi-files"></i>
+                {% if current_folder %}
+                    {{ current_folder.name }}
+                {% else %}
+                    Tous les documents
+                {% endif %}
+            </h1>
+            {% if current_folder %}
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'documents:document_list' %}">Documents</a>
+                    </li>
+                    {% if current_folder.parent %}
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'documents:document_list' %}?folder={{ current_folder.parent.id }}">
+                            {{ current_folder.parent.name }}
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="breadcrumb-item active">{{ current_folder.name }}</li>
+                </ol>
+            </nav>
+            {% endif %}
+        </div>
+        
+        <div class="header-actions">
+            <div class="search-box">
+                <form method="get" class="d-flex">
+                    {% if request.GET.folder %}
+                    <input type="hidden" name="folder" value="{{ request.GET.folder }}">
+                    {% endif %}
+                    <input type="search" 
+                           name="search" 
+                           class="form-control" 
+                           placeholder="Rechercher des documents..." 
+                           value="{{ search_query }}">
+                    <button type="submit" class="btn btn-outline-secondary">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{% url 'documents:document_create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus"></i>
+                    Nouveau document
+                </a>
+                
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" 
+                            type="button" 
+                            data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'documents:folder_list' %}">
+                                <i class="bi bi-folder"></i> Gérer les dossiers
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <button class="dropdown-item" onclick="toggleViewMode()">
+                                <i class="bi bi-grid"></i> Changer la vue
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filters and Sorting -->
+    <div class="list-controls">
+        <div class="filters">
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="view-filter" id="all-docs" checked>
+                <label class="btn btn-outline-primary" for="all-docs">Tous</label>
+                
+                <input type="radio" class="btn-check" name="view-filter" id="my-docs">
+                <label class="btn btn-outline-primary" for="my-docs">Mes documents</label>
+                
+                <input type="radio" class="btn-check" name="view-filter" id="shared-docs">
+                <label class="btn btn-outline-primary" for="shared-docs">Partagés avec moi</label>
+            </div>
+        </div>
+        
+        <div class="sorting">
+            <select class="form-select form-select-sm" onchange="applySorting(this.value)">
+                <option value="-updated_at">Modifié récemment</option>
+                <option value="-created_at">Créé récemment</option>
+                <option value="title">Nom (A-Z)</option>
+                <option value="-title">Nom (Z-A)</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- Document Grid/List -->
+    <div class="documents-container" id="documents-container">
+        {% if documents %}
+        <div class="documents-grid" id="documents-grid">
+            {% for document in documents %}
+            <div class="document-card" data-document-id="{{ document.id }}">
+                <div class="document-header">
+                    <div class="document-icon">
+                        {% if document.content_type == 'markdown' %}
+                            <i class="bi bi-markdown text-primary"></i>
+                        {% elif document.content_type == 'html' %}
+                            <i class="bi bi-filetype-html text-warning"></i>
+                        {% else %}
+                            <i class="bi bi-file-earmark-text text-secondary"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="document-actions">
+                        <div class="dropdown">
+                            <button class="btn btn-sm" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'documents:document_detail' document.pk %}">
+                                        <i class="bi bi-eye"></i> Voir
+                                    </a>
+                                </li>
+                                {% if document.owner == request.user or document.shares.all %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'documents:document_editor' document.pk %}">
+                                        <i class="bi bi-pencil"></i> Modifier
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if document.owner == request.user %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'documents:document_share' document.pk %}">
+                                        <i class="bi bi-share"></i> Partager
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <button class="dropdown-item text-danger" 
+                                            data-action="delete-document"
+                                            data-document-id="{{ document.id }}"
+                                            data-document-title="{{ document.title }}">
+                                        <i class="bi bi-trash"></i> Supprimer
+                                    </button>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="document-content">
+                    <h3>
+                        <a href="{% url 'documents:document_detail' document.pk %}">
+                            {{ document.title }}
+                        </a>
+                    </h3>
+                    
+                    <div class="document-meta">
+                        {% if document.folder %}
+                        <span class="meta-item">
+                            <i class="bi bi-folder"></i>
+                            <a href="{% url 'documents:document_list' %}?folder={{ document.folder.id }}">
+                                {{ document.folder.name }}
+                            </a>
+                        </span>
+                        {% endif %}
+                        
+                        <span class="meta-item">
+                            <i class="bi bi-person"></i>
+                            {% if document.owner == request.user %}
+                                Vous
+                            {% else %}
+                                {{ document.owner.get_full_name|default:document.owner.username }}
+                            {% endif %}
+                        </span>
+                        
+                        <span class="meta-item">
+                            <i class="bi bi-clock"></i>
+                            {{ document.updated_at|timesince }} ago
+                        </span>
+                        
+                        {% if document.collaborators.exists %}
+                        <span class="meta-item">
+                            <i class="bi bi-people"></i>
+                            {{ document.collaborators.count }} collaborateur{{ document.collaborators.count|pluralize }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if document.get_tags_list %}
+                    <div class="document-tags">
+                        {% for tag in document.get_tags_list %}
+                        <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Preview snippet -->
+                    {% if document.content %}
+                    <div class="document-preview">
+                        {{ document.content|truncatechars:150 }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Documents pagination" class="pagination-nav">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if request.GET.folder %}folder={{ request.GET.folder }}&{% endif %}page=1">
+                        &laquo; Premier
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if request.GET.folder %}folder={{ request.GET.folder }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                        &lsaquo; Précédent
+                    </a>
+                </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">
+                        Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if request.GET.folder %}folder={{ request.GET.folder }}&{% endif %}page={{ page_obj.next_page_number }}">
+                        Suivant &rsaquo;
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if request.GET.folder %}folder={{ request.GET.folder }}&{% endif %}page={{ page_obj.paginator.num_pages }}">
+                        Dernier &raquo;
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-icon">
+                {% if search_query %}
+                    <i class="bi bi-search"></i>
+                {% else %}
+                    <i class="bi bi-file-earmark-plus"></i>
+                {% endif %}
+            </div>
+            
+            {% if search_query %}
+            <h3>Aucun résultat trouvé</h3>
+            <p>Aucun document ne correspond à votre recherche "{{ search_query }}".</p>
+            <a href="{% url 'documents:document_list' %}{% if request.GET.folder %}?folder={{ request.GET.folder }}{% endif %}" 
+               class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i>
+                Voir tous les documents
+            </a>
+            {% else %}
+            <h3>Aucun document</h3>
+            <p>
+                {% if current_folder %}
+                    Ce dossier ne contient aucun document.
+                {% else %}
+                    Vous n'avez encore créé aucun document.
+                {% endif %}
+            </p>
+            <a href="{% url 'documents:document_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus"></i>
+                Créer votre premier document
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Supprimer le document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer le document <strong id="delete-document-title"></strong> ?</p>
+                <p class="text-muted">Cette action est irréversible.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" id="confirm-delete">Supprimer</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// View mode toggle
+function toggleViewMode() {
+    const grid = document.getElementById('documents-grid');
+    grid.classList.toggle('list-view');
+}
+
+// Sorting
+function applySorting(value) {
+    const url = new URL(window.location);
+    url.searchParams.set('ordering', value);
+    window.location = url;
+}
+
+// Filter handling
+document.querySelectorAll('input[name="view-filter"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const url = new URL(window.location);
+        
+        if (this.id === 'my-docs') {
+            url.searchParams.set('owner', 'me');
+            url.searchParams.delete('shared');
+        } else if (this.id === 'shared-docs') {
+            url.searchParams.set('shared', 'true');
+            url.searchParams.delete('owner');
+        } else {
+            url.searchParams.delete('owner');
+            url.searchParams.delete('shared');
+        }
+        
+        window.location = url;
+    });
+});
+
+// Delete document handling
+let deleteDocumentId = null;
+
+document.addEventListener('click', function(e) {
+    if (e.target.matches('[data-action="delete-document"]')) {
+        e.preventDefault();
+        
+        deleteDocumentId = e.target.dataset.documentId;
+        const documentTitle = e.target.dataset.documentTitle;
+        
+        document.getElementById('delete-document-title').textContent = documentTitle;
+        
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+    }
+});
+
+document.getElementById('confirm-delete').addEventListener('click', function() {
+    if (deleteDocumentId) {
+        fetch(`/documents/api/v1/documents/${deleteDocumentId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Erreur lors de la suppression');
+            }
+        })
+        .catch(error => {
+            console.error('Delete error:', error);
+            alert('Erreur lors de la suppression');
+        });
+    }
+});
+</script>
+{% endblock %}

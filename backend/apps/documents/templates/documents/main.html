@@ -1,0 +1,244 @@
+{% extends 'documents/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block document_content %}
+<div class="documents-dashboard">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1>
+                <i class="bi bi-file-earmark-text"></i>
+                Mes Documents
+            </h1>
+            <p class="subtitle">Créez, partagez et collaborez sur vos documents</p>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'documents:document_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus"></i>
+                Créer un document
+            </a>
+        </div>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ recent_documents|length }}</div>
+                <div class="stat-label">Documents récents</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-folder"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ folders|length }}</div>
+                <div class="stat-label">Dossiers</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-share"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ shared_documents|length }}</div>
+                <div class="stat-label">Partagés avec moi</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Documents -->
+    <div class="content-section">
+        <div class="section-header">
+            <h2>
+                <i class="bi bi-clock-history"></i>
+                Documents récents
+            </h2>
+            <a href="{% url 'documents:document_list' %}" class="view-all-btn">
+                Voir tout
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="documents-grid">
+            {% for document in recent_documents %}
+            <div class="document-card">
+                <div class="document-header">
+                    <div class="document-icon">
+                        {% if document.content_type == 'markdown' %}
+                            <i class="bi bi-markdown"></i>
+                        {% elif document.content_type == 'html' %}
+                            <i class="bi bi-filetype-html"></i>
+                        {% else %}
+                            <i class="bi bi-file-earmark-text"></i>
+                        {% endif %}
+                    </div>
+                    <div class="document-actions">
+                        <div class="dropdown">
+                            <button class="btn btn-sm" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'documents:document_detail' document.pk %}">
+                                    <i class="bi bi-eye"></i> Voir
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'documents:document_edit' document.pk %}">
+                                    <i class="bi bi-pencil"></i> Modifier
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'documents:document_share' document.pk %}">
+                                    <i class="bi bi-share"></i> Partager
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="document-content">
+                    <h3>
+                        <a href="{% url 'documents:document_detail' document.pk %}">
+                            {{ document.title }}
+                        </a>
+                    </h3>
+                    
+                    <div class="document-meta">
+                        {% if document.folder %}
+                        <span class="meta-item">
+                            <i class="bi bi-folder"></i>
+                            {{ document.folder.name }}
+                        </span>
+                        {% endif %}
+                        
+                        <span class="meta-item">
+                            <i class="bi bi-person"></i>
+                            {{ document.last_edited_by.get_full_name|default:document.last_edited_by.username }}
+                        </span>
+                        
+                        <span class="meta-item">
+                            <i class="bi bi-clock"></i>
+                            {{ document.updated_at|timesince }} ago
+                        </span>
+                    </div>
+                    
+                    {% if document.get_tags_list %}
+                    <div class="document-tags">
+                        {% for tag in document.get_tags_list %}
+                        <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-file-earmark-plus"></i>
+                </div>
+                <h3>Aucun document</h3>
+                <p>Commencez par créer votre premier document.</p>
+                <a href="{% url 'documents:document_create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus"></i>
+                    Créer un document
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Folders -->
+    {% if folders %}
+    <div class="content-section">
+        <div class="section-header">
+            <h2>
+                <i class="bi bi-folder"></i>
+                Mes dossiers
+            </h2>
+            <a href="{% url 'documents:folder_list' %}" class="view-all-btn">
+                Gérer
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="folders-grid">
+            {% for folder in folders %}
+            <div class="folder-card">
+                <div class="folder-icon">
+                    <i class="bi bi-folder"></i>
+                </div>
+                <div class="folder-content">
+                    <h4>
+                        <a href="{% url 'documents:document_list' %}?folder={{ folder.id }}">
+                            {{ folder.name }}
+                        </a>
+                    </h4>
+                    <p class="folder-description">{{ folder.description|default:"Aucune description" }}</p>
+                    <div class="folder-stats">
+                        <span class="stat">
+                            <i class="bi bi-file-earmark-text"></i>
+                            {{ folder.documents.count }} documents
+                        </span>
+                        <span class="stat">
+                            <i class="bi bi-folder"></i>
+                            {{ folder.subfolders.count }} sous-dossiers
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Shared Documents -->
+    {% if shared_documents %}
+    <div class="content-section">
+        <div class="section-header">
+            <h2>
+                <i class="bi bi-share"></i>
+                Partagés avec moi
+            </h2>
+        </div>
+        
+        <div class="shared-documents-list">
+            {% for document in shared_documents %}
+            <div class="shared-document-item">
+                <div class="document-info">
+                    <div class="document-icon">
+                        {% if document.content_type == 'markdown' %}
+                            <i class="bi bi-markdown"></i>
+                        {% elif document.content_type == 'html' %}
+                            <i class="bi bi-filetype-html"></i>
+                        {% else %}
+                            <i class="bi bi-file-earmark-text"></i>
+                        {% endif %}
+                    </div>
+                    <div class="document-details">
+                        <h4>
+                            <a href="{% url 'documents:document_detail' document.pk %}">
+                                {{ document.title }}
+                            </a>
+                        </h4>
+                        <div class="shared-by">
+                            Partagé par {{ document.owner.get_full_name|default:document.owner.username }}
+                        </div>
+                    </div>
+                </div>
+                <div class="document-actions">
+                    <a href="{% url 'documents:document_detail' document.pk %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye"></i>
+                        Voir
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

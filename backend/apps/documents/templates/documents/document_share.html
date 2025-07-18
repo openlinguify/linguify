@@ -1,0 +1,776 @@
+{% extends 'documents/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block document_content %}
+<div class="documents-dashboard">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="header-navigation">
+            <a href="{% url 'documents:document_detail' document.pk %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i>
+                Retour au document
+            </a>
+        </div>
+        
+        <div class="header-title">
+            <h1>
+                <i class="bi bi-share"></i>
+                Partager le document
+            </h1>
+            <p class="subtitle">
+                Document : <strong>{{ document.title }}</strong>
+            </p>
+        </div>
+    </div>
+    
+    <!-- Share Options -->
+    <div class="share-content">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Add New Share -->
+                <div class="share-section">
+                    <h3>
+                        <i class="bi bi-person-plus"></i>
+                        Ajouter un collaborateur
+                    </h3>
+                    
+                    <form id="add-share-form" class="add-share-form">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-5">
+                                <label for="user-email" class="form-label">
+                                    <i class="bi bi-envelope"></i> Email de l'utilisateur
+                                </label>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="user-email" 
+                                       name="user_email" 
+                                       placeholder="exemple@email.com"
+                                       required>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="permission-level" class="form-label">
+                                    <i class="bi bi-shield"></i> Niveau d'accès
+                                </label>
+                                <select class="form-select" id="permission-level" name="permission_level">
+                                    <option value="view">👁️ Lecture seule</option>
+                                    <option value="edit">✏️ Édition</option>
+                                    <option value="admin">🔧 Administration</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-plus"></i>
+                                    Ajouter
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="expires-at" class="form-label">
+                                    <i class="bi bi-calendar-x"></i> Expiration (optionnel)
+                                </label>
+                                <input type="datetime-local" 
+                                       class="form-control" 
+                                       id="expires-at" 
+                                       name="expires_at">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="share-message" class="form-label">
+                                    <i class="bi bi-chat"></i> Message (optionnel)
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="share-message" 
+                                       name="message"
+                                       placeholder="Message pour le collaborateur...">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Current Shares -->
+                <div class="share-section">
+                    <h3>
+                        <i class="bi bi-people"></i>
+                        Collaborateurs actuels ({{ shares.count }})
+                    </h3>
+                    
+                    {% if shares %}
+                    <div class="shares-list">
+                        {% for share in shares %}
+                        <div class="share-item" data-share-id="{{ share.id }}">
+                            <div class="collaborator-info">
+                                <div class="collaborator-avatar">
+                                    {% if share.user.profile_picture %}
+                                        <img src="{{ share.user.profile_picture.url }}" alt="{{ share.user.username }}">
+                                    {% else %}
+                                        <div class="avatar-placeholder">
+                                            {{ share.user.get_full_name|default:share.user.username|first|upper }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="collaborator-details">
+                                    <div class="collaborator-name">
+                                        {{ share.user.get_full_name|default:share.user.username }}
+                                    </div>
+                                    <div class="collaborator-email">
+                                        {{ share.user.email }}
+                                    </div>
+                                    <div class="share-meta">
+                                        <span class="share-date">
+                                            <i class="bi bi-calendar"></i>
+                                            Partagé {{ share.shared_at|timesince }} ago
+                                        </span>
+                                        {% if share.expires_at %}
+                                        <span class="expiration-date {% if share.is_expired %}text-danger{% else %}text-warning{% endif %}">
+                                            <i class="bi bi-clock"></i>
+                                            {% if share.is_expired %}
+                                                Expiré
+                                            {% else %}
+                                                Expire {{ share.expires_at|timeuntil }}
+                                            {% endif %}
+                                        </span>
+                                        {% endif %}
+                                        <span class="shared-by">
+                                            <i class="bi bi-person"></i>
+                                            par {{ share.shared_by.get_full_name|default:share.shared_by.username }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-info">
+                                <div class="permission-badge">
+                                    {% if share.permission_level == 'view' %}
+                                        <span class="badge bg-info">👁️ Lecture</span>
+                                    {% elif share.permission_level == 'edit' %}
+                                        <span class="badge bg-warning">✏️ Édition</span>
+                                    {% elif share.permission_level == 'admin' %}
+                                        <span class="badge bg-danger">🔧 Admin</span>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if share.is_expired %}
+                                <div class="expired-indicator">
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-x-circle"></i> Expiré
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="share-actions">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                            type="button" 
+                                            data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <button class="dropdown-item" 
+                                                    onclick="changePermission({{ share.id }}, '{{ share.permission_level }}')">
+                                                <i class="bi bi-shield"></i> Changer les droits
+                                            </button>
+                                        </li>
+                                        {% if share.expires_at %}
+                                        <li>
+                                            <button class="dropdown-item" 
+                                                    onclick="extendExpiration({{ share.id }})">
+                                                <i class="bi bi-calendar-plus"></i> Prolonger l'accès
+                                            </button>
+                                        </li>
+                                        {% endif %}
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <button class="dropdown-item text-danger" 
+                                                    onclick="removeShare({{ share.id }}, '{{ share.user.get_full_name|default:share.user.username|escapejs }}')">
+                                                <i class="bi bi-trash"></i> Retirer l'accès
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="no-shares">
+                        <div class="empty-state-mini">
+                            <i class="bi bi-people"></i>
+                            <p>Aucun collaborateur pour le moment.</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <!-- Document Info -->
+                <div class="document-info-card">
+                    <h4>
+                        <i class="bi bi-file-earmark-text"></i>
+                        Informations du document
+                    </h4>
+                    
+                    <div class="info-item">
+                        <strong>Titre :</strong>
+                        <span>{{ document.title }}</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <strong>Propriétaire :</strong>
+                        <span>{{ document.owner.get_full_name|default:document.owner.username }}</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <strong>Visibilité :</strong>
+                        <span class="visibility-badge">
+                            {% if document.visibility == 'private' %}
+                                <span class="badge bg-secondary">🔒 Privé</span>
+                            {% elif document.visibility == 'shared' %}
+                                <span class="badge bg-primary">👥 Partagé</span>
+                            {% elif document.visibility == 'public' %}
+                                <span class="badge bg-success">🌐 Public</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <strong>Créé :</strong>
+                        <span>{{ document.created_at|date:"d M Y" }}</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <strong>Modifié :</strong>
+                        <span>{{ document.updated_at|timesince }} ago</span>
+                    </div>
+                </div>
+                
+                <!-- Share Settings -->
+                <div class="share-settings-card">
+                    <h4>
+                        <i class="bi bi-gear"></i>
+                        Paramètres de partage
+                    </h4>
+                    
+                    <div class="setting-item">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" id="allow-comments">
+                            Autoriser les commentaires
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" id="notify-changes">
+                            Notifier les modifications
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" id="download-allowed">
+                            Autoriser le téléchargement
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="quick-actions-card">
+                    <h4>
+                        <i class="bi bi-lightning"></i>
+                        Actions rapides
+                    </h4>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-primary" onclick="copyShareLink()">
+                            <i class="bi bi-link"></i>
+                            Copier le lien
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-secondary" onclick="generateShareCode()">
+                            <i class="bi bi-qr-code"></i>
+                            Générer un code QR
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-info" onclick="exportShareList()">
+                            <i class="bi bi-download"></i>
+                            Exporter la liste
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Permission Modal -->
+<div class="modal fade" id="changePermissionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-shield"></i>
+                    Changer les permissions
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="change-permission-form">
+                    {% csrf_token %}
+                    <input type="hidden" id="change-share-id">
+                    
+                    <div class="mb-3">
+                        <label for="new-permission-level" class="form-label">Nouveau niveau d'accès</label>
+                        <select class="form-select" id="new-permission-level">
+                            <option value="view">👁️ Lecture seule - Peut voir le document</option>
+                            <option value="edit">✏️ Édition - Peut modifier le document</option>
+                            <option value="admin">🔧 Administration - Peut tout gérer</option>
+                        </select>
+                    </div>
+                    
+                    <div class="permission-explanation">
+                        <h6>Explication des permissions :</h6>
+                        <ul>
+                            <li><strong>Lecture seule :</strong> Peut uniquement voir le document</li>
+                            <li><strong>Édition :</strong> Peut voir et modifier le contenu</li>
+                            <li><strong>Administration :</strong> Peut tout faire, y compris partager avec d'autres</li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="confirmChangePermission()">
+                    <i class="bi bi-check"></i>
+                    Changer les permissions
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.document-share-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.share-header {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.header-navigation {
+    margin-bottom: 1rem;
+}
+
+.header-title h1 {
+    margin-bottom: 0.5rem;
+    color: #212529;
+}
+
+.subtitle {
+    color: #6c757d;
+    margin: 0;
+}
+
+.share-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    border: 1px solid #dee2e6;
+    margin-bottom: 2rem;
+}
+
+.share-section h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.add-share-form .form-label {
+    font-weight: 600;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.shares-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.share-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+}
+
+.share-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.collaborator-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.collaborator-avatar img,
+.avatar-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #007bff;
+    color: white;
+    font-weight: 600;
+}
+
+.collaborator-name {
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 0.25rem;
+}
+
+.collaborator-email {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.share-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.share-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.permission-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.permission-badge .badge {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.share-actions {
+    margin-left: 1rem;
+}
+
+.no-shares .empty-state-mini {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+}
+
+.empty-state-mini i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.5;
+}
+
+.document-info-card,
+.share-settings-card,
+.quick-actions-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #dee2e6;
+    margin-bottom: 1.5rem;
+}
+
+.document-info-card h4,
+.share-settings-card h4,
+.quick-actions-card h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-item strong {
+    color: #495057;
+}
+
+.setting-item {
+    margin-bottom: 1rem;
+}
+
+.setting-item:last-child {
+    margin-bottom: 0;
+}
+
+.form-check-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.permission-explanation {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-top: 1rem;
+}
+
+.permission-explanation h6 {
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
+
+.permission-explanation ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.permission-explanation li {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .share-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .collaborator-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .share-meta {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .permission-info {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .add-share-form .row {
+        flex-direction: column;
+    }
+    
+    .add-share-form .col-md-3 .btn {
+        margin-top: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add share form submission
+    document.getElementById('add-share-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        addShare();
+    });
+});
+
+function addShare() {
+    const form = document.getElementById('add-share-form');
+    const formData = new FormData(form);
+    
+    fetch(`/documents/api/v1/documents/{{ document.id }}/share/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.id) {
+            location.reload();
+        } else {
+            alert(data.message || 'Erreur lors du partage');
+        }
+    })
+    .catch(error => {
+        console.error('Add share error:', error);
+        alert('Erreur lors du partage');
+    });
+}
+
+function changePermission(shareId, currentPermission) {
+    document.getElementById('change-share-id').value = shareId;
+    document.getElementById('new-permission-level').value = currentPermission;
+    
+    const modal = new bootstrap.Modal(document.getElementById('changePermissionModal'));
+    modal.show();
+}
+
+function confirmChangePermission() {
+    const shareId = document.getElementById('change-share-id').value;
+    const newPermission = document.getElementById('new-permission-level').value;
+    
+    fetch(`/documents/api/v1/shares/${shareId}/`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            permission_level: newPermission
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert('Erreur lors du changement de permissions');
+        }
+    })
+    .catch(error => {
+        console.error('Change permission error:', error);
+        alert('Erreur lors du changement de permissions');
+    });
+}
+
+function removeShare(shareId, userName) {
+    if (confirm(`Retirer l'accès de ${userName} ?`)) {
+        fetch(`/documents/api/v1/shares/${shareId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Erreur lors de la suppression du partage');
+            }
+        })
+        .catch(error => {
+            console.error('Remove share error:', error);
+            alert('Erreur lors de la suppression du partage');
+        });
+    }
+}
+
+function extendExpiration(shareId) {
+    const newDate = prompt('Nouvelle date d\'expiration (YYYY-MM-DD HH:MM):');
+    if (newDate) {
+        fetch(`/documents/api/v1/shares/${shareId}/`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                expires_at: newDate
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Erreur lors de la modification de l\'expiration');
+            }
+        })
+        .catch(error => {
+            console.error('Extend expiration error:', error);
+            alert('Erreur lors de la modification de l\'expiration');
+        });
+    }
+}
+
+function copyShareLink() {
+    const link = `${window.location.origin}/documents/{{ document.id }}/`;
+    navigator.clipboard.writeText(link).then(() => {
+        alert('Lien copié dans le presse-papiers !');
+    }).catch(() => {
+        alert('Erreur lors de la copie du lien');
+    });
+}
+
+function generateShareCode() {
+    alert('Fonctionnalité QR Code à implémenter');
+}
+
+function exportShareList() {
+    const shares = [];
+    document.querySelectorAll('.share-item').forEach(item => {
+        const name = item.querySelector('.collaborator-name').textContent;
+        const email = item.querySelector('.collaborator-email').textContent;
+        const permission = item.querySelector('.permission-badge .badge').textContent;
+        shares.push(`${name} (${email}) - ${permission}`);
+    });
+    
+    const content = `Liste des collaborateurs pour: {{ document.title }}\n\n${shares.join('\n')}`;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'collaborateurs_{{ document.title|slugify }}.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+</script>
+{% endblock %}

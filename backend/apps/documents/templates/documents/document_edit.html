@@ -1,0 +1,349 @@
+{% extends 'documents/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block document_content %}
+<div class="documents-dashboard">
+    <!-- Editor Header -->
+    <div class="dashboard-header">
+        <div class="editor-title-section">
+            <input type="text" 
+                   id="document-title" 
+                   class="form-control form-control-lg" 
+                   value="{{ document.title }}" 
+                   placeholder="Titre du document...">
+        </div>
+        
+        <div class="editor-actions">
+            <div class="editor-status">
+                <span id="auto-save-indicator" class="auto-save-indicator"></span>
+            </div>
+            
+            <!-- Editor Type Toggle -->
+            <div class="btn-group" role="group" data-bs-toggle="buttons">
+                <input type="radio" class="btn-check" name="editor-type" id="markdown-editor" value="markdown" 
+                       {% if document.content_type == 'markdown' %}checked{% endif %}>
+                <label class="btn btn-outline-primary" for="markdown-editor">
+                    <i class="bi bi-markdown"></i> Markdown
+                </label>
+                
+                <input type="radio" class="btn-check" name="editor-type" id="rich-text-editor" value="html"
+                       {% if document.content_type == 'html' %}checked{% endif %}>
+                <label class="btn btn-outline-primary" for="rich-text-editor">
+                    <i class="bi bi-type-bold"></i> Rich Text
+                </label>
+            </div>
+            
+            <!-- Save Actions -->
+            <button type="button" class="btn btn-outline-secondary" id="save-draft">
+                <i class="bi bi-cloud-arrow-up"></i>
+                Brouillon
+            </button>
+            <button type="button" class="btn btn-primary" id="save-document">
+                <i class="bi bi-check-lg"></i>
+                Enregistrer
+            </button>
+        </div>
+    </div>
+    
+    <!-- Editor Content -->
+    <div class="editor-main">
+        <!-- Markdown Editor -->
+        <div id="markdown-editor-container" class="editor-container" 
+             style="{% if document.content_type != 'markdown' %}display: none;{% endif %}">
+            <div class="editor-toolbar">
+                <div class="toolbar-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-action="bold" title="Gras">
+                        <i class="bi bi-type-bold"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-action="italic" title="Italique">
+                        <i class="bi bi-type-italic"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-action="strikethrough" title="Barré">
+                        <i class="bi bi-type-strikethrough"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-action="heading" title="Titre">
+                        <i class="bi bi-type-h1"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-action="link" title="Lien">
+                        <i class="bi bi-link-45deg"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-action="image" title="Image">
+                        <i class="bi bi-image"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-action="list" title="Liste">
+                        <i class="bi bi-list-ul"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-action="ordered-list" title="Liste numérotée">
+                        <i class="bi bi-list-ol"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-action="quote" title="Citation">
+                        <i class="bi bi-quote"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-action="code" title="Code">
+                        <i class="bi bi-code"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="editor-split">
+                <div class="editor-pane">
+                    <textarea id="markdown-content" 
+                              class="form-control markdown-textarea" 
+                              placeholder="Écrivez votre contenu en Markdown...">{{ document.content }}</textarea>
+                </div>
+                
+                <div class="preview-pane">
+                    <div class="preview-header">
+                        <h6><i class="bi bi-eye"></i> Aperçu</h6>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="toggle-preview">
+                            <i class="bi bi-layout-split"></i>
+                        </button>
+                    </div>
+                    <div id="markdown-preview" class="preview-content"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rich Text Editor -->
+        <div id="rich-text-editor-container" class="editor-container"
+             style="{% if document.content_type != 'html' %}display: none;{% endif %}">
+            <div id="rich-text-toolbar" class="editor-toolbar">
+                <div class="toolbar-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="bold" title="Gras">
+                        <i class="bi bi-type-bold"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="italic" title="Italique">
+                        <i class="bi bi-type-italic"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="underline" title="Souligné">
+                        <i class="bi bi-type-underline"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="strikeThrough" title="Barré">
+                        <i class="bi bi-type-strikethrough"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <select class="form-select form-select-sm" data-command="formatBlock">
+                        <option value="p">Paragraphe</option>
+                        <option value="h1">Titre 1</option>
+                        <option value="h2">Titre 2</option>
+                        <option value="h3">Titre 3</option>
+                        <option value="h4">Titre 4</option>
+                        <option value="h5">Titre 5</option>
+                        <option value="h6">Titre 6</option>
+                    </select>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="insertUnorderedList" title="Liste">
+                        <i class="bi bi-list-ul"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="insertOrderedList" title="Liste numérotée">
+                        <i class="bi bi-list-ol"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="indent" title="Indenter">
+                        <i class="bi bi-indent-left"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="outdent" title="Désindenter">
+                        <i class="bi bi-indent-right"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="justifyLeft" title="Aligner à gauche">
+                        <i class="bi bi-text-left"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="justifyCenter" title="Centrer">
+                        <i class="bi bi-text-center"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="justifyRight" title="Aligner à droite">
+                        <i class="bi bi-text-right"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="createLink" title="Insérer un lien">
+                        <i class="bi bi-link-45deg"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="unlink" title="Supprimer le lien">
+                        <i class="bi bi-link"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertImage()" title="Insérer une image">
+                        <i class="bi bi-image"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="undo" title="Annuler">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-command="redo" title="Refaire">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="rich-text-content" 
+                 class="rich-text-editor" 
+                 contenteditable="true"
+                 data-placeholder="Commencez à écrire votre document...">{{ document.content|safe }}</div>
+        </div>
+    </div>
+    
+    <!-- Document Metadata -->
+    <div class="document-metadata">
+        <div class="metadata-tabs">
+            <ul class="nav nav-tabs" id="metadata-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="properties-tab" data-bs-toggle="tab" data-bs-target="#properties" type="button" role="tab">
+                        <i class="bi bi-gear"></i> Propriétés
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="sharing-tab" data-bs-toggle="tab" data-bs-target="#sharing" type="button" role="tab">
+                        <i class="bi bi-share"></i> Partage
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="versions-tab" data-bs-toggle="tab" data-bs-target="#versions" type="button" role="tab">
+                        <i class="bi bi-clock-history"></i> Versions
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="metadata-tab-content">
+                <!-- Properties Tab -->
+                <div class="tab-pane fade show active" id="properties" role="tabpanel">
+                    <div class="property-group">
+                        <label for="document-folder" class="form-label">Dossier</label>
+                        <select id="document-folder" class="form-select">
+                            <option value="">Aucun dossier</option>
+                            {% for folder in folders %}
+                            <option value="{{ folder.id }}" {% if document.folder_id == folder.id %}selected{% endif %}>
+                                {{ folder.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="property-group">
+                        <label for="document-visibility" class="form-label">Visibilité</label>
+                        <select id="document-visibility" class="form-select">
+                            <option value="private" {% if document.visibility == 'private' %}selected{% endif %}>Privé</option>
+                            <option value="shared" {% if document.visibility == 'shared' %}selected{% endif %}>Partagé</option>
+                            <option value="public" {% if document.visibility == 'public' %}selected{% endif %}>Public</option>
+                        </select>
+                    </div>
+                    
+                    <div class="property-group">
+                        <label for="document-language" class="form-label">Langue</label>
+                        <select id="document-language" class="form-select">
+                            <option value="">Non spécifiée</option>
+                            <option value="fr" {% if document.language == 'fr' %}selected{% endif %}>Français</option>
+                            <option value="en" {% if document.language == 'en' %}selected{% endif %}>Anglais</option>
+                            <option value="es" {% if document.language == 'es' %}selected{% endif %}>Espagnol</option>
+                            <option value="de" {% if document.language == 'de' %}selected{% endif %}>Allemand</option>
+                        </select>
+                    </div>
+                    
+                    <div class="property-group">
+                        <label for="document-difficulty" class="form-label">Niveau de difficulté</label>
+                        <select id="document-difficulty" class="form-select">
+                            <option value="">Non spécifié</option>
+                            <option value="A1" {% if document.difficulty_level == 'A1' %}selected{% endif %}>A1 - Débutant</option>
+                            <option value="A2" {% if document.difficulty_level == 'A2' %}selected{% endif %}>A2 - Élémentaire</option>
+                            <option value="B1" {% if document.difficulty_level == 'B1' %}selected{% endif %}>B1 - Intermédiaire</option>
+                            <option value="B2" {% if document.difficulty_level == 'B2' %}selected{% endif %}>B2 - Intermédiaire supérieur</option>
+                            <option value="C1" {% if document.difficulty_level == 'C1' %}selected{% endif %}>C1 - Avancé</option>
+                            <option value="C2" {% if document.difficulty_level == 'C2' %}selected{% endif %}>C2 - Maîtrise</option>
+                        </select>
+                    </div>
+                    
+                    <div class="property-group">
+                        <label for="document-tags" class="form-label">Tags</label>
+                        <input type="text" id="document-tags" class="form-control" 
+                               value="{{ document.tags }}" 
+                               placeholder="Séparez les tags par des virgules">
+                        <div class="form-text">Ex: éducation, cours, français</div>
+                    </div>
+                </div>
+                
+                <!-- Sharing Tab -->
+                <div class="tab-pane fade" id="sharing" role="tabpanel">
+                    <div class="sharing-controls">
+                        <button type="button" class="btn btn-primary btn-sm" id="add-collaborator">
+                            <i class="bi bi-person-plus"></i> Ajouter un collaborateur
+                        </button>
+                    </div>
+                    
+                    <div class="collaborators-list">
+                        {% for share in document.shares.all %}
+                        <div class="collaborator-item" data-share-id="{{ share.id }}">
+                            <div class="collaborator-info">
+                                <strong>{{ share.user.get_full_name|default:share.user.username }}</strong>
+                                <span class="badge bg-secondary">{{ share.get_permission_level_display }}</span>
+                            </div>
+                            <div class="collaborator-actions">
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-action="remove-share">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">Aucun collaborateur pour le moment.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Versions Tab -->
+                <div class="tab-pane fade" id="versions" role="tabpanel">
+                    <div class="versions-list">
+                        {% for version in document.versions.all %}
+                        <div class="version-item">
+                            <div class="version-info">
+                                <strong>Version {{ version.version_number }}</strong>
+                                <span class="text-muted">par {{ version.created_by.username }} - {{ version.created_at|timesince }} ago</span>
+                                {% if version.notes %}
+                                <p class="version-notes">{{ version.notes }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="version-actions">
+                                <button type="button" class="btn btn-sm btn-outline-primary" 
+                                        data-action="restore-version" data-version-id="{{ version.id }}">
+                                    <i class="bi bi-arrow-counterclockwise"></i> Restaurer
+                                </button>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">Aucune version antérieure.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden form for data submission -->
+<form id="document-form" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" id="document-id" value="{{ document.id }}">
+</form>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'documents/css/document_editor.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'documents/js/document_editor.js' %}"></script>
+<script src="{% static 'documents/js/markdown_preview.js' %}"></script>
+{% endblock %}

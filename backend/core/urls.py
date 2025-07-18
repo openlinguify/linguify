@@ -79,6 +79,7 @@ urlpatterns = [
     path('api/auth/terms/status', terms_status, name='terms_status'),
     path('api/v1/revision/', include('apps.revision.urls', namespace='revision')),
     path('api/v1/notebook/', include('apps.notebook.urls', namespace='notebook')),
+    path('documents/', include('apps.documents.urls', namespace='documents')),
     path('notebook/', include('apps.notebook.urls_web', namespace='notebook_web')),
     path('revision/', include('apps.revision.urls_web', namespace='revision_web')),
     path('learning/', include('apps.course.urls_web', namespace='course')),

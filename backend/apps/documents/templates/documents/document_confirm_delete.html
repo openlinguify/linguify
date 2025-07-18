@@ -1,0 +1,412 @@
+{% extends 'documents/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block document_content %}
+<div class="documents-dashboard">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="header-navigation">
+            <a href="{% url 'documents:document_detail' object.pk %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i>
+                Retour au document
+            </a>
+        </div>
+        
+        <div class="header-title">
+            <h1>
+                <i class="bi bi-trash text-danger"></i>
+                Supprimer le document
+            </h1>
+            <p class="subtitle text-danger">
+                Cette action est irréversible
+            </p>
+        </div>
+    </div>
+    
+    <!-- Confirmation Content -->
+    <div class="delete-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="delete-card">
+                    <div class="alert alert-danger" role="alert">
+                        <h4 class="alert-heading">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Attention !
+                        </h4>
+                        <p>Vous êtes sur le point de supprimer définitivement le document :</p>
+                        <hr>
+                        <h5 class="mb-0">
+                            <i class="bi bi-file-earmark-text"></i>
+                            {{ object.title }}
+                        </h5>
+                    </div>
+                    
+                    <!-- Document Info -->
+                    <div class="document-info">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <i class="bi bi-calendar"></i>
+                                <div>
+                                    <strong>Créé le :</strong>
+                                    <span>{{ object.created_at|date:"d M Y à H:i" }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <i class="bi bi-clock"></i>
+                                <div>
+                                    <strong>Dernière modification :</strong>
+                                    <span>{{ object.updated_at|timesince }} ago</span>
+                                </div>
+                            </div>
+                            
+                            {% if object.folder %}
+                            <div class="info-item">
+                                <i class="bi bi-folder"></i>
+                                <div>
+                                    <strong>Dossier :</strong>
+                                    <span>{{ object.folder.name }}</span>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="info-item">
+                                <i class="bi bi-eye"></i>
+                                <div>
+                                    <strong>Visibilité :</strong>
+                                    <span>
+                                        {% if object.visibility == 'private' %}
+                                            <span class="badge bg-secondary">🔒 Privé</span>
+                                        {% elif object.visibility == 'shared' %}
+                                            <span class="badge bg-primary">👥 Partagé</span>
+                                        {% elif object.visibility == 'public' %}
+                                            <span class="badge bg-success">🌐 Public</span>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            {% if object.collaborators.exists %}
+                            <div class="info-item">
+                                <i class="bi bi-people"></i>
+                                <div>
+                                    <strong>Collaborateurs :</strong>
+                                    <span>{{ object.collaborators.count }} utilisateur{{ object.collaborators.count|pluralize }}</span>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Consequences Warning -->
+                    <div class="consequences-warning">
+                        <h5>
+                            <i class="bi bi-exclamation-circle text-warning"></i>
+                            Conséquences de la suppression :
+                        </h5>
+                        <ul class="consequences-list">
+                            <li>
+                                <i class="bi bi-x-circle text-danger"></i>
+                                Le document et tout son contenu seront <strong>définitivement perdus</strong>
+                            </li>
+                            {% if object.collaborators.exists %}
+                            <li>
+                                <i class="bi bi-person-x text-warning"></i>
+                                Les {{ object.collaborators.count }} collaborateur{{ object.collaborators.count|pluralize }} perdront l'accès
+                            </li>
+                            {% endif %}
+                            <li>
+                                <i class="bi bi-chat-x text-warning"></i>
+                                Tous les commentaires et discussions seront supprimés
+                            </li>
+                            <li>
+                                <i class="bi bi-clock-history text-warning"></i>
+                                L'historique des versions sera effacé
+                            </li>
+                            <li>
+                                <i class="bi bi-link-45deg text-warning"></i>
+                                Tous les liens partagés deviendront inaccessibles
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Alternative Actions -->
+                    <div class="alternatives">
+                        <h5>
+                            <i class="bi bi-lightbulb text-info"></i>
+                            Alternatives à la suppression :
+                        </h5>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'documents:document_edit' object.pk %}" class="btn btn-outline-info">
+                                <i class="bi bi-pencil"></i>
+                                Modifier le document au lieu de le supprimer
+                            </a>
+                            <button type="button" class="btn btn-outline-warning" onclick="makePrivate()">
+                                <i class="bi bi-eye-slash"></i>
+                                Rendre le document privé au lieu de le supprimer
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="removeCollaborators()">
+                                <i class="bi bi-person-dash"></i>
+                                Retirer tous les collaborateurs seulement
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Final Confirmation -->
+                    <form method="post" class="delete-form">
+                        {% csrf_token %}
+                        
+                        <div class="final-confirmation">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="confirm-understanding" required>
+                                <label class="form-check-label" for="confirm-understanding">
+                                    Je comprends que cette action est <strong>irréversible</strong> et que toutes les données seront perdues
+                                </label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="confirm-delete" required>
+                                <label class="form-check-label" for="confirm-delete">
+                                    Je confirme vouloir supprimer définitivement le document "<strong>{{ object.title }}</strong>"
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{% url 'documents:document_detail' object.pk %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left"></i>
+                                    Annuler et revenir au document
+                                </a>
+                                
+                                <button type="submit" class="btn btn-danger" id="delete-button" disabled>
+                                    <i class="bi bi-trash"></i>
+                                    Supprimer définitivement
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.delete-confirm-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.delete-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.header-navigation {
+    margin-bottom: 1rem;
+}
+
+.header-title h1 {
+    margin-bottom: 0.5rem;
+    color: #212529;
+}
+
+.subtitle {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.delete-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.1);
+}
+
+.document-info {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 0.375rem;
+    border: 1px solid #e9ecef;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.info-item i {
+    margin-top: 0.25rem;
+    color: #6c757d;
+    flex-shrink: 0;
+}
+
+.consequences-warning {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 0.375rem;
+}
+
+.consequences-warning h5 {
+    margin-bottom: 1rem;
+    color: #856404;
+}
+
+.consequences-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.consequences-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(220, 53, 69, 0.05);
+    border-radius: 0.25rem;
+}
+
+.consequences-list li:last-child {
+    margin-bottom: 0;
+}
+
+.alternatives {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    border-radius: 0.375rem;
+}
+
+.alternatives h5 {
+    margin-bottom: 1rem;
+    color: #0c5460;
+}
+
+.final-confirmation {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #f8d7da;
+    border: 1px solid #f1aeb5;
+    border-radius: 0.375rem;
+}
+
+.final-confirmation .form-check {
+    margin-bottom: 1rem;
+}
+
+.final-confirmation .form-check:last-child {
+    margin-bottom: 0;
+}
+
+.form-check-label {
+    color: #721c24;
+    font-weight: 500;
+}
+
+.form-actions {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #dee2e6;
+}
+
+#delete-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .delete-confirm-container {
+        padding: 1rem;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmUnderstanding = document.getElementById('confirm-understanding');
+    const confirmDelete = document.getElementById('confirm-delete');
+    const deleteButton = document.getElementById('delete-button');
+    
+    function updateDeleteButton() {
+        deleteButton.disabled = !(confirmUnderstanding.checked && confirmDelete.checked);
+    }
+    
+    confirmUnderstanding.addEventListener('change', updateDeleteButton);
+    confirmDelete.addEventListener('change', updateDeleteButton);
+    
+    // Prevent accidental form submission
+    const form = document.querySelector('.delete-form');
+    form.addEventListener('submit', function(e) {
+        if (!confirm('Êtes-vous absolument certain de vouloir supprimer ce document ? Cette action ne peut pas être annulée.')) {
+            e.preventDefault();
+        }
+    });
+});
+
+function makePrivate() {
+    if (confirm('Rendre ce document privé au lieu de le supprimer ?')) {
+        // Implementation would require an API call
+        fetch(`/documents/api/v1/documents/{{ object.pk }}/`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                visibility: 'private'
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Document rendu privé avec succès');
+                window.location.href = '{% url "documents:document_detail" object.pk %}';
+            } else {
+                alert('Erreur lors de la modification');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur lors de la modification');
+        });
+    }
+}
+
+function removeCollaborators() {
+    if (confirm('Retirer tous les collaborateurs de ce document ?')) {
+        // Implementation would require API calls to remove all shares
+        alert('Fonctionnalité à implémenter');
+    }
+}
+</script>
+{% endblock %}

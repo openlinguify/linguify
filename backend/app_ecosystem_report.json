@@ -1,0 +1,1260 @@
+{
+  "metadata": {
+    "generated_at": "2025-07-18T02:08:26.140539+00:00",
+    "total_apps": 11,
+    "linguify_version": "1.0.0"
+  },
+  "apps": {
+    "authentication": {
+      "basic_info": {
+        "name": "Authentication",
+        "version": "1.0.0",
+        "category": "Unknown",
+        "has_settings": false
+      },
+      "capabilities": [
+        "web_interface",
+        "models",
+        "tests",
+        "migrations",
+        "static_files",
+        "management_commands"
+      ],
+      "dependencies": [],
+      "synergies": {
+        "total": 0,
+        "by_type": {},
+        "strongest_connections": []
+      },
+      "ecosystem_integration": {
+        "integration_score": 0,
+        "compatibility_issues": [],
+        "recommendations": []
+      }
+    },
+    "chat": {
+      "basic_info": {
+        "name": "Chat",
+        "version": "1.0.0",
+        "category": "Unknown",
+        "has_settings": false
+      },
+      "capabilities": [
+        "api",
+        "web_interface",
+        "models",
+        "admin",
+        "tests",
+        "migrations",
+        "static_files"
+      ],
+      "dependencies": [],
+      "synergies": {
+        "total": 10,
+        "by_type": {
+          "workflow_chain": [
+            {
+              "target": "community",
+              "strength": 0.8
+            }
+          ],
+          "data_sharing": [
+            {
+              "target": "community",
+              "strength": 0.5
+            },
+            {
+              "target": "course",
+              "strength": 0.5
+            },
+            {
+              "target": "data",
+              "strength": 0.5
+            },
+            {
+              "target": "documents",
+              "strength": 0.5
+            },
+            {
+              "target": "language_ai",
+              "strength": 0.5
+            },
+            {
+              "target": "revision",
+              "strength": 0.5
+            },
+            {
+              "target": "notebook",
+              "strength": 0.5
+            },
+            {
+              "target": "notification",
+              "strength": 0.5
+            },
+            {
+              "target": "quizz",
+              "strength": 0.5
+            }
+          ]
+        },
+        "strongest_connections": [
+          {
+            "target": "community",
+            "type": "workflow_chain",
+            "strength": 0.8
+          },
+          {
+            "target": "community",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "course",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "data",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "documents",
+            "type": "data_sharing",
+            "strength": 0.5
+          }
+        ]
+      },
+      "ecosystem_integration": {
+        "integration_score": 100,
+        "compatibility_issues": [],
+        "recommendations": []
+      }
+    },
+    "community": {
+      "basic_info": {
+        "name": "Community",
+        "version": "1.0.0",
+        "category": "Unknown",
+        "has_settings": false
+      },
+      "capabilities": [
+        "api",
+        "web_interface",
+        "models",
+        "admin",
+        "tests",
+        "migrations",
+        "static_files",
+        "management_commands"
+      ],
+      "dependencies": [],
+      "synergies": {
+        "total": 13,
+        "by_type": {
+          "workflow_chain": [
+            {
+              "target": "chat",
+              "strength": 0.8
+            }
+          ],
+          "content_enrichment": [
+            {
+              "target": "course",
+              "strength": 0.7
+            },
+            {
+              "target": "revision",
+              "strength": 0.7
+            },
+            {
+              "target": "notebook",
+              "strength": 0.7
+            }
+          ],
+          "data_sharing": [
+            {
+              "target": "chat",
+              "strength": 0.5
+            },
+            {
+              "target": "course",
+              "strength": 0.5
+            },
+            {
+              "target": "data",
+              "strength": 0.5
+            },
+            {
+              "target": "documents",
+              "strength": 0.5
+            },
+            {
+              "target": "language_ai",
+              "strength": 0.5
+            },
+            {
+              "target": "revision",
+              "strength": 0.5
+            },
+            {
+              "target": "notebook",
+              "strength": 0.5
+            },
+            {
+              "target": "notification",
+              "strength": 0.5
+            },
+            {
+              "target": "quizz",
+              "strength": 0.5
+            }
+          ]
+        },
+        "strongest_connections": [
+          {
+            "target": "chat",
+            "type": "workflow_chain",
+            "strength": 0.8
+          },
+          {
+            "target": "course",
+            "type": "content_enrichment",
+            "strength": 0.7
+          },
+          {
+            "target": "revision",
+            "type": "content_enrichment",
+            "strength": 0.7
+          },
+          {
+            "target": "notebook",
+            "type": "content_enrichment",
+            "strength": 0.7
+          },
+          {
+            "target": "chat",
+            "type": "data_sharing",
+            "strength": 0.5
+          }
+        ]
+      },
+      "ecosystem_integration": {
+        "integration_score": 100,
+        "compatibility_issues": [],
+        "recommendations": []
+      }
+    },
+    "course": {
+      "basic_info": {
+        "name": "Courses",
+        "version": "1.0.0",
+        "category": "Unknown",
+        "has_settings": false
+      },
+      "capabilities": [
+        "api",
+        "web_interface",
+        "models",
+        "admin",
+        "tests",
+        "migrations",
+        "static_files",
+        "management_commands"
+      ],
+      "dependencies": [],
+      "synergies": {
+        "total": 14,
+        "by_type": {
+          "skill_correlation": [
+            {
+              "target": "revision",
+              "strength": 0.9
+            }
+          ],
+          "content_enrichment": [
+            {
+              "target": "community",
+              "strength": 0.7
+            },
+            {
+              "target": "language_ai",
+              "strength": 0.7
+            }
+          ],
+          "data_sharing": [
+            {
+              "target": "chat",
+              "strength": 0.5
+            },
+            {
+              "target": "community",
+              "strength": 0.5
+            },
+            {
+              "target": "data",
+              "strength": 0.5
+            },
+            {
+              "target": "documents",
+              "strength": 0.5
+            },
+            {
+              "target": "language_ai",
+              "strength": 0.5
+            },
+            {
+              "target": "revision",
+              "strength": 0.5
+            },
+            {
+              "target": "notebook",
+              "strength": 0.5
+            },
+            {
+              "target": "notification",
+              "strength": 0.5
+            },
+            {
+              "target": "quizz",
+              "strength": 0.5
+            }
+          ],
+          "workflow_chain": [
+            {
+              "target": "revision",
+              "strength": 0.5
+            }
+          ],
+          "progress_tracking": [
+            {
+              "target": "revision",
+              "strength": 0.4
+            }
+          ]
+        },
+        "strongest_connections": [
+          {
+            "target": "revision",
+            "type": "skill_correlation",
+            "strength": 0.9
+          },
+          {
+            "target": "community",
+            "type": "content_enrichment",
+            "strength": 0.7
+          },
+          {
+            "target": "language_ai",
+            "type": "content_enrichment",
+            "strength": 0.7
+          },
+          {
+            "target": "chat",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "community",
+            "type": "data_sharing",
+            "strength": 0.5
+          }
+        ]
+      },
+      "ecosystem_integration": {
+        "integration_score": 100,
+        "compatibility_issues": [],
+        "recommendations": []
+      }
+    },
+    "data": {
+      "basic_info": {
+        "name": "Data",
+        "version": "1.0.0",
+        "category": "Unknown",
+        "has_settings": false
+      },
+      "capabilities": [
+        "api",
+        "models",
+        "admin",
+        "tests",
+        "migrations"
+      ],
+      "dependencies": [],
+      "synergies": {
+        "total": 9,
+        "by_type": {
+          "data_sharing": [
+            {
+              "target": "chat",
+              "strength": 0.5
+            },
+            {
+              "target": "community",
+              "strength": 0.5
+            },
+            {
+              "target": "course",
+              "strength": 0.5
+            },
+            {
+              "target": "documents",
+              "strength": 0.5
+            },
+            {
+              "target": "language_ai",
+              "strength": 0.5
+            },
+            {
+              "target": "revision",
+              "strength": 0.5
+            },
+            {
+              "target": "notebook",
+              "strength": 0.5
+            },
+            {
+              "target": "notification",
+              "strength": 0.5
+            },
+            {
+              "target": "quizz",
+              "strength": 0.5
+            }
+          ]
+        },
+        "strongest_connections": [
+          {
+            "target": "chat",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "community",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "course",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "documents",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "language_ai",
+            "type": "data_sharing",
+            "strength": 0.5
+          }
+        ]
+      },
+      "ecosystem_integration": {
+        "integration_score": 90,
+        "compatibility_issues": [],
+        "recommendations": []
+      }
+    },
+    "documents": {
+      "basic_info": {
+        "name": "Documents",
+        "version": "1.0.0",
+        "category": "Unknown",
+        "has_settings": false
+      },
+      "capabilities": [
+        "api",
+        "web_interface",
+        "models",
+        "admin",
+        "tests",
+        "migrations",
+        "static_files",
+        "management_commands"
+      ],
+      "dependencies": [],
+      "synergies": {
+        "total": 9,
+        "by_type": {
+          "data_sharing": [
+            {
+              "target": "chat",
+              "strength": 0.5
+            },
+            {
+              "target": "community",
+              "strength": 0.5
+            },
+            {
+              "target": "course",
+              "strength": 0.5
+            },
+            {
+              "target": "data",
+              "strength": 0.5
+            },
+            {
+              "target": "language_ai",
+              "strength": 0.5
+            },
+            {
+              "target": "revision",
+              "strength": 0.5
+            },
+            {
+              "target": "notebook",
+              "strength": 0.5
+            },
+            {
+              "target": "notification",
+              "strength": 0.5
+            },
+            {
+              "target": "quizz",
+              "strength": 0.5
+            }
+          ]
+        },
+        "strongest_connections": [
+          {
+            "target": "chat",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "community",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "course",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "data",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "language_ai",
+            "type": "data_sharing",
+            "strength": 0.5
+          }
+        ]
+      },
+      "ecosystem_integration": {
+        "integration_score": 90,
+        "compatibility_issues": [],
+        "recommendations": []
+      }
+    },
+    "language_ai": {
+      "basic_info": {
+        "name": "Language AI Conversation",
+        "version": "1.0.0",
+        "category": "Unknown",
+        "has_settings": false
+      },
+      "capabilities": [
+        "api",
+        "web_interface",
+        "models",
+        "admin",
+        "migrations",
+        "static_files"
+      ],
+      "dependencies": [],
+      "synergies": {
+        "total": 12,
+        "by_type": {
+          "content_enrichment": [
+            {
+              "target": "course",
+              "strength": 0.7
+            },
+            {
+              "target": "revision",
+              "strength": 0.7
+            },
+            {
+              "target": "notebook",
+              "strength": 0.7
+            }
+          ],
+          "data_sharing": [
+            {
+              "target": "chat",
+              "strength": 0.5
+            },
+            {
+              "target": "community",
+              "strength": 0.5
+            },
+            {
+              "target": "course",
+              "strength": 0.5
+            },
+            {
+              "target": "data",
+              "strength": 0.5
+            },
+            {
+              "target": "documents",
+              "strength": 0.5
+            },
+            {
+              "target": "revision",
+              "strength": 0.5
+            },
+            {
+              "target": "notebook",
+              "strength": 0.5
+            },
+            {
+              "target": "notification",
+              "strength": 0.5
+            },
+            {
+              "target": "quizz",
+              "strength": 0.5
+            }
+          ]
+        },
+        "strongest_connections": [
+          {
+            "target": "course",
+            "type": "content_enrichment",
+            "strength": 0.7
+          },
+          {
+            "target": "revision",
+            "type": "content_enrichment",
+            "strength": 0.7
+          },
+          {
+            "target": "notebook",
+            "type": "content_enrichment",
+            "strength": 0.7
+          },
+          {
+            "target": "chat",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "community",
+            "type": "data_sharing",
+            "strength": 0.5
+          }
+        ]
+      },
+      "ecosystem_integration": {
+        "integration_score": 100,
+        "compatibility_issues": [],
+        "recommendations": []
+      }
+    },
+    "revision": {
+      "basic_info": {
+        "name": "Révision",
+        "version": "1.0.0",
+        "category": "Unknown",
+        "has_settings": false
+      },
+      "capabilities": [
+        "api",
+        "web_interface",
+        "settings",
+        "models",
+        "admin",
+        "tests",
+        "migrations",
+        "static_files",
+        "management_commands"
+      ],
+      "dependencies": [],
+      "synergies": {
+        "total": 14,
+        "by_type": {
+          "skill_correlation": [
+            {
+              "target": "course",
+              "strength": 0.9
+            }
+          ],
+          "content_enrichment": [
+            {
+              "target": "community",
+              "strength": 0.7
+            },
+            {
+              "target": "language_ai",
+              "strength": 0.7
+            }
+          ],
+          "data_sharing": [
+            {
+              "target": "chat",
+              "strength": 0.5
+            },
+            {
+              "target": "community",
+              "strength": 0.5
+            },
+            {
+              "target": "course",
+              "strength": 0.5
+            },
+            {
+              "target": "data",
+              "strength": 0.5
+            },
+            {
+              "target": "documents",
+              "strength": 0.5
+            },
+            {
+              "target": "language_ai",
+              "strength": 0.5
+            },
+            {
+              "target": "notebook",
+              "strength": 0.5
+            },
+            {
+              "target": "notification",
+              "strength": 0.5
+            },
+            {
+              "target": "quizz",
+              "strength": 0.5
+            }
+          ],
+          "workflow_chain": [
+            {
+              "target": "course",
+              "strength": 0.5
+            }
+          ],
+          "progress_tracking": [
+            {
+              "target": "course",
+              "strength": 0.4
+            }
+          ]
+        },
+        "strongest_connections": [
+          {
+            "target": "course",
+            "type": "skill_correlation",
+            "strength": 0.9
+          },
+          {
+            "target": "community",
+            "type": "content_enrichment",
+            "strength": 0.7
+          },
+          {
+            "target": "language_ai",
+            "type": "content_enrichment",
+            "strength": 0.7
+          },
+          {
+            "target": "chat",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "community",
+            "type": "data_sharing",
+            "strength": 0.5
+          }
+        ]
+      },
+      "ecosystem_integration": {
+        "integration_score": 100,
+        "compatibility_issues": [],
+        "recommendations": []
+      }
+    },
+    "notebook": {
+      "basic_info": {
+        "name": "Notebook",
+        "version": "1.0.0",
+        "category": "Unknown",
+        "has_settings": false
+      },
+      "capabilities": [
+        "api",
+        "web_interface",
+        "models",
+        "admin",
+        "tests",
+        "migrations",
+        "static_files"
+      ],
+      "dependencies": [],
+      "synergies": {
+        "total": 11,
+        "by_type": {
+          "content_enrichment": [
+            {
+              "target": "community",
+              "strength": 0.7
+            },
+            {
+              "target": "language_ai",
+              "strength": 0.7
+            }
+          ],
+          "data_sharing": [
+            {
+              "target": "chat",
+              "strength": 0.5
+            },
+            {
+              "target": "community",
+              "strength": 0.5
+            },
+            {
+              "target": "course",
+              "strength": 0.5
+            },
+            {
+              "target": "data",
+              "strength": 0.5
+            },
+            {
+              "target": "documents",
+              "strength": 0.5
+            },
+            {
+              "target": "language_ai",
+              "strength": 0.5
+            },
+            {
+              "target": "revision",
+              "strength": 0.5
+            },
+            {
+              "target": "notification",
+              "strength": 0.5
+            },
+            {
+              "target": "quizz",
+              "strength": 0.5
+            }
+          ]
+        },
+        "strongest_connections": [
+          {
+            "target": "community",
+            "type": "content_enrichment",
+            "strength": 0.7
+          },
+          {
+            "target": "language_ai",
+            "type": "content_enrichment",
+            "strength": 0.7
+          },
+          {
+            "target": "chat",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "community",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "course",
+            "type": "data_sharing",
+            "strength": 0.5
+          }
+        ]
+      },
+      "ecosystem_integration": {
+        "integration_score": 100,
+        "compatibility_issues": [],
+        "recommendations": []
+      }
+    },
+    "notification": {
+      "basic_info": {
+        "name": "Notifications",
+        "version": "1.0.0",
+        "category": "Unknown",
+        "has_settings": false
+      },
+      "capabilities": [
+        "api",
+        "models",
+        "admin",
+        "migrations",
+        "static_files",
+        "management_commands"
+      ],
+      "dependencies": [],
+      "synergies": {
+        "total": 9,
+        "by_type": {
+          "data_sharing": [
+            {
+              "target": "chat",
+              "strength": 0.5
+            },
+            {
+              "target": "community",
+              "strength": 0.5
+            },
+            {
+              "target": "course",
+              "strength": 0.5
+            },
+            {
+              "target": "data",
+              "strength": 0.5
+            },
+            {
+              "target": "documents",
+              "strength": 0.5
+            },
+            {
+              "target": "language_ai",
+              "strength": 0.5
+            },
+            {
+              "target": "revision",
+              "strength": 0.5
+            },
+            {
+              "target": "notebook",
+              "strength": 0.5
+            },
+            {
+              "target": "quizz",
+              "strength": 0.5
+            }
+          ]
+        },
+        "strongest_connections": [
+          {
+            "target": "chat",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "community",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "course",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "data",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "documents",
+            "type": "data_sharing",
+            "strength": 0.5
+          }
+        ]
+      },
+      "ecosystem_integration": {
+        "integration_score": 90,
+        "compatibility_issues": [],
+        "recommendations": []
+      }
+    },
+    "quizz": {
+      "basic_info": {
+        "name": "Quiz Interactif",
+        "version": "1.0.0",
+        "category": "Unknown",
+        "has_settings": false
+      },
+      "capabilities": [
+        "api",
+        "web_interface",
+        "models",
+        "admin",
+        "tests",
+        "migrations",
+        "static_files",
+        "management_commands"
+      ],
+      "dependencies": [],
+      "synergies": {
+        "total": 9,
+        "by_type": {
+          "data_sharing": [
+            {
+              "target": "chat",
+              "strength": 0.5
+            },
+            {
+              "target": "community",
+              "strength": 0.5
+            },
+            {
+              "target": "course",
+              "strength": 0.5
+            },
+            {
+              "target": "data",
+              "strength": 0.5
+            },
+            {
+              "target": "documents",
+              "strength": 0.5
+            },
+            {
+              "target": "language_ai",
+              "strength": 0.5
+            },
+            {
+              "target": "revision",
+              "strength": 0.5
+            },
+            {
+              "target": "notebook",
+              "strength": 0.5
+            },
+            {
+              "target": "notification",
+              "strength": 0.5
+            }
+          ]
+        },
+        "strongest_connections": [
+          {
+            "target": "chat",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "community",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "course",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "data",
+            "type": "data_sharing",
+            "strength": 0.5
+          },
+          {
+            "target": "documents",
+            "type": "data_sharing",
+            "strength": 0.5
+          }
+        ]
+      },
+      "ecosystem_integration": {
+        "integration_score": 90,
+        "compatibility_issues": [],
+        "recommendations": []
+      }
+    }
+  },
+  "categories": {
+    "Unknown": {
+      "apps": [
+        "authentication",
+        "chat",
+        "community",
+        "course",
+        "data",
+        "documents",
+        "language_ai",
+        "revision",
+        "notebook",
+        "notification",
+        "quizz"
+      ],
+      "total_synergies": 110,
+      "avg_compatibility": 0,
+      "avg_synergies_per_app": 10.0
+    }
+  },
+  "synergies": {},
+  "ecosystem_health": {
+    "overall_score": 100,
+    "connectivity": {
+      "total_connections": 110,
+      "avg_connections_per_app": 10.0,
+      "connectivity_density": 90.9090909090909
+    },
+    "issues": {
+      "isolated_apps": [
+        "authentication"
+      ],
+      "count_isolated": 1,
+      "percentage_isolated": 9.090909090909092
+    },
+    "strengths": {
+      "highly_connected_apps": [
+        "chat",
+        "community",
+        "course",
+        "data",
+        "documents",
+        "language_ai",
+        "revision",
+        "notebook",
+        "notification",
+        "quizz"
+      ],
+      "count_highly_connected": 10
+    }
+  },
+  "recommendations": {
+    "high_priority": [
+      {
+        "type": "isolated_app",
+        "app": "authentication",
+        "message": "L'app 'authentication' n'a aucune synergie. Considérer l'ajout d'intégrations.",
+        "suggested_actions": [
+          "Ajouter des dépendances vers des apps core",
+          "Implémenter des APIs de partage de données",
+          "Créer des workflows avec d'autres apps"
+        ]
+      }
+    ],
+    "medium_priority": [
+      {
+        "type": "missing_settings",
+        "app": "authentication",
+        "message": "L'app 'authentication' n'a pas de paramètres configurables.",
+        "suggested_actions": [
+          "Créer un module settings/",
+          "Ajouter has_settings: true au manifest",
+          "Implémenter des préférences utilisateur"
+        ]
+      },
+      {
+        "type": "missing_settings",
+        "app": "chat",
+        "message": "L'app 'chat' n'a pas de paramètres configurables.",
+        "suggested_actions": [
+          "Créer un module settings/",
+          "Ajouter has_settings: true au manifest",
+          "Implémenter des préférences utilisateur"
+        ]
+      },
+      {
+        "type": "missing_settings",
+        "app": "community",
+        "message": "L'app 'community' n'a pas de paramètres configurables.",
+        "suggested_actions": [
+          "Créer un module settings/",
+          "Ajouter has_settings: true au manifest",
+          "Implémenter des préférences utilisateur"
+        ]
+      },
+      {
+        "type": "missing_settings",
+        "app": "course",
+        "message": "L'app 'course' n'a pas de paramètres configurables.",
+        "suggested_actions": [
+          "Créer un module settings/",
+          "Ajouter has_settings: true au manifest",
+          "Implémenter des préférences utilisateur"
+        ]
+      },
+      {
+        "type": "missing_settings",
+        "app": "data",
+        "message": "L'app 'data' n'a pas de paramètres configurables.",
+        "suggested_actions": [
+          "Créer un module settings/",
+          "Ajouter has_settings: true au manifest",
+          "Implémenter des préférences utilisateur"
+        ]
+      },
+      {
+        "type": "missing_settings",
+        "app": "documents",
+        "message": "L'app 'documents' n'a pas de paramètres configurables.",
+        "suggested_actions": [
+          "Créer un module settings/",
+          "Ajouter has_settings: true au manifest",
+          "Implémenter des préférences utilisateur"
+        ]
+      },
+      {
+        "type": "missing_settings",
+        "app": "language_ai",
+        "message": "L'app 'language_ai' n'a pas de paramètres configurables.",
+        "suggested_actions": [
+          "Créer un module settings/",
+          "Ajouter has_settings: true au manifest",
+          "Implémenter des préférences utilisateur"
+        ]
+      },
+      {
+        "type": "missing_settings",
+        "app": "revision",
+        "message": "L'app 'revision' n'a pas de paramètres configurables.",
+        "suggested_actions": [
+          "Créer un module settings/",
+          "Ajouter has_settings: true au manifest",
+          "Implémenter des préférences utilisateur"
+        ]
+      },
+      {
+        "type": "missing_settings",
+        "app": "notebook",
+        "message": "L'app 'notebook' n'a pas de paramètres configurables.",
+        "suggested_actions": [
+          "Créer un module settings/",
+          "Ajouter has_settings: true au manifest",
+          "Implémenter des préférences utilisateur"
+        ]
+      },
+      {
+        "type": "missing_settings",
+        "app": "notification",
+        "message": "L'app 'notification' n'a pas de paramètres configurables.",
+        "suggested_actions": [
+          "Créer un module settings/",
+          "Ajouter has_settings: true au manifest",
+          "Implémenter des préférences utilisateur"
+        ]
+      },
+      {
+        "type": "missing_settings",
+        "app": "quizz",
+        "message": "L'app 'quizz' n'a pas de paramètres configurables.",
+        "suggested_actions": [
+          "Créer un module settings/",
+          "Ajouter has_settings: true au manifest",
+          "Implémenter des préférences utilisateur"
+        ]
+      }
+    ],
+    "low_priority": []
+  },
+  "statistics": {
+    "total_apps": 11,
+    "total_connections": 110,
+    "avg_connections_per_app": 10.0,
+    "categories": [
+      "Unknown"
+    ]
+  }
+}
