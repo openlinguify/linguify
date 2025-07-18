@@ -84,6 +84,12 @@
                     {% include 'authentication/interface_settings.html' %}
                 {% elif tab.id == 'voice' and tab.active %}
                     {% include 'vocal/voice_settings.html' %}
+                {% elif tab.id == 'quiz' and tab.active %}
+                    {% include 'quizz/quizz_settings.html' %}
+                {% elif tab.id == 'chat' and tab.active %}
+                    {% include 'chat/chat_settings.html' %}
+                {% elif tab.id == 'community' and tab.active %}
+                    {% include 'community/community_settings.html' %}
                 {% elif tab.active %}
                     <div id="{{ tab.id }}" class="tab-content active">
                         <div class="content-section">
