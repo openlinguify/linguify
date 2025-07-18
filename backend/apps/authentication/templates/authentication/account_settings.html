@@ -66,7 +66,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">{% trans "Phone number" %}</label>
-          <input type="tel" name="phone_number" class="form-control" value="{{ user.profile.phone_number|default:'' }}" placeholder="+32 123 456 789">
+          <input type="tel" name="phone_number" class="form-control" value="{{ user.phone_number|default:'' }}" placeholder="+32 123 456 789">
           <div class="form-help">{% trans "Optional. Format: +32 123 456 789" %}</div>
         </div>
         <div class="form-group">
@@ -75,7 +75,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">{% trans "Biography" %}</label>
-          <textarea name="bio" class="form-control" rows="3" placeholder="{% trans 'Tell us about yourself...' %}">{{ user.profile.bio|default:'' }}</textarea>
+          <textarea name="bio" class="form-control" rows="3" placeholder="{% trans 'Tell us about yourself...' %}">{{ user.bio|default:'' }}</textarea>
         </div>
         <div class="btn-group">
           <button type="submit" class="btn-primary">
@@ -106,14 +106,14 @@
         <input type="hidden" name="setting_type" value="privacy">
         <div class="form-group">
           <label class="form-label">
-            <input type="checkbox" name="public_profile" {% if user.profile.public_profile %}checked{% endif %}>
+            <input type="checkbox" name="public_profile" {% if user.public_profile %}checked{% endif %}>
             {% trans "Public profile" %}
           </label>
           <div class="form-help">{% trans "Allow other users to see your profile" %}</div>
         </div>
         <div class="form-group">
           <label class="form-label">
-            <input type="checkbox" name="share_progress" {% if user.profile.share_progress %}checked{% endif %}>
+            <input type="checkbox" name="share_progress" {% if user.share_progress %}checked{% endif %}>
             {% trans "Share my progress" %}
           </label>
           <div class="form-help">{% trans "Display your learning stats on your profile" %}</div>
