@@ -129,6 +129,12 @@ class UserSettingsView(View):
             view = GeneralSettingsView()
             view.request = request
             return view.post(request)
+        elif setting_type == 'privacy':
+            logger.info("Delegating to PrivacySettingsView")
+            # Delegate to PrivacySettingsView
+            view = PrivacySettingsView()
+            view.request = request
+            return view.post(request)
         else:
             logger.error(f"Unknown setting_type: {setting_type}")
             return JsonResponse({
