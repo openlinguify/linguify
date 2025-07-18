@@ -33,10 +33,6 @@ api_urlpatterns = [
     path('api/v1/metrics/', get_client_metrics, name='get_client_metrics'),
     path('api/v1/report-bug/', report_bug, name='report_bug'),
     path('api/v1/health/', system_health, name='system_health'),
-    # Settings endpoints
-    path('api/v1/save-settings/', save_documents_settings, name='save_documents_settings'),
-    path('api/v1/get-settings/', get_documents_settings, name='get_documents_settings'),
-    path('api/v1/reset-settings/', reset_documents_settings, name='reset_documents_settings'),
 ]
 
 # Web URLs
@@ -44,14 +40,11 @@ web_urlpatterns = [
     # Main dashboard
     path('', main_view, name='main'),
     
-    # Settings (for main Linguify settings integration)
-    path('settings/', documents_settings_view, name='documents_settings'),
-    
     # Document CRUD
     path('list/', DocumentListView.as_view(), name='document_list'),
     path('create/', DocumentCreateView.as_view(), name='document_create'),
     path('<int:pk>/', DocumentDetailView.as_view(), name='document_detail'),
-    path('<int:pk>/edit/', DocumentEditView.as_view(), name='document_edit'),
+    path('<int:pk>/edit/', DocumentEditView.as_view(), name='document_editor'),
     path('<int:pk>/delete/', DocumentDeleteView.as_view(), name='document_delete'),
     
     # Advanced editor

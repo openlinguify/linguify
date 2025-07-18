@@ -11,65 +11,14 @@
 {% endblock %}
 
 {% block content %}
-<!-- Mobile Menu Toggle -->
-<button class="mobile-menu-toggle" onclick="toggleSidebar()">
-    <i class="bi bi-list"></i>
-</button>
+<!-- Header avec navigation intégrée -->
+{% include 'components/header/documents_header.html' %}
 
+<!-- Main Content Container -->
 <div class="documents-container">
-    <!-- Sidebar Navigation -->
-    <div class="documents-sidebar" id="documents-sidebar">
-        <div class="sidebar-header">
-            <h3>
-                <i class="bi bi-file-earmark-text"></i>
-                Documents
-            </h3>
-            <a href="{% url 'documents:document_create' %}" class="btn btn-primary btn-sm">
-                <i class="bi bi-plus"></i>
-                Nouveau
-            </a>
-        </div>
-        
-        <!-- Quick Navigation -->
-        <nav class="sidebar-nav">
-            <a href="{% url 'documents:main' %}" class="nav-item{% if request.resolver_match.url_name == 'main' %} active{% endif %}">
-                <i class="bi bi-house"></i>
-                Accueil
-            </a>
-            <a href="{% url 'documents:document_list' %}" class="nav-item{% if request.resolver_match.url_name == 'document_list' %} active{% endif %}">
-                <i class="bi bi-file-earmark-text"></i>
-                Tous les documents
-            </a>
-            <a href="{% url 'documents:folder_list' %}" class="nav-item{% if request.resolver_match.url_name == 'folder_list' %} active{% endif %}">
-                <i class="bi bi-folder"></i>
-                Dossiers
-            </a>
-        </nav>
-        
-        <!-- Folders Quick Access -->
-        {% if folders %}
-        <div class="sidebar-section">
-            <h4>Dossiers récents</h4>
-            <ul class="folder-list">
-                {% for folder in folders %}
-                <li>
-                    <a href="{% url 'documents:document_list' %}?folder={{ folder.id }}">
-                        <i class="bi bi-folder"></i>
-                        {{ folder.name }}
-                    </a>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-    </div>
-    
-    <!-- Main Content -->
-    <div class="documents-main">
-        {% block document_content %}
-        <!-- Content will be provided by child templates -->
-        {% endblock %}
-    </div>
+    {% block document_content %}
+    <!-- Content will be provided by child templates -->
+    {% endblock %}
 </div>
 {% endblock %}
 
@@ -79,25 +28,6 @@
     // Set debug mode and user data for error handler
     document.documentElement.dataset.debug = '{{ settings.DEBUG|yesno:"True,False" }}';
     document.documentElement.dataset.userId = '{{ user.id|default:"" }}';
-    
-    // Sidebar toggle functionality
-    function toggleSidebar() {
-        const sidebar = document.getElementById('documents-sidebar');
-        sidebar.classList.toggle('show');
-    }
-    
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', function(event) {
-        const sidebar = document.getElementById('documents-sidebar');
-        const toggleButton = document.querySelector('.mobile-menu-toggle');
-        
-        if (window.innerWidth <= 768 && 
-            !sidebar.contains(event.target) && 
-            !toggleButton.contains(event.target) &&
-            sidebar.classList.contains('show')) {
-            sidebar.classList.remove('show');
-        }
-    });
 </script>
 <script src="{% static 'documents/js/documents-error-handler.js' %}"></script>
 <script src="{% static 'documents/js/documents-api-client.js' %}"></script>

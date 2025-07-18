@@ -3,19 +3,21 @@
 {% load i18n %}
 
 {% block document_content %}
-<div class="documents-dashboard">
+<div class="document-detail-page">
     <!-- Document Header -->
-    <div class="dashboard-header">
-        <div class="header-content">
+    <div class="document-header-modern">
+        <div class="header-top">
             {% if document.folder %}
-            <nav aria-label="breadcrumb" class="mb-2">
+            <nav aria-label="breadcrumb" class="document-breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="{% url 'documents:document_list' %}">Documents</a>
+                        <a href="{% url 'documents:document_list' %}">
+                            <i class="bi bi-file-earmark-text me-1"></i>Documents
+                        </a>
                     </li>
                     <li class="breadcrumb-item">
                         <a href="{% url 'documents:document_list' %}?folder={{ document.folder.id }}">
-                            {{ document.folder.name }}
+                            <i class="bi bi-folder me-1"></i>{{ document.folder.name }}
                         </a>
                     </li>
                     <li class="breadcrumb-item active">{{ document.title }}</li>
@@ -23,257 +25,280 @@
             </nav>
             {% endif %}
             
-            <div class="document-title-section">
-            <h1 class="document-title">
-                {% if document.content_type == 'markdown' %}
-                    <i class="bi bi-markdown text-primary"></i>
-                {% elif document.content_type == 'html' %}
-                    <i class="bi bi-filetype-html text-warning"></i>
-                {% else %}
-                    <i class="bi bi-file-earmark-text text-secondary"></i>
-                {% endif %}
-                {{ document.title }}
-            </h1>
-            
-            <div class="document-meta-header">
-                <div class="meta-row">
-                    <span class="meta-item">
-                        <i class="bi bi-person"></i>
-                        <strong>Propriétaire:</strong> 
-                        {% if document.owner == request.user %}
-                            Vous
-                        {% else %}
-                            {{ document.owner.get_full_name|default:document.owner.username }}
-                        {% endif %}
-                    </span>
-                    
-                    <span class="meta-item">
-                        <i class="bi bi-clock"></i>
-                        <strong>Modifié:</strong> {{ document.updated_at|timesince }} ago
-                        {% if document.last_edited_by %}
-                        par {{ document.last_edited_by.get_full_name|default:document.last_edited_by.username }}
-                        {% endif %}
-                    </span>
-                    
-                    <span class="meta-item">
-                        <i class="bi bi-calendar"></i>
-                        <strong>Créé:</strong> {{ document.created_at|date:"d M Y" }}
-                    </span>
-                </div>
-                
-                {% if document.language or document.difficulty_level %}
-                <div class="meta-row">
-                    {% if document.language %}
-                    <span class="meta-item">
-                        <i class="bi bi-translate"></i>
-                        <strong>Langue:</strong> {{ document.get_language_display|default:document.language }}
-                    </span>
-                    {% endif %}
-                    
-                    {% if document.difficulty_level %}
-                    <span class="meta-item">
-                        <i class="bi bi-bar-chart"></i>
-                        <strong>Niveau:</strong> {{ document.get_difficulty_level_display }}
-                    </span>
-                    {% endif %}
-                </div>
+            <div class="document-actions-modern">
+                <a href="{% url 'documents:document_list' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                    <span class="d-none d-lg-inline">Retour</span>
+                </a>
+                {% if can_edit %}
+                <a href="{% url 'documents:document_editor' document.pk %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-pencil"></i>
+                    <span class="d-none d-lg-inline">Modifier</span>
+                </a>
                 {% endif %}
                 
-                {% if document.get_tags_list %}
-                <div class="meta-row">
-                    <span class="meta-item">
-                        <i class="bi bi-tags"></i>
-                        <strong>Tags:</strong>
-                        {% for tag in document.get_tags_list %}
-                        <span class="tag">{{ tag }}</span>
-                        {% endfor %}
-                    </span>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" 
+                            type="button" 
+                            data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        {% if can_share %}
+                        <li>
+                            <a class="dropdown-item" href="{% url 'documents:document_share' document.pk %}">
+                                <i class="bi bi-share"></i> Partager
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% endif %}
+                        <li>
+                            <button class="dropdown-item" onclick="exportDocument('markdown')">
+                                <i class="bi bi-download"></i> Exporter en Markdown
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" onclick="exportDocument('html')">
+                                <i class="bi bi-download"></i> Exporter en HTML
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" onclick="exportDocument('pdf')">
+                                <i class="bi bi-download"></i> Exporter en PDF
+                            </button>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <button class="dropdown-item" onclick="duplicateDocument()">
+                                <i class="bi bi-files"></i> Dupliquer
+                            </button>
+                        </li>
+                        {% if can_delete %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="{% url 'documents:document_delete' document.pk %}">
+                                <i class="bi bi-trash"></i> Supprimer
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
                 </div>
-                {% endif %}
             </div>
         </div>
         
-        <div class="header-actions">
-            <a href="{% url 'documents:document_list' %}" class="btn btn-outline-secondary me-2">
-                <i class="bi bi-arrow-left"></i>
-                Retour aux documents
-            </a>
-            {% if can_edit %}
-            <a href="{% url 'documents:document_editor' document.pk %}" class="btn btn-primary">
-                <i class="bi bi-pencil"></i>
-                Modifier
-            </a>
-            {% endif %}
-            
-            {% if can_share %}
-            <a href="{% url 'documents:document_share' document.pk %}" class="btn btn-outline-primary">
-                <i class="bi bi-share"></i>
-                Partager
-            </a>
-            {% endif %}
-            
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle" 
-                        type="button" 
-                        data-bs-toggle="dropdown">
-                    <i class="bi bi-three-dots"></i>
-                </button>
-                <ul class="dropdown-menu">
-                    <li>
-                        <button class="dropdown-item" onclick="exportDocument('markdown')">
-                            <i class="bi bi-download"></i> Exporter en Markdown
-                        </button>
-                    </li>
-                    <li>
-                        <button class="dropdown-item" onclick="exportDocument('html')">
-                            <i class="bi bi-download"></i> Exporter en HTML
-                        </button>
-                    </li>
-                    <li>
-                        <button class="dropdown-item" onclick="exportDocument('pdf')">
-                            <i class="bi bi-download"></i> Exporter en PDF
-                        </button>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <button class="dropdown-item" onclick="duplicateDocument()">
-                            <i class="bi bi-files"></i> Dupliquer
-                        </button>
-                    </li>
-                    {% if can_delete %}
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <a class="dropdown-item text-danger" href="{% url 'documents:document_delete' document.pk %}">
-                            <i class="bi bi-trash"></i> Supprimer
-                        </a>
-                    </li>
+        <div class="document-title-section">
+            <div class="title-main">
+                <h1 class="document-title">
+                    {% if document.content_type == 'markdown' %}
+                        <i class="bi bi-markdown"></i>
+                    {% elif document.content_type == 'html' %}
+                        <i class="bi bi-filetype-html"></i>
+                    {% else %}
+                        <i class="bi bi-file-earmark-text"></i>
                     {% endif %}
-                </ul>
+                    {{ document.title }}
+                </h1>
+                
+                {% if document.get_tags_list %}
+                <div class="document-tags-modern">
+                    {% for tag in document.get_tags_list %}
+                    <span class="tag-modern">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="document-meta-modern">
+                <div class="meta-cards-compact">
+                    <div class="meta-card-compact">
+                        <i class="bi bi-person-circle"></i>
+                        <div class="meta-content">
+                            <span class="meta-value">
+                                {% if document.owner == request.user %}Vous{% else %}{{ document.owner.get_full_name|default:document.owner.username }}{% endif %}
+                            </span>
+                            <span class="meta-label">Propriétaire</span>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-card-compact">
+                        <i class="bi bi-clock"></i>
+                        <div class="meta-content">
+                            <span class="meta-value">{{ document.updated_at|timesince }} ago</span>
+                            <span class="meta-label">Modifié</span>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-card-compact">
+                        <i class="bi bi-calendar"></i>
+                        <div class="meta-content">
+                            <span class="meta-value">{{ document.created_at|date:"d M Y" }}</span>
+                            <span class="meta-label">Créé</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Document Content -->
-    <div class="document-main">
-        <div class="document-content-wrapper">
-            <div class="document-content">
-                {% if document.content_type == 'markdown' %}
-                    <div id="markdown-content" class="markdown-content">
-                        {{ document.content|linebreaks }}
-                    </div>
-                {% elif document.content_type == 'html' %}
-                    <div class="html-content">
-                        {{ document.content|safe }}
-                    </div>
-                {% else %}
-                    <div class="plaintext-content">
-                        {{ document.content|linebreaks }}
-                    </div>
-                {% endif %}
-            </div>
+    <!-- Document Content Layout -->
+    <div class="document-main-modern">
+        <!-- Primary Content -->
+        <div class="document-content-modern">
+            {% if document.content_type == 'markdown' %}
+                <div id="markdown-content" class="markdown-content">
+                    {{ document.content|linebreaks }}
+                </div>
+            {% elif document.content_type == 'html' %}
+                <div class="html-content">
+                    {{ document.content|safe }}
+                </div>
+            {% else %}
+                <div class="plaintext-content">
+                    {{ document.content|linebreaks }}
+                </div>
+            {% endif %}
         </div>
         
-        <!-- Document Sidebar -->
-        <div class="document-sidebar">
-            <!-- Collaborators -->
-            {% if collaborators %}
-            <div class="sidebar-section">
-                <h4>
-                    <i class="bi bi-people"></i>
-                    Collaborateurs
-                </h4>
-                <div class="collaborators-list">
-                    {% for collab in collaborators %}
-                    <div class="collaborator-item">
-                        <div class="collaborator-avatar">
-                            {% if collab.user.profile_picture %}
-                                <img src="{{ collab.user.profile_picture.url }}" alt="{{ collab.user.username }}">
-                            {% else %}
-                                <div class="avatar-placeholder">
-                                    {{ collab.user.get_full_name|default:collab.user.username|first|upper }}
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="collaborator-info">
-                            <div class="collaborator-name">
-                                {{ collab.user.get_full_name|default:collab.user.username }}
+        <!-- Document Info Sidebar Cards -->
+        <div class="document-info-modern">
+            <!-- Statistics Card -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <h4>
+                        <i class="bi bi-graph-up"></i>
+                        Statistiques
+                    </h4>
+                </div>
+                <div class="info-card-content">
+                    <div class="stats-grid-modern">
+                        <div class="stat-modern">
+                            <div class="stat-icon">
+                                <i class="bi bi-type"></i>
                             </div>
-                            <div class="collaborator-role">
-                                <span class="badge bg-secondary">{{ collab.get_permission_level_display }}</span>
+                            <div class="stat-details">
+                                <span class="stat-number" id="word-count">-</span>
+                                <span class="stat-label">Mots</span>
+                            </div>
+                        </div>
+                        <div class="stat-modern">
+                            <div class="stat-icon">
+                                <i class="bi bi-textarea-t"></i>
+                            </div>
+                            <div class="stat-details">
+                                <span class="stat-number" id="char-count">-</span>
+                                <span class="stat-label">Caractères</span>
+                            </div>
+                        </div>
+                        <div class="stat-modern">
+                            <div class="stat-icon">
+                                <i class="bi bi-clock"></i>
+                            </div>
+                            <div class="stat-details">
+                                <span class="stat-number" id="reading-time">-</span>
+                                <span class="stat-label">Lecture</span>
+                            </div>
+                        </div>
+                        <div class="stat-modern">
+                            <div class="stat-icon">
+                                <i class="bi bi-collection"></i>
+                            </div>
+                            <div class="stat-details">
+                                <span class="stat-number">{{ document.versions.count }}</span>
+                                <span class="stat-label">Versions</span>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
             </div>
-            {% endif %}
             
-            <!-- Table of Contents (for markdown) -->
+            <!-- Table of Contents Card (for markdown) -->
             {% if document.content_type == 'markdown' %}
-            <div class="sidebar-section">
-                <h4>
-                    <i class="bi bi-list-nested"></i>
-                    Table des matières
-                </h4>
-                <div id="table-of-contents">
-                    <!-- Will be populated by JavaScript -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <h4>
+                        <i class="bi bi-list-nested"></i>
+                        Table des matières
+                    </h4>
+                </div>
+                <div class="info-card-content">
+                    <div id="table-of-contents">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
                 </div>
             </div>
             {% endif %}
             
-            <!-- Document Statistics -->
-            <div class="sidebar-section">
-                <h4>
-                    <i class="bi bi-graph-up"></i>
-                    Statistiques
-                </h4>
-                <div class="document-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">Mots:</span>
-                        <span class="stat-value" id="word-count">-</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Caractères:</span>
-                        <span class="stat-value" id="char-count">-</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Lecture:</span>
-                        <span class="stat-value" id="reading-time">-</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Versions:</span>
-                        <span class="stat-value">{{ document.versions.count }}</span>
-                    </div>
+            <!-- Collaborators Card -->
+            {% if collaborators %}
+            <div class="info-card">
+                <div class="info-card-header">
+                    <h4>
+                        <i class="bi bi-people"></i>
+                        Collaborateurs
+                    </h4>
                 </div>
-            </div>
-            
-            <!-- Recent Activity -->
-            <div class="sidebar-section">
-                <h4>
-                    <i class="bi bi-clock-history"></i>
-                    Activité récente
-                </h4>
-                <div class="activity-list">
-                    {% for version in document.versions.all|slice:":5" %}
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="bi bi-pencil"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-text">
-                                Version {{ version.version_number }}
-                                {% if version.notes %}
-                                - {{ version.notes|truncatechars:50 }}
+                <div class="info-card-content">
+                    <div class="collaborators-modern">
+                        {% for collab in collaborators %}
+                        <div class="collaborator-modern">
+                            <div class="collaborator-avatar">
+                                {% if collab.user.profile_picture %}
+                                    <img src="{{ collab.user.profile_picture.url }}" alt="{{ collab.user.username }}">
+                                {% else %}
+                                    <div class="avatar-placeholder">
+                                        {{ collab.user.get_full_name|default:collab.user.username|first|upper }}
+                                    </div>
                                 {% endif %}
                             </div>
-                            <div class="activity-meta">
-                                {{ version.created_by.username }} • {{ version.created_at|timesince }} ago
+                            <div class="collaborator-info">
+                                <div class="collaborator-name">
+                                    {{ collab.user.get_full_name|default:collab.user.username }}
+                                </div>
+                                <div class="collaborator-role">
+                                    <span class="badge bg-primary">{{ collab.get_permission_level_display }}</span>
+                                </div>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
-                    {% empty %}
-                    <p class="text-muted">Aucune version antérieure.</p>
-                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Recent Activity Card -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <h4>
+                        <i class="bi bi-clock-history"></i>
+                        Activité récente
+                    </h4>
+                </div>
+                <div class="info-card-content">
+                    <div class="activity-modern">
+                        {% for version in document.versions.all|slice:":5" %}
+                        <div class="activity-item-modern">
+                            <div class="activity-icon-modern">
+                                <i class="bi bi-pencil"></i>
+                            </div>
+                            <div class="activity-content-modern">
+                                <div class="activity-text">
+                                    Version {{ version.version_number }}
+                                    {% if version.notes %}
+                                    - {{ version.notes|truncatechars:40 }}
+                                    {% endif %}
+                                </div>
+                                <div class="activity-meta">
+                                    {{ version.created_by.username }} • {{ version.created_at|timesince }} ago
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty-activity">
+                            <i class="bi bi-clock"></i>
+                            <span>Aucune version antérieure</span>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -318,12 +343,12 @@
                     </div>
                     
                     <div class="comment-actions">
-                        <button class="btn btn-sm btn-outline-primary" onclick="replyToComment({{ comment.id }})">
+                        <button class="btn btn-sm btn-outline-primary" data-comment-id="{{ comment.id }}" onclick="replyToComment(this.dataset.commentId)">
                             <i class="bi bi-reply"></i> Répondre
                         </button>
                         
                         {% if not comment.is_resolved and can_edit %}
-                        <button class="btn btn-sm btn-outline-success" onclick="resolveComment({{ comment.id }})">
+                        <button class="btn btn-sm btn-outline-success" data-comment-id="{{ comment.id }}" onclick="resolveComment(this.dataset.commentId)">
                             <i class="bi bi-check"></i> Résoudre
                         </button>
                         {% endif %}
@@ -365,431 +390,14 @@
 <!-- Hidden elements for JavaScript -->
 <input type="hidden" id="document-id" value="{{ document.id }}">
 <textarea id="document-content" style="display: none;">{{ document.content }}</textarea>
+
+
 {% endblock %}
 
 {% block extra_css %}
-<style>
-/* Document Detail Specific Styles */
-.document-detail-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
-.document-header {
-    margin-bottom: 2rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.header-navigation {
-    margin-bottom: 1rem;
-}
-
-.document-title-section {
-    margin-bottom: 1.5rem;
-}
-
-.document-title {
-    margin-bottom: 1rem;
-    color: #212529;
-}
-
-.document-meta-header .meta-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    margin-bottom: 0.5rem;
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #6c757d;
-}
-
-.meta-item i {
-    color: #495057;
-}
-
-.tag {
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    background: #e7f3ff;
-    color: #007bff;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    margin-right: 0.5rem;
-}
-
-.document-actions {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.document-main {
-    display: flex;
-    gap: 2rem;
-}
-
-.document-content-wrapper {
-    flex: 1;
-}
-
-.document-content {
-    background: #fff;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    border: 1px solid #dee2e6;
-    min-height: 400px;
-    line-height: 1.6;
-}
-
-.markdown-content h1,
-.markdown-content h2,
-.markdown-content h3,
-.markdown-content h4,
-.markdown-content h5,
-.markdown-content h6 {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    color: #212529;
-}
-
-.markdown-content h1:first-child,
-.markdown-content h2:first-child,
-.markdown-content h3:first-child {
-    margin-top: 0;
-}
-
-.document-sidebar {
-    width: 300px;
-    flex-shrink: 0;
-}
-
-.sidebar-section {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.sidebar-section h4 {
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #495057;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.collaborator-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.collaborator-item:last-child {
-    border-bottom: none;
-}
-
-.collaborator-avatar img,
-.avatar-placeholder {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #007bff;
-    color: white;
-    font-weight: 600;
-}
-
-.collaborator-name {
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-}
-
-.document-stats .stat-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.document-stats .stat-item:last-child {
-    border-bottom: none;
-}
-
-.activity-item {
-    display: flex;
-    gap: 0.75rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.activity-item:last-child {
-    border-bottom: none;
-}
-
-.activity-icon {
-    width: 32px;
-    height: 32px;
-    background: #e7f3ff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #007bff;
-    flex-shrink: 0;
-}
-
-.activity-text {
-    font-size: 0.9rem;
-    margin-bottom: 0.25rem;
-}
-
-.activity-meta {
-    font-size: 0.8rem;
-    color: #6c757d;
-}
-
-.comments-section {
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid #dee2e6;
-}
-
-.comment-item {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.comment-avatar img,
-.comment-avatar .avatar-placeholder {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-}
-
-.comment-content {
-    flex: 1;
-}
-
-.comment-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
-}
-
-.comment-author {
-    font-weight: 600;
-}
-
-.comment-date {
-    color: #6c757d;
-    font-size: 0.9rem;
-}
-
-.comment-text {
-    margin-bottom: 1rem;
-    line-height: 1.5;
-}
-
-.comment-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.comment-replies {
-    margin-top: 1rem;
-    padding-left: 1rem;
-    border-left: 2px solid #dee2e6;
-}
-
-.comment-reply {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-
-.reply-avatar img,
-.reply-avatar .avatar-placeholder {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-}
-
-.reply-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.25rem;
-}
-
-.reply-author {
-    font-weight: 500;
-    font-size: 0.9rem;
-}
-
-.reply-date {
-    color: #6c757d;
-    font-size: 0.8rem;
-}
-
-.reply-text {
-    font-size: 0.9rem;
-    line-height: 1.4;
-}
-
-@media (max-width: 768px) {
-    .document-main {
-        flex-direction: column;
-    }
-    
-    .document-sidebar {
-        width: 100%;
-    }
-    
-    .document-meta-header .meta-row {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
-    .document-actions {
-        flex-wrap: wrap;
-    }
-}
-</style>
+<link rel="stylesheet" href="{% static 'documents/css/document_detail.css' %}">
 {% endblock %}
 
 {% block extra_js %}
-<script>
-// Calculate document statistics
-document.addEventListener('DOMContentLoaded', function() {
-    const content = document.getElementById('document-content').value;
-    
-    // Word count
-    const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
-    document.getElementById('word-count').textContent = wordCount.toLocaleString();
-    
-    // Character count
-    document.getElementById('char-count').textContent = content.length.toLocaleString();
-    
-    // Reading time (average 200 words per minute)
-    const readingTime = Math.ceil(wordCount / 200);
-    document.getElementById('reading-time').textContent = readingTime + ' min';
-    
-    // Generate table of contents for markdown
-    {% if document.content_type == 'markdown' %}
-    generateTableOfContents();
-    {% endif %}
-});
-
-{% if document.content_type == 'markdown' %}
-function generateTableOfContents() {
-    const content = document.getElementById('document-content').value;
-    const tocContainer = document.getElementById('table-of-contents');
-    
-    if (!content || !tocContainer) return;
-    
-    const lines = content.split('\n');
-    const headings = [];
-    
-    lines.forEach((line, index) => {
-        const match = line.match(/^(#{1,6})\s+(.+)$/);
-        if (match) {
-            const level = match[1].length;
-            const text = match[2].trim();
-            const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-            
-            headings.push({ level, text, id, line: index + 1 });
-        }
-    });
-    
-    if (headings.length === 0) {
-        tocContainer.innerHTML = '<p class="text-muted">Aucun titre trouvé</p>';
-        return;
-    }
-    
-    let tocHtml = '<ul class="toc-list">';
-    headings.forEach(heading => {
-        const indent = 'padding-left: ' + ((heading.level - 1) * 1) + 'rem;';
-        tocHtml += `
-            <li style="${indent}">
-                <a href="#${heading.id}" class="toc-link">
-                    ${heading.text}
-                </a>
-            </li>
-        `;
-    });
-    tocHtml += '</ul>';
-    
-    tocContainer.innerHTML = tocHtml;
-}
-{% endif %}
-
-// Document actions
-function exportDocument(format) {
-    const documentId = document.getElementById('document-id').value;
-    window.open(`/documents/api/v1/documents/${documentId}/export/?format=${format}`, '_blank');
-}
-
-function duplicateDocument() {
-    const documentId = document.getElementById('document-id').value;
-    
-    fetch(`/documents/api/v1/documents/${documentId}/duplicate/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.id) {
-            window.location.href = `/documents/${data.id}/`;
-        } else {
-            alert('Erreur lors de la duplication');
-        }
-    })
-    .catch(error => {
-        console.error('Duplicate error:', error);
-        alert('Erreur lors de la duplication');
-    });
-}
-
-// Comment actions
-function replyToComment(commentId) {
-    // Implementation would depend on your comment system
-    console.log('Reply to comment', commentId);
-}
-
-function resolveComment(commentId) {
-    fetch(`/documents/api/v1/comments/${commentId}/resolve/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            location.reload();
-        } else {
-            alert('Erreur lors de la résolution du commentaire');
-        }
-    })
-    .catch(error => {
-        console.error('Resolve comment error:', error);
-        alert('Erreur lors de la résolution du commentaire');
-    });
-}
-</script>
+<script src="{% static 'documents/js/document_detail.js' %}"></script>
 {% endblock %}

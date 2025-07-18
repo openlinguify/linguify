@@ -270,7 +270,7 @@ class DocumentEditor {
                 }
                 break;
             case 'image':
-                const imageUrl = prompt('URL de l\\'image:');
+                const imageUrl = prompt('URL de l\'image:');
                 if (imageUrl) {
                     replacement = `![${selectedText || 'alt text'}](${imageUrl})`;
                     newCursorPos = start + replacement.length;
@@ -289,10 +289,10 @@ class DocumentEditor {
                 newCursorPos = start + replacement.length;
                 break;
             case 'code':
-                if (selectedText.includes('\\n')) {
-                    replacement = `\\`\\`\\`\\n${selectedText}\\n\\`\\`\\``;
+                if (selectedText.includes('\n')) {
+                    replacement = `\`\`\`\n${selectedText}\n\`\`\``;
                 } else {
-                    replacement = `\\`${selectedText || 'code'}\\``;
+                    replacement = `\`${selectedText || 'code'}\``;
                 }
                 newCursorPos = start + replacement.length;
                 break;
@@ -352,24 +352,24 @@ class DocumentEditor {
             .replace(/^### (.*$)/gim, '<h3>$1</h3>')
             .replace(/^## (.*$)/gim, '<h2>$1</h2>')
             .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-            .replace(/\\*\\*(.*?)\\*\\*/gim, '<strong>$1</strong>')
-            .replace(/\\*(.*?)\\*/gim, '<em>$1</em>')
+            .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/gim, '<em>$1</em>')
             .replace(/~~(.*?)~~/gim, '<del>$1</del>')
-            .replace(/\\`(.*?)\\`/gim, '<code>$1</code>')
-            .replace(/\\n/gim, '<br>');
+            .replace(/`(.*?)`/gim, '<code>$1</code>')
+            .replace(/\n/gim, '<br>');
     }
     
     htmlToMarkdown(html) {
         // Simple HTML to markdown conversion
         return html
-            .replace(/<h1>(.*?)<\\/h1>/gim, '# $1\\n')
-            .replace(/<h2>(.*?)<\\/h2>/gim, '## $1\\n')
-            .replace(/<h3>(.*?)<\\/h3>/gim, '### $1\\n')
-            .replace(/<strong>(.*?)<\\/strong>/gim, '**$1**')
-            .replace(/<em>(.*?)<\\/em>/gim, '*$1*')
-            .replace(/<del>(.*?)<\\/del>/gim, '~~$1~~')
-            .replace(/<code>(.*?)<\\/code>/gim, '`$1`')
-            .replace(/<br\\s*\\/?>/gim, '\\n')
+            .replace(/<h1>(.*?)<\/h1>/gim, '# $1\n')
+            .replace(/<h2>(.*?)<\/h2>/gim, '## $1\n')
+            .replace(/<h3>(.*?)<\/h3>/gim, '### $1\n')
+            .replace(/<strong>(.*?)<\/strong>/gim, '**$1**')
+            .replace(/<em>(.*?)<\/em>/gim, '*$1*')
+            .replace(/<del>(.*?)<\/del>/gim, '~~$1~~')
+            .replace(/<code>(.*?)<\/code>/gim, '`$1`')
+            .replace(/<br\s*\/?>/gim, '\n')
             .replace(/<[^>]+>/gim, ''); // Remove other HTML tags
     }
     
@@ -453,7 +453,7 @@ class DocumentEditor {
             indicator.className = 'auto-save-indicator error';
             
             if (!isAutoSave) {
-                this.showNotification('Erreur lors de l\\'enregistrement', 'error');
+                this.showNotification('Erreur lors de l\'enregistrement', 'error');
             }
             
             setTimeout(() => {
@@ -465,7 +465,7 @@ class DocumentEditor {
     
     // Collaboration methods
     showAddCollaboratorModal() {
-        const email = prompt('Email de l\\'utilisateur à ajouter:');
+        const email = prompt('Email de l\'utilisateur à ajouter:');
         if (email) {
             this.addCollaborator(email);
         }
@@ -491,11 +491,11 @@ class DocumentEditor {
                 location.reload();
             } else {
                 const error = await response.json();
-                this.showNotification(error.message || 'Erreur lors de l\\'ajout', 'error');
+                this.showNotification(error.message || 'Erreur lors de l\'ajout', 'error');
             }
         } catch (error) {
             console.error('Add collaborator error:', error);
-            this.showNotification('Erreur lors de l\\'ajout du collaborateur', 'error');
+            this.showNotification('Erreur lors de l\'ajout du collaborateur', 'error');
         }
     }
     
@@ -573,7 +573,7 @@ class DocumentEditor {
 
 // Additional utility functions
 function insertImage() {
-    const url = prompt('URL de l\\'image:');
+    const url = prompt('URL de l\'image:');
     if (url) {
         document.execCommand('insertImage', false, url);
     }

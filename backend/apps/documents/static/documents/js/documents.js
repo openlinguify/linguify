@@ -25,6 +25,9 @@ class DocumentsApp {
         
         // Sharing functionality
         this.bindSharingActions();
+        
+        // Card interactions
+        this.bindCardInteractions();
     }
     
     bindSearchEvents() {
@@ -92,6 +95,84 @@ class DocumentsApp {
             if (e.target.matches('[data-action="remove-share"]')) {
                 e.preventDefault();
                 this.removeShare(e.target);
+            }
+        });
+    }
+    
+    bindCardInteractions() {
+        // Documents cards cliquables
+        document.querySelectorAll('.document-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                // Éviter le clic si on clique sur le menu dropdown ou les actions
+                if (e.target.closest('.dropdown') || 
+                    e.target.closest('.document-actions') ||
+                    e.target.closest('button') ||
+                    e.target.closest('a')) {
+                    return;
+                }
+                
+                const link = card.querySelector('.document-content h3 a');
+                if (link) {
+                    window.location.href = link.href;
+                }
+            });
+        });
+        
+        // Folder cards cliquables
+        document.querySelectorAll('.folder-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                // Éviter le clic si on clique sur un bouton ou lien existant
+                if (e.target.closest('button') || 
+                    e.target.closest('a') ||
+                    e.target.closest('.dropdown')) {
+                    return;
+                }
+                
+                const link = card.querySelector('.folder-content h4 a');
+                if (link) {
+                    window.location.href = link.href;
+                }
+            });
+        });
+        
+        // Shared documents cliquables
+        document.querySelectorAll('.shared-document-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                // Éviter le clic si on clique sur les actions
+                if (e.target.closest('.document-actions') ||
+                    e.target.closest('button') ||
+                    e.target.closest('a')) {
+                    return;
+                }
+                
+                const link = item.querySelector('.document-details h4 a');
+                if (link) {
+                    window.location.href = link.href;
+                }
+            });
+        });
+        
+        // Stat cards cliquables (navigation vers les listes)
+        document.querySelectorAll('.stat-card').forEach(card => {
+            const label = card.querySelector('.stat-label')?.textContent?.trim();
+            
+            if (label) {
+                card.style.cursor = 'pointer';
+                
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('button') || e.target.closest('a')) {
+                        return;
+                    }
+                    
+                    // Navigation basée sur le type de stat
+                    if (label.includes('Documents')) {
+                        window.location.href = '/documents/list/';
+                    } else if (label.includes('Dossiers')) {
+                        window.location.href = '/documents/folders/';
+                    } else if (label.includes('Partagés')) {
+                        window.location.href = '/documents/list/?shared=true';
+                    }
+                });
             }
         });
     }

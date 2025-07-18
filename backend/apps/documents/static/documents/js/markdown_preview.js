@@ -17,34 +17,34 @@ class MarkdownPreview {
             { regex: /~~(.*?)~~/gim, replacement: '<del>$1</del>' },
             
             // Code
-            { regex: /```([\\s\\S]*?)```/gim, replacement: '<pre><code>$1</code></pre>' },
+            { regex: /```([\s\S]*?)```/gim, replacement: '<pre><code>$1</code></pre>' },
             { regex: /`(.*?)`/gim, replacement: '<code>$1</code>' },
             
             // Links
-            { regex: /\\[([^\\]]+)\\]\\(([^\\)]+)\\)/gim, replacement: '<a href="$2">$1</a>' },
-            { regex: /(https?:\\/\\/[^\\s]+)/gim, replacement: '<a href="$1">$1</a>' },
+            { regex: /\[([^\]]+)\]\(([^\)]+)\)/gim, replacement: '<a href="$2">$1</a>' },
+            { regex: /(https?:\/\/[^\s]+)/gim, replacement: '<a href="$1">$1</a>' },
             
             // Images
-            { regex: /!\\[([^\\]]*)\\]\\(([^\\)]+)\\)/gim, replacement: '<img src="$2" alt="$1" class="img-fluid">' },
+            { regex: /!\[([^\]]*)\]\(([^\)]+)\)/gim, replacement: '<img src="$2" alt="$1" class="img-fluid">' },
             
             // Lists
-            { regex: /^\\* (.+$)/gim, replacement: '<li>$1</li>' },
-            { regex: /^\\- (.+$)/gim, replacement: '<li>$1</li>' },
-            { regex: /^\\+ (.+$)/gim, replacement: '<li>$1</li>' },
+            { regex: /^\* (.+$)/gim, replacement: '<li>$1</li>' },
+            { regex: /^- (.+$)/gim, replacement: '<li>$1</li>' },
+            { regex: /^\+ (.+$)/gim, replacement: '<li>$1</li>' },
             
             // Ordered lists
-            { regex: /^\\d+\\. (.+$)/gim, replacement: '<li>$1</li>' },
+            { regex: /^\d+\. (.+$)/gim, replacement: '<li>$1</li>' },
             
             // Blockquotes
             { regex: /^> (.+$)/gim, replacement: '<blockquote>$1</blockquote>' },
             
             // Horizontal rules
             { regex: /^---$/gim, replacement: '<hr>' },
-            { regex: /^\\*\\*\\*$/gim, replacement: '<hr>' },
+            { regex: /^\*\*\*$/gim, replacement: '<hr>' },
             
             // Line breaks
-            { regex: /\\n\\n/gim, replacement: '</p><p>' },
-            { regex: /\\n/gim, replacement: '<br>' }
+            { regex: /\n\n/gim, replacement: '</p><p>' },
+            { regex: /\n/gim, replacement: '<br>' }
         ];
     }
     
@@ -82,13 +82,13 @@ class MarkdownPreview {
      */
     processLists(html) {
         // Wrap consecutive <li> elements in <ul>
-        html = html.replace(/(<li>.*?<\\/li>)(\\s*<li>.*?<\\/li>)*/gims, (match) => {
+        html = html.replace(/(<li>.*?<\/li>)(\s*<li>.*?<\/li>)*/gims, (match) => {
             return '<ul>' + match + '</ul>';
         });
         
         // Handle ordered lists (basic implementation)
-        html = html.replace(/(<li>\\d+\\. .*?<\\/li>)(\\s*<li>\\d+\\. .*?<\\/li>)*/gims, (match) => {
-            const cleanedMatch = match.replace(/\\d+\\. /g, '');
+        html = html.replace(/(<li>\d+\. .*?<\/li>)(\s*<li>\d+\. .*?<\/li>)*/gims, (match) => {
+            const cleanedMatch = match.replace(/\d+\. /g, '');
             return '<ol>' + cleanedMatch + '</ol>';
         });
         
@@ -125,11 +125,11 @@ class MarkdownPreview {
     cleanup(html) {
         return html
             // Remove empty paragraphs
-            .replace(/<p>\\s*<\\/p>/gim, '')
+            .replace(/<p>\s*<\/p>/gim, '')
             // Remove paragraphs around block elements
-            .replace(/<p>\\s*(<(h[1-6]|ul|ol|blockquote|pre|hr)[^>]*>.*?<\\/\\2>)\\s*<\\/p>/gims, '$1')
+            .replace(/<p>\s*(<(h[1-6]|ul|ol|blockquote|pre|hr)[^>]*>.*?<\/\2>)\s*<\/p>/gims, '$1')
             // Fix nested emphasis
-            .replace(/<(strong|em)>\\s*<\\/\\1>/gim, '')
+            .replace(/<(strong|em)>\s*<\/\1>/gim, '')
             // Trim whitespace
             .trim();
     }
@@ -144,27 +144,27 @@ class MarkdownPreview {
         
         return markdown
             // Remove code blocks
-            .replace(/```[\\s\\S]*?```/gim, '')
+            .replace(/```[\s\S]*?```/gim, '')
             // Remove inline code
             .replace(/`.*?`/gim, '')
             // Remove images
-            .replace(/!\\[.*?\\]\\(.*?\\)/gim, '')
+            .replace(/!\[.*?\]\(.*?\)/gim, '')
             // Remove links but keep text
-            .replace(/\\[([^\\]]+)\\]\\([^\\)]+\\)/gim, '$1')
+            .replace(/\[([^\]]+)\]\([^\)]+\)/gim, '$1')
             // Remove emphasis markers
-            .replace(/\\*\\*(.*?)\\*\\*/gim, '$1')
-            .replace(/\\*(.*?)\\*/gim, '$1')
+            .replace(/\*\*(.*?)\*\*/gim, '$1')
+            .replace(/\*(.*?)\*/gim, '$1')
             .replace(/~~(.*?)~~/gim, '$1')
             // Remove headers
-            .replace(/^#{1,6}\\s+/gim, '')
+            .replace(/^#{1,6}\s+/gim, '')
             // Remove lists
-            .replace(/^[\\*\\-\\+]\\s+/gim, '')
-            .replace(/^\\d+\\.\\s+/gim, '')
+            .replace(/^[\*\-\+]\s+/gim, '')
+            .replace(/^\d+\.\s+/gim, '')
             // Remove blockquotes
-            .replace(/^>\\s+/gim, '')
+            .replace(/^>\s+/gim, '')
             // Clean up whitespace
-            .replace(/\\n+/g, ' ')
-            .replace(/\\s+/g, ' ')
+            .replace(/\n+/g, ' ')
+            .replace(/\s+/g, ' ')
             .trim();
     }
     
@@ -175,7 +175,7 @@ class MarkdownPreview {
      */
     getWordCount(markdown) {
         const plainText = this.toPlainText(markdown);
-        return plainText ? plainText.split(/\\s+/).length : 0;
+        return plainText ? plainText.split(/\s+/).length : 0;
     }
     
     /**
@@ -198,10 +198,10 @@ class MarkdownPreview {
         if (!markdown) return [];
         
         const headings = [];
-        const lines = markdown.split('\\n');
+        const lines = markdown.split('\n');
         
         lines.forEach((line, index) => {
-            const match = line.match(/^(#{1,6})\\s+(.+)$/);
+            const match = line.match(/^(#{1,6})\s+(.+)$/);
             if (match) {
                 const level = match[1].length;
                 const text = match[2].trim();
@@ -227,8 +227,8 @@ class MarkdownPreview {
     generateHeadingId(text) {
         return text
             .toLowerCase()
-            .replace(/[^\\w\\s-]/g, '') // Remove special characters
-            .replace(/\\s+/g, '-') // Replace spaces with hyphens
+            .replace(/[^\w\s-]/g, '') // Remove special characters
+            .replace(/\s+/g, '-') // Replace spaces with hyphens
             .replace(/-+/g, '-') // Replace multiple hyphens with single
             .trim('-'); // Remove leading/trailing hyphens
     }
@@ -239,7 +239,7 @@ class MarkdownPreview {
      * @returns {string} - HTML with heading IDs
      */
     addHeadingIds(html) {
-        return html.replace(/<h([1-6])>(.*?)<\\/h[1-6]>/gim, (match, level, text) => {
+        return html.replace(/<h([1-6])>(.*?)<\/h[1-6]>/gim, (match, level, text) => {
             const id = this.generateHeadingId(text);
             return `<h${level} id="${id}">${text}</h${level}>`;
         });

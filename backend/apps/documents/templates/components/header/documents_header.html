@@ -1,89 +1,77 @@
+{% extends "components/header/app_header.html" %}
 {% load static %}
 {% load i18n %}
 
-<!-- Documents Settings Header -->
-<div class="settings-header mb-4">
-    <div class="d-flex align-items-center justify-content-between">
-        <div class="header-content">
-            <div class="d-flex align-items-center">
-                <div class="app-icon me-3">
-                    <i class="bi bi-file-earmark-text text-primary fs-1"></i>
-                </div>
-                <div>
-                    <h2 class="mb-1 fw-bold">Documents</h2>
-                    <p class="text-muted mb-0">Gérez vos paramètres de collaboration et d'édition</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="header-actions">
-            <a href="/documents/" class="btn btn-outline-primary me-2">
-                <i class="bi bi-arrow-left me-2"></i>
-                Retour aux documents
-            </a>
-            <a href="/documents/create/" class="btn btn-primary">
-                <i class="bi bi-plus me-2"></i>
-                Nouveau document
-            </a>
-        </div>
-    </div>
+{% block app_navigation %}
+<!-- Navigation Documents dans le header -->
+<div class="d-none d-lg-flex align-items-center gap-2">
+    <!-- Retour Dashboard -->
+    {% if request.resolver_match.url_name != 'dashboard' %}
+    <a href="{% url 'saas_web:dashboard' %}" 
+       class="btn btn-outline-secondary btn-sm header-btn"
+       aria-label="{% trans 'Go to dashboard' %}">
+        <i class="bi bi-house me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Dashboard" %}</span>
+    </a>
+    {% endif %}
+    
+    <!-- Navigation Documents -->
+    <a href="{% url 'documents:main' %}" 
+       class="btn btn-outline-primary btn-sm header-btn {% if request.resolver_match.url_name == 'main' %}active{% endif %}"
+       aria-label="{% trans 'Documents home' %}">
+        <i class="bi bi-house me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Accueil" %}</span>
+    </a>
+    
+    <a href="{% url 'documents:document_list' %}" 
+       class="btn btn-outline-secondary btn-sm header-btn {% if request.resolver_match.url_name == 'document_list' %}active{% endif %}"
+       aria-label="{% trans 'All documents' %}">
+        <i class="bi bi-file-earmark-text me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Documents" %}</span>
+    </a>
+    
+    <a href="{% url 'documents:folder_list' %}" 
+       class="btn btn-outline-secondary btn-sm header-btn {% if request.resolver_match.url_name == 'folder_list' %}active{% endif %}"
+       aria-label="{% trans 'Folders' %}">
+        <i class="bi bi-folder me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Dossiers" %}</span>
+    </a>
+    
+    <!-- Actions -->
+    <div class="vr mx-2"></div>
+    
+    <a href="{% url 'documents:document_create' %}" 
+       class="btn btn-primary btn-sm header-btn"
+       aria-label="{% trans 'Create new document' %}">
+        <i class="bi bi-plus me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Nouveau" %}</span>
+    </a>
 </div>
 
-<style>
-.settings-header {
-    padding: 1.5rem 0;
-    border-bottom: 1px solid #e9ecef;
-    margin-bottom: 2rem;
-}
-
-.app-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    background: rgba(13, 110, 253, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.header-content h2 {
-    color: #2c3e50;
-    font-size: 1.75rem;
-}
-
-.header-actions .btn {
-    font-weight: 500;
-}
-
-@media (max-width: 768px) {
-    .settings-header {
-        padding: 1rem 0;
-    }
-    
-    .settings-header .d-flex {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 1rem;
-    }
-    
-    .header-actions {
-        width: 100%;
-        display: flex;
-        gap: 0.5rem;
-    }
-    
-    .header-actions .btn {
-        flex: 1;
-        text-align: center;
-    }
-    
-    .app-icon {
-        width: 50px;
-        height: 50px;
-    }
-    
-    .header-content h2 {
-        font-size: 1.5rem;
-    }
-}
-</style>
+<!-- Mobile Navigation -->
+<div class="d-lg-none">
+    <div class="dropdown">
+        <button class="btn btn-outline-secondary btn-sm dropdown-toggle header-btn" 
+                type="button" 
+                data-bs-toggle="dropdown" 
+                aria-expanded="false">
+            <i class="bi bi-list"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{% url 'documents:main' %}">
+                <i class="bi bi-house me-2"></i>Accueil
+            </a></li>
+            <li><a class="dropdown-item" href="{% url 'documents:document_list' %}">
+                <i class="bi bi-file-earmark-text me-2"></i>Tous les documents
+            </a></li>
+            <li><a class="dropdown-item" href="{% url 'documents:folder_list' %}">
+                <i class="bi bi-folder me-2"></i>Dossiers
+            </a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'documents:document_create' %}">
+                <i class="bi bi-plus me-2"></i>Nouveau document
+            </a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

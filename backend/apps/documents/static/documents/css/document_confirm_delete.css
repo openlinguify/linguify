@@ -1,0 +1,452 @@
+/* Document Delete Confirmation Styles - Linguify Brand */
+
+:root {
+    --linguify-primary: #2D5BBA;
+    --linguify-secondary: #8B5CF6;
+    --linguify-accent: #00D4AA;
+    --linguify-gray: #6B7280;
+    --linguify-primary-light: #4F7BD9;
+    --linguify-primary-dark: #1E4A8C;
+    --linguify-accent-light: #26E4B8;
+    --linguify-accent-dark: #00B894;
+    --linguify-success: #10B981;
+    --linguify-warning: #F59E0B;
+    --linguify-error: #EF4444;
+}
+
+/* ===========================================
+   DASHBOARD LAYOUT
+   =========================================== */
+
+.documents-dashboard {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e3e6ea;
+    flex-shrink: 0;
+}
+
+.header-navigation .btn {
+    color: var(--linguify-gray);
+    border-color: #dee2e6;
+}
+
+.header-navigation .btn:hover {
+    background-color: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+    color: white;
+}
+
+.header-title h1 {
+    color: #2c3e50;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.header-title .subtitle {
+    color: var(--linguify-error);
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* ===========================================
+   DELETE CONTENT
+   =========================================== */
+
+.delete-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.delete-card {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e3e6ea;
+}
+
+/* ===========================================
+   ALERT STYLING
+   =========================================== */
+
+.alert-danger {
+    border-color: var(--linguify-error);
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #991b1b;
+}
+
+.alert-danger .alert-heading {
+    color: var(--linguify-error);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.alert-danger h5 {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* ===========================================
+   DOCUMENT INFO
+   =========================================== */
+
+.document-info {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #f8f9fb;
+    border-radius: 0.5rem;
+    border: 1px solid #e3e6ea;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #ffffff;
+    border-radius: 0.375rem;
+    border: 1px solid #dee2e6;
+}
+
+.info-item i {
+    color: var(--linguify-primary);
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.info-item div {
+    flex: 1;
+    min-width: 0;
+}
+
+.info-item strong {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--linguify-gray);
+    margin-bottom: 0.25rem;
+}
+
+.info-item span {
+    font-size: 0.875rem;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.info-item .badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+}
+
+/* ===========================================
+   CONSEQUENCES WARNING
+   =========================================== */
+
+.consequences-warning {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid var(--linguify-warning);
+    border-radius: 0.5rem;
+}
+
+.consequences-warning h5 {
+    color: var(--linguify-warning);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.consequences-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.consequences-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    font-size: 0.875rem;
+    color: #4a5568;
+}
+
+.consequences-list li:not(:last-child) {
+    border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.consequences-list li i {
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+}
+
+.consequences-list li strong {
+    color: #2c3e50;
+}
+
+/* ===========================================
+   ALTERNATIVES SECTION
+   =========================================== */
+
+.alternatives {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid #3b82f6;
+    border-radius: 0.5rem;
+}
+
+.alternatives h5 {
+    color: #1e40af;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.alternatives .btn {
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.alternatives .btn-outline-info {
+    color: #1e40af;
+    border-color: #3b82f6;
+}
+
+.alternatives .btn-outline-info:hover {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.alternatives .btn-outline-warning {
+    color: var(--linguify-warning);
+    border-color: var(--linguify-warning);
+}
+
+.alternatives .btn-outline-warning:hover {
+    background-color: var(--linguify-warning);
+    border-color: var(--linguify-warning);
+    color: white;
+}
+
+.alternatives .btn-outline-secondary {
+    color: var(--linguify-gray);
+    border-color: #dee2e6;
+}
+
+.alternatives .btn-outline-secondary:hover {
+    background-color: var(--linguify-gray);
+    border-color: var(--linguify-gray);
+    color: white;
+}
+
+/* ===========================================
+   FINAL CONFIRMATION
+   =========================================== */
+
+.final-confirmation {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(239, 68, 68, 0.05);
+    border: 2px solid var(--linguify-error);
+    border-radius: 0.5rem;
+}
+
+.form-check {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: #ffffff;
+    border-radius: 0.375rem;
+    border: 1px solid #dee2e6;
+}
+
+.form-check:last-child {
+    margin-bottom: 0;
+}
+
+.form-check-input {
+    margin-top: 0.125rem;
+}
+
+.form-check-input:focus {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+}
+
+.form-check-label {
+    font-size: 0.875rem;
+    color: #2c3e50;
+    line-height: 1.5;
+}
+
+.form-check-label strong {
+    color: var(--linguify-error);
+}
+
+/* ===========================================
+   FORM ACTIONS
+   =========================================== */
+
+.form-actions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e3e6ea;
+}
+
+.form-actions .btn {
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+}
+
+.form-actions .btn-outline-secondary {
+    color: var(--linguify-gray);
+    border-color: #dee2e6;
+}
+
+.form-actions .btn-outline-secondary:hover {
+    background-color: var(--linguify-gray);
+    border-color: var(--linguify-gray);
+    color: white;
+}
+
+.form-actions .btn-danger {
+    background-color: var(--linguify-error);
+    border-color: var(--linguify-error);
+    color: white;
+}
+
+.form-actions .btn-danger:hover:not(:disabled) {
+    background-color: #dc2626;
+    border-color: #dc2626;
+}
+
+.form-actions .btn-danger:disabled {
+    background-color: #9ca3af;
+    border-color: #9ca3af;
+    color: #ffffff;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ===========================================
+   RESPONSIVE DESIGN
+   =========================================== */
+
+@media (max-width: 992px) {
+    .documents-dashboard {
+        padding: 1rem;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .header-title {
+        text-align: center;
+    }
+    
+    .delete-card {
+        padding: 1.5rem;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .documents-dashboard {
+        padding: 0.75rem;
+    }
+    
+    .header-title h1 {
+        font-size: 1.5rem;
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .delete-card {
+        padding: 1rem;
+    }
+    
+    .form-actions .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .header-title h1 {
+        font-size: 1.25rem;
+    }
+    
+    .consequences-list li {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: left;
+    }
+    
+    .consequences-list li i {
+        align-self: flex-start;
+    }
+    
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .info-item i {
+        align-self: center;
+    }
+}
