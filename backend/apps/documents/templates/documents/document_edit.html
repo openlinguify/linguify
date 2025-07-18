@@ -31,19 +31,12 @@
                 <span id="auto-save-indicator" class="auto-save-indicator"></span>
             </div>
             
-            <!-- Editor Type Toggle -->
-            <div class="btn-group btn-group-sm" role="group">
-                <input type="radio" class="btn-check" name="editor-type" id="markdown-editor" value="markdown" 
-                       {% if document.content_type == 'markdown' %}checked{% endif %}>
-                <label class="btn btn-outline-secondary" for="markdown-editor">
-                    <i class="bi bi-markdown"></i> <span class="d-none d-lg-inline">Markdown</span>
-                </label>
-                
-                <input type="radio" class="btn-check" name="editor-type" id="rich-text-editor" value="html"
-                       {% if document.content_type == 'html' %}checked{% endif %}>
-                <label class="btn btn-outline-secondary" for="rich-text-editor">
-                    <i class="bi bi-type-bold"></i> <span class="d-none d-lg-inline">Rich Text</span>
-                </label>
+            <!-- Visual Editor Info -->
+            <div class="editor-type-info">
+                <span class="badge bg-primary">
+                    <i class="bi bi-type-bold"></i>
+                    <span class="d-none d-lg-inline">Éditeur visuel</span>
+                </span>
             </div>
             
             <!-- Action Buttons -->
@@ -77,112 +70,10 @@
     <div class="editor-main-layout">
         <!-- Editor Content Area -->
         <div class="editor-content-area">
-            <!-- Markdown Editor -->
-            <div id="markdown-editor-container" class="editor-container-full{% if document.content_type != 'markdown' %} d-none{% endif %}">
+            <!-- Visual Rich Text Editor (Default) -->
+            <div id="visual-editor-container" class="editor-container-full">
                 
-                <!-- Markdown Toolbar -->
-                <div class="editor-toolbar">
-                    <div class="toolbar-section">
-                        <div class="toolbar-group">
-                            <button type="button" class="btn btn-sm btn-outline-secondary toolbar-btn" 
-                                    data-action="bold" title="Gras (Ctrl+B)">
-                                <i class="bi bi-type-bold"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary toolbar-btn" 
-                                    data-action="italic" title="Italique (Ctrl+I)">
-                                <i class="bi bi-type-italic"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary toolbar-btn" 
-                                    data-action="strikethrough" title="Barré">
-                                <i class="bi bi-type-strikethrough"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="toolbar-group">
-                            <button type="button" class="btn btn-sm btn-outline-secondary toolbar-btn" 
-                                    data-action="heading" title="Titre">
-                                <i class="bi bi-type-h1"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary toolbar-btn" 
-                                    data-action="link" title="Lien (Ctrl+K)">
-                                <i class="bi bi-link-45deg"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary toolbar-btn" 
-                                    data-action="image" title="Image">
-                                <i class="bi bi-image"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="toolbar-group">
-                            <button type="button" class="btn btn-sm btn-outline-secondary toolbar-btn" 
-                                    data-action="list" title="Liste">
-                                <i class="bi bi-list-ul"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary toolbar-btn" 
-                                    data-action="ordered-list" title="Liste numérotée">
-                                <i class="bi bi-list-ol"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary toolbar-btn" 
-                                    data-action="quote" title="Citation">
-                                <i class="bi bi-quote"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary toolbar-btn" 
-                                    data-action="code" title="Code">
-                                <i class="bi bi-code"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="toolbar-spacer"></div>
-                    
-                    <div class="toolbar-section">
-                        <div class="word-count">
-                            <span id="markdown-word-count">0</span> mots
-                        </div>
-                        
-                        <div class="toolbar-group">
-                            <button type="button" class="btn btn-sm btn-outline-secondary toolbar-btn" 
-                                    id="toggle-preview-mode" title="Basculer l'aperçu (Ctrl+P)">
-                                <i class="bi bi-layout-split"></i>
-                                <span class="d-none d-lg-inline">Aperçu</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Editor Split View -->
-                <div class="editor-split-view">
-                    <div class="editor-pane">
-                        <textarea id="markdown-content" 
-                                  class="editor-textarea" 
-                                  placeholder="# Titre de votre document
-
-Commencez à écrire votre contenu en Markdown...
-
-## Exemples de formatage :
-- **Texte en gras**
-- *Texte en italique*
-- [Lien](https://example.com)
-- `code en ligne`
-
-```
-Bloc de code
-```">{{ document.content }}</textarea>
-                    </div>
-                    
-                    <div class="preview-pane" id="preview-pane">
-                        <div class="preview-header">
-                            <h6><i class="bi bi-eye me-1"></i>Aperçu en temps réel</h6>
-                        </div>
-                        <div id="markdown-preview" class="preview-content"></div>
-                    </div>
-                </div>
-            </div>
-        
-            <!-- Rich Text Editor -->
-            <div id="rich-text-editor-container" class="editor-container-full{% if document.content_type != 'html' %} d-none{% endif %}">
-                
-                <!-- Rich Text Toolbar -->
+                <!-- Visual Editor Toolbar -->
                 <div class="editor-toolbar">
                     <div class="toolbar-section">
                         <div class="toolbar-group">
@@ -205,11 +96,11 @@ Bloc de code
                         </div>
                         
                         <div class="toolbar-group">
-                            <select class="form-select form-select-sm" data-command="formatBlock" title="Format">
-                                <option value="p">Paragraphe</option>
-                                <option value="h1">Titre 1</option>
-                                <option value="h2">Titre 2</option>
-                                <option value="h3">Titre 3</option>
+                            <select class="form-select form-select-sm" data-command="formatBlock" title="Format de titre">
+                                <option value="p">Paragraphe normal</option>
+                                <option value="h1">Titre principal (H1)</option>
+                                <option value="h2">Titre secondaire (H2)</option>
+                                <option value="h3">Sous-titre (H3)</option>
                                 <option value="h4">Titre 4</option>
                                 <option value="h5">Titre 5</option>
                                 <option value="h6">Titre 6</option>
@@ -218,7 +109,7 @@ Bloc de code
                         
                         <div class="toolbar-group">
                             <button type="button" class="btn btn-sm btn-outline-secondary toolbar-btn" 
-                                    data-command="insertUnorderedList" title="Liste">
+                                    data-command="insertUnorderedList" title="Liste à puces">
                                 <i class="bi bi-list-ul"></i>
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-secondary toolbar-btn" 
@@ -270,7 +161,7 @@ Bloc de code
                     
                     <div class="toolbar-section">
                         <div class="word-count">
-                            <span id="rich-text-word-count">0</span> mots
+                            <span id="visual-word-count">0</span> mots
                         </div>
                         
                         <div class="toolbar-group">
@@ -286,12 +177,12 @@ Bloc de code
                     </div>
                 </div>
                 
-                <!-- Rich Text Workspace -->
-                <div class="rich-text-workspace">
-                    <div id="rich-text-content" 
-                         class="rich-text-editor" 
+                <!-- Visual Editor Workspace -->
+                <div class="visual-editor-workspace">
+                    <div id="visual-editor-content" 
+                         class="visual-editor" 
                          contenteditable="true"
-                         data-placeholder="Commencez à écrire votre document...">{{ document.content|safe }}</div>
+                         data-placeholder="Commencez à écrire votre document comme dans Word...">{{ document.content|safe }}</div>
                 </div>
             </div>
         </div>
@@ -560,7 +451,7 @@ Bloc de code
 <form id="document-form" style="display: none;">
     {% csrf_token %}
     <input type="hidden" id="document-id" value="{{ document.id }}">
-    <input type="hidden" id="document-type" value="{{ document.content_type }}">
+    <input type="hidden" id="document-type" value="html">
 </form>
 
 <!-- Keyboard Shortcuts Modal -->
@@ -616,12 +507,6 @@ document.addEventListener('keydown', function(e) {
         document.getElementById('save-document').click();
     }
     
-    // Ctrl+P - Toggle preview (Markdown only)
-    if (e.ctrlKey && e.key === 'p' && document.getElementById('markdown-editor').checked) {
-        e.preventDefault();
-        document.getElementById('toggle-preview-mode').click();
-    }
-    
     // Ctrl+? - Show shortcuts
     if (e.ctrlKey && e.key === '?') {
         e.preventDefault();
@@ -629,28 +514,6 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Auto-save functionality
-let autoSaveTimeout;
-function setupAutoSave() {
-    const titleInput = document.getElementById('document-title');
-    const markdownContent = document.getElementById('markdown-content');
-    const richTextContent = document.getElementById('rich-text-content');
-    
-    function triggerAutoSave() {
-        clearTimeout(autoSaveTimeout);
-        autoSaveTimeout = setTimeout(() => {
-            document.getElementById('save-draft').click();
-        }, 2000); // Auto-save after 2 seconds of inactivity
-    }
-    
-    [titleInput, markdownContent, richTextContent].forEach(element => {
-        if (element) {
-            element.addEventListener('input', triggerAutoSave);
-        }
-    });
-}
-
-// Initialize when document loads
-document.addEventListener('DOMContentLoaded', setupAutoSave);
+// Auto-save is handled by the DocumentEditor class
 </script>
 {% endblock %}

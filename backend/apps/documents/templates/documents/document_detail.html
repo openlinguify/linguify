@@ -123,7 +123,7 @@
                     <div class="meta-card-compact">
                         <i class="bi bi-clock"></i>
                         <div class="meta-content">
-                            <span class="meta-value">{{ document.updated_at|timesince }} ago</span>
+                            <span class="meta-value">Il y a {{ document.updated_at|timesince }}</span>
                             <span class="meta-label">Modifié</span>
                         </div>
                     </div>
@@ -144,17 +144,25 @@
     <div class="document-main-modern">
         <!-- Primary Content -->
         <div class="document-content-modern">
-            {% if document.content_type == 'markdown' %}
-                <div id="markdown-content" class="markdown-content">
-                    {{ document.content|linebreaks }}
-                </div>
-            {% elif document.content_type == 'html' %}
-                <div class="html-content">
-                    {{ document.content|safe }}
-                </div>
+            {% if document.content %}
+                {% if document.content_type == 'markdown' %}
+                    <div id="markdown-content" class="markdown-content">
+                        {{ document.content|linebreaks }}
+                    </div>
+                {% elif document.content_type == 'html' %}
+                    <div class="html-content">
+                        {{ document.content|safe }}
+                    </div>
+                {% else %}
+                    <div class="plaintext-content">
+                        {{ document.content|linebreaks }}
+                    </div>
+                {% endif %}
             {% else %}
-                <div class="plaintext-content">
-                    {{ document.content|linebreaks }}
+                <div class="empty-content">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <h3>Contenu vide</h3>
+                    <p>Ce document ne contient pas encore de contenu. Cliquez sur "Modifier" pour commencer à rédiger.</p>
                 </div>
             {% endif %}
         </div>

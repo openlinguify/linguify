@@ -6,7 +6,7 @@
 class DocumentEditor {
     constructor() {
         this.documentId = document.getElementById('document-id')?.value;
-        this.currentEditorType = 'markdown';
+        this.currentEditorType = 'html'; // Always HTML/visual mode
         this.autoSaveTimeout = null;
         this.autoSaveInterval = 3000; // 3 seconds
         this.isInitialized = false;
@@ -18,13 +18,12 @@ class DocumentEditor {
         if (this.isInitialized) return;
         
         this.bindEvents();
-        this.setupEditorToggle();
         this.setupAutoSave();
-        this.setupToolbars();
-        this.updatePreview();
+        this.setupVisualToolbar();
+        this.updateWordCount();
         
         this.isInitialized = true;
-        console.log('Document editor initialized');
+        console.log('Visual document editor initialized');
     }
     
     bindEvents() {
@@ -37,21 +36,10 @@ class DocumentEditor {
             this.saveDraft();
         });
         
-        // Editor type toggle
-        document.querySelectorAll('input[name="editor-type"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                this.switchEditor(e.target.value);
-            });
-        });
-        
-        // Content change detection
-        document.getElementById('markdown-content')?.addEventListener('input', () => {
+        // Visual editor content change detection
+        document.getElementById('visual-editor-content')?.addEventListener('input', () => {
             this.onContentChange();
-            this.updatePreview();
-        });
-        
-        document.getElementById('rich-text-content')?.addEventListener('input', () => {
-            this.onContentChange();
+            this.updateWordCount();
         });
         
         // Title change
@@ -102,73 +90,15 @@ class DocumentEditor {
         });
     }
     
-    setupEditorToggle() {
-        const markdownRadio = document.getElementById('markdown-editor');
-        const richTextRadio = document.getElementById('rich-text-editor');
-        
-        if (markdownRadio?.checked) {
-            this.currentEditorType = 'markdown';
-        } else if (richTextRadio?.checked) {
-            this.currentEditorType = 'html';
-        }
-        
-        this.showCurrentEditor();
-    }
-    
-    switchEditor(editorType) {
-        if (this.currentEditorType === editorType) return;
-        
-        // Get current content
-        const currentContent = this.getCurrentContent();
-        
-        // Convert content if needed
-        let convertedContent = currentContent;
-        if (this.currentEditorType === 'markdown' && editorType === 'html') {
-            convertedContent = this.markdownToHtml(currentContent);
-        } else if (this.currentEditorType === 'html' && editorType === 'markdown') {
-            convertedContent = this.htmlToMarkdown(currentContent);
-        }
-        
-        // Switch editors
-        this.currentEditorType = editorType;
-        this.showCurrentEditor();
-        this.setCurrentContent(convertedContent);
-        
-        // Update preview
-        if (editorType === 'markdown') {
-            this.updatePreview();
-        }
-    }
-    
-    showCurrentEditor() {
-        const markdownContainer = document.getElementById('markdown-editor-container');
-        const richTextContainer = document.getElementById('rich-text-editor-container');
-        
-        if (this.currentEditorType === 'markdown') {
-            markdownContainer.style.display = 'flex';
-            richTextContainer.style.display = 'none';
-        } else {
-            markdownContainer.style.display = 'none';
-            richTextContainer.style.display = 'flex';
-        }
-    }
+    // Visual editor is always active - no switching needed
     
     getCurrentContent() {
-        if (this.currentEditorType === 'markdown') {
-            return document.getElementById('markdown-content')?.value || '';
-        } else {
-            return document.getElementById('rich-text-content')?.innerHTML || '';
-        }
+        return document.getElementById('visual-editor-content')?.innerHTML || '';
     }
     
     setCurrentContent(content) {
-        if (this.currentEditorType === 'markdown') {
-            const textarea = document.getElementById('markdown-content');
-            if (textarea) textarea.value = content;
-        } else {
-            const editor = document.getElementById('rich-text-content');
-            if (editor) editor.innerHTML = content;
-        }
+        const editor = document.getElementById('visual-editor-content');
+        if (editor) editor.innerHTML = content;
     }
     
     setupAutoSave() {
@@ -190,27 +120,8 @@ class DocumentEditor {
         }
     }
     
-    setupToolbars() {
-        this.setupMarkdownToolbar();
-        this.setupRichTextToolbar();
-    }
-    
-    setupMarkdownToolbar() {
-        const toolbar = document.querySelector('#markdown-editor-container .editor-toolbar');
-        if (!toolbar) return;
-        
-        toolbar.addEventListener('click', (e) => {
-            const button = e.target.closest('button[data-action]');
-            if (!button) return;
-            
-            e.preventDefault();
-            const action = button.dataset.action;
-            this.executeMarkdownAction(action);
-        });
-    }
-    
-    setupRichTextToolbar() {
-        const toolbar = document.getElementById('rich-text-toolbar');
+    setupVisualToolbar() {
+        const toolbar = document.querySelector('#visual-editor-container .editor-toolbar');
         if (!toolbar) return;
         
         toolbar.addEventListener('click', (e) => {
@@ -219,7 +130,7 @@ class DocumentEditor {
             
             e.preventDefault();
             const command = button.dataset.command;
-            this.executeRichTextCommand(command);
+            this.executeVisualCommand(command);
         });
         
         toolbar.addEventListener('change', (e) => {
@@ -228,87 +139,12 @@ class DocumentEditor {
             
             const command = select.dataset.command;
             const value = select.value;
-            this.executeRichTextCommand(command, value);
+            this.executeVisualCommand(command, value);
         });
     }
     
-    executeMarkdownAction(action) {
-        const textarea = document.getElementById('markdown-content');
-        if (!textarea) return;
-        
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const selectedText = textarea.value.substring(start, end);
-        const beforeText = textarea.value.substring(0, start);
-        const afterText = textarea.value.substring(end);
-        
-        let replacement = '';
-        let newCursorPos = start;
-        
-        switch (action) {
-            case 'bold':
-                replacement = `**${selectedText || 'texte en gras'}**`;
-                newCursorPos = start + (selectedText ? replacement.length : 2);
-                break;
-            case 'italic':
-                replacement = `*${selectedText || 'texte en italique'}*`;
-                newCursorPos = start + (selectedText ? replacement.length : 1);
-                break;
-            case 'strikethrough':
-                replacement = `~~${selectedText || 'texte barré'}~~`;
-                newCursorPos = start + (selectedText ? replacement.length : 2);
-                break;
-            case 'heading':
-                replacement = `## ${selectedText || 'Titre'}`;
-                newCursorPos = start + replacement.length;
-                break;
-            case 'link':
-                const url = prompt('URL du lien:');
-                if (url) {
-                    replacement = `[${selectedText || 'texte du lien'}](${url})`;
-                    newCursorPos = start + replacement.length;
-                }
-                break;
-            case 'image':
-                const imageUrl = prompt('URL de l\'image:');
-                if (imageUrl) {
-                    replacement = `![${selectedText || 'alt text'}](${imageUrl})`;
-                    newCursorPos = start + replacement.length;
-                }
-                break;
-            case 'list':
-                replacement = `- ${selectedText || 'élément de liste'}`;
-                newCursorPos = start + replacement.length;
-                break;
-            case 'ordered-list':
-                replacement = `1. ${selectedText || 'élément de liste'}`;
-                newCursorPos = start + replacement.length;
-                break;
-            case 'quote':
-                replacement = `> ${selectedText || 'citation'}`;
-                newCursorPos = start + replacement.length;
-                break;
-            case 'code':
-                if (selectedText.includes('\n')) {
-                    replacement = `\`\`\`\n${selectedText}\n\`\`\``;
-                } else {
-                    replacement = `\`${selectedText || 'code'}\``;
-                }
-                newCursorPos = start + replacement.length;
-                break;
-        }
-        
-        if (replacement) {
-            textarea.value = beforeText + replacement + afterText;
-            textarea.setSelectionRange(newCursorPos, newCursorPos);
-            textarea.focus();
-            this.onContentChange();
-            this.updatePreview();
-        }
-    }
-    
-    executeRichTextCommand(command, value = null) {
-        const editor = document.getElementById('rich-text-content');
+    executeVisualCommand(command, value = null) {
+        const editor = document.getElementById('visual-editor-content');
         if (!editor) return;
         
         editor.focus();
@@ -326,52 +162,30 @@ class DocumentEditor {
             }
             
             this.onContentChange();
+            this.updateWordCount();
         } catch (error) {
-            console.error('Rich text command error:', error);
+            console.error('Visual editor command error:', error);
         }
     }
     
-    updatePreview() {
-        if (this.currentEditorType !== 'markdown') return;
+    // No preview needed - WYSIWYG editor shows final result directly
+    
+    updateWordCount() {
+        const content = this.getCurrentContent();
         
-        const content = document.getElementById('markdown-content')?.value || '';
-        const preview = document.getElementById('markdown-preview');
+        // Extract text content from HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content;
+        const textContent = tempDiv.textContent || tempDiv.innerText || '';
         
-        if (preview) {
-            preview.innerHTML = this.markdownToHtml(content);
-        }
+        const words = textContent.trim() ? textContent.trim().split(/\s+/).length : 0;
+        
+        // Update word count display
+        const visualWordCount = document.getElementById('visual-word-count');
+        if (visualWordCount) visualWordCount.textContent = words;
     }
     
-    markdownToHtml(markdown) {
-        if (typeof marked !== 'undefined') {
-            return marked.parse(markdown);
-        }
-        
-        // Simple markdown to HTML conversion
-        return markdown
-            .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-            .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-            .replace(/~~(.*?)~~/gim, '<del>$1</del>')
-            .replace(/`(.*?)`/gim, '<code>$1</code>')
-            .replace(/\n/gim, '<br>');
-    }
-    
-    htmlToMarkdown(html) {
-        // Simple HTML to markdown conversion
-        return html
-            .replace(/<h1>(.*?)<\/h1>/gim, '# $1\n')
-            .replace(/<h2>(.*?)<\/h2>/gim, '## $1\n')
-            .replace(/<h3>(.*?)<\/h3>/gim, '### $1\n')
-            .replace(/<strong>(.*?)<\/strong>/gim, '**$1**')
-            .replace(/<em>(.*?)<\/em>/gim, '*$1*')
-            .replace(/<del>(.*?)<\/del>/gim, '~~$1~~')
-            .replace(/<code>(.*?)<\/code>/gim, '`$1`')
-            .replace(/<br\s*\/?>/gim, '\n')
-            .replace(/<[^>]+>/gim, ''); // Remove other HTML tags
-    }
+    // Content conversion not needed - visual editor works directly with HTML
     
     // Document saving methods
     async saveDocument() {
@@ -561,13 +375,24 @@ class DocumentEditor {
     }
     
     showNotification(message, type = 'info') {
-        // Simple notification - can be enhanced with a proper notification system
-        if (type === 'error') {
-            alert('Erreur: ' + message);
-        } else {
-            console.log(message);
-            // You can implement a toast notification here
-        }
+        // Create toast notification
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 1055; max-width: 400px;';
+        notification.innerHTML = `
+            <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
     }
 }
 
@@ -581,7 +406,7 @@ function insertImage() {
 
 // Initialize the document editor when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.querySelector('.document-editor-container')) {
+    if (document.querySelector('.editor-page-container')) {
         new DocumentEditor();
     }
 });
