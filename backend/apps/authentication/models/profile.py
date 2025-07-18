@@ -387,6 +387,18 @@ def get_profile_picture_urls(user, use_cache: bool = True) -> Dict[str, str]:
     if not user:
         return get_default_profile_picture()
     
+    # Priorité à Supabase URL si disponible
+    if hasattr(user, 'profile_picture_url') and user.profile_picture_url:
+        supabase_url = user.profile_picture_url
+        return {
+            'original': supabase_url,
+            'default': supabase_url,
+            'small': supabase_url,
+            'medium': supabase_url,
+            'large': supabase_url,
+        }
+    
+    # Fallback vers l'ancien système de fichiers locaux
     if not hasattr(user, 'profile_picture') or not user.profile_picture:
         return get_default_profile_picture()
     
@@ -398,7 +410,11 @@ def get_profile_picture_urls(user, use_cache: bool = True) -> Dict[str, str]:
             return cached_urls
     
     profile_picture_path = str(user.profile_picture)
-    base_url = user.profile_picture.url
+    try:
+        base_url = user.profile_picture.url
+    except AttributeError:
+        # Si ProfileStorage n'a pas de méthode url, utiliser get_default_profile_picture
+        return get_default_profile_picture()
     
     # Gérer le format legacy (profile_pictures/...)
     if profile_picture_path.startswith(LEGACY_DIR) or LEGACY_DIR in profile_picture_path:
