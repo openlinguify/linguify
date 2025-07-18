@@ -106,18 +106,34 @@ class UserSettingsView(View):
         """Handle settings updates with auto-save support"""
         setting_type = request.POST.get('setting_type')
         
+        # Debug logging
+        logger.info(f"UserSettingsView POST - setting_type: {setting_type}")
+        logger.info(f"UserSettingsView POST - POST data: {dict(request.POST)}")
+        logger.info(f"UserSettingsView POST - FILES: {list(request.FILES.keys())}")
+        
         # Check if it's an AJAX request for auto-save
         is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
         
-        if setting_type == 'general':
+        # Check if it's a profile-related request
+        if (request.FILES.get('profile_picture') or 
+            any(key.startswith('profile_') for key in request.POST.keys()) or 
+            setting_type == 'profile'):
+            logger.info("Delegating to ProfileSettingsView")
+            # Delegate to ProfileSettingsView
+            view = ProfileSettingsView()
+            view.request = request
+            return view.post(request)
+        elif setting_type == 'general':
+            logger.info("Delegating to GeneralSettingsView")
             # Delegate to GeneralSettingsView
             view = GeneralSettingsView()
             view.request = request
             return view.post(request)
         else:
+            logger.error(f"Unknown setting_type: {setting_type}")
             return JsonResponse({
                 'success': False,
-                'message': 'Type de paramètre non reconnu'
+                'message': f'Type de paramètre non reconnu: {setting_type}'
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -195,18 +211,13 @@ class ProfileSettingsView(View):
             profile_picture = request.FILES.get('profile_picture')
             if profile_picture:
                 logger.info(f"Processing profile picture upload: {profile_picture.name}, size: {profile_picture.size}")
-                from apps.authentication.utils.supabase_storage import SupabaseStorageService
                 
-                # Upload to Supabase Storage
-                supabase_storage = SupabaseStorageService()
-                upload_result = supabase_storage.upload_profile_picture(
-                    user_id=str(request.user.id),
-                    file=profile_picture,
-                    original_filename=profile_picture.name
-                )
+                # Use the centralized profile picture processing function
+                from ..models.profile import process_uploaded_profile_picture
+                upload_result = process_uploaded_profile_picture(request.user, profile_picture)
                 
                 if not upload_result.get('success'):
-                    logger.error(f"Supabase upload failed: {upload_result.get('error')}")
+                    logger.error(f"Profile picture upload failed: {upload_result.get('error')}")
                     if is_ajax:
                         return JsonResponse({
                             'success': False,
@@ -216,13 +227,8 @@ class ProfileSettingsView(View):
                         messages.error(request, f"Erreur lors de l'upload de l'image: {upload_result.get('error')}")
                         return redirect('saas_web:settings')
                 else:
-                    logger.info(f"Supabase upload successful: {upload_result}")
-                    # Update user with Supabase URL and clear local file
-                    request.user.profile_picture_url = upload_result.get('public_url')
-                    request.user.profile_picture_filename = upload_result.get('filename')
-                    request.user.profile_picture = None  # Clear local file
-                    request.user.save(update_fields=['profile_picture_url', 'profile_picture_filename', 'profile_picture'])
-                    # Refresh user from database
+                    logger.info(f"Profile picture upload successful: {upload_result}")
+                    # User model is already updated by process_uploaded_profile_picture
                     request.user.refresh_from_db()
                     logger.info(f"User profile_picture_url after update: {request.user.profile_picture_url}")
                     logger.info(f"User get_profile_picture_url: {request.user.get_profile_picture_url}")
@@ -234,8 +240,10 @@ class ProfileSettingsView(View):
             if serializer.is_valid():
                 serializer.save()
                 
-                # Include the updated profile picture URL in the response
-                profile_picture_url = request.user.get_profile_picture_url
+                # Include the updated profile picture URL in the response  
+                from ..models.profile import get_profile_picture_urls
+                profile_urls = get_profile_picture_urls(request.user, use_cache=False)
+                profile_picture_url = profile_urls.get('original', request.user.get_profile_picture_url)
                 
                 if is_ajax:
                     return JsonResponse({
@@ -416,20 +424,8 @@ def logout_all_devices(request):
     """Deconnexion de tous les appareils"""
     return JsonResponse({'status': 'placeholder'})
 
-def update_user_profile(request):
-    """Mise a jour du profil utilisateur"""
-    return JsonResponse({'status': 'placeholder'})
-
-def update_learning_settings(request):
-    """Mise a jour des parametres d'apprentissage"""
-    return JsonResponse({'status': 'placeholder'})
-
 def change_user_password(request):
     """Changement de mot de passe"""
-    return JsonResponse({'status': 'placeholder'})
-
-def manage_profile_picture(request):
-    """Gestion de la photo de profil"""
     return JsonResponse({'status': 'placeholder'})
 
 def settings_stats(request):

@@ -2,7 +2,6 @@
 from django.urls import path
 from ..views import (
     get_me,
-    user_settings,
     user_profile,
     update_profile_picture,
     debug_profile_endpoint,
@@ -19,12 +18,7 @@ from ..views import (
     # Additional settings endpoints
     export_user_data,
     logout_all_devices,
-    # Simple Django views for settings
-    update_user_profile,
-    update_learning_settings,
-    change_user_password,
-    # Profile picture management
-    manage_profile_picture
+    change_user_password
 )
 
 # Settings views
@@ -48,9 +42,7 @@ urlpatterns = [
     
     # Common user endpoints
     path('me/', get_me, name='get_me'),
-    path('me/settings/', user_settings, name='user_settings'),
     path('profile/', user_profile, name='user_profile'),
-    path('profile-picture/', manage_profile_picture, name='user_profile_picture'),
     path('debug-profile/', debug_profile_endpoint, name='debug_profile'),
     path('delete-account/', delete_account, name='delete_account'),
     path('restore-account/', cancel_account_deletion, name='restore_account'),
@@ -76,7 +68,6 @@ urlpatterns = [
     path('settings/profile/', ProfileSettingsView.as_view(), name='profile_settings'),
     path('settings/privacy/', PrivacySettingsView.as_view(), name='privacy_settings'),
     path('settings/appearance/', AppearanceSettingsView.as_view(), name='appearance_settings'),
-    path('settings/learning/', update_learning_settings, name='update_learning_settings'),
     path('settings/password/', change_user_password, name='change_user_password'),
     path('settings/stats/', settings_stats, name='settings_stats'),
     

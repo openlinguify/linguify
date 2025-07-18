@@ -176,11 +176,17 @@ class SettingsManager {
         
         try {
             const formData = new FormData(form);
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                             document.cookie.match(/csrftoken=([^;]+)/)?.[1];
+            
             const response = await fetch(form.action, {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
                 }
             });
             

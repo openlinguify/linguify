@@ -4,7 +4,7 @@ Django template-based authentication URLs
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from ..views.auth_views import LoginView, RegisterView, logout_view
-from ..views.password_views import CustomPasswordResetView
+from ..views.views_password_reset import CustomPasswordResetView
 
 app_name = 'auth'
 

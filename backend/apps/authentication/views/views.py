@@ -6,11 +6,11 @@ from rest_framework.decorators import api_view, permission_classes, parser_class
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from django.contrib.auth import get_user_model
-from .serializers import (
+from ..serializers import (
     UserSerializer, ProfileUpdateSerializer, 
-    CookieConsentCreateSerializer, CookieConsentSerializer,
-    CookieConsentLogSerializer, CookieConsentStatsSerializer
+    CookieConsentCreateSerializer, CookieConsentSerializer
 )
+from ..serializers.settings_serializers import CookieConsentLogSerializer, CookieConsentStatsSerializer
 import os
 import datetime
 from PIL import Image
@@ -286,76 +286,6 @@ def get_me(request):
         500: ErrorResponseSerializer
     }
 )
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
-def user_settings(request):
-    """
-    GET: Retrieve user settings
-    POST: Save user settings
-    """
-    user = request.user
-    
-    if request.method == 'GET':
-        # Get settings from user profile or defaults
-        settings = {
-            # Account settings
-            'email_notifications': getattr(user, 'email_notifications', True),
-            'push_notifications': getattr(user, 'push_notifications', True),
-            'interface_language': getattr(user, 'interface_language', 'en'),
-            
-            # Learning settings
-            'daily_goal': getattr(user, 'daily_goal', 15),
-            'weekday_reminders': getattr(user, 'weekday_reminders', True),
-            'weekend_reminders': getattr(user, 'weekend_reminders', False),
-            'reminder_time': getattr(user, 'reminder_time', '18:00'),
-            'speaking_exercises': getattr(user, 'speaking_exercises', True),
-            'listening_exercises': getattr(user, 'listening_exercises', True),
-            'reading_exercises': getattr(user, 'reading_exercises', True),
-            'writing_exercises': getattr(user, 'writing_exercises', True),
-            
-            # Language settings
-            'native_language': user.native_language,
-            'target_language': user.target_language,
-            'language_level': user.language_level,
-            'objectives': user.objectives,
-            
-            # Privacy settings
-            'public_profile': getattr(user, 'public_profile', True),
-            'share_progress': getattr(user, 'share_progress', True),
-            'share_activity': getattr(user, 'share_activity', False),
-        }
-        
-        return Response(settings)
-    
-    elif request.method == 'POST':
-        settings_data = request.data
-        
-        # Update language settings on the user model
-        if 'native_language' in settings_data:
-            user.native_language = settings_data['native_language']
-            
-        if 'target_language' in settings_data:
-            user.target_language = settings_data['target_language']
-            
-        if 'language_level' in settings_data:
-            user.language_level = settings_data['language_level']
-            
-        if 'objectives' in settings_data:
-            user.objectives = settings_data['objectives']
-            
-        # For other settings, we'll store them as model attributes 
-        # (They'll be saved even if not in the model fields explicitly)
-        for key, value in settings_data.items():
-            if key not in ['native_language', 'target_language', 'language_level', 'objectives']:
-                setattr(user, key, value)
-                
-        user.save()
-        
-        return Response({
-            'message': 'Settings saved successfully',
-            'settings': settings_data
-        })
-
 
 
 
@@ -508,7 +438,8 @@ def update_profile_picture(request):
                         status=status.HTTP_400_BAD_REQUEST)
     
     try:
-        from .supabase_storage import supabase_storage
+        from ..utils.supabase_storage import SupabaseStorageService
+        supabase_storage = SupabaseStorageService()
         logger.info("Supabase storage service imported successfully")
         
         # Delete existing profile picture from Supabase if any
@@ -785,7 +716,7 @@ def debug_profile_endpoint(request):
         serializer_data = None
         if request.user.is_authenticated:
             try:
-                from .serializers import UserSerializer
+                from ..serializers import UserSerializer
                 serializer = UserSerializer(request.user)
                 serializer_data = serializer.data
             except Exception as e:
@@ -811,7 +742,7 @@ def debug_profile_endpoint(request):
 # Cookie Consent Management Views
 # ============================================================================
 
-from .models import CookieConsent, CookieConsentLog
+from ..models import CookieConsent, CookieConsentLog
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
 from django.db import models
 
@@ -1245,185 +1176,8 @@ def settings_stats(request):
         )
 
 
-# === DJANGO PROFILE PICTURE VIEWS ===
-
-@csrf_protect
-@django_login_required  
-@require_http_methods(["POST", "DELETE"])
-def manage_profile_picture(request):
-    """Upload or delete profile picture"""
-    user = request.user
-    
-    if request.method == 'POST':
-        # Upload new profile picture
-        if 'profile_picture' not in request.FILES:
-            return JsonResponse({'success': False, 'error': 'No profile picture provided'}, status=400)
-        
-        uploaded_file = request.FILES['profile_picture']
-        
-        # Validate file type
-        if not uploaded_file.name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
-            return JsonResponse({'success': False, 'error': 'Invalid file type. Please upload PNG, JPG, JPEG, GIF or WEBP'}, status=400)
-        
-        # Validate file size (5MB limit)
-        if uploaded_file.size > 5 * 1024 * 1024:
-            return JsonResponse({'success': False, 'error': 'File too large. Maximum size is 5MB'}, status=400)
-        
-        try:
-            from .supabase_storage import SupabaseStorageService
-            storage_service = SupabaseStorageService()
-            
-            # Delete existing profile picture from Supabase if any
-            if user.profile_picture_filename:
-                try:
-                    storage_service.delete_profile_picture(user.profile_picture_filename)
-                except Exception as e:
-                    logger.warning(f"Failed to delete old profile picture: {str(e)}")
-            
-            # Upload to Supabase Storage
-            upload_result = storage_service.upload_profile_picture(
-                user_id=str(user.id),
-                file=uploaded_file,
-                original_filename=uploaded_file.name
-            )
-            
-            if not upload_result.get('success'):
-                return JsonResponse({
-                    'success': False, 
-                    'error': upload_result.get('error', 'Failed to upload image')
-                }, status=500)
-            
-            # Update user with Supabase URL and filename
-            user.profile_picture_url = upload_result['public_url']
-            user.profile_picture_filename = upload_result['filename']
-            
-            # Clear old Django storage if exists
-            if user.profile_picture:
-                user.profile_picture = None
-            
-            user.save(update_fields=['profile_picture_url', 'profile_picture_filename', 'profile_picture'])
-            
-            return JsonResponse({
-                'success': True,
-                'message': 'Profile picture updated successfully',
-                'picture_url': upload_result['public_url']
-            })
-            
-        except Exception as e:
-            logger.error(f"Error uploading profile picture: {str(e)}")
-            return JsonResponse({
-                'success': False,
-                'error': f'Failed to upload profile picture: {str(e)}'
-            }, status=500)
-    
-    elif request.method == 'DELETE':
-        # Delete profile picture
-        try:
-            if user.profile_picture_filename:
-                from .supabase_storage import SupabaseStorageService
-                storage_service = SupabaseStorageService()
-                storage_service.delete_profile_picture(user.profile_picture_filename)
-            
-            # Clear profile picture fields
-            user.profile_picture_url = None
-            user.profile_picture_filename = None
-            if user.profile_picture:
-                user.profile_picture = None
-            
-            user.save(update_fields=['profile_picture_url', 'profile_picture_filename', 'profile_picture'])
-            
-            return JsonResponse({
-                'success': True,
-                'message': 'Profile picture deleted successfully'
-            })
-            
-        except Exception as e:
-            logger.error(f"Error deleting profile picture: {str(e)}")
-            return JsonResponse({
-                'success': False,
-                'error': f'Failed to delete profile picture: {str(e)}'
-            }, status=500)
 
 
-# === DJANGO SETTINGS VIEWS ===
-
-@csrf_protect
-@django_login_required
-@require_http_methods(["PATCH"])
-def update_user_profile(request):
-    """Update user profile settings"""
-    try:
-        import json
-        data = json.loads(request.body)
-        
-        user = request.user
-        
-        # Update allowed fields
-        allowed_fields = ['first_name', 'last_name', 'username', 'bio']
-        for field in allowed_fields:
-            if field in data:
-                setattr(user, field, data[field])
-        
-        user.save()
-        
-        return JsonResponse({
-            'success': True,
-            'data': {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'bio': getattr(user, 'bio', ''),
-            }
-        })
-        
-    except Exception as e:
-        logger.error(f"Error updating user profile: {str(e)}")
-        return JsonResponse({
-            'success': False,
-            'error': str(e)
-        }, status=400)
-
-
-@csrf_protect
-@django_login_required
-@require_http_methods(["PATCH"])
-def update_learning_settings(request):
-    """Update learning settings"""
-    try:
-        import json
-        data = json.loads(request.body)
-        
-        user = request.user
-        
-        # Update learning settings
-        allowed_fields = ['native_language', 'target_language', 'language_level', 'daily_goal', 'reminder_time']
-        for field in allowed_fields:
-            if field in data:
-                setattr(user, field, data[field])
-        
-        # Validate languages
-        if hasattr(user, 'native_language') and hasattr(user, 'target_language'):
-            if user.native_language == user.target_language:
-                return JsonResponse({
-                    'success': False,
-                    'error': 'Native and target languages cannot be the same'
-                }, status=400)
-        
-        user.save()
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Learning settings updated successfully'
-        })
-        
-    except Exception as e:
-        logger.error(f"Error updating learning settings: {str(e)}")
-        return JsonResponse({
-            'success': False,
-            'error': str(e)
-        }, status=400)
 
 
 @csrf_protect

@@ -125,10 +125,38 @@ function validateField(input) {
 
 // Generic form submission handler
 async function handleFormSubmission(form) {
+    // Prevent multiple simultaneous submissions
+    if (form.hasAttribute('data-submitting')) {
+        console.log('[Settings Utils] Form already being submitted, ignoring');
+        return;
+    }
+    
+    form.setAttribute('data-submitting', 'true');
+    
     try {
         showTemporaryMessage('Sauvegarde en cours...', 'info');
         
         const formData = new FormData(form);
+        
+        // Auto-detect setting type based on form fields (only if not already set)
+        if (!formData.has('setting_type')) {
+            if (formData.has('profile_picture')) {
+                formData.append('setting_type', 'profile');
+            } else if (form.querySelector('input[name="first_name"], input[name="last_name"], input[name="username"], input[name*="general"]')) {
+                formData.append('setting_type', 'general');
+            } else if (form.querySelector('input[name="bio"], input[name="phone_number"], input[name*="profile"]')) {
+                formData.append('setting_type', 'profile');
+            }
+        }
+        
+        // Debug logging
+        console.log('[Settings Utils] Form submission details:', {
+            action: form.action,
+            formData: Array.from(formData.entries()),
+            hasProfilePicture: formData.has('profile_picture'),
+            settingType: formData.get('setting_type')
+        });
+        
         const response = await fetch(form.action, {
             method: 'POST',
             body: formData,
@@ -138,7 +166,17 @@ async function handleFormSubmission(form) {
             }
         });
         
-        const result = await response.json();
+        console.log('[Settings Utils] Response status:', response.status);
+        
+        let result;
+        try {
+            result = await response.json();
+            console.log('[Settings Utils] Response data:', result);
+        } catch (e) {
+            const text = await response.text();
+            console.error('[Settings Utils] Failed to parse JSON response:', text);
+            throw new Error('Invalid JSON response');
+        }
         
         if (result.success) {
             showTemporaryMessage(result.message || 'Paramètres sauvegardés', 'success');
@@ -157,6 +195,9 @@ async function handleFormSubmission(form) {
         console.error('Form submission error:', error);
         showTemporaryMessage('Erreur de connexion', 'error');
         return null;
+    } finally {
+        // Always remove the submitting flag
+        form.removeAttribute('data-submitting');
     }
 }
 
@@ -245,8 +286,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Setup generic form submissions
     document.querySelectorAll('form').forEach(form => {
-        // Skip forms that have specific handlers
-        if (!form.hasAttribute('data-custom-handler')) {
+        // Skip forms that have specific handlers or already have our handler
+        if (!form.hasAttribute('data-custom-handler') && !form.hasAttribute('data-utils-handled')) {
+            form.setAttribute('data-utils-handled', 'true');
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 await handleFormSubmission(form);

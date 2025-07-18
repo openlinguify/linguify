@@ -2,7 +2,7 @@
 Profile-specific URLs
 """
 from django.urls import path
-from ..views.profile_views import UserProfileView
+from ..views.views import UserProfileView
 
 urlpatterns = [
     path('', UserProfileView.as_view(), name='profile'),  # /profile/

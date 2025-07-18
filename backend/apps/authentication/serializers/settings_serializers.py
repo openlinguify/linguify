@@ -210,6 +210,8 @@ class TermsAcceptanceSerializer(serializers.Serializer):
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(required=False)
+    
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'phone_number', 'bio',
@@ -523,6 +525,7 @@ class AppearanceSettingsSerializer(serializers.ModelSerializer):
 
 class GeneralSettingsSerializer(serializers.ModelSerializer):
     """Serializer for general user settings"""
+    username = serializers.CharField(required=False)
     
     class Meta:
         model = User

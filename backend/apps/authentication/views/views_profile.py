@@ -15,7 +15,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from ..profile import (
+from ..models.profile import (
     process_uploaded_profile_picture,
     delete_profile_picture,
     get_profile_picture_urls,
