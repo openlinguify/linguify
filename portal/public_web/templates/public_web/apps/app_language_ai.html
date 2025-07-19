@@ -8,40 +8,185 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section hero-gradient">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="app-icon me-3">
-                        <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI" style="width: 80px; height: 80px;">
+<section class="hero-gradient">
+    <div class="hero-section">
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle bg-white me-4" style="width: 80px; height: 80px; box-shadow: 0 8px 25px rgba(255,255,255,0.3);">
+                            <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI" style="width: 50px; height: 50px;">
+                        </div>
+                        <div>
+                            <h1 class="display-4 fw-bold mb-2 text-white">
+                                {% trans "Language AI" %}
+                            </h1>
+                            <p class="lead mb-0 text-white" style="opacity: 0.9;">{% trans "Your AI-powered language learning companion" %}</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 class="display-4 fw-bold mb-2 text-white">
-                            {% trans "Language AI" %}
-                        </h1>
-                        <p class="lead mb-0 text-white-75">{% trans "Your AI-powered language learning companion" %}</p>
+                    
+                    <div class="d-flex gap-3 flex-wrap">
+                        {% if not user.is_authenticated %}
+                            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-robot me-2"></i>{% trans "Start Learning" %}
+                            </a>
+                        {% else %}
+                            <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
+                        </a>
                     </div>
                 </div>
-                
-                <div class="d-flex gap-3">
-                    {% if not user.is_authenticated %}
-                        <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg">
-                            <i class="bi bi-robot me-2"></i>{% trans "Start Learning" %}
-                        </a>
-                    {% else %}
-                        <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-light btn-lg">
-                            <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
-                        </a>
-                    {% endif %}
-                    <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
-                        <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
-                    </a>
+                <div class="col-lg-6">
+                    <div class="text-center">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-4 bg-white" style="width: 200px; height: 200px; box-shadow: 0 15px 40px rgba(255,255,255,0.2);">
+                            <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI" style="width: 120px; height: 120px;">
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="text-center">
-                    <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI" style="width: 300px; height: 300px; opacity: 0.3;">
+        </div>
+    </div>
+</section>
+
+<!-- Description Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI" style="width: 50px; height: 50px;">
+                            </div>
+                            <h2 class="h3 mb-3" style="color: var(--linguify-primary);">{% trans "AI-Powered Language Learning" %}</h2>
+                        </div>
+                        
+                        <div class="description-content">
+                            <p class="lead text-center mb-4" style="color: #6b7280;">{% trans "Experience the future of language learning with our intelligent AI assistant that adapts to your learning style. Practice natural conversations and get real-time feedback." %}</p>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-chat-square-text text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{% trans "Natural Conversations" %}</h6>
+                                            <small class="text-muted">{% trans "Authentic & engaging dialogue" %}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-mic text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{% trans "Speech Recognition" %}</h6>
+                                            <small class="text-muted">{% trans "Advanced pronunciation analysis" %}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-lightning-charge text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{% trans "Real-time Corrections" %}</h6>
+                                            <small class="text-muted">{% trans "Instant grammar & vocabulary feedback" %}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-translate text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{% trans "Multi-language Support" %}</h6>
+                                            <small class="text-muted">{% trans "Native-level AI assistants" %}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-person-gear text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{% trans "Personalized Learning" %}</h6>
+                                            <small class="text-muted">{% trans "Adapts to your pace & goals" %}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-graph-up text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{% trans "Progress Tracking" %}</h6>
+                                            <small class="text-muted">{% trans "Detailed analytics & reports" %}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert border-0 mt-4" style="background: linear-gradient(135deg, rgba(45, 91, 186, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%); border-left: 4px solid var(--linguify-primary) !important;">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-lightbulb me-3" style="color: var(--linguify-primary); font-size: 1.2rem;"></i>
+                                    <div>
+                                        <strong style="color: var(--linguify-primary);">{% trans "AI Tip" %}:</strong>
+                                        <span class="text-muted">{% trans "Practice daily conversations with your AI tutor to see dramatic improvements in just weeks!" %}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4" style="border-color: rgba(45, 91, 186, 0.1);">
+                        
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-tag text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Category" %}</h6>
+                                <p class="text-muted small">{% trans "AI & Language Learning" %}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
+                                    <i class="bi bi-code-slash text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Version" %}</h6>
+                                <p class="text-muted small">1.0.0</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-person text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Author" %}</h6>
+                                <p class="text-muted small">Linguify Team</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -49,87 +194,49 @@
 </section>
 
 <!-- Features Section -->
-<section class="py-5">
+<section class="py-5" style="background: linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%);">
     <div class="container">
         <div class="row">
-            <div class="col-lg-10 mx-auto">
-                <div class="text-center mb-5">
-                    <h2 class="display-5 fw-bold mb-4">{% trans "AI-Powered Language Learning" %}</h2>
-                    <p class="lead">{% trans "Experience the future of language learning with our intelligent AI assistant that adapts to your learning style." %}</p>
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">{% trans "AI Features" %}</h2>
+                <p class="lead text-muted">{% trans "Cutting-edge AI technology for effective language learning" %}</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-chat-square-text"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">{% trans "Natural Conversations" %}</h5>
+                    <p class="text-muted">{% trans "Practice with AI that feels authentic and engaging" %}</p>
                 </div>
-                
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-chat-square-text text-primary" style="font-size: 3rem;"></i>
-                                </div>
-                                <h5 class="card-title">{% trans "Natural Conversations" %}</h5>
-                                <p class="card-text">{% trans "Practice speaking with our AI in natural, flowing conversations that feel authentic and engaging." %}</p>
-                            </div>
-                        </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-mic"></i>
                     </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-mic text-primary" style="font-size: 3rem;"></i>
-                                </div>
-                                <h5 class="card-title">{% trans "Speech Recognition" %}</h5>
-                                <p class="card-text">{% trans "Advanced speech recognition technology that understands your pronunciation and helps you improve." %}</p>
-                            </div>
-                        </div>
+                    <h5 class="fw-bold mb-3">{% trans "Speech Recognition" %}</h5>
+                    <p class="text-muted">{% trans "Advanced technology for pronunciation improvement" %}</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-lightning-charge"></i>
                     </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-lightning-charge text-primary" style="font-size: 3rem;"></i>
-                                </div>
-                                <h5 class="card-title">{% trans "Real-time Corrections" %}</h5>
-                                <p class="card-text">{% trans "Get instant feedback on grammar, pronunciation, and vocabulary with intelligent corrections." %}</p>
-                            </div>
-                        </div>
+                    <h5 class="fw-bold mb-3">{% trans "Real-time Feedback" %}</h5>
+                    <p class="text-muted">{% trans "Instant corrections for faster improvement" %}</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-person-gear"></i>
                     </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-translate text-primary" style="font-size: 3rem;"></i>
-                                </div>
-                                <h5 class="card-title">{% trans "Multi-language Support" %}</h5>
-                                <p class="card-text">{% trans "Practice multiple languages with native-level AI assistants tailored to each language." %}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-person-gear text-primary" style="font-size: 3rem;"></i>
-                                </div>
-                                <h5 class="card-title">{% trans "Personalized Learning" %}</h5>
-                                <p class="card-text">{% trans "AI adapts to your learning pace, preferences, and goals for a customized experience." %}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-graph-up text-primary" style="font-size: 3rem;"></i>
-                                </div>
-                                <h5 class="card-title">{% trans "Progress Tracking" %}</h5>
-                                <p class="card-text">{% trans "Monitor your improvement with detailed analytics and progress reports." %}</p>
-                            </div>
-                        </div>
-                    </div>
+                    <h5 class="fw-bold mb-3">{% trans "Personalized" %}</h5>
+                    <p class="text-muted">{% trans "Adapts to your unique learning style" %}</p>
                 </div>
             </div>
         </div>
@@ -255,28 +362,34 @@
 
 <!-- CTA Section -->
 <section class="cta-section">
-    <div class="container text-center">
-        <h2 class="display-5 fw-bold mb-4">
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white mb-3" style="width: 80px; height: 80px; box-shadow: 0 8px 30px rgba(255,255,255,0.3);">
+                <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI" style="width: 50px; height: 50px;">
+            </div>
+        </div>
+        
+        <h2 class="display-5 fw-bold mb-4 text-white">
             {% trans "Ready to start conversing with AI?" %}
         </h2>
-        <p class="lead mb-5">
+        <p class="lead mb-5 text-white" style="opacity: 0.95; max-width: 600px; margin: 0 auto;">
             {% trans "Join thousands of learners who are improving their language skills with our AI-powered conversations." %}
         </p>
-        {% if not user.is_authenticated %}
-            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-primary btn-lg me-3">
-                <i class="bi bi-robot me-2"></i>{% trans "Start AI Conversation" %}
-            </a>
-            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
+        
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+            {% if not user.is_authenticated %}
+                <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                    <i class="bi bi-robot me-2"></i>{% trans "Start AI Conversation" %}
+                </a>
+            {% else %}
+                <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                    <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
+                </a>
+            {% endif %}
+            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" style="border-radius: 16px; border: 2px solid rgba(255,255,255,0.8);">
                 <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
             </a>
-        {% else %}
-            <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-primary btn-lg me-3">
-                <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
-            </a>
-            <a href="http://127.0.0.1:8000/app-store/" class="btn btn-outline-light btn-lg">
-                <i class="bi bi-shop me-2"></i>{% trans "Explore App Store" %}
-            </a>
-        {% endif %}
+        </div>
     </div>
 </section>
 

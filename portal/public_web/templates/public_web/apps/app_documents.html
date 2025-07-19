@@ -8,40 +8,185 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section hero-gradient">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="app-icon me-3">
-                        <img src="{% static 'img/app_icon/documents.png' %}" alt="Documents" style="width: 80px; height: 80px;">
+<section class="hero-gradient">
+    <div class="hero-section">
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle bg-white me-4" style="width: 80px; height: 80px; box-shadow: 0 8px 25px rgba(255,255,255,0.3);">
+                            <img src="{% static 'img/app_icon/documents.png' %}" alt="Documents" style="width: 50px; height: 50px;">
+                        </div>
+                        <div>
+                            <h1 class="display-4 fw-bold mb-2 text-white">
+                                {% trans "Documents" %}
+                            </h1>
+                            <p class="lead mb-0 text-white" style="opacity: 0.9;">{% trans "Real-time collaborative documents with rich text editing" %}</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 class="display-4 fw-bold mb-2 text-white">
-                            {% trans "Documents" %}
-                        </h1>
-                        <p class="lead mb-0 text-white-75">{% trans "Real-time collaborative documents with rich text editing" %}</p>
+                    
+                    <div class="d-flex gap-3 flex-wrap">
+                        {% if not user.is_authenticated %}
+                            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-person-plus me-2"></i>{% trans "Start for free" %}
+                            </a>
+                        {% else %}
+                            <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
+                        </a>
                     </div>
                 </div>
-                
-                <div class="d-flex gap-3">
-                    {% if not user.is_authenticated %}
-                        <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg">
-                            <i class="bi bi-person-plus me-2"></i>{% trans "Start for free" %}
-                        </a>
-                    {% else %}
-                        <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-light btn-lg">
-                            <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
-                        </a>
-                    {% endif %}
-                    <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
-                        <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
-                    </a>
+                <div class="col-lg-6">
+                    <div class="text-center">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-4 bg-white" style="width: 200px; height: 200px; box-shadow: 0 15px 40px rgba(255,255,255,0.2);">
+                            <img src="{% static 'img/app_icon/documents.png' %}" alt="Documents" style="width: 120px; height: 120px;">
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="text-center">
-                    <img src="{% static 'img/app_icon/documents.png' %}" alt="Documents" style="width: 300px; height: 300px; opacity: 0.3;">
+        </div>
+    </div>
+</section>
+
+<!-- Description Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <img src="{% static 'img/app_icon/documents.png' %}" alt="Documents" style="width: 50px; height: 50px;">
+                            </div>
+                            <h2 class="h3 mb-3" style="color: var(--linguify-primary);">{% trans "Collaborative Document Creation" %}</h2>
+                        </div>
+                        
+                        <div class="description-content">
+                            <p class="lead text-center mb-4" style="color: #6b7280;">{% trans "Create, edit, and share educational documents with real-time collaboration features. Perfect for team projects, research papers, and educational content creation." %}</p>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-file-richtext text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{% trans "Rich Text Editor" %}</h6>
+                                            <small class="text-muted">{% trans "Advanced formatting options" %}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-people text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{% trans "Real-time Collaboration" %}</h6>
+                                            <small class="text-muted">{% trans "Live editing with team" %}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-clock-history text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{% trans "Version Control" %}</h6>
+                                            <small class="text-muted">{% trans "Track changes & history" %}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-share text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{% trans "Smart Sharing" %}</h6>
+                                            <small class="text-muted">{% trans "Customizable permissions" %}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-folder-plus text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{% trans "Organization" %}</h6>
+                                            <small class="text-muted">{% trans "Folders, tags & categories" %}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-download text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{% trans "Export Options" %}</h6>
+                                            <small class="text-muted">{% trans "PDF, Word & more" %}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert border-0 mt-4" style="background: linear-gradient(135deg, rgba(45, 91, 186, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%); border-left: 4px solid var(--linguify-primary) !important;">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-lightbulb me-3" style="color: var(--linguify-primary); font-size: 1.2rem;"></i>
+                                    <div>
+                                        <strong style="color: var(--linguify-primary);">{% trans "Tip" %}:</strong>
+                                        <span class="text-muted">{% trans "Use collaborative comments and suggestions to provide feedback on documents in real-time!" %}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4" style="border-color: rgba(45, 91, 186, 0.1);">
+                        
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-tag text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Category" %}</h6>
+                                <p class="text-muted small">{% trans "Productivity & Collaboration" %}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
+                                    <i class="bi bi-code-slash text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Version" %}</h6>
+                                <p class="text-muted small">1.0.0</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-person text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Author" %}</h6>
+                                <p class="text-muted small">Linguify Team</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -49,87 +194,49 @@
 </section>
 
 <!-- Features Section -->
-<section class="py-5">
+<section class="py-5" style="background: linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%);">
     <div class="container">
         <div class="row">
-            <div class="col-lg-10 mx-auto">
-                <div class="text-center mb-5">
-                    <h2 class="display-5 fw-bold mb-4">{% trans "Powerful Document Collaboration" %}</h2>
-                    <p class="lead">{% trans "Create, edit, and share educational documents with real-time collaboration features." %}</p>
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">{% trans "Powerful Document Features" %}</h2>
+                <p class="lead text-muted">{% trans "Everything you need for professional document creation and collaboration" %}</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-file-richtext"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">{% trans "Rich Text Editor" %}</h5>
+                    <p class="text-muted">{% trans "Advanced formatting with images, tables, and more" %}</p>
                 </div>
-                
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-file-richtext text-primary" style="font-size: 3rem;"></i>
-                                </div>
-                                <h5 class="card-title">{% trans "Rich Text Editor" %}</h5>
-                                <p class="card-text">{% trans "Create documents with advanced formatting, images, tables, and more." %}</p>
-                            </div>
-                        </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-people"></i>
                     </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-people text-primary" style="font-size: 3rem;"></i>
-                                </div>
-                                <h5 class="card-title">{% trans "Real-time Collaboration" %}</h5>
-                                <p class="card-text">{% trans "Work together on documents with live editing and instant synchronization." %}</p>
-                            </div>
-                        </div>
+                    <h5 class="fw-bold mb-3">{% trans "Live Collaboration" %}</h5>
+                    <p class="text-muted">{% trans "Work together with real-time synchronization" %}</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-clock-history"></i>
                     </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-clock-history text-primary" style="font-size: 3rem;"></i>
-                                </div>
-                                <h5 class="card-title">{% trans "Version Control" %}</h5>
-                                <p class="card-text">{% trans "Track changes, view document history, and restore previous versions." %}</p>
-                            </div>
-                        </div>
+                    <h5 class="fw-bold mb-3">{% trans "Version History" %}</h5>
+                    <p class="text-muted">{% trans "Track changes and restore previous versions" %}</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-download"></i>
                     </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-share text-primary" style="font-size: 3rem;"></i>
-                                </div>
-                                <h5 class="card-title">{% trans "Smart Sharing" %}</h5>
-                                <p class="card-text">{% trans "Share documents with customizable permissions and access controls." %}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-folder-plus text-primary" style="font-size: 3rem;"></i>
-                                </div>
-                                <h5 class="card-title">{% trans "Organization" %}</h5>
-                                <p class="card-text">{% trans "Organize documents with folders, tags, and categories for easy navigation." %}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-download text-primary" style="font-size: 3rem;"></i>
-                                </div>
-                                <h5 class="card-title">{% trans "Export Options" %}</h5>
-                                <p class="card-text">{% trans "Export documents to PDF, Word, and other formats for offline use." %}</p>
-                            </div>
-                        </div>
-                    </div>
+                    <h5 class="fw-bold mb-3">{% trans "Export Formats" %}</h5>
+                    <p class="text-muted">{% trans "Export to PDF, Word, and other formats" %}</p>
                 </div>
             </div>
         </div>
@@ -137,62 +244,64 @@
 </section>
 
 <!-- Use Cases Section -->
-<section class="py-5 bg-light">
+<section class="py-5">
     <div class="container">
         <div class="row">
-            <div class="col-lg-10 mx-auto">
-                <div class="text-center mb-5">
-                    <h2 class="display-5 fw-bold mb-4">{% trans "Perfect for Education" %}</h2>
-                    <p class="lead">{% trans "Designed specifically for educational content creation and collaboration." %}</p>
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">{% trans "Perfect for Education" %}</h2>
+                <p class="lead text-muted">{% trans "Designed specifically for educational content creation and collaboration" %}</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                <i class="bi bi-book text-white"></i>
+                            </div>
+                            <h5 class="mb-0 fw-bold">{% trans "Course Materials" %}</h5>
+                        </div>
+                        <p class="text-muted">{% trans "Create and share lesson plans, course notes, and educational resources with students and colleagues." %}</p>
+                    </div>
                 </div>
-                
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-start">
-                            <div class="me-3">
-                                <i class="bi bi-book text-primary" style="font-size: 2rem;"></i>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
+                                <i class="bi bi-people-fill text-white"></i>
                             </div>
-                            <div>
-                                <h5>{% trans "Course Materials" %}</h5>
-                                <p>{% trans "Create and share lesson plans, course notes, and educational resources with students and colleagues." %}</p>
-                            </div>
+                            <h5 class="mb-0 fw-bold">{% trans "Group Projects" %}</h5>
                         </div>
+                        <p class="text-muted">{% trans "Enable students to collaborate on assignments and projects with real-time editing and feedback." %}</p>
                     </div>
-                    
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-start">
-                            <div class="me-3">
-                                <i class="bi bi-people-fill text-primary" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                <i class="bi bi-chat-square-text text-white"></i>
                             </div>
-                            <div>
-                                <h5>{% trans "Group Projects" %}</h5>
-                                <p>{% trans "Enable students to collaborate on assignments and projects with real-time editing and feedback." %}</p>
-                            </div>
+                            <h5 class="mb-0 fw-bold">{% trans "Research Papers" %}</h5>
                         </div>
+                        <p class="text-muted">{% trans "Write and collaborate on research papers with citation management and academic formatting." %}</p>
                     </div>
-                    
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-start">
-                            <div class="me-3">
-                                <i class="bi bi-chat-square-text text-primary" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
+                                <i class="bi bi-journal-text text-white"></i>
                             </div>
-                            <div>
-                                <h5>{% trans "Research Papers" %}</h5>
-                                <p>{% trans "Write and collaborate on research papers with citation management and academic formatting." %}</p>
-                            </div>
+                            <h5 class="mb-0 fw-bold">{% trans "Study Guides" %}</h5>
                         </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-start">
-                            <div class="me-3">
-                                <i class="bi bi-journal-text text-primary" style="font-size: 2rem;"></i>
-                            </div>
-                            <div>
-                                <h5>{% trans "Study Guides" %}</h5>
-                                <p>{% trans "Create comprehensive study guides and share them with classmates for collaborative learning." %}</p>
-                            </div>
-                        </div>
+                        <p class="text-muted">{% trans "Create comprehensive study guides and share them with classmates for collaborative learning." %}</p>
                     </div>
                 </div>
             </div>
@@ -202,28 +311,34 @@
 
 <!-- CTA Section -->
 <section class="cta-section">
-    <div class="container text-center">
-        <h2 class="display-5 fw-bold mb-4">
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white mb-3" style="width: 80px; height: 80px; box-shadow: 0 8px 30px rgba(255,255,255,0.3);">
+                <img src="{% static 'img/app_icon/documents.png' %}" alt="Documents" style="width: 50px; height: 50px;">
+            </div>
+        </div>
+        
+        <h2 class="display-5 fw-bold mb-4 text-white">
             {% trans "Ready to start collaborating?" %}
         </h2>
-        <p class="lead mb-5">
+        <p class="lead mb-5 text-white" style="opacity: 0.95; max-width: 600px; margin: 0 auto;">
             {% trans "Join thousands of educators and students using our collaborative document platform." %}
         </p>
-        {% if not user.is_authenticated %}
-            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-primary btn-lg me-3">
-                <i class="bi bi-rocket me-2"></i>{% trans "Start for free" %}
-            </a>
-            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
+        
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+            {% if not user.is_authenticated %}
+                <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                    <i class="bi bi-rocket-takeoff me-2"></i>{% trans "Start for free" %}
+                </a>
+            {% else %}
+                <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                    <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
+                </a>
+            {% endif %}
+            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" style="border-radius: 16px; border: 2px solid rgba(255,255,255,0.8);">
                 <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
             </a>
-        {% else %}
-            <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-primary btn-lg me-3">
-                <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
-            </a>
-            <a href="http://127.0.0.1:8000/app-store/" class="btn btn-outline-light btn-lg">
-                <i class="bi bi-shop me-2"></i>{% trans "Explore App Store" %}
-            </a>
-        {% endif %}
+        </div>
     </div>
 </section>
 {% endblock %}

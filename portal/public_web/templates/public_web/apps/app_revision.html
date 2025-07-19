@@ -1,5 +1,6 @@
 {% extends "public_web/public_base.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block title %}Révision - Système de Flashcards avec Répétition Espacée{% endblock %}
 
@@ -7,40 +8,44 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="app-icon me-3" style="font-size: 3rem; color: #fff;">
-                        🎯
+<section class="hero-gradient">
+    <div class="hero-section">
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle bg-white me-4" style="width: 80px; height: 80px; box-shadow: 0 8px 25px rgba(255,255,255,0.3);">
+                            <img src="{% static 'img/app_icon/memory.png' %}" alt="Révision" style="width: 50px; height: 50px;">
+                        </div>
+                        <div>
+                            <h1 class="display-4 fw-bold mb-2 text-white">
+                                Révision
+                            </h1>
+                            <p class="lead mb-0 text-white" style="opacity: 0.9;">Système de flashcards avec répétition espacée</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 class="display-4 fw-bold mb-2">
-                            Révision
-                        </h1>
-                        <p class="lead mb-0">Système de flashcards avec répétition espacée</p>
+                    
+                    <div class="d-flex gap-3 flex-wrap">
+                        {% if not user.is_authenticated %}
+                            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-person-plus me-2"></i>{% trans "Commencer gratuitement" %}
+                            </a>
+                        {% else %}
+                            <a href="/revision/" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-lightning-charge me-2"></i>{% trans "Commencer les révisions" %}
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="bi bi-chat-dots me-2"></i>{% trans "Contact" %}
+                        </a>
                     </div>
                 </div>
-                
-                <div class="d-flex gap-3">
-                    {% if not user.is_authenticated %}
-                        <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg">
-                            <i class="bi bi-person-plus me-2"></i>{% trans "Commencer gratuitement" %}
-                        </a>
-                    {% else %}
-                        <a href="/revision/" class="btn btn-light btn-lg">
-                            <i class="bi bi-lightning-charge me-2"></i>{% trans "Commencer les révisions" %}
-                        </a>
-                    {% endif %}
-                    <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
-                        <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="text-center">
-                    <div style="font-size: 10rem; opacity: 0.3; color: #fff;">🎯</div>
+                <div class="col-lg-6">
+                    <div class="text-center">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-4 bg-white" style="width: 200px; height: 200px; box-shadow: 0 15px 40px rgba(255,255,255,0.2);">
+                            <img src="{% static 'img/app_icon/memory.png' %}" alt="Révision" style="width: 120px; height: 120px;">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -52,53 +57,159 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto">
-                <div class="card shadow-sm">
+                <div class="card border-0 shadow-lg" style="border-radius: 20px;">
                     <div class="card-body p-5">
-                        <h2 class="h3 mb-4">{% trans "Système de Flashcards Intelligent" %}</h2>
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <img src="{% static 'img/app_icon/memory.png' %}" alt="Révision" style="width: 50px; height: 50px;">
+                            </div>
+                            <h2 class="h3 mb-3" style="color: var(--linguify-primary);">{% trans "Système de Flashcards Intelligent" %}</h2>
+                        </div>
+                        
                         <div class="description-content">
-                            <p>Notre système de révision utilise les principes scientifiques de la répétition espacée pour optimiser votre mémorisation. Créez vos decks de flashcards et laissez l'algorithme vous guider vers une mémorisation durable.</p>
+                            <p class="lead text-center mb-4" style="color: #6b7280;">Notre système de révision utilise les principes scientifiques de la répétition espacée pour optimiser votre mémorisation. Créez vos decks de flashcards et laissez l'algorithme vous guider vers une mémorisation durable.</p>
                             
-                            <h4>Fonctionnalités principales :</h4>
-                            <ul>
-                                <li><strong>Algorithme de répétition espacée</strong> pour une mémorisation optimale</li>
-                                <li><strong>Création de decks personnalisés</strong> avec vos propres contenus</li>
-                                <li><strong>Planification intelligente</strong> des sessions de révision</li>
-                                <li><strong>Suivi détaillé des progrès</strong> et statistiques de performance</li>
-                                <li><strong>Multiples modes de révision</strong> : flashcards, apprentissage, association</li>
-                                <li><strong>Intégration vocabulaire</strong> depuis vos cours automatiquement</li>
-                                <li><strong>Révision rapide</strong> pour les sessions express</li>
-                                <li><strong>Analytics avancés</strong> pour optimiser votre apprentissage</li>
-                            </ul>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-brain text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Algorithme de répétition espacée</h6>
+                                            <small class="text-muted">Mémorisation optimale</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-collection text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Decks personnalisés</h6>
+                                            <small class="text-muted">Créez vos contenus</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-calendar-check text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Planification intelligente</h6>
+                                            <small class="text-muted">Sessions optimisées</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-graph-up text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Suivi des progrès</h6>
+                                            <small class="text-muted">Statistiques détaillées</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-play-circle text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Multiples modes</h6>
+                                            <small class="text-muted">Flashcards, quiz, association</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-translate text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Intégration vocabulaire</h6>
+                                            <small class="text-muted">Depuis vos cours</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-lightning text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Révision rapide</h6>
+                                            <small class="text-muted">Sessions express</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-bar-chart text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Analytics avancés</h6>
+                                            <small class="text-muted">Optimisation continue</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             
-                            <div class="alert alert-warning mt-4">
-                                <i class="bi bi-star me-2"></i>
-                                <strong>Science :</strong> La répétition espacée peut améliorer votre rétention jusqu'à 90% !
+                            <div class="alert border-0 mt-4" style="background: linear-gradient(135deg, rgba(45, 91, 186, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%); border-left: 4px solid var(--linguify-primary) !important;">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-star me-3" style="color: var(--linguify-primary); font-size: 1.2rem;"></i>
+                                    <div>
+                                        <strong style="color: var(--linguify-primary);">Science :</strong>
+                                        <span class="text-muted">La répétition espacée peut améliorer votre rétention jusqu'à 90% !</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
-                        <hr class="my-4">
+                        <hr class="my-4" style="border-color: rgba(45, 91, 186, 0.1);">
                         
                         <div class="row text-center">
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <i class="bi bi-tag text-primary" style="font-size: 2rem;"></i>
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-tag text-white"></i>
                                 </div>
-                                <h6 class="fw-bold">{% trans "Category" %}</h6>
-                                <p class="text-muted">Mémorisation & Révision</p>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Category" %}</h6>
+                                <p class="text-muted small">Mémorisation & Révision</p>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <i class="bi bi-code-slash text-primary" style="font-size: 2rem;"></i>
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
+                                    <i class="bi bi-code-slash text-white"></i>
                                 </div>
-                                <h6 class="fw-bold">{% trans "Version" %}</h6>
-                                <p class="text-muted">2.0.0</p>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Version" %}</h6>
+                                <p class="text-muted small">2.0.0</p>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <i class="bi bi-person text-primary" style="font-size: 2rem;"></i>
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-person text-white"></i>
                                 </div>
-                                <h6 class="fw-bold">{% trans "Author" %}</h6>
-                                <p class="text-muted">Linguify Team</p>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Author" %}</h6>
+                                <p class="text-muted small">Linguify Team</p>
                             </div>
                         </div>
                     </div>
@@ -109,48 +220,48 @@
 </section>
 
 <!-- Features Section -->
-<section class="py-5 bg-light">
+<section class="py-5" style="background: linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%);">
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center mb-5">
-                <h2 class="display-6 fw-bold">Pourquoi la Répétition Espacée ?</h2>
+                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">Pourquoi la Répétition Espacée ?</h2>
                 <p class="lead text-muted">Une méthode scientifiquement prouvée</p>
             </div>
         </div>
         <div class="row g-4">
             <div class="col-md-6 col-lg-3">
-                <div class="text-center h-100">
-                    <div class="mb-3">
-                        <i class="bi bi-lightning-charge text-warning" style="font-size: 3rem;"></i>
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-lightning-charge"></i>
                     </div>
-                    <h5 class="fw-bold">Flashcards Intelligentes</h5>
+                    <h5 class="fw-bold mb-3">Flashcards Intelligentes</h5>
                     <p class="text-muted">Cartes adaptatives qui s'ajustent à votre rythme</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="text-center h-100">
-                    <div class="mb-3">
-                        <i class="bi bi-clock text-primary" style="font-size: 3rem;"></i>
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-clock"></i>
                     </div>
-                    <h5 class="fw-bold">Timing Optimal</h5>
+                    <h5 class="fw-bold mb-3">Timing Optimal</h5>
                     <p class="text-muted">Révision au moment parfait pour la mémorisation</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="text-center h-100">
-                    <div class="mb-3">
-                        <i class="bi bi-brain text-success" style="font-size: 3rem;"></i>
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-brain"></i>
                     </div>
-                    <h5 class="fw-bold">Mémorisation Durable</h5>
+                    <h5 class="fw-bold mb-3">Mémorisation Durable</h5>
                     <p class="text-muted">Transfert efficace en mémoire long terme</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="text-center h-100">
-                    <div class="mb-3">
-                        <i class="bi bi-graph-up text-info" style="font-size: 3rem;"></i>
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-graph-up"></i>
                     </div>
-                    <h5 class="fw-bold">Suivi Précis</h5>
+                    <h5 class="fw-bold mb-3">Suivi Précis</h5>
                     <p class="text-muted">Analytics détaillés de vos performances</p>
                 </div>
             </div>
@@ -217,29 +328,35 @@
 </section>
 
 <!-- CTA Section -->
-<section class="cta-section" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 4rem 0;">
-    <div class="container text-center">
-        <h2 class="display-5 fw-bold mb-4">
+<section class="cta-section">
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white mb-3" style="width: 80px; height: 80px; box-shadow: 0 8px 30px rgba(255,255,255,0.3);">
+                <img src="{% static 'img/app_icon/memory.png' %}" alt="Révision" style="width: 50px; height: 50px;">
+            </div>
+        </div>
+        
+        <h2 class="display-5 fw-bold mb-4 text-white">
             {% trans "Prêt à optimiser votre mémorisation ?" %}
         </h2>
-        <p class="lead mb-5">
+        <p class="lead mb-5 text-white" style="opacity: 0.95; max-width: 600px; margin: 0 auto;">
             {% trans "Découvrez la puissance de la répétition espacée et transformez votre façon d'apprendre." %}
         </p>
-        {% if not user.is_authenticated %}
-            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg me-3">
-                <i class="bi bi-rocket me-2"></i>{% trans "Commencer gratuitement" %}
+        
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+            {% if not user.is_authenticated %}
+                <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                    <i class="bi bi-rocket-takeoff me-2"></i>{% trans "Commencer gratuitement" %}
+                </a>
+            {% else %}
+                <a href="/revision/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                    <i class="bi bi-lightning-charge me-2"></i>{% trans "Commencer les révisions" %}
+                </a>
+            {% endif %}
+            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" style="border-radius: 16px; border: 2px solid rgba(255,255,255,0.8);">
+                <i class="bi bi-chat-dots me-2"></i>{% trans "Contact" %}
             </a>
-            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
-                <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
-            </a>
-        {% else %}
-            <a href="/revision/" class="btn btn-light btn-lg me-3">
-                <i class="bi bi-lightning-charge me-2"></i>{% trans "Commencer les révisions" %}
-            </a>
-            <a href="http://127.0.0.1:8000/app-store/" class="btn btn-outline-light btn-lg">
-                <i class="bi bi-shop me-2"></i>{% trans "Explore App Store" %}
-            </a>
-        {% endif %}
+        </div>
     </div>
 </section>
 {% endblock %}

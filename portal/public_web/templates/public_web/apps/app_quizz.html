@@ -1,5 +1,6 @@
 {% extends "public_web/public_base.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block title %}Quiz Interactif - Créateur de Quiz{% endblock %}
 
@@ -7,40 +8,44 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="app-icon me-3" style="font-size: 3rem; color: #fff;">
-                        🧠
+<section class="hero-gradient">
+    <div class="hero-section">
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle bg-white me-4" style="width: 80px; height: 80px; box-shadow: 0 8px 25px rgba(255,255,255,0.3);">
+                            <img src="{% static 'img/app_icon/quizz.png' %}" alt="Quiz" style="width: 50px; height: 50px;">
+                        </div>
+                        <div>
+                            <h1 class="display-4 fw-bold mb-2 text-white">
+                                Quiz Interactif
+                            </h1>
+                            <p class="lead mb-0 text-white" style="opacity: 0.9;">Créez et partagez des quiz pour tester vos connaissances</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 class="display-4 fw-bold mb-2">
-                            Quiz Interactif
-                        </h1>
-                        <p class="lead mb-0">Créez et partagez des quiz pour tester vos connaissances</p>
+                    
+                    <div class="d-flex gap-3 flex-wrap">
+                        {% if not user.is_authenticated %}
+                            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-person-plus me-2"></i>{% trans "Commencer gratuitement" %}
+                            </a>
+                        {% else %}
+                            <a href="/quizz/" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-patch-question me-2"></i>{% trans "Créer un quiz" %}
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="bi bi-chat-dots me-2"></i>{% trans "Contact" %}
+                        </a>
                     </div>
                 </div>
-                
-                <div class="d-flex gap-3">
-                    {% if not user.is_authenticated %}
-                        <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg">
-                            <i class="bi bi-person-plus me-2"></i>{% trans "Commencer gratuitement" %}
-                        </a>
-                    {% else %}
-                        <a href="/quizz/" class="btn btn-light btn-lg">
-                            <i class="bi bi-patch-question me-2"></i>{% trans "Créer un quiz" %}
-                        </a>
-                    {% endif %}
-                    <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
-                        <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="text-center">
-                    <div style="font-size: 10rem; opacity: 0.3; color: #fff;">🧠</div>
+                <div class="col-lg-6">
+                    <div class="text-center">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-4 bg-white" style="width: 200px; height: 200px; box-shadow: 0 15px 40px rgba(255,255,255,0.2);">
+                            <img src="{% static 'img/app_icon/quizz.png' %}" alt="Quiz" style="width: 120px; height: 120px;">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -52,53 +57,159 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto">
-                <div class="card shadow-sm">
+                <div class="card border-0 shadow-lg" style="border-radius: 20px;">
                     <div class="card-body p-5">
-                        <h2 class="h3 mb-4">{% trans "Système de Quiz Interactif" %}</h2>
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <img src="{% static 'img/app_icon/quizz.png' %}" alt="Quiz" style="width: 50px; height: 50px;">
+                            </div>
+                            <h2 class="h3 mb-3" style="color: var(--linguify-primary);">{% trans "Système de Quiz Interactif" %}</h2>
+                        </div>
+                        
                         <div class="description-content">
-                            <p>Créez des quiz personnalisés pour tester vos connaissances et celles de votre communauté. Notre système de quiz intelligent s'adapte à votre niveau et vous aide à progresser efficacement.</p>
+                            <p class="lead text-center mb-4" style="color: #6b7280;">Créez des quiz personnalisés pour tester vos connaissances et celles de votre communauté. Notre système de quiz intelligent s'adapte à votre niveau et vous aide à progresser efficacement.</p>
                             
-                            <h4>Fonctionnalités principales :</h4>
-                            <ul>
-                                <li><strong>Création de quiz personnalisés</strong> avec différents types de questions</li>
-                                <li><strong>Questions à choix multiples</strong>, vrai/faux, réponses courtes</li>
-                                <li><strong>Système de notation avancé</strong> avec feedback détaillé</li>
-                                <li><strong>Analytics de performance</strong> pour suivre vos progrès</li>
-                                <li><strong>Partage communautaire</strong> de vos quiz avec d'autres apprenants</li>
-                                <li><strong>Quiz adaptatifs</strong> qui s'ajustent à votre niveau</li>
-                                <li><strong>Bibliothèque de quiz</strong> créés par la communauté</li>
-                                <li><strong>Statistiques détaillées</strong> de vos performances</li>
-                            </ul>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-patch-question text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Quiz personnalisés</h6>
+                                            <small class="text-muted">Différents types de questions</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-check-circle text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Questions multiples</h6>
+                                            <small class="text-muted">Choix multiples, vrai/faux</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-award text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Notation avancée</h6>
+                                            <small class="text-muted">Feedback détaillé</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-graph-up text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Analytics de performance</h6>
+                                            <small class="text-muted">Suivi des progrès</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-share text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Partage communautaire</h6>
+                                            <small class="text-muted">Avec d'autres apprenants</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-puzzle text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Quiz adaptatifs</h6>
+                                            <small class="text-muted">Ajustés à votre niveau</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-collection text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Bibliothèque de quiz</h6>
+                                            <small class="text-muted">Créés par la communauté</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-bar-chart text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Statistiques détaillées</h6>
+                                            <small class="text-muted">Performances complètes</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             
-                            <div class="alert alert-success mt-4">
-                                <i class="bi bi-trophy me-2"></i>
-                                <strong>Challenge :</strong> Participez aux défis hebdomadaires et grimpez dans le classement !
+                            <div class="alert border-0 mt-4" style="background: linear-gradient(135deg, rgba(45, 91, 186, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%); border-left: 4px solid var(--linguify-primary) !important;">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-trophy me-3" style="color: var(--linguify-primary); font-size: 1.2rem;"></i>
+                                    <div>
+                                        <strong style="color: var(--linguify-primary);">Challenge :</strong>
+                                        <span class="text-muted">Participez aux défis hebdomadaires et grimpez dans le classement !</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
-                        <hr class="my-4">
+                        <hr class="my-4" style="border-color: rgba(45, 91, 186, 0.1);">
                         
                         <div class="row text-center">
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <i class="bi bi-tag text-primary" style="font-size: 2rem;"></i>
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-tag text-white"></i>
                                 </div>
-                                <h6 class="fw-bold">{% trans "Category" %}</h6>
-                                <p class="text-muted">Évaluation & Tests</p>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Category" %}</h6>
+                                <p class="text-muted small">Évaluation & Tests</p>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <i class="bi bi-code-slash text-primary" style="font-size: 2rem;"></i>
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
+                                    <i class="bi bi-code-slash text-white"></i>
                                 </div>
-                                <h6 class="fw-bold">{% trans "Version" %}</h6>
-                                <p class="text-muted">1.0.0</p>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Version" %}</h6>
+                                <p class="text-muted small">1.0.0</p>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <i class="bi bi-person text-primary" style="font-size: 2rem;"></i>
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-person text-white"></i>
                                 </div>
-                                <h6 class="fw-bold">{% trans "Author" %}</h6>
-                                <p class="text-muted">Linguify Team</p>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Author" %}</h6>
+                                <p class="text-muted small">Linguify Team</p>
                             </div>
                         </div>
                     </div>
@@ -109,48 +220,48 @@
 </section>
 
 <!-- Features Section -->
-<section class="py-5 bg-light">
+<section class="py-5" style="background: linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%);">
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center mb-5">
-                <h2 class="display-6 fw-bold">Pourquoi choisir notre Quiz Interactif ?</h2>
+                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">Pourquoi choisir notre Quiz Interactif ?</h2>
                 <p class="lead text-muted">Des fonctionnalités avancées pour un apprentissage efficace</p>
             </div>
         </div>
         <div class="row g-4">
             <div class="col-md-6 col-lg-3">
-                <div class="text-center h-100">
-                    <div class="mb-3">
-                        <i class="bi bi-patch-question text-danger" style="font-size: 3rem;"></i>
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-patch-question"></i>
                     </div>
-                    <h5 class="fw-bold">Quiz Personnalisés</h5>
+                    <h5 class="fw-bold mb-3">Quiz Personnalisés</h5>
                     <p class="text-muted">Créez vos propres questions adaptées à vos besoins</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="text-center h-100">
-                    <div class="mb-3">
-                        <i class="bi bi-graph-up text-primary" style="font-size: 3rem;"></i>
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-graph-up"></i>
                     </div>
-                    <h5 class="fw-bold">Analytics Avancés</h5>
+                    <h5 class="fw-bold mb-3">Analytics Avancés</h5>
                     <p class="text-muted">Suivez vos progrès avec des statistiques détaillées</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="text-center h-100">
-                    <div class="mb-3">
-                        <i class="bi bi-share text-warning" style="font-size: 3rem;"></i>
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-share"></i>
                     </div>
-                    <h5 class="fw-bold">Partage Communautaire</h5>
+                    <h5 class="fw-bold mb-3">Partage Communautaire</h5>
                     <p class="text-muted">Partagez vos quiz et découvrez ceux des autres</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="text-center h-100">
-                    <div class="mb-3">
-                        <i class="bi bi-award text-success" style="font-size: 3rem;"></i>
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-award"></i>
                     </div>
-                    <h5 class="fw-bold">Système de Scores</h5>
+                    <h5 class="fw-bold mb-3">Système de Scores</h5>
                     <p class="text-muted">Notation intelligente avec feedback personnalisé</p>
                 </div>
             </div>
@@ -217,29 +328,35 @@
 </section>
 
 <!-- CTA Section -->
-<section class="cta-section" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 4rem 0;">
-    <div class="container text-center">
-        <h2 class="display-5 fw-bold mb-4">
+<section class="cta-section">
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white mb-3" style="width: 80px; height: 80px; box-shadow: 0 8px 30px rgba(255,255,255,0.3);">
+                <img src="{% static 'img/app_icon/quizz.png' %}" alt="Quiz" style="width: 50px; height: 50px;">
+            </div>
+        </div>
+        
+        <h2 class="display-5 fw-bold mb-4 text-white">
             {% trans "Prêt à tester vos connaissances ?" %}
         </h2>
-        <p class="lead mb-5">
+        <p class="lead mb-5 text-white" style="opacity: 0.95; max-width: 600px; margin: 0 auto;">
             {% trans "Créez votre premier quiz et découvrez une nouvelle façon d'apprendre et de réviser." %}
         </p>
-        {% if not user.is_authenticated %}
-            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg me-3">
-                <i class="bi bi-rocket me-2"></i>{% trans "Commencer gratuitement" %}
+        
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+            {% if not user.is_authenticated %}
+                <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                    <i class="bi bi-rocket-takeoff me-2"></i>{% trans "Commencer gratuitement" %}
+                </a>
+            {% else %}
+                <a href="/quizz/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                    <i class="bi bi-patch-question me-2"></i>{% trans "Créer un quiz" %}
+                </a>
+            {% endif %}
+            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" style="border-radius: 16px; border: 2px solid rgba(255,255,255,0.8);">
+                <i class="bi bi-chat-dots me-2"></i>{% trans "Contact" %}
             </a>
-            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
-                <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
-            </a>
-        {% else %}
-            <a href="/quizz/" class="btn btn-light btn-lg me-3">
-                <i class="bi bi-patch-question me-2"></i>{% trans "Créer un quiz" %}
-            </a>
-            <a href="http://127.0.0.1:8000/app-store/" class="btn btn-outline-light btn-lg">
-                <i class="bi bi-shop me-2"></i>{% trans "Explore App Store" %}
-            </a>
-        {% endif %}
+        </div>
     </div>
 </section>
 {% endblock %}
