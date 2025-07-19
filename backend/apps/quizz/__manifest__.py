@@ -2,7 +2,7 @@
 __manifest__ = {
     'name': 'Quiz Interactif',
     'version': '1.0.0',
-    'category': 'Practice',
+    'category': 'Productivity',
     'summary': 'Créez et participez à des quiz personnalisés',
     'description': '''
 Quiz Interactif Module pour Linguify
@@ -43,8 +43,12 @@ Usage:
     'frontend_components': {
         'main_component': 'QuizzView',
         'route': '/quizz',
-        'icon': 'Trophy',
+        'icon': 'bi-patch-question',
+        'static_icon': '/static/quizz/description/icon.png',
         'menu_order': 5,
+        'display_category': 'productivity',
+        'category_label': 'Productivité',
+        'category_icon': 'bi-journal-text',
     },
     'api_endpoints': {
         'base_url': '/api/v1/quizz/',

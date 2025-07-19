@@ -38,9 +38,12 @@ Usage:
     'sequence': 25,
     'frontend_components': {
         'route': '/documents',
-        'static_icon': '/static/app-icons/documents.png',
+        'icon': 'bi-folder2-open',
+        'static_icon': '/static/documents/description/icon.png',
         'menu_order': 4,
-        'icon': 'bi-file-earmark-text',
+        'display_category': 'collaboration',
+        'category_label': 'Collaboration',
+        'category_icon': 'bi-folder2-open',
     },
     'api_endpoints': {
         'base_url': '/api/v1/documents/',

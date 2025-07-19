@@ -5,6 +5,7 @@ import os
 import logging
 from django.apps import apps as django_apps
 from django.conf import settings
+from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,7 @@ class AppIconService:
     def get_static_icon_url(cls, app_code):
         """
         Generate static icon URL for an app if the icon file exists.
+        Uses cache for performance.
         
         Args:
             app_code (str): The application code
@@ -52,6 +54,12 @@ class AppIconService:
         Returns:
             str or None: URL to static icon or None if not found
         """
+        # Check cache first
+        cache_key = f"app_icon_url_{app_code}"
+        cached_url = cache.get(cache_key)
+        if cached_url is not None:
+            return cached_url if cached_url != "NOT_FOUND" else None
+        
         try:
             # Find the corresponding Django app
             for app_config in django_apps.get_app_configs():
@@ -66,12 +74,16 @@ class AppIconService:
                     
                     if os.path.exists(icon_path):
                         # Return URL to the app-icons system
-                        return f"/app-icons/{app_code}/icon.png"
+                        url = f"/app-icons/{app_code}/icon.png"
+                        cache.set(cache_key, url, 3600)  # Cache for 1 hour
+                        return url
                     break
                     
         except Exception as e:
             logger.warning(f"Error getting static icon for app {app_code}: {e}")
-            
+        
+        # Cache "not found" to avoid repeated file system checks
+        cache.set(cache_key, "NOT_FOUND", 3600)
         return None
     
     @classmethod

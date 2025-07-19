@@ -447,49 +447,27 @@ def debug_apps(request):
 class AppStoreView(View):
     """Vue de l'App Store pour gérer les applications"""
     def get(self, request):
-        # Récupérer toutes les apps disponibles
-        apps = App.objects.filter(is_enabled=True)
+        # Optimisation: Récupérer toutes les apps disponibles avec prefetch
+        apps = App.objects.filter(is_enabled=True).only(
+            'id', 'code', 'display_name', 'description', 'category', 
+            'route_path', 'installable', 'color', 'icon_name'
+        )
         
         # Filtrer les apps en développement si en production
         if not settings.DEBUG:
-            # Exclure community en production tant qu'elle n'est pas prête
             apps = apps.exclude(code='community')
         
-        # Récupérer les settings utilisateur ou les créer
-        user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
-        enabled_app_ids = user_settings.enabled_apps.values_list('id', flat=True)
+        # Optimisation: Récupérer les settings utilisateur avec prefetch
+        user_settings, created = UserAppSettings.objects.select_related('user').get_or_create(user=request.user)
+        enabled_app_ids = set(user_settings.enabled_apps.values_list('id', flat=True))
+        
+        # Optimisation: Pré-calculer les apps avec icônes
+        apps_with_icons = {'community', 'chat', 'course', 'documents', 'language_ai', 'notebook', 'quizz', 'revision'}
         
         available_apps = []
         for app in apps:
-            # Récupérer l'icône statique depuis le manifest ou depuis le dossier de l'app
-            static_icon_url = None
-            
-            # Option 1: Depuis le manifest_data OU automatiquement depuis app/static/description/icon.png
-            if app.manifest_data and 'frontend_components' in app.manifest_data:
-                frontend_components = app.manifest_data['frontend_components']
-                if 'static_icon' in frontend_components:
-                    # Le manifest contient le chemin relatif
-                    manifest_icon_path = frontend_components['static_icon']
-                    if manifest_icon_path.startswith('/static/'):
-                        # Utiliser le chemin depuis le manifest (app-icons ou description)
-                        static_icon_url = manifest_icon_path[8:]  # Remove '/static/'
-            
-            # Vérifier automatiquement si l'app a une icône dans static/description/
-            if not static_icon_url:
-                try:
-                    import os
-                    from django.apps import apps as django_apps
-                    # Trouver l'app Django correspondante
-                    for app_config in django_apps.get_app_configs():
-                        if app_config.name.endswith(app.code) or app_config.label == app.code:
-                            # Vérifier si icon.png existe dans static/description/
-                            icon_path = os.path.join(app_config.path, 'static', 'description', 'icon.png')
-                            if os.path.exists(icon_path):
-                                # URL vers le système app-icons
-                                static_icon_url = f"/app-icons/{app.code}/icon.png"
-                            break
-                except:
-                    pass
+            # Force static icon URL for apps we know have icons (ultra rapide)
+            static_icon = f"/app-icons/{app.code}/icon.png" if app.code in apps_with_icons else None
             
             available_apps.append({
                 'id': app.id,
@@ -497,18 +475,63 @@ class AppStoreView(View):
                 'display_name': app.display_name,
                 'description': app.description,
                 'icon': app.icon_name or 'bi-app',
-                'static_icon': static_icon_url,
-                'color_gradient': f'linear-gradient(135deg, {app.color} 0%, {app.color}80 100%)',
+                'static_icon': static_icon,
+                'color_gradient': f'linear-gradient(135deg, {app.color or "#6366f1"} 0%, {app.color or "#6366f1"}80 100%)',
                 'category': app.category,
                 'route_path': app.route_path,
                 'is_installed': app.id in enabled_app_ids,
                 'installable': app.installable,
             })
         
+        # 100% Manifest-driven: Lire les catégories directement depuis les manifests
+        from collections import Counter
+        import os
+        import importlib.util
+        from django.apps import apps as django_apps
+        
+        category_counts = Counter()
+        category_definitions = {}
+        
+        # Lire les catégories depuis les manifests de chaque app
+        for app in available_apps:
+            try:
+                # Trouver l'app Django correspondante
+                for app_config in django_apps.get_app_configs():
+                    if app_config.name.endswith(app['name']) or app_config.label == app['name']:
+                        manifest_path = os.path.join(app_config.path, '__manifest__.py')
+                        if os.path.exists(manifest_path):
+                            # Charger le manifest
+                            spec = importlib.util.spec_from_file_location("manifest", manifest_path)
+                            manifest_module = importlib.util.module_from_spec(spec)
+                            spec.loader.exec_module(manifest_module)
+                            manifest = getattr(manifest_module, '__manifest__', {})
+                            
+                            # Lire les informations de catégorie depuis le manifest
+                            frontend_components = manifest.get('frontend_components', {})
+                            display_category = frontend_components.get('display_category')
+                            category_label = frontend_components.get('category_label')
+                            category_icon = frontend_components.get('category_icon')
+                            
+                            if display_category:
+                                category_counts[display_category] += 1
+                                # Stocker les définitions de catégories
+                                if display_category not in category_definitions:
+                                    category_definitions[display_category] = {
+                                        'label': category_label or display_category.title(),
+                                        'icon': category_icon or 'bi-app'
+                                    }
+                        break
+            except Exception as e:
+                print(f"Error reading manifest for {app['name']}: {e}")
+                continue
+        
         context = {
             'title': _('App Store - Open Linguify'),
             'apps': available_apps,
             'enabled_app_ids': list(enabled_app_ids),
+            'category_counts': dict(category_counts),
+            'category_definitions': category_definitions,
+            'total_apps': len(available_apps),
         }
         return render(request, 'app_manager/app_store.html', context)
 

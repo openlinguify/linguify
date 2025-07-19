@@ -35,8 +35,12 @@ Usage:
     'frontend_components': {
         'main_component': 'LanguageAIView',
         'route': '/language_ai',
-        'icon': 'MessageSquare',
+        'icon': 'bi-robot',
+        'static_icon': '/static/language_ai/description/icon.png',
         'menu_order': 4,
+        'display_category': 'ai',
+        'category_label': 'Intelligence IA',
+        'category_icon': 'bi-robot',
     },
     'api_endpoints': {
         'base_url': '/api/v1/language_ai/',

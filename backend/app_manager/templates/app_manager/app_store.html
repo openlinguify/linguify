@@ -4,7 +4,29 @@
 {% block title %}App Store - Open Linguify{% endblock %}
 
 {% block extra_css %}
+<!-- Preload critical icons pour ultra performance -->
+<link rel="preload" href="/app-icons/community/icon.png" as="image">
+<link rel="preload" href="/app-icons/chat/icon.png" as="image">
+<link rel="preload" href="/app-icons/course/icon.png" as="image">
+<link rel="preload" href="/app-icons/documents/icon.png" as="image">
+<link rel="preload" href="/app-icons/language_ai/icon.png" as="image">
+<link rel="preload" href="/app-icons/notebook/icon.png" as="image">
+<link rel="preload" href="/app-icons/quizz/icon.png" as="image">
+<link rel="preload" href="/app-icons/revision/icon.png" as="image">
+
 <link rel="stylesheet" href="{% static 'app_manager/css/app_store.css' %}">
+<style>
+/* Critical CSS inline pour ultra performance */
+.app-store-container{display:flex;max-width:1400px;margin:0 auto;gap:2rem;padding:2rem}
+.app-store-sidebar{width:250px;flex-shrink:0}
+.app-store-main{flex:1}
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
+.app-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:1.5rem;transition:all .3s ease;cursor:pointer;position:relative}
+.app-card:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(0,0,0,.08);border-color:#6366f1}
+.app-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem}
+.app-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:#fff;flex-shrink:0}
+.app-icon img{will-change:transform;backface-visibility:hidden}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -23,32 +45,23 @@
                     <i class="bi bi-grid-3x3-gap category-icon"></i>
                     <span>Toutes les apps</span>
                 </div>
-                <span class="category-count" id="count-all">{{ apps|length }}</span>
+                <span class="category-count" id="count-all">{{ total_apps }}</span>
             </button>
             
-            <button class="category-item" data-category="learning">
+            <!-- Catégories dynamiques depuis les manifests -->
+            {% for category_id, definition in category_definitions.items %}
+            <button class="category-item" data-category="{{ category_id }}">
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-book category-icon"></i>
-                    <span>Apprentissage</span>
+                    <i class="{{ definition.icon }} category-icon"></i>
+                    <span>{{ definition.label }}</span>
                 </div>
-                <span class="category-count" id="count-learning">3</span>
+                <span class="category-count" id="count-{{ category_id }}">
+                    {% for cat_id, count in category_counts.items %}
+                        {% if cat_id == category_id %}{{ count }}{% endif %}
+                    {% empty %}0{% endfor %}
+                </span>
             </button>
-            
-            <button class="category-item" data-category="productivity">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-journal-text category-icon"></i>
-                    <span>Productivité</span>
-                </div>
-                <span class="category-count" id="count-productivity">2</span>
-            </button>
-            
-            <button class="category-item" data-category="ai">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-robot category-icon"></i>
-                    <span>Intelligence IA</span>
-                </div>
-                <span class="category-count" id="count-ai">1</span>
-            </button>
+            {% endfor %}
         </div>
     </aside>
 
@@ -66,12 +79,9 @@
             <div class="app-card" data-category="{{ app.category|default:'other' }}" data-app-id="{{ app.id }}">
                 <!-- App Header -->
                 <div class="app-header">
-                    <div class="app-icon" style="{% if not app.static_icon %}background: {{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }};{% else %}background: transparent; border: 1px solid #e2e8f0; border-radius: 12px;{% endif %}">
-                        {% if app.static_icon %}
-                            <img src="{{ app.static_icon }}" alt="{{ app.display_name }} icon" style="width: 40px; height: 40px; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'; this.parentElement.style.background='{{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}';">
-                            <i class="bi {{ app.icon|default:'bi-app' }}" style="display: none; color: white;"></i>
-                        {% else %}
-                            <i class="bi {{ app.icon|default:'bi-app' }}" style="color: white;"></i>
+                    <div class="app-icon" style="background: transparent; border: 1px solid #e2e8f0; border-radius: 12px;">
+                        {% if app.name in 'community,chat,course,documents,language_ai,notebook,quizz,revision' %}
+                            <img src="/app-icons/{{ app.name }}/icon.png" alt="{{ app.display_name }} icon" style="width: 40px; height: 40px; object-fit: contain;">
                         {% endif %}
                     </div>
                     <div class="app-info">

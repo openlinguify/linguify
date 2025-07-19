@@ -2,7 +2,7 @@
 __manifest__ = {
     'name': 'Révision',
     'version': '2.0.0',
-    'category': 'Education/Language Learning',
+    'category': 'Productivity',
     'summary': 'Système de révision avec répétition espacée (Flashcards)',
     'description': '''
 Module de Révision pour Linguify
@@ -38,10 +38,14 @@ Usage:
     'frontend_components': {
         'main_component': 'RevisionApp',
         'route': '/revision',
-        'icon': '🃏',
+        'icon': 'bi-arrow-repeat',
+        'static_icon': '/static/revision/description/icon.png',
         'menu_order': 2,
         'display_name': 'Révision',
-        'description': 'Révisez vos connaissances avec des flashcards'
+        'description': 'Révisez vos connaissances avec des flashcards',
+        'display_category': 'productivity',
+        'category_label': 'Productivité',
+        'category_icon': 'bi-journal-text',
     },
     'api_endpoints': {
         'base_url': '/api/v1/revision/',

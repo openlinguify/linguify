@@ -106,6 +106,18 @@ class App(models.Model):
         if self.color and not self.color.startswith('#'):
             raise ValidationError({'color': 'Color must start with #'})
     
+    def get_current_icon_name(self):
+        """Get the current icon name from the manifest file"""
+        if hasattr(self, 'manifest_data') and self.manifest_data:
+            frontend_components = self.manifest_data.get('frontend_components', {})
+            return frontend_components.get('icon', self.icon_name)
+        return self.icon_name
+    
+    def get_static_icon_url(self):
+        """Get static icon URL using the service"""
+        from .services.app_icon_service import AppIconService
+        return AppIconService.get_static_icon_url(self.code)
+    
     @classmethod
     def sync_apps(cls):
         """

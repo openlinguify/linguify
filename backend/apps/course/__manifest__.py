@@ -44,8 +44,12 @@ Usage:
     'frontend_components': {
         'main_component': 'LearningView',
         'route': '/learning',
-        'icon': 'GraduationCap',
+        'icon': 'bi-mortarboard',
+        'static_icon': '/static/course/description/icon.png',
         'menu_order': 1,
+        'display_category': 'learning',
+        'category_label': 'Apprentissage',
+        'category_icon': 'bi-book',
     },
     'api_endpoints': {
         'base_url': '/learning/',

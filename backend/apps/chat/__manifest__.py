@@ -67,14 +67,17 @@ Usage (when ready):
     'development_status': 'Alpha',  # Alpha -> Beta -> Stable
     'target_release': '2.0.0',  # When this will be included in releases
     
-    # Frontend components (commented out until ready)
-    # 'frontend_components': {
-    #     'main_component': 'CollaborativeChatView',
-    #     'route': '/collaborative-chat',
-    #     'icon': 'MessageCircle',
-    #     'menu_order': 6,
-    #     'sidebar_menu': True,
-    # },
+    'frontend_components': {
+        'main_component': 'CollaborativeChatView',
+        'route': '/chat',
+        'icon': 'bi-chat-dots',
+        'static_icon': '/static/chat/description/icon.png',
+        'menu_order': 6,
+        'sidebar_menu': True,
+        'display_category': 'communication',
+        'category_label': 'Communication',
+        'category_icon': 'bi-chat-dots',
+    },
     
     # API configuration
     'api_endpoints': {
