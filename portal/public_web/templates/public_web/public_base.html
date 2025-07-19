@@ -60,7 +60,7 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
 
     <!-- Additional SEO -->
     <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#6366f1">
+    <meta name="theme-color" content="#2D5BBA">
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
 
     <!-- Bootstrap CSS -->
@@ -92,19 +92,35 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
 
     <!-- Spécifique pour Google et Microsoft -->
     <meta name="msapplication-TileImage" content="{% static 'images/favicon-144x144.png' %}">
-    <meta name="msapplication-TileColor" content="#6366f1">
+    <meta name="msapplication-TileColor" content="#2D5BBA">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="{% static 'manifest.json' %}">
 
     <style>
         :root {
-            --primary-color: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary-color: #8b5cf6;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
+            /* Linguify Brand Colors */
+            --linguify-primary: #2D5BBA;
+            --linguify-secondary: #8B5CF6;
+            --linguify-accent: #00D4AA;
+            --linguify-gray: #6B7280;
+            --linguify-primary-light: #4F7BD9;
+            --linguify-primary-dark: #1E4A8C;
+            --linguify-secondary-light: #A78BFA;
+            --linguify-secondary-dark: #7C3AED;
+            --linguify-accent-light: #26E4B8;
+            --linguify-accent-dark: #00B894;
+            --linguify-success: #10B981;
+            --linguify-warning: #F59E0B;
+            --linguify-error: #EF4444;
+            
+            /* Compatibility variables */
+            --primary-color: var(--linguify-primary);
+            --primary-dark: var(--linguify-primary-dark);
+            --secondary-color: var(--linguify-secondary);
+            --success-color: var(--linguify-success);
+            --warning-color: var(--linguify-warning);
+            --danger-color: var(--linguify-error);
         }
 
         body {
@@ -120,13 +136,15 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
         }
 
         .btn-primary {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+            border: none;
+            color: white;
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
-            border-color: var(--primary-dark);
+            background: linear-gradient(135deg, var(--linguify-primary-dark) 0%, var(--linguify-accent-dark) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(45, 91, 186, 0.4);
         }
 
         .text-primary {
@@ -167,7 +185,7 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
 
         /* Hero section */
         .hero-section {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
             color: white;
             padding: 6rem 0;
         }

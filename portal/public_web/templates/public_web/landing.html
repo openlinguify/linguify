@@ -124,13 +124,29 @@
     
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
-            --primary-color: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary-color: #8b5cf6;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
+            /* Linguify Brand Colors */
+            --linguify-primary: #2D5BBA;
+            --linguify-secondary: #8B5CF6;
+            --linguify-accent: #00D4AA;
+            --linguify-gray: #6B7280;
+            --linguify-primary-light: #4F7BD9;
+            --linguify-primary-dark: #1E4A8C;
+            --linguify-secondary-light: #A78BFA;
+            --linguify-secondary-dark: #7C3AED;
+            --linguify-accent-light: #26E4B8;
+            --linguify-accent-dark: #00B894;
+            --linguify-success: #10B981;
+            --linguify-warning: #F59E0B;
+            --linguify-error: #EF4444;
+            
+            /* New primary gradient: Bleu royal → Vert menthe */
+            --primary-gradient: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+            --primary-color: var(--linguify-primary);
+            --primary-dark: var(--linguify-primary-dark);
+            --secondary-color: var(--linguify-secondary);
+            --success-color: var(--linguify-success);
+            --warning-color: var(--linguify-warning);
+            --danger-color: var(--linguify-error);
             --indigo-50: #eef2ff;
             --indigo-100: #e0e7ff;
             --gray-50: #f8fafc;
@@ -350,7 +366,7 @@
         .stat-number {
             font-size: 3rem;
             font-weight: 700;
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -428,7 +444,7 @@
         }
         
         .feature-icon i {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
             width: 60px;
             height: 60px;
             border-radius: 15px;
@@ -504,7 +520,7 @@
         .app-tag.grammar { background: #ecfdf5; color: #059669; }
         
         .highlights-box {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
             border-radius: 16px;
             padding: 2rem;
             color: white;
@@ -654,7 +670,7 @@
         /* CTA Section */
         .cta-section {
             padding: 5rem 0;
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
             color: white;
             text-align: center;
             position: relative;

@@ -9,7 +9,7 @@
 <style>
     /* Hero Section */
     .about-hero {
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
         padding: 120px 0 80px;
         color: white;
         position: relative;
@@ -50,7 +50,7 @@
     .stat-number {
         font-size: 3rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0;
@@ -80,6 +80,8 @@
         margin: 0 auto 20px;
         border-radius: 20px;
         font-size: 2rem;
+        background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%) !important;
+        box-shadow: 0 4px 15px rgba(45, 91, 186, 0.3);
     }
     
     /* Timeline */
@@ -109,7 +111,7 @@
         transform: translateX(-50%);
         width: 20px;
         height: 20px;
-        background: #6366f1;
+        background: var(--linguify-primary);
         border-radius: 50%;
         border: 4px solid white;
         box-shadow: 0 0 0 4px #f3f4f6;
@@ -260,7 +262,7 @@
                     </div>
                     <div class="col-md-6 order-md-first">
                         <div class="text-center">
-                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                            <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 6px 20px rgba(45, 91, 186, 0.4);">
                                 <i class="bi bi-lightbulb-fill" style="font-size: 3rem;"></i>
                             </div>
                         </div>
@@ -273,7 +275,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="text-center">
-                            <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                            <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 6px 20px rgba(0, 212, 170, 0.4);">
                                 <i class="bi bi-rocket-takeoff-fill" style="font-size: 3rem;"></i>
                             </div>
                         </div>
@@ -312,7 +314,7 @@
                     </div>
                     <div class="col-md-6 order-md-first">
                         <div class="text-center">
-                            <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                            <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 6px 20px rgba(45, 91, 186, 0.4);">
                                 <i class="bi bi-graph-up-arrow" style="font-size: 3rem;"></i>
                             </div>
                         </div>
@@ -338,7 +340,7 @@
             <div class="col-lg-4">
                 <div class="value-card card text-center">
                     <div class="card-body p-4">
-                        <div class="value-icon bg-primary text-white">
+                        <div class="value-icon text-white">
                             <i class="bi bi-heart-fill"></i>
                         </div>
                         <h4 class="card-title mb-3">{% trans "Accessibility" %}</h4>
@@ -351,7 +353,7 @@
             <div class="col-lg-4">
                 <div class="value-card card text-center">
                     <div class="card-body p-4">
-                        <div class="value-icon bg-success text-white">
+                        <div class="value-icon text-white">
                             <i class="bi bi-lightbulb-fill"></i>
                         </div>
                         <h4 class="card-title mb-3">{% trans "Innovation" %}</h4>
@@ -364,7 +366,7 @@
             <div class="col-lg-4">
                 <div class="value-card card text-center">
                     <div class="card-body p-4">
-                        <div class="value-icon bg-warning text-white">
+                        <div class="value-icon text-white">
                             <i class="bi bi-people-fill"></i>
                         </div>
                         <h4 class="card-title mb-3">{% trans "Community" %}</h4>
@@ -392,7 +394,7 @@
         
         <div class="feature-grid">
             <div class="feature-item">
-                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.3);">
                     <i class="bi bi-code-square" style="font-size: 2rem;"></i>
                 </div>
                 <h5 class="fw-bold mb-3">Django</h5>
@@ -400,7 +402,7 @@
             </div>
             
             <div class="feature-item">
-                <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);">
                     <i class="bi bi-window-desktop" style="font-size: 2rem;"></i>
                 </div>
                 <h5 class="fw-bold mb-3">Next.js</h5>
@@ -408,7 +410,7 @@
             </div>
             
             <div class="feature-item">
-                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.3);">
                     <i class="bi bi-robot" style="font-size: 2rem;"></i>
                 </div>
                 <h5 class="fw-bold mb-3">{% trans "AI Models" %}</h5>
@@ -416,7 +418,7 @@
             </div>
             
             <div class="feature-item">
-                <div class="bg-dark text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);">
                     <i class="bi bi-github" style="font-size: 2rem;"></i>
                 </div>
                 <h5 class="fw-bold mb-3">{% trans "Open Source" %}</h5>
@@ -441,7 +443,7 @@
             <div class="col-lg-6">
                 <div class="d-flex align-items-start p-4 bg-light rounded-4 h-100">
                     <div class="flex-shrink-0 me-4">
-                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <div class="text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 12px rgba(45, 91, 186, 0.3);">
                             <i class="bi bi-brain" style="font-size: 1.5rem;"></i>
                         </div>
                     </div>
@@ -456,7 +458,7 @@
             <div class="col-lg-6">
                 <div class="d-flex align-items-start p-4 bg-light rounded-4 h-100">
                     <div class="flex-shrink-0 me-4">
-                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <div class="text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 12px rgba(0, 212, 170, 0.3);">
                             <i class="bi bi-mortarboard" style="font-size: 1.5rem;"></i>
                         </div>
                     </div>
@@ -471,7 +473,7 @@
             <div class="col-lg-6">
                 <div class="d-flex align-items-start p-4 bg-light rounded-4 h-100">
                     <div class="flex-shrink-0 me-4">
-                        <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <div class="text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 12px rgba(45, 91, 186, 0.3);">
                             <i class="bi bi-graph-up" style="font-size: 1.5rem;"></i>
                         </div>
                     </div>
@@ -486,7 +488,7 @@
             <div class="col-lg-6">
                 <div class="d-flex align-items-start p-4 bg-light rounded-4 h-100">
                     <div class="flex-shrink-0 me-4">
-                        <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <div class="text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 12px rgba(0, 212, 170, 0.3);">
                             <i class="bi bi-phone" style="font-size: 1.5rem;"></i>
                         </div>
                     </div>
@@ -515,21 +517,21 @@
         </div>
         <div class="row g-4">
             <div class="col-md-4 text-center">
-                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 6px 20px rgba(45, 91, 186, 0.4);">
                     <i class="bi bi-translate" style="font-size: 2.5rem;"></i>
                 </div>
                 <h5 class="fw-bold">{% trans "Linguists & Educators" %}</h5>
                 <p class="text-muted">{% trans "Language experts who understand how people learn" %}</p>
             </div>
             <div class="col-md-4 text-center">
-                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 6px 20px rgba(0, 212, 170, 0.4);">
                     <i class="bi bi-code-slash" style="font-size: 2.5rem;"></i>
                 </div>
                 <h5 class="fw-bold">{% trans "Developers & Engineers" %}</h5>
                 <p class="text-muted">{% trans "Tech experts building scalable, user-friendly platforms" %}</p>
             </div>
             <div class="col-md-4 text-center">
-                <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 6px 20px rgba(45, 91, 186, 0.4);">
                     <i class="bi bi-heart-fill" style="font-size: 2.5rem;"></i>
                 </div>
                 <h5 class="fw-bold">{% trans "Community Contributors" %}</h5>
@@ -550,26 +552,26 @@
                 </p>
                 <div class="row g-3">
                     <div class="col-6">
-                        <div class="border-start border-primary border-4 ps-3">
-                            <h4 class="fw-bold text-primary mb-1">85%</h4>
+                        <div class="border-start border-4 ps-3" style="border-color: var(--linguify-primary) !important;">
+                            <h4 class="fw-bold mb-1" style="color: var(--linguify-primary);">85%</h4>
                             <small class="text-muted">{% trans "Completion Rate" %}</small>
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="border-start border-success border-4 ps-3">
-                            <h4 class="fw-bold text-success mb-1">4.8★</h4>
+                        <div class="border-start border-4 ps-3" style="border-color: var(--linguify-accent) !important;">
+                            <h4 class="fw-bold mb-1" style="color: var(--linguify-accent);">4.8★</h4>
                             <small class="text-muted">{% trans "User Rating" %}</small>
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="border-start border-warning border-4 ps-3">
-                            <h4 class="fw-bold text-warning mb-1">50+</h4>
+                        <div class="border-start border-4 ps-3" style="border-color: var(--linguify-primary) !important;">
+                            <h4 class="fw-bold mb-1" style="color: var(--linguify-primary);">50+</h4>
                             <small class="text-muted">{% trans "Countries" %}</small>
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="border-start border-info border-4 ps-3">
-                            <h4 class="fw-bold text-info mb-1">24/7</h4>
+                        <div class="border-start border-4 ps-3" style="border-color: var(--linguify-accent) !important;">
+                            <h4 class="fw-bold mb-1" style="color: var(--linguify-accent);">24/7</h4>
                             <small class="text-muted">{% trans "AI Tutoring" %}</small>
                         </div>
                     </div>
@@ -577,7 +579,7 @@
             </div>
             <div class="col-lg-6">
                 <div class="bg-light rounded-4 p-5 text-center">
-                    <i class="bi bi-quote text-primary" style="font-size: 3rem;"></i>
+                    <i class="bi bi-quote" style="font-size: 3rem; color: var(--linguify-primary);"></i>
                     <blockquote class="blockquote mt-3">
                         <p class="mb-3 fs-5">
                             {% trans "Open Linguify has transformed how I learn languages. The AI personalization is incredible, and being open-source means I can trust the platform completely." %}
@@ -593,29 +595,69 @@
 </section>
 
 <!-- Call to Action -->
-<section class="py-5">
-    <div class="container">
-        <div class="card bg-gradient border-0 text-white" style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);">
-            <div class="card-body p-5 text-center">
-                <h2 class="display-6 fw-bold mb-4">{% trans "Ready to Start Your Language Journey?" %}</h2>
-                <p class="lead mb-4">
-                    {% trans "Join thousands of learners worldwide and experience the future of language education with Open Linguify." %}
-                </p>
-                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                    {% if not user.is_authenticated %}
-                        <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-4 py-3">
-                            <i class="bi bi-rocket-takeoff me-2"></i>
-                            {% trans "Start Learning Free" %}
-                        </a>
-                    {% endif %}
-                    <a href="{% url 'public_web:apps' %}" class="btn btn-outline-light btn-lg px-4 py-3">
-                        <i class="bi bi-grid-3x3-gap me-2"></i>
-                        {% trans "Explore Our Apps" %}
+<section class="py-5" style="background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); position: relative; overflow: hidden;">
+    <!-- Same decorative elements as hero section -->
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: radial-gradient(circle at 30% 20%, rgba(0, 212, 170, 0.2) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(45, 91, 186, 0.3) 0%, transparent 50%); pointer-events: none;"></div>
+    
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="text-center text-white">
+            <!-- Icon header -->
+            <div class="mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white mb-3" style="width: 80px; height: 80px; color: var(--linguify-primary); box-shadow: 0 8px 30px rgba(255,255,255,0.3);">
+                    <i class="bi bi-rocket-takeoff-fill" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+            
+            <h2 class="display-5 fw-bold mb-4" style="text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                {% trans "Ready to Start Your Language Journey?" %}
+            </h2>
+            <p class="lead mb-5 fs-4" style="opacity: 0.95; max-width: 600px; margin: 0 auto;">
+                {% trans "Join thousands of learners worldwide and experience the future of language education with Open Linguify." %}
+            </p>
+            
+            <!-- Enhanced buttons -->
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center mb-5">
+                {% if not user.is_authenticated %}
+                    <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                        <i class="bi bi-rocket-takeoff me-2"></i>
+                        {% trans "Start Learning Free" %}
                     </a>
-                    <a href="https://github.com/openlinguify" class="btn btn-outline-light btn-lg px-4 py-3" target="_blank">
-                        <i class="bi bi-github me-2"></i>
-                        {% trans "View Source Code" %}
-                    </a>
+                {% endif %}
+                <a href="{% url 'public_web:apps' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" style="border-radius: 16px; border: 2px solid rgba(255,255,255,0.8);">
+                    <i class="bi bi-grid-3x3-gap me-2"></i>
+                    {% trans "Explore Our Apps" %}
+                </a>
+                <a href="https://github.com/openlinguify" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" style="border-radius: 16px; border: 2px solid rgba(255,255,255,0.8);" target="_blank">
+                    <i class="bi bi-github me-2"></i>
+                    {% trans "View Source Code" %}
+                </a>
+            </div>
+            
+            <!-- Trust indicators -->
+            <div class="row g-4 pt-4" style="border-top: 1px solid rgba(255,255,255,0.3);">
+                <div class="col-6 col-md-3">
+                    <div class="text-center">
+                        <h5 class="fw-bold mb-1" style="color: rgba(255,255,255,0.95);">50K+</h5>
+                        <small style="color: rgba(255,255,255,0.8);">{% trans "Active Users" %}</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="text-center">
+                        <h5 class="fw-bold mb-1" style="color: rgba(255,255,255,0.95);">100%</h5>
+                        <small style="color: rgba(255,255,255,0.8);">{% trans "Open Source" %}</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="text-center">
+                        <h5 class="fw-bold mb-1" style="color: rgba(255,255,255,0.95);">4.8★</h5>
+                        <small style="color: rgba(255,255,255,0.8);">{% trans "User Rating" %}</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="text-center">
+                        <h5 class="fw-bold mb-1" style="color: rgba(255,255,255,0.95);">24/7</h5>
+                        <small style="color: rgba(255,255,255,0.8);">{% trans "AI Support" %}</small>
+                    </div>
                 </div>
             </div>
         </div>

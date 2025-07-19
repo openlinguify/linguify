@@ -1,8 +1,30 @@
 /* Public Website Main CSS */
 
+/* Linguify Brand Colors */
+:root {
+    --linguify-primary: #2D5BBA;        /* Bleu royal moderne - confiance et professionnalisme */
+    --linguify-secondary: #8B5CF6;      /* Violet élégant - créativité et sophistication */
+    --linguify-accent: #00D4AA;         /* Vert menthe - succès et progression */
+    --linguify-gray: #6B7280;           /* Gris moderne - neutralité élégante */
+    --linguify-primary-light: #4F7BD9;  /* Bleu plus clair */
+    --linguify-primary-dark: #1E4A8C;   /* Bleu plus foncé */
+    --linguify-secondary-light: #A78BFA; /* Violet plus clair */
+    --linguify-secondary-dark: #7C3AED;  /* Violet plus foncé */
+    --linguify-accent-light: #26E4B8;   /* Vert menthe plus clair */
+    --linguify-accent-dark: #00B894;    /* Vert menthe plus foncé */
+    --linguify-success: #10B981;        /* Vert succès */
+    --linguify-warning: #F59E0B;        /* Jaune attention */
+    --linguify-error: #EF4444;          /* Rouge erreur */
+    --header-height: 64px;              /* Hauteur du header fixe */
+    
+    /* Variables de compatibilité */
+    --primary-color: var(--linguify-primary);
+    --secondary-color: var(--linguify-secondary);
+}
+
 /* Hero sections */
 .hero-gradient {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
 }
 
 .hero-section {
@@ -42,14 +64,14 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.05), transparent);
+    background: linear-gradient(90deg, transparent, rgba(45, 91, 186, 0.05), transparent);
     transition: left 0.5s ease;
 }
 
 .feature-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 25px 50px rgba(99, 102, 241, 0.15);
-    border-color: var(--primary-color);
+    box-shadow: 0 25px 50px rgba(45, 91, 186, 0.15);
+    border-color: var(--linguify-primary);
 }
 
 .feature-card:hover::before {
@@ -66,6 +88,8 @@
     font-size: 1.5rem;
     color: white;
     margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+    box-shadow: 0 4px 15px rgba(45, 91, 186, 0.3);
 }
 
 /* App presentation cards */
@@ -80,13 +104,13 @@
 
 .app-preview:hover {
     transform: translateY(-12px) scale(1.02);
-    box-shadow: 0 30px 60px rgba(99, 102, 241, 0.2);
-    border-color: var(--primary-color);
+    box-shadow: 0 30px 60px rgba(45, 91, 186, 0.2);
+    border-color: var(--linguify-primary);
 }
 
 .app-preview-header {
     padding: 2rem;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
     color: white;
 }
 
@@ -108,7 +132,10 @@
 .stat-number {
     font-size: 3rem;
     font-weight: 700;
-    color: var(--primary-color);
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     display: block;
 }
 
@@ -147,6 +174,18 @@
     overflow: hidden;
 }
 
+.btn-primary {
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--linguify-primary-dark) 0%, var(--linguify-accent-dark) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(45, 91, 186, 0.4);
+}
+
 .btn::before {
     content: '';
     position: absolute;
@@ -173,15 +212,36 @@
 
 /* CTA sections */
 .cta-section {
-    background: #1e293b;
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
     color: white;
     padding: 6rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(0, 212, 170, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(45, 91, 186, 0.3) 0%, transparent 50%);
+    pointer-events: none;
 }
 
 .cta-section h2 {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.cta-section .container {
+    position: relative;
+    z-index: 1;
 }
 
 /* Testimonials */
