@@ -1050,7 +1050,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.messengerChat = new MessengerChat();
         console.log('[MessengerChat] Objet créé:', window.messengerChat);
     } else if (!window.currentUserId) {
-        console.error('[MessengerChat] currentUserId manquant');
+        console.log('[MessengerChat] currentUserId non défini, script non initialisé (normal sur certaines pages)');
     } else if (window.messengerChat) {
         console.log('[MessengerChat] Objet déjà existant');
     }

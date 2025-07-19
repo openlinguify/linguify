@@ -72,6 +72,6 @@ Usage:
         'admin_registered': True,
         'web_interface': True,
         'refactored': True,
-        'version': '2.0.0'
+        'version': '1.0.0'
     }
 }

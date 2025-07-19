@@ -20,6 +20,17 @@
   margin-bottom: 12px;
 }
 
+/* Styles spécifiques pour les icônes d'app dans les paramètres */
+.app-icon-default {
+  background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%) !important;
+  color: white !important;
+}
+
+.app-icon-custom {
+  background: transparent !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
 .app-name {
   font-size: 14px;
   font-weight: 600;

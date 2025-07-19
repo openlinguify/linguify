@@ -28,6 +28,10 @@ router.register(r'comments', DocumentCommentViewSet, basename='documentcomment')
 # API URLs
 api_urlpatterns = [
     path('api/v1/', include(router.urls)),
+    # Settings endpoints
+    path('api/v1/save-settings/', save_documents_settings, name='save_documents_settings'),
+    path('api/v1/get-settings/', get_documents_settings, name='get_documents_settings'),
+    path('api/v1/reset-settings/', reset_documents_settings, name='reset_documents_settings'),
     # Logging and monitoring endpoints
     path('api/v1/logging/', log_client_event, name='log_client_event'),
     path('api/v1/metrics/', get_client_metrics, name='get_client_metrics'),

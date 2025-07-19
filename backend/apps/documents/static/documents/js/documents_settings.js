@@ -3,7 +3,7 @@
  * Handles saving, loading, and resetting documents settings
  */
 
-const documentsSettings = {
+const documentsSettings = window.documentsSettings || {
     // API endpoints
     endpoints: {
         save: '/documents/api/v1/save-settings/',
@@ -99,7 +99,7 @@ const documentsSettings = {
     save: function() {
         const settings = this.collectSettings();
         if (!settings) {
-            this.showNotification('Erreur lors de la collecte des paramètres', 'error');
+            this.showNotification('Erreur lors de la collecte des paramï¿½tres', 'error');
             return;
         }
 
@@ -129,7 +129,7 @@ const documentsSettings = {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                this.showNotification('Paramètres sauvegardés avec succès!', 'success');
+                this.showNotification('Paramï¿½tres sauvegardï¿½s avec succï¿½s!', 'success');
                 // Also save to localStorage as backup
                 localStorage.setItem('documentsSettings', JSON.stringify(settings));
             } else {
@@ -140,7 +140,7 @@ const documentsSettings = {
             console.error('Save error:', error);
             // Fallback to localStorage
             localStorage.setItem('documentsSettings', JSON.stringify(settings));
-            this.showNotification('Paramètres sauvegardés localement', 'warning');
+            this.showNotification('Paramï¿½tres sauvegardï¿½s localement', 'warning');
         });
     },
 
@@ -178,7 +178,7 @@ const documentsSettings = {
 
     // Reset settings to defaults
     reset: function() {
-        if (!confirm('Êtes-vous sûr de vouloir réinitialiser tous les paramètres aux valeurs par défaut ?')) {
+        if (!confirm('ï¿½tes-vous sï¿½r de vouloir rï¿½initialiser tous les paramï¿½tres aux valeurs par dï¿½faut ?')) {
             return;
         }
 
@@ -186,7 +186,7 @@ const documentsSettings = {
         const resetBtn = document.querySelector('[onclick="documentsSettings.reset()"]');
         if (resetBtn) {
             const originalText = resetBtn.innerHTML;
-            resetBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Réinitialisation...';
+            resetBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Rï¿½initialisation...';
             resetBtn.disabled = true;
 
             setTimeout(() => {
@@ -207,11 +207,11 @@ const documentsSettings = {
             if (data.success) {
                 // Apply default settings
                 this.applyDefaults();
-                this.showNotification('Paramètres réinitialisés', 'info');
+                this.showNotification('Paramï¿½tres rï¿½initialisï¿½s', 'info');
                 // Remove from localStorage
                 localStorage.removeItem('documentsSettings');
             } else {
-                throw new Error(data.message || 'Erreur lors de la réinitialisation');
+                throw new Error(data.message || 'Erreur lors de la rï¿½initialisation');
             }
         })
         .catch(error => {
@@ -219,7 +219,7 @@ const documentsSettings = {
             // Fallback reset
             this.applyDefaults();
             localStorage.removeItem('documentsSettings');
-            this.showNotification('Paramètres réinitialisés localement', 'warning');
+            this.showNotification('Paramï¿½tres rï¿½initialisï¿½s localement', 'warning');
         });
     },
 
@@ -300,7 +300,7 @@ const documentsSettings = {
         link.click();
         
         URL.revokeObjectURL(url);
-        this.showNotification('Paramètres exportés', 'success');
+        this.showNotification('Paramï¿½tres exportï¿½s', 'success');
     },
 
     // Import settings from JSON file
@@ -312,9 +312,9 @@ const documentsSettings = {
             try {
                 const settings = JSON.parse(e.target.result);
                 this.applySettings(settings);
-                this.showNotification('Paramètres importés avec succès', 'success');
+                this.showNotification('Paramï¿½tres importï¿½s avec succï¿½s', 'success');
             } catch (error) {
-                this.showNotification('Erreur lors de l\'import des paramètres', 'error');
+                this.showNotification('Erreur lors de l\'import des paramï¿½tres', 'error');
                 console.error('Import error:', error);
             }
         };
@@ -322,9 +322,26 @@ const documentsSettings = {
     }
 };
 
+// Assign to window to prevent redeclaration
+window.documentsSettings = documentsSettings;
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    documentsSettings.init();
+    // Prevent double initialization
+    if (window.documentsSettingsInitialized) {
+        return;
+    }
+    
+    // Only initialize if we're on the documents settings page
+    const url = window.location.pathname;
+    const isDocumentsSettingsPage = url.includes('settings/documents') || 
+                                   document.getElementById('documents-settings-form') ||
+                                   document.querySelector('[data-settings-section="documents"]');
+    
+    if (isDocumentsSettingsPage) {
+        window.documentsSettingsInitialized = true;
+        documentsSettings.init();
+    }
 });
 
 // Global functions for button onclick handlers
