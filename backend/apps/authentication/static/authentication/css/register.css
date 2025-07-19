@@ -3,10 +3,13 @@
 }
 
 :root {
-    --primary: #4f46e5;
-    --primary-light: #6366f1;
-    --primary-dark: #3730a3;
-    --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --linguify-primary: #2D5BBA;
+    --linguify-secondary: #8B5CF6;
+    --linguify-accent: #00D4AA;
+    --primary: var(--linguify-primary);
+    --primary-light: var(--linguify-accent);
+    --primary-dark: #1E3A8A;
+    --background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
     --white: #ffffff;
     --gray-50: #f9fafb;
     --gray-100: #f3f4f6;
@@ -139,7 +142,7 @@ body {
 .form-input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
 }
 
 .form-input:hover:not(:focus) {
@@ -163,7 +166,7 @@ body {
 .form-select:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
 }
 
 .form-checkbox {
@@ -203,7 +206,7 @@ body {
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--white);
-    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
     border: none;
     border-radius: 0.4rem;
     cursor: pointer;

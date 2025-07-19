@@ -1,9 +1,14 @@
 /* Ultra Professional Profile Design */
 :root {
+    /* Linguify Brand Colors */
+    --linguify-primary: #2D5BBA;
+    --linguify-secondary: #8B5CF6;
+    --linguify-accent: #00D4AA;
+    
     /* Primary Colors */
-    --primary: #4f46e5;
-    --primary-light: #6366f1;
-    --primary-dark: #3730a3;
+    --primary: var(--linguify-primary);
+    --primary-light: var(--linguify-accent);
+    --primary-dark: #1E3A8A;
     
     /* Secondary Colors */
     --success: #10b981;
@@ -25,8 +30,8 @@
     --gray-900: #111827;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-    --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-primary: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+    --gradient-hero: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
     --gradient-success: linear-gradient(135deg, var(--success) 0%, #059669 100%);
     --gradient-warning: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
     

@@ -1,7 +1,10 @@
 :root {
-    --primary-color: #6366f1;
-    --primary-dark: #4f46e5;
-    --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --linguify-primary: #2D5BBA;
+    --linguify-secondary: #8B5CF6;
+    --linguify-accent: #00D4AA;
+    --primary-color: var(--linguify-primary);
+    --primary-dark: #1E3A8A;
+    --gradient-bg: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
 }
 
 body {
@@ -43,7 +46,7 @@ body {
 
 .form-control:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
 }
 
 .btn-primary {
