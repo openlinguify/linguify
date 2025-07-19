@@ -86,7 +86,7 @@
                     </div>
                     <div class="app-info">
                         <h3 class="app-title">{{ app.display_name }}</h3>
-                        <span class="app-category">{{ app.category|title|default:'Application' }}</span>
+                        <span class="app-category">{{ app.category_display|default:'Application' }}</span>
                     </div>
                     <div class="install-toggle">
                         <input type="checkbox" id="toggle-{{ app.id }}" 

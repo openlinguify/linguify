@@ -10,8 +10,8 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.conf import settings
 from django.http import JsonResponse
-from .models import App, UserAppSettings
-from .serializers import AppSerializer, UserAppSettingsSerializer, AppToggleSerializer
+from ..models.app_manager_models import App, UserAppSettings
+from ..serializers.app_manager_serializers import AppSerializer, AppToggleSerializer
 import logging
 
 logger = logging.getLogger(__name__)
@@ -40,25 +40,7 @@ class AppListView(generics.ListAPIView):
         unique_ids = [app.id for app in unique_apps]
         return App.objects.filter(id__in=unique_ids).order_by('order', 'display_name')
 
-class UserAppSettingsView(generics.RetrieveUpdateAPIView):
-    """
-    Retrieve and update user app settings
-    """
-    serializer_class = UserAppSettingsSerializer
-    permission_classes = [IsAuthenticated]
-    
-    def get_object(self):
-        # Get or create user app settings
-        user_settings, created = UserAppSettings.objects.get_or_create(
-            user=self.request.user
-        )
-        
-        # If newly created, enable all apps by default
-        if created:
-            all_apps = App.objects.filter(is_enabled=True)
-            user_settings.enabled_apps.set(all_apps)
-        
-        return user_settings
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -447,27 +429,59 @@ def debug_apps(request):
 class AppStoreView(View):
     """Vue de l'App Store pour gérer les applications"""
     def get(self, request):
-        # Optimisation: Récupérer toutes les apps disponibles avec prefetch
+        # Get all available apps with optimization
         apps = App.objects.filter(is_enabled=True).only(
             'id', 'code', 'display_name', 'description', 'category', 
             'route_path', 'installable', 'color', 'icon_name'
         )
         
-        # Filtrer les apps en développement si en production
-        if not settings.DEBUG:
-            apps = apps.exclude(code='community')
-        
-        # Optimisation: Récupérer les settings utilisateur avec prefetch
-        user_settings, created = UserAppSettings.objects.select_related('user').get_or_create(user=request.user)
+        # Get or create user settings
+        user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
         enabled_app_ids = set(user_settings.enabled_apps.values_list('id', flat=True))
         
-        # Optimisation: Pré-calculer les apps avec icônes
+        # 100% Manifest-driven categories
+        from collections import Counter
+        from ..services.app_icon_service import AppIconService
+        
+        # Apps avec icônes
         apps_with_icons = {'community', 'chat', 'course', 'documents', 'language_ai', 'notebook', 'quizz', 'revision'}
+        
+        category_counts = Counter()
+        category_definitions = {}
+        app_categories = {}
+        
+        # Mapping basé sur les manifests
+        manifest_categories = {
+            'community': {'category': 'social', 'label': 'Social', 'icon': 'bi-people'},
+            'chat': {'category': 'communication', 'label': 'Communication', 'icon': 'bi-chat-dots'},
+            'course': {'category': 'learning', 'label': 'Apprentissage', 'icon': 'bi-book'},
+            'documents': {'category': 'collaboration', 'label': 'Collaboration', 'icon': 'bi-folder2-open'},
+            'language_ai': {'category': 'ai', 'label': 'Intelligence IA', 'icon': 'bi-robot'},
+            'notebook': {'category': 'productivity', 'label': 'Productivité', 'icon': 'bi-journal-text'},
+            'quizz': {'category': 'productivity', 'label': 'Productivité', 'icon': 'bi-journal-text'},
+            'revision': {'category': 'productivity', 'label': 'Productivité', 'icon': 'bi-journal-text'},
+        }
+        
+        for app_code, info in manifest_categories.items():
+            display_category = info['category']
+            category_label = info['label'] 
+            category_icon = info['icon']
+            
+            app_categories[app_code] = display_category
+            category_counts[display_category] += 1
+            category_definitions[display_category] = {
+                'label': category_label,
+                'icon': category_icon
+            }
         
         available_apps = []
         for app in apps:
-            # Force static icon URL for apps we know have icons (ultra rapide)
+            # Static icon URL pour ultra performance
             static_icon = f"/app-icons/{app.code}/icon.png" if app.code in apps_with_icons else None
+            
+            # Catégorie depuis manifests
+            manifest_category = app_categories.get(app.code, 'other')
+            category_display = category_definitions.get(manifest_category, {}).get('label', app.category or 'Application')
             
             available_apps.append({
                 'id': app.id,
@@ -476,54 +490,13 @@ class AppStoreView(View):
                 'description': app.description,
                 'icon': app.icon_name or 'bi-app',
                 'static_icon': static_icon,
-                'color_gradient': f'linear-gradient(135deg, {app.color or "#6366f1"} 0%, {app.color or "#6366f1"}80 100%)',
-                'category': app.category,
+                'color_gradient': AppIconService.get_color_gradient(app.color),
+                'category': manifest_category,
+                'category_display': category_display,
                 'route_path': app.route_path,
                 'is_installed': app.id in enabled_app_ids,
                 'installable': app.installable,
             })
-        
-        # 100% Manifest-driven: Lire les catégories directement depuis les manifests
-        from collections import Counter
-        import os
-        import importlib.util
-        from django.apps import apps as django_apps
-        
-        category_counts = Counter()
-        category_definitions = {}
-        
-        # Lire les catégories depuis les manifests de chaque app
-        for app in available_apps:
-            try:
-                # Trouver l'app Django correspondante
-                for app_config in django_apps.get_app_configs():
-                    if app_config.name.endswith(app['name']) or app_config.label == app['name']:
-                        manifest_path = os.path.join(app_config.path, '__manifest__.py')
-                        if os.path.exists(manifest_path):
-                            # Charger le manifest
-                            spec = importlib.util.spec_from_file_location("manifest", manifest_path)
-                            manifest_module = importlib.util.module_from_spec(spec)
-                            spec.loader.exec_module(manifest_module)
-                            manifest = getattr(manifest_module, '__manifest__', {})
-                            
-                            # Lire les informations de catégorie depuis le manifest
-                            frontend_components = manifest.get('frontend_components', {})
-                            display_category = frontend_components.get('display_category')
-                            category_label = frontend_components.get('category_label')
-                            category_icon = frontend_components.get('category_icon')
-                            
-                            if display_category:
-                                category_counts[display_category] += 1
-                                # Stocker les définitions de catégories
-                                if display_category not in category_definitions:
-                                    category_definitions[display_category] = {
-                                        'label': category_label or display_category.title(),
-                                        'icon': category_icon or 'bi-app'
-                                    }
-                        break
-            except Exception as e:
-                print(f"Error reading manifest for {app['name']}: {e}")
-                continue
         
         context = {
             'title': _('App Store - Open Linguify'),

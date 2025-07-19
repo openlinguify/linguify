@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     AppListView,
     UserAppSettingsView,
+    AppStoreView,
     AppToggleAPI,
     toggle_app,
     user_enabled_apps,
@@ -12,6 +13,9 @@ from .views import (
 app_name = 'app_manager'
 
 urlpatterns = [
+    # App Store
+    path('store/', AppStoreView.as_view(), name='app_store'),
+    
     # List all available apps
     path('apps/', AppListView.as_view(), name='app-list'),
     

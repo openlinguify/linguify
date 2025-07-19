@@ -5,7 +5,6 @@ Modular views separated by responsibility.
 
 # Import all views to maintain backward compatibility
 from .dashboard import DashboardView
-from .apps import AppStoreView, AppToggleAPI  
 from .api import UserStatsAPI, NotificationAPI
 from .admin import AdminFixAppsView
 from .utils import check_username_availability, save_draft_settings, load_draft_settings
@@ -13,8 +12,6 @@ from .utils import check_username_availability, save_draft_settings, load_draft_
 # Maintain backward compatibility for existing imports
 __all__ = [
     'DashboardView',
-    'AppStoreView',
-    'AppToggleAPI',
     'UserStatsAPI',
     'NotificationAPI', 
     'AdminFixAppsView',

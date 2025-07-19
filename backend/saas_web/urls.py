@@ -1,10 +1,11 @@
 from django.urls import path
 from django.views.generic import RedirectView
 from .views import (
-    DashboardView, AppStoreView,
+    DashboardView,
     UserStatsAPI, NotificationAPI, AdminFixAppsView,
     check_username_availability, save_draft_settings, load_draft_settings
 )
+from app_manager.views import AppStoreView
 from apps.authentication.views.settings_views import UserSettingsView
 from apps.authentication.views.interface_settings_views import InterfaceSettingsView
 # Import settings views from each app
