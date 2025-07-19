@@ -1,0 +1,293 @@
+{% extends "saas_web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Community" %} | Open Linguify{% endblock %}
+
+{% block extra_css %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'community/css/community-modern.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="community-container">
+<div class="container-fluid">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-12">
+            <!-- Modern Header -->
+            <div class="community-header">
+                <div class="container">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h1 class="h2 mb-2 text-gradient">
+                                <i class="bi bi-people-fill me-2"></i>
+                                {% trans "Community" %}
+                            </h1>
+                            <p class="mb-0 opacity-75">{% trans "Connect with language learners around the world" %}</p>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'community:discover' %}" class="btn-modern primary">
+                                <i class="bi bi-search me-1"></i>
+                                {% trans "Discover Users" %}
+                            </a>
+                            <a href="{% url 'community:friends' %}" class="btn-modern secondary">
+                                <i class="bi bi-person-heart me-1"></i>
+                                {% trans "My Friends" %} ({{ friends_count }})
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modern Stats Cards -->
+            <div class="row mb-4 stagger-children">
+                <div class="col-md-3">
+                    <div class="stats-card animate-fade-in-up">
+                        <div class="stats-icon">
+                            <i class="bi bi-person-heart"></i>
+                        </div>
+                        <div class="stats-number">{{ friends_count }}</div>
+                        <div class="stats-label">{% trans "Friends" %}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card animate-fade-in-up">
+                        <div class="stats-icon">
+                            <i class="bi bi-envelope"></i>
+                        </div>
+                        <div class="stats-number">{{ friend_requests_count }}</div>
+                        <div class="stats-label">{% trans "Friend Requests" %}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card animate-fade-in-up">
+                        <div class="stats-icon">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div class="stats-number">3</div>
+                        <div class="stats-label">{% trans "Groups" %}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card animate-fade-in-up">
+                        <div class="stats-icon">
+                            <i class="bi bi-chat-dots"></i>
+                        </div>
+                        <div class="stats-number">12</div>
+                        <div class="stats-label">{% trans "Messages" %}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modern Quick Actions -->
+            <div class="mb-4">
+                <h3 class="h4 mb-3 text-gradient">{% trans "Quick Actions" %}</h3>
+                <div class="quick-actions-grid">
+                    <a href="{% url 'community:discover' %}" class="quick-action-card">
+                        <div class="quick-action-icon">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <div class="quick-action-title">{% trans "Find Language Partners" %}</div>
+                        <div class="quick-action-description">{% trans "Connect with learners of your target language" %}</div>
+                    </a>
+                    
+                    <a href="{% url 'community:groups' %}" class="quick-action-card">
+                        <div class="quick-action-icon">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div class="quick-action-title">{% trans "Join Study Groups" %}</div>
+                        <div class="quick-action-description">{% trans "Practice with groups of learners" %}</div>
+                    </a>
+                    
+                    <a href="{% url 'community:messages' %}" class="quick-action-card">
+                        <div class="quick-action-icon">
+                            <i class="bi bi-chat-dots"></i>
+                        </div>
+                        <div class="quick-action-title">{% trans "Start Conversations" %}</div>
+                        <div class="quick-action-description">{% trans "Practice speaking with native speakers" %}</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Suggested Friends -->
+            {% if suggested_friends %}
+            <div class="mb-4">
+                <div class="modern-card">
+                    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+                        <h3 class="h5 mb-0 text-gradient">{% trans "Suggested Friends" %}</h3>
+                        <a href="{% url 'community:discover' %}" class="btn-modern secondary">
+                            {% trans "See All" %}
+                        </a>
+                    </div>
+                    <div class="p-3">
+                        <div class="row">
+                            {% for user in suggested_friends %}
+                            <div class="col-md-4 mb-3">
+                                <div class="user-card text-center">
+                                    <div class="user-avatar mb-3">
+                                        {% if user.user.get_profile_picture_url %}
+                                            <img src="{{ user.user.get_profile_picture_url }}" 
+                                                 alt="{{ user.user.username }}" 
+                                                 style="width: 60px; height: 60px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-primary rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                                                 style="width: 60px; height: 60px;">
+                                                <i class="bi bi-person text-white"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <h6 class="mb-2">{{ user.user.name|default:user.user.username }}</h6>
+                                    
+                                    <div class="mb-3">
+                                        <span class="language-badge native me-1">
+                                            <i class="bi bi-globe me-1"></i>
+                                            {{ user.user.get_native_language_display|default:"??" }}
+                                        </span>
+                                        <span class="language-badge learning">
+                                            <i class="bi bi-book me-1"></i>
+                                            {{ user.user.get_target_language_display|default:"??" }}
+                                        </span>
+                                    </div>
+                                    
+                                    <button class="btn-modern primary send-friend-request" 
+                                            data-user-id="{{ user.user.id }}">
+                                        <i class="bi bi-person-plus me-1"></i>
+                                        {% trans "Add Friend" %}
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recent Activity -->
+            <div class="mb-4">
+                <div class="modern-card">
+                    <div class="p-3 border-bottom">
+                        <h3 class="h5 mb-0 text-gradient">{% trans "Recent Activity" %}</h3>
+                    </div>
+                    <div class="p-0">
+                        {% if recent_posts %}
+                            {% for post in recent_posts %}
+                            <div class="activity-item">
+                                <div class="activity-avatar">
+                                    <div class="user-avatar">
+                                        {% if post.author.get_profile_picture_url %}
+                                            <img src="{{ post.author.get_profile_picture_url }}" 
+                                                 alt="{{ post.author.username }}" 
+                                                 style="width: 40px; height: 40px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center"
+                                                 style="width: 40px; height: 40px;">
+                                                <i class="bi bi-person text-white"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="activity-content">
+                                    <div class="activity-header">
+                                        <div class="activity-author">{{ post.author.name|default:post.author.username }}</div>
+                                        <div class="activity-time">{{ post.created_at|timesince }} ago</div>
+                                    </div>
+                                    
+                                    {% if post.title %}
+                                        <div class="activity-title">{{ post.title }}</div>
+                                    {% endif %}
+                                    
+                                    <div class="activity-text">{{ post.content|truncatewords:20 }}</div>
+                                    
+                                    <div class="activity-actions">
+                                        <a href="#" class="activity-action">
+                                            <i class="bi bi-heart"></i>{{ post.likes.count }}
+                                        </a>
+                                        <a href="#" class="activity-action">
+                                            <i class="bi bi-chat"></i>{{ post.comments.count }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="bi bi-chat-square-dots"></i>
+                                </div>
+                                <div class="empty-state-title">{% trans "No recent activity" %}</div>
+                                <div class="empty-state-description">{% trans "No recent activity from your friends. Start by connecting with other learners!" %}</div>
+                                <a href="{% url 'community:discover' %}" class="btn-modern primary">
+                                    <i class="bi bi-search me-1"></i>
+                                    {% trans "Find Friends to Follow Their Activity" %}
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<style>
+.hover-shadow:hover {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transform: translateY(-1px);
+    transition: all 0.15s ease-in-out;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des demandes d'amitié
+    document.querySelectorAll('.send-friend-request').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            
+            fetch(`/community/api/send-friend-request/${userId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.innerHTML = '<i class="bi bi-check me-1"></i>{% trans "Request Sent" %}';
+                    this.disabled = true;
+                    this.classList.remove('primary');
+                    this.classList.add('success');
+                } else {
+                    alert(data.error || 'Error sending friend request');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error sending friend request');
+            });
+        });
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

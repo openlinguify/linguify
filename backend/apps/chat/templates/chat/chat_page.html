@@ -1,44 +1,81 @@
 {% extends 'saas_web/base.html' %}
-{% load static %}
+{% load static i18n %}
 
 {% block title %}Chat - Linguify{% endblock %}
 
 {% block body_class %}chat-page{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
 <link rel="stylesheet" href="{% static 'chat/css/messenger.css' %}">
 <link rel="stylesheet" href="{% static 'chat/css/chat_page.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="chat-page-container">
-    <div class="row h-100 g-0">
-        <!-- Sidebar avec liste des conversations -->
-        <div class="col-md-4 col-lg-3 h-100">
-            <div class="chat-sidebar" id="chat-sidebar">
-                <!-- Header sidebar -->
-                <div class="conversations-header">
-                    <h5 class="mb-3">
-                        <i class="bi bi-chat-dots-fill me-2"></i>
-                        Conversations
-                    </h5>
-                    
-                    <!-- Bouton nouvelle conversation -->
-                    <button class="btn btn-primary new-conversation-btn" id="new-conversation-btn">
-                        <i class="bi bi-plus-circle me-1"></i>
-                        Nouvelle conversation
-                    </button>
-                    
-                    <!-- Recherche -->
-                    <div class="search-conversations">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text" class="form-control" placeholder="Rechercher..." id="search-conversations">
-                        </div>
-                    </div>
+<div class="community-page">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="community-header">
+            <div class="container">
+                <h1 class="h3 mb-3">
+                    <i class="bi bi-chat-dots me-2"></i>
+                    <span class="gradient-text">Messages</span>
+                </h1>
+                
+                <!-- Navigation -->
+                <div class="community-nav">
+                    <a href="{% url 'community:main' %}" class="nav-button">
+                        <i class="bi bi-house me-1"></i>
+                        {% trans "Overview" %}
+                    </a>
+                    <a href="{% url 'community:discover' %}" class="nav-button">
+                        <i class="bi bi-search me-1"></i>
+                        {% trans "Discover" %}
+                    </a>
+                    <a href="{% url 'community:friends' %}" class="nav-button">
+                        <i class="bi bi-person-heart me-1"></i>
+                        {% trans "Friends" %}
+                    </a>
+                    <a href="{% url 'community:groups' %}" class="nav-button">
+                        <i class="bi bi-people me-1"></i>
+                        {% trans "Groups" %}
+                    </a>
+                    <a href="#" class="nav-button active">
+                        <i class="bi bi-chat-dots me-1"></i>
+                        Messages
+                    </a>
                 </div>
+            </div>
+        </div>
+
+        <div class="chat-page-container">
+            <div class="row h-100 g-0">
+                <!-- Sidebar avec liste des conversations -->
+                <div class="col-md-4 col-lg-3 h-100">
+                    <div class="chat-sidebar" id="chat-sidebar">
+                        <!-- Header sidebar -->
+                        <div class="conversations-header">
+                            <h5 class="mb-3">
+                                <i class="bi bi-chat-dots-fill me-2"></i>
+                                Conversations
+                            </h5>
+                            
+                            <!-- Bouton nouvelle conversation -->
+                            <button class="btn-simple new-conversation-btn" id="new-conversation-btn">
+                                <i class="bi bi-plus-circle me-1"></i>
+                                Nouvelle conversation
+                            </button>
+                            
+                            <!-- Recherche -->
+                            <div class="search-conversations mt-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control" placeholder="Rechercher..." id="search-conversations">
+                                </div>
+                            </div>
+                        </div>
                 
                 <!-- Liste des conversations -->
                 <div class="conversations-list" id="conversations-list">
@@ -102,6 +139,7 @@
                                 <i class="bi bi-send-fill"></i>
                             </button>
                         </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -139,7 +177,7 @@
 {% block extra_js %}
 <script>
 // Variables globales pour le chat
-window.currentUserId = {{ user.id| default:'null' }};
+window.currentUserId = {{ user.id|default:'null' }};
 window.currentUsername = '{{ user.username|default:'' }}';
 window.csrfToken = '{{ csrf_token }}';
 </script>
