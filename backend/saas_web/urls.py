@@ -6,6 +6,8 @@ from .views import (
     check_username_availability, save_draft_settings, load_draft_settings
 )
 from app_manager.views import AppStoreView
+from app_manager.views.simple_settings_view import AppManagerSimpleSettingsView
+from app_manager.views.standalone_settings_view import StandaloneAppManagerView
 from apps.authentication.views.settings_views import UserSettingsView
 from apps.authentication.views.interface_settings_views import InterfaceSettingsView
 # Import settings views from each app
@@ -41,6 +43,8 @@ urlpatterns = [
     path('settings/language-ai/', LanguageAISettingsView.as_view(), name='language_ai_settings'),
     path('settings/notifications/', NotificationSettingsView.as_view(), name='notification_settings'),
     path('settings/documents/', documents_settings_view, name='documents_settings'),
+    path('settings/app-manager/', AppManagerSimpleSettingsView.as_view(), name='app_manager_settings'),
+    path('app-manager/', StandaloneAppManagerView.as_view(), name='standalone_app_manager'),
     
     # API endpoints
     path('api/user/stats/', UserStatsAPI.as_view(), name='api_user_stats'),

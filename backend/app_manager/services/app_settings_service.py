@@ -222,6 +222,22 @@ class AppSettingsService:
                     'order': 8
                 }
             ]
+        },
+        'app_manager': {
+            'tabs': [
+                {
+                    'id': 'app_manager',
+                    'name': 'Gestionnaire d\'Apps',
+                    'icon': 'bi-grid-3x3-gap',
+                    'template': 'app_manager/app_manager_settings_full.html',
+                    'category': 'interface',  # Mettre dans Interface pour qu'il soit toujours visible
+                    'order': 0,  # Premier dans Interface
+                    'app_name': 'app_manager',  # Nom de l'app pour le filtrage
+                    'source': 'core',
+                    'active': False,
+                    'description': 'Gérez vos applications installées et configurez l\'App Store'
+                }
+            ]
         }
     }
     
@@ -493,7 +509,8 @@ class AppSettingsService:
                 # Vérifier si l'app est activée
                 if app_code:
                     # Les apps core (personal/interface) sont toujours visibles
-                    if tab.get('category') in ['personal', 'interface']:
+                    # + app_manager qui est toujours nécessaire
+                    if tab.get('category') in ['personal', 'interface'] or app_code == 'app_manager':
                         filtered_tabs.append(tab)
                     # Les apps de la catégorie 'applications' doivent être activées
                     elif tab.get('category') == 'applications':
@@ -531,6 +548,7 @@ class AppSettingsService:
             
             # Liste des apps à activer par défaut
             default_apps = [
+                'app_manager',   # Gestionnaire d'apps (toujours activé)
                 'revision',      # App de révision
                 'chat',          # Chat
                 'community',     # Communauté

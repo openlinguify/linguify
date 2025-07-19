@@ -123,4 +123,5 @@ class SettingsContextMixin:
             'notifications': reverse('saas_web:notification_settings'),
             'notification': reverse('saas_web:notification_settings'),
             'documents': reverse('saas_web:documents_settings'),
+            'app_manager': reverse('saas_web:app_manager_settings'),
         }

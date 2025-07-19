@@ -44,6 +44,16 @@
                     {% endif %}
                 </a>
                 {% endfor %}
+                
+                <!-- Force ajout de Gestionnaire d'Apps dans Interface -->
+                {% if category_id == 'interface' %}
+                <a href="{% url 'saas_web:app_manager_settings' %}" class="nav-item" data-tab="app_manager">
+                    <div class="nav-item-text">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                        Gestionnaire d'Apps
+                    </div>
+                </a>
+                {% endif %}
             </div>
             {% endfor %}
         </nav>
@@ -92,6 +102,8 @@
                     {% include 'community/community_settings.html' %}
                 {% elif tab.id == 'documents' and tab.active %}
                     {% include 'documents/documents_settings.html' %}
+                {% elif tab.id == 'app_manager' and tab.active %}
+                    {% include 'app_manager/app_manager_settings.html' %}
                 {% elif tab.active %}
                     <div id="{{ tab.id }}" class="tab-content active">
                         <div class="content-section">
@@ -108,6 +120,13 @@
                     </div>
                 {% endif %}
             {% endfor %}
+            
+            <!-- Contenu pour app_manager quand on y accède via lien direct -->
+            {% if request.resolver_match.url_name == 'app_manager_settings' %}
+            <div id="app_manager" class="tab-content active">
+                {% include 'app_manager/app_manager_settings.html' %}
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
