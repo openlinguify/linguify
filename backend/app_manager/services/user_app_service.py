@@ -6,6 +6,7 @@ from django.utils import timezone
 from datetime import timedelta
 from ..models import App, UserAppSettings
 from .app_icon_service import AppIconService
+from .manifest_loader import manifest_loader
 
 logger = logging.getLogger(__name__)
 
@@ -136,7 +137,7 @@ class UserAppService:
     @classmethod
     def _format_app_data(cls, app):
         """
-        Format app data for display.
+        Format app data for display using manifest-driven approach.
         
         Args:
             app: App model instance
@@ -144,10 +145,13 @@ class UserAppService:
         Returns:
             dict: Formatted app data
         """
+        # Obtenir les infos depuis le manifest (comme dans l'app-store)
+        app_info = manifest_loader.get_app_info(app.code)
+        
         return {
             'name': app.code,
-            'display_name': app.display_name,
-            'url': app.route_path,
+            'display_name': app_info.get('display_name', app.display_name),
+            'url': app_info.get('route_path', app.route_path),
             'icon': app.icon_name,
             'static_icon': AppIconService.get_static_icon_url(app.code),
             'color_gradient': AppIconService.get_color_gradient(app.color),

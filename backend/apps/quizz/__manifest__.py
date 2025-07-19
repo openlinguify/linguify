@@ -3,7 +3,7 @@ __manifest__ = {
     'name': 'Quiz Interactif',
     'version': '1.0.0',
     'category': 'Productivity',
-    'summary': 'Créez et participez à des quiz personnalisés',
+    'summary': 'Testez vos connaissances avec des quiz interactifs et amusants personnalisables.',
     'description': '''
 Quiz Interactif Module pour Linguify
 ====================================

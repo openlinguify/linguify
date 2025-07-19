@@ -193,5 +193,5 @@
 {% block extra_js %}
 <!-- Pass Django URL to JavaScript -->
 <div data-toggle-url="{% url 'app_manager:api_app_toggle' 0 %}" style="display: none;"></div>
-<script src="{% static 'app_manager/js/app_store.js' %}"></script>
+<script src="{% static 'app_manager/js/app_store.js' %}?v=2"></script>
 {% endblock %}

@@ -3,7 +3,7 @@ __manifest__ = {
     'name': 'Conversation AI',
     'version': '1.0.0',
     'category': 'Intelligence IA',
-    'summary': 'Practice conversations with AI',
+    'summary': 'Pratiquez des conversations avec notre IA pour améliorer votre expression orale et recevoir des corrections personnalisées.',
     'description': '''
 Conversation AI Module for Linguify
 ==================================

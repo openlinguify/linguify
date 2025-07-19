@@ -3,7 +3,7 @@ __manifest__ = {
     'name': 'Documents',
     'version': '1.0.0',
     'category': 'Collaboration',
-    'summary': 'Collaborative document management and sharing',
+    'summary': 'Créez et partagez vos documents en temps réel avec vos collaborateurs.',
     'description': '''
 Documents Module for Linguify
 =============================

@@ -3,7 +3,7 @@ __manifest__ = {
     'name': 'Révision',
     'version': '2.0.0',
     'category': 'Productivity',
-    'summary': 'Système de révision avec répétition espacée (Flashcards)',
+    'summary': 'Mémorisez durablement avec des flashcards intelligentes et la répétition espacée.',
     'description': '''
 Module de Révision pour Linguify
 =================================

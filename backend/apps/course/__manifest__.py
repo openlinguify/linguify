@@ -4,7 +4,7 @@ __manifest__ = {
     'name': 'Learning',
     'version': '2.0.0',
     'category': 'Education/Language Learning',
-    'summary': 'Interactive language lessons and exercises',
+    'summary': 'Apprenez les langues avec des leçons interactives et des exercices variés adaptés à votre niveau.',
     'description': '''
 Learning Module for Open Linguify (v2.0)
 ===================================

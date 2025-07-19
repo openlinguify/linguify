@@ -11,97 +11,119 @@ from django.utils.translation import gettext as _
 from django.conf import settings
 from django.http import JsonResponse
 from ..models.app_manager_models import App, UserAppSettings
-from ..serializers.app_manager_serializers import AppSerializer, AppToggleSerializer
+from ..serializers.app_manager_serializers import AppSerializer
 import logging
 
 logger = logging.getLogger(__name__)
 
-class AppListView(generics.ListAPIView):
-    """
-    List all available applications with deduplication
-    """
-    serializer_class = AppSerializer
-    permission_classes = [IsAuthenticated]
-    
-    def get_queryset(self):
-        # Get all enabled apps
-        apps = App.objects.filter(is_enabled=True).order_by('display_name', '-id')
+@method_decorator(login_required, name='dispatch')
+class AppStoreView(View):
+    """Vue de l'App Store pour gérer les applications"""
+    def get(self, request):
+        from collections import Counter
+        from ..services.app_icon_service import AppIconService
+        from ..services.manifest_loader import manifest_loader
         
-        # Deduplicate by display_name - keep the one with highest ID (most recent)
-        seen_names = set()
-        unique_apps = []
+        # Get all available apps with required fields only
+        required_fields = manifest_loader.get_required_database_fields()
+        apps = App.objects.filter(is_enabled=True).only(*required_fields)
         
+        # Get or create user settings
+        user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
+        enabled_app_ids = set(user_settings.enabled_apps.values_list('id', flat=True))
+        
+        # 100% Manifest-driven: charger toutes les données depuis les manifests
+        apps_with_icons = manifest_loader.get_apps_with_icons()
+        category_mapping = manifest_loader.get_category_mapping()
+        
+        # Construire les définitions et compteurs de catégories
+        category_counts = Counter()
+        category_definitions = {}
+        
+        for app_code, mapping in category_mapping.items():
+            category = mapping['category']
+            category_counts[category] += 1
+            category_definitions[category] = {
+                'label': mapping['label'],
+                'icon': mapping['icon']
+            }
+        
+        available_apps = []
         for app in apps:
-            if app.display_name not in seen_names:
-                unique_apps.append(app)
-                seen_names.add(app.display_name)
-        
-        # Return as queryset - we'll filter the IDs
-        unique_ids = [app.id for app in unique_apps]
-        return App.objects.filter(id__in=unique_ids).order_by('order', 'display_name')
-
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def toggle_app(request):
-    """
-    Toggle an app on/off for the current user
-    """
-    serializer = AppToggleSerializer(data=request.data)
-    if serializer.is_valid():
-        app_code = serializer.validated_data['app_code']
-        enabled = serializer.validated_data['enabled']
-        
-        # Get or create user app settings
-        user_settings, created = UserAppSettings.objects.get_or_create(
-            user=request.user
-        )
-        
-        if enabled:
-            success = user_settings.enable_app(app_code)
-            message = f"App '{app_code}' enabled successfully" if success else f"Failed to enable app '{app_code}'"
-        else:
-            success = user_settings.disable_app(app_code)
-            message = f"App '{app_code}' disabled successfully" if success else f"Failed to disable app '{app_code}'"
-        
-        if success:
-            return Response({
-                'success': True,
-                'message': message,
-                'enabled_apps': user_settings.get_enabled_app_codes()
+            # Obtenir les infos complètes depuis le manifest
+            app_info = manifest_loader.get_app_info(app.code)
+            
+            # Static icon URL depuis manifest
+            static_icon = AppIconService.get_static_icon_url(app.code)
+            
+            available_apps.append({
+                'id': app.id,
+                'name': app.code,
+                'display_name': app_info.get('display_name', app.display_name),
+                'description': app_info.get('description', app.description),
+                'icon': app.icon_name or 'bi-app',
+                'static_icon': static_icon,
+                'color_gradient': AppIconService.get_color_gradient(app.color),
+                'category': app_info.get('category', 'other'),
+                'category_display': app_info.get('category_label', 'Application'),
+                'route_path': app_info.get('route_path', app.route_path),
+                'is_installed': app.id in enabled_app_ids,
+                'installable': app_info.get('installable', app.installable),
             })
-        else:
-            return Response({
+        
+        context = {
+            'title': _('App Store - Open Linguify'),
+            'apps': available_apps,
+            'enabled_app_ids': list(enabled_app_ids),
+            'category_counts': dict(category_counts),
+            'category_definitions': category_definitions,
+            'total_apps': len(available_apps),
+        }
+        return render(request, 'app_manager/app_store.html', context)
+
+@method_decorator(login_required, name='dispatch')
+class AppToggleAPI(View):
+    """API pour activer/désactiver une application"""
+    
+    def post(self, request, app_id):
+        try:
+            app = get_object_or_404(App, id=app_id, is_enabled=True)
+            user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
+            
+            # Check if app is already installed
+            if user_settings.enabled_apps.filter(id=app_id).exists():
+                # Uninstall the app
+                user_settings.enabled_apps.remove(app)
+                is_enabled = False
+                message = f"{app.display_name} a été désinstallée avec succès"
+                logger.info(f"User {request.user.id} uninstalled app {app.code}")
+            else:
+                # Install the app
+                user_settings.enabled_apps.add(app)
+                is_enabled = True
+                message = f"{app.display_name} a été installée avec succès"
+                logger.info(f"User {request.user.id} installed app {app.code}")
+            
+            return JsonResponse({
+                'success': True,
+                'is_enabled': is_enabled,
+                'message': message,
+                'app_name': app.display_name
+            })
+            
+        except App.DoesNotExist:
+            logger.warning(f"User {request.user.id} tried to toggle non-existent app {app_id}")
+            return JsonResponse({
                 'success': False,
-                'message': message
-            }, status=status.HTTP_400_BAD_REQUEST)
-    
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def user_enabled_apps(request):
-    """
-    Get list of apps enabled for the current user
-    """
-    user_settings, created = UserAppSettings.objects.get_or_create(
-        user=request.user
-    )
-    
-    # If newly created, enable all apps by default
-    if created:
-        all_apps = App.objects.filter(is_enabled=True)
-        user_settings.enabled_apps.set(all_apps)
-    
-    enabled_apps = user_settings.enabled_apps.filter(is_enabled=True)
-    serializer = AppSerializer(enabled_apps, many=True)
-    
-    return Response({
-        'enabled_apps': serializer.data,
-        'enabled_app_codes': user_settings.get_enabled_app_codes()
-    })
-
+                'error': 'Application non trouvée'
+            }, status=404)
+        except Exception as e:
+            logger.error(f"Error toggling app {app_id} for user {request.user.id}: {e}")
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+        
 @api_view(['GET', 'POST', 'PUT'])
 @permission_classes([IsAuthenticated])
 def debug_apps(request):
@@ -424,130 +446,3 @@ def debug_apps(request):
         'can_add_apps': request.user.is_staff
     })
 
-
-@method_decorator(login_required, name='dispatch')
-class AppStoreView(View):
-    """Vue de l'App Store pour gérer les applications"""
-    def get(self, request):
-        # Get all available apps with optimization
-        apps = App.objects.filter(is_enabled=True).only(
-            'id', 'code', 'display_name', 'description', 'category', 
-            'route_path', 'installable', 'color', 'icon_name'
-        )
-        
-        # Get or create user settings
-        user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
-        enabled_app_ids = set(user_settings.enabled_apps.values_list('id', flat=True))
-        
-        # 100% Manifest-driven categories
-        from collections import Counter
-        from ..services.app_icon_service import AppIconService
-        
-        # Apps avec icônes
-        apps_with_icons = {'community', 'chat', 'course', 'documents', 'language_ai', 'notebook', 'quizz', 'revision'}
-        
-        category_counts = Counter()
-        category_definitions = {}
-        app_categories = {}
-        
-        # Mapping basé sur les manifests
-        manifest_categories = {
-            'community': {'category': 'social', 'label': 'Social', 'icon': 'bi-people'},
-            'chat': {'category': 'communication', 'label': 'Communication', 'icon': 'bi-chat-dots'},
-            'course': {'category': 'learning', 'label': 'Apprentissage', 'icon': 'bi-book'},
-            'documents': {'category': 'collaboration', 'label': 'Collaboration', 'icon': 'bi-folder2-open'},
-            'language_ai': {'category': 'ai', 'label': 'Intelligence IA', 'icon': 'bi-robot'},
-            'notebook': {'category': 'productivity', 'label': 'Productivité', 'icon': 'bi-journal-text'},
-            'quizz': {'category': 'productivity', 'label': 'Productivité', 'icon': 'bi-journal-text'},
-            'revision': {'category': 'productivity', 'label': 'Productivité', 'icon': 'bi-journal-text'},
-        }
-        
-        for app_code, info in manifest_categories.items():
-            display_category = info['category']
-            category_label = info['label'] 
-            category_icon = info['icon']
-            
-            app_categories[app_code] = display_category
-            category_counts[display_category] += 1
-            category_definitions[display_category] = {
-                'label': category_label,
-                'icon': category_icon
-            }
-        
-        available_apps = []
-        for app in apps:
-            # Static icon URL pour ultra performance
-            static_icon = f"/app-icons/{app.code}/icon.png" if app.code in apps_with_icons else None
-            
-            # Catégorie depuis manifests
-            manifest_category = app_categories.get(app.code, 'other')
-            category_display = category_definitions.get(manifest_category, {}).get('label', app.category or 'Application')
-            
-            available_apps.append({
-                'id': app.id,
-                'name': app.code,
-                'display_name': app.display_name,
-                'description': app.description,
-                'icon': app.icon_name or 'bi-app',
-                'static_icon': static_icon,
-                'color_gradient': AppIconService.get_color_gradient(app.color),
-                'category': manifest_category,
-                'category_display': category_display,
-                'route_path': app.route_path,
-                'is_installed': app.id in enabled_app_ids,
-                'installable': app.installable,
-            })
-        
-        context = {
-            'title': _('App Store - Open Linguify'),
-            'apps': available_apps,
-            'enabled_app_ids': list(enabled_app_ids),
-            'category_counts': dict(category_counts),
-            'category_definitions': category_definitions,
-            'total_apps': len(available_apps),
-        }
-        return render(request, 'app_manager/app_store.html', context)
-
-
-@method_decorator(login_required, name='dispatch')
-class AppToggleAPI(View):
-    """API pour activer/désactiver une application"""
-    
-    def post(self, request, app_id):
-        try:
-            app = get_object_or_404(App, id=app_id, is_enabled=True)
-            user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
-            
-            # Check if app is already installed
-            if user_settings.enabled_apps.filter(id=app_id).exists():
-                # Uninstall the app
-                user_settings.enabled_apps.remove(app)
-                is_enabled = False
-                message = f"{app.display_name} a été désinstallée avec succès"
-                logger.info(f"User {request.user.id} uninstalled app {app.code}")
-            else:
-                # Install the app
-                user_settings.enabled_apps.add(app)
-                is_enabled = True
-                message = f"{app.display_name} a été installée avec succès"
-                logger.info(f"User {request.user.id} installed app {app.code}")
-            
-            return JsonResponse({
-                'success': True,
-                'is_enabled': is_enabled,
-                'message': message,
-                'app_name': app.display_name
-            })
-            
-        except App.DoesNotExist:
-            logger.warning(f"User {request.user.id} tried to toggle non-existent app {app_id}")
-            return JsonResponse({
-                'success': False,
-                'error': 'Application non trouvée'
-            }, status=404)
-        except Exception as e:
-            logger.error(f"Error toggling app {app_id} for user {request.user.id}: {e}")
-            return JsonResponse({
-                'success': False,
-                'error': str(e)
-            }, status=500)

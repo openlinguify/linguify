@@ -3,7 +3,7 @@ __manifest__ = {
     'name': 'Community',
     'version': '1.0.0',
     'category': 'Social',
-    'summary': 'Connect with other language learners',
+    'summary': 'Connectez-vous avec d\'autres apprenants, trouvez des partenaires linguistiques et rejoignez des groupes d\'étude.',
     'description': '''
 Community Module for Linguify
 =============================

@@ -3,7 +3,7 @@ __manifest__ = {
     'name': 'Notes',
     'version': '1.0.0',
     'category': 'Productivity',
-    'summary': 'Take notes and organize vocabulary',
+    'summary': 'Prenez des notes personnalisées et organisez votre vocabulaire de manière efficace.',
     'description': '''
 Notes Module for Linguify
 ==========================

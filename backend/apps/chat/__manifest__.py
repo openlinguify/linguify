@@ -11,7 +11,7 @@ __manifest__ = {
     'name': 'Collaborative Chat',  # Changed from 'Conversation AI' to avoid confusion
     'version': '0.5.0',  # Version indicates development status
     'category': 'Communication',
-    'summary': 'Real-time collaborative chat for learning groups',
+    'summary': 'Chattez en temps réel avec vos amis',
     'description': '''
 Collaborative Chat Module for Open Linguify
 ==========================================

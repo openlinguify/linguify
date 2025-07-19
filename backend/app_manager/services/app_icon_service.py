@@ -6,6 +6,7 @@ import logging
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.core.cache import cache
+from .manifest_loader import manifest_loader
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class AppIconService:
     @classmethod
     def get_static_icon_url(cls, app_code):
         """
-        Generate static icon URL for an app if the icon file exists.
+        Generate static icon URL for an app using manifest data.
         Uses cache for performance.
         
         Args:
@@ -61,23 +62,12 @@ class AppIconService:
             return cached_url if cached_url != "NOT_FOUND" else None
         
         try:
-            # Find the corresponding Django app
-            for app_config in django_apps.get_app_configs():
-                if app_config.name.endswith(app_code) or app_config.label == app_code:
-                    # Check if icon.png exists in static/description/
-                    icon_path = os.path.join(
-                        app_config.path, 
-                        'static', 
-                        'description', 
-                        'icon.png'
-                    )
-                    
-                    if os.path.exists(icon_path):
-                        # Return URL to the app-icons system
-                        url = f"/app-icons/{app_code}/icon.png"
-                        cache.set(cache_key, url, 3600)  # Cache for 1 hour
-                        return url
-                    break
+            # Check if app has static icon according to manifest
+            app_info = manifest_loader.get_app_info(app_code)
+            if app_info.get('has_static_icon', False):
+                url = f"/app-icons/{app_code}/icon.png"
+                cache.set(cache_key, url, 3600)  # Cache for 1 hour
+                return url
                     
         except Exception as e:
             logger.warning(f"Error getting static icon for app {app_code}: {e}")

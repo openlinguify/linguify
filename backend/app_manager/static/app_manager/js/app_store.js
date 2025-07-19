@@ -123,10 +123,25 @@ document.addEventListener('DOMContentLoaded', function() {
         // Remettre le toggle en position "on" temporairement
         toggle.checked = true;
         
-        // Récupérer les infos de l'app
-        const appName = card.querySelector('.app-title').textContent;
-        const appIcon = card.querySelector('.app-icon i').className;
-        const appIconBg = card.querySelector('.app-icon').style.background;
+        // Récupérer les infos de l'app avec vérification de sécurité
+        const appTitleElement = card.querySelector('.app-title');
+        const appName = appTitleElement ? appTitleElement.textContent : 'Application';
+        
+        // Gérer les nouvelles icônes IMG ou les anciennes icônes I
+        const appIconImg = card.querySelector('.app-icon img');
+        const appIconI = card.querySelector('.app-icon i');
+        
+        let appIcon = '';
+        if (appIconImg) {
+            // Nouvelle structure avec images
+            appIcon = appIconImg.src;
+        } else if (appIconI) {
+            // Ancienne structure avec icônes Bootstrap
+            appIcon = appIconI.className;
+        }
+        
+        const appIconElement = card.querySelector('.app-icon');
+        const appIconBg = appIconElement ? appIconElement.style.background : 'transparent';
         
         // Configurer la modal
         const modal = document.getElementById('uninstallModal');
@@ -136,7 +151,19 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Mettre à jour le contenu de la modal
         modalAppName.textContent = appName;
-        modalAppIcon.innerHTML = `<i class="${appIcon}"></i>`;
+        
+        // Afficher l'icône appropriée dans la modal
+        if (appIconImg) {
+            // Nouvelle structure avec images
+            modalAppIcon.innerHTML = `<img src="${appIcon}" alt="${appName} icon" style="width: 40px; height: 40px; object-fit: contain;">`;
+        } else if (appIconI) {
+            // Ancienne structure avec icônes Bootstrap
+            modalAppIcon.innerHTML = `<i class="${appIcon}"></i>`;
+        } else {
+            // Fallback
+            modalAppIcon.innerHTML = `<i class="bi bi-app"></i>`;
+        }
+        
         modalAppIcon.style.background = appIconBg;
         
         // Gérer la confirmation
