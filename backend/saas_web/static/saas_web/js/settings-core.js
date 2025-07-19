@@ -172,6 +172,11 @@ class SettingsManager {
     }
 
     async autoSave(form) {
+        // Skip auto-save if form doesn't have a valid action or if we're on app manager page
+        if (!form.action || form.action.includes('app-manager')) {
+            return;
+        }
+        
         const indicator = this.showAutoSaveIndicator('Sauvegarde...');
         
         try {

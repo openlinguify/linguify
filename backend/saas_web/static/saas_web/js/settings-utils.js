@@ -125,6 +125,12 @@ function validateField(input) {
 
 // Generic form submission handler
 async function handleFormSubmission(form) {
+    // Skip forms without valid action or on app manager page
+    if (!form.action || form.action.includes('app-manager')) {
+        console.log('[Settings Utils] Skipping form submission for app manager or invalid action');
+        return;
+    }
+    
     // Prevent multiple simultaneous submissions
     if (form.hasAttribute('data-submitting')) {
         console.log('[Settings Utils] Form already being submitted, ignoring');
@@ -169,12 +175,13 @@ async function handleFormSubmission(form) {
         console.log('[Settings Utils] Response status:', response.status);
         
         let result;
+        const responseText = await response.text();
+        
         try {
-            result = await response.json();
+            result = JSON.parse(responseText);
             console.log('[Settings Utils] Response data:', result);
         } catch (e) {
-            const text = await response.text();
-            console.error('[Settings Utils] Failed to parse JSON response:', text);
+            console.error('[Settings Utils] Failed to parse JSON response:', responseText);
             throw new Error('Invalid JSON response');
         }
         
