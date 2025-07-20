@@ -36,25 +36,6 @@
 <!-- Content Area -->
 <div class="content-area" {% if user.is_authenticated %}data-user-id="{{ user.id|default:'null' }}" data-username="{{ user.username|default:'' }}" data-csrf-token="{{ csrf_token }}"{% endif %}>
     <!-- Quick Actions Banner -->
-    <div class="welcome-banner">
-        <div class="row align-items-center justify-content-center">
-            <div class="col-md-8 text-center">
-                <div class="d-flex justify-content-center align-items-center gap-5">
-                    <div class="text-center">
-                        <div class="h4 mb-1">{{ user.native_language }}</div>
-                        <small class="opacity-75">Langue native</small>
-                    </div>
-                    <div class="text-center">
-                        <i class="bi bi-arrow-right" style="font-size: 1.5rem; opacity: 0.7;"></i>
-                    </div>
-                    <div class="text-center">
-                        <div class="h4 mb-1">{{ user.target_language }}</div>
-                        <small class="opacity-75">Langue cible</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
     <!-- Installed Apps Section -->

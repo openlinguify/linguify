@@ -257,8 +257,23 @@ class TagsManagement {
         console.log('🎨 renderTags: nombre de tags à afficher:', this.tags.length);
         if (!tbody) {
             console.error('❌ Élément tagsTableBody non trouvé dans le DOM');
+            // Retry after a short delay to allow DOM to be ready
+            setTimeout(() => {
+                const retryTbody = document.getElementById('tagsTableBody');
+                if (retryTbody) {
+                    console.log('✅ Retry successful: tagsTableBody found after delay');
+                    this.renderTagsInternal(retryTbody);
+                } else {
+                    console.error('❌ Retry failed: tagsTableBody still not found');
+                }
+            }, 100);
             return;
         }
+        
+        this.renderTagsInternal(tbody);
+    }
+    
+    renderTagsInternal(tbody) {
 
         // Filtrer les tags selon la recherche
         let filteredTags = this.tags;
