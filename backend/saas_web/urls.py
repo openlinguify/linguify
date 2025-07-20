@@ -12,7 +12,6 @@ from apps.authentication.views.interface_settings_views import InterfaceSettings
 # Import settings views from each app
 from apps.chat.views.chat_settings_views import ChatSettingsView
 from apps.community.views.community_settings_views import CommunitySettingsView
-from core.vocal.views.voice_settings_views import VoiceSettingsView
 from apps.notification.views.notification_settings_views import NotificationSettingsView
 from apps.course.views.learning_settings_views import LearningSettingsView
 from apps.notebook.views.notebook_settings_views import NotebookSettingsView
@@ -32,7 +31,6 @@ urlpatterns = [
     # Settings for each module
     path('settings/profile/', UserSettingsView.as_view(), name='profile_settings'),
     path('settings/interface/', InterfaceSettingsView.as_view(), name='interface_settings'),
-    path('settings/voice/', VoiceSettingsView.as_view(), name='voice_settings'),
     path('settings/learning/', LearningSettingsView.as_view(), name='learning_settings'),
     path('settings/chat/', ChatSettingsView.as_view(), name='chat_settings'),
     path('settings/community/', CommunitySettingsView.as_view(), name='community_settings'),

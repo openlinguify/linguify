@@ -19,7 +19,7 @@ class TagsManagement {
 
     init() {
         this.setupEventListeners();
-        this.loadTags();
+        this.loadTags(false); // false = ne pas render lors de l'init
     }
 
     setupEventListeners() {
@@ -199,7 +199,7 @@ class TagsManagement {
         return this.colors[Math.floor(Math.random() * this.colors.length)];
     }
 
-    async loadTags() {
+    async loadTags(shouldRender = true) {
         console.log('📡 Chargement des tags...');
         
         try {
@@ -225,8 +225,10 @@ class TagsManagement {
                 console.log('⚠️ Aucun tag trouvé dans la réponse');
             }
 
-            this.renderTags();
-            this.updateTagsCount();
+            if (shouldRender) {
+                this.renderTags();
+                this.updateTagsCount();
+            }
 
         } catch (error) {
             console.error('❌ Erreur lors du chargement des tags:', error);

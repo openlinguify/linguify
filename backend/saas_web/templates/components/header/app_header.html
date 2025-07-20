@@ -132,21 +132,6 @@
                     </ul>
                 </div>
                 
-                <!-- Assistant Vocal -->
-                <div class="dropdown me-2" id="vocalAssistantDropdown">
-                    <button class="btn btn-outline-secondary position-relative btn-sm header-btn" 
-                            type="button" 
-                            id="vocalAssistantButton"
-                            title="{% trans 'Voice Assistant (Ctrl + .)' %}"
-                            aria-label="{% trans 'Voice Assistant' %}">
-                        <i class="bi bi-mic" id="vocalIcon" aria-hidden="true"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success" 
-                              id="vocalStatusBadge" 
-                              style="display: none; width: 12px; height: 12px;"
-                              aria-label="{% trans 'Voice assistant active' %}">
-                        </span>
-                    </button>
-                </div>
                 
                 <!-- User Menu -->
                 <div class="dropdown">
@@ -299,5 +284,3 @@
 <!-- Notification System Script -->
 <script src="{% static 'js/notifications.js' %}" defer></script>
 
-<!-- Voice Assistant Script -->
-<script src="{% static 'vocal/js/voice-assistant.js' %}" defer></script>

@@ -115,18 +115,6 @@ class AppSettingsService:
                 }
             ]
         },
-        'vocal': {
-            'tabs': [
-                {
-                    'id': 'voice',
-                    'name': 'Assistant Vocal',
-                    'icon': 'bi-mic',
-                    'template': 'vocal/voice_settings.html',
-                    'category': 'interface',
-                    'order': 2
-                }
-            ]
-        },
         'course': {
             'tabs': [
                 {

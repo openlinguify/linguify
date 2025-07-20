@@ -97,9 +97,6 @@ INSTALLED_APPS = [
     'app_manager',
     'apps.quizz',
     
-    # Core apps
-    'core.vocal',
-    
     # Web interfaces
     'saas_web',
     'core.apps.CoreConfig',
