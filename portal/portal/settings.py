@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'public_web',  # Notre app principale pour le portail
     'blog',       # App blog déplacée du backend
     'jobs',       # App jobs déplacée du backend
+    'docs',       # Documentation intégrée
 ]
 
 MIDDLEWARE = [

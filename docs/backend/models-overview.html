@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Models Overview - OpenLinguify Documentation</title>
+</head>
+<body>
+    <main class="docs-main">
+        <div class="docs-content">
+            <h1><i class="bi bi-database me-3"></i>Models Overview</h1>
+            <p class="lead">Complete overview of OpenLinguify's database models and their relationships.</p>
+
+            <div class="alert alert-info">
+                <h5><i class="bi bi-info-circle me-2"></i>Database Architecture</h5>
+                <p class="mb-0">OpenLinguify uses PostgreSQL with Django ORM. The database is designed for scalability and supports multiple languages and educational content types.</p>
+            </div>
+
+            <h2>Core Models</h2>
+
+            <h3>User Management</h3>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5><i class="bi bi-person me-2"></i>User Model</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Location:</strong> <code>apps/authentication/models.py</code></p>
+                    <p><strong>Purpose:</strong> Extended Django User model with additional fields for language learning</p>
+                    
+                    <h6>Key Fields:</h6>
+                    <ul>
+                        <li><code>email</code> - Primary identifier (unique)</li>
+                        <li><code>username</code> - Display name</li>
+                        <li><code>preferred_language</code> - UI language preference</li>
+                        <li><code>native_language</code> - User's native language</li>
+                        <li><code>learning_languages</code> - Languages being learned</li>
+                        <li><code>timezone</code> - User's timezone</li>
+                        <li><code>is_premium</code> - Premium subscription status</li>
+                    </ul>
+
+                    <h6>Relationships:</h6>
+                    <ul>
+                        <li>One-to-Many: Courses, Progress, Notes</li>
+                        <li>Many-to-Many: Learning Languages, Groups</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Course System</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5><i class="bi bi-book me-2"></i>Course</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Location:</strong> <code>apps/course/models.py</code></p>
+                            <p>Main course container with metadata</p>
+                            <ul class="small">
+                                <li><code>title</code>, <code>description</code></li>
+                                <li><code>language</code> - Target language</li>
+                                <li><code>difficulty_level</code></li>
+                                <li><code>estimated_duration</code></li>
+                                <li><code>is_published</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5><i class="bi bi-list-ol me-2"></i>Lesson</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Location:</strong> <code>apps/course/models.py</code></p>
+                            <p>Individual lessons within courses</p>
+                            <ul class="small">
+                                <li><code>course</code> - Foreign Key</li>
+                                <li><code>title</code>, <code>content</code></li>
+                                <li><code>order</code> - Lesson sequence</li>
+                                <li><code>lesson_type</code> - vocabulary, grammar, etc.</li>
+                                <li><code>estimated_time</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>User Progress</h3>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5><i class="bi bi-graph-up me-2"></i>UserProgress</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Location:</strong> <code>apps/course/models.py</code></p>
+                    <p>Tracks user progress through courses and lessons</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Course Progress:</h6>
+                            <ul>
+                                <li><code>user</code>, <code>course</code></li>
+                                <li><code>completion_percentage</code></li>
+                                <li><code>total_time_spent</code></li>
+                                <li><code>last_accessed</code></li>
+                                <li><code>is_completed</code></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Lesson Progress:</h6>
+                            <ul>
+                                <li><code>user</code>, <code>lesson</code></li>
+                                <li><code>status</code> - not_started, in_progress, completed</li>
+                                <li><code>score</code> - Performance score</li>
+                                <li><code>attempts</code> - Number of attempts</li>
+                                <li><code>completed_at</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Learning Tools</h2>
+
+            <h3>Revision System</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5><i class="bi bi-arrow-repeat me-2"></i>Flashcard</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Location:</strong> <code>apps/revision/models.py</code></p>
+                            <ul class="small">
+                                <li><code>front_text</code>, <code>back_text</code></li>
+                                <li><code>user</code> - Owner</li>
+                                <li><code>deck</code> - Card collection</li>
+                                <li><code>difficulty</code></li>
+                                <li><code>tags</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5><i class="bi bi-stack me-2"></i>Deck</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Location:</strong> <code>apps/revision/models.py</code></p>
+                            <ul class="small">
+                                <li><code>name</code>, <code>description</code></li>
+                                <li><code>user</code> - Owner</li>
+                                <li><code>is_public</code></li>
+                                <li><code>language</code></li>
+                                <li><code>card_count</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Spaced Repetition</h3>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5><i class="bi bi-clock-history me-2"></i>ReviewSession</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Location:</strong> <code>apps/revision/models.py</code></p>
+                    <p>Implements spaced repetition algorithm for optimal learning</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Session Data:</h6>
+                            <ul>
+                                <li><code>user</code>, <code>flashcard</code></li>
+                                <li><code>interval</code> - Days until next review</li>
+                                <li><code>ease_factor</code> - Learning ease</li>
+                                <li><code>repetitions</code> - Times reviewed</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Scheduling:</h6>
+                            <ul>
+                                <li><code>next_review_date</code></li>
+                                <li><code>last_reviewed</code></li>
+                                <li><code>quality</code> - Last response quality</li>
+                                <li><code>is_due</code> - Ready for review</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Content Management</h2>
+
+            <h3>Notes & Documents</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5><i class="bi bi-journal-text me-2"></i>Note</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Location:</strong> <code>apps/notebook/models.py</code></p>
+                            <ul class="small">
+                                <li><code>title</code>, <code>content</code></li>
+                                <li><code>user</code> - Owner</li>
+                                <li><code>language</code></li>
+                                <li><code>tags</code></li>
+                                <li><code>is_favorite</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5><i class="bi bi-file-earmark me-2"></i>Document</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Location:</strong> <code>apps/documents/models.py</code></p>
+                            <ul class="small">
+                                <li><code>title</code>, <code>file</code></li>
+                                <li><code>user</code> - Owner</li>
+                                <li><code>file_type</code> - PDF, DOC, etc.</li>
+                                <li><code>size</code>, <code>upload_date</code></li>
+                                <li><code>is_shared</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Quizzes & Assessments</h3>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5><i class="bi bi-question-circle me-2"></i>Quiz System</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Location:</strong> <code>apps/quizz/models.py</code></p>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>Quiz:</h6>
+                            <ul>
+                                <li><code>title</code>, <code>description</code></li>
+                                <li><code>creator</code></li>
+                                <li><code>time_limit</code></li>
+                                <li><code>max_attempts</code></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Question:</h6>
+                            <ul>
+                                <li><code>quiz</code></li>
+                                <li><code>question_text</code></li>
+                                <li><code>question_type</code></li>
+                                <li><code>points</code></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>QuizAttempt:</h6>
+                            <ul>
+                                <li><code>user</code>, <code>quiz</code></li>
+                                <li><code>score</code></li>
+                                <li><code>completed_at</code></li>
+                                <li><code>time_taken</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Communication</h2>
+
+            <h3>Chat System</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5><i class="bi bi-chat me-2"></i>Conversation</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Location:</strong> <code>apps/chat/models.py</code></p>
+                            <ul class="small">
+                                <li><code>participants</code> - Many-to-Many</li>
+                                <li><code>title</code></li>
+                                <li><code>is_group</code></li>
+                                <li><code>created_by</code></li>
+                                <li><code>last_message_at</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5><i class="bi bi-chat-dots me-2"></i>Message</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Location:</strong> <code>apps/chat/models.py</code></p>
+                            <ul class="small">
+                                <li><code>conversation</code></li>
+                                <li><code>sender</code></li>
+                                <li><code>content</code></li>
+                                <li><code>message_type</code> - text, image, file</li>
+                                <li><code>is_read</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Database Relationships</h2>
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5><i class="bi bi-diagram-3 me-2"></i>Entity Relationships</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Key Relationships:</h6>
+                    <ul>
+                        <li><strong>User → Courses:</strong> Many-to-Many through UserProgress</li>
+                        <li><strong>Course → Lessons:</strong> One-to-Many</li>
+                        <li><strong>User → Flashcards:</strong> One-to-Many</li>
+                        <li><strong>Flashcard → ReviewSessions:</strong> One-to-Many</li>
+                        <li><strong>User → Notes:</strong> One-to-Many</li>
+                        <li><strong>User → Messages:</strong> One-to-Many</li>
+                        <li><strong>Conversation → Messages:</strong> One-to-Many</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Performance Considerations</h2>
+
+            <div class="alert alert-warning">
+                <h5><i class="bi bi-lightning me-2"></i>Database Optimization</h5>
+                <ul class="mb-0">
+                    <li><strong>Indexes:</strong> All foreign keys and frequently queried fields</li>
+                    <li><strong>Caching:</strong> Redis for sessions and frequently accessed data</li>
+                    <li><strong>Pagination:</strong> All list views use pagination</li>
+                    <li><strong>Query Optimization:</strong> Use select_related() and prefetch_related()</li>
+                    <li><strong>Soft Deletes:</strong> Important data uses soft deletion</li>
+                </ul>
+            </div>
+
+            <h2>Migration Strategy</h2>
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5><i class="bi bi-arrow-up-circle me-2"></i>Database Migrations</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Best Practices:</h6>
+                    <ul>
+                        <li><strong>Backward Compatible:</strong> Always create backwards-compatible migrations</li>
+                        <li><strong>Data Migrations:</strong> Separate data migrations from schema changes</li>
+                        <li><strong>Testing:</strong> Test migrations on production-like data</li>
+                        <li><strong>Rollback Plan:</strong> Have rollback procedures ready</li>
+                    </ul>
+
+                    <h6>Common Commands:</h6>
+                    <pre><code class="language-bash"># Create migrations
+python manage.py makemigrations
+
+# Apply migrations
+python manage.py migrate
+
+# Show migration status
+python manage.py showmigrations
+
+# Rollback migration
+python manage.py migrate app_name 0002</code></pre>
+                </div>
+            </div>
+
+            <h2>API Serialization</h2>
+
+            <p>All models have corresponding DRF serializers for API access:</p>
+
+            <pre><code class="language-python"># Example serializer structure
+class CourseSerializer(serializers.ModelSerializer):
+    progress = serializers.SerializerMethodField()
+    lessons_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Course
+        fields = ['id', 'title', 'description', 'language', 
+                 'difficulty_level', 'progress', 'lessons_count']
+        read_only_fields = ['id', 'created_at', 'updated_at']
+    
+    def get_progress(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            progress = UserProgress.objects.filter(user=user, course=obj).first()
+            return progress.completion_percentage if progress else 0
+        return 0</code></pre>
+
+            <div class="alert alert-info mt-4">
+                <h5><i class="bi bi-info-circle me-2"></i>Next Steps</h5>
+                <p class="mb-0">
+                    For detailed API documentation, see our <a href="../api-reference.html">API Reference</a>.
+                    To contribute new models, check the <a href="../development/developer-guidelines.html">Developer Guidelines</a>.
+                </p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
