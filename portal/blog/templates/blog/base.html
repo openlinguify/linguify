@@ -3,21 +3,6 @@
 {% load static %}
 
 {% block extra_css %}
-<style>
-:root {
-    --linguify-primary: #2D5BBA;
-    --linguify-secondary: #8B5CF6;
-    --linguify-accent: #00D4AA;
-    --linguify-gray: #6B7280;
-}
-
-/* Override navbar brand to add "Blog" suffix in green mint */
-.public-header .navbar-brand::after {
-    content: " Blog";
-    color: var(--linguify-accent, #00D4AA) !important;
-    font-weight: 600;
-    display: inline;
-}
-</style>
+<link rel="stylesheet" href="{% static 'blog/css/blog.css' %}">
 {{ block.super }}
 {% endblock %}

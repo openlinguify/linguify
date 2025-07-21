@@ -1,0 +1,1106 @@
+:root {
+    /* Linguify Brand Colors - Version complète */
+    --linguify-primary: #2D5BBA;
+    --linguify-secondary: #8B5CF6;
+    --linguify-accent: #00D4AA;
+    --linguify-gray: #6B7280;
+    --linguify-primary-light: #4F7BD9;
+    --linguify-primary-dark: #1E4A8C;
+    --linguify-secondary-light: #A78BFA;
+    --linguify-secondary-dark: #7C3AED;
+    --linguify-accent-light: #26E4B8;
+    --linguify-accent-dark: #00B894;
+    --linguify-success: #10B981;
+    --linguify-warning: #F59E0B;
+    --linguify-error: #EF4444;
+    
+    /* Primary gradient: Bleu royal → Vert menthe */
+    --primary-gradient: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+}
+
+/* Blog specific styling with Linguify colors */
+.blog-page {
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-secondary) 50%, var(--linguify-accent) 100%);
+    min-height: 100vh;
+    padding-top: 2rem;
+}
+
+.blog-page .container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(45, 91, 186, 0.1);
+}
+
+/* Titre principal avec gradient Linguify */
+.blog-page h1.display-4 {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+}
+
+/* Boutons primaires */
+.blog-page .btn-primary {
+    background: var(--linguify-primary) !important;
+    border-color: var(--linguify-primary) !important;
+    color: white !important;
+}
+
+.blog-page .btn-primary:hover {
+    background: var(--linguify-primary-dark) !important;
+    border-color: var(--linguify-primary-dark) !important;
+}
+
+.blog-page .btn-outline-primary {
+    color: var(--linguify-primary) !important;
+    border-color: var(--linguify-primary) !important;
+}
+
+.blog-page .btn-outline-primary:hover {
+    background: var(--linguify-primary) !important;
+    border-color: var(--linguify-primary) !important;
+    color: white !important;
+}
+
+/* Badges et catégories */
+.blog-page .badge.bg-primary {
+    background-color: var(--linguify-accent) !important;
+    color: white !important;
+}
+
+/* Cards avec effet hover */
+.blog-page .card {
+    border: none;
+    box-shadow: 0 5px 15px rgba(45, 91, 186, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.blog-page .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(45, 91, 186, 0.15);
+}
+
+.blog-page .card-header {
+    background: var(--primary-gradient) !important;
+    color: white !important;
+    border-bottom: none;
+}
+
+.blog-page .card-title a {
+    color: var(--linguify-primary) !important;
+    text-decoration: none;
+}
+
+.blog-page .card-title a:hover {
+    color: var(--linguify-primary-dark) !important;
+}
+
+/* Texte primaire */
+.blog-page .text-primary {
+    color: var(--linguify-primary) !important;
+}
+
+/* Boutons secondaires */
+.blog-page .btn-outline-secondary {
+    color: var(--linguify-secondary) !important;
+    border-color: var(--linguify-secondary) !important;
+}
+
+.blog-page .btn-outline-secondary:hover {
+    background: var(--linguify-secondary) !important;
+    border-color: var(--linguify-secondary) !important;
+    color: white !important;
+}
+
+/* Tags et badges secondaires */
+.blog-page .badge.bg-light {
+    background-color: var(--linguify-accent) !important;
+    color: white !important;
+}
+
+/* Sidebar */
+.blog-page .sticky-top .card {
+    border: 1px solid rgba(45, 91, 186, 0.1);
+}
+
+/* Links */
+.blog-page a:not(.btn):not(.navbar-brand) {
+    color: var(--linguify-primary);
+}
+
+.blog-page a:not(.btn):not(.navbar-brand):hover {
+    color: var(--linguify-primary-dark);
+}
+
+/* Pagination */
+.blog-page .pagination .page-link {
+    color: var(--linguify-primary) !important;
+    border-color: var(--linguify-primary) !important;
+}
+
+.blog-page .pagination .page-item.active .page-link {
+    background-color: var(--linguify-primary) !important;
+    border-color: var(--linguify-primary) !important;
+}
+
+.blog-page .pagination .page-link:hover {
+    background-color: var(--linguify-primary-light) !important;
+    border-color: var(--linguify-primary) !important;
+    color: white !important;
+}
+
+/* Form elements */
+.blog-page .form-control:focus {
+    border-color: var(--linguify-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25) !important;
+}
+
+/* Success and info messages */
+.blog-page .alert-info {
+    background-color: rgba(45, 91, 186, 0.1) !important;
+    border-color: var(--linguify-primary) !important;
+    color: var(--linguify-primary-dark) !important;
+}
+
+/* Blog Detail Article Styling */
+.blog-article-container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.blog-content-wrapper {
+    display: flex;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.blog-main-content {
+    flex: 1;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.blog-sidebar {
+    flex: 0 0 300px;
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+}
+
+/* Article Header with Linguify Colors */
+.article-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(45, 91, 186, 0.1);
+}
+
+.article-category {
+    display: inline-block;
+    background: var(--primary-gradient) !important;
+    color: white !important;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.article-category:hover {
+    color: white !important;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.3);
+}
+
+.article-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--linguify-primary-dark) !important;
+    margin-bottom: 1.5rem;
+}
+
+.article-meta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    color: var(--linguify-gray);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.article-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.article-meta-item i {
+    color: var(--linguify-accent);
+}
+
+.article-excerpt {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--linguify-gray);
+    font-style: italic;
+    margin: 0;
+}
+
+/* Content Typography with Linguify Colors */
+.blog-content {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--linguify-primary-dark);
+    max-width: none;
+}
+
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content h4,
+.blog-content h5,
+.blog-content h6 {
+    color: var(--linguify-primary) !important;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.blog-content h1 { font-size: 2rem; }
+.blog-content h2 { font-size: 1.75rem; }
+.blog-content h3 { font-size: 1.5rem; }
+.blog-content h4 { font-size: 1.25rem; }
+
+.blog-content p {
+    margin-bottom: 1.5rem;
+}
+
+.blog-content strong {
+    color: var(--linguify-primary-dark);
+    font-weight: 600;
+}
+
+.blog-content blockquote {
+    border-left: 4px solid var(--linguify-accent);
+    background: rgba(0, 212, 170, 0.05);
+    padding: 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    border-radius: 0 8px 8px 0;
+}
+
+.blog-content code {
+    background: rgba(45, 91, 186, 0.1);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    color: var(--linguify-secondary);
+    font-size: 0.9em;
+}
+
+.blog-content pre {
+    background: rgba(45, 91, 186, 0.05);
+    padding: 1.5rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 2rem 0;
+    border: 1px solid rgba(45, 91, 186, 0.1);
+}
+
+/* Tags Section with Linguify Colors */
+.article-tags {
+    margin: 3rem 0;
+    padding: 2rem 0;
+    border-top: 1px solid rgba(45, 91, 186, 0.1);
+    border-bottom: 1px solid rgba(45, 91, 186, 0.1);
+}
+
+.article-tags h6 {
+    color: var(--linguify-primary);
+    margin-bottom: 1rem;
+}
+
+.tag-item {
+    display: inline-block;
+    background: rgba(0, 212, 170, 0.1);
+    color: var(--linguify-accent-dark);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    text-decoration: none;
+    margin: 0.25rem;
+    border: 1px solid var(--linguify-accent);
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.tag-item:hover {
+    background: var(--linguify-accent);
+    color: white;
+    border-color: var(--linguify-accent);
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+/* Social Sharing with Linguify Colors */
+.social-sharing {
+    background: rgba(45, 91, 186, 0.05);
+    padding: 2rem;
+    border-radius: 12px;
+    margin: 3rem 0;
+    text-align: center;
+    border: 1px solid rgba(45, 91, 186, 0.1);
+}
+
+.social-sharing h6 {
+    color: var(--linguify-primary);
+    margin-bottom: 1.5rem;
+}
+
+.share-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.share-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    text-decoration: none;
+}
+
+/* Related Posts with Linguify Colors */
+.related-posts {
+    margin-top: 4rem;
+}
+
+.related-posts h4 {
+    color: var(--linguify-primary);
+    margin-bottom: 2rem;
+}
+
+.related-post-card {
+    border: 1px solid rgba(45, 91, 186, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.related-post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(45, 91, 186, 0.15);
+    border-color: var(--linguify-accent);
+}
+
+.related-post-image {
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.related-post-content {
+    padding: 1.5rem;
+}
+
+.related-post-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.related-post-title a {
+    color: var(--linguify-primary);
+    text-decoration: none;
+}
+
+.related-post-title a:hover {
+    color: var(--linguify-primary-dark);
+}
+
+/* Comments Section with Linguify Colors */
+.comments-section h4 {
+    color: var(--linguify-primary);
+}
+
+.text-gradient {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.comment-stats-badge {
+    background: var(--linguify-accent);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    margin-left: 0.5rem;
+}
+
+.comment-sorting .btn {
+    background: transparent;
+    border: 1px solid var(--linguify-primary);
+    color: var(--linguify-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.comment-sorting .btn.active,
+.comment-sorting .btn:hover {
+    background: var(--linguify-primary);
+    color: white;
+}
+
+.main-comment-form h5 {
+    color: var(--linguify-primary);
+    margin-bottom: 1.5rem;
+}
+
+.icon-gradient {
+    color: var(--linguify-accent);
+}
+
+.char-counter {
+    font-size: 0.85rem;
+    color: var(--linguify-gray);
+    margin-top: 0.25rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .blog-content-wrapper {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    
+    .blog-sidebar {
+        position: relative;
+        top: auto;
+        max-height: none;
+        overflow-y: visible;
+    }
+}
+
+@media (max-width: 768px) {
+    .article-title {
+        font-size: 2rem;
+    }
+    
+    .article-meta {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .blog-content {
+        font-size: 1rem;
+    }
+    
+    .share-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+/* Navigation dropdowns fix */
+.navbar .dropdown-menu {
+    z-index: 999999 !important;
+    position: absolute !important;
+}
+
+.navbar .dropdown {
+    z-index: 999999 !important;
+}
+
+/* Enhanced Blog List Styles - Force full width */
+.blog-container {
+    max-width: 100vw !important;
+    width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden;
+}
+
+.blog-container .container-fluid {
+    max-width: 100vw !important;
+    width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Override any Bootstrap container restrictions */
+.blog-page .container,
+.blog-page .container-fluid,
+body .container,
+body .container-fluid {
+    max-width: 100vw !important;
+    width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Force body and html to use full width */
+html, body {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden;
+}
+
+/* Force main content wrapper to use full width */
+.blog-content-wrapper {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.blog-sidebar {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 0;
+    padding: 1.2rem;
+    margin-bottom: 0;
+    border: none;
+    border-right: 1px solid rgba(45, 91, 186, 0.1);
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    z-index: 50;
+    width: 250px;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.main-content-with-sidebar {
+    margin-left: 270px;
+    min-height: calc(100vh - 300px);
+    width: calc(100vw - 270px);
+    max-width: none;
+}
+
+.sidebar-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(45, 91, 186, 0.1);
+}
+
+.sidebar-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.sidebar-section h6 {
+    color: var(--linguify-primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sidebar-filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--linguify-gray);
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.25rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    border: 1px solid transparent;
+}
+
+.sidebar-filter:hover {
+    background: rgba(45, 91, 186, 0.05);
+    color: var(--linguify-primary-dark);
+    text-decoration: none;
+    border-color: rgba(45, 91, 186, 0.1);
+}
+
+.sidebar-filter.active {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 2px 8px rgba(45, 91, 186, 0.3);
+}
+
+.sidebar-filter i {
+    width: 16px;
+    text-align: center;
+    color: var(--linguify-accent);
+}
+
+.sidebar-filter.active i {
+    color: white;
+}
+
+.filter-count {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.sidebar-filter:not(.active) .filter-count {
+    background: rgba(45, 91, 186, 0.1);
+    color: var(--linguify-primary);
+}
+
+.tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag-cloud .badge {
+    background: var(--linguify-accent) !important;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.tag-cloud .badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 212, 170, 0.4);
+    background: var(--linguify-accent-dark) !important;
+    color: white;
+    text-decoration: none;
+}
+
+.blog-search {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.blog-search input {
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border-radius: 25px;
+    border: 2px solid rgba(45, 91, 186, 0.1);
+    width: 100%;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.blog-search input:focus {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25);
+    outline: none;
+}
+
+.blog-search .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--linguify-accent);
+    font-size: 1rem;
+}
+
+.blog-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.results-info {
+    color: var(--linguify-gray);
+    font-size: 0.9rem;
+}
+
+.sort-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.sort-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(45, 91, 186, 0.2);
+    background: white;
+    color: var(--linguify-primary);
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sort-btn:hover {
+    background: rgba(45, 91, 186, 0.05);
+    border-color: var(--linguify-primary);
+    color: var(--linguify-primary-dark);
+    text-decoration: none;
+}
+
+.sort-btn.active {
+    background: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+    color: white;
+}
+
+.post-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(45, 91, 186, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(45, 91, 186, 0.15);
+    border-color: var(--linguify-accent);
+}
+
+.post-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+}
+
+.post-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--linguify-primary-dark);
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.post-title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.post-title a:hover {
+    color: var(--linguify-primary);
+}
+
+.post-excerpt {
+    color: var(--linguify-gray);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.post-meta-enhanced {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(45, 91, 186, 0.1);
+}
+
+.post-meta-left {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.post-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--linguify-gray);
+}
+
+.post-meta-item i {
+    font-size: 0.8rem;
+    width: 14px;
+    text-align: center;
+    color: var(--linguify-accent);
+}
+
+.post-meta-item.views {
+    color: var(--linguify-success);
+}
+
+.post-meta-item.comments {
+    color: var(--linguify-secondary);
+}
+
+.post-meta-item.date {
+    color: var(--linguify-gray);
+}
+
+.post-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.post-tag {
+    background: rgba(0, 212, 170, 0.1);
+    color: var(--linguify-accent-dark);
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    text-decoration: none;
+    border: 1px solid var(--linguify-accent);
+    transition: all 0.2s ease;
+}
+
+.post-tag:hover {
+    background: var(--linguify-accent);
+    color: white;
+    border-color: var(--linguify-accent);
+    text-decoration: none;
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.author-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.author-name {
+    font-weight: 500;
+    color: var(--linguify-primary-dark);
+    font-size: 0.9rem;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+/* Blog Content Wrapper for Enhanced Layout */
+.blog-content-wrapper {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.blog-content-wrapper .blog-sidebar {
+    flex: 0 0 250px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    max-height: 100vh;
+}
+
+.blog-content-wrapper .main-content-with-sidebar {
+    flex: 1;
+    margin-left: 0;
+    padding: 1.5rem 2rem;
+    width: 100%;
+    max-width: none;
+}
+
+/* Loading States */
+.loading-skeleton {
+    background: linear-gradient(90deg, rgba(45, 91, 186, 0.1) 25%, rgba(0, 212, 170, 0.1) 50%, rgba(45, 91, 186, 0.1) 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Responsive Design for Enhanced Blog List */
+@media (max-width: 1024px) {
+    .blog-sidebar {
+        position: relative;
+        width: 100%;
+        left: auto;
+        top: auto;
+        margin-bottom: 2rem;
+        height: auto;
+        max-height: none;
+        bottom: auto;
+        border-right: none;
+        border-bottom: 1px solid rgba(45, 91, 186, 0.1);
+    }
+    
+    .main-content-with-sidebar {
+        margin-left: 0;
+    }
+    
+    .container-fluid {
+        padding: 0 1rem;
+    }
+    
+    .blog-content-wrapper {
+        flex-direction: column;
+    }
+    
+    .blog-content-wrapper .blog-sidebar {
+        flex: none;
+        width: 100%;
+        position: relative;
+        top: auto;
+        height: auto;
+        max-height: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .blog-container {
+        padding: 1rem 0.5rem;
+    }
+    
+    .blog-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .sort-controls {
+        justify-content: center;
+    }
+    
+    .post-meta-enhanced {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .post-meta-left {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+/* Additional Blog Elements */
+.breadcrumb-item a {
+    color: var(--linguify-primary) !important;
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--linguify-primary-dark) !important;
+}
+
+.breadcrumb-item.active {
+    color: var(--linguify-gray) !important;
+}
+
+.blog-page .badge.bg-light {
+    background-color: var(--linguify-accent) !important;
+    color: white !important;
+}
+
+/* Comment Modern Styles - Override inline styles */
+.comment-item .avatar-circle {
+    background: var(--primary-gradient) !important;
+}
+
+/* Category and Tag Pages */
+.blog-page .display-5 {
+    color: var(--linguify-primary) !important;
+}
+
+.blog-page .badge.bg-light.text-dark {
+    background-color: var(--linguify-accent) !important;
+    color: white !important;
+}
+
+/* Report Modal Styles with Linguify Colors */
+.report-reasons .form-check {
+    background: rgba(45, 91, 186, 0.05);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.report-reasons .form-check:hover {
+    background: rgba(45, 91, 186, 0.1);
+    border-color: rgba(45, 91, 186, 0.2);
+}
+
+.report-reasons .form-check-input:checked + .form-check-label {
+    color: var(--linguify-primary-dark);
+}
+
+.report-reasons .form-check:has(.form-check-input:checked) {
+    background: rgba(0, 212, 170, 0.1);
+    border-color: var(--linguify-accent);
+}
+
+.report-reasons .form-check-label {
+    cursor: pointer;
+    width: 100%;
+}
+
+.report-reasons .form-check-input {
+    margin-top: 0.25rem;
+}
+
+.report-reasons .form-check-input:checked {
+    background-color: var(--linguify-accent);
+    border-color: var(--linguify-accent);
+}
