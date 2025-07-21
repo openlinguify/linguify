@@ -2,202 +2,11 @@
 {% load i18n %}
 {% load static %}
 
-<style>
-    /* Header responsive improvements */
-    .navbar-brand {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--linguify-primary, #2D5BBA) !important;
-    }
-
-    /* Language dropdown styling */
-    .language-dropdown {
-        max-height: 400px;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: #6c757d #f8f9fa;
-        border-radius: 0.375rem !important;
-        z-index: 9999 !important;
-    }
-
-    /* Fix dropdown z-index issues */
-    .dropdown-menu {
-        z-index: 99999 !important;
-        position: absolute !important;
-    }
-
-    .navbar .dropdown {
-        z-index: 99999 !important;
-        position: relative !important;
-    }
-
-    .navbar {
-        z-index: 99999 !important;
-        background: rgba(255, 255, 255, 0.95) !important;
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    /* Override any sticky elements that might interfere */
-    .sticky-top {
-        z-index: 1000 !important;
-    }
-
-    .language-dropdown::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .language-dropdown::-webkit-scrollbar-track {
-        background: #f8f9fa;
-        border-radius: 3px;
-    }
-
-    .language-dropdown::-webkit-scrollbar-thumb {
-        background: #6c757d;
-        border-radius: 3px;
-    }
-
-    .language-dropdown::-webkit-scrollbar-thumb:hover {
-        background: #495057;
-    }
-
-    /* Mobile responsive improvements */
-    @media (max-width: 991.98px) {
-        .navbar-brand {
-            font-size: 1.25rem;
-        }
-        
-        .navbar-collapse {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 0.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .navbar-nav {
-            gap: 0.5rem;
-        }
-        
-        .nav-item {
-            margin-bottom: 0.25rem;
-        }
-        
-        .nav-link {
-            padding: 0.75rem 1rem !important;
-            border-radius: 0.375rem;
-            font-weight: 500;
-        }
-        
-        .nav-link:hover {
-            background: rgba(45, 91, 186, 0.1);
-            color: var(--linguify-primary, #2D5BBA) !important;
-        }
-        
-        .dropdown-menu {
-            position: static !important;
-            transform: none !important;
-            box-shadow: none !important;
-            border: none !important;
-            background: rgba(248, 249, 250, 0.8) !important;
-            margin-top: 0.5rem;
-            border-radius: 0.375rem;
-        }
-        
-        .dropdown-item {
-            padding: 0.75rem 1.25rem;
-            border-radius: 0.25rem;
-            margin: 0.125rem 0;
-        }
-        
-        .dropdown-item:hover {
-            background: rgba(45, 91, 186, 0.1) !important;
-            color: var(--linguify-primary, #2D5BBA) !important;
-        }
-        
-        .dropdown-divider {
-            margin: 0.75rem 0;
-        }
-        
-        /* Language selector mobile */
-        .language-selector-mobile {
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-            padding-top: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .language-selector-mobile .dropdown-menu {
-            background: rgba(255, 255, 255, 0.9) !important;
-        }
-        
-        /* Auth buttons mobile */
-        .auth-buttons-mobile {
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-            padding-top: 1rem;
-            margin-top: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        
-        .auth-buttons-mobile .btn {
-            width: 100%;
-            padding: 0.75rem;
-            font-weight: 500;
-        }
-        
-        .user-menu-mobile {
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-            padding-top: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .user-menu-mobile .dropdown-menu {
-            background: rgba(255, 255, 255, 0.9) !important;
-        }
-    }
-    
-    /* Tablet responsive */
-    @media (max-width: 1199.98px) and (min-width: 992px) {
-        .navbar-brand {
-            font-size: 1.35rem;
-        }
-        
-        .nav-link {
-            padding: 0.5rem 0.75rem !important;
-            font-size: 0.9rem;
-        }
-        
-        .btn {
-            padding: 0.5rem 1rem !important;
-            font-size: 0.9rem;
-        }
-    }
-    
-    /* Mobile hamburger menu styling */
-    .navbar-toggler {
-        border: none;
-        padding: 0.5rem;
-        font-size: 1.25rem;
-        border-radius: 0.375rem;
-        background: rgba(45, 91, 186, 0.1);
-        color: var(--linguify-primary, #2D5BBA);
-    }
-    
-    .navbar-toggler:focus {
-        box-shadow: 0 0 0 0.25rem rgba(45, 91, 186, 0.25);
-    }
-    
-    .navbar-toggler-icon {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2845, 91, 186, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-    }
-</style>
 <header class="public-header">
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="{% url 'public_web:landing' %}">
-                Open Linguify
+{% if request.resolver_match.app_name == 'blog' %}Open Linguify <span style="color: var(--linguify-accent, #00D4AA); font-weight: 600;">Blog</span>{% else %}Open Linguify{% endif %}
             </a>
 
             <!-- Mobile menu toggle -->
@@ -245,23 +54,23 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'public_web:blog' %}">
-                            <i class="bi bi-newspaper me-2"></i>{% trans "Blog" %}
+                        <a class="nav-link" href="{% url 'blog:list' %}">
+                            {% trans "Blog" %}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'docs:home' %}">
-                            <i class="bi bi-book me-2"></i>{% trans "Documentation" %}
+                            {% trans "Documentation" %}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'public_web:about' %}">
-                            <i class="bi bi-info-circle me-2"></i>{% trans "About" %}
+                            {% trans "About" %}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'public_web:contact' %}">
-                            <i class="bi bi-envelope me-2"></i>{% trans "Contact" %}
+                            {% trans "Contact" %}
                         </a>
                     </li>
                 </ul>
@@ -358,17 +167,17 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item text-danger" href="http://127.0.0.1:8000/fr/auth/logout/">
+                            <li><a class="dropdown-item text-danger" href="http://127.0.0.1:8000/auth/logout/">
                                     <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
                                 </a></li>
                         </ul>
                     </div>
                     {% else %}
                     <!-- Redirections vers le backend pour l'authentification -->
-                    <a href="http://127.0.0.1:8000/fr/auth/login/" class="btn btn-outline-primary" target="_blank">
+                    <a href="http://127.0.0.1:8000/auth/login/" class="btn btn-outline-primary" target="_blank">
                         <i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Log In" %}
                     </a>
-                    <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-primary" target="_blank">
+                    <a href="http://127.0.0.1:8000/auth/register/" class="btn btn-primary" target="_blank">
                         <i class="bi bi-person-plus me-2"></i>{% trans "Sign Up" %}
                     </a>
                     {% endif %}
@@ -402,7 +211,7 @@
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item text-danger" href="http://127.0.0.1:8000/fr/auth/logout/">
+                                <li><a class="dropdown-item text-danger" href="http://127.0.0.1:8000/auth/logout/">
                                         <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
                                     </a></li>
                             </ul>
@@ -410,10 +219,10 @@
                     </div>
                     {% else %}
                     <!-- Redirections vers le backend pour l'authentification -->
-                    <a href="http://127.0.0.1:8000/fr/auth/login/" class="btn btn-outline-primary" target="_blank">
+                    <a href="http://127.0.0.1:8000/auth/login/" class="btn btn-outline-primary" target="_blank">
                         <i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Log In" %}
                     </a>
-                    <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-primary" target="_blank">
+                    <a href="http://127.0.0.1:8000/auth/register/" class="btn btn-primary" target="_blank">
                         <i class="bi bi-person-plus me-2"></i>{% trans "Sign Up" %}
                     </a>
                     {% endif %}

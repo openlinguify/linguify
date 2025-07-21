@@ -1,4 +1,4 @@
-{% extends 'public_web/public_base.html' %}
+{% extends 'blog/base.html' %}
 {% load i18n %}
 {% load static %}
 
@@ -12,24 +12,6 @@
 {% endblock %}
 
 {% block extra_css %}
-<style>
-/* Force dropdown to appear above everything */
-.navbar .dropdown-menu {
-    z-index: 999999 !important;
-    position: absolute !important;
-}
-
-.navbar .dropdown {
-    z-index: 999999 !important;
-}
-
-/* Reduce z-index of sidebar elements */
-.col-lg-4 .sticky-top,
-.sidebar,
-.card {
-    z-index: 1 !important;
-}
-</style>
 {% endblock %}
 
 {% block extra_head %}
@@ -39,11 +21,12 @@
 {% endblock %}
 
 {% block content %}
+<div class="blog-page">
 <div class="container my-5">
     <div class="row">
         <div class="col-lg-8">
             <div class="mb-5">
-                <h1 class="display-4 fw-bold text-primary">OpenLinguify {% trans "Blog" %}</h1>
+                <h1 class="display-4 fw-bold text-primary">{% trans "OpenLinguify Blog" %}</h1>
                 <p class="lead text-muted">{% trans "Language learning tips, AI insights, and OpenLinguify platform updates" %}</p>
             </div>
             
@@ -171,5 +154,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}

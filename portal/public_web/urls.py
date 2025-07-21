@@ -15,7 +15,6 @@ urlpatterns = [
     path('', views.LandingView.as_view(), name='landing'),
     path('features/', views.FeaturesView.as_view(), name='features'),
     path('about/', views.AboutView.as_view(), name='about'),
-    path('blog/', views.BlogView.as_view(), name='blog'),
     path('contact/', views.ContactView.as_view(), name='contact'),
     path('report-bug/', views.ReportBugView.as_view(), name='report_bug'),
     
@@ -75,8 +74,8 @@ seo_patterns = [
     path('tools/', RedirectView.as_view(pattern_name='public_web:apps', permanent=True), name='tools_redirect'),
     
     # Legacy blog patterns (if any)
-    path('news/', RedirectView.as_view(pattern_name='public_web:blog', permanent=True), name='news_redirect'),
-    path('updates/', RedirectView.as_view(pattern_name='public_web:blog', permanent=True), name='updates_redirect'),
+    path('news/', RedirectView.as_view(pattern_name='blog:list', permanent=True), name='news_redirect'),
+    path('updates/', RedirectView.as_view(pattern_name='blog:list', permanent=True), name='updates_redirect'),
 ]
 
 # Conditional patterns for development/staging

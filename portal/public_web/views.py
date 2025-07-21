@@ -129,13 +129,6 @@ class AboutView(BaseSEOView):
     cache_page(300),
     vary_on_headers('Accept-Language')
 ], name='dispatch')
-class BlogView(BaseSEOView):
-    """Page blog avec cache"""
-    template_name = 'public_web/blog.html'
-    page_title = 'Blog - Language Learning Tips & Open Linguify News'
-    meta_description = 'Latest news, tips and advice for learning languages effectively with Open Linguify educational tools.'
-    meta_keywords = 'blog, language learning tips, education news, learning strategies'
-
 
 class ContactView(BaseSEOView):
     """Page contact sans cache (peut contenir des formulaires)"""
