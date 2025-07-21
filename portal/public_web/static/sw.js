@@ -2,8 +2,8 @@
 const CACHE_NAME = 'linguify-portal-v1';
 const urlsToCache = [
   '/',
-  '/static/src/css/main.css',
-  '/static/src/js/main.js',
+  '/static/public_web/css/main.css',
+  '/static/public_web/js/main.js',
   '/static/images/favicon.png'
 ];
 

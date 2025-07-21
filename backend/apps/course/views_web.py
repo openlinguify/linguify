@@ -148,7 +148,6 @@ class LearningDashboardView(LoginRequiredMixin, TemplateView):
                 'streak_days': 0,
                 'total_xp': 0,
                 'current_level': 'A1',
-                'completed_lessons_count': 0,
                 'total_study_time': 0,
                 'overall_progress': 0
             }
