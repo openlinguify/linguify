@@ -11,7 +11,7 @@ from .views import (
     VocabularyListViewSet, 
     CreateRevisionListViewSet
 )
-from .views.flashcard_views import TagsAPIView
+from .views.flashcard_views import TagsAPIView, WordStatsAPIView
 from .views.revision_settings_views import get_user_revision_settings
 app_name = 'revision'
 
@@ -32,6 +32,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('decks/<int:deck_id>/import/', FlashcardImportView.as_view(), name='flashcard-import'),
     path('tags/', TagsAPIView.as_view(), name='tags-api'),
+    path('word-stats/', WordStatsAPIView.as_view(), name='word-stats-api'),
     
     # Paramètres de révision
     path('settings/', include('apps.revision.settings.urls')),

@@ -27,17 +27,29 @@
         
         <!-- Navigation Categories -->
         <nav class="settings-nav">
+            <!-- DEBUG: Show what we have -->
+            {% comment %}
+            DEBUG: Categories: {{ settings_categories|length }}
+            {% for category_id, category in settings_categories.items %}
+                - {{ category_id }}: {{ category.name }} ({{ category.tabs|length }} tabs)
+            {% endfor %}
+            {% endcomment %}
+            
             {% for category_id, category in settings_categories.items %}
             <div class="nav-category">
                 <div class="nav-category-title">
                     <i class="{{ category.icon }}"></i>
                     {{ category.name }}
+                    <small style="color: #999; font-size: 10px;">({{ category.tabs|length }})</small>
                 </div>
                 {% for tab in category.tabs %}
                 <a href="{{ settings_urls|get_item:tab.id }}" class="nav-item{% if tab.active %} active{% endif %}" data-tab="{{ tab.id }}">
                     <div class="nav-item-text">
                         <i class="{{ tab.icon }}"></i>
                         {{ tab.name }}
+                        {% if tab.source == 'debug_forced' %}
+                        <small style="color: #e74c3c; font-size: 10px;">[DEBUG]</small>
+                        {% endif %}
                     </div>
                     {% if tab.source == 'auto_discovered' %}
                     <span class="nav-item-badge">Auto</span>
@@ -81,7 +93,13 @@
                         {% include tab.template %}
                     </div>
                 {% elif tab.id == 'revision' and tab.active %}
+                    <!-- DEBUG: Revision tab active -->
                     {% include 'revision/revision_settings.html' %}
+                {% elif tab.id == 'revision' %}
+                    <!-- DEBUG: Revision tab not active but exists -->
+                    <div id="{{ tab.id }}" class="tab-content">
+                        {% include 'revision/revision_settings.html' %}
+                    </div>
                 {% elif tab.id == 'language_ai' and tab.active %}
                     {% include 'language_ai/language_ai_settings.html' %}
                 {% elif tab.id == 'learning' and tab.active %}

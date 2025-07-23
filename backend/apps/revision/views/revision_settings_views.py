@@ -41,6 +41,10 @@ class RevisionSettingsView(View):
                     'default_study_mode': 'spaced',
                     'default_difficulty': 'normal',
                     'auto_advance': True,
+                    'show_word_stats': True,
+                    'stats_display_mode': 'detailed',
+                    'hide_learned_words': False,
+                    'group_by_deck': False,
                 }
             
             if is_ajax:
@@ -83,19 +87,42 @@ class RevisionSettingsView(View):
             # Check if it's an AJAX request
             is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
             
-            # Parse form data
-            data = {
-                'daily_goal': int(request.POST.get('daily_goal', '10')),
-                'reminder_enabled': request.POST.get('reminder_enabled') == 'on',
-                'reminder_time': request.POST.get('reminder_time', '09:00'),
-                'spaced_repetition': request.POST.get('spaced_repetition') == 'on',
-                'difficulty_adaptation': request.POST.get('difficulty_adaptation') == 'on',
-                'session_duration': int(request.POST.get('session_duration', '15')),
-                'cards_per_session': int(request.POST.get('cards_per_session', '20')),
-                'default_study_mode': request.POST.get('default_study_mode', 'spaced'),
-                'default_difficulty': request.POST.get('default_difficulty', 'normal'),
-                'auto_advance': request.POST.get('auto_advance') == 'on',
-            }
+            # Check if this is a word_stats specific form
+            setting_type = request.POST.get('setting_type', 'revision')
+            
+            if setting_type == 'word_stats':
+                # Handle word stats settings separately
+                session_key = f'revision_settings_{request.user.id}'
+                current_settings = request.session.get(session_key, {})
+                
+                # Update only word stats settings
+                current_settings.update({
+                    'show_word_stats': request.POST.get('show_word_stats') == 'on',
+                    'stats_display_mode': request.POST.get('stats_display_mode', 'detailed'),
+                    'hide_learned_words': request.POST.get('hide_learned_words') == 'on',
+                    'group_by_deck': request.POST.get('group_by_deck') == 'on',
+                })
+                
+                request.session[session_key] = current_settings
+                data = current_settings
+            else:
+                # Parse all form data for other settings
+                data = {
+                    'daily_goal': int(request.POST.get('daily_goal', '10')),
+                    'reminder_enabled': request.POST.get('reminder_enabled') == 'on',
+                    'reminder_time': request.POST.get('reminder_time', '09:00'),
+                    'spaced_repetition': request.POST.get('spaced_repetition') == 'on',
+                    'difficulty_adaptation': request.POST.get('difficulty_adaptation') == 'on',
+                    'session_duration': int(request.POST.get('session_duration', '15')),
+                    'cards_per_session': int(request.POST.get('cards_per_session', '20')),
+                    'default_study_mode': request.POST.get('default_study_mode', 'spaced'),
+                    'default_difficulty': request.POST.get('default_difficulty', 'normal'),
+                    'auto_advance': request.POST.get('auto_advance') == 'on',
+                    'show_word_stats': request.POST.get('show_word_stats') == 'on',
+                    'stats_display_mode': request.POST.get('stats_display_mode', 'detailed'),
+                    'hide_learned_words': request.POST.get('hide_learned_words') == 'on',
+                    'group_by_deck': request.POST.get('group_by_deck') == 'on',
+                }
             
             # Store validated revision settings
             # TODO: Consider creating a dedicated RevisionUserSettings model
@@ -165,6 +192,10 @@ def get_user_revision_settings(request):
             'default_study_mode': 'spaced',
             'default_difficulty': 'normal',
             'auto_advance': True,
+            'show_word_stats': True,
+            'stats_display_mode': 'detailed',
+            'hide_learned_words': False,
+            'group_by_deck': False,
         })
         
         print(f"[USER_SETTINGS] Retrieved settings for {request.user.username}: {settings}")
@@ -186,6 +217,10 @@ def get_user_revision_settings(request):
                 'default_study_mode': 'spaced',
                 'default_difficulty': 'normal',
                 'auto_advance': True,
+                'show_word_stats': True,
+                'stats_display_mode': 'detailed',
+                'hide_learned_words': False,
+                'group_by_deck': False,
             }
         })
 

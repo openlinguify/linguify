@@ -33,10 +33,69 @@ class UserSettingsView(View):
     def get(self, request):
         try:
             # Use service to get user apps with registry information
-            user_apps, app_recommendations = UserAppService.get_user_apps_with_registry_info(request.user)
+            try:
+                user_apps, app_recommendations = UserAppService.get_user_apps_with_registry_info(request.user)
+            except Exception as e:
+                logger.error(f"Error getting app recommendations: {e}")
+                user_apps = []
+                app_recommendations = []
             
             # Get dynamic settings tabs and categories (filtered by user activation)
             settings_categories, settings_tabs = AppSettingsService.get_all_settings_tabs(user=request.user)
+            
+            # DEBUG: Force add all missing tabs and categories
+            logger.info(f"DEBUG: Current categories: {list(settings_categories.keys())}")
+            logger.info(f"DEBUG: Current tabs: {[tab.get('id') for tab in settings_tabs]}")
+            
+            # Ensure all basic categories exist
+            if 'interface' not in settings_categories:
+                settings_categories['interface'] = {
+                    'name': 'Interface',
+                    'icon': 'bi-palette',
+                    'order': 2,
+                    'tabs': []
+                }
+            
+            if 'applications' not in settings_categories:
+                settings_categories['applications'] = {
+                    'name': 'Applications', 
+                    'icon': 'bi-grid-3x3-gap',
+                    'order': 3,
+                    'tabs': []
+                }
+            
+            # Force add interface tab if missing
+            interface_tab_exists = any(tab.get('id') == 'interface' for tab in settings_tabs)
+            if not interface_tab_exists:
+                interface_tab = {
+                    'id': 'interface',
+                    'name': 'Thème & Apparence',
+                    'icon': 'bi-palette',
+                    'category': 'interface',
+                    'order': 1,
+                    'active': False,
+                    'source': 'debug_forced'
+                }
+                settings_tabs.append(interface_tab)
+                settings_categories['interface']['tabs'].append(interface_tab)
+            
+            # Force add revision tab if missing
+            revision_tab_exists = any(tab.get('id') == 'revision' for tab in settings_tabs)
+            if not revision_tab_exists:
+                revision_tab = {
+                    'id': 'revision',
+                    'name': 'Révision',
+                    'icon': 'bi-arrow-repeat',
+                    'category': 'applications',
+                    'order': 6,
+                    'active': False,
+                    'source': 'debug_forced'
+                }
+                settings_tabs.append(revision_tab)
+                settings_categories['applications']['tabs'].append(revision_tab)
+            
+            logger.info(f"DEBUG: After adding - Categories: {list(settings_categories.keys())}")
+            logger.info(f"DEBUG: After adding - Tabs: {[tab.get('id') for tab in settings_tabs]}")
             
             # Mark the profile tab as active by default (since this is the main settings view)
             for tab in settings_tabs:
@@ -52,25 +111,32 @@ class UserSettingsView(View):
             
             # Build URL mapping for template
             from django.urls import reverse
-            settings_urls = {
-                'profile': reverse('saas_web:profile_settings'),
-                'interface': reverse('saas_web:interface_settings'),
-                'voice': reverse('saas_web:voice_settings'),
-                'vocal': reverse('saas_web:voice_settings'),
-                'learning': reverse('saas_web:learning_settings'),
-                'chat': reverse('saas_web:chat_settings'),
-                'community': reverse('saas_web:community_settings'),
-                'notebook': reverse('saas_web:notebook_settings'),
-                'notes': reverse('saas_web:notebook_settings'),
-                'quiz': reverse('saas_web:quiz_settings'),
-                'quizz': reverse('saas_web:quiz_settings'),
-                'revision': reverse('saas_web:revision_settings'),
-                'language_ai': reverse('saas_web:language_ai_settings'),
-                'language-ai': reverse('saas_web:language_ai_settings'),
-                'notifications': reverse('saas_web:notification_settings'),
-                'notification': reverse('saas_web:notification_settings'),
-                'documents': reverse('saas_web:documents_settings'),
+            # Build URL mapping for template (with error handling)
+            settings_urls = {}
+            url_mappings = {
+                'profile': 'saas_web:profile_settings',
+                'interface': 'saas_web:interface_settings',
+                'learning': 'saas_web:learning_settings',
+                'chat': 'saas_web:chat_settings',
+                'community': 'saas_web:community_settings',
+                'notebook': 'saas_web:notebook_settings',
+                'notes': 'saas_web:notebook_settings',
+                'quiz': 'saas_web:quiz_settings',
+                'quizz': 'saas_web:quiz_settings',
+                'revision': 'saas_web:revision_settings',
+                'language_ai': 'saas_web:language_ai_settings',
+                'language-ai': 'saas_web:language_ai_settings',
+                'notifications': 'saas_web:notification_settings',
+                'notification': 'saas_web:notification_settings',
+                'documents': 'saas_web:documents_settings',
             }
+            
+            for key, url_name in url_mappings.items():
+                try:
+                    settings_urls[key] = reverse(url_name)
+                except Exception as e:
+                    logger.warning(f"Could not reverse URL {url_name}: {e}")
+                    settings_urls[key] = f'/settings/{key}/'
             
             context = {
                 'title': _('Paramètres - Open Linguify'),

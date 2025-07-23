@@ -1100,6 +1100,118 @@ class FlashcardImportView(APIView):
 
 # ===== API VIEWS =====
 
+class StatWordKnown:
+    """Classe pour afficher les statistiques des mots connus et à apprendre"""
+    
+    def __init__(self, user):
+        self.user = user
+    
+    def display_known_words(self):
+        """Affiche tous les mots marqués comme appris"""
+        learned_cards = Flashcard.objects.filter(
+            user=self.user,
+            learned=True,
+            deck__is_active=True,
+            deck__is_archived=False
+        ).select_related('deck').order_by('-last_reviewed')
+        
+        known_words = []
+        for card in learned_cards:
+            known_words.append({
+                'front_text': card.front_text,
+                'back_text': card.back_text,
+                'deck_name': card.deck.name,
+                'last_reviewed': card.last_reviewed,
+                'review_count': card.review_count,
+                'front_language': card.front_language,
+                'back_language': card.back_language
+            })
+        
+        return {
+            'known_words': known_words,
+            'total_known': len(known_words)
+        }
+    
+    def display_words_to_learn(self):
+        """Affiche tous les mots encore à apprendre"""
+        unlearned_cards = Flashcard.objects.filter(
+            user=self.user,
+            learned=False,
+            deck__is_active=True,
+            deck__is_archived=False
+        ).select_related('deck').order_by('-created_at')
+        
+        words_to_learn = []
+        for card in unlearned_cards:
+            words_to_learn.append({
+                'front_text': card.front_text,
+                'back_text': card.back_text,
+                'deck_name': card.deck.name,
+                'created_at': card.created_at,
+                'correct_reviews': card.correct_reviews_count,
+                'reviews_needed': card.reviews_remaining_to_learn,
+                'progress_percentage': card.learning_progress_percentage,
+                'front_language': card.front_language,
+                'back_language': card.back_language
+            })
+        
+        return {
+            'words_to_learn': words_to_learn,
+            'total_to_learn': len(words_to_learn)
+        }
+    
+    def get_complete_statistics(self):
+        """Retourne les statistiques complètes des mots connus et à apprendre"""
+        known_data = self.display_known_words()
+        to_learn_data = self.display_words_to_learn()
+        
+        total_words = known_data['total_known'] + to_learn_data['total_to_learn']
+        completion_rate = 0
+        if total_words > 0:
+            completion_rate = (known_data['total_known'] / total_words) * 100
+        
+        return {
+            'known_words': known_data['known_words'],
+            'words_to_learn': to_learn_data['words_to_learn'],
+            'statistics': {
+                'total_known': known_data['total_known'],
+                'total_to_learn': to_learn_data['total_to_learn'],
+                'total_words': total_words,
+                'completion_rate': round(completion_rate, 2)
+            }
+        }
+
+class Applied_translation:
+    pass
+
+
+class WordStatsAPIView(APIView):
+    """API pour récupérer les statistiques des mots connus et à apprendre"""
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        """Récupère les statistiques complètes des mots pour l'utilisateur"""
+        try:
+            stats = StatWordKnown(request.user)
+            
+            # Paramètre optionnel pour le type de données
+            data_type = request.query_params.get('type', 'all')
+            
+            if data_type == 'known':
+                return Response(stats.display_known_words())
+            elif data_type == 'to_learn':
+                return Response(stats.display_words_to_learn())
+            else:
+                return Response(stats.get_complete_statistics())
+                
+        except Exception as e:
+            logger.error(f"Error retrieving word stats for user {request.user.id}: {str(e)}")
+            return Response(
+                {"detail": "Erreur lors de la récupération des statistiques"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
 class TagsAPIView(APIView):
     """API pour gérer les tags des decks - VERSION UNIQUE."""
     permission_classes = [IsAuthenticated]
