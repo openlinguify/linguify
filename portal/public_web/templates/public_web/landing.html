@@ -220,6 +220,197 @@
         </div>
     </section>
 
+    <!-- Teachers Professional Space Section -->
+    <section id="teachers" class="teachers-section py-5" style="background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%); color: white; position: relative; overflow: hidden;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 animate-on-scroll">
+                    <div class="teachers-content">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-chalkboard-teacher fa-3x me-3" style="color: var(--linguify-accent); text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></i>
+                            <h2 class="display-5 fw-bold mb-0" style="text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                {% trans "Espace Professionnel Enseignants" %}
+                            </h2>
+                        </div>
+                        <p class="lead mb-4" style="color: rgba(255,255,255,0.95); text-shadow: 0 1px 3px rgba(0,0,0,0.4);">
+                            {% trans "Créez et monétisez vos cours en ligne avec Linguify Pro. Vos cours créés seront automatiquement disponibles pour tous les étudiants sur la plateforme Linguify. Gérez votre planning et donnez des cours particuliers." %}
+                        </p>
+                        
+                        <!-- Process explanation -->
+                        <div class="process-flow mb-4 p-3" style="background: rgba(255,255,255,0.15); border-radius: 10px; border-left: 4px solid var(--linguify-accent); backdrop-filter: blur(5px);">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-info-circle me-2" style="color: var(--linguify-accent); text-shadow: 0 1px 2px rgba(0,0,0,0.3);"></i>
+                                <strong style="color: var(--linguify-accent); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">{% trans "Comment ça fonctionne :" %}</strong>
+                            </div>
+                            <div class="process-steps" style="font-size: 0.9rem; color: rgba(255,255,255,0.98); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                                <div class="step d-flex align-items-start mb-2">
+                                    <span class="step-number me-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">1</span>
+                                    <span>{% trans "Vous créez vos cours sur <strong>Linguify Pro</strong> (CMS enseignant)" %}</span>
+                                </div>
+                                <div class="step d-flex align-items-start mb-2">
+                                    <span class="step-number me-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">2</span>
+                                    <span>{% trans "Vos cours sont <strong>automatiquement synchronisés</strong> avec la plateforme" %}</span>
+                                </div>
+                                <div class="step d-flex align-items-start">
+                                    <span class="step-number me-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">3</span>
+                                    <span>{% trans "Les étudiants peuvent <strong>découvrir et acheter</strong> vos cours sur Linguify" %}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="teachers-features mb-4">
+                            <div class="feature-item d-flex align-items-center mb-3">
+                                <div class="feature-icon me-3" style="background: rgba(0, 212, 170, 0.25); padding: 0.7rem; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                                    <i class="fas fa-graduation-cap" style="color: var(--linguify-accent); text-shadow: 0 1px 2px rgba(0,0,0,0.3);"></i>
+                                </div>
+                                <span class="fw-medium" style="color: rgba(255,255,255,0.95); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">{% trans "Créez des cours interactifs avec flashcards et quiz" %}</span>
+                            </div>
+                            <div class="feature-item d-flex align-items-center mb-3">
+                                <div class="feature-icon me-3" style="background: rgba(0, 212, 170, 0.25); padding: 0.7rem; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                                    <i class="fas fa-euro-sign" style="color: var(--linguify-accent); text-shadow: 0 1px 2px rgba(0,0,0,0.3);"></i>
+                                </div>
+                                <span class="fw-medium" style="color: rgba(255,255,255,0.95); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">{% trans "Gagnez de l'argent avec vos contenus (85% des revenus)" %}</span>
+                            </div>
+                            <div class="feature-item d-flex align-items-center mb-3">
+                                <div class="feature-icon me-3" style="background: rgba(0, 212, 170, 0.25); padding: 0.7rem; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                                    <i class="fas fa-calendar-alt" style="color: var(--linguify-accent); text-shadow: 0 1px 2px rgba(0,0,0,0.3);"></i>
+                                </div>
+                                <span class="fw-medium" style="color: rgba(255,255,255,0.95); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">{% trans "Gérez votre planning pour les cours particuliers" %}</span>
+                            </div>
+                            <div class="feature-item d-flex align-items-center mb-3">
+                                <div class="feature-icon me-3" style="background: rgba(0, 212, 170, 0.25); padding: 0.7rem; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                                    <i class="fas fa-sync-alt" style="color: var(--linguify-accent); text-shadow: 0 1px 2px rgba(0,0,0,0.3);"></i>
+                                </div>
+                                <span class="fw-medium" style="color: rgba(255,255,255,0.95); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">{% trans "Synchronisation automatique avec la plateforme étudiante" %}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="teachers-cta">
+                            <a href="http://127.0.0.1:8002" target="_blank" class="btn btn-lg me-3 mb-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border: none; border-radius: 25px; padding: 12px 30px; font-weight: 600; box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);">
+                                <i class="fas fa-rocket me-2"></i>{% trans "Accéder au CMS Enseignant" %}
+                            </a>
+                            <a href="#teacher-benefits" class="btn btn-outline-light btn-lg mb-2" style="border-radius: 25px; padding: 12px 30px; font-weight: 600;">
+                                <i class="fas fa-info-circle me-2"></i>{% trans "En savoir plus" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 animate-on-scroll delay-1">
+                    <div class="teachers-visual">
+                        <div class="teacher-stats-card" style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 2rem; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-chart-line" style="font-size: 3rem; color: var(--linguify-accent);"></i>
+                                <h3 class="mt-3 mb-1" style="color: white;">{% trans "Marketplace Enseignants" %}</h3>
+                                <p style="color: rgba(255,255,255,0.8);">{% trans "Rejoignez notre communauté de créateurs" %}</p>
+                            </div>
+                            
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--linguify-accent);">85%</div>
+                                        <div class="stat-label" style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">{% trans "Revenus pour vous" %}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--linguify-accent);">€50</div>
+                                        <div class="stat-label" style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">{% trans "Payout minimum" %}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--linguify-accent);">24/7</div>
+                                        <div class="stat-label" style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">{% trans "Support" %}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 pt-3" style="border-top: 1px solid rgba(255,255,255,0.2);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span style="color: rgba(255,255,255,0.8);">{% trans "Commission plateforme" %}</span>
+                                    <span class="badge" style="background: rgba(0, 212, 170, 0.2); color: var(--linguify-accent);">15%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating elements for visual appeal -->
+        <div class="floating-shapes">
+            <div class="shape shape-1" style="position: absolute; top: 10%; left: 5%; width: 60px; height: 60px; background: rgba(0, 212, 170, 0.1); border-radius: 50%; animation: float 6s ease-in-out infinite;"></div>
+            <div class="shape shape-2" style="position: absolute; top: 60%; right: 10%; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: float 4s ease-in-out infinite reverse;"></div>
+            <div class="shape shape-3" style="position: absolute; bottom: 20%; left: 15%; width: 30px; height: 30px; background: rgba(0, 212, 170, 0.15); border-radius: 50%; animation: float 8s ease-in-out infinite;"></div>
+        </div>
+    </section>
+
+    <!-- Teacher Benefits Detail Section -->
+    <section id="teacher-benefits" class="teacher-benefits-section py-5" style="background: #f8fafc;">
+        <div class="container">
+            <div class="text-center mb-5 animate-on-scroll">
+                <h2 class="display-5 fw-bold mb-4" style="color: #2d3748;">{% trans "Pourquoi choisir Linguify Professionnel ?" %}</h2>
+                <p class="lead text-muted">
+                    {% trans "Notre plateforme vous offre tous les outils nécessaires pour créer, vendre et gérer vos cours en ligne avec succès." %}
+                </p>
+                
+                <!-- Important notice about course publication -->
+                <div class="alert alert-info d-inline-flex align-items-center mb-4" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 1rem 1.5rem; max-width: 800px;">
+                    <i class="bi bi-info-circle-fill me-3" style="color: #3b82f6; font-size: 1.5rem;"></i>
+                    <div class="text-start">
+                        <strong style="color: #1e40af;">{% trans "📚 Publication automatique :" %}</strong>
+                        <div style="color: #374151; margin-top: 0.25rem;">
+                            {% trans "Tous les cours que vous créez dans <strong>Linguify Pro</strong> deviennent automatiquement disponibles dans le catalogue public de <strong>Linguify</strong>. Les étudiants du monde entier peuvent découvrir, acheter et suivre vos formations !" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6 animate-on-scroll delay-1">
+                    <div class="benefit-card" style="background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); height: 100%; border-top: 4px solid var(--linguify-primary);">
+                        <div class="benefit-icon mb-3" style="background: rgba(45, 91, 186, 0.1); padding: 1rem; border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-tools" style="color: var(--linguify-primary); font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: #2d3748;">{% trans "Outils de création avancés" %}</h4>
+                        <p style="color: var(--linguify-gray);">{% trans "Interface intuitive pour créer des leçons interactives, flashcards personnalisées, quiz adaptatifs et contenu multimédia." %}</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 animate-on-scroll delay-2">
+                    <div class="benefit-card" style="background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); height: 100%; border-top: 4px solid var(--linguify-accent);">
+                        <div class="benefit-icon mb-3" style="background: rgba(0, 212, 170, 0.1); padding: 1rem; border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-globe" style="color: var(--linguify-accent); font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: #2d3748;">{% trans "Visibilité mondiale" %}</h4>
+                        <p style="color: var(--linguify-gray);">{% trans "Vos cours créés dans Linguify Pro sont automatiquement publiés sur la plateforme Linguify, accessible à des milliers d'étudiants." %}</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 animate-on-scroll delay-3">
+                    <div class="benefit-card" style="background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); height: 100%; border-top: 4px solid var(--linguify-success);">
+                        <div class="benefit-icon mb-3" style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-chart-line" style="color: var(--linguify-success); font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: #2d3748;">{% trans "Analytics et revenus" %}</h4>
+                        <p style="color: var(--linguify-gray);">{% trans "Tableau de bord complet pour suivre vos ventes, analyser les performances de vos cours et optimiser vos revenus." %}</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 animate-on-scroll delay-4">
+                    <div class="benefit-card" style="background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); height: 100%; border-top: 4px solid var(--linguify-secondary);">
+                        <div class="benefit-icon mb-3" style="background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-calendar-check" style="color: var(--linguify-secondary); font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: #2d3748;">{% trans "Gestion des rendez-vous" %}</h4>
+                        <p style="color: var(--linguify-gray);">{% trans "Système de réservation intégré pour vos cours particuliers avec gestion automatique des créneaux et notifications." %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Features Section -->
     <section id="features" class="features-section">
         <div class="container">
@@ -515,12 +706,32 @@
                         <div class="accordion-item mb-3 animate-on-scroll delay-5" style="border: none; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
                             <h2 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5" style="background: var(--gray-50); border: none; padding: 1.5rem; font-weight: 600;">
-                                    {% trans "How does the AI-powered learning work?" %}
+                                    {% trans "Comment ajouter mes cours à Linguify ?" %}
                                 </button>
                             </h2>
                             <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                                 <div class="accordion-body" style="padding: 1.5rem; color: var(--gray-600);">
-                                    {% trans "Our AI analyzes your learning patterns, strengths, and areas for improvement to create personalized lessons and conversations. It adapts the difficulty level, suggests relevant content, and provides real-time corrections and feedback to optimize your learning experience." %}
+                                    {% trans "Pour ajouter vos cours à Linguify, vous devez utiliser <strong>Linguify Pro</strong> (notre CMS enseignant). Une fois vos cours créés et publiés dans Linguify Pro, ils sont automatiquement synchronisés et deviennent disponibles dans le catalogue public de Linguify pour tous les étudiants." %}
+                                    
+                                    <div class="mt-3">
+                                        <a href="http://127.0.0.1:8002" target="_blank" class="btn btn-success btn-sm">
+                                            <i class="bi bi-arrow-right me-1"></i>
+                                            {% trans "Accéder à Linguify Pro" %}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 animate-on-scroll delay-6" style="border: none; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6" style="background: var(--gray-50); border: none; padding: 1.5rem; font-weight: 600;">
+                                    {% trans "Mes cours seront-ils visibles par tous les étudiants ?" %}
+                                </button>
+                            </h2>
+                            <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body" style="padding: 1.5rem; color: var(--gray-600);">
+                                    {% trans "Oui ! Tous les cours que vous créez et publiez dans Linguify Pro sont automatiquement disponibles dans le catalogue public de Linguify. Les étudiants peuvent les découvrir, les acheter et les suivre. Vous bénéficiez ainsi d'une visibilité maximale auprès de notre communauté d'apprenants mondiale." %}
                                 </div>
                             </div>
                         </div>
@@ -830,4 +1041,44 @@
         console.log('%cMigré avec succès vers la nouvelle architecture! ✨', 'color: #10b981; font-size: 14px;');
         console.log('%c📱 Support PWA activé', 'color: #8b5cf6; font-size: 12px;');
 </script>
+
+<style>
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.teachers-section .floating-shapes .shape {
+    animation: float 6s ease-in-out infinite;
+}
+
+.teachers-section .floating-shapes .shape:nth-child(2) {
+    animation-delay: -2s;
+}
+
+.teachers-section .floating-shapes .shape:nth-child(3) {
+    animation-delay: -4s;
+}
+
+.benefit-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.benefit-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+}
+
+.teacher-stats-card {
+    transition: transform 0.3s ease;
+}
+
+.teacher-stats-card:hover {
+    transform: scale(1.05);
+}
+</style>
 {% endblock %}

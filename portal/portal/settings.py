@@ -107,10 +107,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LINGUIFY_PRODUCTS = {
     'backend': {
         'name': 'Linguify Particulier',
-        'description': 'Pour les apprenants individuels',
+        'description': 'For all students',
         'dev_url': 'http://127.0.0.1:8000',
         'prod_url': 'https://app.openlinguify.com',
         'icon': 'fas fa-user',
+    },
+    'cms': {
+        'name': 'Linguify Professionnel',
+        'description': 'Pour les enseignants et créateurs de contenu',
+        'dev_url': 'http://127.0.0.1:8002',
+        'prod_url': 'https://cms.openlinguify.com',
+        'icon': 'fas fa-chalkboard-teacher',
     },
     'lms': {
         'name': 'Linguify LMS',

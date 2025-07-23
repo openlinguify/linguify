@@ -85,7 +85,6 @@ urlpatterns = [
     path('learning/', include('apps.course.urls_web', namespace='course')),
     path('quizz/', include('apps.quizz.urls_web', namespace='quizz_web')),
     path('language_ai/', include('apps.language_ai.urls_web', namespace='language_ai_web')),
-    path('community/', include('apps.community.urls', namespace='community')),
     path('api/contact/', views.contact_view, name='contact'),
     path('api/v1/notifications/', include('apps.notification.urls', namespace='notification')),
     path('api/v1/language_ai/', include('apps.language_ai.urls', namespace='language_ai')),
@@ -93,11 +92,17 @@ urlpatterns = [
     # path('api/v1/jobs/', include('core.jobs.urls', namespace='jobs')),
     path('api/v1/app-manager/', include('app_manager.urls', namespace='app_manager')),
     # path('api/v1/task/', include('task.urls', namespace='task')),
-    path('chat/', include('apps.chat.urls', namespace='chat')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('api/v1/quizz/', include('apps.quizz.urls', namespace='quizz')),
+    
+    # Marketplace apps
+    path('chat/', include('apps.chat.urls', namespace='chat')),
+    path('community/', include('apps.community.urls', namespace='community')),
+    path('learning/', include('apps.learning.urls', namespace='learning')),
+    path('teaching/', include('apps.teaching.urls', namespace='teaching')),
+    path('api/cms-sync/', include('apps.cms_sync.urls', namespace='cms_sync')),
     
     # SEO URLs - Organized sitemap serving
     path('robots.txt', serve_robots_txt, name='robots_txt'),

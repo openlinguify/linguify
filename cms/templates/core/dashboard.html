@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de bord - Linguify CMS{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1>Tableau de bord enseignant</h1>
+        <p class="lead">Bienvenue {{ user.get_full_name|default:user.username }} !</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Mes cours</div>
+            <div class="card-body">
+                <h4 class="card-title">{{ user.teacher_profile.units.count }}</h4>
+                <p class="card-text">cours créés</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Revenus</div>
+            <div class="card-body">
+                <h4 class="card-title">€{{ user.teacher_profile.total_earnings|floatformat:2 }}</h4>
+                <p class="card-text">total généré</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-header">Évaluations</div>
+            <div class="card-body">
+                <h4 class="card-title">{{ user.teacher_profile.average_rating }}/5</h4>
+                <p class="card-text">note moyenne</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">Heures enseignées</div>
+            <div class="card-body">
+                <h4 class="card-title">{{ user.teacher_profile.total_hours_taught }}</h4>
+                <p class="card-text">heures au total</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Actions rapides</h5>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'course_builder:course_create' %}" class="btn btn-primary mb-2">Créer un nouveau cours</a><br>
+                <a href="{% url 'sync:sync_all' %}" class="btn btn-success mb-2">Synchroniser mes cours</a><br>
+                <a href="{% url 'scheduling:calendar' %}" class="btn btn-info">Voir mon planning</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Statut du profil</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Statut :</strong> 
+                    <span class="badge bg-{{ user.teacher_profile.status|yesno:'success,warning' }}">
+                        {{ user.teacher_profile.get_status_display }}
+                    </span>
+                </p>
+                <p><strong>Synchronisation :</strong> 
+                    <span class="badge bg-{{ user.teacher_profile.sync_status|yesno:'success,warning' }}">
+                        {{ user.teacher_profile.get_sync_status_display }}
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

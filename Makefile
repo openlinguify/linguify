@@ -7,21 +7,25 @@
 PORTAL_PORT = 8080
 LMS_PORT = 8001
 BACKEND_PORT = 8000
+CMS_PORT = 8002
 
 # Commandes Python - Utilisation de l'environnement virtuel du backend
 BACKEND_VENV = ./backend/venv
 PORTAL_VENV = ./portal/venv
 LMS_VENV = ./lms/venv
+CMS_VENV = ./cms/venv
 
 # Python pour chaque projet (avec fallback vers système)
 BACKEND_PYTHON = cd backend && poetry run python
 PORTAL_PYTHON = $(shell if [ -f $(PORTAL_VENV)/bin/python ]; then echo $(PORTAL_VENV)/bin/python; else echo python3; fi)
 LMS_PYTHON = $(shell if [ -f $(LMS_VENV)/bin/python ]; then echo $(LMS_VENV)/bin/python; else echo python3; fi)
+CMS_PYTHON = $(shell if [ -f $(CMS_VENV)/bin/python ]; then echo $(CMS_VENV)/bin/python; else echo python3; fi)
 
 # Manage commands pour chaque projet
 MANAGE_BACKEND = cd backend && poetry run python ../manage.py backend
 MANAGE_PORTAL = cd portal && ./venv/bin/python manage.py  
 MANAGE_LMS = cd lms && ./venv/bin/python manage.py
+MANAGE_CMS = cd cms && ./venv/bin/python manage.py
 
 # Couleurs pour l'affichage
 RED = \033[0;31m
@@ -64,16 +68,29 @@ backend: ## Lance le serveur Backend (port 8000)
 	fi
 	cd backend && poetry run python ../manage.py backend runserver 0.0.0.0:$(BACKEND_PORT)
 
-all: ## Lance les 3 serveurs en parallèle
+cms: ## Lance le serveur CMS Enseignants (port 8002)
+	@echo "$(BLUE)👨‍🏫 Lancement du CMS Enseignants...$(NC)"
+	@echo "$(GREEN)🌐 Accédez au serveur sur : http://localhost:$(CMS_PORT)/$(NC)"
+	@echo ""
+	@if lsof -Pi :$(CMS_PORT) -t >/dev/null 2>&1; then \
+		echo "$(RED)❌ Erreur: Le port $(CMS_PORT) est déjà utilisé!$(NC)"; \
+		echo "$(YELLOW)💡 Essayez: make stop-cms ou utilisez un autre port$(NC)"; \
+		exit 1; \
+	fi
+	$(MANAGE_CMS) runserver $(CMS_PORT)
+
+all: ## Lance les 4 serveurs en parallèle
 	@echo "$(BLUE) Lancement de tous les serveurs Linguify...$(NC)"
 	@echo "$(YELLOW)Portal: http://127.0.0.1:$(PORTAL_PORT)$(NC)"
 	@echo "$(YELLOW)LMS: http://127.0.0.1:$(LMS_PORT)$(NC)"
 	@echo "$(YELLOW)Backend: http://127.0.0.1:$(BACKEND_PORT)$(NC)"
+	@echo "$(YELLOW)CMS: http://127.0.0.1:$(CMS_PORT)$(NC)"
 	@echo "$(RED)Utilisez Ctrl+C pour arrêter tous les serveurs$(NC)"
 	@echo "$(BLUE)⏳ Démarrage en cours... (peut prendre 30s sur WSL)$(NC)"
 	cd portal && ./venv/bin/python manage.py runserver $(PORTAL_PORT) --nothreading & \
 	sleep 2 && cd lms && ./venv/bin/python manage.py runserver $(LMS_PORT) --nothreading & \
 	sleep 2 && cd backend && poetry run python ../manage.py backend runserver 0.0.0.0:$(BACKEND_PORT) --nothreading & \
+	sleep 2 && cd cms && ./venv/bin/python manage.py runserver $(CMS_PORT) --nothreading & \
 	wait
 
 stop: ## Arrête tous les serveurs Django
@@ -95,6 +112,11 @@ stop-backend: ## Arrête le serveur Backend
 	@echo "$(RED)🛑 Arrêt du serveur Backend...$(NC)"
 	@lsof -ti :$(BACKEND_PORT) | xargs -r kill -9 2>/dev/null || true
 	@echo "$(GREEN)✅ Serveur Backend arrêté$(NC)"
+
+stop-cms: ## Arrête le serveur CMS
+	@echo "$(RED)🛑 Arrêt du serveur CMS...$(NC)"
+	@lsof -ti :$(CMS_PORT) | xargs -r kill -9 2>/dev/null || true
+	@echo "$(GREEN)✅ Serveur CMS arrêté$(NC)"
 
 restart: ## Redémarre tous les serveurs
 	@make stop

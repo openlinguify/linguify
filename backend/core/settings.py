@@ -97,6 +97,11 @@ INSTALLED_APPS = [
     'app_manager',
     'apps.quizz',
     
+    # New apps for marketplace
+    'apps.learning',
+    'apps.teaching',
+    'apps.cms_sync',
+    
     # Web interfaces
     'saas_web',
     'core.apps.CoreConfig',
