@@ -89,7 +89,7 @@ all: ## Lance les 4 serveurs en parallèle
 	@echo "$(BLUE)⏳ Démarrage en cours... (peut prendre 30s sur WSL)$(NC)"
 	cd portal && ./venv/bin/python manage.py runserver $(PORTAL_PORT) --nothreading & \
 	sleep 2 && cd lms && ./venv/bin/python manage.py runserver $(LMS_PORT) --nothreading & \
-	sleep 2 && cd backend && poetry run python ../manage.py backend runserver 0.0.0.0:$(BACKEND_PORT) --nothreading & \
+	sleep 2 && cd backend && poetry run python manage.py runserver 0.0.0.0:$(BACKEND_PORT) --nothreading & \
 	sleep 2 && cd cms && ./venv/bin/python manage.py runserver $(CMS_PORT) --nothreading & \
 	wait
 

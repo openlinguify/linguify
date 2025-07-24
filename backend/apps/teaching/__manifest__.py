@@ -1,22 +1,32 @@
+# -*- coding: utf-8 -*-
 """
 Teaching app manifest for private lesson bookings.
 Connects students with teachers for individual sessions.
 """
 
-{
+__manifest__ = {
     'name': 'Teaching',
     'version': '1.0.0',
-    'description': 'Private lesson booking and teaching management system',
-    'author': 'Linguify Team',
     'category': 'Education',
+    'summary': 'Réservez des cours particuliers avec des enseignants professionnels',
+    'description': 'Système de réservation de leçons privées et de gestion d\'enseignement',
+    'author': 'Linguify Team',
     'installable': True,
     'depends': ['authentication', 'learning'],
+    'frontend_components': {
+        'route': '/teaching',
+        'icon': 'bi-person-video3',
+        'static_icon': '/static/teaching/description/icon.png',
+        'menu_order': 9,
+        'display_category': 'education',
+        'category_label': 'Éducation',
+    },
     'routes': [
         {
             'path': '/teaching/',
-            'name': 'Private Lessons',
-            'icon': 'user-group',
-            'description': 'Book and manage private lessons with teachers'
+            'name': 'Cours Particuliers',
+            'icon': 'person-video3',
+            'description': 'Réservez et gérez vos cours particuliers avec des enseignants'
         }
     ],
     'settings': {
