@@ -35,15 +35,20 @@ class UnitListSerializer(serializers.ModelSerializer):
     """Serializer for Unit list view"""
     lessons_count = serializers.IntegerField(read_only=True)
     user_progress = serializers.SerializerMethodField()
+    estimated_duration = serializers.SerializerMethodField()
     
     class Meta:
         model = Unit
         fields = [
             'id', 'title_en', 'title_fr', 'title_es', 'title_nl',
             'description_en', 'description_fr', 'description_es', 'description_nl',
-            'level', 'order', 'is_premium', 'estimated_duration',
+            'level', 'order', 'is_free', 'estimated_duration',
             'lessons_count', 'user_progress'
         ]
+    
+    def get_estimated_duration(self, obj):
+        """Get estimated duration for this unit"""
+        return obj.get_estimated_duration()
     
     def get_user_progress(self, obj):
         """Get user progress for this unit"""
@@ -52,11 +57,11 @@ class UnitListSerializer(serializers.ModelSerializer):
             try:
                 progress = UnitProgress.objects.get(user=user, unit=obj)
                 return {
-                    'completed_lessons': progress.completed_lessons,
-                    'total_lessons': progress.total_lessons,
-                    'percentage': progress.percentage,
+                    'completed_lessons': progress.lessons_completed,
+                    'total_lessons': progress.unit.get_total_lessons_count(),
+                    'percentage': progress.progress_percentage,
                     'is_completed': progress.is_completed,
-                    'current_lesson_id': progress.current_lesson_id
+                    'current_lesson_id': None  # Cette propriété n'existe pas dans le modèle
                 }
             except UnitProgress.DoesNotExist:
                 return None
@@ -96,12 +101,12 @@ class ChapterListSerializer(BaseMultilingualSerializer):
             try:
                 progress = ChapterProgress.objects.get(user=user, chapter=obj)
                 return {
-                    'completed_lessons': progress.completed_lessons,
-                    'total_lessons': progress.total_lessons,
+                    'completed_lessons': progress.lessons_completed,
+                    'total_lessons': progress.chapter.lessons.count(),
                     'progress_percentage': progress.progress_percentage,
-                    'is_completed': progress.is_completed,
-                    'is_current': progress.is_current,
-                    'is_locked': progress.is_locked
+                    'is_completed': progress.status == 'completed',
+                    'is_current': progress.status == 'in_progress',
+                    'is_locked': progress.status == 'locked'
                 }
             except ChapterProgress.DoesNotExist:
                 return None
@@ -131,7 +136,7 @@ class LessonListSerializer(serializers.ModelSerializer):
         model = Lesson
         fields = [
             'id', 'title', 'order', 'estimated_duration',
-            'is_premium', 'professional_field', 'user_progress', 'content_count'
+            'user_progress', 'content_count'
         ]
     
     def get_user_progress(self, obj):
@@ -142,7 +147,7 @@ class LessonListSerializer(serializers.ModelSerializer):
                 progress = LessonProgress.objects.get(user=user, lesson=obj)
                 return {
                     'is_completed': progress.is_completed,
-                    'completion_date': progress.completion_date,
+                    'completed_at': progress.completed_at,
                     'time_spent': progress.time_spent,
                     'score': progress.score
                 }
@@ -377,9 +382,9 @@ class UserProgressSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProgress
         fields = [
-            'id', 'user', 'overall_progress', 'completed_lessons',
-            'total_lessons', 'streak_days', 'total_xp', 'level',
-            'last_activity', 'study_time_today'
+            'id', 'user', 'overall_progress', 'completed_lessons_count',
+            'streak_days', 'total_xp', 'current_level',
+            'last_activity_date', 'total_study_time'
         ]
         read_only_fields = ['user']
 
@@ -387,14 +392,20 @@ class UserProgressSerializer(serializers.ModelSerializer):
 class UnitProgressSerializer(serializers.ModelSerializer):
     """Serializer for UnitProgress"""
     unit = UnitListSerializer(read_only=True)
+    total_lessons = serializers.SerializerMethodField()
     
     class Meta:
         model = UnitProgress
         fields = [
-            'id', 'user', 'unit', 'completed_lessons', 'total_lessons',
-            'percentage', 'is_completed', 'current_lesson'
+            'id', 'user', 'unit', 'lessons_completed', 'chapters_completed',
+            'progress_percentage', 'status', 'is_completed', 'is_current', 'is_locked',
+            'total_lessons', 'started_at', 'completed_at'
         ]
         read_only_fields = ['user']
+    
+    def get_total_lessons(self, obj):
+        """Get total lessons count for this unit"""
+        return obj.unit.get_total_lessons_count()
 
 
 class ChapterProgressSerializer(serializers.ModelSerializer):
@@ -404,8 +415,8 @@ class ChapterProgressSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChapterProgress
         fields = [
-            'id', 'user', 'chapter', 'completed_lessons', 'total_lessons',
-            'progress_percentage', 'is_completed', 'is_current', 'is_locked'
+            'id', 'user', 'chapter', 'lessons_completed',
+            'progress_percentage', 'status', 'started_at', 'completed_at'
         ]
         read_only_fields = ['user']
 
@@ -417,10 +428,10 @@ class LessonProgressSerializer(serializers.ModelSerializer):
     class Meta:
         model = LessonProgress
         fields = [
-            'id', 'user', 'lesson', 'is_completed', 'completion_date',
+            'id', 'user', 'lesson', 'is_completed', 'completed_at',
             'time_spent', 'score'
         ]
-        read_only_fields = ['user', 'completion_date']
+        read_only_fields = ['user', 'completed_at']
 
 
 # ==================== STUDENT MODELS ====================
@@ -466,7 +477,7 @@ class LearningSessionSerializer(serializers.ModelSerializer):
         model = LearningSession
         fields = [
             'id', 'student', 'lesson', 'started_at', 'ended_at',
-            'duration_minutes', 'exercises_completed', 'score'
+            'duration_seconds', 'exercises_completed', 'score'
         ]
         read_only_fields = ['student', 'started_at']
 

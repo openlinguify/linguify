@@ -1416,7 +1416,7 @@ class UserProfileView(View):
             from apps.course.models import LessonProgress
             return LessonProgress.objects.filter(
                 user=user,
-                is_completed=True
+                status='completed'
             ).count()
         except:
             return 42  # Valeur simulée

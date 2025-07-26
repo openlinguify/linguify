@@ -62,6 +62,14 @@ class CourseDashboardView(LoginRequiredMixin, TemplateView):
         context['marketplace_courses'] = self.get_marketplace_courses()
         context['marketplace_stats'] = self.get_marketplace_stats()
         
+        # Données JSON pour JavaScript
+        import json
+        context['user_stats_json'] = json.dumps(user_progress)
+        context['marketplace_courses_json'] = json.dumps(context['marketplace_courses'])
+        context['marketplace_stats_json'] = json.dumps(context['marketplace_stats'])
+        context['my_courses_json'] = json.dumps(context['my_courses'])
+        context['continue_learning_json'] = json.dumps(context['continue_learning'])
+        
         return context
     
     def get_user_progress(self, user):
@@ -84,12 +92,12 @@ class CourseDashboardView(LoginRequiredMixin, TemplateView):
             
             # Calculate actual stats
             completed_lessons = LessonProgress.objects.filter(
-                user=user, is_completed=True
+                user=user, status='completed'
             ).count()
             
             total_time = LearningSession.objects.filter(
                 student=user
-            ).aggregate(total=Sum('duration_minutes'))['total'] or 0
+            ).aggregate(total=Sum('duration_seconds'))['total'] or 0
             
             return {
                 'overall_progress': user_progress.overall_progress,
@@ -120,7 +128,7 @@ class CourseDashboardView(LoginRequiredMixin, TemplateView):
             # Get recent incomplete lessons
             recent_lessons = LessonProgress.objects.filter(
                 user=user,
-                is_completed=False
+                status__in=['in_progress', 'not_started']
             ).select_related('lesson', 'lesson__unit').order_by('-id')[:3]
             
             continue_items = []
@@ -196,44 +204,32 @@ class CourseDashboardView(LoginRequiredMixin, TemplateView):
             marketplace_courses = []
             
             for level in levels:
-                units = Unit.objects.filter(level=level)
+                # Filtrer les cours publiés synchronisés depuis le CMS pour ce niveau
+                units = Unit.objects.filter(
+                    level=level,
+                    is_published=True,
+                    cms_unit_id__isnull=False
+                ).order_by('order')
+                
                 courses = []
                 
                 for unit in units:
                     course = {
                         'id': unit.id,
-                        'title': unit.title_en or unit.title_fr or f'Cours {level}',
-                        'instructor': 'Équipe Linguify',
-                        'description': unit.description_en or unit.description_fr or 'Description à venir...',
+                        'title': unit.title or unit.title_fr or unit.title_en or f'Cours {level}',
+                        'instructor': unit.teacher_name or 'Équipe Linguify',
+                        'description': unit.description or unit.description_fr or unit.description_en or 'Découvrez ce cours pour améliorer vos compétences linguistiques.',
                         'level': level,
-                        'price': 49.99,
-                        'is_free': False,
-                        'rating': 4.5,
-                        'reviews_count': 156,
-                        'students_count': 1240,
-                        'is_enrolled': False
+                        'price': float(unit.price),
+                        'is_free': unit.is_free,
+                        'rating': 4.5,  # Valeur par défaut, à implémenter plus tard
+                        'reviews_count': 0,  # À implémenter avec le système de reviews
+                        'students_count': 0,  # À implémenter avec le tracking d'inscriptions
+                        'is_enrolled': False  # À implémenter avec la vérification d'inscription utilisateur
                     }
                     courses.append(course)
                 
-                # Add some mock courses if no units exist
-                if not courses:
-                    mock_courses = [
-                        {
-                            'id': f'{level}_1',
-                            'title': f'Français {level_names[level].split(" - ")[1]}',
-                            'instructor': 'Marie Dupont',
-                            'description': f'Cours complet de niveau {level} pour maîtriser le français.',
-                            'level': level,
-                            'price': 49.99 if level in ['B2', 'C1', 'C2'] else 29.99,
-                            'is_free': level == 'A1',
-                            'rating': 4.5,
-                            'reviews_count': 156,
-                            'students_count': 1240,
-                            'is_enrolled': False
-                        }
-                    ]
-                    courses.extend(mock_courses)
-                
+                # Seulement ajouter les niveaux qui ont des cours réels
                 if courses:
                     marketplace_courses.append({
                         'level': level,
@@ -271,16 +267,22 @@ class CourseDashboardView(LoginRequiredMixin, TemplateView):
         try:
             from .models import Unit
             
-            total_courses = Unit.objects.count()
-            free_courses = 1  # Would be calculated based on actual pricing
-            instructors = 2
-            levels = Unit.objects.values_list('level', flat=True).distinct().count()
+            # Utiliser les cours publiés synchronisés depuis le CMS
+            published_units = Unit.objects.filter(
+                is_published=True,
+                cms_unit_id__isnull=False
+            )
+            
+            total_courses = published_units.count()
+            free_courses = published_units.filter(is_free=True).count()
+            instructors = published_units.values_list('teacher_name', flat=True).distinct().count()
+            levels = published_units.values_list('level', flat=True).distinct().count()
             
             return {
-                'total_courses': total_courses or 3,
+                'total_courses': total_courses,
                 'free_courses': free_courses,
                 'instructors': instructors,
-                'levels': levels or 6
+                'levels': levels
             }
         except Exception:
             return {

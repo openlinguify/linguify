@@ -261,6 +261,11 @@ class LessonProgress(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.lesson.title} ({self.status})"
     
+    @property
+    def is_completed(self):
+        """Check if lesson is completed."""
+        return self.status == 'completed'
+    
     def mark_completed(self, score=100):
         """Mark lesson as completed with a score."""
         from django.utils import timezone

@@ -68,14 +68,14 @@ class UnitViewSet(BaseAuthenticatedViewSet):
     def get_queryset(self):
         """Get units with optimized queries"""
         return Unit.objects.prefetch_related(
-            'lesson_set',
+            'lessons',
             Prefetch(
                 'unitprogress_set',
                 queryset=UnitProgress.objects.filter(user=self.request.user),
                 to_attr='user_progress_list'
             )
         ).annotate(
-            lessons_count=Count('lesson')
+            lessons_count=Count('lessons')
         ).order_by('order')
     
     def get_serializer_class(self):
@@ -98,7 +98,7 @@ class UnitViewSet(BaseAuthenticatedViewSet):
             progress = UnitProgress.objects.create(
                 user=request.user,
                 unit=unit,
-                total_lessons=unit.lesson_set.count()
+                total_lessons=unit.lessons.count()
             )
             serializer = UnitProgressSerializer(progress)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -132,7 +132,7 @@ class UnitViewSet(BaseAuthenticatedViewSet):
             # Logic for recommendations based on completed units and level
             completed_units = UnitProgress.objects.filter(
                 user=request.user, 
-                is_completed=True
+                status='completed'
             ).values_list('unit_id', flat=True)
             
             return Unit.objects.exclude(
@@ -152,14 +152,14 @@ class ChapterViewSet(BaseAuthenticatedViewSet):
     def get_queryset(self):
         """Get chapters with optimized queries"""
         return Chapter.objects.select_related('unit').prefetch_related(
-            'lesson_set',
+            'lessons',
             Prefetch(
                 'chapterprogress_set',
                 queryset=ChapterProgress.objects.filter(user=self.request.user),
                 to_attr='user_progress_list'
             )
         ).annotate(
-            lessons_count=Count('lesson')
+            lessons_count=Count('lessons')
         ).order_by('unit__order', 'order')
     
     def get_serializer_class(self):
@@ -237,8 +237,8 @@ class LessonViewSet(BaseAuthenticatedViewSet):
             )
             
             # Update progress
-            progress.is_completed = True
-            progress.completion_date = timezone.now()
+            progress.status = 'completed'
+            progress.completed_at = timezone.now()
             progress.time_spent += serializer.validated_data.get('time_spent', 0)
             if 'score' in serializer.validated_data:
                 progress.score = serializer.validated_data['score']
@@ -255,7 +255,7 @@ class LessonViewSet(BaseAuthenticatedViewSet):
                     seconds=serializer.validated_data.get('time_spent', 0)
                 ),
                 ended_at=timezone.now(),
-                duration_minutes=serializer.validated_data.get('time_spent', 0) // 60,
+                duration_seconds=serializer.validated_data.get('time_spent', 0),
                 exercises_completed=len(serializer.validated_data.get('exercises_completed', [])),
                 score=serializer.validated_data.get('score', 0)
             )
@@ -279,7 +279,7 @@ class LessonViewSet(BaseAuthenticatedViewSet):
             completed_lessons = LessonProgress.objects.filter(
                 user=user,
                 lesson__chapter=lesson.chapter,
-                is_completed=True
+                status='completed'
             ).count()
             chapter_progress.completed_lessons = completed_lessons
             chapter_progress.save()
@@ -289,12 +289,12 @@ class LessonViewSet(BaseAuthenticatedViewSet):
             unit_progress, _ = UnitProgress.objects.get_or_create(
                 user=user,
                 unit=lesson.unit,
-                defaults={'total_lessons': lesson.unit.lesson_set.count()}
+                defaults={'total_lessons': lesson.unit.lessons.count()}
             )
             completed_lessons = LessonProgress.objects.filter(
                 user=user,
                 lesson__unit=lesson.unit,
-                is_completed=True
+                status='completed'
             ).count()
             unit_progress.completed_lessons = completed_lessons
             unit_progress.save()
@@ -523,8 +523,8 @@ class UserProgressViewSet(BaseAuthenticatedViewSet):
             # Get recent activity
             recent_lessons = LessonProgress.objects.filter(
                 user=user,
-                completion_date__isnull=False
-            ).order_by('-completion_date')[:5]
+                completed_at__isnull=False
+            ).order_by('-completed_at')[:5]
             
             # Get unit progress
             unit_progress = UnitProgress.objects.filter(user=user).select_related('unit')
@@ -532,7 +532,7 @@ class UserProgressViewSet(BaseAuthenticatedViewSet):
             # Get current/recommended lessons
             incomplete_lessons = Lesson.objects.exclude(
                 id__in=LessonProgress.objects.filter(
-                    user=user, is_completed=True
+                    user=user, status='completed'
                 ).values_list('lesson_id', flat=True)
             ).order_by('unit__order', 'chapter__order', 'order')[:3]
             
@@ -560,27 +560,27 @@ class UserProgressViewSet(BaseAuthenticatedViewSet):
         
         stats = {
             'total_lessons_completed': LessonProgress.objects.filter(
-                user=user, is_completed=True
+                user=user, status='completed'
             ).count(),
             'total_time_spent': LearningSession.objects.filter(
                 student=user
             ).aggregate(
-                total_minutes=Sum('duration_minutes')
-            )['total_minutes'] or 0,
-            'average_score': LearningSession.objects.filter(
+                total_seconds=Sum('duration_seconds')
+            )['total_seconds'] or 0,
+            'total_exercises': LearningSession.objects.filter(
                 student=user
             ).aggregate(
-                avg_score=Avg('score')
-            )['avg_score'] or 0,
+                total_exercises=Sum('exercises_completed')
+            )['total_exercises'] or 0,
             'lessons_this_week': LessonProgress.objects.filter(
                 user=user,
-                completion_date__gte=week_ago,
-                is_completed=True
+                completed_at__gte=week_ago,
+                status='completed'
             ).count(),
             'lessons_this_month': LessonProgress.objects.filter(
                 user=user,
-                completion_date__gte=month_ago,
-                is_completed=True
+                completed_at__gte=month_ago,
+                status='completed'
             ).count(),
             'streak_days': UserProgress.objects.filter(
                 user=user

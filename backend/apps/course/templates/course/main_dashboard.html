@@ -57,6 +57,15 @@
         <div class="tab-pane fade show active" id="my-learning" role="tabpanel">
             <div class="container-fluid py-4">
                 
+                <!-- Debug Info Mon Apprentissage -->
+                <div class="alert alert-warning">
+                    <h5>🔍 Debug Mon Apprentissage</h5>
+                    <p><strong>User:</strong> {{ user.username }}</p>
+                    <p><strong>User Stats:</strong> {{ user_stats }}</p>
+                    <p><strong>My Courses Count:</strong> {{ my_courses|length }}</p>
+                    <p><strong>Continue Learning Count:</strong> {{ continue_learning|length }}</p>
+                </div>
+
                 <!-- Welcome Section -->
                 <div class="welcome-section mb-4">
                     <div class="row align-items-center">
@@ -307,6 +316,19 @@
                     </div>
                 </div>
 
+                <!-- Debug Info -->
+                <div class="alert alert-info">
+                    <h5>🔍 Debug Information</h5>
+                    <p><strong>Marketplace Courses Count:</strong> {{ marketplace_courses|length }}</p>
+                    <p><strong>Marketplace Stats:</strong> {{ marketplace_stats.total_courses }} total courses</p>
+                    {% for level_group in marketplace_courses %}
+                        <p><strong>Level {{ level_group.level }}:</strong> {{ level_group.courses|length }} courses</p>
+                    {% endfor %}
+                    {% if not marketplace_courses %}
+                        <p class="text-danger">❌ No marketplace_courses data!</p>
+                    {% endif %}
+                </div>
+
                 <!-- Course Grid -->
                 <div class="marketplace-courses">
                     {% for level_group in marketplace_courses %}
@@ -552,6 +574,69 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+// Passer les données Django au JavaScript
+window.dashboardData = {
+    userStats: {{ user_stats_json|safe }},
+    marketplaceStats: {{ marketplace_stats_json|safe }},
+    marketplaceCourses: {{ marketplace_courses_json|safe }},
+    myCourses: {{ my_courses_json|safe }},
+    continueLearning: {{ continue_learning_json|safe }}
+};
+
+console.log('Dashboard Data loaded:', window.dashboardData);
+
+// Fonction simple pour afficher les données sans AJAX
+function initializeDashboard() {
+    if (window.dashboardData) {
+        console.log('Initializing dashboard with data:', window.dashboardData);
+        
+        // Les données sont déjà dans le template HTML,
+        // pas besoin de les recharger via AJAX
+        
+        // Vérifier que les onglets fonctionnent
+        const myLearningTab = document.getElementById('my-learning');
+        const marketplaceTab = document.getElementById('marketplace');
+        
+        if (myLearningTab) {
+            console.log('Mon apprentissage tab found');
+        }
+        
+        if (marketplaceTab) {
+            console.log('Marketplace tab found');
+        }
+        
+        // Afficher les statistiques marketplace
+        if (window.dashboardData.marketplaceStats) {
+            console.log('Marketplace stats:', window.dashboardData.marketplaceStats);
+        }
+        
+        // Afficher les cours marketplace
+        if (window.dashboardData.marketplaceCourses) {
+            console.log('Marketplace courses:', window.dashboardData.marketplaceCourses);
+        }
+    } else {
+        console.error('Dashboard data not available');
+    }
+}
+
+// Initialiser quand la page est chargée
+document.addEventListener('DOMContentLoaded', initializeDashboard);
+
+// Override des méthodes AJAX pour utiliser les données locales
+if (typeof CourseDashboard !== 'undefined') {
+    const originalLoadMarketplaceData = CourseDashboard.prototype.loadMarketplaceData;
+    CourseDashboard.prototype.loadMarketplaceData = function() {
+        console.log('Using local marketplace data instead of AJAX');
+        // Les données sont déjà dans le template, pas besoin de recharger
+    };
+    
+    const originalLoadMyLearningData = CourseDashboard.prototype.loadMyLearningData;
+    CourseDashboard.prototype.loadMyLearningData = function() {
+        console.log('Using local learning data instead of AJAX');
+        // Les données sont déjà dans le template, pas besoin de recharger
+    };
 }
 </script>
 {% endblock %}
