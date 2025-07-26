@@ -40,8 +40,259 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 
+class CourseDashboardView(LoginRequiredMixin, TemplateView):
+    """Vue principale du dashboard Course avec navigation par onglets"""
+    template_name = 'course/main_dashboard.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        
+        # User progress and stats
+        user_progress = self.get_user_progress(user)
+        context['user_stats'] = user_progress
+        
+        # Continue learning section
+        context['continue_learning'] = self.get_continue_learning(user)
+        
+        # My courses
+        context['my_courses'] = self.get_my_courses(user)
+        
+        # Marketplace data
+        context['marketplace_courses'] = self.get_marketplace_courses()
+        context['marketplace_stats'] = self.get_marketplace_stats()
+        
+        return context
+    
+    def get_user_progress(self, user):
+        """Get user progress and statistics"""
+        try:
+            from .models import UserProgress, LessonProgress, LearningSession
+            
+            # Get or create user progress
+            user_progress, created = UserProgress.objects.get_or_create(
+                user=user,
+                defaults={
+                    'overall_progress': 0,
+                    'completed_lessons': 0,
+                    'total_lessons': 0,
+                    'streak_days': 0,
+                    'total_xp': 0,
+                    'level': 'A1'
+                }
+            )
+            
+            # Calculate actual stats
+            completed_lessons = LessonProgress.objects.filter(
+                user=user, is_completed=True
+            ).count()
+            
+            total_time = LearningSession.objects.filter(
+                student=user
+            ).aggregate(total=Sum('duration_minutes'))['total'] or 0
+            
+            return {
+                'overall_progress': user_progress.overall_progress,
+                'completed_lessons': completed_lessons,
+                'total_lessons': user_progress.total_lessons,
+                'streak_days': user_progress.streak_days,
+                'total_xp': user_progress.total_xp,
+                'level': user_progress.level,
+                'study_time_today': total_time
+            }
+        except Exception as e:
+            # Return default values if models don't exist yet
+            return {
+                'overall_progress': 0,
+                'completed_lessons': 0,
+                'total_lessons': 0,
+                'streak_days': 0,
+                'total_xp': 0,
+                'level': 'A1',
+                'study_time_today': 0
+            }
+    
+    def get_continue_learning(self, user):
+        """Get courses/lessons where user left off"""
+        try:
+            from .models import LessonProgress, Lesson
+            
+            # Get recent incomplete lessons
+            recent_lessons = LessonProgress.objects.filter(
+                user=user,
+                is_completed=False
+            ).select_related('lesson', 'lesson__unit').order_by('-id')[:3]
+            
+            continue_items = []
+            for progress in recent_lessons:
+                continue_items.append({
+                    'lesson_id': progress.lesson.id,
+                    'lesson_title': progress.lesson.title,
+                    'course_title': progress.lesson.unit.title_en if progress.lesson.unit else 'Cours',
+                    'progress': 45  # Could calculate actual progress
+                })
+            
+            return continue_items
+        except Exception:
+            return []
+    
+    def get_my_courses(self, user):
+        """Get user's enrolled courses"""
+        try:
+            from .models import StudentCourse, Unit
+            
+            # Get enrolled courses
+            enrollments = StudentCourse.objects.filter(student=user).select_related()
+            
+            my_courses = []
+            for enrollment in enrollments:
+                # For now, create mock data based on units
+                # In a real implementation, this would be based on actual course enrollment
+                course_data = {
+                    'id': enrollment.course_id,
+                    'title': f'Cours {enrollment.course_id}',
+                    'instructor': 'Professeur Expert',
+                    'level': 'A2',
+                    'progress': 65,
+                    'completed_lessons': 8,
+                    'total_lessons': 12,
+                    'status': 'in-progress'
+                }
+                my_courses.append(course_data)
+            
+            # Add some units as courses for demo
+            units = Unit.objects.all()[:6]
+            for unit in units:
+                my_courses.append({
+                    'id': unit.id,
+                    'title': unit.title_en or unit.title_fr,
+                    'instructor': 'Équipe Linguify',
+                    'level': unit.level,
+                    'progress': 25,
+                    'completed_lessons': 3,
+                    'total_lessons': unit.lesson_set.count() if hasattr(unit, 'lesson_set') else 10,
+                    'status': 'in-progress'
+                })
+            
+            return my_courses[:8]  # Limit to 8 courses
+        except Exception:
+            return []
+    
+    def get_marketplace_courses(self):
+        """Get marketplace courses organized by level"""
+        try:
+            from .models import Unit
+            
+            levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+            level_names = {
+                'A1': 'Niveau A1 - Débutant',
+                'A2': 'Niveau A2 - Élémentaire', 
+                'B1': 'Niveau B1 - Intermédiaire',
+                'B2': 'Niveau B2 - Intermédiaire+',
+                'C1': 'Niveau C1 - Avancé',
+                'C2': 'Niveau C2 - Maîtrise'
+            }
+            
+            marketplace_courses = []
+            
+            for level in levels:
+                units = Unit.objects.filter(level=level)
+                courses = []
+                
+                for unit in units:
+                    course = {
+                        'id': unit.id,
+                        'title': unit.title_en or unit.title_fr or f'Cours {level}',
+                        'instructor': 'Équipe Linguify',
+                        'description': unit.description_en or unit.description_fr or 'Description à venir...',
+                        'level': level,
+                        'price': 49.99,
+                        'is_free': False,
+                        'rating': 4.5,
+                        'reviews_count': 156,
+                        'students_count': 1240,
+                        'is_enrolled': False
+                    }
+                    courses.append(course)
+                
+                # Add some mock courses if no units exist
+                if not courses:
+                    mock_courses = [
+                        {
+                            'id': f'{level}_1',
+                            'title': f'Français {level_names[level].split(" - ")[1]}',
+                            'instructor': 'Marie Dupont',
+                            'description': f'Cours complet de niveau {level} pour maîtriser le français.',
+                            'level': level,
+                            'price': 49.99 if level in ['B2', 'C1', 'C2'] else 29.99,
+                            'is_free': level == 'A1',
+                            'rating': 4.5,
+                            'reviews_count': 156,
+                            'students_count': 1240,
+                            'is_enrolled': False
+                        }
+                    ]
+                    courses.extend(mock_courses)
+                
+                if courses:
+                    marketplace_courses.append({
+                        'level': level,
+                        'level_name': level_names[level],
+                        'courses': courses
+                    })
+            
+            return marketplace_courses
+        except Exception as e:
+            # Return mock data if models don't exist
+            return [
+                {
+                    'level': 'A1',
+                    'level_name': 'Niveau A1 - Débutant',
+                    'courses': [
+                        {
+                            'id': 1,
+                            'title': 'Français pour Débutants',
+                            'instructor': 'Marie Dupont',
+                            'description': 'Apprenez les bases du français avec cette formation complète.',
+                            'level': 'A1',
+                            'price': 0,
+                            'is_free': True,
+                            'rating': 4.5,
+                            'reviews_count': 156,
+                            'students_count': 1240,
+                            'is_enrolled': False
+                        }
+                    ]
+                }
+            ]
+    
+    def get_marketplace_stats(self):
+        """Get marketplace statistics"""
+        try:
+            from .models import Unit
+            
+            total_courses = Unit.objects.count()
+            free_courses = 1  # Would be calculated based on actual pricing
+            instructors = 2
+            levels = Unit.objects.values_list('level', flat=True).distinct().count()
+            
+            return {
+                'total_courses': total_courses or 3,
+                'free_courses': free_courses,
+                'instructors': instructors,
+                'levels': levels or 6
+            }
+        except Exception:
+            return {
+                'total_courses': 3,
+                'free_courses': 1,
+                'instructors': 2,
+                'levels': 6
+            }
+
+
 class CourseMarketplaceView(LoginRequiredMixin, TemplateView):
-    """Vue marketplace des cours synchronisés depuis le CMS"""
+    """Vue marketplace des cours synchronisés depuis le CMS (ancienne version)"""
     template_name = 'course/marketplace.html'
     
     def get_context_data(self, **kwargs):

@@ -2,6 +2,7 @@
 from django.urls import path
 from django.shortcuts import render
 from .views_web import (
+    CourseDashboardView,
     CourseMarketplaceView,
     StudentDashboardView,
     LearningDashboardView,
@@ -44,13 +45,16 @@ urlpatterns = [
     path('simple-test/', simple_test_view, name='simple-test'),
     path('debug/', debug_data, name='debug'),
     
-    # Marketplace
-    path('', CourseMarketplaceView.as_view(), name='marketplace'),
-    path('marketplace/', CourseMarketplaceView.as_view(), name='marketplace-list'),
+    # Main Dashboard (nouvelle interface style Udemy)
+    path('', CourseDashboardView.as_view(), name='main-dashboard'),
+    
+    # Marketplace (ancienne interface)
+    path('marketplace/', CourseMarketplaceView.as_view(), name='marketplace'),
+    path('marketplace-old/', CourseMarketplaceView.as_view(), name='marketplace-old'),
     path('enroll/<int:course_id>/', enroll_in_course, name='enroll-course'),
     
-    # Vues principales
-    path('dashboard/', StudentDashboardView.as_view(), name='student-dashboard'),
+    # Vues principales (anciennes)
+    path('student-dashboard/', StudentDashboardView.as_view(), name='student-dashboard'),
     path('learning-dashboard/', LearningDashboardView.as_view(), name='learning-dashboard'),
     
     # Chapitres et leçons

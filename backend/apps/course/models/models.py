@@ -16,22 +16,50 @@ Structure:
 """
 
 # Import de tous les modèles depuis les modules
-from .models import *
+from .mixins import *
+from .core import *
+from .exercises import *
+from .content import *
+from .tests import *
+from .user_progress import *
 
 # Réexport pour la compatibilité
 __all__ = [
+    # Mixins
     'MultilingualMixin',
+    
+    # Core models
     'Unit', 
+    'Chapter',
     'Lesson', 
     'ContentLesson',
+    
+    # Exercise models
     'VocabularyList',
     'MultipleChoiceQuestion',
     'MatchingExercise', 
     'SpeakingExercise',
-    'TheoryContent',
     'ExerciseGrammarReordering',
     'FillBlankExercise',
+    
+    # Content models
+    'TheoryContent',
+    
+    # Test models
     'TestRecap',
     'TestRecapQuestion', 
-    'TestRecapResult'
+    'TestRecapResult',
+    
+    # Progress models
+    'UserProgress',
+    'UnitProgress',
+    'ChapterProgress',
+    'LessonProgress',
+    'UserActivity',
+    'StudentCourse',
+    'StudentLessonProgress',
+    'StudentContentProgress',
+    'LearningSession',
+    'StudentReview',
+    'LearningAnalytics'
 ]
