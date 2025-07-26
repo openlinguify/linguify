@@ -100,7 +100,7 @@ urlpatterns = [
     # Marketplace apps
     path('chat/', include('apps.chat.urls', namespace='chat')),
     path('community/', include('apps.community.urls', namespace='community')),
-    path('learning/', include('apps.learning.urls', namespace='learning')),
+    path('student-dashboard/', include('apps.learning.urls', namespace='learning')),
     path('teaching/', include('apps.teaching.urls', namespace='teaching')),
     path('api/cms-sync/', include('apps.cms_sync.urls', namespace='cms_sync')),
     

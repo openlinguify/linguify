@@ -21,39 +21,52 @@ from .serializers import (StudentCourseSerializer, LessonProgressSerializer,
 from apps.course.models.core import Unit, Lesson, ContentLesson
 from .services import LearningService, RecommendationService
 
-class LearningDashboardView(LoginRequiredMixin, TemplateView):
+class LearningDashboardView(TemplateView):
     """Main learning dashboard for students."""
     template_name = 'learning/dashboard.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Get student's enrolled courses
-        enrolled_courses = StudentCourse.objects.filter(
-            student=self.request.user,
-            status='active'
-        ).select_related('unit')
-        
-        context.update({
-            'enrolled_courses': enrolled_courses,
-            'total_courses': enrolled_courses.count(),
-            'completed_courses': enrolled_courses.filter(progress_percentage=100).count(),
-            'in_progress_courses': enrolled_courses.filter(
-                progress_percentage__gt=0,
-                progress_percentage__lt=100
-            ).count(),
-        })
+        if self.request.user.is_authenticated:
+            # Get student's enrolled courses
+            enrolled_courses = StudentCourse.objects.filter(
+                student=self.request.user,
+                status='active'
+            ).select_related('unit')
+            
+            context.update({
+                'enrolled_courses': enrolled_courses,
+                'total_courses': enrolled_courses.count(),
+                'completed_courses': enrolled_courses.filter(progress_percentage=100).count(),
+                'in_progress_courses': enrolled_courses.filter(
+                    progress_percentage__gt=0,
+                    progress_percentage__lt=100
+                ).count(),
+            })
+        else:
+            # Demo data for non-authenticated users
+            context.update({
+                'enrolled_courses': [],
+                'total_courses': 0,
+                'completed_courses': 0,
+                'in_progress_courses': 0,
+            })
         return context
 
 class StudentCoursesAPIView(generics.ListAPIView):
     """API to list student's enrolled courses."""
     serializer_class = StudentCourseSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = []  # Allow anonymous access for demo
     
     def get_queryset(self):
-        return StudentCourse.objects.filter(
-            student=self.request.user
-        ).select_related('unit').order_by('-last_accessed')
+        if self.request.user.is_authenticated:
+            return StudentCourse.objects.filter(
+                student=self.request.user
+            ).select_related('unit').order_by('-last_accessed')
+        else:
+            # Return empty queryset for non-authenticated users
+            return StudentCourse.objects.none()
 
 class CourseDetailAPIView(generics.RetrieveAPIView):
     """API to get course details with progress."""
@@ -197,16 +210,23 @@ class AvailableCoursesAPIView(generics.ListAPIView):
 
 class CourseRecommendationsAPIView(APIView):
     """API to get personalized course recommendations."""
-    permission_classes = [IsAuthenticated]
+    permission_classes = []  # Allow anonymous access for demo
     
     def get(self, request):
-        recommendation_service = RecommendationService(request.user)
-        recommendations = recommendation_service.get_recommendations(limit=5)
-        
-        return Response({
-            'recommendations': recommendations,
-            'recommendation_reasons': recommendation_service.get_recommendation_reasons()
-        })
+        if request.user.is_authenticated:
+            recommendation_service = RecommendationService(request.user)
+            recommendations = recommendation_service.get_recommendations(limit=5)
+            
+            return Response({
+                'recommendations': recommendations,
+                'recommendation_reasons': recommendation_service.get_recommendation_reasons()
+            })
+        else:
+            # Return demo data for non-authenticated users
+            return Response({
+                'recommendations': [],
+                'recommendation_reasons': {}
+            })
 
 class StudentReviewsAPIView(generics.ListCreateAPIView):
     """API to list and create course reviews."""
@@ -230,27 +250,48 @@ class StudentReviewsAPIView(generics.ListCreateAPIView):
 class LearningAnalyticsAPIView(generics.ListAPIView):
     """API to get learning analytics."""
     serializer_class = LearningAnalyticsSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = []  # Allow anonymous access for demo
     
     def get_queryset(self):
-        days = int(self.request.query_params.get('days', 30))
-        start_date = timezone.now().date() - timezone.timedelta(days=days)
-        
-        return LearningAnalytics.objects.filter(
-            student=self.request.user,
-            date__gte=start_date
-        ).order_by('-date')
+        if self.request.user.is_authenticated:
+            days = int(self.request.query_params.get('days', 30))
+            start_date = timezone.now().date() - timezone.timedelta(days=days)
+            
+            return LearningAnalytics.objects.filter(
+                student=self.request.user,
+                date__gte=start_date
+            ).order_by('-date')
+        else:
+            # Return empty queryset for non-authenticated users
+            return LearningAnalytics.objects.none()
 
 class LearningDashboardAPIView(APIView):
     """API to get learning dashboard summary."""
-    permission_classes = [IsAuthenticated]
+    permission_classes = []  # Allow anonymous access for demo
     
     def get(self, request):
-        learning_service = LearningService(request.user)
-        dashboard_data = learning_service.get_dashboard_summary()
-        
-        serializer = LearningDashboardSerializer(dashboard_data)
-        return Response(serializer.data)
+        if request.user.is_authenticated:
+            learning_service = LearningService(request.user)
+            dashboard_data = learning_service.get_dashboard_summary()
+            serializer = LearningDashboardSerializer(dashboard_data)
+            return Response(serializer.data)
+        else:
+            # Return demo data for non-authenticated users
+            demo_data = {
+                'active_courses': 0,
+                'completed_courses': 0,
+                'total_time_spent': 0,
+                'current_streak': 0,
+                'recent_activity': [],
+                'progress_summary': {
+                    'courses_by_progress': {'not_started': 0, 'in_progress': 0, 'completed': 0},
+                    'average_progress': 0,
+                    'total_lessons': 0,
+                    'completed_lessons': 0
+                },
+                'recommended_courses': []
+            }
+            return Response(demo_data)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

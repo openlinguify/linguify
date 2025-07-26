@@ -15,7 +15,6 @@ __manifest__ = {
     'depends': ['course', 'authentication'],
     'frontend_components': {
         'route': '/learning',
-        'icon': 'bi-shop',
         'static_icon': '/static/learning/description/icon.png',
         'menu_order': 8,
         'display_category': 'education',

@@ -6,65 +6,7 @@
 {% block title %}{% trans "Cours Particuliers" %} - Linguify{% endblock %}
 
 {% block extra_css %}
-<style>
-:root {
-    --linguify-primary: #1E40AF;
-    --linguify-primary-light: #3B82F6;
-    --linguify-secondary: #8B5CF6;
-    --linguify-accent: #F59E0B;
-    --linguify-success: #10B981;
-    --linguify-warning: #F59E0B;
-    --linguify-danger: #EF4444;
-}
-
-.teaching-header {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-secondary) 100%);
-    color: white;
-    padding: 2rem 0;
-}
-
-.teacher-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
-
-.teacher-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
-
-.lesson-card {
-    background: white;
-    border-radius: 8px;
-    border-left: 4px solid var(--linguify-primary);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.btn-primary-custom {
-    background: var(--linguify-primary);
-    border-color: var(--linguify-primary);
-    color: white;
-}
-
-.btn-primary-custom:hover {
-    background: var(--linguify-primary-light);
-    border-color: var(--linguify-primary-light);
-}
-
-.status-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-
-.status-pending { background-color: #FEF3C7; color: #92400E; }
-.status-confirmed { background-color: #D1FAE5; color: #065F46; }
-.status-completed { background-color: #DBEAFE; color: #1E40AF; }
-.status-cancelled { background-color: #FEE2E2; color: #991B1B; }
-</style>
+<link rel="stylesheet" href="{% static 'teaching/css/dashboard.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -285,70 +227,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-function bookWithTeacher(teacherId) {
-    // Redirect to booking page with pre-selected teacher
-    window.location.href = `/teaching/book/?teacher=${teacherId}`;
-}
-
-function startLesson(lessonId) {
-    fetch(`/api/teaching/lessons/${lessonId}/start/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.meeting_url) {
-            window.open(data.meeting_url, '_blank');
-        }
-        location.reload();
-    })
-    .catch(error => {
-        alert('Erreur lors du démarrage du cours');
-        console.error('Error:', error);
-    });
-}
-
-function cancelLesson(lessonId) {
-    if (confirm('Êtes-vous sûr de vouloir annuler ce cours ?')) {
-        const reason = prompt('Raison de l\'annulation (optionnel):') || 'Annulé par l\'étudiant';
-        
-        fetch(`/api/teaching/lessons/${lessonId}/cancel/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify({ reason: reason })
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert('Cours annulé avec succès');
-            location.reload();
-        })
-        .catch(error => {
-            alert('Erreur lors de l\'annulation');
-            console.error('Error:', error);
-        });
-    }
-}
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-</script>
+<script src="{% static 'teaching/js/dashboard.js' %}"></script>
 {% endblock %}
