@@ -12,7 +12,7 @@ __manifest__ = {
     'description': 'Système de réservation de leçons privées et de gestion d\'enseignement',
     'author': 'Linguify Team',
     'installable': True,
-    'depends': ['authentication', 'learning'],
+    'depends': ['authentication', 'course'],
     'frontend_components': {
         'route': '/teaching',
         'icon': 'bi-person-video3',

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Linguify. See LICENSE file for full copyright and licensing details.
 __manifest__ = {
-    'name': 'Learning Platform',
+    'name': 'Course',
     'version': '4.0.0',
     'category': 'Education/Learning',
     'summary': 'Plateforme d\'apprentissage complète : marketplace, cours et suivi de progression.',
