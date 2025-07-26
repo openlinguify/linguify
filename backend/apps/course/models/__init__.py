@@ -35,7 +35,13 @@ from .user_progress import (
     UnitProgress, 
     ChapterProgress,
     LessonProgress,
-    UserActivity
+    UserActivity,
+    StudentCourse,
+    StudentLessonProgress,
+    StudentContentProgress,
+    LearningSession,
+    StudentReview,
+    LearningAnalytics
 )
 
 # Export de tous les modèles pour l'importation externe
@@ -59,5 +65,11 @@ __all__ = [
     'UnitProgress',
     'ChapterProgress', 
     'LessonProgress',
-    'UserActivity'
+    'UserActivity',
+    'StudentCourse',
+    'StudentLessonProgress',
+    'StudentContentProgress',
+    'LearningSession',
+    'StudentReview',
+    'LearningAnalytics'
 ]

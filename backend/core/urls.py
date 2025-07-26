@@ -97,11 +97,14 @@ urlpatterns = [
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('api/v1/quizz/', include('apps.quizz.urls', namespace='quizz')),
     
+    # Compatibility redirect for old /course/ URL
+    path('course/', RedirectView.as_view(url='/learning/', permanent=True)),
+    
     # Marketplace apps
     path('chat/', include('apps.chat.urls', namespace='chat')),
     path('community/', include('apps.community.urls', namespace='community')),
-    path('student-dashboard/', include('apps.learning.urls', namespace='learning')),
-    path('teaching/', include('apps.teaching.urls', namespace='teaching')),
+    # path('student-dashboard/', include('apps.learning.urls', namespace='learning')),  # Fusionné dans course app
+    # path('teaching/', include('apps.teaching.urls', namespace='teaching')),  # Temporairement désactivé pour résoudre conflit
     path('api/cms-sync/', include('apps.cms_sync.urls', namespace='cms_sync')),
     
     # SEO URLs - Organized sitemap serving

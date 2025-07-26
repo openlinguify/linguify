@@ -2,6 +2,8 @@
 from django.urls import path
 from django.shortcuts import render
 from .views_web import (
+    CourseMarketplaceView,
+    StudentDashboardView,
     LearningDashboardView,
     ChapterDetailView,
     LessonDetailView,
@@ -18,6 +20,7 @@ from .views_web import (
     reset_unit_progress_ajax,
     unit_details_ajax,
     complete_lesson,
+    enroll_in_course,
 )
 from .debug_view import debug_data
 from .views import LearningSettingsView
@@ -41,9 +44,14 @@ urlpatterns = [
     path('simple-test/', simple_test_view, name='simple-test'),
     path('debug/', debug_data, name='debug'),
     
+    # Marketplace
+    path('', CourseMarketplaceView.as_view(), name='marketplace'),
+    path('marketplace/', CourseMarketplaceView.as_view(), name='marketplace-list'),
+    path('enroll/<int:course_id>/', enroll_in_course, name='enroll-course'),
+    
     # Vues principales
-    path('', LearningDashboardView.as_view(), name='dashboard'),
-    path('dashboard/', LearningDashboardView.as_view(), name='learning-dashboard'),
+    path('dashboard/', StudentDashboardView.as_view(), name='student-dashboard'),
+    path('learning-dashboard/', LearningDashboardView.as_view(), name='learning-dashboard'),
     
     # Chapitres et leçons
     path('chapter/<int:chapter_id>/', ChapterDetailView.as_view(), name='chapter_detail'),

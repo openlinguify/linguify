@@ -30,6 +30,7 @@ class Unit(MultilingualMixin):
     Unité de cours pour l'apprentissage des langues.
     Utilise MultilingualMixin pour optimiser la gestion des traductions.
     Structure inspirée de Open Linguify pour une meilleure organisation.
+    Synchronisé avec le CMS pour les cours créés par les professeurs.
     """
     LEVEL_CHOICES = [
         ('A1', 'A1'),
@@ -50,6 +51,28 @@ class Unit(MultilingualMixin):
     description_nl = models.TextField(null=True, blank=True)
     level = models.CharField(max_length=2, choices=LEVEL_CHOICES, blank=False, null=False)
     order = models.PositiveIntegerField(blank=False, null=False, default=1)
+    
+    # CMS Integration fields - pour la synchronisation avec les cours des professeurs
+    cms_unit_id = models.PositiveIntegerField(null=True, blank=True, unique=True, 
+                                            help_text="ID du cours dans le CMS")
+    teacher_id = models.PositiveIntegerField(null=True, blank=True,
+                                           help_text="ID du professeur dans le CMS")
+    teacher_name = models.CharField(max_length=200, blank=True,
+                                  help_text="Nom du professeur qui a créé ce cours")
+    
+    # Marketplace fields
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0,
+                              help_text="Prix du cours")
+    is_published = models.BooleanField(default=False,
+                                     help_text="Cours publié et visible dans le marketplace")
+    is_free = models.BooleanField(default=False,
+                                help_text="Cours gratuit accessible à tous")
+    
+    # Metadata
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+    last_sync = models.DateTimeField(null=True, blank=True,
+                                   help_text="Dernière synchronisation avec le CMS")
 
     class Meta:
         app_label = 'course'

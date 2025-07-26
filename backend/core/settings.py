@@ -98,7 +98,7 @@ INSTALLED_APPS = [
     'apps.quizz',
     
     # New apps for marketplace
-    'apps.learning',
+    # 'apps.learning',  # Fusionné dans apps.course (Learning Platform)
     'apps.teaching',
     'apps.cms_sync',
     

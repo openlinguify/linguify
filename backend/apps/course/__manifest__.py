@@ -1,34 +1,41 @@
 # -*- coding: utf-8 -*-
 # Part of Linguify. See LICENSE file for full copyright and licensing details.
 __manifest__ = {
-    'name': 'Learning',
-    'version': '2.0.0',
-    'category': 'Education/Language Learning',
-    'summary': 'Apprenez les langues avec des leçons interactives et des exercices variés adaptés à votre niveau.',
+    'name': 'Learning Platform',
+    'version': '4.0.0',
+    'category': 'Education/Learning',
+    'summary': 'Plateforme d\'apprentissage complète : marketplace, cours et suivi de progression.',
     'description': '''
-Learning Module for Open Linguify (v2.0)
-===================================
+Learning Platform Module for Open Linguify (v4.0)
+================================================
 
-Interactive language learning system with modular architecture.
+Complete learning platform with marketplace and student dashboard.
 
 Features:
-- Multi-level learning units (A1-C2)
-- Interactive lessons with theory, vocabulary, and exercises
-- Multiple exercise types: Matching, Fill-in-blanks, Multiple choice, Speaking
-- Multilingual support (EN, FR, ES, NL)
-- Test recaps and progress assessment
-- Clean modular codebase for better maintenance
+- Course marketplace synchronized from CMS
+- Student learning dashboard with progress tracking
+- Course browsing by level, teacher, and price
+- Free and paid course enrollment
+- Multi-level course organization (A1-C2)
+- Interactive lessons with progress tracking
+- Teacher profiles and course ratings
+- Multilingual course content (EN, FR, ES, NL)
 
-Technical Improvements (v2.0):
-- Modular models structure (core, exercises, content, tests)
-- MultilingualMixin for code reuse
-- Optimized admin interface
-- Django templates instead of DRF API
-- Better performance and maintainability
+Technical Features (v4.0):
+- Unified Course + Learning functionality
+- CMS integration with automatic synchronization
+- Marketplace and dashboard in single app
+- Course enrollment with progress tracking
+- Modular models structure for courses and progress
+
+Synergy with other apps:
+- CMS → Learning Platform (teachers publish courses)
+- Learning Platform → Teaching (1-on-1 sessions)
 
 Usage:
-- Web interface via saas_web dashboard
-- Admin interface for content management
+- /learning/ → Course marketplace
+- /learning/dashboard/ → Student dashboard
+- Course enrollment and progress tracking
     ''',
     'author': 'Linguify Team',
     'website': 'https://linguify.com',
@@ -42,18 +49,21 @@ Usage:
     'application': True,
     'sequence': 10,
     'frontend_components': {
-        'main_component': 'LearningView',
+        'main_component': 'LearningPlatformView',
         'route': '/learning',
-        'icon': 'bi-mortarboard',
+        'icon': 'bi-mortarboard-fill',
         'static_icon': '/static/course/description/icon.png',
         'menu_order': 1,
-        'display_category': 'learning',
-        'category_label': 'Apprentissage',
-        'category_icon': 'bi-book',
+        'display_category': 'education',
+        'category_label': 'Apprendre',
+        'category_icon': 'bi-book-half',
     },
     'api_endpoints': {
         'base_url': '/learning/',
-        'web_views': 'course_web_views',
+        'web_views': 'learning_platform_views',
+        'marketplace': '/learning/',
+        'dashboard': '/learning/dashboard/',
+        'enrollment': '/learning/enroll/',
     },
     'permissions': {
         'create': 'auth.user',
@@ -67,11 +77,27 @@ Usage:
             'Unit', 'Lesson', 'ContentLesson', 'TheoryContent',
             'VocabularyList', 'MultipleChoiceQuestion', 'MatchingExercise',
             'FillBlankExercise', 'SpeakingExercise', 'ExerciseGrammarReordering',
-            'TestRecap', 'TestRecapQuestion', 'TestRecapResult'
+            'TestRecap', 'TestRecapQuestion', 'TestRecapResult',
+            'UserProgress', 'UnitProgress', 'ChapterProgress', 'LessonProgress'
+        ],
+        'services': [
+            'CMSSyncService'
+        ],
+        'management_commands': [
+            'sync_cms_courses'
+        ],
+        'features': [
+            'cms_integration',
+            'course_marketplace',
+            'student_dashboard',
+            'course_enrollment',
+            'progress_tracking',
+            'unified_learning_platform'
         ],
         'admin_registered': True,
         'web_interface': True,
-        'refactored': True,
-        'version': '1.0.0'
+        'marketplace_ready': True,
+        'dashboard_ready': True,
+        'version': '4.0.0'
     }
 }

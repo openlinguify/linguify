@@ -26,12 +26,102 @@ from .models import (
     UnitProgress,
     ChapterProgress,
     LessonProgress,
-    UserActivity
+    UserActivity,
+    StudentCourse,
+    StudentLessonProgress,
+    StudentContentProgress,
+    LearningSession,
+    StudentReview,
+    LearningAnalytics
 )
 from apps.authentication.models import User
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+
+
+class CourseMarketplaceView(LoginRequiredMixin, TemplateView):
+    """Vue marketplace des cours synchronisés depuis le CMS"""
+    template_name = 'course/marketplace.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        
+        # Récupérer tous les cours publiés synchronisés depuis le CMS
+        published_courses = Unit.objects.filter(
+            is_published=True,
+            cms_unit_id__isnull=False
+        ).order_by('level', 'order')
+        
+        # Grouper par niveau et professeur
+        courses_by_level = {}
+        courses_by_teacher = {}
+        
+        for course in published_courses:
+            # Grouper par niveau
+            if course.level not in courses_by_level:
+                courses_by_level[course.level] = []
+            courses_by_level[course.level].append(course)
+            
+            # Grouper par professeur
+            if course.teacher_name not in courses_by_teacher:
+                courses_by_teacher[course.teacher_name] = []
+            courses_by_teacher[course.teacher_name].append(course)
+        
+        # Statistiques
+        total_courses = published_courses.count()
+        free_courses = published_courses.filter(is_free=True).count()
+        levels_available = published_courses.values_list('level', flat=True).distinct()
+        teachers_count = published_courses.values_list('teacher_name', flat=True).distinct().count()
+        
+        context.update({
+            'courses': published_courses,
+            'courses_by_level': courses_by_level,
+            'courses_by_teacher': courses_by_teacher,
+            'total_courses': total_courses,
+            'free_courses': free_courses,
+            'paid_courses': total_courses - free_courses,
+            'levels_available': sorted(levels_available),
+            'teachers_count': teachers_count,
+            'page_title': 'Marketplace - Catalogue des cours',
+        })
+        
+        return context
+
+
+class StudentDashboardView(LoginRequiredMixin, TemplateView):
+    """Vue du dashboard étudiant avec cours inscrits"""
+    template_name = 'course/student_dashboard.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        
+        # Récupérer les cours inscrits
+        enrolled_courses = StudentCourse.objects.filter(
+            student=user,
+            status=StudentCourse.Status.ACTIVE
+        ).select_related('unit').order_by('-last_accessed')
+        
+        # Statistiques rapides
+        total_enrolled = enrolled_courses.count()
+        completed_courses = enrolled_courses.filter(progress_percentage=100).count()
+        in_progress_courses = enrolled_courses.filter(
+            progress_percentage__gt=0,
+            progress_percentage__lt=100
+        ).count()
+        
+        context.update({
+            'enrolled_courses': enrolled_courses,
+            'total_enrolled': total_enrolled,
+            'completed_courses': completed_courses,
+            'in_progress_courses': in_progress_courses,
+            'new_courses': total_enrolled - completed_courses - in_progress_courses,
+            'page_title': 'Mon Dashboard d\'Apprentissage',
+        })
+        
+        return context
 
 
 class LearningDashboardView(LoginRequiredMixin, TemplateView):
@@ -974,3 +1064,36 @@ def complete_lesson(request, lesson_id):
         messages.success(request, 'Leçon complétée avec succès!')
     
     return redirect('course:dashboard')
+
+
+@login_required
+def enroll_in_course(request, course_id):
+    """Inscription à un cours depuis le marketplace"""
+    course = get_object_or_404(Unit, id=course_id, is_published=True, cms_unit_id__isnull=False)
+    
+    # Pour les cours gratuits, inscription directe
+    if course.is_free:
+        # Créer l'inscription StudentCourse
+        student_course, created = StudentCourse.objects.get_or_create(
+            student=request.user,
+            unit=course,
+            defaults={
+                'price_paid': 0,
+                'teacher_name': course.teacher_name or '',
+                'teacher_id': course.teacher_id,
+                'status': StudentCourse.Status.ACTIVE
+            }
+        )
+        
+        if created:
+            messages.success(request, f'Vous êtes maintenant inscrit au cours "{course.title}" !')
+        else:
+            messages.info(request, f'Vous êtes déjà inscrit au cours "{course.title}".')
+            
+        # Rediriger vers le learning dashboard intégré
+        return redirect('/learning/dashboard/')
+    
+    else:
+        # Pour les cours payants, rediriger vers une page de paiement (à implémenter)
+        messages.info(request, f'Cours payant: {course.price}€. Paiement à implémenter.')
+        return redirect('course:marketplace')

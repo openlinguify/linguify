@@ -6,7 +6,8 @@ from django.db.models import Q, Count, Avg
 from datetime import datetime, timedelta, time
 from typing import List, Dict, Any
 from .models import Teacher, PrivateLesson, TeacherAvailability, TeacherScheduleOverride
-from apps.learning.models import StudentCourse
+# Import updated to use course app models after learning app fusion  
+from apps.course.models import StudentCourse
 
 class BookingService:
     """Service for lesson booking logic."""
