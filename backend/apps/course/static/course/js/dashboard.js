@@ -375,34 +375,62 @@ function switchToMarketplace() {
 }
 
 function continueLesson(lessonId) {
-    console.log('Continue lesson:', lessonId);
-    // Implementation will be added when lesson pages are created
+    const id = parseInt(lessonId);
+    console.log('Continue lesson:', id);
+    if (id) {
+        window.location.href = `/learning/lesson/${id}/`;
+    }
 }
 
 function startCourse(courseId) {
-    console.log('Start course:', courseId);
-    // Implementation will be added when enrollment system is created
+    const id = parseInt(courseId);
+    console.log('Start course:', id);
+    if (id) {
+        enrollCourse(id);
+    }
 }
 
 function continueCourse(courseId) {
-    console.log('Continue course:', courseId);
-    // Implementation will be added when course pages are created
+    const id = parseInt(courseId);
+    console.log('Continue course:', id);
+    if (id) {
+        window.location.href = `/learning/course/${id}/`;
+    }
 }
 
 function enrollCourse(courseId) {
-    console.log('Enroll in course:', courseId);
-    // Implementation will be added when enrollment system is created
+    const id = parseInt(courseId);
+    console.log('Enrolling in course:', id);
+    if (id) {
+        // Redirection vers la page du cours pour inscription
+        window.location.href = `/learning/course/${id}/`;
+    }
 }
 
 function buyCourse(courseId) {
-    console.log('Buy course:', courseId);
-    // Implementation will be added when payment system is integrated
+    const id = parseInt(courseId);
+    console.log('Buy course:', id);
+    if (id) {
+        window.location.href = `/learning/course/${id}/buy/`;
+    }
 }
 
 function filterByLanguage(language) {
     switchToMarketplace();
     setTimeout(() => {
         console.log('Filter by language:', language);
-        // Implementation will be added when marketplace filters are enhanced
+        // À implémenter - filtres marketplace
     }, 100);
 }
+
+function filterByType(type) {
+    console.log('Filter by type:', type);
+    // À implémenter - filtrer par type de cours
+}
+
+// Initialize dashboard data when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.dashboardData) {
+        console.log('Dashboard data loaded:', window.dashboardData);
+    }
+});

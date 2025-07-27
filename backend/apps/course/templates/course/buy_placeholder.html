@@ -1,0 +1,30 @@
+{% extends "saas_web/base.html" %}
+{% load static %}
+
+{% block page_title %}Acheter le cours {{ course_id }} - Linguify{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="fas fa-shopping-cart fa-3x text-warning mb-3"></i>
+                    <h2>Acheter le cours {{ course_id }}</h2>
+                    <p class="lead">{{ message }}</p>
+                    <p class="text-muted">Cette page intégrera le système de paiement et d'achat de cours.</p>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'course:dashboard' %}" class="btn btn-secondary me-2">
+                            <i class="fas fa-arrow-left me-2"></i>Retour au dashboard
+                        </a>
+                        <button class="btn btn-warning" disabled>
+                            <i class="fas fa-credit-card me-2"></i>Paiement (À venir)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

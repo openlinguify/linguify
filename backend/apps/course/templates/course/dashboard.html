@@ -6,29 +6,6 @@
 {% block extra_css %}
 <link href="{% static 'course/css/dashboard.css' %}" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
-<style>
-/* Fix pour l'affichage des onglets */
-.tab-content {
-    display: block !important;
-    visibility: visible !important;
-    min-height: 400px;
-}
-
-.tab-pane {
-    display: none;
-}
-
-.tab-pane.active {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-.tab-pane.show.active {
-    display: block !important;
-}
-</style>
 {% endblock %}
 
 {% block content %}
@@ -116,7 +93,7 @@
                     <div class="row">
                         {% for item in continue_learning %}
                         <div class="col-md-6 col-lg-4 mb-3">
-                            <div class="continue-card" onclick="continueLesson({{ item.lesson_id }})">
+                            <div class="continue-card" data-lesson-id="{{ item.lesson_id }}" onclick="continueLesson(this.dataset.lessonId)">
                                 <div class="continue-header">
                                     <img src="{% static 'course/images/default-course.jpg' %}" 
                                          alt="{{ item.course_title }}" class="course-thumb">
@@ -188,12 +165,12 @@
                                     <div class="course-actions">
                                         {% if course.status == 'not-started' %}
                                         <button class="btn btn-primary btn-sm w-100" 
-                                                onclick="startCourse({{ course.id }})">
+                                                data-course-id="{{ course.id }}" onclick="startCourse(this.dataset.courseId)">
                                             <i class="fas fa-play me-1"></i>Commencer
                                         </button>
                                         {% else %}
                                         <button class="btn btn-outline-primary btn-sm w-100" 
-                                                onclick="continueCourse({{ course.id }})">
+                                                data-course-id="{{ course.id }}" onclick="continueCourse(this.dataset.courseId)">
                                             <i class="fas fa-arrow-right me-1"></i>Continuer
                                         </button>
                                         {% endif %}
@@ -314,12 +291,12 @@
                                                 </button>
                                                 {% elif course.is_free %}
                                                 <button class="btn btn-primary btn-sm" 
-                                                        onclick="enrollCourse({{ course.id }})">
+                                                        data-course-id="{{ course.id }}" onclick="enrollCourse(this.dataset.courseId)">
                                                     <i class="fas fa-play me-1"></i>S'inscrire
                                                 </button>
                                                 {% else %}
                                                 <button class="btn btn-outline-primary btn-sm" 
-                                                        onclick="buyCourse({{ course.id }})">
+                                                        data-course-id="{{ course.id }}" onclick="buyCourse(this.dataset.courseId)">
                                                     <i class="fas fa-shopping-cart me-1"></i>Acheter
                                                 </button>
                                                 {% endif %}
@@ -384,55 +361,15 @@
 {% block extra_js %}
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'course/js/dashboard.js' %}"></script>
 <script>
 // Passer les données Django au JavaScript
 window.dashboardData = {
-    userStats: {{ user_stats_json|safe }},
-    marketplaceStats: {{ marketplace_stats_json|safe }},
-    marketplaceCourses: {{ marketplace_courses_json|safe }},
-    myCourses: {{ my_courses_json|safe }},
-    continueLearning: {{ continue_learning_json|safe }}
+    userStats: {{ user_stats_json|safe|default:'{}' }},
+    marketplaceStats: {{ marketplace_stats_json|safe|default:'{}' }},
+    marketplaceCourses: {{ marketplace_courses_json|safe|default:'[]' }},
+    myCourses: {{ my_courses_json|safe|default:'[]' }},
+    continueLearning: {{ continue_learning_json|safe|default:'[]' }}
 };
-
-// Fonctions globales
-function switchToMarketplace() {
-    const marketplaceTab = document.getElementById('marketplace-tab');
-    marketplaceTab.click();
-}
-
-function continueLesson(lessonId) {
-    window.location.href = `/learning/lesson/${lessonId}/`;
-}
-
-function startCourse(courseId) {
-    enrollCourse(courseId);
-}
-
-function continueCourse(courseId) {
-    window.location.href = `/learning/course/${courseId}/`;
-}
-
-function enrollCourse(courseId) {
-    console.log('Enrolling in course:', courseId);
-    // À implémenter
-}
-
-function buyCourse(courseId) {
-    window.location.href = `/learning/course/${courseId}/buy/`;
-}
-
-function filterByLanguage(language) {
-    switchToMarketplace();
-    setTimeout(() => {
-        console.log('Filter by language:', language);
-        // À implémenter
-    }, 100);
-}
-
-// Initialiser le dashboard
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Dashboard data loaded:', window.dashboardData);
-});
 </script>
+<script src="{% static 'course/js/dashboard.js' %}"></script>
 {% endblock %}

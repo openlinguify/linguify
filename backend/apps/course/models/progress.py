@@ -200,7 +200,7 @@ class LessonProgress(models.Model):
     status = models.CharField(max_length=20, default='not_started')
     progress_percentage = models.PositiveIntegerField(default=0)
     attempts = models.PositiveIntegerField(default=0)
-    best_score = models.PositiveIntegerField(blank=True, null=True)
+    best_score = models.PositiveIntegerField(default=0)
     xp_earned = models.PositiveIntegerField(default=0)
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(blank=True, null=True)
@@ -243,12 +243,13 @@ class LessonProgress(models.Model):
                 unit_progress.update_progress()
                 
                 # Mettre à jour la progression du chapitre si applicable
-                if self.lesson.chapter:
-                    chapter_progress, created = ChapterProgress.objects.get_or_create(
-                        user=self.user,
-                        chapter=self.lesson.chapter
-                    )
-                    chapter_progress.update_progress()
+                # Temporairement désactivé pour éviter les erreurs de migration
+                # if self.lesson.chapter:
+                #     chapter_progress, created = ChapterProgress.objects.get_or_create(
+                #         user=self.user,
+                #         chapter=self.lesson.chapter
+                #     )
+                #     chapter_progress.update_progress()
                     
             except UnitProgress.DoesNotExist:
                 # Créer la progression de l'unité si elle n'existe pas
@@ -264,6 +265,6 @@ class LessonProgress(models.Model):
         
     def update_score(self, score):
         """Met à jour le meilleur score"""
-        if self.best_score is None or score > self.best_score:
+        if score > self.best_score:
             self.best_score = score
             self.save()

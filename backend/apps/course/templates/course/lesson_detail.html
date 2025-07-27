@@ -1,0 +1,478 @@
+{% extends "saas_web/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ lesson.title }} - {{ lesson.unit.title }} - Linguify{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'course/css/dashboard.css' %}">
+<style>
+    .lesson-header {
+        background: var(--linguify-gradient);
+        color: white;
+        padding: 2rem 0;
+    }
+    
+    .lesson-progress-bar {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        height: 8px;
+        overflow: hidden;
+    }
+    
+    .lesson-progress-fill {
+        background: var(--linguify-accent);
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+    
+    .lesson-content {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        margin-top: -1rem;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .lesson-navigation {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        position: sticky;
+        top: calc(var(--header-height, 64px) + 1rem);
+        z-index: 100;
+    }
+    
+    .content-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .content-section.interactive {
+        background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+        border-left: 4px solid var(--linguify-primary);
+    }
+    
+    .content-section.exercise {
+        background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e8 100%);
+        border-left: 4px solid var(--linguify-accent);
+    }
+    
+    .lesson-objectives {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .objective-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+    }
+    
+    .objective-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--linguify-accent);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 0.8rem;
+    }
+    
+    .lesson-sidebar {
+        position: sticky;
+        top: calc(var(--header-height, 64px) + 1rem);
+    }
+    
+    .progress-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+    
+    .complete-btn {
+        background: var(--linguify-gradient);
+        border: none;
+        border-radius: 50px;
+        color: white;
+        font-weight: 600;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .complete-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(45, 91, 186, 0.3);
+        color: white;
+    }
+    
+    .complete-btn:disabled {
+        background: #6c757d;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .nav-btn {
+        background: var(--linguify-primary);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-btn:hover {
+        background: var(--linguify-secondary);
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .nav-btn:disabled {
+        background: #6c757d;
+        transform: none;
+    }
+    
+    .lesson-info {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .access-denied {
+        text-align: center;
+        padding: 3rem;
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        border-radius: 16px;
+        margin: 2rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Lesson Header -->
+<div class="lesson-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'course:dashboard' %}" class="text-white-50">Dashboard</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'course:course_detail' course_id=lesson.unit.id %}" class="text-white-50">
+                                {{ lesson.unit.title }}
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">{{ lesson.title }}</li>
+                    </ol>
+                </nav>
+                
+                <h1 class="display-5 fw-bold mb-2">{{ lesson.title }}</h1>
+                <p class="lead mb-3">{{ lesson.description|default:"Approfondissez vos connaissances avec cette leçon interactive." }}</p>
+                
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span><i class="fas fa-clock me-2"></i>{{ lesson.estimated_duration }} minutes</span>
+                    <span><i class="fas fa-layer-group me-2"></i>{{ lesson.get_lesson_type_display }}</span>
+                    <span><i class="fas fa-list-ol me-2"></i>Leçon {{ current_position }}/{{ total_lessons }}</span>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                {% if is_enrolled and lesson_progress %}
+                <div class="text-center">
+                    <h4 class="mb-2">Progression</h4>
+                    <div class="lesson-progress-bar mb-2">
+                        <div class="lesson-progress-fill" style="width: {{ lesson_progress.progress_percentage }}%;"></div>
+                    </div>
+                    <span class="fw-bold">{{ lesson_progress.progress_percentage }}%</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container">
+    {% if can_access %}
+    <!-- Lesson Navigation -->
+    <div class="lesson-navigation">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                {% if previous_lesson %}
+                <a href="{% url 'course:lesson_detail' lesson_id=previous_lesson.id %}" class="nav-btn btn">
+                    <i class="fas fa-chevron-left me-2"></i>Précédent
+                </a>
+                {% else %}
+                <button class="nav-btn btn" disabled>
+                    <i class="fas fa-chevron-left me-2"></i>Précédent
+                </button>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-4 text-center">
+                <strong>{{ current_position }} / {{ total_lessons }}</strong>
+            </div>
+            
+            <div class="col-md-4 text-end">
+                {% if next_lesson %}
+                <a href="{% url 'course:lesson_detail' lesson_id=next_lesson.id %}" class="nav-btn btn">
+                    Suivant<i class="fas fa-chevron-right ms-2"></i>
+                </a>
+                {% else %}
+                <button class="nav-btn btn" disabled>
+                    Suivant<i class="fas fa-chevron-right ms-2"></i>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="lesson-content p-4">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Lesson Introduction -->
+                <div class="mb-4">
+                    <h3 class="fw-bold mb-3">{{ lesson_content.introduction }}</h3>
+                </div>
+
+                <!-- Lesson Objectives -->
+                <div class="lesson-objectives">
+                    <h4 class="fw-bold mb-3">
+                        <i class="fas fa-bullseye me-2 text-primary"></i>
+                        Objectifs de la leçon
+                    </h4>
+                    {% for objective in lesson_content.objectives %}
+                    <div class="objective-item">
+                        <div class="objective-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>{{ objective }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Lesson Content Sections -->
+                {% for section in lesson_content.content_sections %}
+                <div class="content-section {{ section.type }}">
+                    <h4 class="fw-bold mb-3">
+                        {% if section.type == 'interactive' %}
+                        <i class="fas fa-cogs me-2 text-primary"></i>
+                        {% elif section.type == 'exercise' %}
+                        <i class="fas fa-dumbbell me-2 text-success"></i>
+                        {% else %}
+                        <i class="fas fa-book-open me-2 text-info"></i>
+                        {% endif %}
+                        {{ section.title }}
+                    </h4>
+                    <p class="mb-0">{{ section.content }}</p>
+                    
+                    {% if section.type == 'interactive' %}
+                    <div class="mt-3 p-3 bg-white rounded">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Contenu interactif :</strong> Cette section contiendra bientôt des éléments interactifs comme des quiz, des exercices de glisser-déposer, et des simulations.
+                        </div>
+                    </div>
+                    {% elif section.type == 'exercise' %}
+                    <div class="mt-3 p-3 bg-white rounded">
+                        <div class="alert alert-success">
+                            <i class="fas fa-play-circle me-2"></i>
+                            <strong>Exercices pratiques :</strong> Des exercices interactifs et des évaluations seront intégrés ici pour tester vos connaissances.
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="col-lg-4">
+                <div class="lesson-sidebar">
+                    <!-- Progress Card -->
+                    <div class="progress-card">
+                        <h5 class="fw-bold mb-3">
+                            <i class="fas fa-chart-line me-2 text-primary"></i>
+                            Votre progression
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Cette leçon</span>
+                                <span class="fw-bold">{{ lesson_progress.progress_percentage }}%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {{ lesson_progress.progress_percentage }}%; background: var(--linguify-gradient);">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Cours complet</span>
+                                <span class="fw-bold">{{ unit_progress.progress_percentage }}%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {{ unit_progress.progress_percentage }}%; background: var(--linguify-secondary);">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if not lesson_progress.is_completed %}
+                        <form method="post" class="mt-3">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="complete">
+                            <button type="submit" class="complete-btn btn">
+                                <i class="fas fa-check-circle me-2"></i>Terminer la leçon
+                            </button>
+                        </form>
+                        {% else %}
+                        <div class="text-center">
+                            <i class="fas fa-check-circle fa-3x text-success mb-2"></i>
+                            <p class="text-success fw-bold mb-0">Leçon terminée !</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Lesson Info -->
+                    <div class="lesson-info">
+                        <h6 class="fw-bold mb-3">Informations</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Durée estimée</span>
+                            <span class="fw-bold">{{ lesson.estimated_duration }} min</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Type</span>
+                            <span class="fw-bold">{{ lesson.get_lesson_type_display }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Position</span>
+                            <span class="fw-bold">{{ current_position }}/{{ total_lessons }}</span>
+                        </div>
+                        {% if lesson_progress.attempts > 0 %}
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Tentatives</span>
+                            <span class="fw-bold">{{ lesson_progress.attempts }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- Access Denied -->
+    <div class="access-denied">
+        <i class="fas fa-lock fa-4x text-warning mb-3"></i>
+        <h3 class="fw-bold mb-3">Accès restreint</h3>
+        <p class="lead mb-4">
+            {% if not request.user.is_authenticated %}
+            Vous devez être connecté pour accéder à cette leçon.
+            {% elif not is_enrolled %}
+            Vous devez être inscrit au cours "{{ lesson.unit.title }}" pour accéder à cette leçon.
+            {% endif %}
+        </p>
+        
+        <div class="d-flex gap-2 justify-content-center">
+            {% if not request.user.is_authenticated %}
+            <a href="{% url 'auth:login' %}" class="btn btn-warning">
+                <i class="fas fa-sign-in-alt me-2"></i>Se connecter
+            </a>
+            {% elif not is_enrolled %}
+            <a href="{% url 'course:course_detail' course_id=lesson.unit.id %}" class="btn btn-primary">
+                <i class="fas fa-graduation-cap me-2"></i>S'inscrire au cours
+            </a>
+            {% endif %}
+            
+            <a href="{% url 'course:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Retour au dashboard
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Simulate lesson progress updates
+        {% if can_access and lesson_progress %}
+        const progressValue = {{ lesson_progress.progress_percentage }};
+        
+        // Animate progress bars
+        const progressBars = document.querySelectorAll('.progress-bar');
+        progressBars.forEach(bar => {
+            const targetWidth = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.transition = 'width 1s ease-in-out';
+                bar.style.width = targetWidth;
+            }, 500);
+        });
+        
+        // Auto-save progress every 30 seconds (if user is actively reading)
+        let lastActivity = Date.now();
+        let progressInterval;
+        
+        document.addEventListener('scroll', () => {
+            lastActivity = Date.now();
+        });
+        
+        document.addEventListener('click', () => {
+            lastActivity = Date.now();
+        });
+        
+        // Simulate reading progress
+        if (progressValue < 100) {
+            progressInterval = setInterval(() => {
+                if (Date.now() - lastActivity < 30000) { // Active in last 30 seconds
+                    const currentProgress = Math.min(progressValue + Math.floor(Math.random() * 5), 95);
+                    
+                    // Send progress update
+                    fetch(window.location.href, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        },
+                        body: `action=update_progress&progress=${currentProgress}`
+                    });
+                }
+            }, 30000);
+        }
+        {% endif %}
+        
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

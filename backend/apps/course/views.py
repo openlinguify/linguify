@@ -303,6 +303,184 @@ def demo_dashboard_view(request):
     return render(request, 'course/dashboard_modular.html', context)
 
 
+def lesson_detail_view(request, lesson_id):
+    """Vue pour afficher une leçon individuelle avec contenu et progression"""
+    from django.shortcuts import get_object_or_404
+    from .models.core import Lesson
+    from .models.progress import LessonProgress, UnitProgress
+    from django.contrib import messages
+    from django.utils import timezone
+    
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    
+    # Vérifier si l'utilisateur est connecté et inscrit au cours
+    is_enrolled = False
+    lesson_progress = None
+    unit_progress = None
+    
+    if request.user.is_authenticated:
+        try:
+            unit_progress = UnitProgress.objects.get(user=request.user, unit=lesson.unit)
+            is_enrolled = True
+            
+            # Obtenir ou créer la progression de la leçon
+            try:
+                lesson_progress = LessonProgress.objects.get(user=request.user, lesson=lesson)
+                created = False
+            except LessonProgress.DoesNotExist:
+                # Créer manuellement pour éviter le problème de NULL
+                lesson_progress = LessonProgress(
+                    user=request.user,
+                    lesson=lesson,
+                    status='in_progress',
+                    progress_percentage=0,
+                    best_score=0,
+                    attempts=0,
+                    xp_earned=0
+                )
+                lesson_progress.save()
+                created = True
+        except UnitProgress.DoesNotExist:
+            is_enrolled = False
+    
+    # Traitement de la complétion de la leçon
+    if request.method == 'POST' and is_enrolled and lesson_progress:
+        action = request.POST.get('action')
+        
+        if action == 'complete':
+            if not lesson_progress.is_completed:
+                lesson_progress.mark_completed()
+                messages.success(request, f'Félicitations ! Vous avez terminé la leçon "{lesson.title}"!')
+                
+                # Rediriger vers la prochaine leçon si disponible
+                next_lesson = unit_progress.get_next_lesson()
+                if next_lesson and next_lesson.id != lesson.id:
+                    return redirect('course:lesson_detail', lesson_id=next_lesson.id)
+                else:
+                    messages.info(request, 'Vous avez terminé toutes les leçons de ce cours !')
+                    return redirect('course:course_detail', course_id=lesson.unit.id)
+        
+        elif action == 'update_progress':
+            progress = int(request.POST.get('progress', 0))
+            lesson_progress.progress_percentage = min(100, max(0, progress))
+            lesson_progress.save()
+    
+    # Obtenir la leçon précédente et suivante
+    previous_lesson = lesson.unit.lessons.filter(order__lt=lesson.order).order_by('-order').first()
+    next_lesson = lesson.unit.lessons.filter(order__gt=lesson.order).order_by('order').first()
+    
+    # Calculer les statistiques du cours
+    total_lessons = lesson.unit.lessons.count()
+    current_position = lesson.order
+    
+    # Contenu de la leçon (simulé pour l'instant)
+    lesson_content = {
+        'introduction': f"Bienvenue dans la leçon \"{lesson.title}\".",
+        'objectives': [
+            "Comprendre les concepts clés",
+            "Mettre en pratique les nouvelles connaissances",
+            "Évaluer votre progression"
+        ],
+        'content_sections': [
+            {
+                'title': 'Introduction',
+                'content': f"Cette leçon vous permettra d'apprendre {lesson.get_lesson_type_display().lower()}.",
+                'type': 'text'
+            },
+            {
+                'title': 'Contenu principal',
+                'content': f"Voici le contenu principal de la leçon {lesson.title}. Cette section sera développée avec du contenu interactif.",
+                'type': 'interactive'
+            },
+            {
+                'title': 'Exercices pratiques',
+                'content': "Des exercices interactifs seront disponibles ici pour mettre en pratique ce que vous avez appris.",
+                'type': 'exercise'
+            }
+        ]
+    }
+    
+    context = {
+        'lesson': lesson,
+        'lesson_content': lesson_content,
+        'is_enrolled': is_enrolled,
+        'lesson_progress': lesson_progress,
+        'unit_progress': unit_progress,
+        'previous_lesson': previous_lesson,
+        'next_lesson': next_lesson,
+        'total_lessons': total_lessons,
+        'current_position': current_position,
+        'can_access': request.user.is_authenticated and is_enrolled,
+    }
+    
+    return render(request, 'course/lesson_detail.html', context)
+
+
+def course_detail_view(request, course_id):
+    """Vue pour afficher un cours individuel avec possibilité d'inscription"""
+    from django.shortcuts import get_object_or_404
+    from .models.core import Unit
+    from .models.progress import UnitProgress
+    from django.contrib import messages
+    from django.utils import timezone
+    
+    unit = get_object_or_404(Unit, id=course_id)
+    
+    # Vérifier si l'utilisateur est connecté et inscrit
+    is_enrolled = False
+    user_progress = None
+    
+    if request.user.is_authenticated:
+        try:
+            user_progress = UnitProgress.objects.get(user=request.user, unit=unit)
+            is_enrolled = True
+        except UnitProgress.DoesNotExist:
+            is_enrolled = False
+    
+    # Traitement de l'inscription
+    if request.method == 'POST' and request.user.is_authenticated and not is_enrolled:
+        # Créer la progression pour inscrire l'utilisateur
+        user_progress = UnitProgress.objects.create(
+            user=request.user,
+            unit=unit,
+            status='in_progress',
+            progress_percentage=0,
+            started_at=timezone.now()
+        )
+        is_enrolled = True
+        
+        # Message de succès
+        messages.success(request, f'Vous êtes maintenant inscrit au cours "{unit.title}"!')
+        
+        # Rediriger vers la première leçon si disponible
+        first_lesson = unit.lessons.order_by('order').first()
+        if first_lesson:
+            return redirect('course:lesson_detail', lesson_id=first_lesson.id)
+    
+    # Calculer les statistiques du cours
+    total_lessons = unit.lessons.count()
+    estimated_duration = unit.get_estimated_duration()
+    
+    context = {
+        'unit': unit,
+        'is_enrolled': is_enrolled,
+        'user_progress': user_progress,
+        'total_lessons': total_lessons,
+        'estimated_duration': estimated_duration,
+        'can_enroll': request.user.is_authenticated and not is_enrolled,
+    }
+    
+    return render(request, 'course/course_detail.html', context)
+
+
+def course_buy_view(request, course_id):
+    """Vue pour acheter un cours"""
+    return render(request, 'course/buy_placeholder.html', {
+        'course_id': course_id,
+        'message': f'Page d\'achat du cours {course_id} - À implémenter'
+    })
+
+
 @method_decorator(login_required, name='dispatch')
 class LearningSettingsView(View):
     """Handle learning settings for the user"""
