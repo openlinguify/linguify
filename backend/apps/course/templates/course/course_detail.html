@@ -184,7 +184,7 @@
                         </div>
                     </div>
                     
-                    {% if user_progress.progress_percentage > 0 %}
+                    {% if user_progress.progress_percentage > 0 and user_progress.get_next_lesson %}
                     <div class="d-flex gap-2 mt-3">
                         <a href="{% url 'course:lesson_detail' lesson_id=user_progress.get_next_lesson.id %}" 
                            class="btn btn-primary">

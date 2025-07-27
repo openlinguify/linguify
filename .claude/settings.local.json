@@ -173,7 +173,9 @@
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python -c \"\nimport django; django.setup()\nfrom django.contrib.auth.models import AnonymousUser\nfrom django.test import RequestFactory\nfrom rest_framework.test import APIRequestFactory\nfactory = APIRequestFactory()\nrequest = factory.get(''/test/'')\nprint(f''User: {request.user}'')\nprint(f''Is authenticated: {request.user.is_authenticated}'')\nprint(f''Type: {type(request.user)}'')\n\")",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings python3 manage.py shell)",
       "Bash(psql:*)",
-      "Bash(PGPASSWORD=\"louisloulou123 \" psql -h localhost -d db_linguify_dev -U \"postgres  \" -c \"ALTER TABLE course_lesson_progress ALTER COLUMN best_score SET DEFAULT 0;\")"
+      "Bash(PGPASSWORD=\"louisloulou123 \" psql -h localhost -d db_linguify_dev -U \"postgres  \" -c \"ALTER TABLE course_lesson_progress ALTER COLUMN best_score SET DEFAULT 0;\")",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ],
     "deny": []
   },

@@ -4,7 +4,7 @@ Synchronization services for CMS to Backend communication.
 import requests
 import logging
 from django.conf import settings
-from apps.course_builder.models import CMSUnit, CMSChapter, CMSLesson, CMSContentLesson
+from apps.contentstore.models import CMSUnit, CMSChapter, CMSLesson, CMSContentLesson
 from apps.teachers.models import Teacher
 
 logger = logging.getLogger(__name__)

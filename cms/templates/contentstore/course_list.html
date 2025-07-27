@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mes cours - Linguify CMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .course-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: none;
+        height: 100%;
+    }
+    .course-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    .course-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    .course-level {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+    }
+    .quick-action-card {
+        border: 2px dashed #dee2e6;
+        background: #f8f9fa;
+        transition: all 0.2s;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 200px;
+    }
+    .quick-action-card:hover {
+        border-color: #007bff;
+        background: #e7f3ff;
+    }
+    .sync-status {
+        font-size: 0.8rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Mes cours</h2>
+        <p class="text-muted mb-0">Gérez et créez vos cours en ligne</p>
+    </div>
+    <a href="{% url 'contentstore:course_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Nouveau cours
+    </a>
+</div>
+
+<!-- Statistics Row -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <h3 class="mb-1">{{ total_courses }}</h3>
+                <small>Total cours</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <h3 class="mb-1">{{ published_courses }}</h3>
+                <small>Publiés</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <h3 class="mb-1">{{ draft_courses }}</h3>
+                <small>Brouillons</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <h3 class="mb-1">{{ synced_courses }}</h3>
+                <small>Synchronisés</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Courses Grid -->
+{% if courses %}
+<div class="row">
+    {% for course in courses %}
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card course-card">
+            <div class="course-header">
+                <span class="badge course-level">{{ course.level }}</span>
+                <h5 class="text-center mb-0">{{ course.title|truncatechars:30 }}</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text text-muted small mb-3">
+                    {{ course.description|truncatechars:80|default:"Aucune description" }}
+                </p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <small class="text-muted d-block">Chapitres</small>
+                        <strong>{{ course.chapters.count }}</strong>
+                    </div>
+                    <div class="col-4">
+                        <small class="text-muted d-block">Leçons</small>
+                        <strong>{{ course.lessons.count }}</strong>
+                    </div>
+                    <div class="col-4">
+                        <small class="text-muted d-block">Prix</small>
+                        <strong>{{ course.price }}€</strong>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge bg-{% if course.is_published %}success{% else %}warning{% endif %}">
+                        {% if course.is_published %}Publié{% else %}Brouillon{% endif %}
+                    </span>
+                    <span class="badge bg-{% if course.sync_status == 'synced' %}success{% elif course.sync_status == 'pending' %}warning{% elif course.sync_status == 'failed' %}danger{% else %}secondary{% endif %} sync-status">
+                        {% if course.sync_status == 'synced' %}Synchronisé{% elif course.sync_status == 'pending' %}En attente{% elif course.sync_status == 'failed' %}Échec{% else %}Brouillon{% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-0">
+                <div class="btn-group w-100" role="group">
+                    <a href="{% url 'contentstore:course_studio' course.pk %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-tools"></i> Studio
+                    </a>
+                    <a href="{% url 'contentstore:course_detail' course.pk %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-eye"></i> Voir
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'contentstore:course_edit' course.pk %}">
+                                <i class="fas fa-edit me-2"></i>Modifier
+                            </a></li>
+                            {% if course.is_published and course.sync_status != 'synced' %}
+                            <li><button class="dropdown-item sync-course" data-course-id="{{ course.pk }}">
+                                <i class="fas fa-sync me-2"></i>Synchroniser
+                            </button></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button class="dropdown-item text-danger delete-course" data-course-id="{{ course.pk }}" data-course-name="{{ course.title }}">
+                                <i class="fas fa-trash me-2"></i>Supprimer
+                            </button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    
+    <!-- Quick Create Card -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card quick-action-card" onclick="window.location='{% url 'contentstore:course_create' %}'">
+            <div class="text-center">
+                <i class="fas fa-plus fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Créer un nouveau cours</h5>
+                <p class="text-muted small">Commencez à créer votre prochain cours</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<nav aria-label="Pagination des cours" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; Premier</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+            </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">
+                Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+            </span>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Dernier &raquo;</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<!-- Empty State -->
+<div class="text-center py-5">
+    <i class="fas fa-graduation-cap fa-4x text-muted mb-4"></i>
+    <h3 class="text-muted mb-3">Aucun cours créé</h3>
+    <p class="text-muted mb-4">Commencez votre aventure d'enseignant en créant votre premier cours.</p>
+    <a href="{% url 'contentstore:course_create' %}" class="btn btn-primary btn-lg">
+        <i class="fas fa-plus me-2"></i>Créer mon premier cours
+    </a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Sync course functionality
+document.querySelectorAll('.sync-course').forEach(button => {
+    button.addEventListener('click', function() {
+        const courseId = this.dataset.courseId;
+        const btn = this;
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Synchronisation...';
+        
+        fetch(`/api/sync/sync-unit/${courseId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Cours synchronisé avec succès!', 'success');
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showAlert('Erreur de synchronisation: ' + (data.errors?.join(', ') || 'Erreur inconnue'), 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Erreur réseau lors de la synchronisation', 'danger');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sync me-2"></i>Synchroniser';
+        });
+    });
+});
+
+// Delete course functionality
+document.querySelectorAll('.delete-course').forEach(button => {
+    button.addEventListener('click', function() {
+        const courseId = this.dataset.courseId;
+        const courseName = this.dataset.courseName;
+        
+        if (confirm(`Êtes-vous sûr de vouloir supprimer le cours "${courseName}" ? Cette action est irréversible.`)) {
+            fetch(`/contentstore/api/courses/${courseId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Cours supprimé avec succès!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('Erreur lors de la suppression: ' + data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Erreur réseau lors de la suppression', 'danger');
+            });
+        }
+    });
+});
+
+// Utility function for alerts
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

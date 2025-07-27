@@ -11,7 +11,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),  # Add authentication URLs
     path('', include('apps.core.urls')),
     path('teachers/', include('apps.teachers.urls')),
-    path('courses/', include('apps.course_builder.urls')),
+    path('courses/', include('apps.contentstore.urls')),  # Main course management
     path('monetization/', include('apps.monetization.urls')),
     path('scheduling/', include('apps.scheduling.urls')),
     path('api/sync/', include('apps.sync.urls')),

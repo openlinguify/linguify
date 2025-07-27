@@ -14,11 +14,11 @@
             
             {% if user.is_authenticated %}
             <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{% url 'core:dashboard' %}">Tableau de bord</a>
-                <a class="nav-link" href="{% url 'course_builder:course_list' %}">Mes cours</a>
-                <a class="nav-link" href="{% url 'monetization:dashboard' %}">Revenus</a>
-                <a class="nav-link" href="{% url 'scheduling:calendar' %}">Planning</a>
-                <a class="nav-link" href="{% url 'teachers:profile' %}">Profil</a>
+                <a class="nav-link" href="{% url 'contentstore:dashboard' %}">Tableau de bord</a>
+                <a class="nav-link" href="{% url 'contentstore:course_list' %}">Mes cours</a>
+                <a class="nav-link" href="#">Revenus</a>
+                <a class="nav-link" href="#">Planning</a>
+                <a class="nav-link" href="#">Profil</a>
                 <a class="nav-link" href="/admin/logout/">Déconnexion</a>
             </div>
             {% endif %}

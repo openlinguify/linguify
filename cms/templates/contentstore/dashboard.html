@@ -1,0 +1,346 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tableau de bord - Linguify CMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        transition: transform 0.2s;
+    }
+    .dashboard-card:hover {
+        transform: translateY(-2px);
+    }
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .stat-card-alt {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+    .stat-card-success {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+    .stat-card-warning {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        color: #333;
+    }
+    .recent-course {
+        border-left: 4px solid #007bff;
+        transition: all 0.2s;
+    }
+    .recent-course:hover {
+        border-left-color: #28a745;
+        background-color: #f8f9fa;
+    }
+    .quick-action {
+        border: 2px dashed #dee2e6;
+        background: #f8f9fa;
+        transition: all 0.2s;
+        cursor: pointer;
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: inherit;
+    }
+    .quick-action:hover {
+        border-color: #007bff;
+        background: #e7f3ff;
+        color: #007bff;
+        text-decoration: none;
+    }
+    .welcome-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h2 class="mb-2">Bienvenue, {{ teacher.user.get_full_name|default:teacher.user.username }} !</h2>
+            <p class="mb-0 opacity-75">Gérez vos cours et créez du contenu éducatif de qualité</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <i class="fas fa-chalkboard-teacher fa-4x opacity-50"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Row -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card dashboard-card stat-card">
+            <div class="card-body text-center">
+                <i class="fas fa-book fa-2x mb-2"></i>
+                <h3 class="mb-1">{{ stats.total_courses }}</h3>
+                <p class="mb-0 small opacity-75">Total des cours</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card dashboard-card stat-card-success">
+            <div class="card-body text-center">
+                <i class="fas fa-globe fa-2x mb-2"></i>
+                <h3 class="mb-1">{{ stats.published_courses }}</h3>
+                <p class="mb-0 small opacity-75">Cours publiés</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card dashboard-card stat-card-warning">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-2x mb-2"></i>
+                <h3 class="mb-1">{{ stats.draft_courses }}</h3>
+                <p class="mb-0 small">Brouillons</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card dashboard-card stat-card-alt">
+            <div class="card-body text-center">
+                <i class="fas fa-sync fa-2x mb-2"></i>
+                <h3 class="mb-1">{{ stats.synced_courses }}</h3>
+                <p class="mb-0 small opacity-75">Synchronisés</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Row -->
+<div class="row">
+    <!-- Recent Courses -->
+    <div class="col-lg-8 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-history text-primary me-2"></i>Cours récents
+                </h5>
+                <a href="{% url 'contentstore:course_list' %}" class="btn btn-outline-primary btn-sm">
+                    Voir tous
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_courses %}
+                    {% for course in recent_courses %}
+                    <div class="recent-course p-3 mb-3 rounded">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="mb-1">
+                                    <a href="{% url 'contentstore:course_studio' course.pk %}" class="text-decoration-none">
+                                        {{ course.title }}
+                                    </a>
+                                </h6>
+                                <p class="text-muted small mb-1">{{ course.description|truncatechars:60|default:"Aucune description" }}</p>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-info me-2">{{ course.level }}</span>
+                                    <span class="badge bg-{% if course.is_published %}success{% else %}warning{% endif %} me-2">
+                                        {% if course.is_published %}Publié{% else %}Brouillon{% endif %}
+                                    </span>
+                                    <small class="text-muted">Modifié {{ course.updated_at|timesince }}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Chapitres</small>
+                                        <strong>{{ course.chapters.count }}</strong>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Leçons</small>
+                                        <strong>{{ course.lessons.count }}</strong>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Prix</small>
+                                        <strong>{{ course.price }}€</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">Aucun cours créé</h6>
+                        <p class="text-muted">Commencez par créer votre premier cours</p>
+                        <a href="{% url 'contentstore:course_create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Créer un cours
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions & Stats -->
+    <div class="col-lg-4">
+        <!-- Quick Actions -->
+        <div class="card dashboard-card mb-4">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt text-warning me-2"></i>Actions rapides
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <a href="{% url 'contentstore:course_create' %}" class="quick-action rounded text-center">
+                            <div>
+                                <i class="fas fa-plus fa-2x mb-2"></i>
+                                <div class="small">Nouveau cours</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a href="{% url 'contentstore:course_list' %}" class="quick-action rounded text-center">
+                            <div>
+                                <i class="fas fa-list fa-2x mb-2"></i>
+                                <div class="small">Mes cours</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a href="#" class="quick-action rounded text-center">
+                            <div>
+                                <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                                <div class="small">Analytics</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a href="#" class="quick-action rounded text-center">
+                            <div>
+                                <i class="fas fa-cog fa-2x mb-2"></i>
+                                <div class="small">Paramètres</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Statistics -->
+        <div class="card dashboard-card">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie text-info me-2"></i>Statistiques de contenu
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <h4 class="text-primary">{{ stats.total_chapters }}</h4>
+                        <small class="text-muted">Chapitres totaux</small>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h4 class="text-success">{{ stats.total_lessons }}</h4>
+                        <small class="text-muted">Leçons totales</small>
+                    </div>
+                </div>
+                <hr>
+                
+                <!-- Sync Status -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <small class="text-muted">Statut de synchronisation</small>
+                        {% if stats.pending_sync > 0 %}
+                        <button class="btn btn-outline-info btn-sm" onclick="syncAllPending()">
+                            <i class="fas fa-sync"></i> Sync tous
+                        </button>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="progress mb-2" style="height: 8px;">
+                        {% widthratio stats.synced_courses stats.total_courses 100 as sync_percentage %}
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ sync_percentage }}%" 
+                             aria-valuenow="{{ sync_percentage }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                        </div>
+                    </div>
+                    <div class="row small text-muted">
+                        <div class="col-6">
+                            <i class="fas fa-check text-success me-1"></i>{{ stats.synced_courses }} synchronisés
+                        </div>
+                        <div class="col-6">
+                            <i class="fas fa-clock text-warning me-1"></i>{{ stats.pending_sync }} en attente
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teacher Status -->
+                <div class="text-center">
+                    <span class="badge bg-{% if teacher.is_active %}success{% else %}warning{% endif %} mb-2">
+                        <i class="fas fa-user-check me-1"></i>
+                        Statut: {% if teacher.is_active %}Actif{% else %}En attente{% endif %}
+                    </span>
+                    <div class="small text-muted">
+                        Membre depuis {{ teacher.created_at|date:"F Y" }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function syncAllPending() {
+    if (confirm('Synchroniser tous les cours en attente ?')) {
+        showAlert('Synchronisation en cours...', 'info');
+        
+        fetch('/api/sync/sync-all/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Synchronisation terminée!', 'success');
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showAlert('Erreurs lors de la synchronisation', 'warning');
+            }
+        })
+        .catch(error => {
+            showAlert('Erreur réseau lors de la synchronisation', 'danger');
+        });
+    }
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

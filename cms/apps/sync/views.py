@@ -3,7 +3,7 @@ from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from .services import SyncManager
-from apps.course_builder.models import CMSUnit
+from apps.contentstore.models import CMSUnit
 from apps.teachers.models import Teacher
 
 class SyncStatusView(LoginRequiredMixin, View):

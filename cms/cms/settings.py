@@ -28,7 +28,8 @@ DJANGO_APPS = [
 LOCAL_APPS = [
     'apps.core',
     'apps.teachers',
-    'apps.course_builder',
+    # 'apps.course_builder',  # Replaced completely by contentstore
+    'apps.contentstore',
     'apps.monetization',
     'apps.scheduling',
     'apps.sync',

@@ -5,7 +5,7 @@ from django.db import models
 from django.utils import timezone
 from apps.core.models import TimestampedModel
 from apps.teachers.models import Teacher
-from apps.course_builder.models import CMSUnit
+from apps.contentstore.models import CMSUnit
 
 class Sale(TimestampedModel):
     """Record of course sales."""
