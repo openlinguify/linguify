@@ -4,85 +4,304 @@
 {% block title %}Studio - {{ course.title }} - Linguify CMS{% endblock %}
 
 {% block extra_css %}
-<link href="{% static 'contentstore/css/studio.css' %}" rel="stylesheet">
 <style>
+    /* Studio Navigation Premium */
     .studio-nav {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
+        background: rgba(45, 91, 186, 0.95);
+        backdrop-filter: blur(20px) saturate(180%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         padding: 1rem 0;
+        box-shadow: var(--shadow-primary);
+        margin-bottom: 2rem;
     }
+    
     .studio-nav .nav-link {
-        color: #495057;
-        font-weight: 500;
-    }
-    .studio-nav .nav-link.active {
-        color: #007bff;
-        border-bottom: 2px solid #007bff;
-    }
-    .content-outline {
-        border: 1px solid #dee2e6;
-        border-radius: 0.375rem;
-        background: white;
-    }
-    .outline-item {
-        border-bottom: 1px solid #f1f3f4;
-        padding: 1rem;
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-weight: 600;
+        margin: 0 0.3rem;
+        border-radius: 12px;
+        padding: 0.7rem 1.2rem !important;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
+        overflow: hidden;
+        border: none;
     }
+    
+    .studio-nav .nav-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .studio-nav .nav-link:hover {
+        color: white !important;
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+    }
+    
+    .studio-nav .nav-link:hover::before {
+        left: 100%;
+    }
+    
+    .studio-nav .nav-link.active {
+        color: white !important;
+        background: var(--aurora-gradient);
+        box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
+    }
+    
+    /* Course Header Premium */
+    .course-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px) saturate(180%);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .course-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--linguify-primary-dark);
+        margin-bottom: 1rem;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    /* Content Outline Premium */
+    .content-outline {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px) saturate(180%);
+        border: none;
+        border-radius: 20px;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+    
+    .content-outline .card-header {
+        background: var(--aurora-gradient);
+        color: white;
+        padding: 1.5rem 2rem;
+        border: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    
+    .outline-item {
+        border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+        padding: 1.5rem 2rem;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
     .outline-item:last-child {
         border-bottom: none;
     }
+    
     .outline-item:hover {
-        background-color: #f8f9fa;
+        background: linear-gradient(135deg, rgba(45, 91, 186, 0.05), rgba(0, 212, 170, 0.05));
+        transform: translateX(5px);
     }
+    
     .outline-actions {
         position: absolute;
-        right: 1rem;
+        right: 2rem;
         top: 50%;
         transform: translateY(-50%);
         opacity: 0;
-        transition: opacity 0.2s;
+        transition: all 0.3s ease;
     }
+    
     .outline-item:hover .outline-actions {
         opacity: 1;
     }
-    .asset-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1rem;
+    
+    .outline-actions .btn {
+        border-radius: 8px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
     }
-    .asset-card {
-        border: 1px solid #dee2e6;
-        border-radius: 0.375rem;
-        padding: 1rem;
-        text-align: center;
-        background: white;
-        transition: box-shadow 0.2s;
-    }
-    .asset-card:hover {
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    }
-    .asset-preview {
-        width: 100%;
-        height: 120px;
-        object-fit: cover;
-        border-radius: 0.25rem;
-        margin-bottom: 0.5rem;
-    }
-    .settings-section {
-        background: white;
-        border: 1px solid #dee2e6;
-        border-radius: 0.375rem;
+    
+    /* Statistics Cards Premium */
+    .stats-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px) saturate(180%);
+        border: none;
+        border-radius: 20px;
+        box-shadow: var(--shadow-lg);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
         margin-bottom: 1.5rem;
     }
+    
+    .stats-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .stats-card .card-header {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 1.5rem;
+        font-weight: 700;
+    }
+    
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    /* Asset Grid Premium */
+    .asset-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .asset-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px) saturate(180%);
+        border: none;
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: var(--shadow-md);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .asset-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--aurora-gradient);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .asset-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .asset-card:hover::before {
+        opacity: 1;
+    }
+    
+    .asset-preview {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+    
+    /* Settings Sections Premium */
+    .settings-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px) saturate(180%);
+        border: none;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+    
     .settings-header {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-bottom: 1px solid #dee2e6;
+        background: var(--aurora-gradient);
+        color: white;
+        padding: 1.5rem 2rem;
+        border: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    
+    .settings-body {
+        padding: 2rem;
+    }
+    
+    /* Tab Content Styling */
+    .tab-content {
+        margin-top: 2rem;
+    }
+    
+    .tab-pane {
+        min-height: 400px;
+    }
+    
+    /* Premium Badges */
+    .badge {
+        font-size: 0.8rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
         font-weight: 600;
     }
-    .settings-body {
-        padding: 1.5rem;
+    
+    .badge.bg-info {
+        background: var(--linguify-info) !important;
+    }
+    
+    .badge.bg-success {
+        background: var(--linguify-success) !important;
+    }
+    
+    .badge.bg-warning {
+        background: var(--linguify-warning) !important;
+    }
+    
+    .badge.bg-secondary {
+        background: var(--linguify-gray) !important;
+    }
+    
+    /* Action Buttons Premium */
+    .action-buttons .btn {
+        border-radius: 12px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        margin: 0 0.25rem;
+        transition: all 0.3s ease;
+    }
+    
+    .action-buttons .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Content Add Buttons */
+    .content-add-section {
+        background: rgba(248, 250, 252, 0.8);
+        border-top: 1px solid rgba(226, 232, 240, 0.5);
+        padding: 1.5rem 2rem;
+    }
+    
+    .content-add-section .btn {
+        border-radius: 10px;
+        padding: 0.7rem 1.3rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .content-add-section .btn:hover {
+        transform: translateY(-2px);
     }
 </style>
 {% endblock %}
@@ -118,34 +337,36 @@
 
 <!-- Course Header -->
 <div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-1">{{ course.title }}</h1>
-            <div class="text-muted">
-                <span class="badge bg-info me-2">{{ course.level }}</span>
-                <span class="badge bg-{% if course.sync_status == 'synced' %}success{% elif course.sync_status == 'pending' %}warning{% elif course.sync_status == 'failed' %}danger{% else %}secondary{% endif %}">
-                    {{ course.sync_status|title }}
-                </span>
-                {% if course.is_published %}
-                    <span class="badge bg-success ms-2">Publié</span>
-                {% else %}
-                    <span class="badge bg-warning ms-2">Brouillon</span>
-                {% endif %}
+    <div class="course-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="course-title">{{ course.title }}</h1>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-info">{{ course.level }}</span>
+                    <span class="badge bg-{% if course.sync_status == 'synced' %}success{% elif course.sync_status == 'pending' %}warning{% elif course.sync_status == 'failed' %}danger{% else %}secondary{% endif %}">
+                        {{ course.sync_status|title }}
+                    </span>
+                    {% if course.is_published %}
+                        <span class="badge bg-success">Publié</span>
+                    {% else %}
+                        <span class="badge bg-warning">Brouillon</span>
+                    {% endif %}
+                </div>
             </div>
-        </div>
-        <div>
-            <button class="btn btn-outline-secondary me-2" onclick="previewCourse()">
-                <i class="fas fa-eye"></i> Aperçu
-            </button>
-            {% if course.is_published and course.sync_status != 'synced' %}
-            <button class="btn btn-info me-2" onclick="syncCourse({{ course.id }})">
-                <i class="fas fa-sync"></i> Synchroniser
-            </button>
-            {% endif %}
-            <button class="btn btn-primary" onclick="{% if course.is_published %}unpublishCourse{% else %}publishCourse{% endif %}({{ course.id }})">
-                <i class="fas fa-{% if course.is_published %}eye-slash{% else %}globe{% endif %}"></i>
-                {% if course.is_published %}Dépublier{% else %}Publier{% endif %}
-            </button>
+            <div class="action-buttons">
+                <button class="btn btn-outline-secondary" onclick="previewCourse()">
+                    <i class="fas fa-eye"></i> Aperçu
+                </button>
+                {% if course.is_published and course.sync_status != 'synced' %}
+                <button class="btn btn-info" onclick="syncCourse({{ course.id }})">
+                    <i class="fas fa-sync"></i> Synchroniser
+                </button>
+                {% endif %}
+                <button class="btn btn-primary" onclick="{% if course.is_published %}unpublishCourse{% else %}publishCourse{% endif %}({{ course.id }})">
+                    <i class="fas fa-{% if course.is_published %}eye-slash{% else %}globe{% endif %}"></i>
+                    {% if course.is_published %}Dépublier{% else %}Publier{% endif %}
+                </button>
+            </div>
         </div>
     </div>
 
@@ -156,8 +377,11 @@
             <div class="row">
                 <div class="col-md-9">
                     <div class="content-outline">
-                        <div class="p-3 bg-light border-bottom">
-                            <h5 class="mb-0">Structure du cours</h5>
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-sitemap me-2"></i>
+                                Structure du cours
+                            </h5>
                         </div>
                         
                         <!-- Course Outline -->
@@ -229,7 +453,7 @@
                         </div>
                         
                         <!-- Add Content Buttons -->
-                        <div class="p-3 border-top">
+                        <div class="content-add-section">
                             <button class="btn btn-outline-primary me-2" onclick="addChapter()">
                                 <i class="fas fa-plus"></i> Ajouter un chapitre
                             </button>
@@ -242,51 +466,78 @@
                 
                 <div class="col-md-3">
                     <!-- Course Statistics -->
-                    <div class="card">
+                    <div class="stats-card">
                         <div class="card-header">
-                            <h6 class="mb-0">Statistiques</h6>
+                            <h6 class="mb-0">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Statistiques
+                            </h6>
                         </div>
                         <div class="card-body">
                             <div class="row text-center">
                                 <div class="col-6">
-                                    <h4 class="text-primary">{{ course.chapters.count }}</h4>
-                                    <small class="text-muted">Chapitres</small>
+                                    <div class="stats-number">{{ course.chapters.count }}</div>
+                                    <small class="text-muted fw-600">Chapitres</small>
                                 </div>
                                 <div class="col-6">
-                                    <h4 class="text-success">{{ course.lessons.count }}</h4>
-                                    <small class="text-muted">Leçons</small>
+                                    <div class="stats-number">{{ course.lessons.count }}</div>
+                                    <small class="text-muted fw-600">Leçons</small>
                                 </div>
                             </div>
-                            <hr>
+                            <hr style="border-color: rgba(226, 232, 240, 0.5);">
                             <div class="text-center">
-                                <h4 class="text-info">
+                                <div class="stats-number">
                                     {% widthratio course.lessons.count 1 10 %}
-                                </h4>
-                                <small class="text-muted">Minutes estimées</small>
+                                </div>
+                                <small class="text-muted fw-600">Minutes estimées</small>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Recent Activity -->
-                    <div class="card mt-3">
+                    <div class="stats-card">
                         <div class="card-header">
-                            <h6 class="mb-0">Activité récente</h6>
+                            <h6 class="mb-0">
+                                <i class="fas fa-clock me-2"></i>
+                                Activité récente
+                            </h6>
                         </div>
                         <div class="card-body">
-                            <div class="small text-muted">
-                                <div class="mb-2">
-                                    <i class="fas fa-edit text-primary me-2"></i>
-                                    Cours modifié le {{ course.updated_at|date:"d/m/Y H:i" }}
+                            <div class="small">
+                                <div class="mb-3 d-flex align-items-center">
+                                    <div class="me-3">
+                                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-edit text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-600">Cours modifié</div>
+                                        <div class="text-muted">{{ course.updated_at|date:"d/m/Y H:i" }}</div>
+                                    </div>
                                 </div>
                                 {% if course.last_sync %}
-                                <div class="mb-2">
-                                    <i class="fas fa-sync text-info me-2"></i>
-                                    Dernière sync: {{ course.last_sync|date:"d/m/Y H:i" }}
+                                <div class="mb-3 d-flex align-items-center">
+                                    <div class="me-3">
+                                        <div class="rounded-circle bg-info d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-sync text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-600">Dernière sync</div>
+                                        <div class="text-muted">{{ course.last_sync|date:"d/m/Y H:i" }}</div>
+                                    </div>
                                 </div>
                                 {% endif %}
-                                <div>
-                                    <i class="fas fa-plus text-success me-2"></i>
-                                    Créé le {{ course.created_at|date:"d/m/Y" }}
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <div class="rounded-circle bg-success d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-plus text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-600">Créé le</div>
+                                        <div class="text-muted">{{ course.created_at|date:"d/m/Y" }}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

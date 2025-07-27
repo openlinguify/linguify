@@ -13,6 +13,8 @@ from django.core.paginator import Paginator
 from apps.teachers.models import Teacher
 from ..models import CMSUnit
 from ..models import CourseSettings
+from ..forms import CourseCreateForm
+from ..services.translation import translation_service
 
 
 class TeacherRequiredMixin(LoginRequiredMixin):
@@ -61,17 +63,47 @@ class CourseCreateView(TeacherRequiredMixin, CreateView):
     """
     model = CMSUnit
     template_name = 'contentstore/course_create.html'
-    fields = [
-        'title_en', 'title_fr', 'title_es', 'title_nl',
-        'description_en', 'description_fr', 'description_es', 'description_nl',
-        'category', 'level', 'tags', 'duration_hours', 'prerequisites',
-        'learning_objectives', 'price'
-    ]
+    form_class = CourseCreateForm
     
     def form_valid(self, form):
-        """Set teacher and create course settings."""
+        """Set teacher, generate translations, and create course settings."""
         form.instance.teacher = self.request.user.teacher_profile
         form.instance.order = CMSUnit.objects.filter(teacher=self.request.user.teacher_profile).count() + 1
+        
+        # Generate automatic translations if French content is provided
+        title_fr = form.cleaned_data.get('title_fr', '')
+        description_fr = form.cleaned_data.get('description_fr', '')
+        
+        if title_fr or description_fr:
+            try:
+                # Get translations from the translation service
+                translations = translation_service.translate_course_content(title_fr, description_fr)
+                
+                # Apply translations to the form instance
+                form.instance.title_en = translations['title_en'] or title_fr
+                form.instance.title_es = translations['title_es'] or title_fr
+                form.instance.title_nl = translations['title_nl'] or title_fr
+                form.instance.description_en = translations['description_en'] or description_fr
+                form.instance.description_es = translations['description_es'] or description_fr
+                form.instance.description_nl = translations['description_nl'] or description_fr
+                
+                messages.info(self.request, 'Traductions automatiques générées avec succès!')
+                
+            except Exception as e:
+                # Log the error but don't fail the course creation
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.warning(f"Translation failed for course creation: {e}")
+                
+                # Use fallback (French content for all languages)
+                form.instance.title_en = title_fr
+                form.instance.title_es = title_fr
+                form.instance.title_nl = title_fr
+                form.instance.description_en = description_fr
+                form.instance.description_es = description_fr
+                form.instance.description_nl = description_fr
+                
+                messages.warning(self.request, 'Traduction automatique non disponible. Le contenu français sera utilisé pour toutes les langues.')
         
         response = super().form_valid(form)
         

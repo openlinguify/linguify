@@ -7,7 +7,7 @@
 <style>
     .category-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 1rem;
         margin-top: 2rem;
     }
@@ -15,9 +15,15 @@
     .category-card {
         border: 2px solid #e9ecef;
         border-radius: 8px;
-        padding: 1.5rem;
+        padding: 1rem;
         cursor: pointer;
         transition: all 0.3s ease;
+        text-align: center;
+        min-height: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
     
     .category-card:hover {
@@ -31,9 +37,21 @@
         background-color: rgba(0, 123, 255, 0.05);
     }
     
-    .category-icon {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
+    .category-content {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+    
+    .category-emoji {
+        font-size: 1.5rem;
+        flex-shrink: 0;
     }
     
     .form-floating {
@@ -93,110 +111,30 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <!-- Onglets multilingues pour les titres -->
+                        <!-- Titre du cours avec traduction automatique -->
                         <div class="mb-4">
                             <label class="form-label fw-bold">Titre du cours <span class="text-danger">*</span></label>
-                            <ul class="nav nav-tabs multilingual-tabs" role="tablist">
-                                <li class="nav-item">
-                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#title-fr" type="button">
-                                        🇫🇷 Français
-                                    </button>
-                                </li>
-                                <li class="nav-item">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#title-en" type="button">
-                                        🇬🇧 English
-                                    </button>
-                                </li>
-                                <li class="nav-item">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#title-es" type="button">
-                                        🇪🇸 Español
-                                    </button>
-                                </li>
-                                <li class="nav-item">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#title-nl" type="button">
-                                        🇳🇱 Nederlands
-                                    </button>
-                                </li>
-                            </ul>
-                            <div class="tab-content multilingual-content">
-                                <div class="tab-pane fade show active" id="title-fr">
-                                    <div class="form-floating">
-                                        {{ form.title_fr }}
-                                        <label for="{{ form.title_fr.id_for_label }}">Titre en français</label>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="title-en">
-                                    <div class="form-floating">
-                                        {{ form.title_en }}
-                                        <label for="{{ form.title_en.id_for_label }}">Title in English</label>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="title-es">
-                                    <div class="form-floating">
-                                        {{ form.title_es }}
-                                        <label for="{{ form.title_es.id_for_label }}">Título en español</label>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="title-nl">
-                                    <div class="form-floating">
-                                        {{ form.title_nl }}
-                                        <label for="{{ form.title_nl.id_for_label }}">Titel in het Nederlands</label>
-                                    </div>
-                                </div>
+                            <div class="form-floating">
+                                {{ form.title_fr }}
+                                <label for="{{ form.title_fr.id_for_label }}">Titre de votre cours</label>
                             </div>
+                            <small class="text-muted">
+                                <i class="fas fa-language me-1"></i>
+                                Les traductions en anglais, espagnol et néerlandais seront générées automatiquement
+                            </small>
                         </div>
 
-                        <!-- Onglets multilingues pour les descriptions -->
+                        <!-- Description du cours avec traduction automatique -->
                         <div class="mb-4">
                             <label class="form-label fw-bold">Description du cours</label>
-                            <ul class="nav nav-tabs multilingual-tabs" role="tablist">
-                                <li class="nav-item">
-                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#desc-fr" type="button">
-                                        🇫🇷 Français
-                                    </button>
-                                </li>
-                                <li class="nav-item">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc-en" type="button">
-                                        🇬🇧 English
-                                    </button>
-                                </li>
-                                <li class="nav-item">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc-es" type="button">
-                                        🇪🇸 Español
-                                    </button>
-                                </li>
-                                <li class="nav-item">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc-nl" type="button">
-                                        🇳🇱 Nederlands
-                                    </button>
-                                </li>
-                            </ul>
-                            <div class="tab-content multilingual-content">
-                                <div class="tab-pane fade show active" id="desc-fr">
-                                    <div class="form-floating">
-                                        {{ form.description_fr }}
-                                        <label for="{{ form.description_fr.id_for_label }}">Description en français</label>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="desc-en">
-                                    <div class="form-floating">
-                                        {{ form.description_en }}
-                                        <label for="{{ form.description_en.id_for_label }}">Description in English</label>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="desc-es">
-                                    <div class="form-floating">
-                                        {{ form.description_es }}
-                                        <label for="{{ form.description_es.id_for_label }}">Descripción en español</label>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="desc-nl">
-                                    <div class="form-floating">
-                                        {{ form.description_nl }}
-                                        <label for="{{ form.description_nl.id_for_label }}">Beschrijving in het Nederlands</label>
-                                    </div>
-                                </div>
+                            <div class="form-floating">
+                                {{ form.description_fr }}
+                                <label for="{{ form.description_fr.id_for_label }}">Description de votre cours</label>
                             </div>
+                            <small class="text-muted">
+                                <i class="fas fa-language me-1"></i>
+                                Les traductions seront générées automatiquement lors de la sauvegarde
+                            </small>
                         </div>
 
                         <!-- Niveau -->
@@ -222,8 +160,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    {{ form.estimated_duration }}
-                                    <label for="{{ form.estimated_duration.id_for_label }}">Durée estimée (heures)</label>
+                                    {{ form.duration_hours }}
+                                    <label for="{{ form.duration_hours.id_for_label }}">Durée estimée (heures)</label>
                                 </div>
                             </div>
                         </div>
@@ -245,8 +183,10 @@
                         <div class="category-grid">
                             {% for value, label in form.category.field.choices %}
                             <div class="category-card" data-category="{{ value }}">
-                                <div class="category-icon">{{ label|slice:":3" }}</div>
-                                <div class="fw-bold">{{ label|slice:"4:" }}</div>
+                                <div class="category-content">
+                                    <span class="category-emoji">{{ label|slice:":2" }}</span>
+                                    <span>{{ label|slice:"3:" }}</span>
+                                </div>
                             </div>
                             {% endfor %}
                         </div>

@@ -149,3 +149,6 @@ BACKEND_API_TOKEN = 'your-backend-api-token-here'
 CMS_COMMISSION_RATE = 0.15  # 15% commission on course sales
 CMS_MIN_PAYOUT_AMOUNT = 50  # Minimum €50 for payout
 CMS_COURSE_APPROVAL_REQUIRED = True
+
+# Google Translate API configuration
+GOOGLE_TRANSLATE_API_KEY = os.environ.get('GOOGLE_TRANSLATE_API_KEY', None)
