@@ -7,61 +7,108 @@ User = get_user_model()
 
 class UserProgress(models.Model):
     """
-    Progression d'un utilisateur dans une unité de cours.
-    Suit l'inscription et l'avancement global dans un cours.
+    Progression globale d'un utilisateur sur la plateforme.
+    Suit les statistiques générales et la progression.
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='course_progress')
-    unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name='user_progress')
     
-    # Progression générale
-    enrollment_date = models.DateTimeField(auto_now_add=True)
-    completion_date = models.DateTimeField(blank=True, null=True)
-    is_completed = models.BooleanField(default=False)
-    progress_percentage = models.PositiveIntegerField(default=0)
-    
-    # Leçon actuelle
-    current_lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, 
-                                     blank=True, null=True, 
-                                     related_name='current_for_users')
-    
-    # Statistiques
-    total_time_spent = models.PositiveIntegerField(default=0)  # en minutes
-    lessons_completed = models.PositiveIntegerField(default=0)
-    last_activity = models.DateTimeField(auto_now=True)
+    # Statistiques générales - matching existing table structure
+    total_xp = models.PositiveIntegerField(default=0)
+    streak_days = models.PositiveIntegerField(default=0)
+    last_activity_date = models.DateField(auto_now=True)
+    current_level = models.CharField(max_length=10, default='A1')
+    total_study_time = models.PositiveIntegerField(default=0)  # en minutes
+    overall_progress = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Progression utilisateur"
         verbose_name_plural = "Progressions utilisateur"
         db_table = 'course_user_progress'
+
+    def __str__(self):
+        return f"{self.user.username} - {self.current_level} ({self.overall_progress}%)"
+
+    def add_xp(self, xp_points):
+        """Ajoute des points d'expérience"""
+        self.total_xp += xp_points
+        self.save()
+
+    def add_study_time(self, minutes):
+        """Ajoute du temps d'étude"""
+        self.total_study_time += minutes
+        self.save()
+
+    def update_streak(self):
+        """Met à jour la streak de jours consécutifs"""
+        from django.utils import timezone
+        today = timezone.now().date()
+        
+        if self.last_activity_date == today:
+            # Déjà étudié aujourd'hui
+            return
+        elif self.last_activity_date == today - timezone.timedelta(days=1):
+            # Étudié hier, continuer la streak
+            self.streak_days += 1
+        else:
+            # Streak cassée
+            self.streak_days = 1
+        
+        self.last_activity_date = today
+        self.save()
+
+
+class UnitProgress(models.Model):
+    """
+    Progression d'un utilisateur dans une unité de cours spécifique.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='unit_progress')
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name='user_progress')
+    
+    # Progression dans l'unité - matching existing table structure
+    status = models.CharField(max_length=20, default='not_started')
+    progress_percentage = models.PositiveIntegerField(default=0)
+    chapters_completed = models.PositiveIntegerField(default=0)
+    lessons_completed = models.PositiveIntegerField(default=0)
+    started_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(blank=True, null=True)
+    last_accessed = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Progression d'unité"
+        verbose_name_plural = "Progressions d'unités"
+        db_table = 'course_unit_progress'
         unique_together = ('user', 'unit')
-        indexes = [
-            models.Index(fields=['user', 'last_activity']),
-            models.Index(fields=['unit', 'is_completed']),
-        ]
 
     def __str__(self):
         return f"{self.user.username} - {self.unit.title} ({self.progress_percentage}%)"
 
+    @property 
+    def is_completed(self):
+        """Vérifie si l'unité est terminée"""
+        return self.status == 'completed' or self.completed_at is not None
+
     def update_progress(self):
         """Recalcule le pourcentage de progression basé sur les leçons terminées"""
-        total_lessons = self.unit.lessons.filter(is_published=True).count()
+        total_lessons = self.unit.lessons.count()
         if total_lessons == 0:
             self.progress_percentage = 0
         else:
             completed_lessons = LessonProgress.objects.filter(
                 user=self.user,
                 lesson__unit=self.unit,
-                is_completed=True
+                status='completed'
             ).count()
             self.progress_percentage = min(100, (completed_lessons * 100) // total_lessons)
             self.lessons_completed = completed_lessons
             
             # Marquer comme terminé si toutes les leçons sont finies
             if completed_lessons >= total_lessons:
-                self.is_completed = True
-                if not self.completion_date:
+                self.status = 'completed'
+                if not self.completed_at:
                     from django.utils import timezone
-                    self.completion_date = timezone.now()
+                    self.completed_at = timezone.now()
         
         self.save()
 
@@ -70,12 +117,10 @@ class UserProgress(models.Model):
         completed_lesson_ids = LessonProgress.objects.filter(
             user=self.user,
             lesson__unit=self.unit,
-            is_completed=True
+            status='completed'
         ).values_list('lesson_id', flat=True)
         
-        next_lesson = self.unit.lessons.filter(
-            is_published=True
-        ).exclude(
+        next_lesson = self.unit.lessons.exclude(
             id__in=completed_lesson_ids
         ).order_by('order').first()
         
@@ -84,7 +129,11 @@ class UserProgress(models.Model):
     @property
     def total_lessons(self):
         """Nombre total de leçons dans l'unité"""
-        return self.unit.lessons.filter(is_published=True).count()
+        return self.unit.lessons.count()
+        
+    def get_current_lesson(self):
+        """Retourne la leçon actuelle ou la prochaine"""
+        return self.get_next_lesson()
 
 
 class ChapterProgress(models.Model):
@@ -117,14 +166,14 @@ class ChapterProgress(models.Model):
 
     def update_progress(self):
         """Recalcule le pourcentage de progression du chapitre"""
-        total_lessons = self.chapter.lessons.filter(is_published=True).count()
+        total_lessons = self.chapter.lessons.count()
         if total_lessons == 0:
             self.progress_percentage = 0
         else:
             completed_lessons = LessonProgress.objects.filter(
                 user=self.user,
                 lesson__chapter=self.chapter,
-                is_completed=True
+                status='completed'
             ).count()
             self.progress_percentage = min(100, (completed_lessons * 100) // total_lessons)
             self.lessons_completed = completed_lessons
@@ -187,7 +236,7 @@ class LessonProgress(models.Model):
             
             # Mettre à jour la progression de l'unité
             try:
-                unit_progress = UserProgress.objects.get(
+                unit_progress = UnitProgress.objects.get(
                     user=self.user, 
                     unit=self.lesson.unit
                 )
@@ -201,9 +250,9 @@ class LessonProgress(models.Model):
                     )
                     chapter_progress.update_progress()
                     
-            except UserProgress.DoesNotExist:
+            except UnitProgress.DoesNotExist:
                 # Créer la progression de l'unité si elle n'existe pas
-                UserProgress.objects.create(
+                UnitProgress.objects.create(
                     user=self.user,
                     unit=self.lesson.unit
                 ).update_progress()

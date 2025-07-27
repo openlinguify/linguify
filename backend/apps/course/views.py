@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from .models.core import Unit
-from .models.progress import UserProgress, LessonProgress
+from .models.progress import UserProgress, UnitProgress, LessonProgress
 import json
 import logging
 
@@ -58,26 +58,31 @@ class CourseDashboardView(LoginRequiredMixin, TemplateView):
     
     def get_user_stats(self, user):
         """Statistiques de progression de l'utilisateur"""
-        total_progress = UserProgress.objects.filter(user=user)
+        # Obtenir ou créer la progression globale de l'utilisateur
+        user_progress, created = UserProgress.objects.get_or_create(user=user)
+        
+        # Compter les leçons terminées
         completed_lessons = LessonProgress.objects.filter(
             user=user, 
-            completed_at__isnull=False
+            status='completed'
         ).count()
+        
+        # Compter le total de leçons commencées
         total_lessons = LessonProgress.objects.filter(user=user).count()
         
         return {
-            'overall_progress': total_progress.filter(is_completed=True).count(),
+            'overall_progress': user_progress.overall_progress,
             'completed_lessons': completed_lessons,
             'total_lessons': total_lessons,
-            'streak_days': 0,  # À implémenter
-            'total_xp': 0,     # À implémenter
-            'level': 'A1',     # À implémenter
+            'streak_days': user_progress.streak_days,
+            'total_xp': user_progress.total_xp,
+            'level': user_progress.current_level,
             'study_time_today': 0,  # À implémenter
         }
     
     def get_marketplace_courses(self):
         """Cours disponibles sur le marketplace groupés par niveau"""
-        units = Unit.objects.filter(is_published=True, teacher_cms_id__isnull=False)
+        units = Unit.objects.filter(is_published=True, teacher_id__isnull=False)
         
         # Grouper par niveau
         levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
@@ -101,14 +106,14 @@ class CourseDashboardView(LoginRequiredMixin, TemplateView):
                     user = getattr(self.request, 'user', None)
                     is_enrolled = False
                     if user and user.is_authenticated:
-                        is_enrolled = UserProgress.objects.filter(
+                        is_enrolled = UnitProgress.objects.filter(
                             user=user, unit=unit
                         ).exists()
                     
                     course = {
                         'id': unit.id,
                         'title': unit.title,
-                        'instructor': unit.teacher_name,
+                        'instructor': unit.teacher_name or 'Équipe Linguify',
                         'description': unit.description,
                         'level': level,
                         'price': float(unit.price),
@@ -142,15 +147,15 @@ class CourseDashboardView(LoginRequiredMixin, TemplateView):
     
     def get_my_courses(self, user):
         """Cours auxquels l'utilisateur est inscrit"""
-        user_progress = UserProgress.objects.filter(user=user).select_related('unit')
+        unit_progress = UnitProgress.objects.filter(user=user).select_related('unit')
         
         my_courses = []
-        for progress in user_progress:
+        for progress in unit_progress:
             unit = progress.unit
             course = {
                 'id': unit.id,
                 'title': unit.title,
-                'instructor': unit.teacher_name,
+                'instructor': unit.teacher_name or 'Équipe Linguify',
                 'level': unit.level,
                 'progress': progress.progress_percentage,
                 'status': 'completed' if progress.is_completed else 'in-progress',
@@ -166,14 +171,14 @@ class CourseDashboardView(LoginRequiredMixin, TemplateView):
         # Trouver les cours en cours avec la prochaine leçon
         continue_items = []
         
-        in_progress = UserProgress.objects.filter(
+        in_progress = UnitProgress.objects.filter(
             user=user, 
-            is_completed=False
-        ).select_related('unit', 'current_lesson')
+            status__in=['not_started', 'in_progress']
+        ).select_related('unit')
         
         for progress in in_progress:
-            # Obtenir la prochaine leçon si pas définie
-            next_lesson = progress.current_lesson or progress.get_next_lesson()
+            # Obtenir la prochaine leçon
+            next_lesson = progress.get_next_lesson()
             
             if next_lesson:
                 item = {

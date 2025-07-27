@@ -31,10 +31,15 @@ class Unit(models.Model):
         default='A1'
     )
     order = models.IntegerField(default=1)
-    teacher_cms_id = models.IntegerField(blank=True, null=True)
+    cms_unit_id = models.IntegerField(blank=True, null=True)
+    teacher_id = models.IntegerField(blank=True, null=True)
+    teacher_name = models.CharField(max_length=100, blank=True, null=True)
     
     # Champs de gestion
     is_published = models.BooleanField(default=False)
+    is_free = models.BooleanField(default=True)
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    last_sync = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -66,28 +71,20 @@ class Unit(models.Model):
         return total_duration
 
     @property
-    def teacher_name(self):
+    def teacher_name_property(self):
         """Retourne le nom du professeur (à synchroniser avec l'app teaching)"""
-        # Pour l'instant, retourner un nom par défaut
-        # TODO: Lier avec l'app teaching quand elle sera prête
-        if self.teacher_cms_id:
+        # Utilise le champ teacher_name s'il existe, sinon un nom par défaut
+        if hasattr(self, 'teacher_name') and self.teacher_name:
+            return self.teacher_name
+        elif self.teacher_id:
             try:
                 from apps.teaching.models import Teacher
-                teacher = Teacher.objects.get(cms_teacher_id=self.teacher_cms_id)
+                teacher = Teacher.objects.get(id=self.teacher_id)
                 return teacher.full_name
             except (ImportError, Teacher.DoesNotExist):
                 return "Équipe Linguify"
         return "Équipe Linguify"
 
-    @property
-    def price(self):
-        """Prix du cours (pour l'instant gratuit, à implémenter)"""
-        return 0
-
-    @property
-    def is_free(self):
-        """Si le cours est gratuit"""
-        return True
 
 
 class Chapter(models.Model):
@@ -184,7 +181,6 @@ class Lesson(models.Model):
     order = models.IntegerField(default=1)
     
     # Champs de gestion
-    is_published = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
