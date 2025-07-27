@@ -13,7 +13,7 @@ from apps.authentication.views.interface_settings_views import InterfaceSettings
 from apps.chat.views.chat_settings_views import ChatSettingsView
 from apps.community.views.community_settings_views import CommunitySettingsView
 from apps.notification.views.notification_settings_views import NotificationSettingsView
-from apps.course.views.learning_settings_views import LearningSettingsView
+from apps.course.views import LearningSettingsView
 from apps.notebook.views.notebook_settings_views import NotebookSettingsView
 from apps.quizz.views.quizz_settings_views import QuizSettingsView
 from apps.revision.views.revision_settings_views import RevisionSettingsView

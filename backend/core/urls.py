@@ -82,7 +82,7 @@ urlpatterns = [
     path('documents/', include('apps.documents.urls', namespace='documents')),
     path('notebook/', include('apps.notebook.urls_web', namespace='notebook_web')),
     path('revision/', include('apps.revision.urls_web', namespace='revision_web')),
-    path('learning/', include('apps.course.urls_web', namespace='course')),
+    path('learning/', include('apps.course.urls', namespace='course')),
     path('quizz/', include('apps.quizz.urls_web', namespace='quizz_web')),
     path('language_ai/', include('apps.language_ai.urls_web', namespace='language_ai_web')),
     path('api/contact/', views.contact_view, name='contact'),
@@ -95,7 +95,7 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    path('api/v1/course/', include('apps.course.api.urls', namespace='course_api')),
+    # path('api/v1/course/', include('apps.course.api.urls', namespace='course_api')),  # TODO: Create course API URLs
     path('api/v1/quizz/', include('apps.quizz.urls', namespace='quizz')),
     
     # Compatibility redirect for old /course/ URL

@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
-# Part of Linguify. See LICENSE file for full copyright and licensing details.
 from django.urls import path
+from . import views
 
 app_name = 'course'
 
-# Ce fichier est conservé pour la compatibilité mais les URLs sont gérées par urls_web.py
-urlpatterns = []
+urlpatterns = [
+    path('', views.CourseDashboardView.as_view(), name='dashboard'),
+    path('redirect/', views.learning_redirect, name='learning_redirect'),
+]

@@ -11,7 +11,7 @@ from .utils import NotificationManager
 from .serializers import NotificationSerializer
 
 # Importations pour les signaux spécifiques
-from apps.course.models import Lesson, ContentLesson
+from apps.course.models.core import Lesson, ContentLesson
 
 User = get_user_model()
 
