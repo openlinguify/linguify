@@ -94,10 +94,10 @@ class Chapter(models.Model):
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name='chapters')
     
     # Champs multilingues pour titre
-    title_en = models.CharField(max_length=100, blank=True, null=True)
-    title_fr = models.CharField(max_length=100, blank=True, null=True)
-    title_es = models.CharField(max_length=100, blank=True, null=True)
-    title_nl = models.CharField(max_length=100, blank=True, null=True)
+    title_en = models.CharField(max_length=100, default='')
+    title_fr = models.CharField(max_length=100, default='')
+    title_es = models.CharField(max_length=100, default='')
+    title_nl = models.CharField(max_length=100, default='')
     
     # Champs multilingues pour description
     description_en = models.TextField(blank=True, null=True)
@@ -106,8 +106,9 @@ class Chapter(models.Model):
     description_nl = models.TextField(blank=True, null=True)
     
     # Métadonnées du chapitre
-    theme = models.CharField(max_length=50, blank=True, null=True)
+    theme = models.CharField(max_length=50, default='')
     order = models.IntegerField(default=1)
+    is_checkpoint_required = models.BooleanField(default=False)
     style = models.CharField(
         max_length=20,
         choices=[
@@ -118,10 +119,6 @@ class Chapter(models.Model):
         default='Open Linguify'
     )
     points_reward = models.IntegerField(default=100)
-    
-    # Champs de gestion
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Chapitre"
