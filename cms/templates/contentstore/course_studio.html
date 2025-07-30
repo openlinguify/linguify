@@ -307,6 +307,7 @@
 {% endblock %}
 
 {% block content %}
+{% csrf_token %}
 <!-- Studio Navigation -->
 <div class="studio-nav">
     <div class="container-fluid">
@@ -929,6 +930,45 @@ function debounce(func, wait) {
     };
 }
 
+// Course Publishing Functions
+function publishCourse(courseId) {
+    const btn = event.target;
+    const isCurrentlyPublished = btn.textContent.includes('Dépublier');
+    const action = isCurrentlyPublished ? 'unpublish' : 'publish';
+    
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${action === 'publish' ? 'Publication...' : 'Dépublication...'}`;
+    
+    fetch(`/contentstore/api/courses/${courseId}/publish/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: action })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(data.message, 'success');
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            showAlert('Erreur: ' + data.error, 'danger');
+        }
+    })
+    .catch(error => {
+        showAlert('Erreur réseau lors de la publication', 'danger');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fas fa-${isCurrentlyPublished ? 'globe' : 'eye-slash'}"></i> ${isCurrentlyPublished ? 'Publier' : 'Dépublier'}`;
+    });
+}
+
+function unpublishCourse(courseId) {
+    publishCourse(courseId);
+}
+
 // Placeholder functions for future implementation
 function addChapter() { showAlert('Fonction à implémenter: Ajouter un chapitre', 'info'); }
 function addLesson() { showAlert('Fonction à implémenter: Ajouter une leçon', 'info'); }
@@ -939,7 +979,5 @@ function deleteLesson(id) { showAlert(`Fonction à implémenter: Supprimer la le
 function editAsset(id) { showAlert(`Fonction à implémenter: Modifier l'asset ${id}`, 'info'); }
 function deleteAsset(id) { showAlert(`Fonction à implémenter: Supprimer l'asset ${id}`, 'info'); }
 function previewCourse() { showAlert('Fonction à implémenter: Aperçu du cours', 'info'); }
-function publishCourse(id) { showAlert(`Fonction à implémenter: Publier le cours ${id}`, 'info'); }
-function unpublishCourse(id) { showAlert(`Fonction à implémenter: Dépublier le cours ${id}`, 'info'); }
 </script>
 {% endblock %}

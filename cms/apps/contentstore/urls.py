@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/courses/', course.course_handler, name='courses_api'),
     path('api/courses/<int:course_id>/', course.course_handler, name='course_api'),
     path('api/courses/<int:course_id>/settings/', course.course_settings_handler, name='course_settings_api'),
+    path('api/courses/<int:course_id>/publish/', course.course_publish_handler, name='course_publish_api'),
     
     # Asset management endpoints
     path('api/courses/<int:course_id>/assets/', assets.assets_handler, name='assets_api'),

@@ -249,6 +249,80 @@ def course_handler(request, course_id=None):
             }, status=500)
 
 
+@require_http_methods(["POST"])
+@login_required
+@ensure_csrf_cookie
+def course_publish_handler(request, course_id):
+    """
+    Handler for publishing/unpublishing courses.
+    """
+    teacher = get_object_or_404(Teacher, user=request.user)
+    course = get_object_or_404(CMSUnit, pk=course_id, teacher=teacher)
+    
+    try:
+        data = json.loads(request.body)
+        action = data.get('action')  # 'publish' or 'unpublish'
+        
+        if action not in ['publish', 'unpublish']:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid action. Must be "publish" or "unpublish"'
+            }, status=400)
+        
+        if action == 'publish':
+            # For now, we'll allow publishing without content for testing
+            # Validate course has basic information
+            if course.price is None or course.price < 0:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Le cours doit avoir un prix valide pour être publié'
+                }, status=400)
+            
+            # Check if course has a description
+            if not course.description_fr:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Le cours doit avoir une description pour être publié'
+                }, status=400)
+            
+            course.is_published = True
+            course.sync_status = 'pending'  # Mark for sync to backend
+            success_message = f'Cours "{course.title}" publié avec succès!'
+            
+        else:  # unpublish
+            course.is_published = False
+            course.sync_status = 'pending'  # Mark for sync to backend
+            success_message = f'Cours "{course.title}" dépublié avec succès!'
+        
+        course.save()
+        
+        # Update course settings to reflect publication status
+        try:
+            course_settings = CourseSettings.objects.get(course_id=str(course.id))
+            course_settings.published = course.is_published
+            course_settings.save()
+        except CourseSettings.DoesNotExist:
+            pass
+        
+        return JsonResponse({
+            'success': True,
+            'message': success_message,
+            'is_published': course.is_published,
+            'sync_status': course.sync_status
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid JSON data'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
 @require_http_methods(["GET", "POST"])
 @login_required
 @ensure_csrf_cookie
