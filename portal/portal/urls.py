@@ -20,8 +20,8 @@ urlpatterns += i18n_patterns(
     path('', include('public_web.urls')),
     # Apps déplacées du backend
     path('blog/', include('blog.urls')),
-    path('jobs/', include('jobs.urls_web')),  # Web interface for jobs
-    path('careers/', include('jobs.urls_web')),  # Alternative URL for careers
+    path('jobs/', include('jobs.urls_web', namespace='jobs_web')),  # Web interface for jobs
+    path('careers/', include('jobs.urls_web')),  # Alternative URL for careers (no namespace)
     # Documentation intégrée
     path('docs/', include('docs.urls')),
     prefix_default_language=True,

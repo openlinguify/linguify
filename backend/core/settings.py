@@ -24,6 +24,20 @@ if not env('SECRET_KEY', default=None):
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
+# Security settings for production
+if not DEBUG:
+    # SSL/HTTPS Security
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    
+    # Cookie Security
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
 # Development authentication bypass for JWT issues
 BYPASS_AUTH_FOR_DEVELOPMENT = env.bool('BYPASS_AUTH_FOR_DEVELOPMENT', default=DEBUG)
 

@@ -13,9 +13,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
             'native_language', 'target_language', 'language_level',
-            'is_active', 'date_joined', 'last_login'
+            'is_active', 'created_at', 'last_login'
         ]
-        read_only_fields = ['id', 'date_joined', 'last_login']
+        read_only_fields = ['id', 'created_at', 'last_login']
 
 class UserCreateSerializer(serializers.ModelSerializer):
     """Serializer pour la création d'utilisateur"""
