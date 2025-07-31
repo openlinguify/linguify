@@ -148,6 +148,33 @@ class RevisionSettings(models.Model):
         help_text="Activer les raccourcis clavier"
     )
     
+    # Paramètres de statistiques de mots
+    show_word_stats = models.BooleanField(
+        default=True,
+        help_text="Afficher les statistiques de mots"
+    )
+    
+    stats_display_mode = models.CharField(
+        max_length=20,
+        choices=[
+            ('detailed', 'Détaillé'),
+            ('summary', 'Résumé'),
+            ('minimal', 'Minimal'),
+        ],
+        default='detailed',
+        help_text="Mode d'affichage des statistiques"
+    )
+    
+    hide_learned_words = models.BooleanField(
+        default=False,
+        help_text="Masquer les mots déjà appris dans les statistiques"
+    )
+    
+    group_by_deck = models.BooleanField(
+        default=False,
+        help_text="Grouper les statistiques par deck"
+    )
+    
     # Métadonnées
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)

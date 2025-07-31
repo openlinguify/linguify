@@ -39,6 +39,9 @@ class RevisionSettingsSerializer(serializers.ModelSerializer):
             # Interface
             'enable_animations', 'auto_play_audio', 'keyboard_shortcuts_enabled',
             
+            # Statistiques de mots
+            'show_word_stats', 'stats_display_mode', 'hide_learned_words', 'group_by_deck',
+            
             # Métadonnées
             'created_at', 'updated_at',
             

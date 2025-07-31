@@ -12,7 +12,7 @@ from .views import (
     VocabularyWordViewSet, 
     VocabularyListViewSet
     )
-from .settings_views import (
+from .revision_settings_views import (
     RevisionSettingsViewSet,
     RevisionSessionConfigViewSet
     )

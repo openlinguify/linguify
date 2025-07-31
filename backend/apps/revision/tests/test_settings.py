@@ -157,3 +157,20 @@ class RevisionSettingsAPITest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('total_cards', response.data)
         self.assertIn('cards_learned', response.data)
+
+    def test_word_stats_settings(self):
+        """Test des paramètres de statistiques de mots"""
+        url = '/api/v1/revision/settings/api/settings/1/'
+        data = {
+            'show_word_stats': False,
+            'stats_display_mode': 'summary',
+            'hide_learned_words': True,
+            'group_by_deck': True
+        }
+        response = self.client.patch(url, data)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['show_word_stats'], False)
+        self.assertEqual(response.data['stats_display_mode'], 'summary')
+        self.assertEqual(response.data['hide_learned_words'], True)
+        self.assertEqual(response.data['group_by_deck'], True)
