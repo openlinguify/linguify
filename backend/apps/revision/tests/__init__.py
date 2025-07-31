@@ -13,3 +13,4 @@ from .test_learning_settings import *
 from .test_learning_integration import *
 from .test_learning_edge_cases import *
 from .test_learning_viewsets import *
+from .test_settings import *

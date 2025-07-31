@@ -465,7 +465,9 @@ test-revision:
 	@echo ""
 	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_views_api --verbosity=2
 	@echo ""
-	@echo "✅ COMPLETE revision test suite finished!"
+	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings --verbosity=2
+	@echo ""
+	@echo "✅ Tests Revision App are finished!"
 
 test-system:
 	@echo "🧪 System tests (public_web)..."
@@ -547,4 +549,4 @@ validate:
 	@echo "📱 Applications..."
 	@make apps | head -5
 	@echo ""
-	@echo "✅ Validation complete"
+	@echo "Validation complete"

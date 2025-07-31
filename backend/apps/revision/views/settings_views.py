@@ -124,8 +124,7 @@ class RevisionSettingsViewSet(viewsets.ModelViewSet):
         """Retourne les statistiques de révision de l'utilisateur"""
         try:
             # Importer les modèles de révision pour les stats
-            from ..models import FlashcardDeck, Flashcard
-            from django.db.models import Q
+            from ..models.revision_flashcard import FlashcardDeck, Flashcard
             
             user = request.user
             now = timezone.now()
@@ -134,12 +133,12 @@ class RevisionSettingsViewSet(viewsets.ModelViewSet):
             total_decks = FlashcardDeck.objects.filter(user=user, is_active=True).count()
             total_cards = Flashcard.objects.filter(deck__user=user, deck__is_active=True).count()
             
-            # Cartes apprises (simulation - à adapter selon la logique métier)
+            # Cartes apprises (basé sur le champ learned s'il existe)
             cards_learned = Flashcard.objects.filter(
                 deck__user=user,
                 deck__is_active=True,
-                # Ajoutez ici la logique pour déterminer si une carte est "apprise"
-            ).count()
+                learned=True
+            ).count() if hasattr(Flashcard, 'learned') else 0
             
             # Cartes en cours
             cards_in_progress = total_cards - cards_learned
@@ -166,21 +165,18 @@ class RevisionSettingsViewSet(viewsets.ModelViewSet):
                 'success_rate': success_rate,
                 'last_study_date': last_study_date,
                 'cards_by_difficulty': {
-                    'easy': total_cards // 3,
-                    'normal': total_cards // 2,
-                    'hard': total_cards // 6,
+                    'easy': total_cards // 3 if total_cards > 0 else 0,
+                    'normal': total_cards // 2 if total_cards > 0 else 0,
+                    'hard': total_cards // 6 if total_cards > 0 else 0,
                 },
                 'performance_trend': [0.7, 0.75, 0.8, 0.85, 0.83, 0.87, 0.85],
                 'upcoming_reviews': 12,
             }
             
-            serializer = RevisionStatsSerializer(data=stats_data)
-            serializer.is_valid()
-            return Response(serializer.data)
+            return Response(stats_data)
             
-        except ImportError:
-            # Si les modèles de révision ne sont pas disponibles
-            logger.warning("Revision models not available for stats")
+        except ImportError as e:
+            logger.warning(f"Revision models not available for stats: {e}")
             return Response({
                 'error': 'Statistiques non disponibles'
             }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
