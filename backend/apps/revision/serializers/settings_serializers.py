@@ -2,7 +2,7 @@
 Serializers pour les paramètres de l'application Révision
 """
 from rest_framework import serializers
-from .models_settings import RevisionSettings, RevisionSessionConfig
+from ..models.settings_models import RevisionSettings, RevisionSessionConfig
 import logging
 
 logger = logging.getLogger(__name__)

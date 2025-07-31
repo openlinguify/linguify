@@ -3,7 +3,7 @@ URLs pour les paramètres de l'application Révision
 """
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views_settings import RevisionSettingsViewSet, RevisionSessionConfigViewSet
+from .views.settings_views import RevisionSettingsViewSet, RevisionSessionConfigViewSet
 
 # Router pour les API REST
 router = DefaultRouter()

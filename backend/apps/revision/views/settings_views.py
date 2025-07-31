@@ -10,8 +10,8 @@ from django.db.models import Count, Avg, Sum
 from datetime import timedelta
 import logging
 
-from .models_settings import RevisionSettings, RevisionSessionConfig
-from .serializers_settings import (
+from ..models.settings_models import RevisionSettings, RevisionSessionConfig
+from ..serializers.settings_serializers import (
     RevisionSettingsSerializer, 
     RevisionSessionConfigSerializer,
     ApplyPresetSerializer,
@@ -124,7 +124,7 @@ class RevisionSettingsViewSet(viewsets.ModelViewSet):
         """Retourne les statistiques de révision de l'utilisateur"""
         try:
             # Importer les modèles de révision pour les stats
-            from .models import FlashcardDeck, Flashcard
+            from ..models import FlashcardDeck, Flashcard
             from django.db.models import Q
             
             user = request.user

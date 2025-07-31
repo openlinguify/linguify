@@ -13,6 +13,12 @@ from .flashcard_serializers import (
     ApplyPresetSerializer,
 )
 from .revision_serializers import RevisionSessionSerializer, VocabularyWordSerializer, VocabularyListSerializer
+from .settings_serializers import (
+    RevisionSettingsSerializer,
+    RevisionSessionConfigSerializer,
+    ApplyPresetSerializer as SettingsApplyPresetSerializer,
+    RevisionStatsSerializer
+)
 
 __all__ = [
     'CreateRevisionListSerializer',
@@ -28,5 +34,9 @@ __all__ = [
     'BatchDeleteSerializer',
     'BatchArchiveSerializer',
     'DeckLearningSettingsSerializer',
-    'ApplyPresetSerializer'
+    'ApplyPresetSerializer',
+    'RevisionSettingsSerializer',
+    'RevisionSessionConfigSerializer',
+    'SettingsApplyPresetSerializer',
+    'RevisionStatsSerializer',
 ]

@@ -12,6 +12,10 @@ from .views import (
     VocabularyWordViewSet, 
     VocabularyListViewSet
     )
+from .settings_views import (
+    RevisionSettingsViewSet,
+    RevisionSessionConfigViewSet
+    )
 
 __all__ = [
     # ALL VIEWS for Revision
@@ -25,4 +29,7 @@ __all__ = [
     'RevisionSessionViewSet',
     'VocabularyWordViewSet',
     'VocabularyListViewSet',
+    # Settings Views
+    'RevisionSettingsViewSet',
+    'RevisionSessionConfigViewSet',
 ]

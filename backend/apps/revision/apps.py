@@ -13,7 +13,7 @@ class RevisionConfig(AppConfig):
         """Called when Django starts"""
         try:
             # Import settings models to register them
-            from . import models_settings
+            from .models import settings_models
             logger.info("Revision settings models loaded successfully")
             
             # Register signals if needed
