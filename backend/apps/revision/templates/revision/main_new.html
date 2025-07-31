@@ -37,19 +37,19 @@
     <!-- Centre: Statistiques compactes -->
     <div class="d-none d-lg-flex align-items-center gap-3">
         <div class="d-flex align-items-center gap-2 text-sm">
-            <span id="totalDecks" class="fw-semibold text-primary">0</span>
+            <span id="totalDecks" class="fw-semibold text-linguify-primary">0</span>
             <span class="text-muted">Decks</span>
         </div>
         <div class="d-flex align-items-center gap-2 text-sm">
-            <span id="totalCards" class="fw-semibold text-primary">0</span>
+            <span id="totalCards" class="fw-semibold text-linguify-primary">0</span>
             <span class="text-muted">Cartes</span>
         </div>
         <div class="d-flex align-items-center gap-2 text-sm">
-            <span id="totalLearned" class="fw-semibold text-success">0</span>
+            <span id="totalLearned" class="fw-semibold text-linguify-success">0</span>
             <span class="text-muted">Apprises</span>
         </div>
         <div class="d-flex align-items-center gap-2 text-sm">
-            <span id="completionRate" class="fw-semibold text-warning">0%</span>
+            <span id="completionRate" class="fw-semibold text-linguify-warning">0%</span>
             <span class="text-muted">Progression</span>
         </div>
     </div>
@@ -57,17 +57,16 @@
     <!-- Droite: Actions et filtres -->
     <div class="d-flex align-items-center gap-2">
         <!-- Filtres compacts -->
-        <input type="text" id="searchInput" class="form-control form-control-sm" 
-               style="width: 200px;" placeholder="Rechercher...">
+        <input type="text" id="searchInput" class="form-control form-control-sm search-input" placeholder="Rechercher...">
         
-        <select id="statusFilter" class="form-select form-select-sm" style="width: auto;">
+        <select id="statusFilter" class="form-select form-select-sm filter-select">
             <option value="">Tous les statuts</option>
             <option value="active">Actifs</option>
             <option value="archived">Archivés</option>
             <option value="public">Publics</option>
         </select>
         
-        <select id="sortFilter" class="form-select form-select-sm" style="width: auto;">
+        <select id="sortFilter" class="form-select form-select-sm filter-select">
             <option value="updated_desc">Plus récents</option>
             <option value="name_asc">A-Z</option>
             <option value="progress_desc">Progression</option>
@@ -77,9 +76,9 @@
             <button id="tagsFilterToggle" class="btn btn-tags-filter">
                 <i class="bi bi-tags"></i>
                 <span class="tags-filter-label">Filtrer par tags</span>
-                <span class="tags-filter-count" id="tagsFilterCount" style="display: none;">0</span>
+                <span class="tags-filter-count" id="tagsFilterCount">0</span>
             </button>
-            <div id="tagsFilterDropdown" class="tags-filter-dropdown" style="display: none;">
+            <div id="tagsFilterDropdown" class="tags-filter-dropdown">
                 <!-- Tags will be dynamically loaded here -->
             </div>
         </div>
@@ -106,7 +105,7 @@
         <ul id="decksList" class="deck-list"></ul>
         
         <!-- Empty state -->
-        <div id="decksEmpty" class="empty-state" style="display: none;">
+        <div id="decksEmpty" class="empty-state empty-state-hidden">
             <i class="bi bi-stack empty-state-icon"></i>
             <div class="empty-state-title">Aucun deck</div>
             <div class="empty-state-description">Créez votre premier deck de flashcards pour commencer à réviser</div>
@@ -117,7 +116,7 @@
         </div>
         
         <!-- Load more -->
-        <div id="loadMoreContainer" class="p-3 text-center" style="display: none;">
+        <div id="loadMoreContainer" class="p-3 text-center load-more-container">
             <button id="loadMoreBtn" class="btn btn-outline-custom">
                 <i class="bi bi-arrow-down-circle me-1"></i>
                 Charger plus
@@ -148,7 +147,7 @@
     </div>
     
     <!-- Deck Details -->
-    <div id="deckDetails" style="display: none;">
+    <div id="deckDetails" class="deck-details-hidden">
         <!-- Deck Header -->
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
@@ -168,7 +167,7 @@
                     <div class="d-flex align-items-center gap-2 me-3 d-none d-md-flex">
                         <span id="deckProgress" class="badge deck-badge">0/0</span>
                         <div class="progress-bar-custom">
-                            <div id="deckProgressBar" class="progress-fill" style="width: 0%"></div>
+                            <div id="deckProgressBar" class="progress-fill w-0"></div>
                         </div>
                     </div>
                     
@@ -274,7 +273,7 @@
     </div>
     
     <!-- Create Deck Form -->
-    <div id="createDeckForm" style="display: none;">
+    <div id="createDeckForm" class="create-deck-form-hidden">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <h5 class="mb-0">Créer un nouveau deck</h5>
@@ -329,7 +328,7 @@
     </div>
     
     <!-- View All Cards -->
-    <div id="viewAllCardsSection" style="display: none;">
+    <div id="viewAllCardsSection" class="view-all-cards-hidden">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <h5 class="mb-0">Toutes les cartes - <span id="deckNameInCards"></span></h5>
@@ -345,8 +344,8 @@
                 <!-- Cards will be loaded here -->
             </div>
             
-            <div id="noCardsMessage" class="text-center p-4" style="display: none;">
-                <i class="bi bi-stack text-muted" style="font-size: 3rem;"></i>
+            <div id="noCardsMessage" class="text-center p-4 no-cards-message-hidden">
+                <i class="bi bi-stack text-muted font-size-3rem"></i>
                 <h5 class="text-muted mt-3">Aucune carte dans ce deck</h5>
                 <p class="text-muted">Commencez par ajouter quelques cartes pour réviser !</p>
                 <button class="btn btn-gradient" onclick="window.revisionMain.showCreateCardForm()">
@@ -358,7 +357,7 @@
     </div>
     
     <!-- Create Card Form -->
-    <div id="createCardForm" style="display: none;">
+    <div id="createCardForm" class="create-card-form-hidden">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <h5 class="mb-0">Ajouter une nouvelle carte</h5>
@@ -396,7 +395,7 @@
     </div>
     
     <!-- Edit Card Form -->
-    <div id="editCardForm" style="display: none;">
+    <div id="editCardForm" class="edit-card-form-hidden">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <h5 class="mb-0">Modifier la carte</h5>
@@ -433,7 +432,7 @@
     </div>
     
     <!-- Learning Settings Form -->
-    <div id="learningSettingsForm" style="display: none;">
+    <div id="learningSettingsForm" class="learning-settings-hidden">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <h5 class="mb-0">Paramètres d'apprentissage - <span id="settingsDeckName"></span></h5>
@@ -451,15 +450,15 @@
                     <h6 class="card-title">📊 Statistiques actuelles</h6>
                     <div class="row text-center" id="currentStats">
                         <div class="col-3">
-                            <div class="stat-value text-primary" id="statTotalCards">0</div>
+                            <div class="stat-value text-linguify-primary" id="statTotalCards">0</div>
                             <div class="stat-label">Total cartes</div>
                         </div>
                         <div class="col-3">
-                            <div class="stat-value text-success" id="statLearnedCards">0</div>
+                            <div class="stat-value text-linguify-success" id="statLearnedCards">0</div>
                             <div class="stat-label">Apprises</div>
                         </div>
                         <div class="col-3">
-                            <div class="stat-value text-warning" id="statAverageProgress">0%</div>
+                            <div class="stat-value text-linguify-warning" id="statAverageProgress">0%</div>
                             <div class="stat-label">Progression moy.</div>
                         </div>
                         <div class="col-3">
@@ -535,7 +534,7 @@
     </div>
     
     <!-- Flashcard Study Mode -->
-    <div id="flashcardStudyMode" style="display: none;">
+    <div id="flashcardStudyMode" class="study-mode-hidden">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <h5 class="mb-0">Mode Flashcards - <span id="studyDeckName"></span></h5>
@@ -551,7 +550,7 @@
         
         <div class="study-content">
             <!-- Study Area -->
-            <div id="studyArea" class="d-flex flex-column align-items-center justify-content-center p-4" style="min-height: 400px;">
+            <div id="studyArea" class="d-flex flex-column align-items-center justify-content-center p-4 study-area">
                 <!-- Flashcard -->
                 <div id="flashcard" class="flashcard mb-4" onclick="flipCard()">
                     <div class="flashcard-inner">
@@ -570,7 +569,7 @@
                 </div>
                 
                 <!-- Action Buttons -->
-                <div id="studyActions" class="d-flex gap-3" style="display: none;">
+                <div id="studyActions" class="d-flex gap-3 study-actions-hidden">
                     <button id="studyDifficult" class="btn btn-outline-danger">
                         <i class="bi bi-x-circle"></i>
                         Difficile
@@ -586,8 +585,8 @@
                 </div>
                 
                 <!-- Empty State -->
-                <div id="noCardsToStudy" class="empty-state" style="display: none;">
-                    <i class="bi bi-trophy text-warning" style="font-size: 4rem;"></i>
+                <div id="noCardsToStudy" class="empty-state empty-state-hidden">
+                    <i class="bi bi-trophy icon-linguify-warning font-size-4rem"></i>
                     <h4 class="mt-3">Félicitations !</h4>
                     <p class="text-muted">Vous avez terminé toutes les cartes de ce deck pour aujourd'hui.</p>
                     <button class="btn btn-gradient" onclick="window.revisionMain.exitStudyMode()">
@@ -600,11 +599,11 @@
             <div class="border-top p-3">
                 <div class="row text-center">
                     <div class="col">
-                        <div class="stat-value text-success" id="studyCorrect">0</div>
+                        <div class="stat-value text-linguify-success" id="studyCorrect">0</div>
                         <div class="stat-label">Réussies</div>
                     </div>
                     <div class="col">
-                        <div class="stat-value text-warning" id="studyMedium">0</div>
+                        <div class="stat-value text-linguify-warning" id="studyMedium">0</div>
                         <div class="stat-label">Moyennes</div>
                     </div>
                     <div class="col">
@@ -612,7 +611,7 @@
                         <div class="stat-label">Difficiles</div>
                     </div>
                     <div class="col">
-                        <div class="stat-value text-primary" id="studyRemaining">0</div>
+                        <div class="stat-value text-linguify-primary" id="studyRemaining">0</div>
                         <div class="stat-label">Restantes</div>
                     </div>
                 </div>
@@ -621,7 +620,7 @@
     </div>
     
     <!-- Quiz Study Mode -->
-    <div id="quizStudyMode" style="display: none;">
+    <div id="quizStudyMode" class="study-mode-hidden">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <h5 class="mb-0">Mode Questionnaire - <span id="quizDeckName"></span></h5>
@@ -635,8 +634,8 @@
             </div>
             
             <!-- Progress Bar -->
-            <div class="progress mt-2" style="height: 4px;">
-                <div id="quizProgressBar" class="progress-bar bg-primary" style="width: 0%"></div>
+            <div class="progress mt-2 progress-thin">
+                <div id="quizProgressBar" class="progress-bar bg-primary w-0"></div>
             </div>
         </div>
         
@@ -654,13 +653,13 @@
                 </div>
                 
                 <!-- Feedback -->
-                <div id="quizFeedback" style="display: none;">
+                <div id="quizFeedback" class="display-none">
                     <!-- Feedback will be shown here -->
                 </div>
                 
                 <!-- Next Button -->
                 <div class="text-center">
-                    <button id="nextQuestion" class="btn btn-gradient" style="display: none;">
+                    <button id="nextQuestion" class="btn btn-gradient display-none">
                         <i class="bi bi-arrow-right me-1"></i>
                         Question suivante
                     </button>
@@ -668,8 +667,8 @@
             </div>
             
             <!-- No Cards Message -->
-            <div id="noQuizCards" class="empty-state" style="display: none;">
-                <i class="bi bi-question-circle text-muted" style="font-size: 4rem;"></i>
+            <div id="noQuizCards" class="empty-state empty-state-hidden">
+                <i class="bi bi-question-circle text-muted font-size-4rem"></i>
                 <h4 class="mt-3">Pas assez de cartes</h4>
                 <p class="text-muted">Ce deck doit contenir au moins 4 cartes pour le mode questionnaire.</p>
                 <button class="btn btn-gradient" onclick="window.quizMode.exitQuizMode()">
@@ -681,7 +680,7 @@
             <div class="border-top p-3">
                 <div class="row text-center">
                     <div class="col">
-                        <div class="stat-value text-success" id="quizCorrect">0</div>
+                        <div class="stat-value text-linguify-success" id="quizCorrect">0</div>
                         <div class="stat-label">Correctes</div>
                     </div>
                     <div class="col">
@@ -689,7 +688,7 @@
                         <div class="stat-label">Incorrectes</div>
                     </div>
                     <div class="col">
-                        <div class="stat-value text-primary" id="quizScore">0%</div>
+                        <div class="stat-value text-linguify-primary" id="quizScore">0%</div>
                         <div class="stat-label">Score</div>
                     </div>
                 </div>
@@ -698,7 +697,7 @@
     </div>
     
     <!-- Matching Study Mode -->
-    <div id="matchingStudyMode" style="display: none;">
+    <div id="matchingStudyMode" class="study-mode-hidden">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <h5 class="mb-0">Mode Associer - <span id="matchingDeckName"></span></h5>
@@ -731,7 +730,7 @@
             </div>
             
             <!-- Completion Screen -->
-            <div id="matchingCompletion" class="empty-state" style="display: none;">
+            <div id="matchingCompletion" class="empty-state empty-state-hidden">
                 <div id="matchingCompletionMessage">
                     <!-- Completion message will be generated dynamically -->
                 </div>
@@ -752,15 +751,15 @@
             <div class="border-top p-3">
                 <div class="row text-center">
                     <div class="col">
-                        <div class="stat-value text-success"><span id="matchingPairs">0</span>/<span id="matchingTotal">0</span></div>
+                        <div class="stat-value text-linguify-success"><span id="matchingPairs">0</span>/<span id="matchingTotal">0</span></div>
                         <div class="stat-label">Paires trouvées</div>
                     </div>
                     <div class="col">
-                        <div class="stat-value text-primary" id="matchingAttempts">0</div>
+                        <div class="stat-value text-linguify-primary" id="matchingAttempts">0</div>
                         <div class="stat-label">Tentatives</div>
                     </div>
                     <div class="col">
-                        <div class="stat-value text-warning" id="matchingAccuracy">100%</div>
+                        <div class="stat-value text-linguify-warning" id="matchingAccuracy">100%</div>
                         <div class="stat-label">Précision</div>
                     </div>
                 </div>
@@ -769,7 +768,7 @@
     </div>
     
     <!-- Spaced Repetition Study Mode -->
-    <div id="spacedStudyMode" style="display: none;">
+    <div id="spacedStudyMode" class="study-mode-hidden">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <h5 class="mb-0">Révision Rapide - <span id="spacedDeckName"></span></h5>
@@ -783,8 +782,8 @@
             </div>
             
             <!-- Progress Bar -->
-            <div class="progress mt-2" style="height: 4px;">
-                <div id="spacedProgressBar" class="progress-bar bg-primary" style="width: 0%"></div>
+            <div class="progress mt-2 progress-thin">
+                <div id="spacedProgressBar" class="progress-bar bg-primary w-0"></div>
             </div>
         </div>
         
@@ -813,7 +812,7 @@
                 </div>
                 
                 <!-- Answer State -->
-                <div id="spacedCardAnswer" class="text-center mb-4" style="display: none;">
+                <div id="spacedCardAnswer" class="text-center mb-4 display-none">
                     <div class="flashcard mb-4">
                         <div class="flashcard-inner">
                             <div class="flashcard-back">
@@ -826,7 +825,7 @@
                 </div>
                 
                 <!-- Difficulty Actions -->
-                <div id="spacedActions" class="d-flex justify-content-center gap-2 flex-wrap" style="display: none;">
+                <div id="spacedActions" class="d-flex justify-content-center gap-2 flex-wrap display-none">
                     <button id="reviewAgain" class="btn btn-danger">
                         <i class="bi bi-arrow-clockwise"></i>
                         <div class="small">À revoir</div>
@@ -851,9 +850,9 @@
             </div>
             
             <!-- No Review Needed -->
-            <div id="noReviewNeeded" class="empty-state" style="display: none;">
-                <i class="bi bi-calendar-check text-success" style="font-size: 4rem;"></i>
-                <h4 class="mt-3 text-success">Toutes les cartes sont à jour !</h4>
+            <div id="noReviewNeeded" class="empty-state empty-state-hidden">
+                <i class="bi bi-calendar-check icon-linguify-success font-size-4rem"></i>
+                <h4 class="mt-3 text-linguify-success">Toutes les cartes sont à jour !</h4>
                 <p class="text-muted">Aucune carte n'a besoin d'être révisée pour le moment.</p>
                 <p class="text-muted">Revenez plus tard ou ajoutez de nouvelles cartes à étudier.</p>
                 <button class="btn btn-gradient" onclick="window.spacedMode.exitSpacedMode()">
@@ -862,7 +861,7 @@
             </div>
             
             <!-- Session Complete -->
-            <div id="spacedCompletion" class="empty-state" style="display: none;">
+            <div id="spacedCompletion" class="empty-state empty-state-hidden">
                 <div id="spacedCompletionMessage">
                     <!-- Completion message will be generated dynamically -->
                 </div>
@@ -879,7 +878,7 @@
             <div class="border-top p-3">
                 <div class="row text-center">
                     <div class="col">
-                        <div class="stat-value text-primary" id="spacedReviewed">0</div>
+                        <div class="stat-value text-linguify-primary" id="spacedReviewed">0</div>
                         <div class="stat-label">Révisées</div>
                     </div>
                     <div class="col">
@@ -887,7 +886,7 @@
                         <div class="stat-label">Restantes</div>
                     </div>
                     <div class="col">
-                        <div class="stat-value text-success" id="spacedEfficiency">100%</div>
+                        <div class="stat-value text-linguify-success" id="spacedEfficiency">100%</div>
                         <div class="stat-label">Efficacité</div>
                     </div>
                 </div>
@@ -896,11 +895,11 @@
     </div>
     
     <!-- Import Deck Form -->
-    <div id="importDeckForm" style="display: none;">
+    <div id="importDeckForm" class="display-none">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-upload text-primary me-2" style="font-size: 1.5rem;"></i>
+                    <i class="bi bi-upload icon-linguify-primary me-2 font-size-1-5rem"></i>
                     <h5 class="mb-0">Importer un deck</h5>
                 </div>
                 <button id="cancelImport" class="btn btn-outline-custom btn-sm">
@@ -934,7 +933,7 @@
             <!-- Zone de drop pour fichier -->
             <div class="file-drop-zone mb-4" id="fileDropZone">
                 <div class="drop-zone-content">
-                    <i class="bi bi-cloud-upload text-primary" style="font-size: 3rem;"></i>
+                    <i class="bi bi-cloud-upload icon-linguify-primary font-size-3rem"></i>
                     <h6 class="mt-3 mb-2">Glissez votre fichier ici</h6>
                     <p class="text-muted mb-3">ou cliquez pour sélectionner</p>
                     <input type="file" id="importFile" class="d-none" accept=".csv,.xlsx,.xls">
@@ -944,16 +943,16 @@
                     </button>
                 </div>
                 <div class="drop-zone-overlay" id="dropZoneOverlay">
-                    <i class="bi bi-cloud-upload-fill text-white" style="font-size: 3rem;"></i>
+                    <i class="bi bi-cloud-upload-fill text-white font-size-3rem"></i>
                     <p class="text-white mt-2 mb-0">Déposez le fichier ici</p>
                 </div>
             </div>
 
             <!-- Informations sur le fichier sélectionné -->
-            <div class="selected-file-info" id="selectedFileInfo" style="display: none;">
+            <div class="selected-file-info display-none" id="selectedFileInfo">
                 <div class="alert alert-success">
                     <div class="d-flex align-items-center">
-                        <i class="bi bi-file-earmark-check text-success me-2"></i>
+                        <i class="bi bi-file-earmark-check icon-linguify-success me-2"></i>
                         <div>
                             <strong id="selectedFileName"></strong>
                             <div class="text-muted small" id="selectedFileSize"></div>
@@ -970,7 +969,7 @@
                 <h6 class="text-muted mb-2">Formats supportés</h6>
                 <div class="d-flex gap-2">
                     <span class="badge bg-light text-dark">
-                        <i class="bi bi-file-earmark-excel text-success me-1"></i>
+                        <i class="bi bi-file-earmark-excel icon-linguify-success me-1"></i>
                         Excel (.xlsx, .xls)
                     </span>
                     <span class="badge bg-light text-dark">
@@ -1008,11 +1007,11 @@
     </div>
     
     <!-- Import Preview Section -->
-    <div id="importPreviewSection" style="display: none;">
+    <div id="importPreviewSection" class="display-none">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-eye text-info me-2" style="font-size: 1.5rem;"></i>
+                    <i class="bi bi-eye text-info me-2 font-size-1-5rem"></i>
                     <h5 class="mb-0">Aperçu de l'import</h5>
                 </div>
                 <button id="cancelImportPreview" class="btn btn-outline-custom btn-sm">
@@ -1049,7 +1048,7 @@
                     <div class="col-md-4">
                         <div class="summary-card">
                             <div class="summary-icon">
-                                <i class="bi bi-file-earmark text-primary"></i>
+                                <i class="bi bi-file-earmark icon-linguify-primary"></i>
                             </div>
                             <div class="summary-content">
                                 <div class="summary-title">Fichier</div>
@@ -1060,7 +1059,7 @@
                     <div class="col-md-4">
                         <div class="summary-card">
                             <div class="summary-icon">
-                                <i class="bi bi-list-ol text-success"></i>
+                                <i class="bi bi-list-ol icon-linguify-success"></i>
                             </div>
                             <div class="summary-content">
                                 <div class="summary-title">Lignes</div>
@@ -1071,7 +1070,7 @@
                     <div class="col-md-4">
                         <div class="summary-card">
                             <div class="summary-icon">
-                                <i class="bi bi-credit-card text-warning"></i>
+                                <i class="bi bi-credit-card icon-linguify-warning"></i>
                             </div>
                             <div class="summary-content">
                                 <div class="summary-title">Cartes à créer</div>
@@ -1102,7 +1101,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mapping-option">
-                            <label class="form-label fw-bold text-primary">
+                            <label class="form-label fw-bold text-linguify-primary">
                                 <i class="bi bi-card-text me-1"></i>
                                 Recto des cartes
                             </label>
@@ -1135,7 +1134,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="mapping-option">
-                            <label class="form-label fw-bold text-success">
+                            <label class="form-label fw-bold text-linguify-success">
                                 <i class="bi bi-card-text me-1"></i>
                                 Verso des cartes
                             </label>
@@ -1168,7 +1167,7 @@
                     </div>
                 </div>
                 <div class="mapping-hint mt-2">
-                    <i class="bi bi-lightbulb text-warning me-1"></i>
+                    <i class="bi bi-lightbulb icon-linguify-warning me-1"></i>
                     <small class="text-muted">Modifiez la sélection pour voir l'aperçu mis à jour en temps réel</small>
                 </div>
             </div>
@@ -1180,7 +1179,7 @@
                         <i class="bi bi-stack me-1"></i>
                         Aperçu des cartes (5 premières)
                     </h6>
-                    <span class="badge bg-info" id="previewUpdateIndicator" style="display: none;">
+                    <span class="badge bg-info display-none" id="previewUpdateIndicator">
                         <i class="bi bi-arrow-repeat me-1"></i>
                         Mise à jour...
                     </span>
@@ -1204,11 +1203,11 @@
     </div>
     
     <!-- Edit Deck Form -->
-    <div id="editDeckForm" style="display: none;">
+    <div id="editDeckForm" class="display-none">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-pencil text-warning me-2" style="font-size: 1.5rem;"></i>
+                    <i class="bi bi-pencil icon-linguify-warning me-2 font-size-1-5rem"></i>
                     <h5 class="mb-0">Modifier le deck</h5>
                 </div>
                 <button id="cancelEditDeck" class="btn btn-outline-custom btn-sm">
@@ -1284,1087 +1283,6 @@
 {% endblock %}
 
 {% block extra_css %}
-<style>
-/* ===== STYLES POUR L'IMPORT AMÉLIORÉ ===== */
-
-/* Indicateur d'étapes */
-.import-steps {
-    padding: 20px 0;
-}
-
-.step-indicator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-    position: relative;
-}
-
-.step-number {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: #e9ecef;
-    color: #6c757d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    margin-bottom: 8px;
-    transition: all 0.3s ease;
-    border: 3px solid #e9ecef;
-}
-
-.step.active .step-number {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-    animation: pulse 2s infinite;
-}
-
-.step.completed .step-number {
-    background: #28a745;
-    color: white;
-    border-color: #28a745;
-}
-
-.step-label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #6c757d;
-    text-align: center;
-}
-
-.step.active .step-label {
-    color: var(--primary-color);
-    font-weight: bold;
-}
-
-.step.completed .step-label {
-    color: #28a745;
-}
-
-.step-line {
-    height: 3px;
-    background: #e9ecef;
-    flex: 1;
-    margin: 0 10px;
-    margin-top: -25px;
-    transition: all 0.3s ease;
-}
-
-.step-line.completed {
-    background: #28a745;
-}
-
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(var(--primary-color-rgb), 0); }
-    100% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0); }
-}
-
-/* Zone de drop pour fichiers */
-.file-drop-zone {
-    position: relative;
-    border: 3px dashed #dee2e6;
-    border-radius: 12px;
-    padding: 60px 30px;
-    text-align: center;
-    background: #f8f9fa;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.file-drop-zone:hover {
-    border-color: var(--primary-color);
-    background: rgba(var(--primary-color-rgb), 0.05);
-}
-
-.file-drop-zone.drag-over {
-    border-color: var(--primary-color);
-    background: rgba(var(--primary-color-rgb), 0.1);
-    transform: scale(1.02);
-}
-
-.drop-zone-content {
-    transition: all 0.3s ease;
-}
-
-.drop-zone-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--primary-color);
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: all 0.3s ease;
-    pointer-events: none;
-}
-
-.file-drop-zone.drag-over .drop-zone-overlay {
-    opacity: 0.9;
-}
-
-.file-drop-zone.drag-over .drop-zone-content {
-    opacity: 0.3;
-}
-
-/* Informations du fichier sélectionné */
-.selected-file-info {
-    animation: slideInUp 0.3s ease;
-}
-
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Formats supportés */
-.supported-formats .badge {
-    font-size: 0.875rem;
-    padding: 8px 12px;
-}
-
-/* Résumé d'import */
-.import-summary {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 12px;
-    padding: 20px;
-}
-
-.summary-card {
-    display: flex;
-    align-items: center;
-    background: white;
-    border-radius: 8px;
-    padding: 15px;
-    height: 100%;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
-}
-
-.summary-card:hover {
-    transform: translateY(-2px);
-}
-
-.summary-icon {
-    font-size: 2rem;
-    margin-right: 15px;
-    width: 60px;
-    text-align: center;
-}
-
-.summary-content {
-    flex: 1;
-}
-
-.summary-title {
-    font-size: 0.875rem;
-    color: #6c757d;
-    margin-bottom: 4px;
-    font-weight: 500;
-}
-
-.summary-value {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: #2c3e50;
-}
-
-/* Configuration des colonnes */
-.column-mapping {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    border: 1px solid #e9ecef;
-}
-
-.mapping-option {
-    position: relative;
-}
-
-.mapping-option .form-select {
-    border: 2px solid #e9ecef;
-    transition: all 0.3s ease;
-}
-
-.mapping-option .form-select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(var(--primary-color-rgb), 0.25);
-}
-
-.mapping-hint {
-    text-align: center;
-    padding: 10px;
-    background: rgba(255, 193, 7, 0.1);
-    border-radius: 6px;
-}
-
-/* Aperçu des cartes */
-.preview-cards {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    border: 1px solid #e9ecef;
-}
-
-.preview-cards-grid {
-    display: grid;
-    gap: 15px;
-}
-
-.preview-cards-grid .card {
-    border: none;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    overflow: hidden;
-}
-
-.preview-cards-grid .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-}
-
-.preview-cards-grid .card-body {
-    padding: 15px;
-}
-
-.preview-cards-grid .card-body h6 {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-}
-
-.preview-cards-grid .card-body p {
-    font-size: 0.95rem;
-    line-height: 1.4;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .step-indicator {
-        flex-direction: column;
-        gap: 15px;
-    }
-    
-    .step-line {
-        width: 3px;
-        height: 30px;
-        margin: 10px 0;
-    }
-    
-    .file-drop-zone {
-        padding: 40px 20px;
-    }
-    
-    .import-summary {
-        padding: 15px;
-    }
-    
-    .summary-card {
-        margin-bottom: 15px;
-        padding: 12px;
-    }
-    
-    .summary-icon {
-        font-size: 1.5rem;
-        margin-right: 10px;
-        width: 40px;
-    }
-}
-
-/* États de validation */
-.form-control.is-valid {
-    border-color: #28a745;
-}
-
-.form-control.is-invalid {
-    border-color: #dc3545;
-}
-
-/* Animations d'entrée */
-.import-steps,
-.file-drop-zone,
-.supported-formats,
-.import-summary,
-.column-mapping,
-.preview-cards {
-    animation: fadeInUp 0.6s ease forwards;
-    opacity: 0;
-}
-
-.import-steps { animation-delay: 0.1s; }
-.file-drop-zone { animation-delay: 0.2s; }
-.supported-formats { animation-delay: 0.3s; }
-.import-summary { animation-delay: 0.1s; }
-.column-mapping { animation-delay: 0.2s; }
-.preview-cards { animation-delay: 0.3s; }
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Variables CSS pour les couleurs primaires */
-:root {
-    --primary-color-rgb: 13, 110, 253;
-}
-
-/* ===== STYLES POUR LES TAGS ===== */
-.tags-input-container {
-    border: 1px solid #e2e8f0;
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    background: white;
-    min-height: 45px;
-    transition: border-color 0.2s ease;
-}
-
-.tags-input-container:focus-within {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
-}
-
-.tags-display {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.tags-display:empty {
-    margin-bottom: 0;
-}
-
-.tag-item {
-    background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-    cursor: default;
-}
-
-.tag-item:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
-}
-
-.tag-remove {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 0.75rem;
-    transition: background-color 0.2s ease;
-}
-
-.tag-remove:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-.tags-input-container input {
-    border: none;
-    outline: none;
-    padding: 0;
-    background: transparent;
-    flex: 1;
-}
-
-.tags-input-container input::placeholder {
-    color: #94a3b8;
-}
-
-/* Tags dans la liste des decks */
-.deck-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-    margin-top: 0.25rem;
-}
-
-.deck-tag {
-    background: rgba(139, 92, 246, 0.1);
-    color: var(--primary-color);
-    padding: 0.125rem 0.5rem;
-    border-radius: 0.75rem;
-    font-size: 0.625rem;
-    font-weight: 500;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-}
-
-/* Filtres par tags */
-.tags-filter {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.tag-filter-item {
-    background: white;
-    border: 1px solid #e2e8f0;
-    color: #64748b;
-    padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.tag-filter-item:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
-
-.tag-filter-item.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-
-/* Autocomplete pour les tags */
-.tags-suggestions {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-.tags-suggestion-item {
-    padding: 0.5rem 0.75rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.tags-suggestion-item:hover {
-    background: #f8fafc;
-}
-
-.tags-suggestion-item.selected {
-    background: var(--primary-color);
-    color: white;
-}
-
-/* Tags filter dropdown */
-.tags-filter-container {
-    position: relative;
-}
-
-.btn-tags-filter {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-tags-filter:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-.btn-tags-filter.active {
-    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-}
-
-.tags-filter-label {
-    white-space: nowrap;
-}
-
-.tags-filter-count {
-    background: rgba(255, 255, 255, 0.9);
-    color: #667eea;
-    padding: 0.125rem 0.5rem;
-    border-radius: 1rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-left: 0.25rem;
-}
-
-@media (max-width: 768px) {
-    .tags-filter-label {
-        display: none;
-    }
-}
-
-.tags-filter-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    min-width: 200px;
-    max-height: 300px;
-    overflow-y: auto;
-    margin-top: 0.25rem;
-}
-
-.tags-filter-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem;
-    border-bottom: 1px solid #e2e8f0;
-    font-weight: 600;
-    background: #f8fafc;
-    border-radius: 0.5rem 0.5rem 0 0;
-}
-
-.tags-filter-list {
-    padding: 0.5rem;
-}
-
-.tags-filter-item {
-    padding: 0.5rem 0.75rem;
-    cursor: pointer;
-    border-radius: 0.375rem;
-    transition: all 0.2s ease;
-    margin-bottom: 0.25rem;
-    border: 1px solid transparent;
-}
-
-.tags-filter-item:hover {
-    background: #f1f5f9;
-    border-color: var(--primary-color);
-}
-
-.tags-filter-item.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-
-.deck-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-    margin-top: 0.5rem;
-}
-
-.deck-tag {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-right: 0.25rem;
-    display: inline-block;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
-}
-
-.deck-tag:hover {
-    transform: translateY(-1px);
-}
-
-.no-tags-message {
-    color: #94a3b8;
-    font-size: 0.75rem;
-    font-style: italic;
-    opacity: 0.8;
-    transition: all 0.2s ease;
-}
-
-.deck-item:hover .no-tags-message {
-    color: var(--primary-color);
-    opacity: 1;
-}
-
-/* Tags container dans les deck items */
-.deck-tags-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-    min-height: 24px;
-}
-
-.btn-add-tag {
-    background: transparent;
-    border: 1px dashed #cbd5e0;
-    color: #64748b;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.75rem;
-    opacity: 0;
-    transform: translateX(10px);
-}
-
-.deck-item:hover .btn-add-tag {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.btn-add-tag:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    background: rgba(var(--primary-color-rgb), 0.05);
-}
-
-/* Modal de modification rapide des tags (style Odoo) */
-.quick-tags-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 2000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.quick-tags-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-}
-
-.quick-tags-content {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    position: relative;
-    width: 90%;
-    max-width: 500px;
-    max-height: 80vh;
-    overflow: hidden;
-    animation: modalSlideIn 0.3s ease-out;
-}
-
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.quick-tags-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 1rem 1.5rem;
-    display: flex;
-    justify-content: between;
-    align-items: center;
-}
-
-.quick-tags-header h5 {
-    margin: 0;
-    font-weight: 600;
-    flex: 1;
-}
-
-.quick-tags-header .btn-close {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0.25rem;
-    border-radius: 0.25rem;
-    transition: background 0.2s ease;
-}
-
-.quick-tags-header .btn-close:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.quick-tags-header .btn-sm {
-    color: white;
-    border-color: rgba(255, 255, 255, 0.5);
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-}
-
-.quick-tags-header .btn-sm:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.8);
-}
-
-.quick-tags-body {
-    padding: 1.5rem;
-}
-
-.current-tags {
-    margin-bottom: 1rem;
-    min-height: 40px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: flex-start;
-}
-
-.tag-pill {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 0.5rem 0.75rem;
-    border-radius: 1.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.tag-pill:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-}
-
-.tag-pill i {
-    font-size: 0.75rem;
-    opacity: 0.8;
-}
-
-.add-tag-section {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.add-tag-section input {
-    flex: 1;
-    padding: 0.75rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    transition: border-color 0.2s ease;
-}
-
-.add-tag-section input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
-}
-
-.add-tag-section .btn-add {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-}
-
-.add-tag-section .btn-add:hover {
-    background: color-mix(in srgb, var(--primary-color) 90%, black);
-    transform: translateY(-1px);
-}
-
-.suggested-tags {
-    border-top: 1px solid #e2e8f0;
-    padding-top: 1rem;
-}
-
-.suggestions-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #64748b;
-    margin-bottom: 0.75rem;
-}
-
-.suggestions-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.tag-suggestion {
-    background: #f1f5f9;
-    color: #475569;
-    padding: 0.375rem 0.75rem;
-    border-radius: 1rem;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
-}
-
-.tag-suggestion:hover {
-    background: var(--primary-color);
-    color: white;
-    transform: translateY(-1px);
-}
-
-/* Styles pour la gestion des tags (style Odoo) */
-.tags-management-container {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.tags-management-container .table {
-    margin-bottom: 0;
-}
-
-.tags-management-container .table thead th {
-    border-top: none;
-    background-color: #f8f9fa;
-    font-weight: 600;
-    font-size: 0.875rem;
-    color: #495057;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-.tags-management-container .table tbody tr:hover {
-    background-color: #f8f9fa;
-}
-
-.color-display {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    display: inline-block;
-}
-
-.tag-preview {
-    min-width: 80px;
-    text-align: center;
-}
-
-.tag-preview .badge {
-    font-size: 0.875rem;
-    padding: 0.5rem 0.75rem;
-}
-
-/* Modal customization */
-.modal-lg {
-    max-width: 800px;
-}
-
-.modal-header {
-    border-bottom: 2px solid #e9ecef;
-    background-color: #f8f9fa;
-}
-
-.modal-header .modal-title {
-    font-weight: 600;
-    color: #495057;
-}
-
-.btn-group-sm .btn {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-}
-
-/* Tags count styling */
-#tagsCount {
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-
-/* Search input styling */
-#tagsSearchInput:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-}
-
-/* Pagination customization */
-.pagination .page-link {
-    color: var(--primary-color);
-    border-color: #dee2e6;
-}
-
-.pagination .page-link:hover {
-    color: #5a67d8;
-    background-color: #f8f9fa;
-}
-
-.pagination .page-item.active .page-link {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-/* Button customizations */
-.btn-outline-primary:hover {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-.btn-outline-danger:hover {
-    background-color: #dc3545;
-    border-color: #dc3545;
-}
-
-/* Styles pour les modals natives (sans Bootstrap) */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1050;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    display: none;
-}
-
-.modal.show {
-    display: block !important;
-}
-
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1040;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-backdrop.fade.show {
-    opacity: 1;
-}
-
-.modal-dialog {
-    position: relative;
-    width: auto;
-    margin: 1.75rem auto;
-    pointer-events: none;
-    max-height: calc(100% - 3.5rem);
-}
-
-.modal-content {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    pointer-events: auto;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 0.3rem;
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.5);
-}
-
-body.modal-open {
-    overflow: hidden;
-}
-
-/* Styles spécifiques pour les tags assignés (style Odoo) */
-.tag-row.table-success {
-    background-color: rgba(25, 135, 84, 0.1) !important;
-    border-color: rgba(25, 135, 84, 0.2);
-}
-
-.tag-row.table-success:hover {
-    background-color: rgba(25, 135, 84, 0.15) !important;
-}
-
-.tag-assign-checkbox:checked {
-    background-color: #198754;
-    border-color: #198754;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .modal-lg {
-        max-width: 95%;
-        margin: 1rem auto;
-    }
-    
-    .tags-management-container {
-        max-height: 300px;
-    }
-    
-    .table-responsive {
-        font-size: 0.875rem;
-    }
-    
-    .btn-group-sm .btn {
-        padding: 0.125rem 0.25rem;
-        font-size: 0.7rem;
-    }
-    
-    .modal-footer {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
-    .modal-footer .ms-auto {
-        margin-left: 0 !important;
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-}
-</style>
 {% endblock %}
 
 <!-- Modal de gestion des tags (style Odoo) -->
@@ -2401,13 +1319,13 @@ body.modal-open {
                         <table class="table table-hover">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="width: 50px;">
+                                    <th class="w-50px">
                                         <input type="checkbox" id="selectAllTags" class="form-check-input">
                                     </th>
                                     <th>Nom</th>
-                                    <th style="width: 80px;">Couleur</th>
-                                    <th style="width: 100px;">Utilisations</th>
-                                    <th style="width: 120px;">Actions</th>
+                                    <th class="w-80px">Couleur</th>
+                                    <th class="w-100px">Utilisations</th>
+                                    <th class="w-120px">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="tagsTableBody">
@@ -2462,9 +1380,9 @@ body.modal-open {
                     <div class="mb-3">
                         <label for="tagColorInput" class="form-label">Couleur</label>
                         <div class="d-flex align-items-center gap-2">
-                            <input type="color" class="form-control form-control-color" id="tagColorInput" value="#667eea">
+                            <input type="color" class="form-control form-control-color" id="tagColorInput" value="#2D5BBA">
                             <div class="tag-preview" id="tagPreview">
-                                <span class="badge" style="background: #667eea; color: white;">Aperçu</span>
+                                <span class="badge tag-color-preview">Aperçu</span>
                             </div>
                         </div>
                     </div>
@@ -2482,7 +1400,7 @@ body.modal-open {
 
 <!-- Modals de partage -->
 <!-- DEBUG: Template main_new.html is being rendered -->
-<div id="template-debug-marker" style="display: none;">main_new.html loaded</div>
+<div id="template-debug-marker" class="display-none">main_new.html loaded</div>
 {% include "revision/components/share_deck.html" %}
 
 {% block extra_js %}
