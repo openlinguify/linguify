@@ -15,7 +15,7 @@ def create_revision_settings(sender, instance, created, **kwargs):
     """
     if created:
         try:
-            from .settings.models import RevisionSettings
+            from .models_settings import RevisionSettings
             RevisionSettings.objects.create(user=instance)
             logger.info(f"Created revision settings for new user: {instance.username}")
         except Exception as e:

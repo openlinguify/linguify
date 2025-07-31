@@ -3,12 +3,7 @@ URLs pour les paramètres de l'application Révision
 """
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import RevisionSettingsViewSet, RevisionSessionConfigViewSet
-# Production views (à utiliser après migrations)
-# from .views import RevisionSettingsViewSet, RevisionSessionConfigViewSet
-
-# Temporary working views (session-based)
-from .views_working import simple_revision_config, simple_revision_stats
+from .views_settings import RevisionSettingsViewSet, RevisionSessionConfigViewSet
 
 # Router pour les API REST
 router = DefaultRouter()
@@ -35,12 +30,4 @@ urlpatterns = [
     path('stats/', RevisionSettingsViewSet.as_view({
         'get': 'stats'
     }), name='stats'),
-    
-    # Working endpoints (session-based, reliable)
-    path('simple/config/', simple_revision_config, name='simple_config'),
-    path('simple/stats/', simple_revision_stats, name='simple_stats'),
-    
-    # TODO: Migrate to these once DB migrations are applied
-    # path('config/', RevisionSettingsViewSet.as_view({'get': 'list', 'post': 'update'})),
-    # path('stats/', RevisionSettingsViewSet.as_view({'get': 'stats'})),
 ]

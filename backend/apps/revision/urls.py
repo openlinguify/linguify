@@ -35,7 +35,7 @@ urlpatterns = [
     path('word-stats/', WordStatsAPIView.as_view(), name='word-stats-api'),
     
     # Paramètres de révision
-    path('settings/', include('apps.revision.settings.urls')),
+    path('settings/', include('apps.revision.urls_settings')),
     
     # Endpoint pour récupérer les paramètres utilisateur dans l'app
     path('user-settings/', get_user_revision_settings, name='user-settings'),

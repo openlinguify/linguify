@@ -261,12 +261,6 @@
                             Réinitialiser progrès
                         </button>
                     </div>
-                    <div class="col-md-3">
-                        <button id="learningSettings" class="btn btn-outline-custom w-100">
-                            <i class="bi bi-gear me-1"></i>
-                            Paramètres
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -432,106 +426,6 @@
     </div>
     
     <!-- Learning Settings Form -->
-    <div id="learningSettingsForm" class="learning-settings-hidden">
-        <div class="study-header">
-            <div class="d-flex align-items-center justify-content-between">
-                <h5 class="mb-0">Paramètres d'apprentissage - <span id="settingsDeckName"></span></h5>
-                <button id="closeLearningSettings" class="btn btn-outline-custom btn-sm">
-                    <i class="bi bi-x-lg"></i>
-                    Fermer
-                </button>
-            </div>
-        </div>
-        
-        <div class="study-content p-4">
-            <!-- Current Statistics -->
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h6 class="card-title">📊 Statistiques actuelles</h6>
-                    <div class="row text-center" id="currentStats">
-                        <div class="col-3">
-                            <div class="stat-value text-linguify-primary" id="statTotalCards">0</div>
-                            <div class="stat-label">Total cartes</div>
-                        </div>
-                        <div class="col-3">
-                            <div class="stat-value text-linguify-success" id="statLearnedCards">0</div>
-                            <div class="stat-label">Apprises</div>
-                        </div>
-                        <div class="col-3">
-                            <div class="stat-value text-linguify-warning" id="statAverageProgress">0%</div>
-                            <div class="stat-label">Progression moy.</div>
-                        </div>
-                        <div class="col-3">
-                            <div class="stat-value text-info" id="statCardsNeeding">0</div>
-                            <div class="stat-label">À réviser</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Presets -->
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h6 class="card-title">🎯 Presets de configuration</h6>
-                    <div class="row g-2" id="presetsContainer">
-                        <!-- Presets will be populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Manual Settings -->
-            <div class="card">
-                <div class="card-body">
-                    <h6 class="card-title">⚙️ Configuration personnalisée</h6>
-                    
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Révisions requises pour apprendre</label>
-                            <select id="requiredReviews" class="form-control">
-                                <option value="1">1 fois (très facile)</option>
-                                <option value="2">2 fois (facile)</option>
-                                <option value="3" selected>3 fois (normal)</option>
-                                <option value="4">4 fois (exigeant)</option>
-                                <option value="5">5 fois (difficile)</option>
-                                <option value="7">7 fois (très difficile)</option>
-                                <option value="10">10 fois (expert)</option>
-                            </select>
-                            <small class="text-muted">Nombre de révisions correctes nécessaires</small>
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <label class="form-label">Marquage automatique</label>
-                            <div class="form-check form-switch">
-                                <input type="checkbox" class="form-check-input" id="autoMarkLearned" checked>
-                                <label class="form-check-label">Marquer automatiquement comme apprises</label>
-                            </div>
-                            <small class="text-muted">Désactiver pour un contrôle manuel</small>
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <label class="form-label">Reset sur erreur</label>
-                            <div class="form-check form-switch">
-                                <input type="checkbox" class="form-check-input" id="resetOnWrong">
-                                <label class="form-check-label">Remettre à zéro si mauvaise réponse</label>
-                            </div>
-                            <small class="text-muted">Le compteur redémarre à 0 en cas d'erreur</small>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4">
-                        <button id="saveLearningSettings" class="btn btn-gradient me-2">
-                            <i class="bi bi-check-lg me-1"></i>
-                            Enregistrer les paramètres
-                        </button>
-                        <button id="resetToDefault" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-clockwise me-1"></i>
-                            Remettre par défaut
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     
     <!-- Flashcard Study Mode -->
     <div id="flashcardStudyMode" class="study-mode-hidden">

@@ -324,7 +324,6 @@ function hideAllSections() {
     if (elements.createCardForm) elements.createCardForm.style.display = 'none';
     if (elements.editCardForm) elements.editCardForm.style.display = 'none';
     if (elements.viewAllCardsSection) elements.viewAllCardsSection.style.display = 'none';
-    if (elements.learningSettingsForm) elements.learningSettingsForm.style.display = 'none';
     
     // Study modes
     if (elements.flashcardStudyMode) elements.flashcardStudyMode.style.display = 'none';
@@ -2290,169 +2289,6 @@ function loadMoreDecks() {
     }
 }
 
-// Learning Settings Functions
-async function showLearningSettings() {
-    if (!appState.selectedDeck) {
-        window.notificationService.error('Veuillez sélectionner un deck d\'abord');
-        return;
-    }
-
-    try {
-        hideAllSections();
-        
-        const elements = getElements();
-        elements.learningSettingsForm.style.display = 'block';
-        
-        // Set deck name
-        elements.settingsDeckName.textContent = appState.selectedDeck.name;
-        
-        // Load current settings and statistics
-        await loadLearningSettings();
-        
-    } catch (error) {
-        console.error('Error showing learning settings:', error);
-        window.notificationService.error('Erreur lors du chargement des paramètres');
-    }
-}
-
-async function loadLearningSettings() {
-    if (!appState.selectedDeck) return;
-    
-    try {
-        const response = await revisionAPI.getLearningSettings(appState.selectedDeck.id);
-        const settings = response.settings || response;
-        
-        // Update current statistics
-        updateStatisticsDisplay(settings.learning_statistics);
-        
-        // Update presets display
-        updatePresetsDisplay(settings.learning_presets);
-        
-        // Update form values
-        const elements = getElements();
-        elements.requiredReviews.value = settings.required_reviews_to_learn;
-        elements.autoMarkLearned.checked = settings.auto_mark_learned;
-        elements.resetOnWrong.checked = settings.reset_on_wrong_answer;
-        
-    } catch (error) {
-        console.error('Error loading learning settings:', error);
-        window.notificationService.error('Erreur lors du chargement des paramètres');
-    }
-}
-
-function updateStatisticsDisplay(stats) {
-    if (!stats) return;
-    
-    const elements = getElements();
-    elements.statTotalCards.textContent = stats.total_cards;
-    elements.statLearnedCards.textContent = stats.learned_cards;
-    elements.statAverageProgress.textContent = `${stats.average_progress}%`;
-    elements.statCardsNeeding.textContent = stats.cards_needing_review;
-}
-
-function updatePresetsDisplay(presets) {
-    if (!presets) return;
-    
-    const container = document.getElementById('presetsContainer');
-    container.innerHTML = '';
-    
-    const presetOrder = ['beginner', 'normal', 'intensive', 'expert'];
-    
-    presetOrder.forEach(presetKey => {
-        if (presets[presetKey]) {
-            const preset = presets[presetKey];
-            const presetElement = document.createElement('div');
-            presetElement.className = 'col-md-6';
-            presetElement.innerHTML = `
-                <div class="card preset-card" data-preset="${presetKey}" style="cursor: pointer;">
-                    <div class="card-body p-3">
-                        <h6 class="card-title">${preset.name}</h6>
-                        <p class="card-text small">${preset.description}</p>
-                        <div class="small text-muted">
-                            ${preset.required_reviews_to_learn} révisions • 
-                            ${preset.auto_mark_learned ? 'Auto' : 'Manuel'} • 
-                            ${preset.reset_on_wrong_answer ? 'Reset' : 'Pas de reset'}
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Add click handler
-            presetElement.querySelector('.preset-card').addEventListener('click', () => {
-                applyPreset(presetKey, preset.name);
-            });
-            
-            container.appendChild(presetElement);
-        }
-    });
-}
-
-async function applyPreset(presetName, presetDisplayName) {
-    if (!appState.selectedDeck) return;
-    
-    try {
-        await revisionAPI.applyPreset(appState.selectedDeck.id, presetName);
-        
-        window.notificationService.success(`Preset "${presetDisplayName}" appliqué avec succès`);
-        
-        // Reload settings to update the display
-        await loadLearningSettings();
-        
-        // Reload deck data to update progress
-        await selectDeck(appState.selectedDeck.id);
-        
-    } catch (error) {
-        console.error('Error applying preset:', error);
-        window.notificationService.error('Erreur lors de l\'application du preset');
-    }
-}
-
-async function saveLearningSettings() {
-    if (!appState.selectedDeck) return;
-    
-    try {
-        const elements = getElements();
-        
-        const settings = {
-            required_reviews_to_learn: parseInt(elements.requiredReviews.value),
-            auto_mark_learned: elements.autoMarkLearned.checked,
-            reset_on_wrong_answer: elements.resetOnWrong.checked
-        };
-        
-        await revisionAPI.updateLearningSettings(appState.selectedDeck.id, settings);
-        
-        window.notificationService.success('Paramètres enregistrés avec succès');
-        
-        // Reload settings to update statistics
-        await loadLearningSettings();
-        
-        // Reload deck data to update progress
-        await selectDeck(appState.selectedDeck.id);
-        
-    } catch (error) {
-        console.error('Error saving learning settings:', error);
-        window.notificationService.error('Erreur lors de l\'enregistrement des paramètres');
-    }
-}
-
-function resetToDefaultSettings() {
-    const elements = getElements();
-    elements.requiredReviews.value = 3;
-    elements.autoMarkLearned.checked = true;
-    elements.resetOnWrong.checked = false;
-}
-
-function closeLearningSettings() {
-    const elements = getElements();
-    elements.learningSettingsForm.style.display = 'none';
-    
-    if (appState.selectedDeck) {
-        elements.deckDetails.style.display = 'block';
-    } else {
-        elements.welcomeState.style.display = 'block';
-    }
-}
-
 // UI functions
 function toggleSidebar() {
     const elements = getElements();
@@ -2570,25 +2406,6 @@ function getElements() {
         quizStudyMode: document.getElementById('quizStudyMode'),
         matchingStudyMode: document.getElementById('matchingStudyMode'),
         spacedStudyMode: document.getElementById('spacedStudyMode'),
-        
-        // Learning Settings
-        learningSettingsForm: document.getElementById('learningSettingsForm'),
-        learningSettings: document.getElementById('learningSettings'),
-        settingsDeckName: document.getElementById('settingsDeckName'),
-        closeLearningSettings: document.getElementById('closeLearningSettings'),
-        
-        // Learning Settings Form Elements
-        requiredReviews: document.getElementById('requiredReviews'),
-        autoMarkLearned: document.getElementById('autoMarkLearned'),
-        resetOnWrong: document.getElementById('resetOnWrong'),
-        saveLearningSettings: document.getElementById('saveLearningSettings'),
-        resetToDefault: document.getElementById('resetToDefault'),
-        
-        // Statistics Elements
-        statTotalCards: document.getElementById('statTotalCards'),
-        statLearnedCards: document.getElementById('statLearnedCards'),
-        statAverageProgress: document.getElementById('statAverageProgress'),
-        statCardsNeeding: document.getElementById('statCardsNeeding')
     };
 }
 
@@ -2652,12 +2469,6 @@ function setupEventListeners() {
     elements.submitCardEdit?.addEventListener('click', submitCardEdit);
     elements.cancelCardEdit?.addEventListener('click', hideEditCardForm);
     elements.cancelCardEditAlt?.addEventListener('click', hideEditCardForm);
-    
-    // Learning Settings
-    elements.learningSettings?.addEventListener('click', showLearningSettings);
-    elements.closeLearningSettings?.addEventListener('click', closeLearningSettings);
-    elements.saveLearningSettings?.addEventListener('click', saveLearningSettings);
-    elements.resetToDefault?.addEventListener('click', resetToDefaultSettings);
     
     // Deck Management buttons
     document.getElementById('editDeck')?.addEventListener('click', showEditDeckForm);
@@ -2913,15 +2724,6 @@ window.revisionMain = {
     initializeApp,
     getElements,
     
-    // Learning Settings
-    showLearningSettings,
-    loadLearningSettings,
-    saveLearningSettings,
-    resetToDefaultSettings,
-    closeLearningSettings,
-    applyPreset,
-    updateStatisticsDisplay,
-    updatePresetsDisplay,
     
     // Import Preview
     showImportPreview,

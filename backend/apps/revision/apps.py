@@ -12,16 +12,16 @@ class RevisionConfig(AppConfig):
     def ready(self):
         """Called when Django starts"""
         try:
-            # Import settings module to register models
-            from . import settings
-            logger.info("Revision settings module loaded successfully")
+            # Import settings models to register them
+            from . import models_settings
+            logger.info("Revision settings models loaded successfully")
             
             # Register signals if needed
             from . import signals
             logger.info("Revision signals registered")
             
         except ImportError as e:
-            logger.warning(f"Could not import revision settings or signals: {e}")
+            logger.warning(f"Could not import revision settings models or signals: {e}")
         except Exception as e:
             logger.error(f"Error initializing revision app: {e}")
     
