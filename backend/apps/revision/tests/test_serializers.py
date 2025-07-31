@@ -70,7 +70,7 @@ class FlashcardDeckSerializerTest(TestCase):
         self.assertEqual(data['description'], 'Test Description')
         self.assertEqual(data['tags'], ['python', 'django'])
         self.assertTrue(data['is_public'])
-        self.assertEqual(data['user'], self.user.id)
+        self.assertEqual(data['user']['id'], self.user.id)
         self.assertEqual(data['cards_count'], 2)
         self.assertEqual(data['learned_count'], 1)
     
@@ -377,7 +377,11 @@ class BatchDeleteSerializerTest(TestCase):
         factory = APIRequestFactory()
         request = factory.get('/')
         request.user = self.user
-        self.context = {'request': Request(request)}
+        # Force authentication on the DRF Request object
+        drf_request = Request(request)
+        drf_request._user = self.user
+        drf_request._auth = None
+        self.context = {'request': drf_request}
     
     def test_valid_batch_delete(self):
         """Test de suppression en lot valide"""
@@ -435,7 +439,11 @@ class BatchArchiveSerializerTest(TestCase):
         factory = APIRequestFactory()
         request = factory.get('/')
         request.user = self.user
-        self.context = {'request': Request(request)}
+        # Force authentication on the DRF Request object
+        drf_request = Request(request)
+        drf_request._user = self.user
+        drf_request._auth = None
+        self.context = {'request': drf_request}
     
     def test_valid_batch_archive(self):
         """Test d'archivage en lot valide"""
@@ -524,8 +532,9 @@ class VocabularyWordSerializerTest(TestCase):
             user=self.user,
             word="hello",
             translation="bonjour",
-            language="en",
-            definition="A greeting"
+            source_language="EN",
+            target_language="FR",
+            notes="A greeting"
         )
         
         factory = APIRequestFactory()
@@ -558,8 +567,8 @@ class VocabularyWordSerializerTest(TestCase):
         word = serializer.save(user=self.user)
         self.assertEqual(word.word, 'goodbye')
         self.assertEqual(word.translation, 'au revoir')
-        self.assertEqual(word.language, 'en')
-        self.assertEqual(word.definition, 'A farewell')
+        self.assertEqual(word.source_language.lower(), 'en')
+        self.assertEqual(word.notes, 'A farewell')
     
     def test_vocabulary_validation(self):
         """Test de validation d'un mot de vocabulaire"""

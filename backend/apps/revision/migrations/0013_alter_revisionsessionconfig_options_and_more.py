@@ -23,64 +23,40 @@ class Migration(migrations.Migration):
             name='revisionsessionconfig',
             unique_together={('user', 'name')},
         ),
-        migrations.RemoveField(
-            model_name='revisionsettings',
-            name='achievement_notifications',
+        # Remove fields safely - only if they exist
+        migrations.RunSQL(
+            sql=[
+                "ALTER TABLE revision_revisionsettings DROP COLUMN IF EXISTS achievement_notifications;",
+                "ALTER TABLE revision_revisionsettings DROP COLUMN IF EXISTS multiplier_easy;",
+                "ALTER TABLE revision_revisionsettings DROP COLUMN IF EXISTS multiplier_hard;",
+                "ALTER TABLE revision_revisionsettings DROP COLUMN IF EXISTS multiplier_normal;",
+                "ALTER TABLE revision_revisionsettings DROP COLUMN IF EXISTS streak_notifications;",
+                "ALTER TABLE revision_revisionsettings DROP COLUMN IF EXISTS theme_preference;",
+            ],
+            reverse_sql=[
+                # No reverse needed since we can't guarantee the original column types
+            ]
         ),
-        migrations.RemoveField(
-            model_name='revisionsettings',
-            name='multiplier_easy',
-        ),
-        migrations.RemoveField(
-            model_name='revisionsettings',
-            name='multiplier_hard',
-        ),
-        migrations.RemoveField(
-            model_name='revisionsettings',
-            name='multiplier_normal',
-        ),
-        migrations.RemoveField(
-            model_name='revisionsettings',
-            name='streak_notifications',
-        ),
-        migrations.RemoveField(
-            model_name='revisionsettings',
-            name='theme_preference',
-        ),
-        migrations.AddField(
-            model_name='revisionsessionconfig',
-            name='difficulty_filter',
-            field=models.JSONField(blank=True, default=list, help_text='Niveaux de difficulté à inclure'),
-        ),
-        migrations.AddField(
-            model_name='revisionsessionconfig',
-            name='duration_minutes',
-            field=models.PositiveIntegerField(default=20, validators=[django.core.validators.MinValueValidator(5), django.core.validators.MaxValueValidator(120)]),
-        ),
-        migrations.AddField(
-            model_name='revisionsessionconfig',
-            name='include_difficult_cards',
-            field=models.BooleanField(default=True),
-        ),
-        migrations.AddField(
-            model_name='revisionsessionconfig',
-            name='session_type',
-            field=models.CharField(choices=[('quick', 'Session rapide'), ('standard', 'Session standard'), ('extended', 'Session étendue'), ('custom', 'Session personnalisée')], default='standard', max_length=20),
-        ),
-        migrations.AddField(
-            model_name='revisionsessionconfig',
-            name='tags_filter',
-            field=models.JSONField(blank=True, default=list, help_text='Tags à inclure dans cette session'),
-        ),
-        migrations.AddField(
-            model_name='revisionsessionconfig',
-            name='target_cards',
-            field=models.PositiveIntegerField(default=20, validators=[django.core.validators.MinValueValidator(5), django.core.validators.MaxValueValidator(200)]),
-        ),
-        migrations.AddField(
-            model_name='revisionsettings',
-            name='reset_on_wrong_answer',
-            field=models.BooleanField(default=False, help_text='Remettre le compteur à zéro si mauvaise réponse'),
+        # Add fields safely - only if they don't exist
+        migrations.RunSQL(
+            sql=[
+                "ALTER TABLE revision_revisionsessionconfig ADD COLUMN IF NOT EXISTS difficulty_filter JSONB DEFAULT '[]'::jsonb;",
+                "ALTER TABLE revision_revisionsessionconfig ADD COLUMN IF NOT EXISTS duration_minutes INTEGER DEFAULT 20 CHECK (duration_minutes >= 5 AND duration_minutes <= 120);",
+                "ALTER TABLE revision_revisionsessionconfig ADD COLUMN IF NOT EXISTS include_difficult_cards BOOLEAN DEFAULT true;",
+                "ALTER TABLE revision_revisionsessionconfig ADD COLUMN IF NOT EXISTS session_type VARCHAR(20) DEFAULT 'standard';",
+                "ALTER TABLE revision_revisionsessionconfig ADD COLUMN IF NOT EXISTS tags_filter JSONB DEFAULT '[]'::jsonb;",
+                "ALTER TABLE revision_revisionsessionconfig ADD COLUMN IF NOT EXISTS target_cards INTEGER DEFAULT 20 CHECK (target_cards >= 5 AND target_cards <= 200);",
+                "ALTER TABLE revision_revisionsettings ADD COLUMN IF NOT EXISTS reset_on_wrong_answer BOOLEAN DEFAULT false;",
+            ],
+            reverse_sql=[
+                "ALTER TABLE revision_revisionsessionconfig DROP COLUMN IF EXISTS difficulty_filter;",
+                "ALTER TABLE revision_revisionsessionconfig DROP COLUMN IF EXISTS duration_minutes;",
+                "ALTER TABLE revision_revisionsessionconfig DROP COLUMN IF EXISTS include_difficult_cards;",
+                "ALTER TABLE revision_revisionsessionconfig DROP COLUMN IF EXISTS session_type;",
+                "ALTER TABLE revision_revisionsessionconfig DROP COLUMN IF EXISTS tags_filter;",
+                "ALTER TABLE revision_revisionsessionconfig DROP COLUMN IF EXISTS target_cards;",
+                "ALTER TABLE revision_revisionsettings DROP COLUMN IF EXISTS reset_on_wrong_answer;",
+            ]
         ),
         migrations.AlterField(
             model_name='revisionsessionconfig',
@@ -207,28 +183,18 @@ class Migration(migrations.Migration):
             name='user',
             field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='revision_settings', to=settings.AUTH_USER_MODEL),
         ),
-        migrations.RemoveField(
-            model_name='revisionsessionconfig',
-            name='cards_count',
-        ),
-        migrations.RemoveField(
-            model_name='revisionsessionconfig',
-            name='description',
-        ),
-        migrations.RemoveField(
-            model_name='revisionsessionconfig',
-            name='difficulty_override',
-        ),
-        migrations.RemoveField(
-            model_name='revisionsessionconfig',
-            name='include_failed_cards',
-        ),
-        migrations.RemoveField(
-            model_name='revisionsessionconfig',
-            name='session_duration',
-        ),
-        migrations.RemoveField(
-            model_name='revisionsessionconfig',
-            name='study_mode',
+        # Remove fields safely from revisionsessionconfig - only if they exist
+        migrations.RunSQL(
+            sql=[
+                "ALTER TABLE revision_revisionsessionconfig DROP COLUMN IF EXISTS cards_count;",
+                "ALTER TABLE revision_revisionsessionconfig DROP COLUMN IF EXISTS description;",
+                "ALTER TABLE revision_revisionsessionconfig DROP COLUMN IF EXISTS difficulty_override;",
+                "ALTER TABLE revision_revisionsessionconfig DROP COLUMN IF EXISTS include_failed_cards;",
+                "ALTER TABLE revision_revisionsessionconfig DROP COLUMN IF EXISTS session_duration;",
+                "ALTER TABLE revision_revisionsessionconfig DROP COLUMN IF EXISTS study_mode;",
+            ],
+            reverse_sql=[
+                # No reverse needed since we can't guarantee the original column types
+            ]
         ),
     ]

@@ -33,6 +33,10 @@ class FlashcardDeckPermission(BasePermission):
         if request.method in SAFE_METHODS:
             return obj.is_public or (request.user.is_authenticated and obj.user == request.user)
         
+        # Clone : autorisé pour les decks publics ou ses propres decks
+        if hasattr(view, 'action') and view.action == 'clone':
+            return obj.is_public or (request.user.is_authenticated and obj.user == request.user)
+        
         # Écriture : autorisée uniquement pour le propriétaire
         return request.user.is_authenticated and obj.user == request.user
 

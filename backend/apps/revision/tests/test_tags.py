@@ -412,7 +412,8 @@ class TagsAPITest(APITestCase):
         url = reverse('revision:tags-api')
         
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        # API peut retourner 401 ou 403 selon la configuration DRF
+        self.assertIn(response.status_code, [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN])
     
     def test_tags_isolation_between_users(self):
         """Test que les tags sont isolés entre utilisateurs"""

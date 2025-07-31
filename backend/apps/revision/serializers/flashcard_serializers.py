@@ -213,15 +213,20 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
             # Garder la casse originale mais vérifier les doublons en mode normalisé
             original_tag = tag.strip()
             
+            # Rejeter les tags vides après strip
             if not normalized_tag:
-                continue  # Ignorer les tags vides
+                raise serializers.ValidationError("Les tags vides ne sont pas autorisés.")
             
             if len(original_tag) > 50:
                 raise serializers.ValidationError("Chaque tag ne peut pas dépasser 50 caractères.")
             
-            # Vérifier que le tag ne contient que des caractères autorisés
+            # Allow Unicode letters, numbers, hyphens, underscores, and emojis, but reject problematic characters
             import re
-            if not re.match(r'^[a-zA-Z0-9àâäçéèêëïîôöùûüÿñæœ\s\-_]+$', normalized_tag):
+            # Reject spaces, @, !, #, %, and other problematic characters, but allow emojis
+            if re.search(r'[\s@!#%&*+=/\\|<>{}[\]().,;:?~`^]', normalized_tag):
+                raise serializers.ValidationError(f"Le tag '{original_tag}' contient des caractères non autorisés.")
+            # Also reject control characters
+            if re.search(r'[\x00-\x1f\x7f-\x9f]', normalized_tag):
                 raise serializers.ValidationError(f"Le tag '{original_tag}' contient des caractères non autorisés.")
             
             # Vérifier les doublons case-insensitive et ignorer les doublons
@@ -238,6 +243,7 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
 # Sérialiseur pour les opérations de création de deck avec un nombre minimal de champs
 class FlashcardDeckCreateSerializer(serializers.ModelSerializer):
     is_public = serializers.BooleanField(default=False)
+    tags = serializers.ListField(required=False, allow_null=True, default=list)
     
     class Meta:
         model = FlashcardDeck
@@ -246,9 +252,12 @@ class FlashcardDeckCreateSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         """Create a new deck with the current user as owner."""
-        user = self.context['request'].user
-        validated_data['user'] = user
-        validated_data['is_active'] = True  # Always active when created
+        # Gérer le cas où le contexte request n'est pas disponible (tests)
+        if 'user' not in validated_data:
+            if self.context and 'request' in self.context:
+                user = self.context['request'].user
+                validated_data['user'] = user
+        validated_data['is_active'] = True  # Always active when created  
         return super().create(validated_data)
     
     def validate_name(self, value):
@@ -273,6 +282,9 @@ class FlashcardDeckCreateSerializer(serializers.ModelSerializer):
     
     def validate_tags(self, value):
         """Validate tags format and content with case-insensitive deduplication."""
+        if value is None:
+            return []
+            
         if not isinstance(value, list):
             raise serializers.ValidationError("Les tags doivent être une liste.")
         
@@ -290,15 +302,20 @@ class FlashcardDeckCreateSerializer(serializers.ModelSerializer):
             # Garder la casse originale mais vérifier les doublons en mode normalisé
             original_tag = tag.strip()
             
+            # Rejeter les tags vides après strip
             if not normalized_tag:
-                continue  # Ignorer les tags vides
+                raise serializers.ValidationError("Les tags vides ne sont pas autorisés.")
             
             if len(original_tag) > 50:
                 raise serializers.ValidationError("Chaque tag ne peut pas dépasser 50 caractères.")
             
-            # Vérifier que le tag ne contient que des caractères autorisés
+            # Allow Unicode letters, numbers, hyphens, underscores, and emojis, but reject problematic characters
             import re
-            if not re.match(r'^[a-zA-Z0-9àâäçéèêëïîôöùûüÿñæœ\s\-_]+$', normalized_tag):
+            # Reject spaces, @, !, #, %, and other problematic characters, but allow emojis
+            if re.search(r'[\s@!#%&*+=/\\|<>{}[\]().,;:?~`^]', normalized_tag):
+                raise serializers.ValidationError(f"Le tag '{original_tag}' contient des caractères non autorisés.")
+            # Also reject control characters
+            if re.search(r'[\x00-\x1f\x7f-\x9f]', normalized_tag):
                 raise serializers.ValidationError(f"Le tag '{original_tag}' contient des caractères non autorisés.")
             
             # Vérifier les doublons case-insensitive et ignorer les doublons
@@ -443,6 +460,21 @@ class BatchDeleteSerializer(serializers.Serializer):
             )
         
         return data
+    
+    def save(self):
+        """Execute la suppression des decks"""
+        deck_ids = self.validated_data.get('deck_ids', [])
+        request = self.context.get('request')
+        
+        # Get and delete the decks
+        deleted_count = FlashcardDeck.objects.filter(
+            id__in=deck_ids,
+            user=request.user
+        ).delete()[0]  # delete() returns (count, {model: count})
+        
+        return {
+            'deleted': deleted_count
+        }
 
 class BatchArchiveSerializer(serializers.Serializer):
     """Sérialiseur pour l'archivage par lot"""
@@ -455,6 +487,21 @@ class BatchArchiveSerializer(serializers.Serializer):
         choices=['archive', 'unarchive'],
         help_text="Action à effectuer sur les decks"
     )
+    
+    def validate_deck_ids(self, value):
+        """Valide les IDs de decks"""
+        # Retirer les doublons
+        unique_ids = list(set(value))
+        
+        if len(unique_ids) != len(value):
+            raise serializers.ValidationError("Des IDs de decks sont dupliqués.")
+        
+        # Vérifier que les decks existent
+        existing_count = FlashcardDeck.objects.filter(id__in=unique_ids).count()
+        if existing_count != len(unique_ids):
+            raise serializers.ValidationError("Certains decks spécifiés n'existent pas.")
+        
+        return unique_ids
     
     def validate(self, data):
         """Validation avec vérification des permissions"""
@@ -476,6 +523,34 @@ class BatchArchiveSerializer(serializers.Serializer):
             )
         
         return data
+    
+    def save(self):
+        """Execute l'action d'archivage/désarchivage sur les decks"""
+        deck_ids = self.validated_data.get('deck_ids', [])
+        action = self.validated_data.get('action')
+        request = self.context.get('request')
+        
+        # Get the decks to update
+        decks = FlashcardDeck.objects.filter(
+            id__in=deck_ids,
+            user=request.user
+        )
+        
+        updated_count = 0
+        for deck in decks:
+            if action == 'archive':
+                if not deck.is_archived:
+                    deck.archive()
+                    updated_count += 1
+            elif action == 'unarchive':
+                if deck.is_archived:
+                    deck.unarchive()
+                    updated_count += 1
+        
+        return {
+            'updated': updated_count,
+            'action': action
+        }
 
 # Nouveau serializer pour les paramètres d'apprentissage
 class DeckLearningSettingsSerializer(serializers.ModelSerializer):

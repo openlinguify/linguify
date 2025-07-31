@@ -1,6 +1,7 @@
 # backend/revision/views/flashcard_views.py
 from django.utils import timezone
 from django.db.models import Q, Count, Prefetch
+from django.core.exceptions import ValidationError
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -185,6 +186,12 @@ class FlashcardDeckViewSet(DeckCloneMixin, DeckPermissionMixin, OptimizedQueryse
                     is_public=True, 
                     is_archived=False
                 )
+        
+        # For retrieve/clone actions, allow access to public decks even without public_access parameter
+        if self.action in ['retrieve', 'clone'] and user.is_authenticated:
+            return self.get_optimized_deck_queryset().filter(
+                Q(user=user) | Q(is_public=True, is_archived=False)
+            )
         
         # If user is not authenticated, return empty queryset for personal space
         if not user.is_authenticated:
@@ -672,7 +679,8 @@ class FlashcardViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(card)
             return Response(serializer.data)
             
-        except Exception as e:
+        except (ValidationError, ValueError) as e:
+            # Only catch specific exceptions, let DRF handle PermissionDenied
             logger.error(f"Error toggling card {pk} learned status: {str(e)}")
             return Response(
                 {"detail": f"Failed to update card: {str(e)}"},
@@ -1222,7 +1230,12 @@ class TagsAPIView(APIView):
             # Récupérer tous les tags des decks de l'utilisateur
             user_decks = FlashcardDeck.objects.filter(user=request.user, is_active=True)
             
-            # Dédupliquer les tags en mode case-insensitive tout en gardant la première occurrence
+            # Paramètres de requête
+            include_counts = request.query_params.get('include_counts', 'false').lower() == 'true'
+            search_term = request.query_params.get('search', '').strip().lower()
+            
+            # Collecter les tags avec leurs comptes
+            tag_counts = {}
             seen_normalized = set()
             unique_tags = []
             
@@ -1233,14 +1246,34 @@ class TagsAPIView(APIView):
                         if normalized not in seen_normalized:
                             seen_normalized.add(normalized)
                             unique_tags.append(tag)  # Garder la casse originale
+                            tag_counts[tag] = 0
+                        
+                        # Compter les occurrences
+                        original_tag = next(t for t in unique_tags if t.lower() == normalized)
+                        tag_counts[original_tag] += 1
+            
+            # Appliquer le filtre de recherche si fourni
+            if search_term:
+                filtered_tags = [tag for tag in unique_tags if search_term in tag.lower()]
+                unique_tags = filtered_tags
             
             # Trier les tags alphabétiquement (case-insensitive)
             sorted_tags = sorted(unique_tags, key=lambda x: x.lower())
             
-            return Response({
+            response_data = {
                 'tags': sorted_tags,
                 'count': len(sorted_tags)
-            })
+            }
+            
+            # Ajouter les comptes si demandé
+            if include_counts:
+                tags_with_counts = [
+                    {'tag': tag, 'count': tag_counts[tag]}
+                    for tag in sorted_tags
+                ]
+                response_data['tags_with_counts'] = tags_with_counts
+            
+            return Response(response_data)
             
         except Exception as e:
             logger.error(f"Error retrieving tags for user {request.user.id}: {str(e)}")
@@ -1267,7 +1300,14 @@ class TagsAPIView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
-            if not re.match(r'^[a-zA-Z0-9àâäçéèêëïîôöùûüÿñæœ\s\-_]+$', tag):
+            # Reject spaces, special characters, but allow emojis and international characters
+            if re.search(r'[\s@!#%&*+=/\\|<>{}[\]().,;:?~`^]', tag):
+                return Response(
+                    {"detail": "Le tag contient des caractères non autorisés"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            # Also reject control characters
+            if re.search(r'[\x00-\x1f\x7f-\x9f]', tag):
                 return Response(
                     {"detail": "Le tag contient des caractères non autorisés"},
                     status=status.HTTP_400_BAD_REQUEST
