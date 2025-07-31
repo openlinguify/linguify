@@ -2,12 +2,33 @@
 
 /* Variables CSS unifiées pour le thème revision */
 :root {
-    /* Couleurs principales */
-    --primary-gradient: linear-gradient(135deg, #007ACC 0%, #005a9a 100%);
-    --primary-color: #007ACC;
-    --primary-dark: #005a9a;
-    --secondary-color: #007ACC;
-    --accent-color: #007ACC;
+    /* Couleurs OpenLinguify */
+    --linguify-primary: #2D5BBA;        /* Bleu royal moderne - confiance et professionnalisme */
+    --linguify-secondary: #8B5CF6;      /* Violet élégant - créativité et sophistication */
+    --linguify-accent: #00D4AA;         /* Vert menthe - succès et progression */
+    --linguify-gray: #6B7280;           /* Gris moderne - neutralité élégante */
+    --linguify-primary-light: #4F7BD9;  /* Bleu plus clair */
+    --linguify-primary-dark: #1E4A8C;   /* Bleu plus foncé */
+    --linguify-secondary-light: #A78BFA; /* Violet plus clair */
+    --linguify-secondary-dark: #7C3AED;  /* Violet plus foncé */
+    --linguify-accent-light: #26E4B8;   /* Vert menthe plus clair */
+    --linguify-accent-dark: #00B894;    /* Vert menthe plus foncé */
+    --linguify-success: #10B981;        /* Vert succès */
+    --linguify-warning: #F59E0B;        /* Jaune attention */
+    --linguify-error: #EF4444;          /* Rouge erreur */
+    --header-height: 64px;              /* Hauteur du header fixe */
+    
+    /* Variables RGB pour transparence */
+    --linguify-primary-rgb: 45, 91, 186;
+    --linguify-secondary-rgb: 139, 92, 246;
+    --linguify-accent-rgb: 0, 212, 170;
+    
+    /* Couleurs principales (compatibilité) */
+    --primary-gradient: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%);
+    --primary-color: var(--linguify-primary);
+    --primary-dark: var(--linguify-primary-dark);
+    --secondary-color: var(--linguify-secondary);
+    --accent-color: var(--linguify-accent);
     
     /* Couleurs système */
     --success-color: #10b981;
@@ -1182,6 +1203,88 @@ body {
     color: #374151;
     margin-bottom: 0.5rem;
     display: block;
+}
+
+/* Modal Share Styles - OpenLinguify */
+.share-modal-icon-bg {
+    background-color: rgba(var(--linguify-primary-rgb, 45, 91, 186), 0.1);
+}
+
+.share-modal-icon {
+    font-size: 1.5rem;
+    color: var(--linguify-primary, #2D5BBA);
+}
+
+.share-modal-title {
+    color: var(--linguify-primary, #2D5BBA);
+}
+
+.share-modal-alert {
+    background-color: rgba(var(--linguify-primary-rgb, 45, 91, 186), 0.08);
+    border-left: 4px solid var(--linguify-primary, #2D5BBA) !important;
+}
+
+.share-modal-alert-icon {
+    color: var(--linguify-primary, #2D5BBA);
+}
+
+.share-modal-alert-title {
+    color: var(--linguify-primary, #2D5BBA);
+}
+
+.share-modal-alert-text {
+    color: var(--linguify-gray, #6B7280);
+}
+
+.share-modal-section-title {
+    color: var(--linguify-gray, #6B7280);
+}
+
+.share-modal-accent-icon {
+    color: var(--linguify-accent, #00D4AA);
+}
+
+.share-modal-list-item {
+    color: var(--linguify-gray, #6B7280);
+}
+
+.share-modal-info-text {
+    color: var(--linguify-gray, #6B7280);
+}
+
+.share-modal-cancel-btn {
+    border-color: var(--linguify-gray, #6B7280);
+    color: var(--linguify-gray, #6B7280);
+}
+
+.share-modal-primary-btn {
+    background-color: var(--linguify-primary, #2D5BBA);
+    border-color: var(--linguify-primary, #2D5BBA);
+    color: white;
+}
+
+.share-modal-public-icon-bg {
+    background-color: rgba(var(--linguify-accent-rgb, 0, 212, 170), 0.1);
+}
+
+.share-modal-public-icon {
+    font-size: 1.5rem;
+    color: var(--linguify-accent, #00D4AA);
+}
+
+.share-modal-public-title {
+    color: var(--linguify-accent, #00D4AA);
+}
+
+.share-modal-url-input {
+    background-color: #f8f9fa;
+    border-color: var(--linguify-primary, #2D5BBA);
+}
+
+.share-modal-social-btn {
+    border: 1px solid var(--linguify-secondary, #8B5CF6);
+    color: var(--linguify-secondary, #8B5CF6);
+    background-color: rgba(var(--linguify-secondary-rgb, 139, 92, 246), 0.05);
 }
 
 /* Responsive */

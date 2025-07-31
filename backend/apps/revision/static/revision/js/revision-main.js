@@ -1626,78 +1626,257 @@ async function exportDeck() {
 }
 
 async function shareDeck() {
+    console.log('shareDeck called, selectedDeck:', appState.selectedDeck);
+    
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error('Aucun jeu de cartes sélectionné');
         return;
     }
     
+    // Wait for modal to be available (with timeout)
+    const waitForModal = (modalId, maxWait = 5000) => {
+        return new Promise((resolve) => {
+            const startTime = Date.now();
+            const checkModal = () => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    console.log(`Modal ${modalId} found after ${Date.now() - startTime}ms`);
+                    resolve(modal);
+                } else if (Date.now() - startTime < maxWait) {
+                    setTimeout(checkModal, 100);
+                } else {
+                    console.error(`Modal ${modalId} not found after ${maxWait}ms`);
+                    resolve(null);
+                }
+            };
+            checkModal();
+        });
+    };
+    
     if (!appState.selectedDeck.is_public) {
-        // Proposer de rendre le deck public
-        const makePublic = confirm(
-            'Ce deck est privé. Voulez-vous le rendre public pour pouvoir le partager ?'
-        );
+        // Deck is private, show make public modal
+        console.log('Looking for makePublicModal...');
+        let modalElement = document.getElementById('makePublicModal');
         
-        if (makePublic) {
+        if (!modalElement) {
+            console.log('makePublicModal not found, creating it dynamically...');
+            // Immediately create modals dynamically since we know they're not in template
+            ensureModalsExist();
+            
+            // Give a brief moment for DOM to update
+            await new Promise(resolve => setTimeout(resolve, 100));
+            modalElement = document.getElementById('makePublicModal');
+            
+            if (!modalElement) {
+                window.notificationService.error('Erreur: Impossible de créer le modal de partage');
+                return;
+            }
+        }
+        
+        console.log('Opening makePublicModal:', modalElement);
+        
+        try {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+            } else {
+                // Fallback manuel
+                modalElement.style.display = 'block';
+                modalElement.classList.add('show');
+                document.body.classList.add('modal-open');
+                
+                // Ajouter un backdrop
+                const backdrop = document.createElement('div');
+                backdrop.className = 'modal-backdrop fade show';
+                backdrop.onclick = () => {
+                    modalElement.style.display = 'none';
+                    modalElement.classList.remove('show');
+                    document.body.classList.remove('modal-open');
+                    backdrop.remove();
+                };
+                document.body.appendChild(backdrop);
+            }
+        } catch (error) {
+            console.error('Error with modal:', error);
+            window.notificationService.error('Erreur lors de l\'ouverture de la modal');
+        }
+        return;
+    }
+    
+    // Générer le lien de partage et afficher la modal de partage
+    showShareModal();
+}
+
+async function showShareModal() {
+    try {
+        // Check if elements exist, if not create them immediately
+        let shareModalElement = document.getElementById('shareModal');
+        let shareUrlInput = document.getElementById('shareUrl');
+        let shareModalDeckName = document.getElementById('shareModalDeckName');
+        
+        if (!shareModalElement || !shareUrlInput || !shareModalDeckName) {
+            console.log('Share modal elements not found, creating them dynamically...');
+            ensureModalsExist();
+            
+            // Give a brief moment for DOM to update
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            shareModalElement = document.getElementById('shareModal');
+            shareUrlInput = document.getElementById('shareUrl');
+            shareModalDeckName = document.getElementById('shareModalDeckName');
+            
+            if (!shareModalElement || !shareUrlInput || !shareModalDeckName) {
+                window.notificationService.error('Erreur: Impossible de créer le modal de partage');
+                return;
+            }
+        }
+        
+        // Générer le lien de partage et mettre à jour la modal
+        const url = `${window.location.origin}/revision/explore/?deck=${appState.selectedDeck.id}`;
+        shareUrlInput.value = url;
+        shareModalDeckName.textContent = `"${appState.selectedDeck.name || 'Jeu de cartes sans nom'}"`;
+        
+        // Afficher la modal
+        if (typeof bootstrap !== 'undefined') {
+            const modal = new bootstrap.Modal(shareModalElement);
+            modal.show();
+        } else if (typeof $ !== 'undefined' && $.fn.modal) {
+            console.log('Using jQuery modal for share');
+            $(shareModalElement).modal('show');
+        } else {
+            // Fallback ultime: afficher la modal manuellement
+            console.log('Using manual modal display for share');
+            shareModalElement.style.display = 'block';
+            shareModalElement.classList.add('show');
+            document.body.classList.add('modal-open');
+            
+            // Ajouter un backdrop
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            backdrop.onclick = () => {
+                shareModalElement.style.display = 'none';
+                shareModalElement.classList.remove('show');
+                document.body.classList.remove('modal-open');
+                backdrop.remove();
+            };
+            document.body.appendChild(backdrop);
+        }
+    } catch (error) {
+        console.error('Error with share modal:', error);
+        window.notificationService.error('Erreur lors de l\'ouverture de la modal de partage');
+    }
+}
+
+// Variable pour éviter la double initialisation
+let shareModalHandlersSetup = false;
+
+function setupShareModalEventHandlers() {
+    if (shareModalHandlersSetup) {
+        console.log('Share modal handlers already setup');
+        return;
+    }
+    
+    // Utiliser la délégation d'événements sur document pour éviter les problèmes de timing
+    document.addEventListener('click', async function(e) {
+        // Handler pour le bouton "Rendre public et partager"
+        if (e.target.id === 'makeDeckPublicBtn' || e.target.closest('#makeDeckPublicBtn')) {
+            e.preventDefault();
+            const button = e.target.closest('#makeDeckPublicBtn') || e.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Mise à jour...';
+            button.disabled = true;
+            
             try {
                 const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, {
                     is_public: true
                 });
+                
                 appState.selectedDeck = updatedDeck;
-                window.notificationService.success('Deck rendu public');
+                window.notificationService.success('Jeu de cartes rendu public avec succès !');
+                
+                // Fermer la modal actuelle et afficher la modal de partage
+                const makePublicModal = bootstrap.Modal.getInstance(document.getElementById('makePublicModal'));
+                if (makePublicModal) {
+                    makePublicModal.hide();
+                }
+                showShareModal();
+                
             } catch (error) {
                 console.error('Error making deck public:', error);
-                window.notificationService.error('Erreur lors de la publication du deck');
-                return;
+                window.notificationService.error('Erreur lors de la publication du jeu de cartes');
+                button.innerHTML = originalText;
+                button.disabled = false;
             }
-        } else {
-            return;
         }
-    }
-    
-    // Créer l'URL de partage
-    const shareUrl = `${window.location.origin}/revision/explore/?deck=${appState.selectedDeck.id}`;
-    
-    // Copier dans le presse-papiers si possible
-    if (navigator.clipboard && window.isSecureContext) {
-        try {
-            await navigator.clipboard.writeText(shareUrl);
-            window.notificationService.success('Lien de partage copié dans le presse-papiers');
-        } catch (error) {
-            showShareDialog(shareUrl);
+        
+        // Handler pour le bouton copier
+        if (e.target.id === 'copyShareUrlBtn' || e.target.closest('#copyShareUrlBtn')) {
+            e.preventDefault();
+            const button = e.target.closest('#copyShareUrlBtn') || e.target;
+            const input = document.getElementById('shareUrl');
+            if (!input) return;
+            
+            input.select();
+            input.setSelectionRange(0, 99999); // Pour mobile
+            
+            try {
+                document.execCommand('copy');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-check-circle me-1"></i>Copié !';
+                button.style.backgroundColor = 'var(--linguify-accent, #00D4AA)';
+                button.style.borderColor = 'var(--linguify-accent, #00D4AA)';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.backgroundColor = 'var(--linguify-primary, #2D5BBA)';
+                    button.style.borderColor = 'var(--linguify-primary, #2D5BBA)';
+                }, 2000);
+                
+                window.notificationService.success('Lien copié dans le presse-papiers !');
+            } catch (err) {
+                window.notificationService.error('Impossible de copier le lien');
+                console.error('Copy failed:', err);
+            }
         }
-    } else {
-        showShareDialog(shareUrl);
-    }
+        
+        // Handlers pour les boutons de partage social
+        if (e.target.classList.contains('social-share-btn') || e.target.closest('.social-share-btn')) {
+            e.preventDefault();
+            const button = e.target.closest('.social-share-btn') || e.target;
+            const platform = button.dataset.platform;
+            const shareUrlInput = document.getElementById('shareUrl');
+            if (!shareUrlInput || !platform) return;
+            
+            const url = shareUrlInput.value;
+            shareOnSocial(platform, url);
+        }
+    });
+    
+    shareModalHandlersSetup = true;
+    console.log('Share modal event handlers configured with event delegation');
 }
 
-function showShareDialog(url) {
-    // Créer une modal simple pour afficher l'URL
-    const modal = document.createElement('div');
-    modal.innerHTML = `
-        <div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Partager le deck</h5>
-                        <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Copiez ce lien pour partager votre deck :</p>
-                        <div class="input-group">
-                            <input type="text" class="form-control" value="${url}" readonly>
-                            <button class="btn btn-primary" onclick="
-                                this.previousElementSibling.select();
-                                document.execCommand('copy');
-                                window.notificationService.success('Lien copié');
-                                this.closest('.modal').remove();
-                            ">Copier</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
+function shareOnSocial(platform, url) {
+    const deckName = appState.selectedDeck.name || 'Jeu de cartes de révision';
+    const text = `Découvrez mon jeu de cartes de révision "${deckName}" sur OpenLinguify !`;
+    
+    let shareUrl = '';
+    
+    switch (platform) {
+        case 'twitter':
+            shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+            break;
+        case 'facebook':
+            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+            break;
+        case 'linkedin':
+            shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+            break;
+        default:
+            return;
+    }
+    
+    window.open(shareUrl, '_blank', 'width=600,height=400,scrollbars=yes,resizable=yes');
 }
 
 async function archiveDeck() {
@@ -2483,7 +2662,17 @@ function setupEventListeners() {
     // Deck Management buttons
     document.getElementById('editDeck')?.addEventListener('click', showEditDeckForm);
     document.getElementById('exportDeck')?.addEventListener('click', exportDeck);
-    document.getElementById('shareDeck')?.addEventListener('click', shareDeck);
+    const shareButton = document.getElementById('shareDeck');
+    if (shareButton) {
+        shareButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Share button clicked');
+            shareDeck();
+        });
+        console.log('Share button event listener attached');
+    } else {
+        console.log('Share button not found in DOM');
+    }
     document.getElementById('archiveDeck')?.addEventListener('click', archiveDeck);
     document.getElementById('deleteDeck')?.addEventListener('click', deleteDeckConfirm);
     
@@ -2496,10 +2685,187 @@ function setupEventListeners() {
     elements.loadMoreBtn?.addEventListener('click', loadMoreDecks);
 }
 
+// Create modals dynamically if they don't exist in DOM
+function ensureModalsExist() {
+    // Check if modals already exist
+    const makePublicModal = document.getElementById('makePublicModal');
+    const shareModal = document.getElementById('shareModal');
+    
+    console.log('Checking modals existence:', {
+        makePublicModal: !!makePublicModal,
+        shareModal: !!shareModal
+    });
+    
+    if (makePublicModal && shareModal) {
+        console.log('Modals already exist in DOM');
+        return;
+    }
+    
+    console.log('Creating modals dynamically...');
+    
+    // Create makePublicModal
+    const makePublicModalHTML = `
+        <div class="modal fade" id="makePublicModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle p-2 me-3 share-modal-icon-bg">
+                                <i class="bi bi-share share-modal-icon"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title mb-0 share-modal-title">Partager votre jeu de cartes</h5>
+                                <p class="text-muted mb-0 small">Rendez votre jeu de cartes visible à tous</p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body pt-2">
+                        <div class="alert border-0" style="background-color: rgba(45, 91, 186, 0.08); border-left: 4px solid #2D5BBA !important;">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-info-circle-fill me-2 mt-1" style="color: #2D5BBA;"></i>
+                                <div>
+                                    <strong style="color: #2D5BBA;">Jeu de cartes privé</strong><br>
+                                    <span style="color: #6B7280;">Ce jeu de cartes est actuellement privé. Pour le partager, vous devez le rendre public.</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="fw-semibold mb-2" style="color: #6B7280;">
+                                <i class="bi bi-eye me-1" style="color: #00D4AA;"></i>
+                                En rendant ce jeu de cartes public :
+                            </h6>
+                            <ul class="list-unstyled ms-3">
+                                <li class="mb-1" style="color: #6B7280;">
+                                    <i class="bi bi-check-circle me-2" style="color: #00D4AA;"></i>
+                                    Autres utilisateurs pourront le découvrir
+                                </li>
+                                <li class="mb-1" style="color: #6B7280;">
+                                    <i class="bi bi-check-circle me-2" style="color: #00D4AA;"></i>
+                                    Vous pourrez partager le lien
+                                </li>
+                                <li class="mb-1" style="color: #6B7280;">
+                                    <i class="bi bi-check-circle me-2" style="color: #00D4AA;"></i>
+                                    Vous restez propriétaire et pouvez le modifier
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="small" style="color: #6B7280;">
+                            <i class="bi bi-shield-check me-1" style="color: #00D4AA;"></i>
+                            Vous pourrez toujours rendre le jeu de cartes privé plus tard si nécessaire.
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-color: #6B7280; color: #6B7280;">
+                            <i class="bi bi-x-circle me-1"></i>Annuler
+                        </button>
+                        <button type="button" class="btn" id="makeDeckPublicBtn" style="background-color: #2D5BBA; border-color: #2D5BBA; color: white;">
+                            <i class="bi bi-share me-1"></i>Rendre public et partager
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Create shareModal
+    const shareModalHTML = `
+        <div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle p-2 me-3" style="background-color: rgba(0, 212, 170, 0.1);">
+                                <i class="bi bi-share" style="font-size: 1.5rem; color: #00D4AA;"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title mb-0" style="color: #00D4AA;">Partager votre jeu de cartes</h5>
+                                <p class="text-muted mb-0 small" id="shareModalDeckName">"Nom du jeu de cartes"</p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body pt-2">
+                        <p class="mb-3" style="color: #6B7280;">Partagez ce lien avec vos amis ou sur les réseaux sociaux :</p>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" style="color: #6B7280;">
+                                <i class="bi bi-link-45deg me-1" style="color: #2D5BBA;"></i>Lien de partage
+                            </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly id="shareUrl" style="background-color: #f8f9fa; border-color: #2D5BBA;">
+                                <button class="btn" id="copyShareUrlBtn" type="button" style="background-color: #2D5BBA; border-color: #2D5BBA; color: white;">
+                                    <i class="bi bi-clipboard me-1"></i>Copier
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-sm social-share-btn" data-platform="twitter" type="button" style="border: 1px solid #8B5CF6; color: #8B5CF6; background-color: rgba(139, 92, 246, 0.05);">
+                                <i class="bi bi-twitter me-1"></i>Twitter
+                            </button>
+                            <button class="btn btn-sm social-share-btn" data-platform="facebook" type="button" style="border: 1px solid #8B5CF6; color: #8B5CF6; background-color: rgba(139, 92, 246, 0.05);">
+                                <i class="bi bi-facebook me-1"></i>Facebook
+                            </button>
+                            <button class="btn btn-sm social-share-btn" data-platform="linkedin" type="button" style="border: 1px solid #8B5CF6; color: #8B5CF6; background-color: rgba(139, 92, 246, 0.05);">
+                                <i class="bi bi-linkedin me-1"></i>LinkedIn
+                            </button>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-color: #6B7280; color: #6B7280;">
+                            <i class="bi bi-x-circle me-1"></i>Fermer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add modals to DOM
+    document.body.insertAdjacentHTML('beforeend', makePublicModalHTML);
+    document.body.insertAdjacentHTML('beforeend', shareModalHTML);
+    
+    console.log('Modals created successfully');
+}
+
+// Debug function to check DOM state
+function debugModalState() {
+    console.log('=== DEBUG MODAL STATE ===');
+    console.log('Template debug marker:', document.getElementById('template-debug-marker'));
+    console.log('Share component debug marker:', document.getElementById('share-component-debug-marker'));
+    console.log('makePublicModal:', document.getElementById('makePublicModal'));
+    console.log('shareModal:', document.getElementById('shareModal'));
+    console.log('shareUrl:', document.getElementById('shareUrl'));
+    console.log('makeDeckPublicBtn:', document.getElementById('makeDeckPublicBtn'));
+    console.log('copyShareUrlBtn:', document.getElementById('copyShareUrlBtn'));
+    console.log('All modals in DOM:', document.querySelectorAll('.modal'));
+    console.log('All divs with "modal" class:', document.querySelectorAll('div[class*="modal"]'));
+    console.log('Body contains "makePublicModal":', document.body.innerHTML.includes('makePublicModal'));
+    console.log('Body contains "share_deck.html":', document.body.innerHTML.includes('share_deck.html'));
+    console.log('Full body HTML length:', document.body.innerHTML.length);
+    console.log('Bootstrap available:', typeof bootstrap !== 'undefined');
+    console.log('jQuery available:', typeof $ !== 'undefined');
+    console.log('========================');
+}
+
 // Initialize the app
 function initializeApp() {
+    console.log('Initializing app...');
     setupEventListeners();
+    
+    // Setup share modal event handlers
+    setupShareModalEventHandlers();
+    
     loadDecks();
+    
+    // Debug après un délai pour laisser le DOM se charger complètement
+    setTimeout(() => {
+        console.log('=== DELAYED DEBUG MODAL STATE ===');
+        debugModalState();
+    }, 2000);
 }
 
 // Export for global access
@@ -2588,7 +2954,12 @@ window.revisionMain = {
     archiveDeck,
     deleteDeckConfirm,
     showDeleteConfirmationModal,
-    executeDeleteDeck
+    executeDeleteDeck,
+    
+    // Share functions
+    showShareModal,
+    setupShareModalEventHandlers,
+    shareOnSocial
 };
 
 // Auto-initialize when DOM is ready
