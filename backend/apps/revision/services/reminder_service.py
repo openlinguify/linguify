@@ -126,7 +126,8 @@ class RevisionReminderService:
             )
             result['notification_sent'] = success
         else:
-            result['notification_sent'] = True
+            # En mode dry_run, on simule sans envoyer
+            result['notification_sent'] = False
         
         return result
     
