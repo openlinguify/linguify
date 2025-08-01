@@ -44,7 +44,77 @@
     </div>
 
     <div class="container-fluid">
-    <!-- Overall Statistics Cards -->
+    <!-- Collection Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box linguify-secondary text-white me-3">
+                            <i class="bi bi-stack"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" id="totalDecks">-</h3>
+                            <p class="text-muted mb-0">{% trans "Total Decks" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box linguify-primary text-white me-3">
+                            <i class="bi bi-layers"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" id="totalCards">-</h3>
+                            <p class="text-muted mb-0">{% trans "Total Cards" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box linguify-success text-white me-3">
+                            <i class="bi bi-patch-check"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" id="totalLearned">-</h3>
+                            <p class="text-muted mb-0">{% trans "Cards Learned" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box linguify-accent text-white me-3">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" id="completionRate">-</h3>
+                            <p class="text-muted mb-0">{% trans "Progress Rate" %}</p>
+                        </div>
+                    </div>
+                    <div class="progress mt-2" style="height: 4px;">
+                        <div class="progress-bar linguify-accent-bg" id="completionProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Study Activity Statistics Cards -->
     <div class="row mb-4">
         <div class="col-xl-3 col-md-6 mb-3">
             <div class="card stats-card">
@@ -267,8 +337,29 @@
 </div> <!-- Close revision-study -->
 {% endblock %}
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% block extra_js %}
+<script>
+// Immediate test to verify JavaScript is working
+console.log('JavaScript is loading...');
+
+// Try to load Chart.js from CDN, but continue without it if it fails
+function loadChartJS() {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+}
+
+// Load Chart.js with fallback
+loadChartJS().then(() => {
+    console.log('Chart.js loaded successfully');
+}).catch(() => {
+    console.log('Chart.js failed to load, continuing without charts');
+});
+</script>
 
 <script>
 let currentPeriod = 7;
@@ -276,7 +367,14 @@ let studyActivityChart = null;
 let performanceChart = null;
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Stats dashboard DOM loaded, loading data...');
+    
+    // Test if DOM elements exist
+    const testElement = document.getElementById('totalDecks');
+    console.log('totalDecks element found:', testElement);
+    
     // Load stats page functionality
+    loadCollectionOverview();
     loadStatistics();
     initializeCharts();
     loadDeckStats();
@@ -293,6 +391,42 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Load basic collection overview statistics
+function loadCollectionOverview() {
+    fetch('/api/v1/revision/decks/stats/')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Collection overview data:', data);
+            
+            // Update collection overview cards
+            const totalDecks = data.total_decks || 0;
+            const totalCards = data.total_cards || 0;
+            const totalLearned = data.total_learned || 0;
+            const completionPercentage = data.completion_percentage || 0;
+            
+            console.log('Parsed values:', { totalDecks, totalCards, totalLearned, completionPercentage });
+            
+            document.getElementById('totalDecks').textContent = totalDecks;
+            document.getElementById('totalCards').textContent = totalCards;
+            document.getElementById('totalLearned').textContent = totalLearned;
+            document.getElementById('completionRate').textContent = completionPercentage + '%';
+            
+            // Update progress bar
+            const progressBar = document.getElementById('completionProgress');
+            if (progressBar) {
+                progressBar.style.width = completionPercentage + '%';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading collection overview:', error);
+            // Show error in UI
+            document.getElementById('totalDecks').textContent = 'Error';
+            document.getElementById('totalCards').textContent = 'Error';
+            document.getElementById('totalLearned').textContent = 'Error';
+            document.getElementById('completionRate').textContent = 'Error';
+        });
+}
 
 function loadStatistics() {
     fetch(`/api/v1/revision/stats/?period=${currentPeriod}`)
@@ -316,11 +450,29 @@ function loadStatistics() {
         })
         .catch(error => {
             console.error('Error loading statistics:', error);
-            window.notificationService.error('{% trans "Error loading statistics" %}');
+            if (window.notificationService) {
+                window.notificationService.error('{% trans "Error loading statistics" %}');
+            }
         });
 }
 
 function initializeCharts() {
+    // Skip chart initialization if Chart.js is not available
+    if (typeof Chart === 'undefined') {
+        console.log('Chart.js not available, skipping chart initialization');
+        // Replace charts with simple placeholders
+        const activityChart = document.getElementById('studyActivityChart');
+        const performanceChart = document.getElementById('performanceChart');
+        
+        if (activityChart) {
+            activityChart.parentElement.innerHTML = '<p class="text-center text-muted p-4">Chart unavailable (offline mode)</p>';
+        }
+        if (performanceChart) {
+            performanceChart.parentElement.innerHTML = '<p class="text-center text-muted p-4">Chart unavailable (offline mode)</p>';
+        }
+        return;
+    }
+    
     // Study Activity Chart
     const activityCtx = document.getElementById('studyActivityChart').getContext('2d');
     studyActivityChart = new Chart(activityCtx, {
@@ -550,14 +702,19 @@ function exportStats() {
         })
         .catch(error => {
             console.error('Error exporting stats:', error);
-            window.notificationService.error('{% trans "Error exporting statistics" %}');
+            if (window.notificationService) {
+                window.notificationService.error('{% trans "Error exporting statistics" %}');
+            }
         });
 }
 
 function setStudyGoal() {
     // This would open a modal to set study goals
-    window.notificationService.info('{% trans "Study goal setting coming soon!" %}');
+    if (window.notificationService) {
+        window.notificationService.info('{% trans "Study goal setting coming soon!" %}');
+    } else {
+        alert('{% trans "Study goal setting coming soon!" %}');
+    }
 }
 </script>
-
-{% block extra_css %}{% endblock %}
+{% endblock %}

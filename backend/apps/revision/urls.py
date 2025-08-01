@@ -13,6 +13,8 @@ from .views import (
 )
 from .views.flashcard_views import TagsAPIView, WordStatsAPIView
 from .views.revision_settings_views import get_user_revision_settings
+from .views_web import get_user_revision_stats, get_detailed_stats, get_recent_sessions, get_study_goals
+
 app_name = 'revision'
 
 router = DefaultRouter()
@@ -28,6 +30,12 @@ router.register(r'vocabulary-lists', VocabularyListViewSet, basename='vocabulary
 router.register(r'revision-lists', CreateRevisionListViewSet, basename='revision-list')
 
 urlpatterns = [
+    # Stats endpoint pour le dashboard - MUST be before router.urls
+    path('decks/stats/', get_user_revision_stats, name='decks-stats'),
+    path('stats/', get_detailed_stats, name='detailed-stats'),
+    path('sessions/recent/', get_recent_sessions, name='recent-sessions'),
+    path('goals/', get_study_goals, name='study-goals'),
+    
     # API principale de révision
     path('', include(router.urls)),
     path('decks/<int:deck_id>/import/', FlashcardImportView.as_view(), name='flashcard-import'),
@@ -37,7 +45,7 @@ urlpatterns = [
     # Paramètres de révision
     path('settings/', include('apps.revision.urls_settings')),
     
-    # Endpoint pour récupérer les paramètres utilisateur dans l'app
+    # Endpoint pour recuperer les parametres utilisateur dans l'app
     path('user-settings/', get_user_revision_settings, name='user-settings'),
 ]
 

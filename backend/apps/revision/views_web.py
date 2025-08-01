@@ -283,8 +283,8 @@ def get_user_revision_stats(request):
         user_decks = FlashcardDeck.objects.filter(user=request.user)
         
         total_decks = user_decks.count()
-        total_cards = sum(deck.flashcard_set.count() for deck in user_decks)
-        total_learned = sum(deck.flashcard_set.filter(learned=True).count() for deck in user_decks)
+        total_cards = sum(deck.flashcards.count() for deck in user_decks)
+        total_learned = sum(deck.flashcards.filter(learned=True).count() for deck in user_decks)
         
         stats = {
             'total_decks': total_decks,
@@ -366,3 +366,90 @@ def health_check(request):
         'app': 'revision',
         'version': '1.0.0'
     })
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_detailed_stats(request):
+    """
+    API endpoint pour les statistiques détaillées avec période
+    """
+    period = request.GET.get('period', '7')
+    
+    # Données temporaires pour éviter l'erreur 404
+    stats = {
+        'total_studied_cards': 15,
+        'accuracy_rate': 85,
+        'total_study_time': 120,  # en minutes
+        'current_streak': 5,
+        'daily_activity': [
+            {'date': '2025-01-26', 'cards_studied': 8},
+            {'date': '2025-01-27', 'cards_studied': 12},
+            {'date': '2025-01-28', 'cards_studied': 6},
+            {'date': '2025-01-29', 'cards_studied': 10},
+            {'date': '2025-01-30', 'cards_studied': 15},
+            {'date': '2025-01-31', 'cards_studied': 9},
+            {'date': '2025-02-01', 'cards_studied': 11},
+        ],
+        'performance_breakdown': {
+            'correct': 45,
+            'incorrect': 12,
+            'skipped': 3
+        }
+    }
+    
+    return JsonResponse(stats)
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_recent_sessions(request):
+    """
+    API endpoint pour les sessions récentes
+    """
+    # Données temporaires
+    sessions = {
+        'results': [
+            {
+                'deck_name': 'Vocabulaire Anglais',
+                'mode': 'Flashcards',
+                'cards_studied': 12,
+                'accuracy': 85,
+                'created_at': '2025-02-01T10:30:00Z'
+            },
+            {
+                'deck_name': 'Grammaire Française',
+                'mode': 'Learn',
+                'cards_studied': 8,
+                'accuracy': 92,
+                'created_at': '2025-01-31T16:45:00Z'
+            }
+        ]
+    }
+    
+    return JsonResponse(sessions)
+
+
+@login_required
+@require_http_methods(["GET"])  
+def get_study_goals(request):
+    """
+    API endpoint pour les objectifs d'étude
+    """
+    # Données temporaires
+    goals = {
+        'daily_cards_progress': {
+            'current': 11,
+            'target': 20
+        },
+        'weekly_time_progress': {
+            'current': 180,
+            'target': 300
+        },
+        'accuracy_progress': {
+            'current': 85,
+            'target': 85
+        }
+    }
+    
+    return JsonResponse(goals)

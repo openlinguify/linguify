@@ -1,7 +1,7 @@
 # Makefile for Linguify Backend Development
 # Complete application and database management
 
-.PHONY: help install run clean apps apps-manifests app-hide app-show app-order app-delete sync-manifests st test-prod test-dev sync-prod sync-app setup-db migrate reset-db deploy-prod deploy check-deploy env env-dev env-prod
+.PHONY: help install run stop clean apps apps-manifests app-hide app-show app-order app-delete sync-manifests st test-prod test-dev sync-prod sync-app setup-db migrate reset-db deploy-prod deploy check-deploy env env-dev env-prod
 
 # ==============================================================================
 # 🎯 HELP & INFORMATION
@@ -24,6 +24,7 @@ help:
 	@echo "  env-dev          Switch to DEVELOPMENT"
 	@echo "  env-prod         ⚠️  Switch to PRODUCTION"
 	@echo "  run              Start development server"
+	@echo "  stop             Stop development server"
 	@echo "  test             Run tests"
 	@echo ""
 	@echo "🔧 INITIAL SETUP:"
@@ -413,6 +414,12 @@ install:
 run:
 	@echo "🚀 Starting Django server..."
 	poetry run python manage.py runserver 0.0.0.0:8000
+
+stop:
+	@echo "🛑 Stopping Django server..."
+	@pkill -f "python.*manage.py runserver" || echo "No Django server running"
+	@lsof -ti:8000 | xargs kill -9 2>/dev/null || echo "Port 8000 is free"
+	@echo "✅ Server stopped"
 
 shell:
 	@echo "🐚 Opening Django shell..."
