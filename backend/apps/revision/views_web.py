@@ -325,33 +325,6 @@ def revision_settings_update(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
-@login_required
-def study_hub(request):
-    """
-    Hub d'étude centralisé avec tous les modes d'étude
-    """
-    # App info pour le header
-    current_app_info = {
-        'name': 'revision',
-        'display_name': 'Revision',
-        'static_icon': '/app-icons/revision/icon.png',
-        'route_path': '/revision/'
-    }
-    
-    context = {
-        'current_app': current_app_info,
-        'page_title': 'Révision - Hub d\'Étude',
-        'app_name': 'revision',
-        'user_data': {
-            'id': request.user.id,
-            'username': request.user.username,
-            'email': request.user.email,
-        },
-        'api_base_url': '/api/v1/revision',
-        'debug': settings.DEBUG,
-    }
-    
-    return render(request, 'revision/study_hub.html', context)
 
 
 @login_required
