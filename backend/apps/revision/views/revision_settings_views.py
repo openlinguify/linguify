@@ -131,6 +131,32 @@ class RevisionSettingsView(View):
                 
                 request.session[session_key] = current_settings
                 data = current_settings
+            elif setting_type == 'notifications':
+                # Handle notification settings - update User model
+                user = request.user
+                
+                # Update the User model's notification fields
+                reminder_time_str = request.POST.get('reminder_time', '18:00')
+                weekday_reminders = request.POST.get('weekday_reminders') == 'on'
+                
+                try:
+                    from datetime import datetime
+                    reminder_time = datetime.strptime(reminder_time_str, '%H:%M').time()
+                    user.reminder_time = reminder_time
+                    user.weekday_reminders = weekday_reminders
+                    user.save(update_fields=['reminder_time', 'weekday_reminders'])
+                    logger.info(f"Updated notification settings for user {user.id}: reminder_time={reminder_time}, weekday_reminders={weekday_reminders}")
+                except ValueError as e:
+                    logger.error(f"Invalid time format for reminder_time: {reminder_time_str}, error: {e}")
+                    reminder_time = user.reminder_time  # Keep current value
+                    user.weekday_reminders = weekday_reminders
+                    user.save(update_fields=['weekday_reminders'])
+                
+                data = {
+                    'reminder_time': reminder_time.strftime('%H:%M'),
+                    'weekday_reminders': weekday_reminders,
+                    'notification_frequency': request.POST.get('notification_frequency', 'daily'),
+                }
             else:
                 # Parse all form data for other settings
                 data = {

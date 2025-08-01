@@ -320,7 +320,7 @@
                 
                 <div class="form-group">
                     <label class="form-label">
-                        <input type="checkbox" name="daily_reminder_enabled" checked>
+                        <input type="checkbox" name="weekday_reminders" {% if user.weekday_reminders %}checked{% endif %}>
                         Rappel quotidien
                     </label>
                     <div class="form-help">Recevoir un rappel pour réviser quotidiennement</div>
@@ -329,7 +329,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Heure du rappel</label>
-                        <input type="time" name="reminder_time" value="18:00" class="form-control">
+                        <input type="time" name="reminder_time" value="{{ user.reminder_time|time:'H:i' }}" class="form-control">
                         <div class="form-help">Heure à laquelle recevoir le rappel</div>
                     </div>
 
