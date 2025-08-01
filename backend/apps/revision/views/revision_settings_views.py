@@ -404,17 +404,17 @@ class RevisionSettingsViewSet(viewsets.ModelViewSet):
             # Cartes en cours
             cards_in_progress = total_cards - cards_learned
             
-            # Calcul du streak (simulation)
-            daily_streak = 7  # À calculer selon la logique métier
+            # Calcul du streak (simulation pour l'instant)
+            daily_streak = 0  # TODO: calculer depuis les sessions
             
-            # Temps d'étude total (simulation)
-            total_study_time = 450  # minutes - à calculer depuis les sessions
+            # Temps d'étude total (simulation pour l'instant)
+            total_study_time = 0  # TODO: calculer depuis les sessions
             
-            # Taux de succès moyen
-            success_rate = 0.85 if total_cards > 0 else 0.0
+            # Taux de succès réel basé sur les cartes apprises
+            success_rate = (cards_learned / total_cards) if total_cards > 0 else 0.0
             
-            # Dernière date d'étude
-            last_study_date = now - timedelta(hours=6)  # Simulation
+            # Dernière date d'étude (simulation pour l'instant)
+            last_study_date = None  # TODO: calculer depuis les sessions
             
             stats_data = {
                 'total_cards': total_cards,
@@ -422,7 +422,7 @@ class RevisionSettingsViewSet(viewsets.ModelViewSet):
                 'cards_in_progress': cards_in_progress,
                 'daily_streak': daily_streak,
                 'total_study_time': total_study_time,
-                'average_session_duration': 22.5,
+                'average_session_duration': 0,  # TODO: calculer depuis les sessions
                 'success_rate': success_rate,
                 'last_study_date': last_study_date,
                 'cards_by_difficulty': {
@@ -430,11 +430,15 @@ class RevisionSettingsViewSet(viewsets.ModelViewSet):
                     'normal': total_cards // 2 if total_cards > 0 else 0,
                     'hard': total_cards // 6 if total_cards > 0 else 0,
                 },
-                'performance_trend': [0.7, 0.75, 0.8, 0.85, 0.83, 0.87, 0.85],
-                'upcoming_reviews': 12,
+                'performance_trend': [],  # TODO: calculer depuis l'historique
+                'upcoming_reviews': cards_in_progress,  # Cartes non apprises à réviser
             }
             
-            return Response(stats_data)
+            # Ajouter des headers pour débugger
+            response = Response(stats_data)
+            response['Access-Control-Allow-Origin'] = '*'
+            response['Content-Type'] = 'application/json'
+            return response
             
         except ImportError as e:
             logger.warning(f"Revision models not available for stats: {e}")
@@ -446,6 +450,17 @@ class RevisionSettingsViewSet(viewsets.ModelViewSet):
             return Response({
                 'error': 'Erreur lors du calcul des statistiques'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    @action(detail=False, methods=['get'])
+    def test_stats(self, request):
+        """Test endpoint pour vérifier que l'API fonctionne"""
+        return Response({
+            'message': 'API fonctionne!',
+            'total_cards': 19,
+            'cards_learned': 7,
+            'success_rate': 0.368,
+            'daily_streak': 0
+        })
     
     @action(detail=False, methods=['get'])
     def session_config(self, request):

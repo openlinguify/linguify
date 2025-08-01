@@ -8,6 +8,12 @@
                 Statistiques de révision
             </h3>
             <div class="section-actions">
+                <button type="button" onclick="loadRevisionStats()" style="margin-right: 8px; padding: 4px 8px; font-size: 12px; background: #007bff; color: white; border: none; border-radius: 4px;">
+                    🔄 Actualiser
+                </button>
+                <button type="button" onclick="testStatsAPI()" style="margin-right: 8px; padding: 4px 8px; font-size: 12px; background: #28a745; color: white; border: none; border-radius: 4px;">
+                    🧪 Test
+                </button>
                 <button class="section-toggle">
                     <i class="bi bi-chevron-up"></i>
                 </button>
@@ -757,26 +763,64 @@
     });
 
     function initRevisionSettings() {
-        console.log('[RevisionSettings] Initializing revision settings');
-        loadRevisionStats();
+        console.log('[RevisionSettings] Initializing revision settings - VERSION 2.0');
+        console.log('[RevisionSettings] Calling loadRevisionStats in 1 second...');
+        setTimeout(() => {
+            loadRevisionStats();
+        }, 1000);
     }
 
-    function loadRevisionStats() {
-        console.log('[RevisionSettings] Loading revision statistics');
+    async function loadRevisionStats() {
+        console.log('[RevisionSettings] Loading revision statistics from API');
         
-        // Mock data for demonstration
-        const stats = {
-            total_cards: 28,
-            cards_learned: 15,
-            daily_streak: 5,
-            success_rate: 0.75
-        };
+        try {
+            console.log('[RevisionSettings] Fetching from /api/v1/revision/settings/api/settings/stats/');
+            const response = await fetch('/api/v1/revision/settings/api/settings/stats/');
+            console.log('[RevisionSettings] Response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const stats = await response.json();
+            console.log('[RevisionSettings] Statistics loaded successfully:', stats);
+            
+            // Mettre à jour les éléments HTML avec vérification
+            const updateElement = (id, value) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                    console.log(`[RevisionSettings] Updated ${id} to: ${value}`);
+                } else {
+                    console.error(`[RevisionSettings] Element ${id} not found`);
+                }
+            };
+            
+            updateElement('total-cards', stats.total_cards || 0);
+            updateElement('cards-learned', stats.cards_learned || 0);
+            updateElement('daily-streak', stats.daily_streak || 0);
+            updateElement('success-rate', stats.success_rate ? Math.round(stats.success_rate * 100) + '%' : '0%');
+        } catch (error) {
+            console.error('[RevisionSettings] Error loading statistics:', error);
+            // Fallback en cas d'erreur
+            document.getElementById('total-cards').textContent = '0';
+            document.getElementById('cards-learned').textContent = '0';
+            document.getElementById('daily-streak').textContent = '0';
+            document.getElementById('success-rate').textContent = '0%';
+        }
+    }
 
-        document.getElementById('total-cards').textContent = stats.total_cards || 0;
-        document.getElementById('cards-learned').textContent = stats.cards_learned || 0;
-        document.getElementById('daily-streak').textContent = stats.daily_streak || 0;
-        document.getElementById('success-rate').textContent = 
-            stats.success_rate ? Math.round(stats.success_rate * 100) + '%' : '0%';
+    async function testStatsAPI() {
+        console.log('[TEST] Testing stats API...');
+        try {
+            const response = await fetch('/api/v1/revision/settings/api/settings/test_stats/');
+            const data = await response.json();
+            console.log('[TEST] Test API response:', data);
+            alert(`Test API: ${data.message}\nCartes: ${data.total_cards}\nApprises: ${data.cards_learned}`);
+        } catch (error) {
+            console.error('[TEST] Error:', error);
+            alert('Test API failed: ' + error.message);
+        }
     }
 
     function applyRevisionPreset(presetName) {
@@ -844,7 +888,7 @@
     function loadWordStats(type) {
         console.log(`[WordStats] Loading ${type} word statistics`);
         
-        const apiUrl = '/api/revision/word-stats/';
+        const apiUrl = '/api/v1/revision/word-stats/';
         const params = new URLSearchParams();
         
         if (type === 'known') {

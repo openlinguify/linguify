@@ -198,7 +198,7 @@ function loadWordStatsIfEnabled() {
 async function loadWordStats(type) {
     console.log(`[Revision Settings] Loading ${type} word statistics`);
     
-    const apiUrl = '/api/revision/word-stats/';
+    const apiUrl = '/api/v1/revision/word-stats/';
     const params = new URLSearchParams();
     
     if (type === 'known') {
