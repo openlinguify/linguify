@@ -145,6 +145,13 @@ class RevisionSettingsView(View):
                     user.reminder_time = reminder_time
                     user.weekday_reminders = weekday_reminders
                     user.save(update_fields=['reminder_time', 'weekday_reminders'])
+                    
+                    # ALSO update RevisionSettings for consistency
+                    revision_settings, created = RevisionSettings.objects.get_or_create(user=user)
+                    revision_settings.reminder_time = reminder_time
+                    revision_settings.daily_reminder_enabled = weekday_reminders
+                    revision_settings.save(update_fields=['reminder_time', 'daily_reminder_enabled'])
+                    
                     logger.info(f"Updated notification settings for user {user.id}: reminder_time={reminder_time}, weekday_reminders={weekday_reminders}")
                 except ValueError as e:
                     logger.error(f"Invalid time format for reminder_time: {reminder_time_str}, error: {e}")

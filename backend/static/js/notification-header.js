@@ -132,26 +132,23 @@ class NotificationHeader {
     
     addNotificationToDropdown(notification) {
         const li = document.createElement('li');
-        const isRead = notification.is_read;
-        
-        // Add different styling for read vs unread notifications
-        li.className = `notification-item${!isRead ? ' unread' : ' read'}`;
+        li.className = `notification-item${!notification.is_read ? ' unread' : ''}`;
         
         li.innerHTML = `
-            <a class="dropdown-item notification-link ${isRead ? 'opacity-75' : ''}" href="#" data-notification-id="${notification.id}">
+            <a class="dropdown-item notification-link" href="#" data-notification-id="${notification.id}">
                 <div class="d-flex align-items-start">
                     <div class="flex-shrink-0 me-3">
                         <i class="bi ${notification.icon || 'bi-bell'} text-${notification.color || 'primary'}" 
-                           style="font-size: 1.2rem; ${isRead ? 'opacity: 0.6;' : ''}"></i>
+                           style="font-size: 1.2rem;"></i>
                     </div>
                     <div class="flex-grow-1">
-                        <div class="${isRead ? 'fw-normal text-muted' : 'fw-semibold'}">${this.escapeHtml(notification.title)}</div>
+                        <div class="fw-semibold">${this.escapeHtml(notification.title)}</div>
                         <div class="text-muted small">${this.escapeHtml(notification.message)}</div>
                         <div class="text-muted smaller mt-1">
                             <i class="bi bi-clock"></i> ${notification.time || notification.created_at}
                         </div>
                     </div>
-                    ${!isRead ? '<div class="flex-shrink-0"><span class="badge bg-primary rounded-pill ms-2">Nouveau</span></div>' : '<div class="flex-shrink-0"><i class="bi bi-check-circle text-success"></i></div>'}
+                    ${!notification.is_read ? '<div class="flex-shrink-0"><span class="badge bg-primary rounded-pill ms-2">Nouveau</span></div>' : ''}
                 </div>
             </a>
         `;
@@ -160,10 +157,7 @@ class NotificationHeader {
         const link = li.querySelector('.notification-link');
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            // Only mark as read if it's not already read
-            if (!notification.is_read) {
-                this.markAsRead(notification.id);
-            }
+            this.markAsRead(notification.id);
             this.handleNotificationClick(notification);
         });
         

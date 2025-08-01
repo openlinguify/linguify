@@ -4,6 +4,7 @@ API views for SaaS functionality.
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from apps.notification.models import Notification
 import logging
@@ -26,7 +27,7 @@ class UserStatsAPI(View):
         return JsonResponse(stats)
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator([login_required, csrf_exempt], name='dispatch')
 class NotificationAPI(View):
     """API pour les notifications"""
     
@@ -62,19 +63,14 @@ class NotificationAPI(View):
     
     def get(self, request):
         try:
-            # Get all recent notifications (read and unread) for display
-            all_notifications = Notification.objects.filter(
-                user=request.user
-            ).order_by('-created_at')[:10]
-            
-            # Count only unread notifications
-            unread_count = Notification.objects.filter(
+            # Get only unread notifications for display
+            notifications = Notification.objects.filter(
                 user=request.user,
                 is_read=False
-            ).count()
+            ).order_by('-created_at')[:10]
             
             data = {
-                'unread_count': unread_count,
+                'unread_count': notifications.count(),
                 'notifications': [
                     {
                         'id': str(notif.id),
@@ -88,7 +84,7 @@ class NotificationAPI(View):
                         'data': notif.data or {},
                         'is_read': notif.is_read,
                     }
-                    for notif in all_notifications
+                    for notif in notifications
                 ]
             }
             return JsonResponse(data)
