@@ -1,0 +1,750 @@
+{% extends 'revision/base_new.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Learn" %} - {{ deck_data.name }}{% endblock %}
+
+{% block header_content %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <a href="{% url 'revision_web:main' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>
+                {% trans "Back to Decks" %}
+            </a>
+            <div class="vr"></div>
+            <h1 class="h4 mb-0">{% trans "Learn Mode" %}: {{ deck_data.name }}</h1>
+        </div>
+        <p class="text-muted mb-0">
+            <i class="bi bi-lightbulb me-1"></i>
+            {% trans "Interactive learning with multiple choice questions and immediate feedback" %}
+        </p>
+    </div>
+    
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" id="settingsBtn" title="{% trans 'Study Settings' %}">
+            <i class="bi bi-gear"></i>
+        </button>
+        <button class="btn btn-outline-secondary" id="pauseBtn" title="{% trans 'Pause Study' %}">
+            <i class="bi bi-pause-circle"></i>
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Study Progress Bar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small text-muted">{% trans "Progress" %}</span>
+                        <span class="small text-muted">
+                            <span id="currentCard">0</span> / <span id="totalCards">0</span>
+                            (<span id="progressPercentage">0</span>%)
+                        </span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-primary" role="progressbar" id="progressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Study Interface -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <!-- Loading State -->
+            <div id="loadingState" class="text-center py-5">
+                <div class="loading-spinner mb-3"></div>
+                <p class="text-muted">{% trans "Loading questions..." %}</p>
+            </div>
+
+            <!-- Question Card -->
+            <div id="questionCard" class="card shadow-sm" style="display: none;">
+                <div class="card-body p-4">
+                    <!-- Question Header -->
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary">{% trans "Question" %}</span>
+                            <span class="badge bg-outline-secondary" id="questionType">Multiple Choice</span>
+                        </div>
+                        <div class="text-muted small" id="remainingTime">
+                            <i class="bi bi-clock me-1"></i>
+                            <span>--:--</span>
+                        </div>
+                    </div>
+
+                    <!-- Question Content -->
+                    <div class="question-content mb-4">
+                        <div id="questionText" class="h5 mb-3">
+                            <!-- Question text will be loaded here -->
+                        </div>
+                        
+                        <!-- Audio playback for pronunciation questions -->
+                        <div id="audioSection" class="mb-3" style="display: none;">
+                            <button class="btn btn-outline-primary btn-sm" id="playAudioBtn">
+                                <i class="bi bi-play-circle me-1"></i>
+                                {% trans "Play Audio" %}
+                            </button>
+                            <audio id="questionAudio" preload="none"></audio>
+                        </div>
+
+                        <!-- Image for visual questions -->
+                        <div id="imageSection" class="mb-3 text-center" style="display: none;">
+                            <img id="questionImage" class="img-fluid rounded" style="max-height: 200px;" alt="Question image">
+                        </div>
+                    </div>
+
+                    <!-- Answer Options -->
+                    <div id="answerOptions" class="mb-4">
+                        <!-- Answer buttons will be loaded here -->
+                    </div>
+
+                    <!-- Answer Input (for text input questions) -->
+                    <div id="textInput" class="mb-4" style="display: none;">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="textAnswer" placeholder="{% trans 'Your answer...' %}">
+                            <label for="textAnswer">{% trans "Your answer..." %}</label>
+                        </div>
+                        <button class="btn btn-primary mt-2" id="submitTextBtn">
+                            {% trans "Submit Answer" %}
+                        </button>
+                    </div>
+
+                    <!-- Feedback Section -->
+                    <div id="feedbackSection" style="display: none;">
+                        <div class="alert" id="feedbackAlert">
+                            <div class="d-flex align-items-start">
+                                <div class="feedback-icon me-2">
+                                    <!-- Icon will be set by JavaScript -->
+                                </div>
+                                <div class="feedback-content flex-grow-1">
+                                    <div class="feedback-title fw-bold mb-1">
+                                        <!-- Feedback title -->
+                                    </div>
+                                    <div class="feedback-text">
+                                        <!-- Feedback text -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-muted small">
+                                <span id="correctAnswer" style="display: none;">
+                                    {% trans "Correct answer:" %} <strong class="text-success"></strong>
+                                </span>
+                            </div>
+                            <button class="btn btn-primary" id="nextBtn">
+                                {% trans "Continue" %}
+                                <i class="bi bi-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Study Complete -->
+            <div id="studyComplete" class="card text-center" style="display: none;">
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-trophy-fill text-warning" style="font-size: 3rem;"></i>
+                    </div>
+                    <h3 class="mb-3">{% trans "Study Session Complete!" %}</h3>
+                    <p class="text-muted mb-4">
+                        {% trans "Great job! You've completed this learn session." %}
+                    </p>
+                    
+                    <!-- Study Stats -->
+                    <div class="row mb-4">
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <div class="stat-value text-success" id="correctCount">0</div>
+                                <div class="stat-label">{% trans "Correct" %}</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <div class="stat-value text-danger" id="incorrectCount">0</div>
+                                <div class="stat-label">{% trans "Incorrect" %}</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <div class="stat-value text-primary" id="accuracyRate">0%</div>
+                                <div class="stat-label">{% trans "Accuracy" %}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button class="btn btn-primary" id="studyAgainBtn">
+                            <i class="bi bi-arrow-repeat me-1"></i>
+                            {% trans "Study Again" %}
+                        </button>
+                        <button class="btn btn-outline-primary" id="backToDecksBtn">
+                            {% trans "Back to Decks" %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="settingsModalLabel">{% trans "Study Settings" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="questionsLimit" class="form-label">{% trans "Number of questions" %}</label>
+                    <select class="form-select" id="questionsLimit">
+                        <option value="10">10 {% trans "questions" %}</option>
+                        <option value="20" selected>20 {% trans "questions" %}</option>
+                        <option value="50">50 {% trans "questions" %}</option>
+                        <option value="-1">{% trans "All questions" %}</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="timeLimit" class="form-label">{% trans "Time per question (seconds)" %}</label>
+                    <select class="form-select" id="timeLimit">
+                        <option value="0">{% trans "No time limit" %}</option>
+                        <option value="30" selected>30 {% trans "seconds" %}</option>
+                        <option value="60">60 {% trans "seconds" %}</option>
+                        <option value="120">120 {% trans "seconds" %}</option>
+                    </select>
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="shuffleQuestions" checked>
+                    <label class="form-check-label" for="shuffleQuestions">
+                        {% trans "Shuffle questions" %}
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="showHints" checked>
+                    <label class="form-check-label" for="showHints">
+                        {% trans "Show hints when available" %}
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-primary" id="saveSettingsBtn">{% trans "Save Settings" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.question-content {
+    min-height: 100px;
+}
+
+.answer-option {
+    transition: all 0.3s ease;
+    margin-bottom: 0.5rem;
+}
+
+.answer-option.correct {
+    background-color: var(--bs-success-bg-subtle) !important;
+    border-color: var(--bs-success-border-subtle) !important;
+    color: var(--bs-success-text-emphasis) !important;
+}
+
+.answer-option.incorrect {
+    background-color: var(--bs-danger-bg-subtle) !important;
+    border-color: var(--bs-danger-border-subtle) !important;
+    color: var(--bs-danger-text-emphasis) !important;
+}
+
+.answer-option.selected {
+    background-color: var(--bs-primary-bg-subtle) !important;
+    border-color: var(--bs-primary-border-subtle) !important;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--bs-text-muted);
+}
+
+.loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 0.25em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spinner-border {
+    to { transform: rotate(360deg); }
+}
+
+.feedback-icon {
+    font-size: 1.25rem;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+class LearnStudyMode {
+    constructor() {
+        this.deckId = window.REVISION_CONFIG?.deckId;
+        this.apiBaseUrl = window.REVISION_CONFIG?.apiBaseUrl || '/api/v1/revision';
+        this.currentQuestionIndex = 0;
+        this.questions = [];
+        this.answers = [];
+        this.settings = {
+            questionsLimit: 20,
+            timeLimit: 30,
+            shuffleQuestions: true,
+            showHints: true
+        };
+        this.timer = null;
+        this.timeRemaining = 0;
+        
+        this.initializeInterface();
+        this.loadSettings();
+        this.startStudySession();
+    }
+    
+    initializeInterface() {
+        // Settings modal
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            new bootstrap.Modal(document.getElementById('settingsModal')).show();
+        });
+        
+        document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+            this.saveSettings();
+            bootstrap.Modal.getInstance(document.getElementById('settingsModal')).hide();
+        });
+        
+        // Audio playback
+        document.getElementById('playAudioBtn').addEventListener('click', () => {
+            const audio = document.getElementById('questionAudio');
+            if (audio.src) {
+                audio.play();
+            }
+        });
+        
+        // Text input submission
+        document.getElementById('submitTextBtn').addEventListener('click', () => {
+            this.submitTextAnswer();
+        });
+        
+        document.getElementById('textAnswer').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.submitTextAnswer();
+            }
+        });
+        
+        // Next button
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            this.nextQuestion();
+        });
+        
+        // Study complete actions
+        document.getElementById('studyAgainBtn').addEventListener('click', () => {
+            this.restartStudy();
+        });
+        
+        document.getElementById('backToDecksBtn').addEventListener('click', () => {
+            window.location.href = '{% url "revision_web:main" %}';
+        });
+        
+        // Pause functionality
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            this.pauseStudy();
+        });
+    }
+    
+    async startStudySession() {
+        try {
+            document.getElementById('loadingState').style.display = 'block';
+            
+            const response = await window.apiService.request(
+                `${this.apiBaseUrl}/decks/${this.deckId}/study/learn/start/`,
+                { method: 'POST' }
+            );
+            
+            this.questions = response.questions || [];
+            
+            if (this.questions.length === 0) {
+                window.notificationService.info('{% trans "No questions available for this deck." %}');
+                window.location.href = '{% url "revision_web:main" %}';
+                return;
+            }
+            
+            if (this.settings.shuffleQuestions) {
+                this.shuffleArray(this.questions);
+            }
+            
+            if (this.settings.questionsLimit > 0) {
+                this.questions = this.questions.slice(0, this.settings.questionsLimit);
+            }
+            
+            this.updateProgressBar();
+            this.showQuestion();
+            
+        } catch (error) {
+            console.error('Error starting study session:', error);
+            window.notificationService.error('{% trans "Error starting study session." %}');
+        } finally {
+            document.getElementById('loadingState').style.display = 'none';
+        }
+    }
+    
+    showQuestion() {
+        if (this.currentQuestionIndex >= this.questions.length) {
+            this.completeStudy();
+            return;
+        }
+        
+        const question = this.questions[this.currentQuestionIndex];
+        
+        // Update question card
+        document.getElementById('questionText').textContent = question.question;
+        document.getElementById('questionType').textContent = question.type || 'Multiple Choice';
+        
+        // Handle audio
+        if (question.audio_url) {
+            document.getElementById('audioSection').style.display = 'block';
+            document.getElementById('questionAudio').src = question.audio_url;
+        } else {
+            document.getElementById('audioSection').style.display = 'none';
+        }
+        
+        // Handle image
+        if (question.image_url) {
+            document.getElementById('imageSection').style.display = 'block';
+            document.getElementById('questionImage').src = question.image_url;
+        } else {
+            document.getElementById('imageSection').style.display = 'none';
+        }
+        
+        // Show appropriate input method
+        if (question.type === 'text_input') {
+            this.showTextInput();
+        } else {
+            this.showMultipleChoice(question);
+        }
+        
+        // Start timer
+        if (this.settings.timeLimit > 0) {
+            this.startTimer();
+        }
+        
+        // Show question card
+        document.getElementById('questionCard').style.display = 'block';
+        document.getElementById('feedbackSection').style.display = 'none';
+    }
+    
+    showMultipleChoice(question) {
+        document.getElementById('answerOptions').style.display = 'block';
+        document.getElementById('textInput').style.display = 'none';
+        
+        const optionsContainer = document.getElementById('answerOptions');
+        optionsContainer.innerHTML = '';
+        
+        question.options.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.className = 'btn btn-outline-secondary answer-option w-100 text-start';
+            button.textContent = option.text;
+            button.onclick = () => this.selectAnswer(index, option);
+            optionsContainer.appendChild(button);
+        });
+    }
+    
+    showTextInput() {
+        document.getElementById('answerOptions').style.display = 'none';
+        document.getElementById('textInput').style.display = 'block';
+        document.getElementById('textAnswer').value = '';
+        document.getElementById('textAnswer').focus();
+    }
+    
+    selectAnswer(optionIndex, option) {
+        // Clear previous selections
+        document.querySelectorAll('.answer-option').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        
+        // Mark selected
+        event.target.classList.add('selected');
+        
+        // Stop timer
+        this.stopTimer();
+        
+        // Process answer
+        this.processAnswer(optionIndex, option);
+    }
+    
+    submitTextAnswer() {
+        const answer = document.getElementById('textAnswer').value.trim();
+        if (!answer) {
+            window.notificationService.warning('{% trans "Please enter an answer." %}');
+            return;
+        }
+        
+        // Stop timer
+        this.stopTimer();
+        
+        // Process text answer
+        this.processAnswer(null, { text: answer, is_text_input: true });
+    }
+    
+    async processAnswer(optionIndex, selectedOption) {
+        const question = this.questions[this.currentQuestionIndex];
+        
+        try {
+            const response = await window.apiService.request(
+                `${this.apiBaseUrl}/decks/${this.deckId}/study/learn/answer/`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        question_id: question.id,
+                        selected_option: optionIndex,
+                        answer_text: selectedOption.is_text_input ? selectedOption.text : null,
+                        time_taken: this.settings.timeLimit - this.timeRemaining
+                    })
+                }
+            );
+            
+            this.answers.push({
+                question_id: question.id,
+                correct: response.correct,
+                selected_option: optionIndex,
+                answer_text: selectedOption.is_text_input ? selectedOption.text : null
+            });
+            
+            this.showFeedback(response);
+            
+        } catch (error) {
+            console.error('Error processing answer:', error);
+            window.notificationService.error('{% trans "Error processing answer." %}');
+        }
+    }
+    
+    showFeedback(response) {
+        const feedbackSection = document.getElementById('feedbackSection');
+        const feedbackAlert = document.getElementById('feedbackAlert');
+        const feedbackIcon = feedbackAlert.querySelector('.feedback-icon');
+        const feedbackTitle = feedbackAlert.querySelector('.feedback-title');
+        const feedbackText = feedbackAlert.querySelector('.feedback-text');
+        const correctAnswer = document.getElementById('correctAnswer');
+        
+        // Set feedback content
+        if (response.correct) {
+            feedbackAlert.className = 'alert alert-success';
+            feedbackIcon.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
+            feedbackTitle.textContent = '{% trans "Correct!" %}';
+            feedbackText.textContent = response.explanation || '{% trans "Well done!" %}';
+            correctAnswer.style.display = 'none';
+        } else {
+            feedbackAlert.className = 'alert alert-danger';
+            feedbackIcon.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
+            feedbackTitle.textContent = '{% trans "Incorrect" %}';
+            feedbackText.textContent = response.explanation || '{% trans "Try to remember this for next time." %}';
+            
+            if (response.correct_answer) {
+                correctAnswer.style.display = 'block';
+                correctAnswer.querySelector('strong').textContent = response.correct_answer;
+            }
+        }
+        
+        // Update answer options visual feedback
+        if (!response.correct && response.correct_option_index !== undefined) {
+            const options = document.querySelectorAll('.answer-option');
+            options.forEach((option, index) => {
+                if (index === response.correct_option_index) {
+                    option.classList.add('correct');
+                } else if (option.classList.contains('selected')) {
+                    option.classList.add('incorrect');
+                }
+            });
+        }
+        
+        feedbackSection.style.display = 'block';
+    }
+    
+    nextQuestion() {
+        this.currentQuestionIndex++;
+        this.updateProgressBar();
+        this.showQuestion();
+    }
+    
+    completeStudy() {
+        const correct = this.answers.filter(a => a.correct).length;
+        const total = this.answers.length;
+        const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+        
+        document.getElementById('correctCount').textContent = correct;
+        document.getElementById('incorrectCount').textContent = total - correct;
+        document.getElementById('accuracyRate').textContent = accuracy + '%';
+        
+        document.getElementById('questionCard').style.display = 'none';
+        document.getElementById('studyComplete').style.display = 'block';
+        
+        // Send completion data to server
+        this.saveStudyResults();
+    }
+    
+    async saveStudyResults() {
+        try {
+            await window.apiService.request(
+                `${this.apiBaseUrl}/decks/${this.deckId}/study/learn/complete/`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        answers: this.answers,
+                        settings: this.settings
+                    })
+                }
+            );
+        } catch (error) {
+            console.error('Error saving study results:', error);
+        }
+    }
+    
+    updateProgressBar() {
+        const current = this.currentQuestionIndex + 1;
+        const total = this.questions.length;
+        const percentage = total > 0 ? Math.round((current / total) * 100) : 0;
+        
+        document.getElementById('currentCard').textContent = Math.min(current, total);
+        document.getElementById('totalCards').textContent = total;
+        document.getElementById('progressPercentage').textContent = percentage;
+        document.getElementById('progressBar').style.width = percentage + '%';
+    }
+    
+    startTimer() {
+        this.timeRemaining = this.settings.timeLimit;
+        this.updateTimer();
+        
+        this.timer = setInterval(() => {
+            this.timeRemaining--;
+            this.updateTimer();
+            
+            if (this.timeRemaining <= 0) {
+                this.timeUp();
+            }
+        }, 1000);
+    }
+    
+    stopTimer() {
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+        }
+    }
+    
+    updateTimer() {
+        const minutes = Math.floor(this.timeRemaining / 60);
+        const seconds = this.timeRemaining % 60;
+        const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        const timerElement = document.getElementById('remainingTime').querySelector('span');
+        timerElement.textContent = timeStr;
+        
+        // Change color when time is running out
+        if (this.timeRemaining <= 10) {
+            timerElement.className = 'text-danger';
+        } else if (this.timeRemaining <= 30) {
+            timerElement.className = 'text-warning';
+        } else {
+            timerElement.className = '';
+        }
+    }
+    
+    timeUp() {
+        this.stopTimer();
+        window.notificationService.warning('{% trans "Time's up!" %}');
+        
+        // Auto-submit with no answer
+        this.processAnswer(null, { text: '', is_timeout: true });
+    }
+    
+    loadSettings() {
+        const saved = localStorage.getItem('learnModeSettings');
+        if (saved) {
+            this.settings = { ...this.settings, ...JSON.parse(saved) };
+        }
+        
+        // Update UI
+        document.getElementById('questionsLimit').value = this.settings.questionsLimit;
+        document.getElementById('timeLimit').value = this.settings.timeLimit;
+        document.getElementById('shuffleQuestions').checked = this.settings.shuffleQuestions;
+        document.getElementById('showHints').checked = this.settings.showHints;
+    }
+    
+    saveSettings() {
+        this.settings = {
+            questionsLimit: parseInt(document.getElementById('questionsLimit').value),
+            timeLimit: parseInt(document.getElementById('timeLimit').value),
+            shuffleQuestions: document.getElementById('shuffleQuestions').checked,
+            showHints: document.getElementById('showHints').checked
+        };
+        
+        localStorage.setItem('learnModeSettings', JSON.stringify(this.settings));
+        window.notificationService.success('{% trans "Settings saved!" %}');
+    }
+    
+    restartStudy() {
+        this.currentQuestionIndex = 0;
+        this.answers = [];
+        document.getElementById('studyComplete').style.display = 'none';
+        this.startStudySession();
+    }
+    
+    pauseStudy() {
+        this.stopTimer();
+        const isPaused = confirm('{% trans "Pause study session? Your progress will be saved." %}');
+        if (isPaused) {
+            window.location.href = '{% url "revision_web:main" %}';
+        } else {
+            if (this.settings.timeLimit > 0) {
+                this.startTimer();
+            }
+        }
+    }
+    
+    shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.REVISION_CONFIG?.deckId) {
+        new LearnStudyMode();
+    } else {
+        window.notificationService.error('{% trans "Deck ID not found." %}');
+        window.location.href = '{% url "revision_web:main" %}';
+    }
+});
+</script>
+{% endblock %}
