@@ -2609,3 +2609,200 @@ body.modal-open {
         padding: 0.75rem;
     }
 }
+
+/* =======================
+   STATISTICS DASHBOARD
+   ======================= */
+
+/* Couleurs Linguify pour les éléments de statistiques */
+.linguify-primary {
+    background-color: var(--linguify-primary, #2D5BBA) !important;
+}
+
+.linguify-primary-bg {
+    background-color: var(--linguify-primary, #2D5BBA) !important;
+}
+
+.linguify-success {
+    background-color: var(--linguify-success, #10B981) !important;
+}
+
+.linguify-success-bg {
+    background-color: var(--linguify-success, #10B981) !important;
+}
+
+.linguify-warning {
+    background-color: var(--linguify-warning, #F59E0B) !important;
+}
+
+.linguify-warning-bg {
+    background-color: var(--linguify-warning, #F59E0B) !important;
+}
+
+.linguify-accent {
+    background-color: var(--linguify-accent, #00D4AA) !important;
+}
+
+.linguify-accent-bg {
+    background-color: var(--linguify-accent, #00D4AA) !important;
+}
+
+.linguify-error-bg {
+    background-color: var(--linguify-error, #EF4444) !important;
+}
+
+/* Classes de texte Linguify */
+.text-linguify-primary {
+    color: var(--linguify-primary, #2D5BBA) !important;
+}
+
+.text-linguify-secondary {
+    color: var(--linguify-secondary, #8B5CF6) !important;
+}
+
+.text-linguify-accent {
+    color: var(--linguify-accent, #00D4AA) !important;
+}
+
+.text-linguify-success {
+    color: var(--linguify-success, #10B981) !important;
+}
+
+.text-linguify-warning {
+    color: var(--linguify-warning, #F59E0B) !important;
+}
+
+.text-linguify-error {
+    color: var(--linguify-error, #EF4444) !important;
+}
+
+.text-linguify-gray {
+    color: var(--linguify-gray, #6B7280) !important;
+}
+
+/* Boutons Linguify */
+.btn-linguify-primary {
+    background-color: var(--linguify-primary, #2D5BBA);
+    border-color: var(--linguify-primary, #2D5BBA);
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-linguify-primary:hover {
+    background-color: var(--linguify-primary-dark, #1E4A8C);
+    border-color: var(--linguify-primary-dark, #1E4A8C);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.3);
+}
+
+.btn-outline-linguify-primary {
+    background-color: transparent;
+    border-color: var(--linguify-primary, #2D5BBA);
+    color: var(--linguify-primary, #2D5BBA);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-linguify-primary:hover {
+    background-color: var(--linguify-primary, #2D5BBA);
+    border-color: var(--linguify-primary, #2D5BBA);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.2);
+}
+
+.btn-outline-linguify-gray {
+    background-color: transparent;
+    border-color: var(--linguify-gray, #6B7280);
+    color: var(--linguify-gray, #6B7280);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-linguify-gray:hover {
+    background-color: var(--linguify-gray, #6B7280);
+    border-color: var(--linguify-gray, #6B7280);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Layout spécifique pour la page de statistiques pleine largeur */
+.stats-full-width {
+    width: 100%;
+    height: 100%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    /* Simule l'espace normalement occupé par sidebar + contenu */
+    margin-left: 0;
+    flex: 1;
+}
+
+.stats-header {
+    background: var(--gray-50, #f9fafb);
+    border-bottom: 1px solid var(--gray-200, #e5e7eb);
+    padding: 1.5rem 0;
+    flex-shrink: 0;
+}
+
+
+.stats-card {
+    border: none;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+}
+
+.stats-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15);
+}
+
+.icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.goal-card {
+    padding: 1.5rem;
+    border: 1px solid var(--gray-200, #e5e7eb);
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--gray-50, #f9fafb) 0%, #ffffff 100%);
+    transition: all 0.3s ease;
+}
+
+.goal-card:hover {
+    border-color: var(--linguify-primary-light, #4F7BD9);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.1);
+}
+
+.goal-progress h6 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive adjustments pour les statistiques */
+@media (max-width: 768px) {
+    .stats-header {
+        padding: 1rem 0;
+    }
+    
+    .stats-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .stats-header .d-flex .d-flex {
+        flex-direction: row;
+    }
+}

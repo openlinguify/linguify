@@ -344,6 +344,7 @@ def stats_dashboard(request):
         'current_app': current_app_info,
         'page_title': 'Révision - Statistiques',
         'app_name': 'revision',
+        'view_type': 'stats',
         'user_data': {
             'id': request.user.id,
             'username': request.user.username,

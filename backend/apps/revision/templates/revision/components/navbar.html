@@ -10,7 +10,7 @@
         <!-- Navigation tabs -->
         <div class="d-flex align-items-center gap-1">
             <a href="{% url 'revision_web:main' %}" 
-               class="nav-tab {% if app_name == 'revision' and not study_mode %}active{% endif %}">
+               class="nav-tab {% if app_name == 'revision' and not study_mode and not view_type %}active{% endif %}">
                 <i class="bi bi-stack me-1"></i>
                 Liste de cartes
             </a>
@@ -18,6 +18,11 @@
                class="nav-tab {% if view_type == 'explore' %}active{% endif %}">
                 <i class="bi bi-globe2 me-1"></i>
                 Explorer
+            </a>
+            <a href="{% url 'revision_web:stats_dashboard' %}" 
+               class="nav-tab {% if view_type == 'stats' %}active{% endif %}">
+                <i class="bi bi-graph-up me-1"></i>
+                Statistiques
             </a>
         </div>
         
@@ -28,7 +33,8 @@
         </button>
     </div>
     
-    <!-- Centre: Statistiques compactes -->
+    <!-- Centre: Statistiques compactes (masquées sur la page de stats) -->
+    {% if view_type != 'stats' %}
     <div class="d-none d-lg-flex align-items-center gap-3">
         <div class="d-flex align-items-center gap-2 text-sm">
             <span id="totalDecks" class="fw-semibold text-linguify-primary">0</span>
@@ -47,6 +53,7 @@
             <span class="text-muted">Progression</span>
         </div>
     </div>
+    {% endif %}
     
     <!-- Droite: Actions et filtres -->
     <div class="d-flex align-items-center gap-1 flex-nowrap">
@@ -82,11 +89,6 @@
             <i class="bi bi-upload"></i>
             <span class="d-none d-xxl-inline ms-1">Importer</span>
         </button>
-        
-        <a href="{% url 'revision_web:stats_dashboard' %}" class="btn btn-outline-primary btn-sm px-2">
-            <i class="bi bi-graph-up"></i>
-            <span class="d-none d-xxl-inline ms-1">Stats</span>
-        </a>
         
         <button id="createDeck" class="btn btn-gradient btn-sm px-2">
             <i class="bi bi-plus-lg"></i>
