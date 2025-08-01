@@ -541,7 +541,7 @@ function updatePerformanceChart(data) {
 }
 
 function loadDeckStats() {
-    fetch('/api/v1/revision/decks/stats/')
+    fetch('/api/v1/revision/decks/performance/')
         .then(response => response.json())
         .then(data => {
             const tbody = document.getElementById('deckStatsTable');

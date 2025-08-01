@@ -13,7 +13,7 @@ from .views import (
 )
 from .views.flashcard_views import TagsAPIView, WordStatsAPIView
 from .views.revision_settings_views import get_user_revision_settings
-from .views_web import get_user_revision_stats, get_detailed_stats, get_recent_sessions, get_study_goals
+from .views_web import get_user_revision_stats, get_detailed_stats, get_recent_sessions, get_study_goals, get_deck_performance
 
 app_name = 'revision'
 
@@ -35,6 +35,7 @@ urlpatterns = [
     path('stats/', get_detailed_stats, name='detailed-stats'),
     path('sessions/recent/', get_recent_sessions, name='recent-sessions'),
     path('goals/', get_study_goals, name='study-goals'),
+    path('decks/performance/', get_deck_performance, name='deck-performance'),
     
     # API principale de révision
     path('', include(router.urls)),
