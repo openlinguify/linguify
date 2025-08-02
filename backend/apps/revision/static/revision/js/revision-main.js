@@ -371,6 +371,9 @@ async function selectDeck(deckId) {
         // Update decks list visual state
         renderDecksList();
         
+        // Update archive button text and icon based on deck status
+        updateArchiveButton();
+        
         // Hide sidebar on mobile
         if (window.innerWidth < 768) {
             elements.sidebar.classList.remove('show');
@@ -1878,21 +1881,120 @@ function shareOnSocial(platform, url) {
     window.open(shareUrl, '_blank', 'width=600,height=400,scrollbars=yes,resizable=yes');
 }
 
+function updateArchiveButton() {
+    const archiveButton = document.getElementById('archiveDeck');
+    if (!archiveButton || !appState.selectedDeck) return;
+    
+    const isArchived = appState.selectedDeck.is_archived;
+    const icon = archiveButton.querySelector('i');
+    const text = isArchived ? 'Désarchiver' : 'Archiver';
+    const iconClass = isArchived ? 'bi-archive-fill' : 'bi-archive';
+    
+    // Update icon
+    if (icon) {
+        icon.className = `${iconClass} me-2`;
+    }
+    
+    // Update text (keep the icon and just update the text part)
+    archiveButton.innerHTML = `<i class="${iconClass} me-2"></i>${text}`;
+}
+
 async function archiveDeck() {
     if (!appState.selectedDeck) {
         window.notificationService.error('Aucun deck sélectionné');
         return;
     }
     
-    const action = appState.selectedDeck.is_archived ? 'désarchiver' : 'archiver';
+    const deckName = appState.selectedDeck.name;
+    const isArchived = appState.selectedDeck.is_archived;
     
-    if (!confirm(`Êtes-vous sûr de vouloir ${action} ce deck ?`)) {
+    showArchiveConfirmationModal(deckName, isArchived);
+}
+
+function showArchiveConfirmationModal(deckName, isArchived) {
+    const action = isArchived ? 'désarchiver' : 'archiver';
+    const actionTitle = isArchived ? 'Désarchiver le deck' : 'Archiver le deck';
+    const actionDescription = isArchived ? 
+        'Le deck redeviendra visible dans votre liste principale' : 
+        'Le deck sera déplacé vers vos archives';
+    const iconClass = isArchived ? 'bi-archive-fill' : 'bi-archive';
+    
+    // Utiliser les couleurs Linguify
+    const bgColor = isArchived ? '#e8f5e8' : '#e8f0fe'; // Vert clair pour désarchiver, bleu clair pour archiver
+    const borderColor = isArchived ? '#00D4AA' : '#2D5BBA'; // Accent vert pour désarchiver, primary bleu pour archiver
+    const textColor = isArchived ? '#00D4AA' : '#2D5BBA';
+    const btnBgColor = isArchived ? '#00D4AA' : '#2D5BBA'; // Accent pour désarchiver, primary pour archiver
+    
+    // Créer la modal de confirmation
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+        <div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle p-2 me-3" style="background-color: ${bgColor};">
+                                <i class="${iconClass}" style="font-size: 1.5rem; color: ${textColor};"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title mb-0" style="color: ${textColor};">${actionTitle}</h5>
+                                <p class="text-muted mb-0 small">${actionDescription}</p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+                    </div>
+                    <div class="modal-body pt-2">
+                        <div class="alert border" style="background-color: ${bgColor}; border-color: ${borderColor} !important;">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-info-circle-fill me-2 mt-1" style="color: ${textColor};"></i>
+                                <div>
+                                    <strong>Confirmer l'action</strong>
+                                    <p class="mb-0 mt-1">
+                                        Voulez-vous vraiment ${action} le deck <strong>"${deckName}"</strong> ?
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-outline-secondary" onclick="this.closest('.modal').remove()">
+                            <i class="bi bi-x-lg me-1"></i>
+                            Annuler
+                        </button>
+                        <button type="button" class="btn text-white" style="background-color: ${btnBgColor}; border-color: ${btnBgColor};" onclick="executeArchiveDeck(${!isArchived})">
+                            <i class="${iconClass} me-1"></i>
+                            ${actionTitle}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Fermer avec Escape
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
+}
+
+async function executeArchiveDeck(shouldArchive) {
+    // Fermer la modal
+    document.querySelector('.modal')?.remove();
+    
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
         return;
     }
     
     try {
         const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, {
-            is_archived: !appState.selectedDeck.is_archived
+            is_archived: shouldArchive
         });
         
         appState.selectedDeck = updatedDeck;
@@ -1915,6 +2017,7 @@ async function archiveDeck() {
         
     } catch (error) {
         console.error('Error archiving deck:', error);
+        const action = shouldArchive ? 'archiv' : 'désarchiv';
         window.notificationService.error(`Erreur lors de l'${action}age du deck`);
     }
 }
@@ -2773,6 +2876,8 @@ window.revisionMain = {
     exportDeck,
     shareDeck,
     archiveDeck,
+    showArchiveConfirmationModal,
+    executeArchiveDeck,
     deleteDeckConfirm,
     showDeleteConfirmationModal,
     executeDeleteDeck,

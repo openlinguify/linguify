@@ -187,8 +187,8 @@ class FlashcardDeckViewSet(DeckCloneMixin, DeckPermissionMixin, OptimizedQueryse
                     is_archived=False
                 )
         
-        # For retrieve/clone actions, allow access to public decks even without public_access parameter
-        if self.action in ['retrieve', 'clone'] and user.is_authenticated:
+        # For retrieve/clone/update actions, allow access to user's decks (including archived ones) and public decks
+        if self.action in ['retrieve', 'clone', 'update', 'partial_update'] and user.is_authenticated:
             return self.get_optimized_deck_queryset().filter(
                 Q(user=user) | Q(is_public=True, is_archived=False)
             )
@@ -231,6 +231,9 @@ class FlashcardDeckViewSet(DeckCloneMixin, DeckPermissionMixin, OptimizedQueryse
             personal_query = Q(user=user, is_active=True)
             if not show_archived:
                 personal_query &= Q(is_archived=False)
+            elif show_archived:
+                # Filtrer pour afficher SEULEMENT les decks archivés
+                personal_query &= Q(is_archived=True)
             queryset = self.get_optimized_deck_queryset().filter(personal_query)
             logger.debug(f"Personal decks query for user {user.username}: {queryset.count()} decks")
             return queryset
@@ -243,6 +246,8 @@ class FlashcardDeckViewSet(DeckCloneMixin, DeckPermissionMixin, OptimizedQueryse
             personal_filter = Q(user=user)
             if not show_archived:
                 personal_filter &= Q(is_archived=False)
+            elif show_archived:
+                personal_filter &= Q(is_archived=True)
                 
             if show_public:
                 public_filter = Q(is_public=True, is_archived=False)
@@ -293,12 +298,14 @@ class FlashcardDeckViewSet(DeckCloneMixin, DeckPermissionMixin, OptimizedQueryse
                 status=status.HTTP_403_FORBIDDEN
             )
             
-        # Vérifier si le deck est archivé
+        # Vérifier si le deck est archivé - permettre les modifications du statut d'archivage
         if not self.check_deck_not_archived(instance):
-            return Response(
-                {"detail": "This deck is archived. Please unarchive it first to make changes."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            # Permettre seulement les modifications du champ is_archived pour désarchiver
+            if set(request.data.keys()) != {'is_archived'}:
+                return Response(
+                    {"detail": "This deck is archived. Please unarchive it first to make changes."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             
         return super().update(request, *args, **kwargs)
 
