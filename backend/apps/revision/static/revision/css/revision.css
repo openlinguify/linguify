@@ -1386,9 +1386,7 @@ body {
     display: none;
 }
 
-.tags-filter-dropdown {
-    display: none;
-}
+/* Règle supprimée - gérée par JavaScript */
 
 .empty-state-hidden {
     display: none;
@@ -1959,32 +1957,53 @@ body {
 /* Tags filter dropdown */
 .tags-filter-container {
     position: relative;
+    display: inline-block;  /* S'assurer que le conteneur ne prend que l'espace nécessaire */
 }
 
 .btn-tags-filter {
     background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%);
-    color: white;
+    color: white !important;   /* Force la couleur blanche */
     border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
+    /* Ajuster pour correspondre exactement aux form-select-sm */
+    padding: 0.25rem 0.5rem;   /* Même padding que form-select-sm */
+    border-radius: 0.25rem;    /* Même border-radius que form-select-sm */
+    font-size: 0.875rem;       /* Même font-size que form-select-sm */
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.25rem;              /* Espace réduit entre les éléments */
+    /* Dimensions plus compactes */
+    width: auto;               /* Largeur automatique basée sur le contenu */
+    min-width: 70px;           /* Largeur minimale réduite */
+    max-width: 90px;           /* Largeur maximale pour éviter d'être trop large */
+    height: calc(1.5em + 0.5rem + 2px); /* Hauteur exacte de form-select-sm */
     position: relative;
-    overflow: hidden;
+    justify-content: center;   /* Centrage du contenu */
 }
 
 .btn-tags-filter:hover {
+    background: linear-gradient(135deg, var(--linguify-primary-dark) 0%, var(--linguify-primary-dark) 100%) !important;
+    color: white !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(var(--linguify-primary-rgb), 0.3);
 }
 
+.btn-tags-filter:focus,
+.btn-tags-filter:focus-visible {
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%) !important;
+    color: white !important;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(var(--linguify-primary-rgb), 0.25);
+}
+
+.btn-tags-filter:active,
 .btn-tags-filter.active {
-    background: linear-gradient(135deg, var(--linguify-primary-dark) 0%, var(--linguify-secondary) 100%);
+    background: linear-gradient(135deg, var(--linguify-primary-dark) 0%, var(--linguify-primary-dark) 100%) !important;
+    color: white !important;
+    transform: translateY(0);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .tags-filter-label {
@@ -1994,26 +2013,40 @@ body {
 .tags-filter-count {
     background: rgba(255, 255, 255, 0.9);
     color: var(--linguify-primary);
-    padding: 0.125rem 0.5rem;
-    border-radius: 1rem;
-    font-size: 0.75rem;
+    padding: 0.125rem 0.375rem;  /* Padding réduit */
+    border-radius: 0.75rem;      /* Border-radius réduit */
+    font-size: 0.7rem;           /* Taille de police réduite */
     font-weight: 600;
-    margin-left: 0.25rem;
+    margin-left: 0.125rem;       /* Marge réduite */
+    min-width: 1.25rem;          /* Largeur minimale pour les nombres */
+    text-align: center;          /* Centrage du texte */
+    line-height: 1;              /* Hauteur de ligne pour un meilleur alignement */
 }
 
 .tags-filter-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
+    position: fixed;           /* Changement de absolute à fixed pour sortir complètement du flux */
+    top: auto;                 /* Auto pour permettre le calcul via JavaScript */
+    right: auto;               /* Auto pour permettre le calcul via JavaScript */
     background: white;
     border: 1px solid #e2e8f0;
     border-radius: 0.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
     min-width: 200px;
+    max-width: 250px;
     max-height: 300px;
     overflow-y: auto;
-    margin-top: 0.25rem;
+    display: none;
+    /* Propriétés pour éviter tout impact sur le layout */
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    transform: translateZ(0);  /* Force GPU rendering pour de meilleures performances */
+}
+
+.tags-filter-dropdown.show {
+    display: block !important; /* État visible avec !important pour override */
 }
 
 .tags-filter-header {
