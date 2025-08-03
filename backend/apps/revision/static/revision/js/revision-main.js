@@ -323,7 +323,6 @@ function hideAllSections() {
     if (elements.importPreviewSection) elements.importPreviewSection.style.display = 'none';
     if (elements.createCardForm) elements.createCardForm.style.display = 'none';
     if (elements.editCardForm) elements.editCardForm.style.display = 'none';
-    if (elements.viewAllCardsSection) elements.viewAllCardsSection.style.display = 'none';
     
     // Study modes
     if (elements.flashcardStudyMode) elements.flashcardStudyMode.style.display = 'none';
@@ -373,6 +372,12 @@ async function selectDeck(deckId) {
         
         // Update archive button text and icon based on deck status
         updateArchiveButton();
+        
+        // Load cards automatically
+        await loadDeckCards();
+        
+        // Update cards count
+        updateCardsCount();
         
         // Hide sidebar on mobile
         if (window.innerWidth < 768) {
@@ -528,29 +533,6 @@ async function createNewCard() {
     }
 }
 
-async function viewAllCards() {
-    if (!appState.selectedDeck) {
-        window.notificationService.error('Veuillez sélectionner un deck d\'abord');
-        return;
-    }
-    
-    try {
-        hideAllSections();
-        
-        const elements = getElements();
-        elements.viewAllCardsSection.style.display = 'block';
-        
-        // Set deck name
-        elements.deckNameInCards.textContent = appState.selectedDeck.name;
-        
-        // Load cards for the current deck
-        await loadDeckCards();
-        
-    } catch (error) {
-        console.error('Error viewing cards:', error);
-        window.notificationService.error('Erreur lors du chargement des cartes');
-    }
-}
 
 async function loadDeckCards() {
     if (!appState.selectedDeck) {
@@ -636,17 +618,13 @@ async function loadDeckCards() {
 
 function backToDeckView() {
     const elements = getElements();
-    elements.viewAllCardsSection.style.display = 'none';
     elements.editCardForm.style.display = 'none';
     
-    // Clear cards container to prevent showing wrong cards
-    if (elements.cardsContainer) {
-        elements.cardsContainer.innerHTML = '';
-    }
-    
+    // Show deck details with cards
     if (appState.selectedDeck) {
-        elements.deckDetails.style.display = 'block';
+        selectDeck(appState.selectedDeck.id);
     } else {
+        hideAllSections();
         elements.welcomeState.style.display = 'block';
     }
 }
@@ -726,7 +704,7 @@ async function editCard(cardId) {
         elements.editCardBack.value = card.back_text;
         
         // Hide other sections and show edit form
-        elements.viewAllCardsSection.style.display = 'none';
+        hideAllSections();
         elements.editCardForm.style.display = 'block';
         
         // Focus on front text
@@ -747,12 +725,16 @@ async function editCard(cardId) {
 function hideEditCardForm() {
     const elements = getElements();
     elements.editCardForm.style.display = 'none';
-    elements.viewAllCardsSection.style.display = 'block';
     
     // Clear form data
     elements.editCardId.value = '';
     elements.editCardFront.value = '';
     elements.editCardBack.value = '';
+    
+    // Return to deck view with cards
+    if (appState.selectedDeck) {
+        selectDeck(appState.selectedDeck.id);
+    }
 }
 
 async function submitCardEdit() {
@@ -1899,6 +1881,14 @@ function updateArchiveButton() {
     archiveButton.innerHTML = `<i class="${iconClass} me-2"></i>${text}`;
 }
 
+function updateCardsCount() {
+    const cardsCountElement = document.getElementById('cardsCount');
+    if (!cardsCountElement || !appState.selectedDeck) return;
+    
+    const count = appState.selectedDeck.cards_count || 0;
+    cardsCountElement.textContent = `${count} carte${count > 1 ? 's' : ''}`;
+}
+
 async function archiveDeck() {
     if (!appState.selectedDeck) {
         window.notificationService.error('Aucun deck sélectionné');
@@ -2444,7 +2434,6 @@ function getElements() {
         createDeckForm: document.getElementById('createDeckForm'),
         importDeckForm: document.getElementById('importDeckForm'),
         createCardForm: document.getElementById('createCardForm'),
-        viewAllCardsSection: document.getElementById('viewAllCardsSection'),
         
         // Deck details
         deckName: document.getElementById('deckName'),
@@ -2491,8 +2480,6 @@ function getElements() {
         refreshDecks: document.getElementById('refreshDecks'),
         backToList: document.getElementById('backToList'),
         addCard: document.getElementById('addCard'),
-        viewAllCards: document.getElementById('viewAllCards'),
-        backToDeckView: document.getElementById('backToDeckView'),
         submitCreate: document.getElementById('submitCreate'),
         cancelCreate: document.getElementById('cancelCreate'),
         cancelCreateAlt: document.getElementById('cancelCreateAlt'),
@@ -2553,8 +2540,6 @@ function setupEventListeners() {
     elements.refreshDecks?.addEventListener('click', loadDecks);
     elements.backToList?.addEventListener('click', backToList);
     elements.addCard?.addEventListener('click', showCreateCardForm);
-    elements.viewAllCards?.addEventListener('click', viewAllCards);
-    elements.backToDeckView?.addEventListener('click', backToDeckView);
     
     // Study mode buttons
     document.getElementById('studyFlashcards')?.addEventListener('click', startFlashcardsMode);
@@ -2825,7 +2810,7 @@ window.revisionMain = {
     createNewDeck,
     createNewCard,
     importNewDeck,
-    viewAllCards,
+    updateCardsCount,
     loadDeckCards,
     backToDeckView,
     editCard,
