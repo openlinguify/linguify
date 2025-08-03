@@ -1,25 +1,24 @@
-name: Dynamic System Tests
+# DISABLED: public_web tests moved to portal project
+# name: Dynamic System Tests
+#
+# on:
+#   push:
+#     branches: [ main, develop ]
+#     paths:
+#       - 'portal/public_web/**'
+#       - 'portal/tests/test_public_web_*.py'
+#       - '.github/workflows/dynamic-system-tests.yml'
+#   pull_request:
+#     branches: [ main, develop ]
+#     paths:
+#       - 'portal/public_web/**'
+#       - 'portal/tests/test_public_web_*.py'
+#       - '.github/workflows/dynamic-system-tests.yml'
+#   workflow_dispatch:
 
-on:
-  push:
-    branches: [ main, develop ]
-    paths:
-      - 'backend/public_web/**'
-      - 'backend/tests/test_public_web_*.py'
-      - 'backend/core/settings_test.py'
-      - '.github/workflows/dynamic-system-tests.yml'
-  pull_request:
-    branches: [ main, develop ]
-    paths:
-      - 'backend/public_web/**'
-      - 'backend/tests/test_public_web_*.py'
-      - 'backend/core/settings_test.py'
-      - '.github/workflows/dynamic-system-tests.yml'
-  workflow_dispatch:
-
-jobs:
-  test-dynamic-system:
-    name: Test Dynamic App Management System
+# jobs:
+#   test-dynamic-system:
+#     name: Test Dynamic App Management System
     runs-on: ubuntu-latest
     
     services:

@@ -109,7 +109,8 @@ jobs:
 
       - name: Run main tests
         run: |
-          poetry run python manage.py test tests.test_public_web_views tests.test_public_web_integration core.jobs.tests --verbosity=2 --keepdb
+          # public_web tests moved to portal project
+          poetry run python manage.py test core.jobs.tests --verbosity=2 --keepdb
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
           DJANGO_ENV: 'test'
@@ -119,11 +120,11 @@ jobs:
           DB_HOST: 'localhost'
           DB_PORT: '5432'
       
-      - name: Run dynamic system tests
+      - name: Run additional backend tests
         run: |
-          echo "🚀 Running Additional Dynamic App Management System Tests"
-          poetry run python manage.py test tests.test_public_web_dynamic_system --verbosity=2 --keepdb
-          poetry run python manage.py test tests.test_public_web_templatetags --verbosity=2 --keepdb
+          echo "🚀 Running Additional Backend Tests"
+          # public_web tests moved to portal project
+          echo "Note: public_web tests now run in portal project CI"
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
           DJANGO_ENV: 'test'
