@@ -60,7 +60,7 @@ Usage (when ready):
     # Development status - disabled for production
     'installable': True,  # Set to True when ready for deployment
     'auto_install': True,
-    'application': True,  # Set to True when ready
+    'application': False,  # En développement - pas prêt pour production
     'sequence': 60,  # Lower priority than core apps
     
     # Development roadmap

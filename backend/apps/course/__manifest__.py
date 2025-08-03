@@ -32,7 +32,7 @@ Usage:
     ],
     'installable': False,
     'auto_install': False,
-    'application': True,
+    'application': False,  # En développement - pas prêt pour production
     'sequence': 10,
     'frontend_components': {
         'main_component': 'CourseApp',

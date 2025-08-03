@@ -34,7 +34,7 @@ Usage:
     ],
     'installable': True,
     'auto_install': False,
-    'application': True,
+    'application': False,  # In developement - Not ready for the production
     'sequence': 25,
     'frontend_components': {
         'route': '/documents',
