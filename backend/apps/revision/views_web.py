@@ -10,6 +10,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.conf import settings
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 import json
 
 from .models.revision_flashcard import FlashcardDeck
@@ -273,11 +276,12 @@ def revision_public_deck(request, deck_id):
 
 # === API HELPERS ===
 
-@login_required
-@require_http_methods(["GET"])
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_user_revision_stats(request):
     """
     API endpoint pour récupérer les statistiques de révision de l'utilisateur
+    Compatible avec l'authentification DRF et Django sessions
     """
     try:
         # Ne compter que les decks actifs, non archivés, avec du contenu
@@ -293,16 +297,16 @@ def get_user_revision_stats(request):
         total_learned = sum(deck.flashcards.filter(learned=True).count() for deck in decks_with_content)
         
         stats = {
-            'total_decks': total_decks,
-            'total_cards': total_cards,
-            'total_learned': total_learned,
-            'completion_percentage': round((total_learned / total_cards * 100) if total_cards > 0 else 0),
+            'totalDecks': total_decks,
+            'totalCards': total_cards,
+            'totalLearned': total_learned,
+            'completionRate': round((total_learned / total_cards * 100) if total_cards > 0 else 0),
         }
         
-        return JsonResponse(stats)
+        return Response(stats)
         
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        return Response({'error': str(e)}, status=500)
 
 
 @csrf_exempt
