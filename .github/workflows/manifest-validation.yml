@@ -185,6 +185,7 @@ jobs:
           
           cat > test_discovery.py << 'EOF'
           import os
+          import sys
           import django
           
           os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings_test')
@@ -209,12 +210,36 @@ jobs:
               for manifest_info in manifests:
                   app_name = manifest_info['app_name']
                   manifest = read_manifest(manifest_info['path'])
-                  print(f"  - {manifest.get('name', app_name)} (code: {app_name})")
+                  name = manifest.get('name', app_name)
+                  version = manifest.get('version', 'unknown')
+                  print(f"  - {name} v{version} (code: {app_name})")
               
-              print("\n✅ App discovery working correctly!")
+              # Test validation
+              errors = []
+              warnings = []
+              
+              for manifest_info in manifests:
+                  app_name = manifest_info['app_name']
+                  manifest = read_manifest(manifest_info['path'])
+                  
+                  # Required fields validation
+                  required_fields = ['name', 'version', 'category', 'summary']
+                  for field in required_fields:
+                      if field not in manifest:
+                          errors.append(f"{app_name}: Missing required field '{field}'")
+              
+              if errors:
+                  print(f"\n❌ Validation errors found:")
+                  for error in errors:
+                      print(f"  - {error}")
+                  exit(1)
+              else:
+                  print(f"\n✅ All {len(manifests)} manifests are valid!")
               
           except Exception as e:
               print(f"❌ App discovery failed: {e}")
+              import traceback
+              traceback.print_exc()
               exit(1)
           EOF
           

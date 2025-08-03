@@ -11,25 +11,23 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='revisionsettings',
-            name='group_by_deck',
-            field=models.BooleanField(default=False, help_text='Grouper les statistiques par deck'),
-        ),
-        migrations.AddField(
-            model_name='revisionsettings',
-            name='hide_learned_words',
-            field=models.BooleanField(default=False, help_text='Masquer les mots déjà appris dans les statistiques'),
-        ),
-        migrations.AddField(
-            model_name='revisionsettings',
-            name='show_word_stats',
-            field=models.BooleanField(default=True, help_text='Afficher les statistiques de mots'),
-        ),
-        migrations.AddField(
-            model_name='revisionsettings',
-            name='stats_display_mode',
-            field=models.CharField(choices=[('detailed', 'Détaillé'), ('summary', 'Résumé'), ('minimal', 'Minimal')], default='detailed', help_text="Mode d'affichage des statistiques", max_length=20),
+        # Note: group_by_deck, hide_learned_words, show_word_stats, and stats_display_mode
+        # were already added in migration 0014 via raw SQL. 
+        # Only adding them to Django's migration state for consistency.
+        migrations.RunSQL(
+            sql=[
+                # Ensure all columns exist (idempotent operations)
+                "ALTER TABLE revision_revisionsettings ADD COLUMN IF NOT EXISTS group_by_deck BOOLEAN DEFAULT false;",
+                "ALTER TABLE revision_revisionsettings ADD COLUMN IF NOT EXISTS hide_learned_words BOOLEAN DEFAULT false;", 
+                "ALTER TABLE revision_revisionsettings ADD COLUMN IF NOT EXISTS show_word_stats BOOLEAN DEFAULT true;",
+                "ALTER TABLE revision_revisionsettings ADD COLUMN IF NOT EXISTS stats_display_mode VARCHAR(20) DEFAULT 'detailed';",
+            ],
+            reverse_sql=[
+                "ALTER TABLE revision_revisionsettings DROP COLUMN IF EXISTS group_by_deck;",
+                "ALTER TABLE revision_revisionsettings DROP COLUMN IF EXISTS hide_learned_words;",
+                "ALTER TABLE revision_revisionsettings DROP COLUMN IF EXISTS show_word_stats;", 
+                "ALTER TABLE revision_revisionsettings DROP COLUMN IF EXISTS stats_display_mode;",
+            ]
         ),
         migrations.AlterField(
             model_name='revisionsessionconfig',
