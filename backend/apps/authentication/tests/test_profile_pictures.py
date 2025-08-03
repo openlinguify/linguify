@@ -12,7 +12,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 
-from ..profile import (
+from ..models.profile import (
     process_profile_picture,
     ensure_profile_directories,
     save_processed_images,
@@ -21,7 +21,7 @@ from ..profile import (
     process_uploaded_profile_picture,
     delete_profile_picture,
 )
-from ..supabase_storage import SupabaseStorageService
+from ..utils.supabase_storage import SupabaseStorageService
 
 User = get_user_model()
 
