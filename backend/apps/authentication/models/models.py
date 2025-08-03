@@ -532,37 +532,69 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def save(self, *args, **kwargs):
         """
-        Override the save method to handle validation and update_fields correctly.
+        Override the save method with proper validation and error handling.
+        Ensures data integrity by avoiding dangerous fallback logic.
         """
-        try:
-            # If update_fields is specified, use that method to avoid full validation
-            if 'update_fields' in kwargs:
-                # Ensure all fields in update_fields exist on the model
-                valid_fields = []
-                for field in kwargs['update_fields']:
-                    if hasattr(self, field):
-                        valid_fields.append(field)
-                
-                if valid_fields:
-                    kwargs['update_fields'] = valid_fields
-                    super().save(*args, **kwargs)
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        # Validate update_fields if provided
+        if 'update_fields' in kwargs:
+            update_fields = kwargs['update_fields']
+            if not isinstance(update_fields, (list, tuple, set)):
+                raise ValueError("update_fields must be a list, tuple, or set")
+            
+            # Filter valid fields and warn about invalid ones
+            valid_fields = []
+            invalid_fields = []
+            
+            for field in update_fields:
+                if hasattr(self, field):
+                    valid_fields.append(field)
                 else:
-                    # If no valid fields, fall back to a normal save
-                    kwargs.pop('update_fields')
-                    super().save(*args, **kwargs)
-            else:
-                # For new users, do full validation
-                if not self.pk:
-                    self.full_clean()
-                super().save(*args, **kwargs)
-        except Exception as e:
-            # If save with update_fields fails, try without it
-            if 'update_fields' in kwargs:
+                    invalid_fields.append(field)
+            
+            # Log warning for invalid fields
+            if invalid_fields:
+                logger.warning(
+                    f"Invalid fields in update_fields ignored: {invalid_fields} "
+                    f"for User {getattr(self, 'username', 'unknown')}"
+                )
+            
+            # If no valid fields, convert to full save
+            if not valid_fields:
                 kwargs.pop('update_fields')
-                super().save(*args, **kwargs)
+                logger.info(f"Converted to full save for User {getattr(self, 'username', 'unknown')} - no valid update_fields")
             else:
-                # If it's still failing, re-raise the exception
-                raise
+                kwargs['update_fields'] = valid_fields
+        
+        # Always validate new users
+        if not self.pk:
+            try:
+                self.full_clean()
+            except Exception as e:
+                raise ValueError(f"Validation failed for new user: {e}")
+        
+        # For updates with specific fields, validate only those fields
+        elif 'update_fields' in kwargs:
+            try:
+                # Validate only the fields being updated
+                exclude_fields = [
+                    f.name for f in self._meta.fields 
+                    if f.name not in kwargs['update_fields']
+                ]
+                self.clean_fields(exclude=exclude_fields)
+                self.clean()
+            except Exception as e:
+                raise ValueError(f"Validation failed for fields {kwargs['update_fields']}: {e}")
+        
+        # Perform the save operation - no dangerous fallbacks
+        try:
+            super().save(*args, **kwargs)
+        except Exception as e:
+            # Log the error but don't attempt dangerous fallbacks
+            logger.error(f"Save failed for User {getattr(self, 'username', 'unknown')}: {e}")
+            raise
 
     def __str__(self):
         return f"{self.email}"
