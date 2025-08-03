@@ -1,7 +1,8 @@
 # backend/revision/views/flashcard_views.py
 from django.utils import timezone
-from django.db.models import Q, Count, Prefetch
-from django.core.exceptions import ValidationError
+from django.db.models import Q, Count, Prefetch, Max
+from django.core.exceptions import ValidationError, ObjectDoesNotExist, PermissionDenied
+from django.db import IntegrityError, OperationalError
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -92,11 +93,42 @@ class DeckCloneMixin:
                 "deck": serializer.data
             }, status=status.HTTP_201_CREATED)
             
-        except Exception as e:
-            logger.error(f"Error cloning deck {source_deck.id}: {str(e)}")
+        except ValidationError as e:
+            logger.error(f"Validation error cloning deck {source_deck.id}: {str(e)}")
             return Response(
-                {"detail": f"Failed to clone deck: {str(e)}"},
+                {"detail": f"Validation failed: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
+            )
+        except IntegrityError as e:
+            logger.error(f"Database integrity error cloning deck {source_deck.id}: {str(e)}")
+            return Response(
+                {"detail": "Database integrity error - this deck might already exist or contain invalid data"},
+                status=status.HTTP_409_CONFLICT
+            )
+        except PermissionDenied as e:
+            logger.error(f"Permission denied cloning deck {source_deck.id}: {str(e)}")
+            return Response(
+                {"detail": "Permission denied"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        except ObjectDoesNotExist as e:
+            logger.error(f"Object not found error cloning deck {source_deck.id}: {str(e)}")
+            return Response(
+                {"detail": "Source deck or related objects not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except OperationalError as e:
+            logger.error(f"Database operational error cloning deck {source_deck.id}: {str(e)}")
+            return Response(
+                {"detail": "Database temporarily unavailable. Please try again later."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+        except Exception as e:
+            # Log l'exception complète pour debug mais ne pas exposer les détails
+            logger.exception(f"Unexpected error cloning deck {source_deck.id}")
+            return Response(
+                {"detail": "An unexpected error occurred. Please contact support if the problem persists."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
 class DeckPermissionMixin:
@@ -115,22 +147,78 @@ class DeckPermissionMixin:
         return not deck.is_archived
 
 class OptimizedQuerysetMixin:
-    """Mixin pour les querysets optimisés."""
+    """Mixin pour les querysets optimisés avec stratégies contextuelles."""
     
-    def get_optimized_deck_queryset(self):
+    def get_base_deck_queryset(self):
+        """Base queryset avec optimisations minimales."""
+        return FlashcardDeck.objects.select_related('user')
+    
+    def get_list_optimized_queryset(self):
+        """Queryset optimisé pour les listes (sans prefetch des cartes)."""
+        return self.get_base_deck_queryset().annotate(
+            cards_count=Count('flashcards'),
+            learned_count=Count('flashcards', filter=Q(flashcards__learned=True))
+        )
+    
+    def get_detail_optimized_queryset(self, max_cards=500):
         """
-        Retourne un queryset optimisé avec les relations préchargées et les annotations
-        pour éviter les requêtes N+1
+        Queryset optimisé pour les détails avec limitation du nombre de cartes.
+        Args:
+            max_cards: Limite du nombre de cartes à précharger (défaut: 500)
         """
-        return FlashcardDeck.objects.select_related('user').prefetch_related(
+        return self.get_base_deck_queryset().prefetch_related(
             Prefetch(
                 'flashcards',
-                queryset=Flashcard.objects.select_related('user')
+                queryset=Flashcard.objects.select_related('user')[:max_cards]
             )
         ).annotate(
             cards_count=Count('flashcards'),
             learned_count=Count('flashcards', filter=Q(flashcards__learned=True))
         )
+    
+    def get_stats_only_queryset(self):
+        """Queryset optimisé pour récupérer uniquement les statistiques."""
+        return self.get_base_deck_queryset().annotate(
+            cards_count=Count('flashcards'),
+            learned_count=Count('flashcards', filter=Q(flashcards__learned=True)),
+            last_reviewed=Max('flashcards__last_reviewed_at')
+        )
+    
+    def get_context_from_action(self):
+        """Détermine le contexte d'optimisation basé sur l'action courante."""
+        if hasattr(self, 'action'):
+            if self.action in ['retrieve']:
+                return 'detail'
+            elif self.action in ['clone', 'update', 'partial_update']:
+                return 'minimal'  # Pour ces actions, on n'a pas besoin des cartes
+            elif self.action in ['stats', 'analytics']:
+                return 'stats'
+        return 'list'  # Défaut pour les listes
+    
+    def get_optimized_deck_queryset(self, context=None):
+        """
+        Retourne un queryset optimisé selon le contexte d'utilisation.
+        Args:
+            context: 'list', 'detail', 'stats', 'minimal' ou None pour auto-détection
+        """
+        if context is None:
+            context = self.get_context_from_action()
+            
+        if context == 'detail':
+            return self.get_detail_optimized_queryset()
+        elif context == 'stats':
+            return self.get_stats_only_queryset()
+        elif context == 'minimal':
+            return self.get_base_deck_queryset()
+        else:  # context == 'list' ou défaut
+            return self.get_list_optimized_queryset()
+    
+    def get_paginated_list_queryset(self, limit=50):
+        """Queryset optimisé pour les listes paginées avec limitation."""
+        return self.get_list_optimized_queryset().only(
+            'id', 'name', 'description', 'is_public', 'is_archived', 
+            'created_at', 'updated_at', 'user__username'
+        )[:limit]
 
 # ===== VIEWSETS PRINCIPAUX =====
 
