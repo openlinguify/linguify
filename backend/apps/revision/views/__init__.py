@@ -1,6 +1,6 @@
 # backend/revision/views/__init__.py
 
-from .add_vocabulary_views import CreateRevisionListViewSet
+# add_vocabulary_views.py was removed as it was redundant
 from .flashcard_views import (
     FlashcardDeckViewSet, 
     FlashcardViewSet, 
@@ -18,8 +18,6 @@ from .revision_settings_views import (
     )
 
 __all__ = [
-    # ALL VIEWS for Revision
-    'CreateRevisionListViewSet',
     # ALL VIEWS for Flashcards
     'FlashcardDeckViewSet',
     'FlashcardViewSet',
