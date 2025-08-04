@@ -50,8 +50,30 @@ class Migration(migrations.Migration):
                 """,
                 # Add indexes
                 "CREATE INDEX revision_revisionsettings_user_id_idx ON revision_revisionsettings (user_id);",
+                # Also create RevisionSessionConfig table that was missing
+                """
+                CREATE TABLE IF NOT EXISTS revision_revisionsessionconfig (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL REFERENCES authentication_user(id) ON DELETE CASCADE,
+                    name VARCHAR(100) NOT NULL,
+                    session_type VARCHAR(20) DEFAULT 'standard',
+                    duration_minutes INTEGER DEFAULT 20,
+                    target_cards INTEGER DEFAULT 20,
+                    include_new_cards BOOLEAN DEFAULT true,
+                    include_review_cards BOOLEAN DEFAULT true,
+                    include_difficult_cards BOOLEAN DEFAULT true,
+                    tags_filter JSONB DEFAULT '[]'::jsonb,
+                    difficulty_filter JSONB DEFAULT '[]'::jsonb,
+                    is_default BOOLEAN DEFAULT false,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(user_id, name)
+                );
+                """,
+                "CREATE INDEX revision_revisionsessionconfig_user_id_idx ON revision_revisionsessionconfig (user_id);",
             ],
             reverse_sql=[
+                "DROP TABLE IF EXISTS revision_revisionsessionconfig;",
                 "DROP TABLE IF EXISTS revision_revisionsettings;",
             ]
         ),
