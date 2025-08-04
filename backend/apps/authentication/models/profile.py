@@ -184,7 +184,7 @@ def process_profile_picture(image_data: bytes,
         'images': {
             'original': {
                 'data': image_data,
-                'path': f"profiles/{user_id}/original/{timestamp}_{unique_id}{ext}",
+                'path': f"{user_id}/original/{timestamp}_{unique_id}{ext}",
             },
         }
     }
@@ -193,7 +193,7 @@ def process_profile_picture(image_data: bytes,
     optimized_data = optimize_image(img, MAX_SIZE, format, DEFAULT_QUALITY)
     result['images']['optimized'] = {
         'data': optimized_data,
-        'path': f"profiles/{user_id}/optimized/{unique_id}{ext}",
+        'path': f"{user_id}/optimized/{unique_id}{ext}",
     }
     
     # Créer les vignettes
@@ -201,7 +201,7 @@ def process_profile_picture(image_data: bytes,
     for size_name, thumb_data in thumbnails.items():
         result['images'][size_name] = {
             'data': thumb_data,
-            'path': f"profiles/{user_id}/thumbnails/{size_name}_{unique_id}{ext}",
+            'path': f"{user_id}/thumbnails/{size_name}_{unique_id}{ext}",
         }
     
     return result
@@ -221,7 +221,10 @@ def ensure_profile_directories(user_id: Union[int, str] = 'temp') -> Dict[str, s
     Returns:
         Dict[str, str]: Un dictionnaire des chemins créés
     """
-    user_dir = os.path.join(settings.MEDIA_ROOT, PROFILES_DIR, str(user_id))
+    # Utiliser le ProfileStorage pour créer les chemins corrects
+    from ..utils.storage import ProfileStorage
+    storage = ProfileStorage()
+    user_dir = os.path.join(storage.location, str(user_id))
     
     paths = {
         'user': user_dir,
@@ -258,9 +261,13 @@ def save_processed_images(processed_data: Dict[str, Dict[str, Any]]) -> Dict[str
     
     saved_paths = {}
     
+    # Utiliser le ProfileStorage pour créer les chemins corrects
+    from ..utils.storage import ProfileStorage
+    storage = ProfileStorage()
+    
     # Sauvegarder chaque image
     for image_type, image_info in processed_data['images'].items():
-        full_path = os.path.join(settings.MEDIA_ROOT, image_info['path'])
+        full_path = os.path.join(storage.location, image_info['path'])
         
         # Ensure directory exists
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
@@ -285,7 +292,10 @@ def clean_old_versions(user_id: Union[int, str], max_versions: int = MAX_VERSION
     Returns:
         int: Nombre de fichiers supprimés
     """
-    original_dir = os.path.join(settings.MEDIA_ROOT, PROFILES_DIR, str(user_id), 'original')
+    # Utiliser le ProfileStorage pour créer les chemins corrects
+    from ..utils.storage import ProfileStorage
+    storage = ProfileStorage()
+    original_dir = os.path.join(storage.location, str(user_id), 'original')
     
     if not os.path.exists(original_dir):
         return 0
@@ -701,7 +711,10 @@ def delete_profile_picture(user):
         else:
             # Pour le nouveau format, supprimer le répertoire utilisateur complet
             user_id = str(user.id)
-            user_dir = os.path.join(settings.MEDIA_ROOT, PROFILES_DIR, user_id)
+            # Utiliser le ProfileStorage pour créer les chemins corrects
+            from ..utils.storage import ProfileStorage
+            storage = ProfileStorage()
+            user_dir = os.path.join(storage.location, user_id)
             
             if os.path.exists(user_dir):
                 shutil.rmtree(user_dir)
